@@ -19,11 +19,11 @@ public class ModRenderTypes extends RenderType {
 
     public static RenderType getTextureRender(ResourceLocation texture) {
         RenderState.TextureState textureState = new TextureState(texture, false, false);
-        return makeType("texture", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL11.GL_QUADS, 256,
-                RenderType.State.getBuilder()
-                        .texture(textureState)
-                        .lightmap(RenderState.LIGHTMAP_ENABLED)
-                        .build(false)
+        return create("texture", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL11.GL_QUADS, 256,
+                RenderType.State.builder()
+                        .setTextureState(textureState)
+                        .setLightmapState(RenderState.LIGHTMAP)
+                        .createCompositeState(false)
         );
     }
 
@@ -33,182 +33,182 @@ public class ModRenderTypes extends RenderType {
 
     public static RenderType getTextureRenderColored(ResourceLocation texture, boolean disableDepthTest) {
         RenderState.TextureState textureState = new TextureState(texture, false, false);
-        return makeType("texture_color", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL11.GL_QUADS, 256,
-                RenderType.State.getBuilder()
-                        .texture(textureState)
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .lightmap(RenderState.LIGHTMAP_ENABLED)
-                        .depthTest(disableDepthTest ? DEPTH_ALWAYS : DEPTH_LEQUAL)
-                        .writeMask(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                        .build(false)
+        return create("texture_color", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL11.GL_QUADS, 256,
+                RenderType.State.builder()
+                        .setTextureState(textureState)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setLightmapState(RenderState.LIGHTMAP)
+                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
+                        .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
+                        .createCompositeState(false)
         );
     }
 
     public static RenderType getUntexturedQuad(boolean disableDepthTest) {
-        return makeType("untextured_quad_" + disableDepthTest, DefaultVertexFormats.POSITION_COLOR_LIGHTMAP, GL11.GL_QUADS, 256,
-                RenderType.State.getBuilder()
-                        .texture(RenderState.NO_TEXTURE)
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .cull(CULL_DISABLED)
-                        .lightmap(RenderState.LIGHTMAP_ENABLED)
-                        .shadeModel(RenderState.SHADE_ENABLED)
-                        .depthTest(disableDepthTest ? DEPTH_ALWAYS : DEPTH_LEQUAL)
-                        .writeMask(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                        .build(false)
+        return create("untextured_quad_" + disableDepthTest, DefaultVertexFormats.POSITION_COLOR_LIGHTMAP, GL11.GL_QUADS, 256,
+                RenderType.State.builder()
+                        .setTextureState(RenderState.NO_TEXTURE)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setCullState(NO_CULL)
+                        .setLightmapState(RenderState.LIGHTMAP)
+                        .setShadeModelState(RenderState.SMOOTH_SHADE)
+                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
+                        .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
+                        .createCompositeState(false)
         );
     }
 
     private static final VertexFormat POS_COLOR_NORMAL_LIGHTMAP = new VertexFormat(ImmutableList.<VertexFormatElement>builder()
-            .add(DefaultVertexFormats.POSITION_3F)
-            .add(DefaultVertexFormats.COLOR_4UB)
-            .add(DefaultVertexFormats.NORMAL_3B)
-            .add(DefaultVertexFormats.TEX_2SB)
-            .add(DefaultVertexFormats.PADDING_1B)
+            .add(DefaultVertexFormats.ELEMENT_POSITION)
+            .add(DefaultVertexFormats.ELEMENT_COLOR)
+            .add(DefaultVertexFormats.ELEMENT_NORMAL)
+            .add(DefaultVertexFormats.ELEMENT_UV2)
+            .add(DefaultVertexFormats.ELEMENT_PADDING)
             .build()
     );
     public static RenderType getBlockFrame(boolean disableDepthTest) {
-        return makeType("block_frame",
+        return create("block_frame",
                 POS_COLOR_NORMAL_LIGHTMAP, GL11.GL_QUADS, 256,
-                RenderType.State.getBuilder()
-                        .texture(NO_TEXTURE)
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .shadeModel(SHADE_ENABLED)
-                        .diffuseLighting(DIFFUSE_LIGHTING_ENABLED)
-                        .lightmap(LIGHTMAP_ENABLED)
-                        .cull(CULL_DISABLED)
-                        .depthTest(disableDepthTest ? DEPTH_ALWAYS : DEPTH_LEQUAL)
-                        .writeMask(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                        .build(false)
+                RenderType.State.builder()
+                        .setTextureState(NO_TEXTURE)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setShadeModelState(SMOOTH_SHADE)
+                        .setDiffuseLightingState(DIFFUSE_LIGHTING)
+                        .setLightmapState(LIGHTMAP)
+                        .setCullState(NO_CULL)
+                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
+                        .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
+                        .createCompositeState(false)
         );
     }
 
-    public static final RenderType BLOCK_TRACKER = makeType("block_tracker",
+    public static final RenderType BLOCK_TRACKER = create("block_tracker",
             DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINES, 256,
-            RenderType.State.getBuilder().line(LineState.DEFAULT_LINE)
-                    // TODO 1.16 can we use field_239235_M_ ?
+            RenderType.State.builder().setLineState(LineState.DEFAULT_LINE)
+                    // TODO 1.16 can we use VIEW_OFFSET_Z_LAYERING ?
 //                    .layer(RenderState.PROJECTION_LAYERING)
-                    .transparency(TRANSLUCENT_TRANSPARENCY)
-                    .texture(NO_TEXTURE)
-                    .cull(CULL_DISABLED)
-                    .lightmap(LIGHTMAP_DISABLED)
-                    .depthTest(DEPTH_ALWAYS)
-                    .writeMask(COLOR_WRITE)
-                    .build(false)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(NO_TEXTURE)
+                    .setCullState(NO_CULL)
+                    .setLightmapState(NO_LIGHTMAP)
+                    .setDepthTestState(NO_DEPTH_TEST)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)
     );
 
-    public static final RenderType TARGET_CIRCLE = makeType("target_circle",
+    public static final RenderType TARGET_CIRCLE = create("target_circle",
             DefaultVertexFormats.POSITION_COLOR, GL11.GL_TRIANGLE_STRIP, 65536,
-            RenderType.State.getBuilder()
+            RenderType.State.builder()
 //                    .layer(PROJECTION_LAYERING)
-                    .shadeModel(SHADE_ENABLED)
-                    .transparency(TRANSLUCENT_TRANSPARENCY)
-                    .texture(NO_TEXTURE)
-                    .cull(CULL_DISABLED)
-                    .lightmap(LIGHTMAP_DISABLED)
-                    .depthTest(DEPTH_ALWAYS)
-                    .writeMask(COLOR_WRITE)
-                    .build(false)
+                    .setShadeModelState(SMOOTH_SHADE)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setTextureState(NO_TEXTURE)
+                    .setCullState(NO_CULL)
+                    .setLightmapState(NO_LIGHTMAP)
+                    .setDepthTestState(NO_DEPTH_TEST)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)
     );
 
     public static RenderType getLineLoops(double lineWidth) {
         LineState lineState = new LineState(OptionalDouble.of(lineWidth));
-        return makeType("line_loops",
+        return create("line_loops",
                 DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINE_LOOP, 256,
-                RenderType.State.getBuilder()
-                        .line(lineState)
-                        .shadeModel(RenderState.SHADE_ENABLED)
-                        .texture(RenderState.NO_TEXTURE)
-                        .lightmap(RenderState.LIGHTMAP_DISABLED)
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .build(false)
+                RenderType.State.builder()
+                        .setLineState(lineState)
+                        .setShadeModelState(RenderState.SMOOTH_SHADE)
+                        .setTextureState(RenderState.NO_TEXTURE)
+                        .setLightmapState(RenderState.NO_LIGHTMAP)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .createCompositeState(false)
         );
     }
 
     public static RenderType getLineLoopsTransparent(double lineWidth) {
         LineState lineState = new LineState(OptionalDouble.of(lineWidth));
-        return makeType("line_loops",
+        return create("line_loops",
                 DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINE_LOOP, 256,
-                RenderType.State.getBuilder()
-                        .line(lineState)
-                        .shadeModel(RenderState.SHADE_ENABLED)
-                        .texture(RenderState.NO_TEXTURE)
-                        .lightmap(RenderState.LIGHTMAP_DISABLED)
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .depthTest(DEPTH_ALWAYS)
-                        .writeMask(COLOR_WRITE)
-                        .cull(CULL_DISABLED)
-                        .build(false)
+                RenderType.State.builder()
+                        .setLineState(lineState)
+                        .setShadeModelState(RenderState.SMOOTH_SHADE)
+                        .setTextureState(RenderState.NO_TEXTURE)
+                        .setLightmapState(RenderState.NO_LIGHTMAP)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setDepthTestState(NO_DEPTH_TEST)
+                        .setWriteMaskState(COLOR_WRITE)
+                        .setCullState(NO_CULL)
+                        .createCompositeState(false)
         );
     }
 
     private static final LineState LINE_5 = new LineState(OptionalDouble.of(5.0));
     public static RenderType getNavPath(boolean xRay, boolean quads) {
-        DepthTestState d = xRay ? DepthTestState.DEPTH_ALWAYS : DepthTestState.DEPTH_LEQUAL;
+        DepthTestState d = xRay ? DepthTestState.NO_DEPTH_TEST : DepthTestState.LEQUAL_DEPTH_TEST;
         WriteMaskState w = xRay ? WriteMaskState.COLOR_WRITE : WriteMaskState.COLOR_DEPTH_WRITE;
 
         if (quads) {
-            return makeType("nav_path_quads",
+            return create("nav_path_quads",
                     DefaultVertexFormats.POSITION_COLOR, GL11.GL_QUADS, 256,
-                    RenderType.State.getBuilder()
-                            .depthTest(d)
-                            .writeMask(w)
-                            .texture(RenderState.NO_TEXTURE)
-                            .cull(RenderState.CULL_DISABLED)
-                            .transparency(TRANSLUCENT_TRANSPARENCY)
-                            .build(false)
+                    RenderType.State.builder()
+                            .setDepthTestState(d)
+                            .setWriteMaskState(w)
+                            .setTextureState(RenderState.NO_TEXTURE)
+                            .setCullState(RenderState.NO_CULL)
+                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                            .createCompositeState(false)
             );
         } else {
-            return makeType("nav_path_lines",
+            return create("nav_path_lines",
                     DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINE_STRIP, 256,
-                    RenderType.State.getBuilder().line(LINE_5)
-                            .depthTest(d)
-                            .writeMask(w)
-                            .texture(RenderState.NO_TEXTURE)
-                            .cull(RenderState.CULL_DISABLED)
-                            .transparency(TRANSLUCENT_TRANSPARENCY)
-                            .build(false)
+                    RenderType.State.builder().setLineState(LINE_5)
+                            .setDepthTestState(d)
+                            .setWriteMaskState(w)
+                            .setTextureState(RenderState.NO_TEXTURE)
+                            .setCullState(RenderState.NO_CULL)
+                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                            .createCompositeState(false)
             );
         }
     }
 
-    public static RenderType getBlockHilightFace(boolean disableDepthTest) {
-        return makeType("block_hilight",
+    public static RenderType getBlockHilightFace(boolean disableDepthTest, boolean disableWriteMask) {
+        return create("block_hilight",
                 DefaultVertexFormats.POSITION_COLOR, GL11.GL_QUADS, 256,
-                RenderType.State.getBuilder()
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .texture(NO_TEXTURE)
-                        .lightmap(LIGHTMAP_DISABLED)
-                        .depthTest(disableDepthTest ? DEPTH_ALWAYS : DEPTH_LEQUAL)
-                        .writeMask(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                        .build(false));
+                RenderType.State.builder()
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setTextureState(NO_TEXTURE)
+                        .setLightmapState(NO_LIGHTMAP)
+                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
+                        .setWriteMaskState(disableWriteMask ? COLOR_WRITE : COLOR_DEPTH_WRITE)
+                        .createCompositeState(false));
     }
 
     private static final LineState LINE_3 = new LineState(OptionalDouble.of(3.0));
-    public static RenderType getBlockHilightLine(boolean disableDepthTest) {
-        return makeType("block_hilight_line",
+    public static RenderType getBlockHilightLine(boolean disableDepthTest, boolean disableWriteMask) {
+        return create("block_hilight_line",
                 DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINES, 256,
-                RenderType.State.getBuilder().line(LINE_3)
-                        .transparency(TRANSLUCENT_TRANSPARENCY)
-                        .texture(NO_TEXTURE)
-                        .depthTest(disableDepthTest ? DEPTH_ALWAYS : RenderState.DEPTH_LEQUAL)
-                        .cull(CULL_DISABLED)
-                        .lightmap(LIGHTMAP_DISABLED)
-                        .writeMask(disableDepthTest ? COLOR_WRITE : RenderState.COLOR_DEPTH_WRITE)
-                        .build(false));
+                RenderType.State.builder().setLineState(LINE_3)
+                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setTextureState(NO_TEXTURE)
+                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : RenderState.LEQUAL_DEPTH_TEST)
+                        .setCullState(NO_CULL)
+                        .setLightmapState(NO_LIGHTMAP)
+                        .setWriteMaskState(disableWriteMask ? COLOR_WRITE : RenderState.COLOR_DEPTH_WRITE)
+                        .createCompositeState(false));
     }
 
 
     private static final LineState LINE_2 = new LineState(OptionalDouble.of(2.0));
-    public static final RenderType TRIANGLE_FAN = makeType("triangle_fan",
+    public static final RenderType TRIANGLE_FAN = create("triangle_fan",
             DefaultVertexFormats.POSITION_COLOR, GL11.GL_TRIANGLE_FAN, 256,
-            RenderType.State.getBuilder()
-                    .line(LINE_2)
-                    .texture(NO_TEXTURE)
-                    .build(false)
+            RenderType.State.builder()
+                    .setLineState(LINE_2)
+                    .setTextureState(NO_TEXTURE)
+                    .createCompositeState(false)
     );
 
     public static RenderType getArmorTranslucentNoCull(ResourceLocation rl) {
-        RenderType.State state = RenderType.State.getBuilder().texture(new RenderState.TextureState(rl, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).alpha(DEFAULT_ALPHA).cull(CULL_DISABLED).lightmap(LIGHTMAP_ENABLED).overlay(OVERLAY_ENABLED).layer(field_239235_M_).build(true);
-        return makeType("armor_translucent_no_cull", DefaultVertexFormats.ENTITY, GL11.GL_QUADS, 256, true, false, state);
+        RenderType.State state = RenderType.State.builder().setTextureState(new RenderState.TextureState(rl, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setDiffuseLightingState(DIFFUSE_LIGHTING).setAlphaState(DEFAULT_ALPHA).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).setLayeringState(VIEW_OFFSET_Z_LAYERING).createCompositeState(true);
+        return create("armor_translucent_no_cull", DefaultVertexFormats.NEW_ENTITY, GL11.GL_QUADS, 256, true, false, state);
     }
 }

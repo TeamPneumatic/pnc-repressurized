@@ -24,23 +24,23 @@ public class RenderMinigunTracers {
     public static void render(Minigun minigun, MatrixStack matrixStack, IRenderTypeBuffer buffer, double x, double y, double z, double gunRadius) {
         LivingEntity target = minigun.getAttackTarget();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(-x, -y, -z);
-        Vector3d vec = new Vector3d(target.getPosX() - x, target.getPosY() + target.getHeight() / 2 - y, target.getPosZ() - z)
+        Vector3d vec = new Vector3d(target.getX() - x, target.getY() + target.getBbHeight() / 2 - y, target.getZ() - z)
                 .normalize().scale(gunRadius);
         // TODO don't really need ProgressingLine here
         ProgressingLine minigunFire = new ProgressingLine().setProgress(1);
         minigunFire.startX = (float) (x + vec.x);
         minigunFire.startY = (float) (y + vec.y);
         minigunFire.startZ = (float) (z + vec.z);
-        Random rand = target.getEntityWorld().rand;
-        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getBlockHilightLine(false));
+        Random rand = target.getCommandSenderWorld().random;
+        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getBlockHilightLine(false, false));
         for (int i = 0; i < 5; i++) {
-            minigunFire.endX = (float) (target.getPosX() + rand.nextDouble() * 0.8 - 0.4);
-            minigunFire.endY = (float) (target.getPosY() + target.getHeight() / 2 + rand.nextDouble() * 0.8 - 0.4);
-            minigunFire.endZ = (float) (target.getPosZ() + rand.nextDouble() * 0.8 - 0.4);
+            minigunFire.endX = (float) (target.getX() + rand.nextDouble() * 0.8 - 0.4);
+            minigunFire.endY = (float) (target.getY() + target.getBbHeight() / 2 + rand.nextDouble() * 0.8 - 0.4);
+            minigunFire.endZ = (float) (target.getZ() + rand.nextDouble() * 0.8 - 0.4);
             RenderUtils.renderProgressingLine(minigunFire, matrixStack, builder, 0x40000000 | minigun.getAmmoColor());
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.particle.AirParticleType;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.particles.ParticleType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;

@@ -71,7 +71,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
         tank.tick();
 
-        if (!world.isRemote && getUpgrades(EnumUpgrade.CREATIVE) > 0) {
+        if (!level.isClientSide && getUpgrades(EnumUpgrade.CREATIVE) > 0) {
             FluidStack fluidStack = tank.getFluid();
             if (!fluidStack.isEmpty() && fluidStack.getAmount() < PneumaticValues.NORMAL_TANK_CAPACITY) {
                 tank.fill(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY), FluidAction.EXECUTE);
@@ -120,7 +120,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         // try to pour fluid into the world
         if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0
                 && tank.getFluidAmount() >= leaveMaterialCount + FluidAttributes.BUCKET_VOLUME) {
-            return FluidUtils.tryPourOutFluid(outputCap, world, getPos().offset(dir), false, false, FluidAction.EXECUTE);
+            return FluidUtils.tryPourOutFluid(outputCap, level, getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
         }
 
         return false;
@@ -169,8 +169,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         }
 
         if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            BlockPos neighborPos = getPos().offset(inputDir);
-            return !FluidUtils.tryPickupFluid(inputCap, world, neighborPos, false, FluidAction.EXECUTE).isEmpty();
+            BlockPos neighborPos = getBlockPos().relative(inputDir);
+            return !FluidUtils.tryPickupFluid(inputCap, level, neighborPos, false, FluidAction.EXECUTE).isEmpty();
         }
 
         return false;
@@ -178,8 +178,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
     @Override
     protected void setupInputOutputRegions() {
-        inputAABB = new AxisAlignedBB(pos.offset(inputDir));
-        outputAABB = new AxisAlignedBB(getPos().offset(getRotation()));
+        inputAABB = new AxisAlignedBB(worldPosition.relative(inputDir));
+        outputAABB = new AxisAlignedBB(getBlockPos().relative(getRotation()));
 
         cachedInputEntities.clear();
         cachedOutputEntities.clear();
@@ -189,7 +189,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     boolean shouldScanForEntities(Direction dir) {
         TileEntity te = getCachedNeighbor(dir);
         return (te == null || !te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).isPresent())
-                && !Block.hasEnoughSolidSide(world, pos.offset(dir), dir.getOpposite());
+                && !Block.canSupportCenter(level, worldPosition.relative(dir), dir.getOpposite());
     }
 
     public HopperTank getTank() {
@@ -197,8 +197,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         comparatorValue = -1;
     }
@@ -238,7 +238,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerLiquidHopper(i, playerInventory, getPos());
+        return new ContainerLiquidHopper(i, playerInventory, getBlockPos());
     }
 
     @Override

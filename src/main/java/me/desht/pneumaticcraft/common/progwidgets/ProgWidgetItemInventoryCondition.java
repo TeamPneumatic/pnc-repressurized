@@ -35,7 +35,7 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
 
             @Override
             protected boolean evaluate(BlockPos pos) {
-                TileEntity te = drone.world().getTileEntity(pos);
+                TileEntity te = drone.world().getBlockEntity(pos);
 
                 boolean[] sides = ((ISidedWidget) progWidget).getSides();
 
@@ -44,7 +44,7 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
                 Set<IItemHandler> handlers = new HashSet<>();
                 for (int sideIdx = 0; sideIdx < sides.length; sideIdx++) {
                     if (sides[sideIdx]) {
-                        IOHelper.getInventoryForTE(te, Direction.byIndex(sideIdx)).ifPresent(handlers::add);
+                        IOHelper.getInventoryForTE(te, Direction.from3DDataValue(sideIdx)).ifPresent(handlers::add);
                     }
                 }
 

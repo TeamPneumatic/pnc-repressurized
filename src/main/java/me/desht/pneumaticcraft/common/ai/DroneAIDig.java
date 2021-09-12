@@ -63,7 +63,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
 
         // get relative hardness for empty hand
         drone.getInv().setStackInSlot(0, ItemStack.EMPTY);
-        float baseSoftness = worldCache.getBlockState(pos).getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.world(), pos);
+        float baseSoftness = worldCache.getBlockState(pos).getDestroyProgress(drone.getFakePlayer(), drone.world(), pos);
         drone.getInv().setStackInSlot(0, currentStackSaved);
         boolean hasDiggingTool = false;
 
@@ -73,7 +73,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         BlockState state = worldCache.getBlockState(pos);
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             drone.getInv().setStackInSlot(0, drone.getInv().getStackInSlot(i));
-            float softness = state.getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.world(), pos);
+            float softness = state.getDestroyProgress(drone.getFakePlayer(), drone.world(), pos);
             if (softness > bestSoftness) {
                 bestSlot = i;
                 bestSoftness = softness;
@@ -89,16 +89,16 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
             drone.getInv().setStackInSlot(bestSlot, drone.getInv().getStackInSlot(0));
             drone.getInv().setStackInSlot(0, bestItem);
         }
-        return hasDiggingTool || !state.getRequiresTool();
+        return hasDiggingTool || !state.requiresCorrectToolForDrops();
     }
 
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
-        PlayerInteractionManager manager = drone.getFakePlayer().interactionManager;
-        if (!manager.isDestroyingBlock || !manager.receivedFinishDiggingPacket) { //is not destroying and is not acknowledged.
+        PlayerInteractionManager manager = drone.getFakePlayer().gameMode;
+        if (!manager.isDestroyingBlock || !manager.hasDelayedDestroy) { //is not destroying and is not acknowledged.
             BlockState blockState = worldCache.getBlockState(pos);
             if (!ignoreBlock(blockState) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
-                if (blockState.getBlockHardness(drone.world(), pos) < 0) {
+                if (blockState.getDestroySpeed(drone.world(), pos) < 0) {
                     addToBlacklist(pos);
                     drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(null);
@@ -107,9 +107,9 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                 PlayerInteractEvent.LeftClickBlock event = new PlayerInteractEvent.LeftClickBlock(drone.getFakePlayer(), pos, Direction.UP);
                 MinecraftForge.EVENT_BUS.post(event);
                 if (!event.isCanceled()) {
-                    int limit = Objects.requireNonNull(drone.world().getServer()).getBuildLimit();
-                    manager.func_225416_a(pos, CPlayerDiggingPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit);
-                    manager.func_225416_a(pos, CPlayerDiggingPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit);
+                    int limit = Objects.requireNonNull(drone.world().getServer()).getMaxBuildHeight();
+                    manager.handleBlockBreakAction(pos, CPlayerDiggingPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit);
+                    manager.handleBlockBreakAction(pos, CPlayerDiggingPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit);
                     drone.setDugBlock(pos);
                     return true;
                 }
@@ -141,7 +141,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         return state.getDrops(
                 new LootContext.Builder((ServerWorld) drone.world())
                         .withParameter(LootParameters.BLOCK_STATE, state)
-                        .withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(pos))
+                        .withParameter(LootParameters.ORIGIN, Vector3d.atCenterOf(pos))
                         .withParameter(LootParameters.TOOL, drone.getInv().getStackInSlot(0))
         );
     }

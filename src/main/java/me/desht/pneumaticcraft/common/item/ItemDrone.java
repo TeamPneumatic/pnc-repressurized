@@ -48,17 +48,17 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext ctx) {
-        World world = ctx.getWorld();
-        BlockPos pos = ctx.getPos();
+    public ActionResultType useOn(ItemUseContext ctx) {
+        World world = ctx.getLevel();
+        BlockPos pos = ctx.getClickedPos();
         if (world instanceof IServerWorld) {
-            ItemStack iStack = ctx.getPlayer().getHeldItem(ctx.getHand());
+            ItemStack iStack = ctx.getPlayer().getItemInHand(ctx.getHand());
             if (iStack.getItem() == ModItems.LOGISTICS_DRONE.get()) {
                 AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((ServerPlayerEntity) ctx.getPlayer());
             }
             BlockState state = world.getBlockState(pos);
-            BlockPos placePos = state.getCollisionShape(world, pos).isEmpty() ? pos : pos.offset(ctx.getFace());
-            spawnDrone(ctx.getPlayer(), world, pos, ctx.getFace(), placePos, iStack);
+            BlockPos placePos = state.getCollisionShape(world, pos).isEmpty() ? pos : pos.relative(ctx.getClickedFace());
+            spawnDrone(ctx.getPlayer(), world, pos, ctx.getClickedFace(), placePos, iStack);
             iStack.shrink(1);
         }
         return ActionResultType.SUCCESS;
@@ -66,13 +66,13 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (!entity.getEntityWorld().isRemote && stack.hasTag() && stack.getTag().contains(IProgrammable.NBT_WIDGETS)) entity.setNoDespawn();
+        if (!entity.getCommandSenderWorld().isClientSide && stack.hasTag() && stack.getTag().contains(IProgrammable.NBT_WIDGETS)) entity.setExtendedLifetime();
         return false;
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (stack.hasTag() && stack.getTag().contains("Tank")) {
             FluidTank fluidTank = new FluidTank(16000);
@@ -80,8 +80,8 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
             FluidStack fluidStack = fluidTank.getFluid();
             if (!fluidStack.isEmpty()) {
                 tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.fluid")
-                        .appendString(fluidStack.getAmount() + "mB ")
-                        .append(fluidStack.getDisplayName()).mergeStyle(TextFormatting.GRAY)
+                        .append(fluidStack.getAmount() + "mB ")
+                        .append(fluidStack.getDisplayName()).withStyle(TextFormatting.GRAY)
                 );
             }
         }
@@ -90,16 +90,16 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     public void spawnDrone(PlayerEntity player, World world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
         EntityDrone drone = droneCreator.apply(world, player);
 
-        drone.setPosition(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
+        drone.setPos(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
         drone.readFromItemStack(iStack);
-        world.addEntity(drone);
+        world.addFreshEntity(drone);
 
         if (drone.addProgram(clickPos, facing, placePos, iStack, drone.progWidgets)) {
             TileEntityProgrammer.updatePuzzleConnections(drone.progWidgets);
         }
 
         if (world instanceof IServerWorld) {
-            drone.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(placePos), SpawnReason.TRIGGERED, new ILivingEntityData() {}, null);
+            drone.finalizeSpawn((IServerWorld) world, world.getCurrentDifficultyAt(placePos), SpawnReason.TRIGGERED, new ILivingEntityData() {}, null);
         }
     }
 
@@ -125,7 +125,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
 
     @Override
     public String getUpgradeAcceptorTranslationKey() {
-        return getTranslationKey();
+        return getDescriptionId();
     }
 
     @Override

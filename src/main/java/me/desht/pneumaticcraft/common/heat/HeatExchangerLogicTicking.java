@@ -30,16 +30,13 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private double thermalCapacity = 1;
     private final BitSet connections = new BitSet(6);
 
-    // prevent infinite recursion when adding/removing a connected exchanger
-//    private static boolean isAddingOrRemovingLogic;
-
     @Override
     public void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> blockFilter, Direction... validSides) {
         if (ambientTemperature < 0) {
             initializeAmbientTemperature(world, pos);
         }
 
-        if (world.isRemote) return;
+        if (world.isClientSide) return;
 
         for (IHeatExchangerLogic logic : hullExchangers) {
             removeConnectedExchanger(logic);
@@ -48,20 +45,20 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         newBehaviours = new ArrayList<>();
         connections.clear();
         for (Direction dir : validSides) {
-            if (HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.offset(dir), dir, blockFilter, this, newBehaviours) > 0) {
-                connections.set(dir.getIndex());
+            if (HeatBehaviourManager.getInstance().addHeatBehaviours(world, pos.relative(dir), dir, blockFilter, this, newBehaviours) > 0) {
+                connections.set(dir.get3DDataValue());
             }
-            HeatExchangerManager.getInstance().getLogic(world, pos.offset(dir), dir.getOpposite(), blockFilter).ifPresent(logic -> {
+            HeatExchangerManager.getInstance().getLogic(world, pos.relative(dir), dir.getOpposite(), blockFilter).ifPresent(logic -> {
                 hullExchangers.add(logic);
                 addConnectedExchanger(logic);
-                connections.set(dir.getIndex());
+                connections.set(dir.get3DDataValue());
             });
         }
     }
 
     @Override
     public boolean isSideConnected(Direction side) {
-        return connections.get(side.getIndex());
+        return connections.get(side.get3DDataValue());
     }
 
     @Override
@@ -70,11 +67,6 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         if (reciprocate) {
             exchanger.addConnectedExchanger(this, false);
         }
-//        if (!isAddingOrRemovingLogic) {
-//            isAddingOrRemovingLogic = true;
-//            exchanger.addConnectedExchanger(this);
-//            isAddingOrRemovingLogic = false;
-//        }
     }
 
     @Override
@@ -83,11 +75,6 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         if (reciprocate) {
             exchanger.removeConnectedExchanger(this, false);
         }
-//        if (!isAddingOrRemovingLogic) {
-//            isAddingOrRemovingLogic = true;
-//            exchanger.removeConnectedExchanger(this);
-//            isAddingOrRemovingLogic = false;
-//        }
     }
 
     @Override
@@ -237,5 +224,15 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     @Override
     public void addHeat(double amount) {
         setTemperature(MathHelper.clamp(temperature + amount / getThermalCapacity(), 0, 2273));
+    }
+
+    @Override
+    public <T extends HeatBehaviour<?>> Optional<T> getHeatBehaviour(BlockPos pos, Class<T> cls) {
+        for (HeatBehaviour<?> behaviour : behaviours) {
+            if (behaviour.getPos().equals(pos) && cls.isAssignableFrom(behaviour.getClass())) {
+                return Optional.of(cls.cast(behaviour));
+            }
+        }
+        return Optional.empty();
     }
 }

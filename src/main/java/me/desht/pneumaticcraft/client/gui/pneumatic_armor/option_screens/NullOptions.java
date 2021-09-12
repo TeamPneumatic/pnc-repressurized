@@ -56,6 +56,11 @@ public class NullOptions implements IOptionPage {
     }
 
     @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        return false;
+    }
+
+    @Override
     public boolean mouseClicked(double x, double y, int button) {
         return false;
     }

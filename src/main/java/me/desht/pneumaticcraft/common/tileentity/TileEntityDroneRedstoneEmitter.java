@@ -14,12 +14,12 @@ public class TileEntityDroneRedstoneEmitter extends TileEntity implements ITicka
 
     @Override
     public void tick() {
-        BlockState state = getWorld().getBlockState(getPos());
+        BlockState state = getLevel().getBlockState(getBlockPos());
         for (Direction facing : DirectionUtil.VALUES) {
-            if (state.getWeakPower(getWorld(), getPos(),  facing) > 0) {
+            if (state.getSignal(getLevel(), getBlockPos(),  facing) > 0) {
                 return;
             }
         }
-        getWorld().removeBlock(getPos(), false);
+        getLevel().removeBlock(getBlockPos(), false);
     }
 }

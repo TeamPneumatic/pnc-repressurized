@@ -28,32 +28,32 @@ public class ItemSeismicSensor extends Item {
     private static boolean needRecache = true;  // recache on first startup & when tags are reloaded
 
     public ItemSeismicSensor() {
-        super(ModItems.defaultProps().maxStackSize(1));
+        super(ModItems.defaultProps().stacksTo(1));
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext ctx) {
-        World world = ctx.getWorld();
+    public ActionResultType useOn(ItemUseContext ctx) {
+        World world = ctx.getLevel();
         PlayerEntity player = ctx.getPlayer();
-        if (!world.isRemote && player != null) {
-            BlockPos.Mutable searchPos = ctx.getPos().toMutable();
+        if (!world.isClientSide && player != null) {
+            BlockPos.Mutable searchPos = ctx.getClickedPos().mutable();
             while (searchPos.getY() > PneumaticCraftUtils.getMinHeight(world)) {
                 searchPos.move(Direction.DOWN);
                 Fluid fluid = findFluid(world, searchPos);
                 if (fluid != null) {
-                    Set<BlockPos> fluidPositions = findLake(world, searchPos.toImmutable(), fluid);
+                    Set<BlockPos> fluidPositions = findLake(world, searchPos.immutable(), fluid);
                     int count = Math.max(1, fluidPositions.size() / 10 * 10);
-                    player.sendStatusMessage(new TranslationTextComponent(
+                    player.displayClientMessage(new TranslationTextComponent(
                             "pneumaticcraft.message.seismicSensor.foundOilDetails",
                             new TranslationTextComponent(fluid.getAttributes().getTranslationKey()),
-                            TextFormatting.GREEN.toString() + (ctx.getPos().getY() - searchPos.getY()),
+                            TextFormatting.GREEN.toString() + (ctx.getClickedPos().getY() - searchPos.getY()),
                             TextFormatting.GREEN.toString() + count),
                             false);
-                    world.playSound(null, ctx.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 1f, 1f);
+                    world.playSound(null, ctx.getClickedPos(), SoundEvents.NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 1f, 1f);
                     return ActionResultType.SUCCESS;
                 }
             }
-            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.seismicSensor.noOilFound"), false);
+            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.seismicSensor.noOilFound"), false);
         }
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
@@ -72,7 +72,7 @@ public class ItemSeismicSensor extends Item {
         }
 
         FluidState state = world.getFluidState(pos);
-        return fluidsOfInterest.contains(state.getFluid().getRegistryName()) ? state.getFluid() : null;
+        return fluidsOfInterest.contains(state.getType().getRegistryName()) ? state.getType() : null;
     }
 
     private Set<BlockPos> findLake(World world, BlockPos searchPos, Fluid fluid) {
@@ -83,9 +83,9 @@ public class ItemSeismicSensor extends Item {
             BlockPos checkingPos = pendingPositions.pop();
             for (Direction d : Direction.values()) {
                 if (d != Direction.UP) {
-                    BlockPos newPos = checkingPos.offset(d);
+                    BlockPos newPos = checkingPos.relative(d);
                     FluidState state = world.getFluidState(newPos);
-                    if (state.getFluid() == fluid && state.isSource() && fluidPositions.add(newPos)) {
+                    if (state.getType() == fluid && state.isSource() && fluidPositions.add(newPos)) {
                         pendingPositions.add(newPos);
                     }
                 }

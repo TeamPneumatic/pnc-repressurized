@@ -7,7 +7,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public abstract class FluidOil {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
@@ -24,7 +24,7 @@ public abstract class FluidOil {
         }
 
         @Override
-        public int getTickRate(IWorldReader world) {
+        public int getTickDelay(IWorldReader world) {
             return 20;
         }
 

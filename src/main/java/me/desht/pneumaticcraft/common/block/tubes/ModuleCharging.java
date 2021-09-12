@@ -20,7 +20,7 @@ public class ModuleCharging extends TubeModule {
     public void update() {
         super.update();
 
-        if (pressureTube.getWorld().isRemote || (pressureTube.getWorld().getGameTime() & 0x7) != 0) return;
+        if (pressureTube.getLevel().isClientSide || (pressureTube.getLevel().getGameTime() & 0x7) != 0) return;
 
         getConnectedInventory().ifPresent(itemHandler -> {
             // times 8 because we only run every 8 ticks
@@ -55,7 +55,7 @@ public class ModuleCharging extends TubeModule {
 
     private LazyOptional<IItemHandler> getConnectedInventory() {
         if (neighbourTE == null || neighbourTE.isRemoved()) {
-            neighbourTE = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
+            neighbourTE = pressureTube.getLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
         }
         return neighbourTE == null ? LazyOptional.empty() : neighbourTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
     }

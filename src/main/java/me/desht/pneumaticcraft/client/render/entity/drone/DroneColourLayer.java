@@ -25,7 +25,7 @@ public class DroneColourLayer extends LayerRenderer<EntityDroneBase, ModelDrone>
     @Override
     public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, EntityDroneBase entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         float[] cols = RenderUtils.decomposeColorF(DyeColor.byId(entityIn.getDroneColor()).getColorValue());
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutoutNoCull(Textures.DRONE_ENTITY));
-        model.render(matrixStackIn, builder, packedLightIn, LivingRenderer.getPackedOverlay(entityIn, 0.0F), cols[1], cols[2], cols[3], 1f);
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(Textures.DRONE_ENTITY));
+        model.renderToBuffer(matrixStackIn, builder, packedLightIn, LivingRenderer.getOverlayCoords(entityIn, 0.0F), cols[1], cols[2], cols[3], 1f);
     }
 }

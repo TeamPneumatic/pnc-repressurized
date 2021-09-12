@@ -41,12 +41,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_CLIENT;
 import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_SERVER;
 
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "5";
+    private static final String PROTOCOL_VERSION = "6";
     private static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder
             .named(RL("main_channel"))
             .clientAcceptedVersions(PROTOCOL_VERSION::equals)
@@ -195,6 +195,8 @@ public class NetworkHandler {
 				PacketSyncHackSimulationUpdate::toBytes, PacketSyncHackSimulationUpdate::new, PacketSyncHackSimulationUpdate::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketUpdateArmorColors.class,
 				PacketUpdateArmorColors::toBytes, PacketUpdateArmorColors::new, PacketUpdateArmorColors::handle, PLAY_TO_SERVER);
+		registerMessage(PacketMinigunStop.class,
+				PacketMinigunStop::toBytes, PacketMinigunStop::new, PacketMinigunStop::handle, PLAY_TO_CLIENT);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
@@ -222,8 +224,8 @@ public class NetworkHandler {
 	}
 
 	public static void sendToAllTracking(Object message, TileEntity te) {
-    	if (te.getWorld() != null) {
-    		sendToAllTracking(message, te.getWorld(), te.getPos());
+    	if (te.getLevel() != null) {
+    		sendToAllTracking(message, te.getLevel(), te.getBlockPos());
 		}
     }
 
@@ -247,7 +249,7 @@ public class NetworkHandler {
 				sendToAll(packet);
 			} else {
 				for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
-					if (!player.server.isServerOwner(player.getGameProfile())) {
+					if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
 						sendToPlayer(packet, player);
 					}
 				}
@@ -261,7 +263,7 @@ public class NetworkHandler {
 	 * @param packet the packet to send
 	 */
 	public static void sendNonLocal(ServerPlayerEntity player, Object packet) {
-		if (!player.server.isServerOwner(player.getGameProfile())) {
+		if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
 			sendToPlayer(packet, player);
 		}
 	}

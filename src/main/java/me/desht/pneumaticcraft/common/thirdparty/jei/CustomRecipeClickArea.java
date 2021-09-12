@@ -56,21 +56,21 @@ public class CustomRecipeClickArea {
                 Collection<FluidStack> fluids = gui.getTargetFluids();
                 ImmutableList.Builder<ITextComponent> builder = ImmutableList.builder();
                 if (!items.isEmpty() || !fluids.isEmpty()) {
-                    builder.add(new StringTextComponent("Current Recipe:").mergeStyle(TextFormatting.GRAY));
+                    builder.add(new StringTextComponent("Current Recipe:").withStyle(TextFormatting.GRAY));
                     for (ItemStack stack : items) {
                         if (!stack.isEmpty()) {
-                            builder.add(new StringTextComponent(GuiConstants.ARROW_RIGHT + " ").append(stack.getDisplayName())
-                                    .mergeStyle(TextFormatting.YELLOW));
+                            builder.add(new StringTextComponent(GuiConstants.ARROW_RIGHT + " ").append(stack.getHoverName())
+                                    .withStyle(TextFormatting.YELLOW));
                         }
                     }
                     for (FluidStack stack : fluids) {
                         if (!stack.isEmpty()) {
                             builder.add(new StringTextComponent(GuiConstants.ARROW_RIGHT + " ").append(stack.getDisplayName())
-                                    .mergeStyle(TextFormatting.AQUA));
+                                    .withStyle(TextFormatting.AQUA));
                         }
                     }
-                    if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
-                        builder.add(new StringTextComponent(gui.te.getCurrentRecipeIdSynced()).mergeStyle(TextFormatting.DARK_GRAY));
+                    if (Minecraft.getInstance().options.advancedItemTooltips) {
+                        builder.add(new StringTextComponent(gui.te.getCurrentRecipeIdSynced()).withStyle(TextFormatting.DARK_GRAY));
                     }
                     builder.add(StringTextComponent.EMPTY);
                 }

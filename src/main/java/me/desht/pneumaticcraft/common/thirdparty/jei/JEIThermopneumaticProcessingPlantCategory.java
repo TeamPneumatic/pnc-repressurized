@@ -39,7 +39,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     JEIThermopneumaticProcessingPlantCategory() {
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()));
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT, 0, 0, 166, 70);
-        localizedName = I18n.format(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getTranslationKey());
+        localizedName = I18n.get(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getDescriptionId());
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT, 176, 0, 48, 30);
         progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
@@ -72,10 +72,10 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
 
     @Override
     public void setIngredients(ThermoPlantRecipe recipe, IIngredients ingredients) {
-        if (!recipe.getInputFluid().hasNoMatchingItems()) {
+        if (!recipe.getInputFluid().isEmpty()) {
             ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInputFluid().getFluidStacks()));
         }
-        if (!recipe.getInputItem().hasNoMatchingItems()) {
+        if (!recipe.getInputItem().isEmpty()) {
             ingredients.setInputIngredients(Collections.singletonList(recipe.getInputItem()));
         }
         if (!recipe.getOutputFluid().isEmpty()) {
@@ -101,11 +101,11 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
             }
         }
 
-        if (!recipe.getInputFluid().hasNoMatchingItems()) {
+        if (!recipe.getInputFluid().isEmpty()) {
             recipeLayout.getFluidStacks().init(0, true, 8, 3 + (64 - inH), 16, inH, in.getAmount(), false, Helpers.makeTankOverlay(inH));
             recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
         }
-        if (!recipe.getInputItem().hasNoMatchingItems()) {
+        if (!recipe.getInputItem().isEmpty()) {
             recipeLayout.getItemStacks().init(0, true, 32, 2);
             recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
         }
@@ -123,7 +123,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     public void draw(ThermoPlantRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() != 0) {
             float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-            PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 141, 42);
+            PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 141, 42);
         }
 
         if (!recipe.getOperatingTemperature().isAny()) {

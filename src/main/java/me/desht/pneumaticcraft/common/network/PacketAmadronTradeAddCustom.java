@@ -45,30 +45,30 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
     }
 
     private void handleServerSide(ServerPlayerEntity player, AmadronPlayerOffer offer) {
-        if (player.openContainer instanceof ContainerAmadronAddTrade) {
+        if (player.containerMenu instanceof ContainerAmadronAddTrade) {
             offer.updatePlayerId();
             if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
-                player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);
+                player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);
             } else if (AmadronOfferManager.getInstance().addPlayerOffer(offer)) {
                 if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
                     NetworkHandler.sendToAll(this);
                 }
-                if (player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET.get()) {
+                if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
                     ItemAmadronTablet.openGui(player, Hand.MAIN_HAND);
-                } else if (player.getHeldItemOffhand().getItem() == ModItems.AMADRON_TABLET.get()) {
+                } else if (player.getOffhandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
                     ItemAmadronTablet.openGui(player, Hand.OFF_HAND);
                 }
             } else {
-                player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);
+                player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);
             }
         }
     }
 
     private void handleClientSide(AmadronPlayerOffer offer) {
         if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
-            ClientUtils.getClientPlayer().sendStatusMessage(
+            ClientUtils.getClientPlayer().displayClientMessage(
                     new TranslationTextComponent("pneumaticcraft.message.amadron.playerAddedTrade",
-                            offer.getVendor(),
+                            offer.getVendorName(),
                             offer.getOutput().toString(),
                             offer.getInput().toString()
                     ), false);

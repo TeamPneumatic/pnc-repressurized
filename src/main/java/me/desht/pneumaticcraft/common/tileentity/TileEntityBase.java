@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
@@ -18,7 +19,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -128,7 +128,7 @@ public abstract class TileEntityBase extends TileEntity
 
     @Override
     public BlockPos getPosition() {
-        return getPos();
+        return getBlockPos();
     }
 
     @Override
@@ -172,14 +172,14 @@ public abstract class TileEntityBase extends TileEntity
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
      */
     void tickImpl() {
-        if (firstTick && !world.isRemote) {
+        if (firstTick && !level.isClientSide) {
             onFirstServerTick();
         }
         firstTick = false;
 
         upgradeCache.validate();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             if (this instanceof IHeatExchangingTE) {
                 // tick default heat exchanger; if the TE has other exchangers, they are handled in the subclass
                 IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger();
@@ -203,21 +203,37 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
 
         if (getInventoryCap().isPresent()) getInventoryCap().invalidate();
         if (getHeatCap(null).isPresent()) getHeatCap(null).invalidate();
     }
 
+    @Override
+    public void setChanged() {
+        // overridden to only update neighbours if this TE actually has a useful comparator output
+        if (level != null) {
+            if (level.isAreaLoaded(worldPosition, 0)) {
+                level.getChunkAt(worldPosition).markUnsaved();
+            }
+            if (this instanceof IComparatorSupport && !this.getBlockState().isAir(this.level, this.worldPosition)) {
+                this.level.updateNeighbourForOutputSignal(this.worldPosition, this.getBlockState().getBlock());
+            }
+        }
+    }
+
     protected void onFirstServerTick() {
+        // TODO 1.17 should be able to replace onFirstServerTick() with onLoad()
         if (this instanceof IHeatExchangingTE) {
-            ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
+            ((IHeatExchangingTE) this).initializeHullHeatExchangers(level, worldPosition);
         }
     }
 
     protected void updateNeighbours() {
-        world.notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock());
+        if (level != null) {
+            level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
+        }
     }
 
     public void onBlockRotated() {
@@ -229,7 +245,9 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     void rerenderTileEntity() {
-        world.notifyBlockUpdate(getPos(), getBlockState(), getBlockState(), 0);
+        if (level != null) {
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 0);
+        }
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {
@@ -237,7 +255,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data written by {@link TileEntityBase#write(CompoundNBT)}
+     * Encoded into the description packet. Also included in saved data written by {@link TileEntityBase#save(CompoundNBT)}
      *
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -252,7 +270,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#read(BlockState, CompoundNBT)}.
+     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#load(BlockState, CompoundNBT)}.
      *
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -267,8 +285,8 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         if (customName != null) {
             tag.putString("CustomName", ITextComponent.Serializer.toJson(customName));
@@ -292,11 +310,11 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         if (tag.contains("CustomName", Constants.NBT.TAG_STRING)) {
-            customName = ITextComponent.Serializer.getComponentFromJson(tag.getString("CustomName"));
+            customName = ITextComponent.Serializer.fromJson(tag.getString("CustomName"));
         }
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
             getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
@@ -327,8 +345,8 @@ public abstract class TileEntityBase extends TileEntity
     public IModelData getModelData() {
         if (this instanceof ICamouflageableTE) {
             return new ModelDataMap.Builder()
-                    .withInitial(BlockPneumaticCraftCamo.BLOCK_ACCESS, world)
-                    .withInitial(BlockPneumaticCraftCamo.BLOCK_POS, pos)
+                    .withInitial(BlockPneumaticCraftCamo.BLOCK_ACCESS, level)
+                    .withInitial(BlockPneumaticCraftCamo.BLOCK_POS, worldPosition)
                     .withInitial(BlockPneumaticCraftCamo.CAMO_STATE, ((ICamouflageableTE) this).getCamouflage())
                     .build();
         } else {
@@ -348,8 +366,8 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public void updateContainingBlockInfo() {
-        super.updateContainingBlockInfo();
+    public void clearCache() {
+        super.clearCache();
     }
 
     public int getUpgrades(EnumUpgrade upgrade) {
@@ -369,17 +387,22 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     public boolean isGuiUseableByPlayer(PlayerEntity player) {
-        return getWorld().getTileEntity(getPos()) == this
-                && player.getDistanceSq(Vector3d.copyCentered(getPos())) <= 64.0D;
+        return level != null && level.getBlockEntity(getBlockPos()) == this
+                && player.distanceToSqr(Vector3d.atCenterOf(getBlockPos())) <= 64.0D;
     }
 
     public TileEntity getCachedNeighbor(Direction dir) {
-        return neighbourCache.getCachedNeighbour(dir);
+        // don't attempt to cache client-side; we don't get neighbour block updates there so can't reliably clear the cache
+        if (level == null) return null;
+
+        return level.isClientSide ?
+                level.getBlockEntity(worldPosition.relative(dir)) :
+                neighbourCache.getCachedNeighbour(dir);
     }
 
     /**
      * Called when a neighboring tile entity changes state (specifically when
-     * {@link net.minecraft.world.World#updateComparatorOutputLevel(BlockPos, Block)} is called.
+     * {@link net.minecraft.world.World#updateNeighbourForOutputSignal(BlockPos, Block)} is called.
      * @param tilePos the blockpos of the neighboring tile entity
      */
     public void onNeighborTileUpdate(BlockPos tilePos) {
@@ -391,7 +414,7 @@ public abstract class TileEntityBase extends TileEntity
      */
     public void onNeighborBlockUpdate(BlockPos fromPos) {
         if (this instanceof IHeatExchangingTE) {
-            ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
+            ((IHeatExchangingTE) this).initializeHullHeatExchangers(level, worldPosition);
         }
         if (this instanceof IRedstoneControl) {
             ((IRedstoneControl<?>)this).getRedstoneController().updateRedstonePower();
@@ -455,7 +478,7 @@ public abstract class TileEntityBase extends TileEntity
                     requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
                     Direction dir = args.length == 0 ? null : getDirForString((String) args[0]);
                     IHeatExchangerLogic logic = ((IHeatExchangingTE) TileEntityBase.this).getHeatExchanger(dir);
-                    double temp = logic == null ? HeatExchangerLogicAmbient.getAmbientTemperature(world, pos) : logic.getTemperature();
+                    double temp = logic == null ? HeatExchangerLogicAmbient.getAmbientTemperature(level, worldPosition) : logic.getTemperature();
                     return new Object[] { temp };
                 }
             });
@@ -568,7 +591,7 @@ public abstract class TileEntityBase extends TileEntity
     /**
      * Get any extra data to be serialized onto a dropped item stack. The supplied tag is the "BlockEntityTag" subtag of
      * the item's NBT data, so will be automatically deserialized into the TE (i.e. available to
-     * {@link TileEntity#read(BlockState, CompoundNBT)} method) when the itemblock  is next placed.
+     * {@link TileEntity#load(BlockState, CompoundNBT)} method) when the itemblock  is next placed.
      *
      * @param blockEntityTag the existing "BlockEntityTag" subtag to add data to
      * @param preserveState true when dropped with a wrench, false when broken with a pickaxe etc.
@@ -582,9 +605,9 @@ public abstract class TileEntityBase extends TileEntity
      * @return the player count
      */
     public int countPlayersUsing() {
-        return (int) world.getPlayers().stream()
-                .filter(player -> player.openContainer instanceof ContainerPneumaticBase)
-                .filter(player -> ((ContainerPneumaticBase<?>) player.openContainer).te == this)
+        return (int) level.players().stream()
+                .filter(player -> player.containerMenu instanceof ContainerPneumaticBase)
+                .filter(player -> ((ContainerPneumaticBase<?>) player.containerMenu).te == this)
                 .count();
     }
 
@@ -592,7 +615,7 @@ public abstract class TileEntityBase extends TileEntity
     public void requestModelDataUpdate() {
         // it is possible for the TE's client world to be a fake one, e.g. Create schematicannon previews
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/812
-        if (world != null && world.isRemote && world == ClientUtils.getClientWorld()) {
+        if (level != null && level.isClientSide && level == ClientUtils.getClientWorld()) {
             ModelDataManager.requestModelDataRefresh(this);
         }
     }

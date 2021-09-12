@@ -16,9 +16,9 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     public void update() {
         super.update();
 
-        if (!pressureTube.getWorld().isRemote) {
+        if (!pressureTube.getLevel().isClientSide) {
             pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
-                if (pressureTube.getWorld().getGameTime() % 20 == 0)
+                if (pressureTube.getLevel().getGameTime() % 20 == 0)
                     NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube());
                 if (setRedstone(getRedstone(h.getPressure()))) {
                     // force a recalc on next tick

@@ -15,7 +15,7 @@ import net.minecraft.world.spawner.AbstractSpawner;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableMobSpawner implements IHackableBlock {
@@ -30,8 +30,8 @@ public class HackableMobSpawner implements IHackableBlock {
     }
 
     public static boolean isHacked(IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
-        return te instanceof MobSpawnerTileEntity && ((MobSpawnerTileEntity) te).getSpawnerBaseLogic().activatingRangeFromPlayer == 0;
+        TileEntity te = world.getBlockEntity(pos);
+        return te instanceof MobSpawnerTileEntity && ((MobSpawnerTileEntity) te).getSpawner().requiredPlayerRange == 0;
     }
 
     @Override
@@ -51,15 +51,15 @@ public class HackableMobSpawner implements IHackableBlock {
 
     @Override
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             CompoundNBT tag = new CompoundNBT();
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity te = world.getBlockEntity(pos);
             if (te != null) {
-                te.write(tag);
+                te.save(tag);
                 tag.putShort("RequiredPlayerRange", (short) 0);
-                te.read(te.getBlockState(), tag);
+                te.load(te.getBlockState(), tag);
                 BlockState state = world.getBlockState(pos);
-                world.notifyBlockUpdate(pos, state, state, 3);
+                world.sendBlockUpdated(pos, state, state, 3);
             }
         }
 
@@ -67,8 +67,8 @@ public class HackableMobSpawner implements IHackableBlock {
 
     @Override
     public boolean afterHackTick(IBlockReader world, BlockPos pos) {
-        AbstractSpawner spawner = ((MobSpawnerTileEntity) world.getTileEntity(pos)).getSpawnerBaseLogic();
-        spawner.prevMobRotation = spawner.mobRotation;
+        AbstractSpawner spawner = ((MobSpawnerTileEntity) world.getBlockEntity(pos)).getSpawner();
+        spawner.oSpin = spawner.spin;
         spawner.spawnDelay = 10;
         return false;
     }

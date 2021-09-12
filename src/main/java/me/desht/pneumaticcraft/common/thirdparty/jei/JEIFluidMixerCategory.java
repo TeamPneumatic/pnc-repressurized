@@ -40,7 +40,7 @@ public class JEIFluidMixerCategory implements IRecipeCategory<FluidMixerRecipe> 
     public JEIFluidMixerCategory() {
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.FLUID_MIXER.get()));
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_FLUID_MIXER, 0, 0, 166, 70);
-        localizedName = I18n.format(ModBlocks.FLUID_MIXER.get().getTranslationKey());
+        localizedName = I18n.get(ModBlocks.FLUID_MIXER.get().getDescriptionId());
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_FLUID_MIXER, 180, 0, 44, 30);
         progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
@@ -115,7 +115,7 @@ public class JEIFluidMixerCategory implements IRecipeCategory<FluidMixerRecipe> 
     @Override
     public void draw(FluidMixerRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 138, 35);
+        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 138, 35);
 
         progressBar.draw(matrixStack, 45, 20);
     }
@@ -127,7 +127,7 @@ public class JEIFluidMixerCategory implements IRecipeCategory<FluidMixerRecipe> 
             res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
         } else if (mouseX >= 45 && mouseY >= 20 && mouseX <= 89 && mouseY <= 50) {
             res.add(new StringTextComponent((recipe.getProcessingTime()) / 20f + "s"));
-            res.add(xlate("pneumaticcraft.gui.jei.tooltip.processingTime").mergeStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
+            res.add(xlate("pneumaticcraft.gui.jei.tooltip.processingTime").withStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
         }
         return res;
     }

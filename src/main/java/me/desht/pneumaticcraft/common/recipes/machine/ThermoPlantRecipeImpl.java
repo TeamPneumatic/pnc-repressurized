@@ -53,8 +53,8 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public boolean matches(FluidStack fluidStack, @Nonnull ItemStack itemStack) {
-        return (inputFluid.hasNoMatchingItems() && fluidStack.isEmpty() || inputFluid.testFluid(fluidStack.getFluid()))
-                && (inputItem.hasNoMatchingItems() && itemStack.isEmpty() || inputItem.test(itemStack));
+        return (inputFluid.isEmpty() && fluidStack.isEmpty() || inputFluid.testFluid(fluidStack.getFluid()))
+                && (inputItem.isEmpty() && itemStack.isEmpty() || inputItem.test(itemStack));
     }
 
     @Override
@@ -102,10 +102,10 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     public void write(PacketBuffer buffer) {
         operatingTemperature.write(buffer);
         buffer.writeFloat(requiredPressure);
-        inputItem.write(buffer);
-        inputFluid.write(buffer);
+        inputItem.toNetwork(buffer);
+        inputFluid.toNetwork(buffer);
         outputFluid.writeToPacket(buffer);
-        buffer.writeItemStack(outputItem);
+        buffer.writeItem(outputItem);
         buffer.writeFloat(recipeSpeed);
         buffer.writeBoolean(exothermic);
     }
@@ -126,7 +126,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public ItemStack getIcon() {
+    public ItemStack getToastSymbol() {
         return new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get());
     }
 
@@ -138,7 +138,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
             if (!json.has("item_input") && !json.has("fluid_input")) {
                 throw new JsonSyntaxException("Must have at least one of item_input and/or fluid_input!");
             }
@@ -147,48 +147,48 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
             }
 
             Ingredient itemInput = json.has("item_input") ?
-                    Ingredient.deserialize(json.get("item_input")) :
+                    Ingredient.fromJson(json.get("item_input")) :
                     Ingredient.EMPTY;
             Ingredient fluidInput = json.has("fluid_input") ?
-                    FluidIngredient.deserialize(json.get("fluid_input")) :
+                    FluidIngredient.fromJson(json.get("fluid_input")) :
                     FluidIngredient.EMPTY;
 
             FluidStack fluidOutput = json.has("fluid_output") ?
                     ModCraftingHelper.fluidStackFromJson(json.getAsJsonObject("fluid_output")):
                     FluidStack.EMPTY;
             ItemStack itemOutput = json.has("item_output") ?
-                    ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "item_output")) :
+                    ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "item_output")) :
                     ItemStack.EMPTY;
 
             TemperatureRange range = json.has("temperature") ?
                     TemperatureRange.fromJson(json.getAsJsonObject("temperature")) :
                     TemperatureRange.any();
 
-            float pressure = JSONUtils.getFloat(json, "pressure", 0f);
+            float pressure = JSONUtils.getAsFloat(json, "pressure", 0f);
 
-            boolean exothermic = JSONUtils.getBoolean(json, "exothermic", false);
+            boolean exothermic = JSONUtils.getAsBoolean(json, "exothermic", false);
 
-            float recipeSpeed = JSONUtils.getFloat(json, "speed", 1.0f);
+            float recipeSpeed = JSONUtils.getAsFloat(json, "speed", 1.0f);
 
             return factory.create(recipeId, (FluidIngredient) fluidInput, itemInput, fluidOutput, itemOutput, range, pressure, recipeSpeed, exothermic);
         }
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             TemperatureRange range = TemperatureRange.read(buffer);
             float pressure = buffer.readFloat();
-            Ingredient input = Ingredient.read(buffer);
-            FluidIngredient fluidIn = (FluidIngredient) Ingredient.read(buffer);
+            Ingredient input = Ingredient.fromNetwork(buffer);
+            FluidIngredient fluidIn = (FluidIngredient) Ingredient.fromNetwork(buffer);
             FluidStack fluidOut = FluidStack.readFromPacket(buffer);
-            ItemStack itemOutput = buffer.readItemStack();
+            ItemStack itemOutput = buffer.readItem();
             float recipeSpeed = buffer.readFloat();
             boolean exothermic = buffer.readBoolean();
             return factory.create(recipeId, fluidIn, input, fluidOut, itemOutput, range, pressure, recipeSpeed, exothermic);
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

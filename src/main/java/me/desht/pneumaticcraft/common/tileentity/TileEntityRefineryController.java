@@ -92,7 +92,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     }
 
     private RefineryRecipe getRecipeFor(FluidStack fluid) {
-        return PneumaticCraftRecipeType.REFINERY.stream(world)
+        return PneumaticCraftRecipeType.REFINERY.stream(level)
                 .filter(r -> r.getOutputs().size() <= outputCount)
                 .filter(r -> FluidUtils.matchFluid(r.getInput(), fluid, true))
                 .max(Comparator.comparingInt(r2 -> r2.getOutputs().size()))
@@ -105,7 +105,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
         inputTank.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             // server
             lastProgress = 0;
             if (outputCache == null) cacheRefineryOutputs();
@@ -161,7 +161,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
                 TileEntityRefineryOutput teRO = findAdjacentOutput();
                 if (teRO != null) {
                     for (int i = 0; i < lastProgress; i++) {
-                        ClientUtils.emitParticles(getWorld(), teRO.getPos().offset(Direction.UP, outputCount - 1), ParticleTypes.SMOKE);
+                        ClientUtils.emitParticles(getLevel(), teRO.getBlockPos().relative(Direction.UP, outputCount - 1), ParticleTypes.SMOKE);
                     }
                 }
             }
@@ -323,10 +323,10 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         if (newValue != comparatorValue) {
             // update comparator output for the controller AND all known outputs
             comparatorValue = newValue;
-            getWorld().updateComparatorOutputLevel(getPos(), getBlockState().getBlock());
+            getLevel().updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
             TileEntityRefineryOutput output = findAdjacentOutput();
-            while (output != null && !output.getBlockState().isAir(getWorld(), output.getPos())) {
-                getWorld().updateComparatorOutputLevel(output.getPos(), output.getBlockState().getBlock());
+            while (output != null && !output.getBlockState().isAir(getLevel(), output.getBlockPos())) {
+                getLevel().updateNeighbourForOutputSignal(output.getBlockPos(), output.getBlockState().getBlock());
                 TileEntity te = output.getCachedNeighbor(Direction.UP);
                 output = te instanceof TileEntityRefineryOutput ? (TileEntityRefineryOutput) te : null;
             }
@@ -357,7 +357,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerRefinery(i, playerInventory, getPos());
+        return new ContainerRefinery(i, playerInventory, getBlockPos());
     }
 
     @Override
@@ -379,7 +379,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
         @Override
         public boolean isFluidValid(FluidStack fluid) {
-            return getFluid().isFluidEqual(fluid) || isInputFluidValid(world, fluid.getFluid(), 4);
+            return getFluid().isFluidEqual(fluid) || isInputFluidValid(level, fluid.getFluid(), 4);
         }
 
         @Override

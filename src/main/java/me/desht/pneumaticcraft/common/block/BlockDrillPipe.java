@@ -12,9 +12,9 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 public class BlockDrillPipe extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE1 = Block.makeCuboidShape(6, 0, 7, 10, 16, 9);
-    private static final VoxelShape SHAPE2 = Block.makeCuboidShape(7, 0, 6, 9, 16, 10);
-    private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(SHAPE1, SHAPE2, IBooleanFunction.OR);
+    private static final VoxelShape SHAPE1 = Block.box(6, 0, 7, 10, 16, 9);
+    private static final VoxelShape SHAPE2 = Block.box(7, 0, 6, 9, 16, 10);
+    private static final VoxelShape SHAPE = VoxelShapes.join(SHAPE1, SHAPE2, IBooleanFunction.OR);
 
     public BlockDrillPipe() {
         super(ModBlocks.defaultProps());

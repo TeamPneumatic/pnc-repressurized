@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.*;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
+import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Log;
@@ -52,7 +54,7 @@ public enum ItemRegistry implements IItemRegistry {
         if (acceptors != null) {
             List<String> tempList = new ArrayList<>(acceptors.size());
             for (IUpgradeAcceptor acceptor : acceptors) {
-                tempList.add(GuiConstants.BULLET + " " + I18n.format(acceptor.getUpgradeAcceptorTranslationKey()));
+                tempList.add(GuiConstants.BULLET + " " + I18n.get(acceptor.getUpgradeAcceptorTranslationKey()));
             }
             Collections.sort(tempList);
             tooltip.addAll(tempList.stream().map(StringTextComponent::new).collect(Collectors.toList()));
@@ -74,9 +76,28 @@ public enum ItemRegistry implements IItemRegistry {
         volumeModifiers.add(modifierFunc);
     }
 
+    @Override
+    public ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack) {
+        Validate.isTrue(stack.getItem() instanceof ItemSpawnerCore, "item is not a Spawner Core!");
+        return ItemSpawnerCore.SpawnerCoreStats.forItemStack(stack);
+    }
+
+    @Override
+    public IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure) {
+        return new AirHandlerItemStack(stack, maxPressure);
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean shouldSuppressMagnet(Entity e) {
         return magnetSuppressors.stream().anyMatch(s -> s.shouldSuppressMagnet(e));
+    }
+
+    @Override
+    public int getModifiedVolume(ItemStack stack, int originalVolume) {
+        for (ItemVolumeModifier modifier : volumeModifiers) {
+            originalVolume = modifier.getNewVolume(stack, originalVolume);
+        }
+        return originalVolume;
     }
 
     /**
@@ -108,12 +129,5 @@ public enum ItemRegistry implements IItemRegistry {
             }
         }
         return items;
-    }
-
-    public int getUpgradedVolume(ItemStack stack, int baseVolume) {
-        for (ItemVolumeModifier modifier : volumeModifiers) {
-            baseVolume = modifier.getNewVolume(stack, baseVolume);
-        }
-        return baseVolume;
     }
 }

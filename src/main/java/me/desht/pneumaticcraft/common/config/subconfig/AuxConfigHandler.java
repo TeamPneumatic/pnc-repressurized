@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.config.subconfig;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.world.storage.FolderName;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -77,7 +77,7 @@ public class AuxConfigHandler {
     }
 
     private static File getWorldSpecificDir() {
-        return ServerLifecycleHooks.getCurrentServer().func_240776_a_(FOLDER).toFile();
+        return ServerLifecycleHooks.getCurrentServer().getWorldPath(FOLDER).toFile();
     }
 
     public static void clearPerWorldConfigs() {

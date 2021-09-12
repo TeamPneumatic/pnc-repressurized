@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableSilverfish implements IHackableBlock {
@@ -43,8 +43,8 @@ public class HackableSilverfish implements IHackableBlock {
         BlockState state = world.getBlockState(pos);
 
         if (state.getBlock() instanceof SilverfishBlock) {
-            Block newBlock = ((SilverfishBlock) state.getBlock()).getMimickedBlock();
-            world.setBlockState(pos, newBlock.getDefaultState(), 3);
+            Block newBlock = ((SilverfishBlock) state.getBlock()).getHostBlock();
+            world.setBlock(pos, newBlock.defaultBlockState(), 3);
         }
     }
 }

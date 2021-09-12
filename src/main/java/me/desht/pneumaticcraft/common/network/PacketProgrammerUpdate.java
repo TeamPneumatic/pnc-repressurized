@@ -23,7 +23,7 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     private final List<IProgWidget> widgets;
 
     public PacketProgrammerUpdate(TileEntityProgrammer te) {
-        super(te.getPos());
+        super(te.getBlockPos());
         this.widgets = te.progWidgets;
     }
 

@@ -64,7 +64,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         xSize = 183;
         ySize = 191;
 
-        ItemStack stack = Minecraft.getInstance().player.getHeldItem(hand);
+        ItemStack stack = Minecraft.getInstance().player.getItemInHand(hand);
         if (stack.getItem() == ModItems.MICROMISSILES.get() && stack.hasTag()) {
             topSpeed = NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED);
             turnSpeed = NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED);
@@ -83,7 +83,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     }
 
     public static void openGui(ITextComponent title, Hand handIn) {
-        Minecraft.getInstance().displayGuiScreen(new GuiMicromissile(title, handIn));
+        Minecraft.getInstance().setScreen(new GuiMicromissile(title, handIn));
     }
 
     @Override
@@ -93,12 +93,12 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         ITextComponent labelStr = xlate("pneumaticcraft.gui.sentryTurret.targetFilter");
         filterLabel = new WidgetLabel(guiLeft + 12, guiTop + 130, labelStr);
         addButton(filterLabel);
-        int textBoxX = guiLeft + 12 + font.getStringPropertyWidth(labelStr) + 5;
+        int textBoxX = guiLeft + 12 + font.width(labelStr) + 5;
         int textBoxWidth = xSize - (textBoxX - guiLeft) - 20;
         textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, 10);
-        textField.setText(entityFilter);
-        setListener(textField);
-        textField.setFocused2(true);
+        textField.setValue(entityFilter);
+        setFocused(textField);
+        textField.setFocus(true);
         textField.setResponder(s -> {
             entityFilter = s;
             if (validateEntityFilter(entityFilter)) {
@@ -112,7 +112,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         addButton(new WidgetTooltipArea(guiLeft + 96, guiTop + 103, 15, 15, xlate("pneumaticcraft.gui.micromissile.damage")));
 
         ITextComponent saveLabel = xlate("pneumaticcraft.gui.micromissile.saveDefault");
-        int buttonWidth = font.getStringPropertyWidth(saveLabel) + 10;
+        int buttonWidth = font.width(saveLabel) + 10;
         int buttonX = guiLeft + (xSize - buttonWidth) / 2;
         addButton(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
 
@@ -139,7 +139,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     }
 
     private void setupWidgets() {
-        textField.setEnabled(fireMode == FireMode.SMART);
+        textField.setEditable(fireMode == FireMode.SMART);
         filterLabel.setColor(fireMode == FireMode.SMART ? 0xFF404040 : 0xFFAAAAAA);
         modeButton.setMessage(xlate(fireMode.getTranslationKey()));
     }
@@ -154,8 +154,8 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         } else if (textField.isHovered()) {
-            String str = I18n.format("pneumaticcraft.gui.entityFilter.holdF1");
-            font.drawString(matrixStack, str, guiLeft + (xSize - font.getStringWidth(str)) / 2f, guiTop + ySize + 5, 0x808080);
+            String str = I18n.get("pneumaticcraft.gui.entityFilter.holdF1");
+            font.draw(matrixStack, str, guiLeft + (xSize - font.width(str)) / 2f, guiTop + ySize + 5, 0x808080);
         }
     }
 
@@ -168,47 +168,47 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         if (point != null) {
             float px = point.x;
             float py = point.y;
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
 
             // crosshairs
             int size = dragging ? 5 : 3;
             RenderSystem.lineWidth(2);
 
-            BufferBuilder wr = Tessellator.getInstance().getBuffer();
-            Matrix4f posMat = matrixStack.getLast().getMatrix();
+            BufferBuilder wr = Tessellator.getInstance().getBuilder();
+            Matrix4f posMat = matrixStack.last().pose();
             wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-            wr.pos(posMat, px - size, py, 0).color(32, 32, 32, 255).endVertex();
-            wr.pos(posMat, px + size, py, 0).color(32, 32, 32, 255).endVertex();
-            wr.pos(posMat, px, py - size, 0).color(32, 32, 32, 255).endVertex();
-            wr.pos(posMat, px, py + size, 0).color(32, 32, 32, 255).endVertex();
-            Tessellator.getInstance().draw();
+            wr.vertex(posMat, px - size, py, 0).color(32, 32, 32, 255).endVertex();
+            wr.vertex(posMat, px + size, py, 0).color(32, 32, 32, 255).endVertex();
+            wr.vertex(posMat, px, py - size, 0).color(32, 32, 32, 255).endVertex();
+            wr.vertex(posMat, px, py + size, 0).color(32, 32, 32, 255).endVertex();
+            Tessellator.getInstance().end();
 
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.lineWidth(1);
             wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
             // speed line
-            wr.pos(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
-            wr.pos(posMat, SELECTOR_BOUNDS.getWidth() / 2f, 0, 0).color(32, 32, 32, 128).endVertex();
+            wr.vertex(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
+            wr.vertex(posMat, SELECTOR_BOUNDS.getWidth() / 2f, 0, 0).color(32, 32, 32, 128).endVertex();
             // turn speed line
-            wr.pos(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
-            wr.pos(posMat, 0, SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
+            wr.vertex(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
+            wr.vertex(posMat, 0, SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
             // damage line
-            wr.pos(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
-            wr.pos(posMat, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
-            Tessellator.getInstance().draw();
+            wr.vertex(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
+            wr.vertex(posMat, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
+            Tessellator.getInstance().end();
             RenderSystem.disableBlend();
 
-            matrixStack.pop();
+            matrixStack.popPose();
         }
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(guiLeft, guiTop, 0);
         fill(matrixStack, 125, 48, 125 + (int) (49 * topSpeed), 54, 0xFF00C000);
         fill(matrixStack, 125, 68, 125 + (int) (49 * turnSpeed), 74, 0xFF00C000);
         fill(matrixStack, 125, 88, 125 + (int) (49 * damage), 94, 0xFF00C000);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -270,7 +270,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             return true;
         } catch (Exception e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).mergeStyle(TextFormatting.GOLD));
+            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).withStyle(TextFormatting.GOLD));
             return false;
         }
     }

@@ -19,25 +19,25 @@ public class GuiProgWidgetString<T extends ProgWidgetText> extends GuiProgWidget
             @Override
             public boolean charTyped(char c, int keyCode) {
                 if (c == '\n') {
-                    onClose();
-                    minecraft.player.closeScreen();
+                    removed();
+                    minecraft.player.closeContainer();
                     return true;
                 } else {
                     return super.charTyped(c, keyCode);
                 }
             }
         };
-        textfield.setMaxStringLength(1000);
-        textfield.setText(progWidget.string);
-        textfield.setFocused2(true);
-        setListener(textfield);
+        textfield.setMaxLength(1000);
+        textfield.setValue(progWidget.string);
+        textfield.setFocus(true);
+        setFocused(textfield);
         addButton(textfield);
     }
 
     @Override
-    public void onClose() {
-        progWidget.string = textfield.getText();
+    public void removed() {
+        progWidget.string = textfield.getValue();
 
-        super.onClose();
+        super.removed();
     }
 }

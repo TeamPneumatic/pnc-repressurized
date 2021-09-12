@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.common.pressure.AirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -68,13 +67,13 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
 
     @Override
     public int getProtectingSecurityStations(PlayerEntity player, BlockPos pos, boolean showRangeLines) {
-        Validate.isTrue(!player.getEntityWorld().isRemote, "This method can only be called from the server side!");
+        Validate.isTrue(!player.getCommandSenderWorld().isClientSide, "This method can only be called from the server side!");
         return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
     }
 
     @Override
     public int getProtectingSecurityStations(PlayerEntity player, BlockPos pos) {
-        Validate.isTrue(!player.getEntityWorld().isRemote, "This method can only be called from the server side!");
+        Validate.isTrue(!player.getCommandSenderWorld().isClientSide, "This method can only be called from the server side!");
         return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
     }
 
@@ -116,6 +115,6 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
 
     @Override
     public ResourceLocation RL(String path) {
-        return PneumaticCraftUtils.RL(path);
+        return PneumaticRegistry.RL(path);
     }
 }

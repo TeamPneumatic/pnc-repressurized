@@ -30,7 +30,7 @@ public class AreaTypeRandom extends AreaType {
 
         if (pickedAmount >= size) {
             // If we pick >= than there are blocks, just pick all blocks
-            BlockPos.getAllInBox(minX, minY, minZ, maxX, maxY, maxZ).forEach(pos -> areaAdder.accept(pos.toImmutable()));
+            BlockPos.betweenClosedStream(minX, minY, minZ, maxX, maxY, maxZ).forEach(pos -> areaAdder.accept(pos.immutable()));
         } else {
             Random rand = ThreadLocalRandom.current();
             for (int i = 0; i < pickedAmount; i++) {

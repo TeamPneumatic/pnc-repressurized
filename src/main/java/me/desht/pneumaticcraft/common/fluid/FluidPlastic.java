@@ -18,7 +18,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public abstract class FluidPlastic {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
@@ -35,7 +35,7 @@ public abstract class FluidPlastic {
         }
 
         @Override
-        public int getTickRate(IWorldReader world) {
+        public int getTickDelay(IWorldReader world) {
             return 10;
         }
 
@@ -43,8 +43,8 @@ public abstract class FluidPlastic {
         public void tick(World worldIn, BlockPos pos, FluidState state) {
             if (PNCConfig.Common.Recipes.inWorldPlasticSolidification) {
                 ItemEntity item = new ItemEntity(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, new ItemStack(ModItems.PLASTIC.get()));
-                worldIn.addEntity(item);
-                worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), Constants.BlockFlags.DEFAULT);
+                worldIn.addFreshEntity(item);
+                worldIn.setBlock(pos, Blocks.AIR.defaultBlockState(), Constants.BlockFlags.DEFAULT);
             }
             super.tick(worldIn, pos, state);
         }
@@ -63,7 +63,7 @@ public abstract class FluidPlastic {
 
         @Override
         public String getCustomTooltipTranslationKey() {
-            return PNCConfig.Common.Recipes.inWorldPlasticSolidification ? getTranslationKey() : getTranslationKey() + ".not_in_world";
+            return PNCConfig.Common.Recipes.inWorldPlasticSolidification ? getDescriptionId() : getDescriptionId() + ".not_in_world";
         }
     }
 }

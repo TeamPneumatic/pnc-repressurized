@@ -25,7 +25,7 @@ public class ElectricAttackHandler {
 
     @SubscribeEvent
     public static void onElectricalAttack(LivingHurtEvent event) {
-        if (!event.getSource().getDamageType().equals(Lib.DMG_WireShock)) return;
+        if (!event.getSource().getMsgId().equals(Lib.DMG_WireShock)) return;
 
         if (event.getEntityLiving() instanceof EntityDrone) {
             EntityDrone drone = (EntityDrone) event.getEntityLiving();
@@ -35,7 +35,7 @@ public class ElectricAttackHandler {
                 drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).addAir((int)(-50 * dmg));
                 event.setAmount(0f);
                 double dy = Math.min(dmg / 4, 0.5);
-                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, drone.getPosX(), drone.getPosY(), drone.getPosZ(),
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, drone.getX(), drone.getY(), drone.getZ(),
                             0, -dy, 0, (int) (dmg), 0, 0, 0), drone);
                 playLeakSound(drone);
             }
@@ -46,10 +46,10 @@ public class ElectricAttackHandler {
                     && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1
                     && handler.isArmorReady(EquipmentSlotType.CHEST)) {
                 handler.addAir(EquipmentSlotType.CHEST, (int)(-150 * event.getAmount()));
-                float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
-                float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
+                float sx = player.getRandom().nextFloat() * 1.5F - 0.75F;
+                float sz = player.getRandom().nextFloat() * 1.5F - 0.75F;
                 double dy = Math.min(event.getAmount() / 4, 0.5);
-                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX() + sx, player.getPosY() + 1, player.getPosZ() + sz, sx / 4, -dy, sz / 4), player.world, player.getPosition());
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX() + sx, player.getY() + 1, player.getZ() + sz, sx / 4, -dy, sz / 4), player.level, player.blockPosition());
                 event.setAmount(0f);
                 playLeakSound(player);
             }
@@ -57,9 +57,9 @@ public class ElectricAttackHandler {
     }
 
     private static void playLeakSound(Entity e) {
-        if (e.world.getGameTime() - sounds.getOrDefault(e.getUniqueID(), 0L) > 16) {
-            e.world.playSound(null, e.getPosition(), ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, 0.5f, 0.7f);
-            sounds.put(e.getUniqueID(), e.world.getGameTime());
+        if (e.level.getGameTime() - sounds.getOrDefault(e.getUUID(), 0L) > 16) {
+            e.level.playSound(null, e.blockPosition(), ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, 0.5f, 0.7f);
+            sounds.put(e.getUUID(), e.level.getGameTime());
         }
     }
 }

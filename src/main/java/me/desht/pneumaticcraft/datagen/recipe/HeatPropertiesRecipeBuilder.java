@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.Map;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Currently unused.  Would require a lot of extra mods in the dev workspace to use properly.  Maybe this should
@@ -57,7 +57,7 @@ public class HeatPropertiesRecipeBuilder extends PneumaticCraftRecipeBuilder<Hea
         }
 
         @Override
-        public void serialize(JsonObject json) {
+        public void serializeRecipeData(JsonObject json) {
             json.addProperty("block", block.getRegistryName().toString());
             json.addProperty("temperature", temperature);
             json.addProperty("thermalResistance", thermalResistance);

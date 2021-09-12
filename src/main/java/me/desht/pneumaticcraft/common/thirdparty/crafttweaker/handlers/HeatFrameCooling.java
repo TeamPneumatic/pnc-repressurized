@@ -8,6 +8,7 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
+import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
@@ -42,7 +43,7 @@ public class HeatFrameCooling implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<HeatFrameCoolingRecipeImpl> getRecipeType() {
+    public IRecipeType<HeatFrameCoolingRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.HEAT_FRAME_COOLING;
     }
 }

@@ -25,31 +25,31 @@ import javax.annotation.Nullable;
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLoggable {
-    private static final VoxelShape CORE = Block.makeCuboidShape(3, 3, 3, 13, 13, 13);
+    private static final VoxelShape CORE = Block.box(3, 3, 3, 13, 13, 13);
     private static final VoxelShape[] SIDES = {
-            Block.makeCuboidShape(3, 0, 3, 13, 3, 13),
-            Block.makeCuboidShape(3, 13, 3, 13, 16, 13),
-            Block.makeCuboidShape(3, 3, 0, 13, 13, 3),
-            Block.makeCuboidShape(3, 3, 13, 13, 13, 16),
-            Block.makeCuboidShape(0, 3, 3, 3, 13, 13),
-            Block.makeCuboidShape(13, 3, 3, 16, 13, 13)
+            Block.box(3, 0, 3, 13, 3, 13),
+            Block.box(3, 13, 3, 13, 16, 13),
+            Block.box(3, 3, 0, 13, 13, 3),
+            Block.box(3, 3, 13, 13, 13, 16),
+            Block.box(0, 3, 3, 3, 13, 13),
+            Block.box(13, 3, 3, 16, 13, 13)
     };
 
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[64];  // 2^6 shapes
 
     public BlockHeatPipe() {
-        super(ModBlocks.defaultProps().notSolid());  // notSolid() because of camo requirements
+        super(ModBlocks.defaultProps().noOcclusion());  // notSolid() because of camo requirements
 
-        BlockState state = getStateContainer().getBaseState();
+        BlockState state = getStateDefinition().any();
         for (BooleanProperty prop : CONNECTION_PROPERTIES) {
-            state = state.with(prop, false);
+            state = state.setValue(prop, false);
         }
-        setDefaultState(state.with(WATERLOGGED, false));
+        registerDefaultState(state.setValue(WATERLOGGED, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(CONNECTION_PROPERTIES);
         builder.add(WATERLOGGED);
@@ -62,7 +62,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
 
     @Override
     public FluidState getFluidState(BlockState state) {
-        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Nullable
@@ -70,14 +70,14 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
 
-        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
-        return state.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
+        return state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.get(WATERLOGGED)) {
-            worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (stateIn.getValue(WATERLOGGED)) {
+            worldIn.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
         }
         return stateIn;
     }
@@ -86,7 +86,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         byte idx = 0;
         for (int i = 0; i < 6; i++) {
-            if (state.get(CONNECTION_PROPERTIES[i])) {
+            if (state.getValue(CONNECTION_PROPERTIES[i])) {
                 idx |= 1 << i;
             }
         }
@@ -95,7 +95,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
             SHAPE_CACHE[idx] = CORE;
             for (int i = 0; i < 6; i++) {
                 if ((idx & (1 << i)) != 0) {
-                    SHAPE_CACHE[idx] = VoxelShapes.combineAndSimplify(SHAPE_CACHE[idx], SIDES[i], IBooleanFunction.OR);
+                    SHAPE_CACHE[idx] = VoxelShapes.join(SHAPE_CACHE[idx], SIDES[i], IBooleanFunction.OR);
                 }
             }
         }

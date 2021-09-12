@@ -23,14 +23,14 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
     private static final ResourceLocation ID = RL("block_tracker.module.inventories");
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
-        if (te instanceof ChestTileEntity && state.hasProperty(ChestBlock.TYPE) && state.get(ChestBlock.TYPE) == ChestType.RIGHT) {
+        if (te instanceof ChestTileEntity && state.hasProperty(ChestBlock.TYPE) && state.getValue(ChestBlock.TYPE) == ChestType.RIGHT) {
             // we'll only track the left side of double chest directly
             return false;
         }
@@ -44,11 +44,11 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     @Override
     public List<BlockPos> getServerUpdatePositions(TileEntity te) {
         List<BlockPos> res = new ArrayList<>();
-        if (te instanceof ChestTileEntity && te.getBlockState().get(ChestBlock.TYPE) == ChestType.LEFT) {
-            Direction dir = ChestBlock.getDirectionToAttached(te.getBlockState());
-            res.add(te.getPos().offset(dir));
+        if (te instanceof ChestTileEntity && te.getBlockState().getValue(ChestBlock.TYPE) == ChestType.LEFT) {
+            Direction dir = ChestBlock.getConnectedDirection(te.getBlockState());
+            res.add(te.getBlockPos().relative(dir));
         }
-        res.add(te.getPos());
+        res.add(te.getBlockPos());
         return res;
     }
 

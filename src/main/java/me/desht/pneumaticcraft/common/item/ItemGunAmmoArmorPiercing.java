@@ -13,7 +13,7 @@ public class ItemGunAmmoArmorPiercing extends ItemGunAmmo {
     public static class DamageSourceArmorPiercing extends EntityDamageSource {
         DamageSourceArmorPiercing(@Nullable Entity damageSourceEntityIn) {
             super("armor_piercing", damageSourceEntityIn);
-            setDamageBypassesArmor();
+            bypassArmor();
         }
     }
 

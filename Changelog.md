@@ -8,6 +8,182 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.14.2-247 (6 Sep 2021)
+
+### New
+* Added new Display Shelf block, which is basically a half-height Display Table
+  * Same functionality as the Display Table
+  * Unlike Display Table, will hide legs completely if no solid block beneath
+  
+### Updates
+* Amadron Tablet allows searching of offers by mod; use `@string` syntax, same as JEI or AE2
+* Slightly tweaked the Amadron Tablet GUI display of unaffordable offers for a better appearance
+
+### Fixes
+* Fixed crash when opening machine GUI's under some circumstances
+  * Tag-related bug introduced in 2.14.1 if the `forge:tools/wrench` item tag wasn't already defined by another mod
+  * Related: added `pneumaticcraft:pneumatic_wrench` to `forge:tools/wrench`
+* Fixed Amadron tablet allowing fluid orders > 576000mB (taking full payment but only deliverying 576000mB)
+  * 576000 is a hard maximum for a single fluid order (the most a fully-upgraded drone can carry)
+* Fixed Amadrones failing to import fluid from any side of a tank other than the top
+  * Issue is noticeable e.g. with Mekanism Dynamic Tanks and a valve on the side
+* Villager Amadron offers now actually show a vendor name of "Villagers" on dedicated server
+
+## 2.14.1-245 (31 Aug 2021)
+
+### Fixes
+
+* Fixed non-fatal client errors from JEI regarding missing item for Fire->Air heat transition recipe
+* Manometer now shows correct block when block has no associated item, e.g. Fire
+* Manometer now shows extracted heat for block with a tile entity, e.g. Campfires
+* Fixed Patchouli manual not working if Tough As Nails is installed 
+  * TAN page was written back in 1.12.2 days, and TAN 1.16 does not have all the features that it did in 1.12
+* Fixed build artifacts not being published to modmaven.dev after build system overhaul in 2.14.0
+  
+## 2.14.0-227 (27 Aug 2021)
+
+Note: despite the major version bump, only minor player-visible changes related to 2.13.5 in this release.
+This is an alpha intended for testing API updates, and a heavily-overhauled build system.
+
+### Build System Updates
+* Now using Gradle 7 and ForgeGradle 5.1+
+* Now using official Mojang mappings plus parchment mappings
+* Now outputting Javadoc JAR as part of build
+
+### API Updates
+* The API JAR is now properly reobfuscated, like the main JAR. To use the API JAR as a dependency, do something like:
+  * `compileOnly fg.deobf ("me.desht:pneumaticcraft-repressurized:${pnc_version}:api")`
+* The API has been moved into its own proper sourceset (`src/api/java/.../api`) instead of living under `src/main/java/.../api`
+* API updates intended to make it easier to add your own pressurizable items 
+  * New interface `IPressurizableItem`
+  * Added `IAirHandler.Provider` abstract class, and `IItemRegistry#makeItemAirHandlerProvider()` method to get an instance
+  * This intended to be returned from `Item#initCapabilities()`
+  * Added `PressureHelper` API class, although only method so far is for volume upgrade calculation
+* Various Pneumatic Armor API cleanup
+  * Internally, "trigger" key handling for upgrades (e.g. hack, kick, launch item) is moved into upgrade handler code, out of core
+  * See `IArmorUpgradeClientHandler#getTriggerKeyBinding()` and `IArmorUpgradeClientHandler#onTriggered()`
+  * Added `IPneumaticHelmetRegistry#makeKeybindingCheckBox()` method for getting a checkbox widget for upgrade toggling
+  * All part of effort to make it easier to add custom upgrades, although the API for this isn't yet complete...
+
+## Updates
+
+* Third party modded wrench detection now also checks for the item being in the `forge:tools/wrench` item tag
+
+## Fixes
+
+* Fixed CraftTweaker removeRecipe() (to remove by output item) not working for Pressure Chamber and Explosion Crafting recipes
+* Fixed mobs spawned by Pressurized Spawner despawning when players are too far away
+
+## 2.13.5-218 (25 Aug 2021)
+
+### Fixes
+* Hotfix: server crash when Smart Chest tries to pull from Hopper Botany pot above
+
+## 2.13.4-215 (20 Aug 2021)
+  
+### Updates
+* Entity Attack widget can now take a max entity count
+  * Allows drone to stop attacking and proceed with next widget in program, even if there are more targets to attack
+* Improvements to Manometer functionality
+  * Right-clicking any block now shows its name
+  * Right-clicking air now shows the ambient temperature for the area
+  * Right-clicking non-tile entity heat blocks (e.g. Magma) now shows the heat extraction/absorption percentage if applicable (e.g. if used to heat or cool a machine)
+  
+### API Updates
+* Pressure Chamber custom recipe enhancement: added item-aware `getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots)` method variant in `PressureChamberRecipe` API class
+  * Allows for item-sensitive pressure requirements in custom recipes (which extend the API class `PressureChamberRecipe`)
+  * Old 0-arg `getCraftingPressure()` method is deprecated and will be removed in next major Minecraft release
+* Added new interface `IPneumaticCraftProbebable` and new block tag `pneumaticcraft:probe_target`
+  * Blocks which inherit the interface or are added to the block tag will be treated like PNC blocks for the purposes of TOP & WAILA display
+  * Previously this required extending the non-API `BlockPneumaticCraft` class, which is not recommended
+  * Useful for blocks added by PNC addon mods
+* Added new interface `ISpawnerCoreStats` to manage Spawner Core items
+* Recipe types are now registered with the recipe interface type (previously mistakenly registered with the recipe implementation class)
+  * This means mods adding custom recipe types don't need to extend the implementation class, which was never intended
+
+### Fixes
+* Fixed Pressure Chamber (4x4x4 and 5x5x5 sizes) miscalculating base volume if broken and rebuilt - thanks @s-l-lee
+* Fixed Pressurized Spawner ignoring Speed Upgrades on initial spawn countdown when reloading world
+* Documented Drone XP Orb importing functionality in the manual (see Entity Import Widget page)
+
+## 2.13.3-211 (3 Aug 2021)
+
+### Updates
+* A few updates to ru_ru translations (thanks @shikhtv)
+
+### Fixes
+* Fixed machines sometimes losing air on world reload (under certain circumstances, based on pressure & Volume Upgrade count)
+* Village house generation has been redone to be properly datapack-friendly
+  * No player-visible change, but previous generation could break datapack-based worldgen due to modifying world registries instead of dynamic registries
+* Fixed some block highlighting (GPS tools etc.) not showing the highlight for air blocks
+* Fixed possible server crash if an Air Compressor explodes (due to overpressure) on the same tick as it toggles on/off
+* Fixed up some hardcoded messages (added translations) and made some other messages more translation-friendly
+* Several ComputerCraft fixes:
+  * `getDroneName()` Lua call now returns the drone's name instead of `nil`
+  * `getOwnerID()` Lua call now returns the drone owner's UUID instead of `nil`
+  * `setArea()` Lua call (7-param version) now properly accepts all the area types listed by `getAreaTypes()`
+  * The area shown by `showArea()` will now disappear as soon as the drone dies (wrenched, killed, etc.) instead of hanging around until the next `hideArea()` call
+
+## 2.13.2-205 (19 Jul 2021)
+
+### New
+* New block: Creative Compressed Iron Block
+  * This creative-only block maintains a constant temperature, similar to how the Creative Compressor maintains a constant pressure
+  
+### Updates
+* Significant internal refactoring of Pneumatic Armor upgrade handling
+  * No player-visible updates, but a fair bit of code cleanup & optimisation has been done
+* Entity filter: `@mob` will no longer match tamed mobs
+  * While there aren't any tameable mobs in vanilla, other mods can add them, e.g. tamed Quark's Foxhounds are now safe from your Sentry Turrets & Guard Drones
+
+### Fixes
+* Fixed bug where PNC Fluid Tanks would push any fluid into a Memory Stick, treating it as XP
+* Items in a Pressure Chamber no longer render too dark
+* Fixed Air Compressors running with no fuel when Advent of Ascension is also installed
+  * This is actually an AoA bug where empty itemstacks end up with a fuel value, but I've added extra checks in PNC to prevent this happening
+* Fixed Programmer only using/returning Puzzle Pieces for a single item when writing a program to a stack of multiple Network API items
+* Fixed right-clicking slots to split stacks not working in the Programmer GUI
+
+## 2.13.1-202 (6 Jul 2021)
+
+### New
+* Added a new Jet Boots Smart Hover mode
+  * Toggle it off & on in the Jet Boots Armor GUI screen (no specific upgrade tier needed)
+  * When off, Jet Boots behave exactly as before
+  * When on, hovering only engages when the thrust key is pressed. Stepping off an edge or jumping will *not* enable hovering.
+* Added new keybinding for Jet Boots thrust
+  * This used to be hardcoded to the vanilla Jump key binding (Space by default)
+  * Default for new keybinding is Space, same as before
+  * Can be set via armor GUI (Jet Boots page) as well as vanilla Options -> Controls screen  
+  * Changing this to something other than the vanilla Jump keybinding is particularly useful in conjunction with Smart Hover Mode
+
+### Updates
+* Jackhammer now highlights to-be-broken blocks when in any multibreak mode
+  * Should reduce the risk of accidentally breaking half your house...
+* Charging Station GUI now has a button to toggle "upgrade only" mode
+  * In this mode, no transfer of air to/from items happens, and no air leaks for unconnected stations occur
+  * Useful if you want to carry a Charging Station around for on-the-go management of item upgrades
+* CraftTweaker docs are now available on the official CraftTweaker documentation site: https://docs.blamejared.com/1.16/en/index/, Mods -> PneumaticCraft: Repressurized
+* Better block shape behaviour for invisible Aphorism Tiles
+  * Invisible tiles now have no block shape at all, unless you sneak
+  * Makes them more attractive as chest labels (especially when displaying items...)
+
+### Fixes
+* Fixed in-world Yeast crafting destroying blocks if trying to spread to a waterlogged block
+* Fixed voiding of Mekanism fluid tanks when trying to craft Speed Upgrades with them
+  * Mekanism fluid tanks can no longer be used in PNC:R fluid crafting recipes
+* Heat Frames can no longer be placed on PNC:R fluid tanks (or any block with a fluid capability)  
+  * This was causing too much confusion: Heat Frames are intended for item inventories, not fluid tanks
+  * It only went on the PNC:R fluid tank because the tank has an item capability for the bucket slot
+* Fixed the fireballs launched by the Chestplate Item Launcher (from Fire Charges) hanging around forever
+* Fixed Pneumatic Armor Jump upgrade only allowing forward jumps, even if moving backwards or sideways
+  * Also slightly increased the horizontal velocity of the forward jump, when already sprinting
+* Fixed Refinery GUI sometimes wrongly reporting missing Refinery Outputs (outputs were found by server OK but client missed them)
+* Fixed Minigun rendering weirdly when in offhand
+  * Note that Minigun still needs to be in main hand to fire, but at least looks right when carried in offhand now
+  * Also fixed odd rendering rotation when player inventory is open
+* Fixed Minigun not spinning up or firing if multiple Miniguns are being carried
+
 ## 2.13.0-199 (24 Jun 2021)
 
 ### New

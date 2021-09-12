@@ -27,7 +27,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
     }
 
     private boolean importItems(BlockPos pos, boolean simulate) {
-        TileEntity te = drone.world().getTileEntity(pos);
+        TileEntity te = drone.world().getBlockEntity(pos);
         boolean imported = false;
         for (Direction dir : DirectionUtil.VALUES) {
             if (progWidget.isSideSelected(dir)) {

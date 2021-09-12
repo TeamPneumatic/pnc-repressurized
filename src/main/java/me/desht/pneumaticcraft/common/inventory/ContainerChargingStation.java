@@ -25,7 +25,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 45) {
             @Override
-            public int getSlotStackLimit() {
+            public int getMaxStackSize() {
                 return 1;
             }
         });
@@ -38,34 +38,34 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
 
     @Override
     @Nonnull
-    public ItemStack transferStackInSlot(PlayerEntity player, int slot) {
-        Slot srcSlot = inventorySlots.get(slot);
-        if (srcSlot == null || !srcSlot.getHasStack()) {
+    public ItemStack quickMoveStack(PlayerEntity player, int slot) {
+        Slot srcSlot = slots.get(slot);
+        if (srcSlot == null || !srcSlot.hasItem()) {
             return ItemStack.EMPTY;
         }
-        ItemStack srcStack = srcSlot.getStack().copy();
+        ItemStack srcStack = srcSlot.getItem().copy();
         ItemStack copyOfSrcStack = srcStack.copy();
 
         if (slot == 0 && srcStack.getItem() instanceof ArmorItem) {
             // chargeable slot - move to armor if appropriate, player inv otherwise
-            if (!mergeItemStack(srcStack, 5, 9, false)
-                    && !mergeItemStack(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
+            if (!moveItemStackTo(srcStack, 5, 9, false)
+                    && !moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
                 return ItemStack.EMPTY;
         } else if (slot >= 5 && slot < 9 && srcStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             // armor slots - try to move to the charging slot if possible
-            if (!mergeItemStack(srcStack, 0, 1, false)
-                    && !mergeItemStack(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
+            if (!moveItemStackTo(srcStack, 0, 1, false)
+                    && !moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
                 return ItemStack.EMPTY;
         } else if (slot < playerSlotsStart) {
-            if (!mergeItemStack(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
+            if (!moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
                 return ItemStack.EMPTY;
         } else {
-            if (!mergeItemStack(srcStack, 0, playerSlotsStart, false))
+            if (!moveItemStackTo(srcStack, 0, playerSlotsStart, false))
                 return ItemStack.EMPTY;
         }
 
-        srcSlot.putStack(srcStack);
-        srcSlot.onSlotChange(srcStack, copyOfSrcStack);
+        srcSlot.set(srcStack);
+        srcSlot.onQuickCraft(srcStack, copyOfSrcStack);
         srcSlot.onTake(player, srcStack);
 
         return copyOfSrcStack;

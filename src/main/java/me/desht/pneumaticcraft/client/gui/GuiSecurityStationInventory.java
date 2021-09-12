@@ -54,7 +54,7 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
     public GuiSecurityStationInventory(ContainerSecurityStationMain container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        ySize = 239;
+        imageHeight = 239;
     }
 
     @Override
@@ -68,9 +68,9 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
 
         Rectangle2d accessButtonRectangle = new Rectangle2d(105, 12, 16, 16);
         addUserButton = getButtonFromRectangle(null, accessButtonRectangle, "+", b -> {
-            if (!sharedUserTextField.getText().isEmpty()) {
-                NetworkHandler.sendToServer(new PacketGuiButton("add:" + sharedUserTextField.getText()));
-                sharedUserTextField.setText("");
+            if (!sharedUserTextField.getValue().isEmpty()) {
+                NetworkHandler.sendToServer(new PacketGuiButton("add:" + sharedUserTextField.getValue()));
+                sharedUserTextField.setValue("");
             }
         });
 
@@ -80,17 +80,17 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
         accessStat.addSubWidget(addUserButton);
         accessStat.setMinimumExpandedDimensions(125, 40);
 
-        addButton(rebootButton = new WidgetButtonExtended(guiLeft + 110, guiTop + 17, 60, 20, xlate("pneumaticcraft.gui.securityStation.reboot")).withTag("reboot"));
-        addButton(new WidgetButtonExtended(guiLeft + 110, guiTop + 107, 60, 20, xlate("pneumaticcraft.gui.securityStation.test")))
+        addButton(rebootButton = new WidgetButtonExtended(leftPos + 110, topPos + 17, 60, 20, xlate("pneumaticcraft.gui.securityStation.reboot")).withTag("reboot"));
+        addButton(new WidgetButtonExtended(leftPos + 110, topPos + 107, 60, 20, xlate("pneumaticcraft.gui.securityStation.test")))
                 .withTag("test");
-        addButton(new WidgetRangeToggleButton(guiLeft + 154, guiTop + 130, te));
+        addButton(new WidgetRangeToggleButton(leftPos + 154, topPos + 130, te));
 
         updateUserList();
         initConnectionRendering();
     }
 
     private void initConnectionRendering() {
-        hackRenderer = new RenderHackSimulation(guiLeft + 25, guiTop + 27, 18);
+        hackRenderer = new RenderHackSimulation(leftPos + 25, topPos + 27, 18);
         hackSimulation = HackSimulation.dummySimulation();
         hackSimulation.wakeUp();
         for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
@@ -109,8 +109,8 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
+    protected void renderBg(MatrixStack matrixStack, float opacity, int x, int y) {
+        super.renderBg(matrixStack, opacity, x, y);
         hackRenderer.render(matrixStack, hackSimulation, 0xFF2222FF);
     }
 
@@ -133,7 +133,7 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
                     xlate("pneumaticcraft.gui.securityStation.rebooting") :
                     new StringTextComponent(PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false));
         } else {
-            rebootButtonString = xlate("pneumaticcraft.gui.securityStation.reboot").mergeStyle(TextFormatting.RED);
+            rebootButtonString = xlate("pneumaticcraft.gui.securityStation.reboot").withStyle(TextFormatting.RED);
         }
         rebootButton.setMessage(rebootButtonString);
 
@@ -150,9 +150,9 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER && sharedUserTextField.isFocused() && !sharedUserTextField.getText().isEmpty()) {
-            NetworkHandler.sendToServer(new PacketGuiButton("add:" + sharedUserTextField.getText()));
-            sharedUserTextField.setText("");
+        if (keyCode == GLFW.GLFW_KEY_ENTER && sharedUserTextField.isFocused() && !sharedUserTextField.getValue().isEmpty()) {
+            NetworkHandler.sendToServer(new PacketGuiButton("add:" + sharedUserTextField.getValue()));
+            sharedUserTextField.setValue("");
             return true;
         } else {
             return super.keyPressed(keyCode, scanCode, modifiers);
@@ -169,7 +169,7 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
             text.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.security_station.hacked"));
         }
         if (!te.hasValidNetwork()) {
-            text.add(xlate("pneumaticcraft.gui.tab.problems.security_station.invalidNetwork").mergeStyle(TextFormatting.WHITE));
+            text.add(xlate("pneumaticcraft.gui.tab.problems.security_station.invalidNetwork").withStyle(TextFormatting.WHITE));
             EnumNetworkValidityProblem problem = te.checkForNetworkValidity();
             if (problem != EnumNetworkValidityProblem.NONE) text.addAll(GuiUtils.xlateAndSplit(problem.getTranslationKey()));
         }
@@ -178,23 +178,23 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
     private List<ITextComponent> getStatusText() {
         List<ITextComponent> text = new ArrayList<>();
         StringTextComponent space = new StringTextComponent("  ");
-        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.protection").mergeStyle(TextFormatting.WHITE));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.protection").withStyle(TextFormatting.WHITE));
         if (te.getRebootTime() > 0) {
-            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.securityStation.rebooting")).mergeStyle(TextFormatting.DARK_RED));
+            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.securityStation.rebooting")).withStyle(TextFormatting.DARK_RED));
         } else if (te.isHacked()) {
-            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.hackedBy")).mergeStyle(TextFormatting.DARK_RED));
+            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.hackedBy")).withStyle(TextFormatting.DARK_RED));
             for (GameProfile hacker : te.hackedUsers) {
-                text.add(new StringTextComponent("  ").append(GuiConstants.bullet()).appendString(hacker.getName()).mergeStyle(TextFormatting.RED));
+                text.add(new StringTextComponent("  ").append(GuiConstants.bullet()).append(hacker.getName()).withStyle(TextFormatting.RED));
             }
         } else {
-            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.secure")).mergeStyle(TextFormatting.GREEN));
+            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.secure")).withStyle(TextFormatting.GREEN));
         }
-        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityLevel").mergeStyle(TextFormatting.WHITE));
-        text.add(new StringTextComponent("  ").append(new StringTextComponent("L" + te.getSecurityLevel())).mergeStyle(TextFormatting.BLACK));
-        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.detectChance").mergeStyle(TextFormatting.WHITE));
-        text.add(new StringTextComponent("  ").append(new StringTextComponent(te.getDetectionChance() + "%")).mergeStyle(TextFormatting.BLACK));
-        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityRange").mergeStyle(TextFormatting.WHITE));
-        text.add(new StringTextComponent("  ").append(new StringTextComponent((te.getRange() * 2 + 1) + "m²")).mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityLevel").withStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent("  ").append(new StringTextComponent("L" + te.getSecurityLevel())).withStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.detectChance").withStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent("  ").append(new StringTextComponent(te.getDetectionChance() + "%")).withStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityRange").withStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent("  ").append(new StringTextComponent((te.getRange() * 2 + 1) + "m²")).withStyle(TextFormatting.BLACK));
         return text;
     }
 
@@ -206,7 +206,7 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
         List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().collect(Collectors.toList());
         for (String name : names) {
             String str = first ? name + " \u2654" : name;
-            textList.add(GuiConstants.bullet().appendString(str).mergeStyle(first ? TextFormatting.YELLOW : TextFormatting.WHITE));
+            textList.add(GuiConstants.bullet().append(str).withStyle(first ? TextFormatting.YELLOW : TextFormatting.WHITE));
             first = false;
         }
         return textList;
@@ -222,7 +222,7 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
         int n = 0;
         List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().collect(Collectors.toList());
         for (String name : names) {
-            Rectangle2d rect = new Rectangle2d(24, 30 + n * (font.FONT_HEIGHT + 1), font.getStringWidth(name), 8);
+            Rectangle2d rect = new Rectangle2d(24, 30 + n * (font.lineHeight + 1), font.width(name), 8);
             WidgetButtonExtended button = getInvisibleButtonFromRectangle("remove:" + name, rect, b -> {});
             button.setInvisibleHoverColor(0x80FF0000);
             button.setVisible(false);
@@ -234,8 +234,8 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
     }
 
     public static void reinitConnectionRendering() {
-        if (Minecraft.getInstance().currentScreen instanceof GuiSecurityStationInventory) {
-            ((GuiSecurityStationInventory) Minecraft.getInstance().currentScreen).reInitBG = true;
+        if (Minecraft.getInstance().screen instanceof GuiSecurityStationInventory) {
+            ((GuiSecurityStationInventory) Minecraft.getInstance().screen).reInitBG = true;
         }
     }
 }

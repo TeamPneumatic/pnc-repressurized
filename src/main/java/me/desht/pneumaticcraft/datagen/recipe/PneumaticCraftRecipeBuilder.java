@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipeBuilder<T>> {
     protected final List<ICondition> conditions = new ArrayList<>();
-    protected final Advancement.Builder advancementBuilder = Advancement.Builder.builder();
+    protected final Advancement.Builder advancementBuilder = Advancement.Builder.advancement();
     protected final ResourceLocation serializerName;
 
     protected PneumaticCraftRecipeBuilder(ResourceLocation serializerName) {
@@ -35,7 +35,7 @@ public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipe
     }
 
     public T addCriterion(String name, ICriterionInstance criterion) {
-        advancementBuilder.withCriterion(name, criterion);
+        advancementBuilder.addCriterion(name, criterion);
         return (T) this;
     }
 
@@ -50,9 +50,9 @@ public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipe
         if (advancementBuilder.getCriteria().isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + id);
         }
-        advancementBuilder.withParentId(new ResourceLocation("recipes/root"))
-                .withCriterion("has_the_recipe", new RecipeUnlockedTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, id))
-                .withRewards(AdvancementRewards.Builder.recipe(id)).withRequirementsStrategy(IRequirementsStrategy.OR);
+        advancementBuilder.parent(new ResourceLocation("recipes/root"))
+                .addCriterion("has_the_recipe", new RecipeUnlockedTrigger.Instance(EntityPredicate.AndPredicate.ANY, id))
+                .rewards(AdvancementRewards.Builder.recipe(id)).requirements(IRequirementsStrategy.OR);
         consumer.accept(getResult(id));
     }
 
@@ -66,7 +66,7 @@ public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipe
         }
 
         @Override
-        public JsonObject getRecipeJson() {
+        public JsonObject serializeRecipe() {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("type", serializerName.toString());
             if (!conditions.isEmpty()) {
@@ -76,13 +76,13 @@ public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipe
                 }
                 jsonObject.add("conditions", conditionsArray);
             }
-            this.serialize(jsonObject);
+            this.serializeRecipeData(jsonObject);
             return jsonObject;
         }
 
         @Nonnull
         @Override
-        public IRecipeSerializer<?> getSerializer() {
+        public IRecipeSerializer<?> getType() {
             //Note: This may be null if something is screwed up but this method isn't actually used so it shouldn't matter
             // and in fact it will probably be null if only the API is included. But again, as we manually just use
             // the serializer's name this should not effect us
@@ -91,19 +91,19 @@ public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipe
 
         @Nonnull
         @Override
-        public ResourceLocation getID() {
+        public ResourceLocation getId() {
             return this.id;
         }
 
         @Nullable
         @Override
-        public JsonObject getAdvancementJson() {
-            return advancementBuilder.serialize();
+        public JsonObject serializeAdvancement() {
+            return advancementBuilder.serializeToJson();
         }
 
         @Nullable
         @Override
-        public ResourceLocation getAdvancementID() {
+        public ResourceLocation getAdvancementId() {
             return this.advancementId;
         }
 

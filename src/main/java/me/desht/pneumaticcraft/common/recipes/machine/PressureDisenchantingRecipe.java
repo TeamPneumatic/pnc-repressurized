@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     public static final ResourceLocation ID = RL("pressure_chamber_disenchanting");
@@ -75,27 +75,27 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
         EnchantmentHelper.setEnchantments(ImmutableMap.of(strippedEnchantment, level), enchantedBook);
 
-        return NonNullList.from(ItemStack.EMPTY, enchantedBook, enchantedStack);
+        return NonNullList.of(ItemStack.EMPTY, enchantedBook, enchantedStack);
     }
 
     @Override
     public List<Ingredient> getInputsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        pick.addEnchantment(Enchantments.FORTUNE, 1);
+        pick.enchant(Enchantments.BLOCK_FORTUNE, 1);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchantedBook.addEnchantment(Enchantments.FORTUNE, 1);
-        enchantedBook.addEnchantment(Enchantments.EFFICIENCY, 1);
+        enchantedBook.enchant(Enchantments.BLOCK_FORTUNE, 1);
+        enchantedBook.enchant(Enchantments.BLOCK_EFFICIENCY, 1);
 
-        return ImmutableList.of(Ingredient.fromStacks(pick, enchantedBook), Ingredient.fromItems(Items.BOOK));
+        return ImmutableList.of(Ingredient.of(pick, enchantedBook), Ingredient.of(Items.BOOK));
     }
 
     @Override
     public List<List<ItemStack>> getResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchantedBook.addEnchantment(Enchantments.EFFICIENCY, 1);
+        enchantedBook.enchant(Enchantments.BLOCK_EFFICIENCY, 1);
         ItemStack resultBook = new ItemStack(Items.ENCHANTED_BOOK);
-        resultBook.addEnchantment(Enchantments.FORTUNE, 1);
+        resultBook.enchant(Enchantments.BLOCK_FORTUNE, 1);
         return ImmutableList.of(ImmutableList.of(pick, enchantedBook), ImmutableList.of(resultBook));
     }
 

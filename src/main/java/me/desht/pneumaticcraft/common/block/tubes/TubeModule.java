@@ -47,12 +47,12 @@ public abstract class TubeModule {
 
         // 0..6 = D,U,N,S,W,E
         boundingBoxes = new VoxelShape[] {
-                Block.makeCuboidShape(8 - w, CORE_MIN - h, 8 - w, 8 + w, CORE_MIN, 8 + w),
-                Block.makeCuboidShape(8 - w, CORE_MAX, 8 - w, 8 + w, CORE_MAX + h, 8 + w),
-                Block.makeCuboidShape(8 - w, 8 - w, CORE_MIN - h, 8 + w, 8 + w, CORE_MIN),
-                Block.makeCuboidShape(8 - w, 8 - w, CORE_MAX, 8 + w, 8 + w, CORE_MAX + h),
-                Block.makeCuboidShape(CORE_MIN - h, 8 - w, 8 - w, CORE_MIN, 8 + w, 8 + w),
-                Block.makeCuboidShape(CORE_MAX, 8 - w, 8 - w, CORE_MAX + h, 8 + w, 8 + w),
+                Block.box(8 - w, CORE_MIN - h, 8 - w, 8 + w, CORE_MIN, 8 + w),
+                Block.box(8 - w, CORE_MAX, 8 - w, 8 + w, CORE_MAX + h, 8 + w),
+                Block.box(8 - w, 8 - w, CORE_MIN - h, 8 + w, 8 + w, CORE_MIN),
+                Block.box(8 - w, 8 - w, CORE_MAX, 8 + w, 8 + w, CORE_MAX + h),
+                Block.box(CORE_MIN - h, 8 - w, 8 - w, CORE_MIN, 8 + w, 8 + w),
+                Block.box(CORE_MAX, 8 - w, 8 - w, CORE_MAX + h, 8 + w, 8 + w),
         };
     }
 
@@ -73,7 +73,7 @@ public abstract class TubeModule {
     }
 
     /**
-     * Get the module's width (in range 0..16 as passed to {@link Block#makeCuboidShape(double, double, double, double, double, double)}
+     * Get the module's width (in range 0..16 as passed to {@link Block#box(double, double, double, double, double, double)}
      *
      * @return the width
      */
@@ -82,7 +82,7 @@ public abstract class TubeModule {
     }
 
     /**
-     * Get the module's height (in range 0..16 as passed to {@link Block#makeCuboidShape(double, double, double, double, double, double)}
+     * Get the module's height (in range 0..16 as passed to {@link Block#box(double, double, double, double, double, double)}
      *
      * @return the height
      */
@@ -123,7 +123,7 @@ public abstract class TubeModule {
     }
 
     public void readFromNBT(CompoundNBT nbt) {
-        dir = Direction.byIndex(nbt.getInt("dir"));
+        dir = Direction.from3DDataValue(nbt.getInt("dir"));
         upgraded = nbt.getBoolean("upgraded");
         lowerBound = nbt.getFloat("lowerBound");
         higherBound = nbt.getFloat("higherBound");
@@ -131,7 +131,7 @@ public abstract class TubeModule {
     }
 
     public CompoundNBT writeToNBT(CompoundNBT nbt) {
-        nbt.putInt("dir", dir.getIndex());
+        nbt.putInt("dir", dir.get3DDataValue());
         nbt.putBoolean("upgraded", upgraded);
         nbt.putFloat("lowerBound", lowerBound);
         nbt.putFloat("higherBound", higherBound);
@@ -157,7 +157,7 @@ public abstract class TubeModule {
     }
 
     public void updateNeighbors() {
-        pressureTube.getWorld().notifyNeighborsOfStateChange(pressureTube.getPos(), pressureTube.getWorld().getBlockState(pressureTube.getPos()).getBlock());
+        pressureTube.getLevel().updateNeighborsAt(pressureTube.getBlockPos(), pressureTube.getLevel().getBlockState(pressureTube.getBlockPos()).getBlock());
     }
 
     public boolean isInline() {
@@ -171,13 +171,13 @@ public abstract class TubeModule {
     public void addInfo(List<ITextComponent> curInfo) {
         if (upgraded) {
             ItemStack stack = new ItemStack(ModItems.ADVANCED_PCB.get());
-            curInfo.add(stack.getDisplayName().deepCopy().appendString(" installed").mergeStyle(TextFormatting.GREEN));
+            curInfo.add(stack.getHoverName().copy().append(" installed").withStyle(TextFormatting.GREEN));
         }
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
             String key = "color.minecraft." + DyeColor.byId(colorChannel);
-            curInfo.add(new TranslationTextComponent("pneumaticcraft.waila.logisticsModule.channel").appendString(" ")
-                    .append(new TranslationTextComponent(key).mergeStyle(TextFormatting.YELLOW)));
+            curInfo.add(new TranslationTextComponent("pneumaticcraft.waila.logisticsModule.channel").append(" ")
+                    .append(new TranslationTextComponent(key).withStyle(TextFormatting.YELLOW)));
         }
     }
 
@@ -194,7 +194,7 @@ public abstract class TubeModule {
     }
 
     public boolean onActivated(PlayerEntity player, Hand hand) {
-        if (player.world.isRemote && hasGui()) {
+        if (player.level.isClientSide && hasGui()) {
             GuiTubeModule.openGuiForModule(this);
         }
         return true;
@@ -211,7 +211,7 @@ public abstract class TubeModule {
     }
 
     public VoxelShape getShape() {
-        return boundingBoxes[getDirection().getIndex()];
+        return boundingBoxes[getDirection().get3DDataValue()];
     }
 
     public AxisAlignedBB getRenderBoundingBox() {
@@ -223,12 +223,12 @@ public abstract class TubeModule {
         if (this == o) return true;
         if (!(o instanceof TubeModule)) return false;
         TubeModule that = (TubeModule) o;
-        return Objects.equals(pressureTube.getPos(), that.pressureTube.getPos()) && dir == that.dir;
+        return Objects.equals(pressureTube.getBlockPos(), that.pressureTube.getBlockPos()) && dir == that.dir;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pressureTube.getPos(), dir);
+        return Objects.hash(pressureTube.getBlockPos(), dir);
     }
 
     public void onPlaced() {

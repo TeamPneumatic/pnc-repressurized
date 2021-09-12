@@ -16,25 +16,25 @@ import javax.annotation.Nonnull;
 
 public class ItemBandage extends Item {
     public ItemBandage() {
-        super(ModItems.defaultProps().maxStackSize(16));
+        super(ModItems.defaultProps().stacksTo(16));
     }
 
     @Nonnull
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, @Nonnull Hand hand) {
-        player.setActiveHand(hand);
-        return ActionResult.resultSuccess(player.getHeldItem(hand));
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, @Nonnull Hand hand) {
+        player.startUsingItem(hand);
+        return ActionResult.success(player.getItemInHand(hand));
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         if (entityLiving instanceof PlayerEntity) {
             entityLiving.setHealth(entityLiving.getHealth() + 6f);
             stack.shrink(1);
-            ((PlayerEntity) entityLiving).getCooldownTracker().setCooldown(stack.getItem(), 160);
-            if (worldIn.isRemote) {
-                Vector3d pos = entityLiving.getEyePosition(1f).add(entityLiving.getLookVec().scale(0.5));
+            ((PlayerEntity) entityLiving).getCooldowns().addCooldown(stack.getItem(), 160);
+            if (worldIn.isClientSide) {
+                Vector3d pos = entityLiving.getEyePosition(1f).add(entityLiving.getLookAngle().scale(0.5));
                 for (int i = 0; i < 5; i++) {
-                    worldIn.addParticle(ParticleTypes.HEART, pos.x + worldIn.rand.nextFloat() - 0.5, pos.y + worldIn.rand.nextFloat() - 0.5, pos.z + worldIn.rand.nextFloat() - 0.5, 0, 0.05, 0);
+                    worldIn.addParticle(ParticleTypes.HEART, pos.x + worldIn.random.nextFloat() - 0.5, pos.y + worldIn.random.nextFloat() - 0.5, pos.z + worldIn.random.nextFloat() - 0.5, 0, 0.05, 0);
                 }
             }
         }
@@ -47,7 +47,7 @@ public class ItemBandage extends Item {
     }
 
     @Override
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.BOW;
     }
 }

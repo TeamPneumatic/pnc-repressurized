@@ -54,13 +54,13 @@ public class ContainerChargingStationUpgradeManager extends ContainerPneumaticBa
         }
 
         @Override
-        public int getItemStackLimit(@Nonnull ItemStack stack) {
+        public int getMaxStackSize(@Nonnull ItemStack stack) {
             return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te.getChargingStack().getItem(), EnumUpgrade.from(stack));
         }
 
         @Override
-        public void onSlotChanged() {
-            super.onSlotChanged();
+        public void setChanged() {
+            super.setChanged();
             ((ChargeableItemHandler) getItemHandler()).writeToNBT();
         }
     }

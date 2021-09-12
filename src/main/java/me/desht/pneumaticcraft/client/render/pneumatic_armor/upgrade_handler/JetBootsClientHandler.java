@@ -16,6 +16,8 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,16 +32,14 @@ import net.minecraft.world.gen.Heightmap;
 
 import java.util.Collection;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler {
-    public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
-    public static final int STABLIZERS_LEVEL = 4;  // tier needed for flight stabilizers
-
+public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<JetBootsHandler> {
     private static final ItemStack PICK = new ItemStack(Items.DIAMOND_PICKAXE);
     private static final ItemStack ROTOR = new ItemStack(ModItems.TURBINE_ROTOR.get());
     private static final ItemStack ELYTRA = new ItemStack(Items.ELYTRA);
+    private static final ItemStack FEATHER = new ItemStack(Items.FEATHER);
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
@@ -47,6 +47,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     private int widestR;
     private boolean builderMode;
     private boolean flightStabilizers;
+    private boolean smartHover;
     private double prevX, prevY, prevZ;
 
     private IGuiAnimatedStat jbStat;
@@ -69,53 +70,55 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
         PlayerEntity player = armorHandler.getPlayer();
         if (jbStat.isStatOpen()) {
-            double mx = player.getPosX() - prevX;
-            double my = player.getPosY() - prevY;
-            double mz = player.getPosZ() - prevZ;
-            prevX = player.getPosX();
-            prevY = player.getPosY();
-            prevZ = player.getPosZ();
+            double mx = player.getX() - prevX;
+            double my = player.getY() - prevY;
+            double mz = player.getZ() - prevZ;
+            prevX = player.getX();
+            prevY = player.getY();
+            prevZ = player.getZ();
             double v = Math.sqrt(mx * mx + my * my + mz * mz);
             double vg = Math.sqrt(mx * mx + mz * mz);
-            int heading = MathHelper.floor((double)(player.rotationYaw * 8.0F / 360.0F) + 0.5D) & 0x7;
-            int yaw = ((int) player.rotationYaw + 180) % 360;
+            int heading = MathHelper.floor((double)(player.yRot * 8.0F / 360.0F) + 0.5D) & 0x7;
+            int yaw = ((int) player.yRot + 180) % 360;
             if (yaw < 0) yaw += 360;
-            BlockPos pos = player.getPosition();
+            BlockPos pos = player.blockPosition();
 
             l1 = String.format(" %sSpd: %s%05.2fm/s", g1, g2, v * 20);
             l2 = String.format("  %sAlt: %s%03dm", g1, g2, pos.getY());
             l3 = String.format("%sHead: %s%d° (%s)", g1, g2, yaw, HEADINGS[heading]);
             r1 = String.format("%sGnd: %s%05.2f", g1, g2, vg * 20);
-            r2 = String.format("%sGnd: %s%dm", g1, g2, pos.getY() - player.world.getHeight(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()));
-            r3 = String.format("%sPch: %s%d°", g1, g2, (int)-player.rotationPitch);
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            widestR = Math.max(fr.getStringWidth(r1), Math.max(fr.getStringWidth(r2), fr.getStringWidth(r3)));
+            r2 = String.format("%sGnd: %s%dm", g1, g2, pos.getY() - player.level.getHeight(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()));
+            r3 = String.format("%sPch: %s%d°", g1, g2, (int)-player.xRot);
+            FontRenderer fr = Minecraft.getInstance().font;
+            widestR = Math.max(fr.width(r1), Math.max(fr.width(r2), fr.width(r3)));
 
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            builderMode = handler.isJetBootsBuilderMode();
-            flightStabilizers = handler.isFlightStabilizers();
+            JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
+            builderMode = jbState.isBuilderMode();
+
+            JetBootsHandler.JetBootsLocalState jbLocal = handler.getExtensionData(getCommonHandler());
+            flightStabilizers = jbLocal.isFlightStabilizers();
+            smartHover = jbLocal.isSmartHover();
         }
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
-        super.render2D(matrixStack, partialTicks, helmetEnabled);
-
-        if (helmetEnabled && jbStat.isStatOpen()) {
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+        if (armorPieceHasPressure && jbStat.isStatOpen()) {
+            FontRenderer fr = Minecraft.getInstance().font;
             int xl = jbStat.getBaseX() + 5;
-            int y = jbStat.getBaseY() + fr.FONT_HEIGHT + 8;
+            int y = jbStat.getBaseY() + fr.lineHeight + 8;
             int xr = jbStat.getBaseX() + jbStat.getStatWidth() - 5;
             if (jbStat.isLeftSided()) {
                 xl -= jbStat.getStatWidth();
                 xr -= jbStat.getStatWidth();
             }
-            fr.drawStringWithShadow(matrixStack, l1, xl, y, 0x404040);
-            fr.drawStringWithShadow(matrixStack, l2, xl, y + fr.FONT_HEIGHT, 0x404040);
-            fr.drawStringWithShadow(matrixStack, l3, xl, y + fr.FONT_HEIGHT * 2, 0x404040);
-            fr.drawStringWithShadow(matrixStack, r1, xr - widestR, y, 0x404040);
-            fr.drawStringWithShadow(matrixStack, r2, xr - widestR, y + fr.FONT_HEIGHT, 0x404040);
-            fr.drawStringWithShadow(matrixStack, r3, xr - widestR, y + fr.FONT_HEIGHT * 2, 0x404040);
+            fr.drawShadow(matrixStack, l1, xl, y, 0x404040);
+            fr.drawShadow(matrixStack, l2, xl, y + fr.lineHeight, 0x404040);
+            fr.drawShadow(matrixStack, l3, xl, y + fr.lineHeight * 2, 0x404040);
+            fr.drawShadow(matrixStack, r1, xr - widestR, y, 0x404040);
+            fr.drawShadow(matrixStack, r2, xr - widestR, y + fr.lineHeight, 0x404040);
+            fr.drawShadow(matrixStack, r3, xr - widestR, y + fr.lineHeight * 2, 0x404040);
 
             int iconX = xr - 30;
             if (builderMode) {
@@ -126,8 +129,12 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
                 GuiUtils.renderItemStack(matrixStack, ROTOR, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
-            if (Minecraft.getInstance().player.isElytraFlying()) {
+            if (Minecraft.getInstance().player.isFallFlying()) {
                 GuiUtils.renderItemStack(matrixStack, ELYTRA, iconX, jbStat.getBaseY());
+                iconX -= 16;
+            }
+            if (smartHover) {
+                GuiUtils.renderItemStack(matrixStack, FEATHER, iconX, jbStat.getBaseY());
 //                iconX -= 16;
             }
         }
@@ -138,9 +145,9 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
         if (jbStat == null) {
             PlayerEntity player = Minecraft.getInstance().player;
             if (player != null) {
-                prevX = player.getPosX();
-                prevY = player.getPosY();
-                prevZ = player.getPosZ();
+                prevX = player.getX();
+                prevY = player.getY();
+                prevZ = player.getZ();
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             int n = Math.max(1, handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS));
@@ -161,6 +168,6 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     @Override
     public Collection<ResourceLocation> getSubKeybinds() {
-        return ImmutableList.of(RL("jet_boots.module.builder_mode"), RL("jet_boots.module.flight_stabilizers"));
+        return ImmutableList.of(RL("jet_boots.module.builder_mode"), RL("jet_boots.module.flight_stabilizers"), RL("jet_boots.module.smart_hover"));
     }
 }

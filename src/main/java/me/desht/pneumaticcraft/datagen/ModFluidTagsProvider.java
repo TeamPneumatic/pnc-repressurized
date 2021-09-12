@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.datagen;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.FluidTagsProvider;
 import net.minecraft.fluid.Fluid;
@@ -19,7 +19,7 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
     }
 
     @Override
-    protected void registerTags() {
+    protected void addTags() {
         createTag(PneumaticCraftTags.Fluids.CRUDE_OIL, ModFluids.OIL);
         createTag(PneumaticCraftTags.Fluids.ETCHING_ACID, ModFluids.ETCHING_ACID);
         createTag(PneumaticCraftTags.Fluids.PLASTIC, ModFluids.PLASTIC);
@@ -47,12 +47,12 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
 
     @SafeVarargs
     private final void createTag(ITag.INamedTag<Fluid> tag, Supplier<? extends Fluid>... blocks) {
-        getOrCreateBuilder(tag).add(resolveAll(Fluid[]::new, blocks));
+        tag(tag).add(resolveAll(Fluid[]::new, blocks));
     }
 
     @SafeVarargs
     private final void appendToTag(ITag.INamedTag<Fluid> tag, ITag.INamedTag<Fluid>... toAppend) {
-        getOrCreateBuilder(tag).addTags(toAppend);
+        tag(tag).addTags(toAppend);
     }
 
     @SafeVarargs

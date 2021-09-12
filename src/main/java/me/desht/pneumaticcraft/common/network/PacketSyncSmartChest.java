@@ -21,7 +21,7 @@ public class PacketSyncSmartChest extends LocationIntPacket {
     private final List<Pair<Integer, ItemStack>> filter;
 
     public PacketSyncSmartChest(TileEntitySmartChest te) {
-        super(te.getPos());
+        super(te.getBlockPos());
 
         lastSlot = te.getLastSlot();
         filter = te.getFilter();
@@ -35,7 +35,7 @@ public class PacketSyncSmartChest extends LocationIntPacket {
         filter = new ArrayList<>();
         for (int i = 0; i < nFilters; i++) {
             int slot = buffer.readVarInt();
-            ItemStack stack = buffer.readItemStack();
+            ItemStack stack = buffer.readItem();
             filter.add(Pair.of(slot, stack));
         }
     }

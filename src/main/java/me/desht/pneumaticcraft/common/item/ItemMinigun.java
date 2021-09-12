@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
 import me.desht.pneumaticcraft.common.core.ModContainers;
@@ -15,6 +16,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.minigun.MinigunPlayerTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketMinigunStop;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -36,7 +38,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -51,16 +57,40 @@ public class ItemMinigun extends ItemPressurizable implements
 
     private static final String NBT_MAGAZINE = "Magazine";
     public static final String NBT_LOCKED_SLOT = "LockedSlot";
+    public static final String OWNING_PLAYER_ID = "owningPlayerId";
 
     public ItemMinigun() {
         super(ModItems.toolProps().setISTER(() -> RenderItemMinigun::new), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
-    public static MagazineHandler getMagazine(ItemStack stack) {
-        if (stack.getItem() instanceof ItemMinigun) {
-            return new MagazineHandler(stack);
+    @Nonnull
+    public MagazineHandler getMagazine(ItemStack stack) {
+        Validate.isTrue(stack.getItem() instanceof ItemMinigun);
+        return new MagazineHandler(stack);
+    }
+
+    /**
+     * Called on server only, when player equips or unequips a minigun
+     * @param player the player
+     * @param stack the minigun item
+     * @param equipping true if equipping, false if unequipping
+     */
+    public void onEquipmentChange(ServerPlayerEntity player, ItemStack stack, boolean equipping) {
+        if (equipping) {
+            // tag the minigun with the player's entity ID - it's sync'd to clients
+            // so other clients will know who's wielding it, and render appropriately
+            // See RenderItemMinigun
+            stack.getOrCreateTag().putInt(OWNING_PLAYER_ID, player.getId());
+        } else {
+            stack.getOrCreateTag().remove(OWNING_PLAYER_ID);
+            Minigun minigun = getMinigun(stack, player);
+            if (minigun.getMinigunSpeed() > 0 || minigun.isMinigunActivated()) {
+                NetworkHandler.sendToPlayer(new PacketMinigunStop(stack), player);
+            }
+            minigun.setMinigunSpeed(0);
+            minigun.setMinigunActivated(false);
+            minigun.setMinigunTriggerTimeOut(0);
         }
-        return null;
     }
 
     @Override
@@ -73,23 +103,21 @@ public class ItemMinigun extends ItemPressurizable implements
         super.inventoryTick(stack, world, entity, slot, currentItem);
 
         PlayerEntity player = (PlayerEntity) entity;
-        Minigun minigun = getMinigun(stack, player);
-        if (!currentItem) {
-            minigun.setMinigunSpeed(0);
-            minigun.setMinigunActivated(false);
-            minigun.setMinigunTriggerTimeOut(0);
-        } else {
-            minigun.update(player.getPosX(), player.getPosY(), player.getPosZ());
-        }
 
-        if (!world.isRemote && slot >= 0 && slot <= 8) {
+        Minigun minigun = null;
+        if (currentItem) {
+            minigun = getMinigun(stack, player);
+            minigun.update(player.getX(), player.getY(), player.getZ());
+        }
+        if (!world.isClientSide && slot >= 0 && slot <= 8) {
             // if on hotbar, possibility of ammo replenishment via item life upgrades
+            if (minigun == null) minigun = getMinigun(stack, player);
             handleAmmoRepair(stack, world, minigun);
         }
     }
 
     private void handleAmmoRepair(ItemStack stack, World world, Minigun minigun) {
-        if (minigun.getPlayer().openContainer instanceof ContainerMinigunMagazine) {
+        if (minigun.getPlayer().containerMenu instanceof ContainerMinigunMagazine) {
             return;  // avoid potential item duping or other shenanigans
         }
         int itemLife = minigun.getUpgrades(EnumUpgrade.ITEM_LIFE);
@@ -99,9 +127,9 @@ public class ItemMinigun extends ItemPressurizable implements
             float pressure = minigun.getAirCapability().map(IAirHandler::getPressure).orElse(0f);
             for (int i = 0; i < handler.getSlots() && pressure > 0.25f; i++) {
                 ItemStack ammo = handler.getStackInSlot(i);
-                if (ammo.getItem() instanceof ItemGunAmmo && ammo.getDamage() > 0) {
+                if (ammo.getItem() instanceof ItemGunAmmo && ammo.getDamageValue() > 0) {
                     if (world.getGameTime() % (475 - itemLife * 75L) == 0) {
-                        ammo.setDamage(ammo.getDamage() - 1);
+                        ammo.setDamageValue(ammo.getDamageValue() - 1);
                         minigun.getAirCapability().ifPresent(h -> h.addAir(-(50 * itemLife)));
                         pressure = minigun.getAirCapability().map(IAirHandler::getPressure).orElse(0f);
                         repaired = true;
@@ -118,7 +146,7 @@ public class ItemMinigun extends ItemPressurizable implements
         return new MinigunItem(player, stack)
                 .setAmmoStack(ammo)
                 .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY), PneumaticValues.USAGE_ITEM_MINIGUN)
-                .setWorld(player.world);
+                .setWorld(player.level);
     }
 
     public Minigun getMinigun(ItemStack stack, PlayerEntity player) {
@@ -126,14 +154,14 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
-        ItemStack stack = player.getHeldItem(handIn);
-        if (player.isSneaking()) {
-            if (!world.isRemote && stack.getCount() == 1) {
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
+        ItemStack stack = player.getItemInHand(handIn);
+        if (player.isShiftKeyDown()) {
+            if (!world.isClientSide && stack.getCount() == 1) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
-                        return stack.getDisplayName();
+                        return stack.getHoverName();
                     }
 
                     @Override
@@ -142,19 +170,19 @@ public class ItemMinigun extends ItemPressurizable implements
                     }
                 }, buf -> ContainerPneumaticBase.putHand(buf, handIn));
             }
-            return ActionResult.resultConsume(stack);
+            return ActionResult.consume(stack);
         } else {
             MagazineHandler magazineHandler = getMagazine(stack);
             ItemStack ammo = magazineHandler.getAmmo();
             if (!ammo.isEmpty()) {
-                player.setActiveHand(handIn);
-                return ActionResult.func_233538_a_(stack, world.isRemote);
+                player.startUsingItem(handIn);
+                return ActionResult.sidedSuccess(stack, world.isClientSide);
             }
-            if (player.world.isRemote) {
-                player.playSound(SoundEvents.BLOCK_COMPARATOR_CLICK, 1f, 1f);
-                player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
+            if (player.level.isClientSide) {
+                player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
+                player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
-            return ActionResult.resultFail(stack);
+            return ActionResult.fail(stack);
         }
     }
 
@@ -166,26 +194,26 @@ public class ItemMinigun extends ItemPressurizable implements
         MagazineHandler magazineHandler = getMagazine(stack);
         ItemStack ammo = magazineHandler.getAmmo();
         if (!ammo.isEmpty()) {
-            int prevDamage = ammo.getDamage();
+            int prevDamage = ammo.getDamageValue();
             Minigun minigun = getMinigun(stack, player, ammo);
             // an item life upgrade will prevent the stack from being destroyed
             boolean usedUpAmmo = minigun.tryFireMinigun(null) && minigun.getUpgrades(EnumUpgrade.ITEM_LIFE) == 0;
             if (usedUpAmmo) ammo.setCount(0);
-            if (usedUpAmmo || ammo.getDamage() != prevDamage) {
+            if (usedUpAmmo || ammo.getDamageValue() != prevDamage) {
                 magazineHandler.save();
             }
         } else {
-            if (player.world.isRemote) {
-                player.playSound(SoundEvents.BLOCK_COMPARATOR_CLICK, 1f, 1f);
-                player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
+            if (player.level.isClientSide) {
+                player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
+                player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
-            player.stopActiveHand();
+            player.releaseUsingItem();
         }
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        return super.onItemUseFinish(stack, worldIn, entityLiving);
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+        return super.finishUsingItem(stack, worldIn, entityLiving);
     }
 
     @Override
@@ -200,7 +228,7 @@ public class ItemMinigun extends ItemPressurizable implements
 
     @Override
     public String getUpgradeAcceptorTranslationKey() {
-        return getTranslationKey();
+        return getDescriptionId();
     }
 
     @Override
@@ -223,7 +251,7 @@ public class ItemMinigun extends ItemPressurizable implements
 
     @Override
     public ITextComponent getInventoryHeader() {
-        return xlate("pneumaticcraft.gui.tooltip.gunAmmo.loaded").mergeStyle(TextFormatting.GREEN);
+        return xlate("pneumaticcraft.gui.tooltip.gunAmmo.loaded").withStyle(TextFormatting.GREEN);
     }
 
     @Override
@@ -234,7 +262,7 @@ public class ItemMinigun extends ItemPressurizable implements
     @Override
     public void onShiftScrolled(PlayerEntity player, boolean forward, Hand hand) {
         // cycle the locked slot to the next valid ammo type (assuming any valid ammo)
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() instanceof ItemMinigun) {
             MagazineHandler handler = getMagazine(stack);
             int newSlot = Math.max(0, getLockedSlot(stack));
@@ -262,6 +290,26 @@ public class ItemMinigun extends ItemPressurizable implements
             }
         }
         return -1;
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onLivingAttack(LivingAttackEvent event) {
+            if (event.getEntityLiving() instanceof PlayerEntity
+                    && event.getSource() instanceof EntityDamageSource
+                    && ((EntityDamageSource) event.getSource()).isThorns()) {
+                // don't take thorns damage when attacking with minigun (it applies direct damage, but it's effectively ranged...)
+                PlayerEntity player = (PlayerEntity) event.getEntityLiving();
+                ItemStack stack = player.getMainHandItem();
+                if (stack.getItem() instanceof ItemMinigun) {
+                    Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
+                    if (minigun != null && minigun.getMinigunSpeed() >= Minigun.MAX_GUN_SPEED) {
+                        event.setCanceled(true);
+                    }
+                }
+            }
+        }
     }
 
     public static class MagazineHandler extends BaseItemStackHandler {
@@ -335,8 +383,8 @@ public class ItemMinigun extends ItemPressurizable implements
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            if (!player.world.isRemote) {
-                NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundCategory.PLAYERS, player.getPosition(), volume, pitch, false), player.world, player.getPosition());
+            if (!player.level.isClientSide) {
+                NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundCategory.PLAYERS, player.blockPosition(), volume, pitch, false), player.level, player.blockPosition());
             }
         }
 

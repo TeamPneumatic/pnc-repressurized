@@ -43,7 +43,7 @@ public class RenderedItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
+    public boolean useAmbientOcclusion() {
         return false;
     }
 
@@ -53,18 +53,18 @@ public class RenderedItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isSideLit() {
+    public boolean usesBlockLight() {
         return false;
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
+    public boolean isCustomRenderer() {
         return true;
     }
 
     @Override
-    public TextureAtlasSprite getParticleTexture() {
-        return bakedBaseModel.getParticleTexture();
+    public TextureAtlasSprite getParticleIcon() {
+        return bakedBaseModel.getParticleIcon();
     }
 
     @Override
@@ -94,12 +94,12 @@ public class RenderedItemModel implements IDynamicBakedModel {
 
         @Override
         public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
-            return new RenderedItemModel(baseModel.bakeModel(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
+            return new RenderedItemModel(baseModel.bake(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override
         public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<com.mojang.datafixers.util.Pair<String, String>> missingTextureErrors) {
-            return baseModel.getTextures(modelGetter, missingTextureErrors);
+            return baseModel.getMaterials(modelGetter, missingTextureErrors);
         }
     }
 
@@ -112,7 +112,7 @@ public class RenderedItemModel implements IDynamicBakedModel {
 
         @Override
         public Geometry read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-            BlockModel baseModel = deserializationContext.deserialize(JSONUtils.getJsonObject(modelContents, "base_model"), BlockModel.class);
+            BlockModel baseModel = deserializationContext.deserialize(JSONUtils.getAsJsonObject(modelContents, "base_model"), BlockModel.class);
             return new Geometry(baseModel);
         }
     }

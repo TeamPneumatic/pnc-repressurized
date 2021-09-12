@@ -67,14 +67,14 @@ public enum FuelRegistry implements IFuelRegistry {
         for (FuelQualityRecipe recipe : PneumaticCraftRecipeType.FUEL_QUALITY.getRecipes(world).values()) {
             res.addAll(recipe.getFuel().getFluidStacks().stream()
                     .map(FluidStack::getFluid)
-                    .filter(f -> f.isSource(f.getDefaultState()))
+                    .filter(f -> f.isSource(f.defaultFluidState()))
                     .collect(Collectors.toList()));
         }
 
         // fluids tags added by code
         fuelTags.forEach((tag, entry) -> {
             if (entry.mLperBucket > 0) {
-                List<Fluid> l = tag.getAllElements().stream().filter(f -> f.isSource(f.getDefaultState())).collect(Collectors.toList());
+                List<Fluid> l = tag.getValues().stream().filter(f -> f.isSource(f.defaultFluidState())).collect(Collectors.toList());
                 res.addAll(l);
             }
         });

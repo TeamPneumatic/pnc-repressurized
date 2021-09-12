@@ -1,18 +1,16 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
-import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
-import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.item.ItemSeismicSensor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.recipes.machine.*;
-import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
-import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
+import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
+import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
+import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
@@ -36,12 +34,12 @@ import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements IRecipeType<T> {
     private static final List<PneumaticCraftRecipeType<? extends PneumaticCraftRecipe>> types = new ArrayList<>();
 
-    public static final PneumaticCraftRecipeType<AmadronOffer> AMADRON_OFFERS
+    public static final PneumaticCraftRecipeType<AmadronRecipe> AMADRON_OFFERS
             = registerType(PneumaticCraftRecipeTypes.AMADRON_OFFERS);
     public static final PneumaticCraftRecipeType<AssemblyRecipe> ASSEMBLY_LASER
             = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_LASER);
@@ -49,21 +47,21 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL);
     public static final PneumaticCraftRecipeType<AssemblyRecipe> ASSEMBLY_DRILL_LASER
             = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL_LASER);
-    public static final PneumaticCraftRecipeType<ExplosionCraftingRecipeImpl> EXPLOSION_CRAFTING
+    public static final PneumaticCraftRecipeType<ExplosionCraftingRecipe> EXPLOSION_CRAFTING
             = registerType(PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING);
-    public static final PneumaticCraftRecipeType<HeatFrameCoolingRecipeImpl> HEAT_FRAME_COOLING
+    public static final PneumaticCraftRecipeType<HeatFrameCoolingRecipe> HEAT_FRAME_COOLING
             = registerType(PneumaticCraftRecipeTypes.HEAT_FRAME_COOLING);
-    public static final PneumaticCraftRecipeType<PressureChamberRecipeImpl> PRESSURE_CHAMBER
+    public static final PneumaticCraftRecipeType<PressureChamberRecipe> PRESSURE_CHAMBER
             = registerType(PneumaticCraftRecipeTypes.PRESSURE_CHAMBER);
-    public static final PneumaticCraftRecipeType<RefineryRecipeImpl> REFINERY
+    public static final PneumaticCraftRecipeType<RefineryRecipe> REFINERY
             = registerType(PneumaticCraftRecipeTypes.REFINERY);
-    public static final PneumaticCraftRecipeType<ThermoPlantRecipeImpl> THERMO_PLANT
+    public static final PneumaticCraftRecipeType<ThermoPlantRecipe> THERMO_PLANT
             = registerType(PneumaticCraftRecipeTypes.THERMO_PLANT);
-    public static final PneumaticCraftRecipeType<FluidMixerRecipeImpl> FLUID_MIXER
+    public static final PneumaticCraftRecipeType<FluidMixerRecipe> FLUID_MIXER
             = registerType(PneumaticCraftRecipeTypes.FLUID_MIXER);
-    public static final PneumaticCraftRecipeType<FuelQualityRecipeImpl> FUEL_QUALITY
+    public static final PneumaticCraftRecipeType<FuelQualityRecipe> FUEL_QUALITY
             = registerType(PneumaticCraftRecipeTypes.FUEL_QUALITY);
-    public static final PneumaticCraftRecipeType<HeatPropertiesRecipeImpl> HEAT_PROPERTIES
+    public static final PneumaticCraftRecipeType<HeatPropertiesRecipe> HEAT_PROPERTIES
             = registerType(PneumaticCraftRecipeTypes.HEAT_PROPERTIES);
 
     private final Map<ResourceLocation, T> cachedRecipes = new HashMap<>();
@@ -108,6 +106,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         FuelRegistry.getInstance().clearCachedFuelFluids();
         ItemSeismicSensor.clearCachedFluids();
         BlockHeatProperties.getInstance().clear();
+        CraftingRecipeCache.INSTANCE.clear();
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {
@@ -115,7 +114,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             // we should pretty much always have a world, but use the overworld as a fallback
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server != null) {
-                world = server.getWorld(World.OVERWORLD);
+                world = server.getLevel(World.OVERWORLD);
             }
             if (world == null) {
                 // still no world?  oh well
@@ -126,7 +125,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
 
         if (cachedRecipes.isEmpty()) {
             RecipeManager recipeManager = world.getRecipeManager();
-            List<T> recipes = recipeManager.getRecipes(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), world);
+            List<T> recipes = recipeManager.getRecipesFor(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), world);
             recipes.forEach(recipe -> cachedRecipes.put(recipe.getId(), recipe));
 
             if (this == ASSEMBLY_DRILL_LASER) {
@@ -161,7 +160,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
                 if (ServerLifecycleHooks.getCurrentServer() != null) {
                     NetworkHandler.sendToAll(new PacketClearRecipeCache());
                 }
-            }, gameExecutor).thenCompose(stage::markCompleteAwaitingOthers);
+            }, gameExecutor).thenCompose(stage::wait);
         }
     }
 }

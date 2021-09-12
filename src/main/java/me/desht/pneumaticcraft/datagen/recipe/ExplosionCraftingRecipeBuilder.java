@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ExplosionCraftingRecipeBuilder extends PneumaticCraftRecipeBuilder<ExplosionCraftingRecipeBuilder> {
     private final Ingredient input;
@@ -32,8 +32,8 @@ public class ExplosionCraftingRecipeBuilder extends PneumaticCraftRecipeBuilder<
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            json.add("input", input.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            json.add("input", input.toJson());
             json.add("results", SerializerHelper.serializeItemStacks(outputs));
             json.addProperty("loss_rate", lossRate);
         }

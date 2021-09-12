@@ -33,7 +33,7 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRe
     JEIAssemblyControllerCategory() {
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 5, 11, 158, 98);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()));
-        localizedName = I18n.format(ModBlocks.ASSEMBLY_CONTROLLER.get().getTranslationKey());
+        localizedName = I18n.get(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId());
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 173, 0, 24, 17);
         progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
@@ -67,9 +67,9 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRe
     public void setIngredients(AssemblyRecipe recipe, IIngredients ingredients) {
         List<Ingredient> input = new ArrayList<>();
         input.add(recipe.getInput());
-        input.add(Ingredient.fromItems(ItemAssemblyProgram.fromProgramType(recipe.getProgramType())));
+        input.add(Ingredient.of(ItemAssemblyProgram.fromProgramType(recipe.getProgramType())));
         Arrays.stream(getMachinesFromEnum(AssemblyProgram.fromRecipe(recipe).getRequiredMachines()))
-                .map(Ingredient::fromStacks)
+                .map(Ingredient::of)
                 .forEach(input::add);
         ingredients.setInputIngredients(input);
         ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput());
@@ -95,9 +95,9 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRe
     @Override
     public void draw(AssemblyRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 68, 65);
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        fontRenderer.drawString(matrixStack, "Required Machines", 5, 15, 0xFF404040);
-        fontRenderer.drawString(matrixStack, "Prog.", 129, 9, 0xFF404040);
+        FontRenderer fontRenderer = Minecraft.getInstance().font;
+        fontRenderer.draw(matrixStack, "Required Machines", 5, 15, 0xFF404040);
+        fontRenderer.draw(matrixStack, "Prog.", 129, 9, 0xFF404040);
     }
 
     private ItemStack[] getMachinesFromEnum(AssemblyProgram.EnumMachine[] requiredMachines) {

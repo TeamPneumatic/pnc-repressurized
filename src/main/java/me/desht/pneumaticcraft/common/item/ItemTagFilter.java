@@ -27,17 +27,17 @@ public class ItemTagFilter extends Item implements ITagFilteringItem {
     private static final String NBT_TAG_LIST = "TagList";
 
     public ItemTagFilter() {
-        super(ModItems.defaultProps().maxStackSize(1));
+        super(ModItems.defaultProps().stacksTo(1));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (worldIn != null) {
-            tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").mergeStyle(TextFormatting.YELLOW));
+            tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(TextFormatting.YELLOW));
             for (ResourceLocation rl : getConfiguredTagList(stack)) {
-                tooltip.add(GuiConstants.bullet().appendString(rl.toString()).mergeStyle(TextFormatting.GOLD));
+                tooltip.add(GuiConstants.bullet().append(rl.toString()).withStyle(TextFormatting.GOLD));
             }
         }
     }

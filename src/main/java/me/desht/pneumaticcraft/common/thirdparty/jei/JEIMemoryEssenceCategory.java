@@ -87,18 +87,18 @@ public class JEIMemoryEssenceCategory implements IRecipeCategory<JEIMemoryEssenc
         recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
             String tooltipKey = recipe.getTooltipKey(slotIndex);
             if (!tooltipKey.isEmpty()) {
-                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(TextFormatting.GREEN + I18n.format(tooltipKey)));
+                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(TextFormatting.GREEN + I18n.get(tooltipKey)));
             }
         });
     }
 
     @Override
     public void draw(MemoryEssenceRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-        FontRenderer fr = Minecraft.getInstance().fontRenderer;
+        FontRenderer fr = Minecraft.getInstance().font;
         int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
         String s = "1 XP = " + ratio + " mB";
-        int w = fr.getStringWidth(s);
-        Minecraft.getInstance().fontRenderer.drawString(matrixStack, s, (background.getWidth() - w) / 2f, 0, 0x404040);
+        int w = fr.width(s);
+        Minecraft.getInstance().font.draw(matrixStack, s, (background.getWidth() - w) / 2f, 0, 0x404040);
     }
 
     static Collection<MemoryEssenceRecipe> getAllRecipes() {

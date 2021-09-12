@@ -34,7 +34,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
 
             @Override
             protected boolean evaluate(BlockPos pos) {
-                TileEntity te = drone.world().getTileEntity(pos);
+                TileEntity te = drone.world().getBlockEntity(pos);
                 int count = te == null ? countFluid(drone.world(), pos) : countFluid(te);
                 maybeRecordMeasuredVal(drone, count);
                 return ((ICondition) progWidget).getOperator().evaluate(count, ((ICondition) progWidget).getRequiredCount());
@@ -42,7 +42,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
 
             private int countFluid(World world, BlockPos pos) {
                 FluidState state = world.getFluidState(pos);
-                if (state.getFluid() != Fluids.EMPTY && ProgWidgetLiquidFilter.isLiquidValid(state.getFluid(), progWidget, 1)) {
+                if (state.getType() != Fluids.EMPTY && ProgWidgetLiquidFilter.isLiquidValid(state.getType(), progWidget, 1)) {
                     return 1000;
                 } else {
                     return 0;

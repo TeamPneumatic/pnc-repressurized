@@ -24,7 +24,7 @@ public class DroneMinigunLayer extends LayerRenderer<EntityDroneBase, ModelDrone
         if (entityIn instanceof EntityDrone) {
             EntityDrone drone = (EntityDrone) entityIn;
             if (drone.hasMinigun()) {
-                modelDroneMinigun.renderMinigun(matrixStackIn, bufferIn, packedLightIn, LivingRenderer.getPackedOverlay(entityIn, 0.0F), drone.getMinigun(), partialTicks, true);
+                modelDroneMinigun.renderMinigun(matrixStackIn, bufferIn, packedLightIn, LivingRenderer.getOverlayCoords(entityIn, 0.0F), drone.getMinigun(), partialTicks, true);
                 renderMinigunTracers(drone, matrixStackIn, bufferIn, partialTicks);
             }
         }
@@ -32,15 +32,15 @@ public class DroneMinigunLayer extends LayerRenderer<EntityDroneBase, ModelDrone
 
     private void renderMinigunTracers(EntityDrone drone, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, float partialTicks) {
         if (RenderMinigunTracers.shouldRender(drone.getMinigun())) {
-            double x = MathHelper.lerp(partialTicks, drone.lastTickPosX, drone.getPosX());
-            double y = MathHelper.lerp(partialTicks, drone.lastTickPosY, drone.getPosY());
-            double z = MathHelper.lerp(partialTicks, drone.lastTickPosZ, drone.getPosZ());
-            matrixStackIn.push();
-            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
+            double x = MathHelper.lerp(partialTicks, drone.xOld, drone.getX());
+            double y = MathHelper.lerp(partialTicks, drone.yOld, drone.getY());
+            double z = MathHelper.lerp(partialTicks, drone.zOld, drone.getZ());
+            matrixStackIn.pushPose();
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
             matrixStackIn.translate(0, -1.5, 0);
             matrixStackIn.scale(2f, 2f, 2f);
             RenderMinigunTracers.render(drone.getMinigun(), matrixStackIn, bufferIn, x, y, z, 0.6);
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
         }
     }
 }

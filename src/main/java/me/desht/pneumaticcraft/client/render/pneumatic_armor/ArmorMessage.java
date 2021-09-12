@@ -27,7 +27,7 @@ public class ArmorMessage {
         stat.setMinimumContractedDimensions(0, 0);
         stat.setText(message);
         PlayerEntity player = ClientUtils.getClientPlayer();
-        player.world.playSound(player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.SCI_FI.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
+        player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.SCI_FI.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
     }
 
     void setDependingMessage(IGuiAnimatedStat dependingStat) {

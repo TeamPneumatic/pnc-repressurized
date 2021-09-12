@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class TileEntityDroneInterface extends TileEntity implements ITickableTileEntity, ILuaMethodProvider {
 
@@ -60,31 +60,32 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             setDrone(null);
         }
         if (drone != null) {
-            if (!getWorld().isRemote) {
+            if (!getLevel().isClientSide) {
                 if (ringSendCooldown > 0) ringSendCooldown--;
                 if (!ringSendQueue.isEmpty() && ringSendCooldown <= 0) {
                     ringSendCooldown = ringSendQueue.size() > 10 ? 1 : 5;
-                    NetworkHandler.sendToAllTracking(new PacketSpawnRing(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, drone, ringSendQueue.poll()), this);
+                    NetworkHandler.sendToAllTracking(new PacketSpawnRing(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, drone, ringSendQueue.poll()), this);
                 }
-                if (!getBlockState().get(BlockDroneInterface.CONNECTED)) {
-                    world.setBlockState(pos, getBlockState().with(BlockDroneInterface.CONNECTED, true));
+                if (!getBlockState().getValue(BlockDroneInterface.CONNECTED)) {
+                    level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockDroneInterface.CONNECTED, true));
                 }
             } else {
                 // client
-                double dx = drone.getPosX() - (getPos().getX() + 0.5);
-                double dy = drone.getPosY() - (getPos().getY() + 0.5);
-                double dz = drone.getPosZ() - (getPos().getZ() + 0.5);
+                double dx = drone.getX() - (getBlockPos().getX() + 0.5);
+                double dy = drone.getY() - (getBlockPos().getY() + 0.5);
+                double dz = drone.getZ() - (getBlockPos().getZ() + 0.5);
                 float f3 = MathHelper.sqrt(dx * dx + dz * dz);
                 rotationYaw = (float) -Math.atan2(dx, dz);
                 rotationPitch = (float) -Math.atan2(dy, f3);
             }
         } else {
-            if (!getWorld().isRemote && getBlockState().get(BlockDroneInterface.CONNECTED)) {
-                world.setBlockState(pos, getBlockState().with(BlockDroneInterface.CONNECTED, false));
+            if (!getLevel().isClientSide && getBlockState().getValue(BlockDroneInterface.CONNECTED)) {
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), TileEntityDroneInterface.this);
+                level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockDroneInterface.CONNECTED, false));
             }
         }
-        if (getWorld().isRemote) {
-            Entity e = getWorld().getEntityByID(droneId);
+        if (getLevel().isClientSide) {
+            Entity e = getLevel().getEntity(droneId);
             if (e instanceof EntityDrone) {
                 drone = (EntityDrone) e;
             } else {
@@ -96,16 +97,15 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(getPos(), 0, getUpdateTag());
+        return new SUpdateTileEntityPacket(getBlockPos(), 0, getUpdateTag());
     }
 
     @Override
     public CompoundNBT getUpdateTag() {
         CompoundNBT tag = super.getUpdateTag();
-        tag.putInt("drone",  drone != null ? drone.getEntityId() : -1);
+        tag.putInt("drone",  drone != null ? drone.getId() : -1);
         return tag;
     }
-
 
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT tag) {
@@ -116,7 +116,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
 //        handleUpdateTag(pkt.getNbtCompound());
-        droneId = pkt.getNbtCompound().getInt("drone");
+        droneId = pkt.getTag().getInt("drone");
     }
 
     private EntityDrone validateAndGetDrone() {
@@ -161,7 +161,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
-                EntityDrone drone = ModEntities.DRONE.get().create(getWorld());
+                EntityDrone drone = ModEntities.DRONE.get().create(getLevel());
                 for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
                     IProgWidget widget = IProgWidget.create(type);
                     if (widget.canBeRunByComputers(drone, getWidget())) {
@@ -177,7 +177,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 EntityDrone d = validateAndGetDrone();
-                return new Double[]{d.getPosX(), d.getPosY(), d.getPosZ()};
+                return new Double[]{d.getX(), d.getY(), d.getZ()};
             }
         });
 
@@ -253,7 +253,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
                 requireNoArgs(args);
                 Set<BlockPos> area = new HashSet<>();
                 getWidget().getArea(area);
-                NetworkHandler.sendToAllTracking(new PacketShowArea(getPos(), area), TileEntityDroneInterface.this);
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos(), area), TileEntityDroneInterface.this);
                 return null;
             }
         });
@@ -262,7 +262,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                NetworkHandler.sendToAllTracking(new PacketShowArea(getPos()), TileEntityDroneInterface.this);
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), TileEntityDroneInterface.this);
                 return null;
             }
         });
@@ -616,7 +616,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                validateAndGetDrone().setAttackTarget(null);
+                validateAndGetDrone().setTarget(null);
                 return null;
             }
         });
@@ -699,7 +699,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                return new Object[]{validateAndGetDrone().getName()};
+                return new Object[]{validateAndGetDrone().getName().getString()};
             }
         });
 
@@ -715,7 +715,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                return new Object[]{validateAndGetDrone().getOwnerUUID()};
+                return new Object[]{validateAndGetDrone().getOwnerUUID().toString()};
             }
         });
     }
@@ -733,8 +733,8 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
     public void setDrone(EntityDrone drone) {
         this.drone = drone;
         ComputerEventManager.getInstance().sendEvents(this, drone != null ? "droneConnected" : "droneDisconnected");
-        BlockState state = getWorld().getBlockState(getPos());
-        getWorld().notifyBlockUpdate(getPos(), state, state, Constants.BlockFlags.DEFAULT);
+        BlockState state = getLevel().getBlockState(getBlockPos());
+        getLevel().sendBlockUpdated(getBlockPos(), state, state, Constants.BlockFlags.DEFAULT);
     }
 
     public EntityDrone getDrone() {

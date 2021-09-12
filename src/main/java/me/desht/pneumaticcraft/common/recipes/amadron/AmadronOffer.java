@@ -8,12 +8,12 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -29,8 +29,9 @@ public class AmadronOffer extends AmadronRecipe {
     protected final AmadronTradeResource output;
     private final boolean isStaticOffer;
     private final int tradeLevel;  // determines rarity of periodic offers (1 = common, 5 = very rare)
-    final int maxStock; // max number of trades available; negative number indicates unlimited trades (or a player trade)
-    int inStock; // current number of trades available; gets reset to max when offer is shuffled in (except for player trades)
+    private final int maxStock; // max number of trades available; negative number indicates unlimited trades (or a player trade)
+
+    protected int inStock; // current number of trades available; gets reset to max when offer is shuffled in (except for player trades)
     private boolean isVillagerTrade = false;
 
     public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer, int tradeLevel, int maxStock, int inStock) {
@@ -81,8 +82,8 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     @Override
-    public String getVendor() {
-        return xlate(isVillagerTrade ? "pneumaticcraft.gui.amadron.villager" : "pneumaticcraft.gui.amadron").getString();
+    public ITextComponent getVendorName() {
+        return isVillagerTrade ? xlate("pneumaticcraft.gui.amadron.villager") : xlate("pneumaticcraft.gui.amadron");
     }
 
     @Override
@@ -90,36 +91,16 @@ public class AmadronOffer extends AmadronRecipe {
         return inStock;
     }
 
+    @Override
     public void setStock(int inStock) {
-        this.inStock = inStock;
-    }
-
-    public void addStock(int stockIncr) {
-        inStock += stockIncr;
-        if (inStock < 0) {
-            Log.warning("in-stock for " + this + " dropped to " + inStock + "? shouldn't happen!");
-            inStock = 0;
+        int max = maxStock > 0 ? maxStock : Integer.MAX_VALUE;
+        if (inStock < 0 || inStock > max) {
+            Log.warning("Amadron Offer %s: new stock %d out of range (0,%d) - clamped", this, inStock, maxStock);
         }
-    }
-
-    public AmadronOffer resetStock() {
-        // negative maxStock indicates either unlimited trades or a player trade, so leave stock levels alone
-        if (maxStock > 0) inStock = maxStock;
-        return this;
-    }
-
-    public boolean passesQuery(String query) {
-        String queryLow = query.toLowerCase();
-        return getInput().getName().toLowerCase().contains(queryLow)
-                || getOutput().getName().toLowerCase().contains(queryLow)
-                || getVendor().toLowerCase().contains(queryLow);
+        this.inStock = MathHelper.clamp(inStock, 0, max);
     }
 
     public void onTrade(int tradingAmount, String buyingPlayer) {
-    }
-
-    public boolean isRemovableBy(PlayerEntity player) {
-        return false;
     }
 
     @Override
@@ -133,7 +114,7 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     public static AmadronOffer offerFromBuf(ResourceLocation id, PacketBuffer buf) {
-        AmadronOffer offer = new AmadronOffer(id,
+        return new AmadronOffer(id,
                 AmadronTradeResource.fromPacketBuf(buf),
                 AmadronTradeResource.fromPacketBuf(buf),
                 buf.readBoolean(),
@@ -141,7 +122,6 @@ public class AmadronOffer extends AmadronRecipe {
                 buf.readVarInt(),
                 buf.readVarInt()
         );
-        return offer;
     }
 
     public JsonObject toJson(JsonObject json) {
@@ -159,9 +139,9 @@ public class AmadronOffer extends AmadronRecipe {
         return new AmadronOffer(id,
                 AmadronTradeResource.fromJson(json.getAsJsonObject("input")),
                 AmadronTradeResource.fromJson(json.getAsJsonObject("output")),
-                JSONUtils.getBoolean(json, "static", true),
-                JSONUtils.getInt(json, "level", 1),
-                JSONUtils.getInt(json, "maxStock", -1)
+                JSONUtils.getAsBoolean(json, "static", true),
+                JSONUtils.getAsInt(json, "level", 1),
+                JSONUtils.getAsInt(json, "maxStock", -1)
         );
     }
 
@@ -202,6 +182,7 @@ public class AmadronOffer extends AmadronRecipe {
         return PneumaticCraftRecipeType.AMADRON_OFFERS;
     }
 
+    @Override
     public int getMaxStock() {
         return maxStock;
     }
@@ -214,14 +195,14 @@ public class AmadronOffer extends AmadronRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
             try {
-                int max = JSONUtils.getInt(json, "maxStock", -1);
+                int max = JSONUtils.getAsInt(json, "maxStock", -1);
                 return factory.create(recipeId,
                         AmadronTradeResource.fromJson(json.getAsJsonObject("input")),
                         AmadronTradeResource.fromJson(json.getAsJsonObject("output")),
-                        JSONUtils.getBoolean(json, "static", true),
-                        JSONUtils.getInt(json, "level", 1),
+                        JSONUtils.getAsBoolean(json, "static", true),
+                        JSONUtils.getAsInt(json, "level", 1),
                         max, max
                 );
             } catch (CommandSyntaxException e) {
@@ -231,7 +212,7 @@ public class AmadronOffer extends AmadronRecipe {
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             return factory.create(recipeId,
                     AmadronTradeResource.fromPacketBuf(buffer),
                     AmadronTradeResource.fromPacketBuf(buffer),
@@ -243,7 +224,7 @@ public class AmadronOffer extends AmadronRecipe {
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

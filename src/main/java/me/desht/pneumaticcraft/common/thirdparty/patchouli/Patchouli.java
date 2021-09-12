@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.IDocsProvider;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -23,7 +23,7 @@ import vazkii.patchouli.api.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
 public class Patchouli implements IThirdParty, IDocsProvider {
@@ -42,10 +42,10 @@ public class Patchouli implements IThirdParty, IDocsProvider {
         IStateMatcher edge = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL.get(), this::validEdge);
         IStateMatcher wall = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL.get(), this::validFace);
         IStateMatcher glass = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), this::validFace);
-        IStateMatcher valve = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.get().getDefaultState().with(FACING, Direction.NORTH), this::validFace);
-        IStateMatcher valveUp = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.get().getDefaultState().with(FACING, Direction.UP), this::validFace);
-        IStateMatcher intI = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get().getDefaultState().with(FACING, Direction.EAST), this::validFace);
-        IStateMatcher intO = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get().getDefaultState().with(FACING, Direction.WEST), this::validFace);
+        IStateMatcher valve = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.get().defaultBlockState().setValue(FACING, Direction.NORTH), this::validFace);
+        IStateMatcher valveUp = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_VALVE.get().defaultBlockState().setValue(FACING, Direction.UP), this::validFace);
+        IStateMatcher intI = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get().defaultBlockState().setValue(FACING, Direction.EAST), this::validFace);
+        IStateMatcher intO = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get().defaultBlockState().setValue(FACING, Direction.WEST), this::validFace);
 
         IMultiblock pc3 = papi.makeMultiblock(new String[][] {
                         { "WWW", "WWW", "WWW" },
@@ -116,7 +116,7 @@ public class Patchouli implements IThirdParty, IDocsProvider {
 
     @Override
     public void showWidgetDocs(String path) {
-        Screen prev = Minecraft.getInstance().currentScreen;  // should be the programmer GUI
+        Screen prev = Minecraft.getInstance().screen;  // should be the programmer GUI
 
         PatchouliAPI.get().openBookEntry(PNC_BOOK, RL("programming/" + path), 1);
         if (PNC_BOOK.equals(PatchouliAPI.get().getOpenBookGui())) {
@@ -136,7 +136,7 @@ public class Patchouli implements IThirdParty, IDocsProvider {
 
     static class Util {
         static IVariable getStacks(Ingredient ingr) {
-            return IVariable.wrapList(Arrays.stream(ingr.getMatchingStacks()).map(IVariable::from).collect(Collectors.toList()));
+            return IVariable.wrapList(Arrays.stream(ingr.getItems()).map(IVariable::from).collect(Collectors.toList()));
         }
 
         public static IVariable getFluidStacks(FluidIngredient ingr) {

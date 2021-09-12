@@ -92,18 +92,18 @@ public class RenderUtils {
 //    }
 
     private static boolean drawSide(byte mask, Direction d1, Direction d2) {
-        return ((mask & 1 << d1.getIndex()) | (mask & 1 << d2.getIndex())) != 0;
+        return ((mask & 1 << d1.get3DDataValue()) | (mask & 1 << d2.get3DDataValue())) != 0;
     }
 
     public static RenderType renderFrame(MatrixStack matrixStack, IRenderTypeBuffer buffer, AxisAlignedBB aabb, float fw, float r, float g, float b, float a, int packedLightIn, boolean disableDepthTest, Direction... sides) {
         RenderType type = ModRenderTypes.getBlockFrame(disableDepthTest);
         IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getBlockFrame(disableDepthTest));
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         byte mask = 0;
         if (sides.length == 0) {
             mask = (byte) 0xFF;
         } else {
-            for (Direction d: sides) mask |= 1 << d.getIndex();
+            for (Direction d: sides) mask |= 1 << d.get3DDataValue();
         }
 
         float x1 = (float) aabb.minX;
@@ -145,35 +145,35 @@ public class RenderUtils {
 
     private static void renderOffsetAABB(Matrix4f posMat, IVertexBuilder builder, float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a, int packedLightIn) {
 
-        builder.pos(posMat, x1, y2, z1).color(r, g, b, a).normal(0, 0, -1).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y2, z1).color(r, g, b, a).normal(0, 0, -1).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y1, z1).color(r, g, b, a).normal(0, 0, -1).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x1, y1, z1).color(r, g, b, a).normal(0, 0, -1).lightmap(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y2, z1).color(r, g, b, a).normal(0, 0, -1).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y2, z1).color(r, g, b, a).normal(0, 0, -1).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y1, z1).color(r, g, b, a).normal(0, 0, -1).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y1, z1).color(r, g, b, a).normal(0, 0, -1).uv2(packedLightIn).endVertex();
 
-        builder.pos(posMat, x1, y1, z2).color(r, g, b, a).normal(0, 0, 1).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y1, z2).color(r, g, b, a).normal(0, 0, 1).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y2, z2).color(r, g, b, a).normal(0, 0, 1).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x1, y2, z2).color(r, g, b, a).normal(0, 0, 1).lightmap(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y1, z2).color(r, g, b, a).normal(0, 0, 1).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y1, z2).color(r, g, b, a).normal(0, 0, 1).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y2, z2).color(r, g, b, a).normal(0, 0, 1).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y2, z2).color(r, g, b, a).normal(0, 0, 1).uv2(packedLightIn).endVertex();
 
-        builder.pos(posMat, x1, y1, z1).color(r, g, b, a).normal(0, -1, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y1, z1).color(r, g, b, a).normal(0, -1, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y1, z2).color(r, g, b, a).normal(0, -1, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x1, y1, z2).color(r, g, b, a).normal(0, -1, 0).lightmap(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y1, z1).color(r, g, b, a).normal(0, -1, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y1, z1).color(r, g, b, a).normal(0, -1, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y1, z2).color(r, g, b, a).normal(0, -1, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y1, z2).color(r, g, b, a).normal(0, -1, 0).uv2(packedLightIn).endVertex();
 
-        builder.pos(posMat, x1, y2, z2).color(r, g, b, a).normal(0, 1, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y2, z2).color(r, g, b, a).normal(0, 1, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y2, z1).color(r, g, b, a).normal(0, 1, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x1, y2, z1).color(r, g, b, a).normal(0, 1, 0).lightmap(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y2, z2).color(r, g, b, a).normal(0, 1, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y2, z2).color(r, g, b, a).normal(0, 1, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y2, z1).color(r, g, b, a).normal(0, 1, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y2, z1).color(r, g, b, a).normal(0, 1, 0).uv2(packedLightIn).endVertex();
 
-        builder.pos(posMat, x1, y1, z2).color(r, g, b, a).normal(-1, 0, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x1, y2, z2).color(r, g, b, a).normal(-1, 0, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x1, y2, z1).color(r, g, b, a).normal(-1, 0, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x1, y1, z1).color(r, g, b, a).normal(-1, 0, 0).lightmap(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y1, z2).color(r, g, b, a).normal(-1, 0, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y2, z2).color(r, g, b, a).normal(-1, 0, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y2, z1).color(r, g, b, a).normal(-1, 0, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x1, y1, z1).color(r, g, b, a).normal(-1, 0, 0).uv2(packedLightIn).endVertex();
 
-        builder.pos(posMat, x2, y1, z1).color(r, g, b, a).normal(1, 0, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y2, z1).color(r, g, b, a).normal(1, 0, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y2, z2).color(r, g, b, a).normal(1, 0, 0).lightmap(packedLightIn).endVertex();
-        builder.pos(posMat, x2, y1, z2).color(r, g, b, a).normal(1, 0, 0).lightmap(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y1, z1).color(r, g, b, a).normal(1, 0, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y2, z1).color(r, g, b, a).normal(1, 0, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y2, z2).color(r, g, b, a).normal(1, 0, 0).uv2(packedLightIn).endVertex();
+        builder.vertex(posMat, x2, y1, z2).color(r, g, b, a).normal(1, 0, 0).uv2(packedLightIn).endVertex();
     }
 
     /**
@@ -188,12 +188,12 @@ public class RenderUtils {
         switch (facing) {
             case UP:
                 yRotation = 0;
-                matrixStack.rotate(Vector3f.XP.rotationDegrees(90f));
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees(90f));
                 matrixStack.translate(0, -1, -1);
                 break;
             case DOWN:
                 yRotation = 0;
-                matrixStack.rotate(Vector3f.XP.rotationDegrees(-90f));
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees(-90f));
                 matrixStack.translate(0, -1, 1);
                 break;
             case NORTH:
@@ -209,7 +209,7 @@ public class RenderUtils {
                 yRotation = 270;
                 break;
         }
-        matrixStack.rotate(Vector3f.YP.rotationDegrees(yRotation));
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(yRotation));
         return yRotation;
     }
 
@@ -222,23 +222,23 @@ public class RenderUtils {
     public static void renderProgressingLineGUI(MatrixStack matrixStack, ProgressingLine line, int color, float lineWidth) {
         int[] cols = decomposeColor(color);
         float progress = line.getProgress();
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+        Matrix4f posMat = matrixStack.last().pose();
+        BufferBuilder wr = Tessellator.getInstance().getBuilder();
         RenderSystem.lineWidth(lineWidth);
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-        wr.pos(posMat, line.startX, line.startY, line.startZ)
+        wr.vertex(posMat, line.startX, line.startY, line.startZ)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
-        wr.pos(posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
+        wr.vertex(posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
-        Tessellator.getInstance().draw();
+        Tessellator.getInstance().end();
     }
 
     public static void renderProgressingLine(ProgressingLine line, MatrixStack matrixStack, IVertexBuilder builder, int color) {
         int[] cols = decomposeColor(color);
         float progress = line.getProgress();
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         posF(builder, posMat, line.startX, line.startY, line.startZ)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
@@ -249,7 +249,7 @@ public class RenderUtils {
 
     public static void renderProgressingLine(ProgressingLine prev, ProgressingLine line, float partialTick, MatrixStack matrixStack, IVertexBuilder builder, int color) {
         int[] cols = decomposeColor(color);
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         float progress = line.getProgress();
         double lx1 = lerp(partialTick, line.startX, prev.startX);
         double ly1 = lerp(partialTick, line.startY, prev.startY);
@@ -266,7 +266,7 @@ public class RenderUtils {
     }
 
     public static void renderRing(ProgressingLine line, ProgressingLine lastLine, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, float partialTick, float rotationYaw, float rotationPitch, int color) {
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 
         double renderProgress = lerp(partialTick, lastLine.progress, line.progress);
         matrixStackIn.translate(
@@ -274,20 +274,20 @@ public class RenderUtils {
                 (line.endY - line.startY) * renderProgress,
                 (line.endZ - line.startZ) * renderProgress
         );
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rotationYaw - 90));
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rotationPitch));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rotationYaw - 90));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(rotationPitch));
 
         IVertexBuilder builder = bufferIn.getBuffer(ModRenderTypes.getLineLoops(1.0));
 
         int[] cols = RenderUtils.decomposeColor(0xFF000000 | color);
         double size = (1 + 4 * renderProgress) / 16;
-        Matrix4f posMat = matrixStackIn.getLast().getMatrix();
+        Matrix4f posMat = matrixStackIn.last().pose();
         for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS; i += 25) { // 25 sides is enough to look circular
             RenderUtils.posF(builder, posMat, 0f, PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size)
                     .color(cols[1], cols[2], cols[3], cols[0])
                     .endVertex();
         }
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     /**
@@ -297,8 +297,8 @@ public class RenderUtils {
      * @param matrixStack the matrix stack
      */
     public static void rotateToPlayerFacing(MatrixStack matrixStack) {
-        matrixStack.rotate(Vector3f.YP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getYaw()));
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getPitch()));
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().getXRot()));
     }
 
     public static void drawTexture(MatrixStack matrixStack, IVertexBuilder builder, int x, int y, int packedLightIn) {
@@ -306,26 +306,26 @@ public class RenderUtils {
     }
 
     public static void drawTexture(MatrixStack matrixStack, IVertexBuilder builder, int x, int y, float u1, float v1, float u2, float v2, int packedLightIn) {
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
-        builder.pos(posMat, x, y + 16, 0)
+        Matrix4f posMat = matrixStack.last().pose();
+        builder.vertex(posMat, x, y + 16, 0)
                 .color(1f, 1f, 1f, 1f)
-                .tex(u1, v2)
-                .lightmap(packedLightIn)
+                .uv(u1, v2)
+                .uv2(packedLightIn)
                 .endVertex();
-        builder.pos(posMat, x + 16, y + 16, 0)
+        builder.vertex(posMat, x + 16, y + 16, 0)
                 .color(1f, 1f, 1f, 1f)
-                .tex(u2, v2)
-                .lightmap(packedLightIn)
+                .uv(u2, v2)
+                .uv2(packedLightIn)
                 .endVertex();
-        builder.pos(posMat, x + 16, y, 0)
+        builder.vertex(posMat, x + 16, y, 0)
                 .color(1f, 1f, 1f, 1f)
-                .tex(u2, v1)
-                .lightmap(packedLightIn)
+                .uv(u2, v1)
+                .uv2(packedLightIn)
                 .endVertex();
-        builder.pos(posMat, x, y, 0)
+        builder.vertex(posMat, x, y, 0)
                 .color(1f, 1f, 1f, 1f)
-                .tex(u1, v1)
-                .lightmap(packedLightIn)
+                .uv(u1, v1)
+                .uv2(packedLightIn)
                 .endVertex();
     }
 
@@ -339,34 +339,34 @@ public class RenderUtils {
      * @return the vertex builder, for method chaining
      */
     public static IVertexBuilder posF(IVertexBuilder builder, Matrix4f posMat, double x, double y, double z) {
-        return builder.pos(posMat, (float)x, (float)y, (float)z);
+        return builder.vertex(posMat, (float)x, (float)y, (float)z);
     }
 
     public static void finishBuffer(IRenderTypeBuffer buffer, RenderType type) {
         if (buffer instanceof IRenderTypeBuffer.Impl) {
             RenderSystem.disableDepthTest();
-            ((IRenderTypeBuffer.Impl) buffer).finish(type);
+            ((IRenderTypeBuffer.Impl) buffer).endBatch(type);
         }
     }
 
     public static void renderWithTypeAndFinish(MatrixStack matrixStack, IRenderTypeBuffer buffer, RenderType type, BiConsumer<Matrix4f, IVertexBuilder> consumer) {
         // use when drawing from RenderWorldLastEvent
-        consumer.accept(matrixStack.getLast().getMatrix(), buffer.getBuffer(type));
+        consumer.accept(matrixStack.last().pose(), buffer.getBuffer(type));
         finishBuffer(buffer, type);
     }
 
     public static void renderWithType(MatrixStack matrixStack, IRenderTypeBuffer buffer, RenderType type, BiConsumer<Matrix4f, IVertexBuilder> consumer) {
         // use anywhere else (TER, entity renderer etc.)
-        consumer.accept(matrixStack.getLast().getMatrix(), buffer.getBuffer(type));
+        consumer.accept(matrixStack.last().pose(), buffer.getBuffer(type));
     }
 
     public static void renderString3d(String str, float x, float y, int color, MatrixStack matrixStack, IRenderTypeBuffer buffer) {
-        FontRenderer fr = Minecraft.getInstance().fontRenderer;
-        fr.renderString(str, x, y, color, false, matrixStack.getLast().getMatrix(), buffer, false, 0, FULL_BRIGHT);
+        FontRenderer fr = Minecraft.getInstance().font;
+        fr.drawInBatch(str, x, y, color, false, matrixStack.last().pose(), buffer, false, 0, FULL_BRIGHT);
     }
 
     public static void renderString3d(String str, float x, float y, int color, MatrixStack matrixStack, IRenderTypeBuffer buffer, boolean dropShadow, boolean disableDepthTest) {
-        FontRenderer fr = Minecraft.getInstance().fontRenderer;
-        fr.renderString(str, x, y, color, dropShadow, matrixStack.getLast().getMatrix(), buffer, disableDepthTest, 0, FULL_BRIGHT);
+        FontRenderer fr = Minecraft.getInstance().font;
+        fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest, 0, FULL_BRIGHT);
     }
 }

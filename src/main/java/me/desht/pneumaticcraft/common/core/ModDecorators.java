@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.worldgen.LakeOil;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.world.gen.placement.ChanceConfig;
 import net.minecraft.world.gen.placement.Placement;
 import net.minecraftforge.fml.RegistryObject;

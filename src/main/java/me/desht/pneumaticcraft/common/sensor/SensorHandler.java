@@ -124,7 +124,7 @@ public class SensorHandler implements ISensorRegistry {
     private String getUpgradePrefix(ISensorSetting sensor) {
         List<EnumUpgrade> upgrades = new ArrayList<>(sensor.getRequiredUpgrades());
 
-        upgrades.sort(Comparator.comparing(upgrade -> I18n.format(upgrade.getName())));
+        upgrades.sort(Comparator.comparing(upgrade -> I18n.get(upgrade.getName())));
 
         StringBuilder ret = new StringBuilder();
         for (int i = 0; i < upgrades.size(); i++) {
@@ -257,7 +257,7 @@ public class SensorHandler implements ISensorRegistry {
 
         @Override
         public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity te = world.getBlockEntity(pos);
             if (te instanceof TileEntityUniversalSensor) {
                 TileEntityUniversalSensor teUs = (TileEntityUniversalSensor) te;
                 Set<BlockPos> positions = teUs.getGPSPositions();

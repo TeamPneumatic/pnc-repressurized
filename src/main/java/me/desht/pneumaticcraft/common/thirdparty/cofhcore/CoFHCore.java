@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.common.item.IPressurizableItem;
+import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
@@ -16,7 +16,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CoFHCore implements IThirdParty {
     static Enchantment holdingEnchantment = null;
@@ -38,18 +38,18 @@ public class CoFHCore implements IThirdParty {
             holdingEnchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation("cofh_core", "holding"));
             if (holdingEnchantment != null) {
                 PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(
-                        (stack, oldVolume) -> oldVolume * (1 + EnchantmentHelper.getEnchantmentLevel(holdingEnchantment, stack))
+                        (stack, oldVolume) -> oldVolume * (1 + EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack))
                 );
             }
         }
     }
 
     public static int getHoldingUpgrades(ItemStack stack) {
-        return holdingEnchantment == null ? 0 : EnchantmentHelper.getEnchantmentLevel(holdingEnchantment, stack);
+        return holdingEnchantment == null ? 0 : EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack);
     }
 
     public static ITextComponent holdingEnchantmentName(int level) {
-        return holdingEnchantment == null ? StringTextComponent.EMPTY : holdingEnchantment.getDisplayName(level);
+        return holdingEnchantment == null ? StringTextComponent.EMPTY : holdingEnchantment.getFullname(level);
     }
 
     private static boolean versionOK() {

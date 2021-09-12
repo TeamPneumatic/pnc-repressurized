@@ -14,14 +14,14 @@ import net.minecraft.world.World;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackEntryMisc implements IBlockTrackEntry {
     private static final ResourceLocation ID = RL("block_tracker.module.misc");
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
-        return state.getBlock().isIn(PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC);
+        return state.getBlock().is(PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC);
     }
 
     @Override

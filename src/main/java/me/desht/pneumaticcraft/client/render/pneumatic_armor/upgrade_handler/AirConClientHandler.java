@@ -11,11 +11,12 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.AirConHandler;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
-public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler {
+public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<AirConHandler> {
     private static final int MAX_AC = 20;
 
     public static int deltaTemp;  // set by packet from server
@@ -36,7 +37,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     public void tickClient(ICommonArmorHandler armorHandler) {
         super.tickClient(armorHandler);
 
-        if ((armorHandler.getPlayer().world.getGameTime() & 0x3) == 0) {
+        if ((armorHandler.getPlayer().level.getGameTime() & 0x3) == 0) {
             if (currentAC < deltaTemp)
                 currentAC++;
             else if (currentAC > deltaTemp)
@@ -49,7 +50,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
                     + Strings.repeat("|", Math.abs(ac))
                     + TextFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));
-            acStat.setTitle(new StringTextComponent("A/C: " + bar).mergeStyle(TextFormatting.YELLOW));
+            acStat.setTitle(new StringTextComponent("A/C: " + bar).withStyle(TextFormatting.YELLOW));
             acStat.setBackgroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }

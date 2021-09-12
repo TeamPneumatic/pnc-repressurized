@@ -2,9 +2,13 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.BlockTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -17,8 +21,8 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -33,24 +37,26 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<BlockTrackerHandler> {
     static final int BLOCK_TRACKING_RANGE = 30;
     private static final int HARD_MAX_BLOCKS_PER_TICK = 50000;
 
-    private final Map<BlockPos, RenderBlockTarget> blockTargets = new HashMap<>();
+    private final Map<BlockPos, RenderBlockTarget> blockTargets = new Object2ObjectOpenHashMap<>();
     private IGuiAnimatedStat blockTrackInfo;
-    private final Map<ResourceLocation, Integer> blockTypeCount = new HashMap<>();
-    private final Map<ResourceLocation, Integer> blockTypeCountPartial = new HashMap<>();
+    private final Object2IntMap<ResourceLocation> blockTypeCount = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<ResourceLocation> blockTypeCountPartial = new Object2IntOpenHashMap<>();
     private int xOff = 0, yOff = 0, zOff = 0;
     private RenderBlockTarget focusedTarget = null;
     private Direction focusedFace = null;
@@ -67,12 +73,12 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         long now = System.nanoTime();
 
         PlayerEntity player = armorHandler.getPlayer();
-        World world = armorHandler.getPlayer().world;
+        World world = armorHandler.getPlayer().level;
 
         BlockPos.Mutable pos = new BlockPos.Mutable();
         for (int i = 0; i < HARD_MAX_BLOCKS_PER_TICK; i++) {
             // 1% of a tick = 500,000ns
-            if ((i & 0xff) == 0 && System.nanoTime() - now > PNCConfig.Client.Armor.blockTrackerMaxTimePerTick * 500000) {
+            if ((i & 0xff) == 0 && System.nanoTime() - now > PNCConfig.Client.Armor.blockTrackerMaxTimePerTick * 500_000L) {
                 break;
             }
 
@@ -80,22 +86,19 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
             if (!world.isAreaLoaded(pos, 0)) break;
 
-            if (world.isAirBlock(pos)) continue;
+            if (world.isEmptyBlock(pos)) continue;
 
-            TileEntity te = world.getTileEntity(pos);
-
-            IArmorUpgradeClientHandler searchHandler = ArmorUpgradeClientRegistry.getInstance().getClientHandler(ArmorUpgradeRegistry.getInstance().searchHandler);
+            TileEntity te = world.getBlockEntity(pos);
 
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(world, pos, te))) {
                 if (te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
-                    ((SearchClientHandler) searchHandler).checkInventoryForItems(te, null, WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler));
+                    SearchClientHandler searchHandler = ArmorUpgradeClientRegistry.getInstance()
+                            .getClientHandler(ArmorUpgradeRegistry.getInstance().searchHandler, SearchClientHandler.class);
+                    searchHandler.checkInventoryForItems(te, null, WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler));
                 }
                 List<IBlockTrackEntry> entries = BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te);
                 if (!entries.isEmpty()) {
-                    entries.forEach(entry -> {
-                        ResourceLocation k = entry.getEntryID();
-                        blockTypeCountPartial.put(k, blockTypeCountPartial.getOrDefault(k, 0) + 1);
-                    });
+                    entries.forEach(entry -> blockTypeCountPartial.mergeInt(entry.getEntryID(), 1, Integer::sum));
 
                     // there's at least one tracker type relevant to this blockpos
                     RenderBlockTarget blockTarget = blockTargets.get(pos);
@@ -103,9 +106,9 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                         // we already have a tracker active for this pos
                         blockTarget.ticksExisted = Math.abs(blockTarget.ticksExisted); // cancel possible "lost target" status
                         blockTarget.setTileEntity(te);
-                    } else if (pos.distanceSq(player.getPosition()) < blockTrackRangeSq) {
+                    } else if (pos.distSqr(player.blockPosition()) < blockTrackRangeSq) {
                         // no tracker currently active for this pos - add a new one
-                        addBlockTarget(new RenderBlockTarget(world, player, pos.toImmutable(), te, this));
+                        addBlockTarget(new RenderBlockTarget(world, player, pos.immutable(), te, this));
                     }
                 }
             }
@@ -116,8 +119,6 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         processTrackerEntries(player, blockTrackRange);
 
         updateTrackerText();
-
-        int nTargets = blockTargets.size();
     }
 
     private void checkBlockFocus(PlayerEntity player, int blockTrackRange) {
@@ -125,16 +126,17 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         focusedFace = null;
         Vector3d eyes = player.getEyePosition(1.0f);
         Vector3d v = eyes;
-        Vector3d lookVec = player.getLookVec();
+        Vector3d lookVec = player.getLookAngle().scale(0.25);  // scale down to minimise clipping across a corner and missing the block
+        BlockPos.Mutable checkPos = new BlockPos.Mutable();
         for (int i = 0; i < blockTrackRange * 4; i++) {
-            v = v.add(lookVec.scale(0.25));  // scale down to minimise clipping across a corner and missing the block
-            BlockPos checkPos = new BlockPos(v.x, v.y, v.z);
+            v = v.add(lookVec);
+            checkPos.set(v.x, v.y, v.z);
             if (blockTargets.containsKey(checkPos)) {
-                BlockState state = player.world.getBlockState(checkPos);
-                BlockRayTraceResult brtr = state.getShape(player.world, checkPos).rayTrace(eyes, v, checkPos);
+                BlockState state = player.level.getBlockState(checkPos);
+                BlockRayTraceResult brtr = state.getShape(player.level, checkPos).clip(eyes, v, checkPos);
                 if (brtr != null && brtr.getType() == RayTraceResult.Type.BLOCK) {
                     focusedTarget = blockTargets.get(checkPos);
-                    focusedFace = brtr.getFace();
+                    focusedFace = brtr.getDirection();
                     break;
                 }
             }
@@ -228,12 +230,12 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 break;
         }
-        pos.setPos(player.getPosX() + xOff, MathHelper.clamp(player.getPosY() + yOff, 0, 255), player.getPosZ() + zOff);
+        pos.set(player.getX() + xOff, MathHelper.clamp(player.getY() + yOff, 0, 255), player.getZ() + zOff);
     }
 
     private void updateBlockTypeCounts() {
         blockTypeCount.clear();
-        blockTypeCountPartial.forEach(blockTypeCount::put);
+        blockTypeCount.putAll(blockTypeCountPartial);
         blockTypeCountPartial.clear();
     }
 
@@ -256,7 +258,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             blockTarget.tick();
 
             BlockPos pos = blockTarget.getPos();
-            if (player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) > rangeSq || !blockTarget.isTargetStillValid()) {
+            if (player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) > rangeSq || !blockTarget.isTargetStillValid()) {
                 if (blockTarget.ticksExisted > 0) {
                     blockTarget.ticksExisted = -100;
                 } else if (blockTarget.ticksExisted == -1) {
@@ -268,24 +270,22 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     private void updateTrackerText() {
-
         if (focusedTarget != null) {
             blockTrackInfo.setTitle(xlate("pneumaticcraft.armor.upgrade.block_tracker"));
-            blockTrackInfo.setText(focusedTarget.stat.getTitle());
+            blockTrackInfo.setText(focusedTarget.getTitle());
         } else {
             blockTrackInfo.setTitle(xlate("pneumaticcraft.blockTracker.info.trackedBlocks"));
 
             List<ITextComponent> textList = new ArrayList<>();
             blockTypeCount.forEach((k, v) -> {
                 if (v > 0 && WidgetKeybindCheckBox.get(k).checked) {
-                    textList.add(new StringTextComponent(v + " ").append(xlate(ArmorUpgradeRegistry.getStringKey(k))));
+                    textList.add(xlate("pneumaticcraft.message.misc.countedItem", v, xlate(ArmorUpgradeRegistry.getStringKey(k))));
                 }
             });
 
-            if (textList.size() == 0) textList.add(xlate("pneumaticcraft.blockTracker.info.noTrackedBlocks"));
+            if (textList.isEmpty()) textList.add(xlate("pneumaticcraft.blockTracker.info.noTrackedBlocks"));
             blockTrackInfo.setText(textList);
         }
-
     }
 
     private void addBlockTarget(RenderBlockTarget blockTarget) {
@@ -306,7 +306,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -335,9 +335,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     public void hack() {
-        for (RenderBlockTarget target : blockTargets.values()) {
-            target.hack();
-        }
+        blockTargets.values().forEach(RenderBlockTarget::hack);
     }
 
     public RenderBlockTarget getTargetForCoord(BlockPos pos) {

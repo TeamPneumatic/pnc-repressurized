@@ -13,7 +13,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableGuardian implements IHackableEntity {
@@ -51,7 +51,7 @@ public class HackableGuardian implements IHackableEntity {
                 .forEach(tasks::removeGoal);
 
         if (entity instanceof ElderGuardianEntity) {
-            player.removeActivePotionEffect(Effects.MINING_FATIGUE);
+            player.removeEffectNoUpdate(Effects.DIG_SLOWDOWN);
         }
     }
 

@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -30,13 +30,13 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
     public ContainerLogistics(ContainerType<?> containerType, int i, PlayerInventory playerInventory, int entityId) {
         super(containerType, i, playerInventory);
 
-        World world = playerInventory.player.world;
+        World world = playerInventory.player.level;
         if (entityId == -1) {
             // opening container from held item; no in-world entity so fake one up from the held item NBT
             this.logistics = EntityLogisticsFrame.fromItemStack(world, playerInventory.player, getHeldLogisticsFrame(playerInventory.player));
             this.itemContainer = true;
         } else {
-            Entity e = world.getEntityByID(entityId);
+            Entity e = world.getEntity(entityId);
             if (e instanceof EntityLogisticsFrame) {
                 this.logistics = (EntityLogisticsFrame) e;
             } else {
@@ -64,10 +64,10 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
     }
 
     private ItemStack getHeldLogisticsFrame(PlayerEntity player) {
-        if (player.getHeldItemMainhand().getItem() instanceof ItemLogisticsFrame) {
-            return player.getHeldItemMainhand();
-        } else if (player.getHeldItem(Hand.OFF_HAND).getItem() instanceof ItemLogisticsFrame) {
-            return player.getHeldItem(Hand.OFF_HAND);
+        if (player.getMainHandItem().getItem() instanceof ItemLogisticsFrame) {
+            return player.getMainHandItem();
+        } else if (player.getItemInHand(Hand.OFF_HAND).getItem() instanceof ItemLogisticsFrame) {
+            return player.getItemInHand(Hand.OFF_HAND);
         } else {
             return ItemStack.EMPTY;
         }
@@ -86,7 +86,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return logistics != null && logistics.isValid();
     }
 
@@ -94,26 +94,26 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
      * Called when the container is closed. If configuring a logistics frame in-hand, update its NBT now.
      */
     @Override
-    public void onContainerClosed(PlayerEntity player) {
-        if (itemContainer && logistics != null && !player.getEntityWorld().isRemote) {
+    public void removed(PlayerEntity player) {
+        if (itemContainer && logistics != null && !player.getCommandSenderWorld().isClientSide) {
             syncSemiblockItemFromClient(player, null);
         }
     }
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity player, int slotIndex) {
-        Slot srcSlot = inventorySlots.get(slotIndex);
-        if (slotIndex >= playerSlotsStart && srcSlot != null && srcSlot.getHasStack()) {
+    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+        Slot srcSlot = slots.get(slotIndex);
+        if (slotIndex >= playerSlotsStart && srcSlot != null && srcSlot.hasItem()) {
             // shift-click from player inventory into filter
-            ItemStack stackInSlot = srcSlot.getStack();
+            ItemStack stackInSlot = srcSlot.getItem();
             for (int i = 0; i < 27; i++) {
-                Slot slot = inventorySlots.get(i);
-                if (!slot.getHasStack()) {
+                Slot slot = slots.get(i);
+                if (!slot.hasItem()) {
                     ItemStack s = logistics.canFilterStack() ?
                             stackInSlot.copy() :
                             ItemHandlerHelper.copyStackWithSize(stackInSlot, 1);
-                    slot.putStack(s);
+                    slot.set(s);
                     break;
                 }
             }

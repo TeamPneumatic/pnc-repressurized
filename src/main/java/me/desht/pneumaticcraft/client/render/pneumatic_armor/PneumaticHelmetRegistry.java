@@ -4,9 +4,12 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import net.minecraft.block.Block;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tags.ITag;
@@ -15,7 +18,10 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     private static final PneumaticHelmetRegistry INSTANCE = new PneumaticHelmetRegistry();
@@ -78,7 +84,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
      */
     public void resolveBlockTags(ITagCollection<Block> tags) {
         hackableTaggedBlocks.clear();
-        pendingBlockTags.forEach((id, hackable) -> tags.get(id).getAllElements().forEach(block -> hackableTaggedBlocks.put(block, hackable)));
+        pendingBlockTags.forEach((id, hackable) -> tags.getTag(id).getValues().forEach(block -> hackableTaggedBlocks.put(block, hackable)));
     }
 
     @Override
@@ -92,9 +98,19 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     }
 
     @Override
-    public void registerRenderHandler(IArmorUpgradeHandler handler, IArmorUpgradeClientHandler clientHandler) {
+    public <T extends IArmorUpgradeHandler<?>> void registerRenderHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler) {
         Validate.notNull(clientHandler, "Render handler can't be null!");
         ArmorUpgradeClientRegistry.getInstance().registerHandler(handler, clientHandler);
+    }
+
+    @Override
+    public IKeybindingButton makeKeybindingButton(int yPos, KeyBinding keyBinding) {
+        return new KeybindingButton(30, yPos, 150, 20, xlate("pneumaticcraft.armor.gui.misc.setKey"), keyBinding);
+    }
+
+    @Override
+    public ICheckboxWidget makeKeybindingCheckBox(ResourceLocation upgradeId, int xPos, int yPos, int color, Consumer<ICheckboxWidget> onPressed) {
+        return WidgetKeybindCheckBox.getOrCreate(upgradeId, xPos, yPos, color, onPressed);
     }
 
     public IHackableBlock getHackable(Block block) {

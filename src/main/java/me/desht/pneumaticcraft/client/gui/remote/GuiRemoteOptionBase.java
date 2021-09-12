@@ -60,7 +60,7 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     public void init() {
         super.init();
 
-        minecraft.keyboardListener.enableRepeatEvents(true);
+        minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         addLabel(xlate("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
         addLabel(title, width / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
@@ -77,8 +77,8 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
         addLabel(new StringTextComponent("Z:"), guiLeft + 124, guiTop + 186);
 
         enableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 160, 152, 10);
-        enableField.setElements(guiRemote.getContainer().variables);
-        enableField.setText(actionWidget.getEnableVariable());
+        enableField.setElements(guiRemote.getMenu().variables);
+        enableField.setValue(actionWidget.getEnableVariable());
         enableField.setTooltip(xlate("pneumaticcraft.gui.remote.enable.tooltip"));
         addButton(enableField);
 
@@ -101,9 +101,9 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
 
         if (actionWidget instanceof IActionWidgetLabeled) {
             labelField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 160, 10);
-            labelField.setText(((IActionWidgetLabeled) actionWidget).getText().getString());
+            labelField.setValue(((IActionWidgetLabeled) actionWidget).getText().getString());
             labelField.setTooltip(xlate("pneumaticcraft.gui.remote.label.tooltip"));
-            labelField.setMaxStringLength(1000);
+            labelField.setMaxLength(1000);
             addButton(labelField);
 
             tooltipField = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 160, 10);
@@ -111,23 +111,23 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
             String joined = ((IActionWidgetLabeled) actionWidget).getTooltip().stream()
                     .map(ITextComponent::getString)
                     .collect(Collectors.joining(TOOLTIP_DELIMITER));
-            tooltipField.setText(joined);
+            tooltipField.setValue(joined);
             addButton(tooltipField);
         }
     }
 
     @Override
-    public void onClose() {
-        minecraft.keyboardListener.enableRepeatEvents(false);
+    public void removed() {
+        minecraft.keyboardHandler.setSendRepeatsToGui(false);
 
-        actionWidget.setEnableVariable(enableField.getText());
-        actionWidget.setEnablingValue(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
+        actionWidget.setEnableVariable(enableField.getValue());
+        actionWidget.setEnablingValue(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue());
         if (actionWidget instanceof IActionWidgetLabeled) {
-            ((IActionWidgetLabeled) actionWidget).setText(new StringTextComponent(labelField.getText()));
-            if (tooltipField.getText().isEmpty()) {
+            ((IActionWidgetLabeled) actionWidget).setText(new StringTextComponent(labelField.getValue()));
+            if (tooltipField.getValue().isEmpty()) {
                 ((IActionWidgetLabeled) actionWidget).setTooltip(Collections.emptyList());
             } else {
-                List<ITextComponent> l = Arrays.stream(tooltipField.getText().split(TOOLTIP_DELIMITER))
+                List<ITextComponent> l = Arrays.stream(tooltipField.getValue().split(TOOLTIP_DELIMITER))
                         .map(StringTextComponent::new)
                         .collect(Collectors.toList());
                 ((IActionWidgetLabeled) actionWidget).setTooltip(l);
@@ -136,7 +136,7 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     }
 
     @Override
-    public void closeScreen() {
-        minecraft.displayGuiScreen(guiRemote);
+    public void onClose() {
+        minecraft.setScreen(guiRemote);
     }
 }

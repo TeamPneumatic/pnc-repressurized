@@ -18,28 +18,28 @@ class CompressedIronArmorMaterial implements IArmorMaterial {
     }
 
     @Override
-    public int getDurability(EquipmentSlotType equipmentSlotType) {
+    public int getDurabilityForSlot(EquipmentSlotType equipmentSlotType) {
         return PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE * MAX_DAMAGE_ARRAY[equipmentSlotType.getIndex()];
     }
 
     @Override
-    public int getDamageReductionAmount(EquipmentSlotType equipmentSlotType) {
+    public int getDefenseForSlot(EquipmentSlotType equipmentSlotType) {
         return DMG_REDUCTION[equipmentSlotType.getIndex()];
     }
 
     @Override
-    public int getEnchantability() {
+    public int getEnchantmentValue() {
         return 9;
     }
 
     @Override
-    public SoundEvent getSoundEvent() {
-        return SoundEvents.ITEM_ARMOR_EQUIP_IRON;
+    public SoundEvent getEquipSound() {
+        return SoundEvents.ARMOR_EQUIP_IRON;
     }
 
     @Override
-    public Ingredient getRepairMaterial() {
-        return Ingredient.fromTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);
+    public Ingredient getRepairIngredient() {
+        return Ingredient.of(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);
     }
 
     @Override

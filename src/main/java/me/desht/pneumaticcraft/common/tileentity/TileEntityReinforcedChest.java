@@ -61,7 +61,7 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
+    public CompoundNBT save(CompoundNBT tag) {
         if (lootTable != null) {
             tag.putString(NBT_LOOT_TABLE, lootTable.toString());
             if (lootTableSeed != 0L) {
@@ -70,12 +70,12 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
         } else {
             tag.put(NBT_ITEMS, inventory.serializeNBT());
         }
-        return super.write(tag);
+        return super.save(tag);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         if (tag.contains(NBT_LOOT_TABLE, Constants.NBT.TAG_STRING)) {
             lootTable = new ResourceLocation(tag.getString(NBT_LOOT_TABLE));
@@ -111,24 +111,24 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
     @Override
     public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
         maybeFillWithLoot(player);
-        return new ContainerReinforcedChest(windowId, inv, getPos());
+        return new ContainerReinforcedChest(windowId, inv, getBlockPos());
     }
 
     private void maybeFillWithLoot(PlayerEntity player) {
-        if (lootTable != null && world instanceof ServerWorld) {
-            LootTable table = world.getServer().getLootTableManager().getLootTableFromLocation(this.lootTable);
+        if (lootTable != null && level instanceof ServerWorld) {
+            LootTable table = level.getServer().getLootTables().get(this.lootTable);
             lootTable = null;
-            LootContext.Builder contextBuilder = new LootContext.Builder((ServerWorld)this.world).withSeed(this.lootTableSeed);
-            contextBuilder.withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(this.pos));
+            LootContext.Builder contextBuilder = new LootContext.Builder((ServerWorld)this.level).withOptionalRandomSeed(this.lootTableSeed);
+            contextBuilder.withParameter(LootParameters.ORIGIN, Vector3d.atCenterOf(this.worldPosition));
             if (player != null) {
                 contextBuilder.withLuck(player.getLuck());
             }
 
             RecipeWrapper invWrapper = new RecipeWrapper(inventory);  // handy forge-provided IInventory->IItemHandlerModifiable adapter
-            LootContext context = contextBuilder.build(LootParameterSets.CHEST);
-            table.fillInventory(invWrapper, context);
+            LootContext context = contextBuilder.create(LootParameterSets.CHEST);
+            table.fill(invWrapper, context);
 
-            markDirty();
+            setChanged();
         }
     }
 

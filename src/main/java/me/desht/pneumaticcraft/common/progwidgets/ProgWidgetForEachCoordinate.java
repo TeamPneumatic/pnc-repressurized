@@ -73,13 +73,13 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
-        buf.writeString(elementVariable);
+        buf.writeUtf(elementVariable);
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
-        elementVariable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        elementVariable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override

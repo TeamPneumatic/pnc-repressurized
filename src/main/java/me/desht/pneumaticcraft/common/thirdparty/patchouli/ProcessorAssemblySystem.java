@@ -19,11 +19,11 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER.getRecipe(Minecraft.getInstance().world, recipeId);
+        this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER.getRecipe(Minecraft.getInstance().level, recipeId);
         if (recipe == null) {
-            this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipe(Minecraft.getInstance().world, recipeId);
+            this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipe(Minecraft.getInstance().level, recipeId);
             if (recipe == null) {
-                this.recipe = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipe(Minecraft.getInstance().world, recipeId);
+                this.recipe = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipe(Minecraft.getInstance().level, recipeId);
             }
         }
     }
@@ -41,11 +41,11 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
             case "program":
                 return IVariable.from(programStack);
             case "name":
-                return IVariable.wrap(recipe.getOutput().getDisplayName().getString());
+                return IVariable.wrap(recipe.getOutput().getHoverName().getString());
             case "desc":
                 return IVariable.wrap(xlate("pneumaticcraft.patchouli.processor.assembly.desc",
-                        recipe.getOutput().getDisplayName(),
-                        programStack.getDisplayName()
+                        recipe.getOutput().getHoverName(),
+                        programStack.getHoverName()
                 ).getString());
         }
 

@@ -21,11 +21,11 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockProgrammer extends BlockPneumaticCraft {
-    private static final VoxelShape BODY = Block.makeCuboidShape(1, 8, 1, 15, 11, 15);
-    private static final VoxelShape LEG1 = Block.makeCuboidShape(1, 0, 1, 3, 8, 3);
-    private static final VoxelShape LEG2 = Block.makeCuboidShape(13, 0, 13, 15, 8, 15);
-    private static final VoxelShape LEG3 = Block.makeCuboidShape(1, 0, 13, 3, 8, 15);
-    private static final VoxelShape LEG4 = Block.makeCuboidShape(13, 0, 1, 15, 8, 3);
+    private static final VoxelShape BODY = Block.box(1, 8, 1, 15, 11, 15);
+    private static final VoxelShape LEG1 = Block.box(1, 0, 1, 3, 8, 3);
+    private static final VoxelShape LEG2 = Block.box(13, 0, 13, 15, 8, 15);
+    private static final VoxelShape LEG3 = Block.box(1, 0, 13, 3, 8, 15);
+    private static final VoxelShape LEG4 = Block.box(13, 0, 1, 15, 8, 3);
     private static final VoxelShape SHAPE = VoxelShapes.or(BODY, LEG1, LEG2, LEG3, LEG4);
 
     public BlockProgrammer() {
@@ -43,13 +43,13 @@ public class BlockProgrammer extends BlockPneumaticCraft {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (!world.isRemote && !player.isSneaking()) {
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        if (!world.isClientSide && !player.isShiftKeyDown()) {
             // FIXME this should be sync'd via the container as part of the openGui() call
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityProgrammer.class)
                     .ifPresent(te -> NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(te), (ServerPlayerEntity) player));
         }
-        return super.onBlockActivated(state, world, pos, player, hand, brtr);
+        return super.use(state, world, pos, player, hand, brtr);
     }
 
     @Override

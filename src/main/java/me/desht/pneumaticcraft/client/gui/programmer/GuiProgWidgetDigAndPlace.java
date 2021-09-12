@@ -50,14 +50,14 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         if (orderSelector.getSelectedElementIndex() >= 0) {
             progWidget.setOrder(Ordering.values()[orderSelector.getSelectedElementIndex()]);
         }
         if (progWidget.supportsMaxActions()) {
-            progWidget.setMaxActions(textField.getValue());
+            progWidget.setMaxActions(textField.getIntValue());
         }
 
-        super.onClose();
+        super.removed();
     }
 }

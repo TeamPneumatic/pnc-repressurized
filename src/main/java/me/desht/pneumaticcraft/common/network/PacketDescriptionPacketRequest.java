@@ -28,7 +28,7 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.get().getSender());
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, true)) {
-                TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
+                TileEntity te = ctx.get().getSender().level.getBlockEntity(pos);
                 if (te != null) {
                     forceLootGeneration(te);
                     NetworkHandler.sendToPlayer(new PacketSendNBTPacket(te), ctx.get().getSender());
@@ -46,7 +46,7 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
     private void forceLootGeneration(TileEntity te){
         if(te instanceof LockableLootTileEntity){
             LockableLootTileEntity teLoot = (LockableLootTileEntity)te;
-            teLoot.fillWithLoot(null);
+            teLoot.unpackLootTable(null);
         }
     }
 }

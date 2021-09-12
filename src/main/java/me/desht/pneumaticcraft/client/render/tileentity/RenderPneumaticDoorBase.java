@@ -22,21 +22,21 @@ public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntit
 
         cylinder1 = new ModelRenderer(64, 64, 0, 28);
         cylinder1.addBox(0F, 0F, 0F, 3, 3, 10);
-        cylinder1.setRotationPoint(2.5F, 8.5F, -6F);
+        cylinder1.setPos(2.5F, 8.5F, -6F);
         cylinder1.mirror = true;
         cylinder2 = new ModelRenderer(64, 64, 0, 28);
         cylinder2.addBox(0F, 0F, 0F, 2, 2, 10);
-        cylinder2.setRotationPoint(3F, 9F, -6F);
+        cylinder2.setPos(3F, 9F, -6F);
         cylinder2.mirror = true;
         cylinder3 = new ModelRenderer(64, 64, 0, 28);
         cylinder3.addBox(0F, 0F, 0F, 1, 1, 10);
-        cylinder3.setRotationPoint(3.5F, 9.5F, -6F);
+        cylinder3.setPos(3.5F, 9.5F, -6F);
         cylinder3.mirror = true;
     }
 
     @Override
     public void renderModel(TileEntityPneumaticDoorBase te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE));
 
         float progress = MathHelper.lerp(partialTicks, te.oldProgress, te.progress);
 
@@ -48,7 +48,7 @@ public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntit
 
         matrixStackIn.translate(((te.rightGoing ? -4 : 0) + 2.5) / 16F, 0, -6 / 16F);
         float cylinderAngle = (float) Math.toDegrees(Math.atan(sinus / (cosinus + 14 / 16F)));
-        matrixStackIn.rotate(te.rightGoing ? Vector3f.YP.rotationDegrees(cylinderAngle) : Vector3f.YN.rotationDegrees(cylinderAngle));
+        matrixStackIn.mulPose(te.rightGoing ? Vector3f.YP.rotationDegrees(cylinderAngle) : Vector3f.YN.rotationDegrees(cylinderAngle));
         matrixStackIn.translate(((te.rightGoing ? -3 : 0) - 2.5) / 16F, 0, 6 / 16F);
         double extensionPart = extension * 0.5D;
         cylinder1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);

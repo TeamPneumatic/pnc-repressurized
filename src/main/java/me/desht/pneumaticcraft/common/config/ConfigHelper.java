@@ -2,10 +2,10 @@ package me.desht.pneumaticcraft.common.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.config.ClientConfig.PathUpdateSetting;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 
@@ -72,6 +72,7 @@ public class ConfigHelper {
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
         PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
         PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();
+        PNCConfig.Common.General.dronesCanBePickedUp = common.general.dronesCanBePickedUp.get();
         PNCConfig.Common.General.droneDebuggerPathParticles = common.general.droneDebuggerPathParticles.get();
         PNCConfig.Common.General.vacuumTrapBlacklist = common.general.vacuumTrapBlacklist.get()
                 .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());

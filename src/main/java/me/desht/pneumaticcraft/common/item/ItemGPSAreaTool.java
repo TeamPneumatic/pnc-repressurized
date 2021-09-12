@@ -45,46 +45,46 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext ctx) {
-        setGPSPosAndNotify(ctx.getPlayer(), ctx.getPos(), ctx.getHand(), 0);
+    public ActionResultType useOn(ItemUseContext ctx) {
+        setGPSPosAndNotify(ctx.getPlayer(), ctx.getClickedPos(), ctx.getHand(), 0);
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack stack = playerIn.getHeldItem(handIn);
-        if (worldIn.isRemote) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
+        if (worldIn.isClientSide) {
             GuiGPSAreaTool.showGUI(stack, handIn, 0);
         }
-        return ActionResult.resultSuccess(stack);
+        return ActionResult.success(stack);
     }
 
 
     public static void setGPSPosAndNotify(PlayerEntity player, BlockPos pos, Hand hand, int index) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         setGPSLocation(stack, pos, index);
-        if (!player.world.isRemote) {
-            player.sendStatusMessage(new StringTextComponent(TextFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
-                    .append(getMessageText(player.world, pos, index)), false);
+        if (!player.level.isClientSide) {
+            player.displayClientMessage(new StringTextComponent(TextFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
+                    .append(getMessageText(player.level, pos, index)), false);
             if (player instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity) player).connection.sendPacket(new SHeldItemChangePacket(player.inventory.currentItem));
+                ((ServerPlayerEntity) player).connection.send(new SHeldItemChangePacket(player.inventory.selected));
         }
     }
 
     private static ITextComponent getMessageText(World worldIn, BlockPos pos, int index) {
-        ITextComponent translated = new TranslationTextComponent(worldIn.getBlockState(pos).getBlock().getTranslationKey());
-        IFormattableTextComponent blockName = worldIn.getChunkProvider().isChunkLoaded(new ChunkPos(pos)) ?
-                new StringTextComponent(" (").append(translated).appendString(")") :
-                StringTextComponent.EMPTY.copyRaw();
+        ITextComponent translated = new TranslationTextComponent(worldIn.getBlockState(pos).getBlock().getDescriptionId());
+        IFormattableTextComponent blockName = worldIn.getChunkSource().isEntityTickingChunk(new ChunkPos(pos)) ?
+                new StringTextComponent(" (").append(translated).append(")") :
+                StringTextComponent.EMPTY.plainCopy();
         String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW.toString(), pos.getX(), pos.getY(), pos.getZ());
-        return new StringTextComponent(str).mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN).append(blockName.mergeStyle(TextFormatting.GREEN));
+        return new StringTextComponent(str).withStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN).append(blockName.withStyle(TextFormatting.GREEN));
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
-        super.addInformation(stack, worldIn, infoList, par4);
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
+        super.appendHoverText(stack, worldIn, infoList, par4);
 
         if (worldIn != null) {
             ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
@@ -106,7 +106,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             for (int index = 0; index < 2; index++) {
                 String var = getVariable(stack, index);
                 if (!var.isEmpty()) {
@@ -132,7 +132,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         ProgWidgetArea area = getArea(gpsTool);
 
         String var = getVariable(gpsTool, index);
-        if (!var.isEmpty() && !world.isRemote) {
+        if (!var.isEmpty() && !world.isClientSide) {
             BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
             setGPSLocation(gpsTool, pos, index);
         }

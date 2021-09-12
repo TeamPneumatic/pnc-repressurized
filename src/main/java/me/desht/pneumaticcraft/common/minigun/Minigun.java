@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.entity.Entity;
@@ -123,8 +124,8 @@ public abstract class Minigun {
      *
      * @return the sound's source
      */
-    public Object getSoundSource() {
-        return player;
+    public SoundSource getSoundSource() {
+        return SoundSource.of(player);
     }
 
     public float getMinigunSpeed() {
@@ -189,9 +190,9 @@ public abstract class Minigun {
 
     public boolean tryFireMinigun(Entity target) {
         boolean lastShotOfAmmo = false;
-        if (!ammoStack.isEmpty() && ammoStack.getDamage() < ammoStack.getMaxDamage() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
+        if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
             setMinigunTriggerTimeOut(10);
-            if (!world.isRemote && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
+            if (!world.isClientSide && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 RayTraceResult rtr = null;
                 ItemGunAmmo ammoItem = (ItemGunAmmo) ammoStack.getItem();
                 if (!requiresTarget) {
@@ -216,7 +217,7 @@ public abstract class Minigun {
                     roundsUsed = ammoItem.onBlockHit(this, ammoStack, brtr);
                 }
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
-                lastShotOfAmmo = ammoStack.attemptDamageItem(ammoCost, rand, player instanceof ServerPlayerEntity ? (ServerPlayerEntity) player : null);
+                lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayerEntity ? (ServerPlayerEntity) player : null);
             }
         }
         return lastShotOfAmmo;
@@ -226,7 +227,7 @@ public abstract class Minigun {
         if (target instanceof TameableEntity) {
             return ((TameableEntity) target).getOwner() != null;
         } else if (target instanceof EntityDrone) {
-            return ((EntityDrone) target).getOwner().getUniqueID().equals(getPlayer().getUniqueID());
+            return ((EntityDrone) target).getOwner().getUUID().equals(getPlayer().getUUID());
         } else {
             return target instanceof PlayerEntity;
         }
@@ -252,9 +253,9 @@ public abstract class Minigun {
             float speedBonus = getUpgrades(EnumUpgrade.SPEED) * 0.0033F;
             float lastSpeed = getMinigunSpeed();
             setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01F + speedBonus, MAX_GUN_SPEED));
-            if (!world.isRemote && getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED) {
+            if (!world.isClientSide && getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED) {
                 // reached max speed: start playing the looping sound
-                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), player.world, new BlockPos(posX, posY, posZ));
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), player.level, new BlockPos(posX, posY, posZ));
             }
         } else {
             // spin down
@@ -265,9 +266,9 @@ public abstract class Minigun {
 
         if (attackTarget != null) {
             // swing toward the target entity
-            double deltaX = posX - attackTarget.getPosX();
-            double deltaY = posY - (attackTarget.getPosY() + attackTarget.getHeight() / 2);
-            double deltaZ = posZ - attackTarget.getPosZ();
+            double deltaX = posX - attackTarget.getX();
+            double deltaY = posY - (attackTarget.getY() + attackTarget.getBbHeight() / 2);
+            double deltaZ = posZ - attackTarget.getZ();
 
             float targetYaw = (float) clampYaw(180 - Math.toDegrees(Math.atan2(deltaX, deltaZ)));
             float targetPitch = (float) Math.toDegrees(Math.atan(deltaY / PneumaticCraftUtils.distBetween(0, 0, deltaX, deltaZ)));//posX, posZ, attackTarget.getPosX(), attackTarget.getPosZ())));
@@ -315,7 +316,7 @@ public abstract class Minigun {
     }
 
     public boolean dispenserWeightedPercentage(int basePct, float dispenserWeight) {
-        return getWorld().rand.nextInt(100) < basePct * (1 + getUpgrades(EnumUpgrade.DISPENSER) * dispenserWeight);
+        return getWorld().random.nextInt(100) < basePct * (1 + getUpgrades(EnumUpgrade.DISPENSER) * dispenserWeight);
     }
 
     public static float clampYaw(float yaw) {

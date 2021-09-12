@@ -167,18 +167,18 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
 
     void setupFacingMatrix() {
         for (Direction f : DirectionUtil.HORIZONTALS) {
-            facingMatrix[f.getHorizontalIndex()] = new RelativeFace[4];
+            facingMatrix[f.get2DDataValue()] = new RelativeFace[4];
             for (RelativeFace rf : RelativeFace.HORIZONTALS) {
                 Direction f2 = rot(f, rf);
-                facingMatrix[f.getHorizontalIndex()][f2.getHorizontalIndex()] = rf;
+                facingMatrix[f.get2DDataValue()][f2.get2DDataValue()] = rf;
             }
         }
     }
 
     private Direction rot(Direction in, RelativeFace rf) {
         switch (rf) {
-            case RIGHT: return in.rotateYCCW();
-            case LEFT: return in.rotateY();
+            case RIGHT: return in.getCounterClockWise();
+            case LEFT: return in.getClockWise();
             case BACK: return in.getOpposite();
             default: return in;
         }
@@ -190,7 +190,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         } else if (facing == Direction.DOWN) {
             return RelativeFace.BOTTOM;
         } else {
-            return facingMatrix[sideConfigurable.byIndex().getHorizontalIndex()][facing.getHorizontalIndex()];
+            return facingMatrix[sideConfigurable.byIndex().get2DDataValue()][facing.get2DDataValue()];
         }
     }
 
@@ -220,7 +220,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     public void deserializeNBT(CompoundNBT nbt) {
         ListNBT l = nbt.getList("faces", Constants.NBT.TAG_BYTE);
         for (int i = 0; i < l.size() && i < faces.length; i++) {
-            faces[i] = ((ByteNBT) l.get(i)).getByte();
+            faces[i] = ((ByteNBT) l.get(i)).getAsByte();
             if (faces[i] < 0 || faces[i] >= entries.size()) {
                 // sanity check: 0th element is always available ("unconnected")
                 faces[i] = 0;

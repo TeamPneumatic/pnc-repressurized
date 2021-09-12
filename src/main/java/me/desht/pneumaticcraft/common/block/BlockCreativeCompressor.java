@@ -25,7 +25,7 @@ public class BlockCreativeCompressor extends BlockPneumaticCraft {
     }
 
     @Override
-    public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getOcclusionShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return ALMOST_FULL_SHAPE;
     }
 

@@ -10,7 +10,7 @@ import net.minecraft.world.Explosion;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableBat implements IHackableEntity {
@@ -41,9 +41,9 @@ public class HackableBat implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        if (!entity.world.isRemote) {
+        if (!entity.level.isClientSide) {
             entity.remove();
-            entity.world.createExplosion(null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), 0, Explosion.Mode.NONE);
+            entity.level.explode(null, entity.getX(), entity.getY(), entity.getZ(), 0, Explosion.Mode.NONE);
         }
     }
 

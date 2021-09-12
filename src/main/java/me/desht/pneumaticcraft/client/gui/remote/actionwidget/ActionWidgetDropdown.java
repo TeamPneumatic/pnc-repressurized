@@ -30,8 +30,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         x = widget.x;
         y = widget.y;
         width = widget.getWidth();
-        height = widget.getHeightRealms();
-        widget.setText(I18n.format("pneumaticcraft.gui.remote.tray.dropdown.name"));
+        height = widget.getHeight();
+        widget.setValue(I18n.get("pneumaticcraft.gui.remote.tray.dropdown.name"));
         widget.setTooltip(xlate("pneumaticcraft.gui.remote.tray.dropdown.tooltip"));
     }
 
@@ -68,7 +68,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     @Override
     public void onKeyTyped() {
         String[] elements = getDropdownElements();
-        selectedElement = getWidget().getText();
+        selectedElement = getWidget().getValue();
         for (int i = 0; i < elements.length; i++) {
             if (elements[i].equals(selectedElement)) {
                 NetworkHandler.sendToServer(new PacketSetGlobalVariable(getVariableName(), i));
@@ -92,7 +92,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     @Override
     public WidgetComboBox getWidget() {
         if (widget == null) {
-            widget = new WidgetComboBox(Minecraft.getInstance().fontRenderer, x, y, width, height, this::onPressed);
+            widget = new WidgetComboBox(Minecraft.getInstance().font, x, y, width, height, this::onPressed);
             widget.setElements(getDropdownElements());
             widget.setFixedOptions();
             widget.setShouldSort(sorted);
@@ -121,7 +121,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
             widget.setWidth(width);
             widget.setHeight(height);
             widget.setElements(getDropdownElements());
-            widget.setText(selectedElement);
+            widget.setValue(selectedElement);
             widget.setShouldSort(sorted);
         }
     }

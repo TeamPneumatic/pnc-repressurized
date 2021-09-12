@@ -51,7 +51,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         strengthTab.addSubWidget(new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"));
         strengthTab.addSubWidget(new WidgetButtonExtended(82, 16, 20, 20, "++").withTag("++"));
 
-        addLabel(new StringTextComponent("GPS"),  guiLeft + 50, guiTop + 20);
+        addLabel(new StringTextComponent("GPS"),  leftPos + 50, topPos + 20);
     }
 
     @Override
@@ -77,13 +77,13 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     private List<ITextComponent> getStatusText() {
         List<ITextComponent> text = new ArrayList<>();
         if (te.gpsX != 0 || te.gpsY != 0 || te.gpsZ != 0) {
-            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ).mergeStyle(TextFormatting.BLACK));
+            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ).withStyle(TextFormatting.BLACK));
         } else {
-            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.no_coord").mergeStyle(TextFormatting.BLACK));
+            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.no_coord").withStyle(TextFormatting.BLACK));
         }
-        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)).mergeStyle(TextFormatting.BLACK));
-        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.height", Math.round(te.heightAngle)).mergeStyle(TextFormatting.BLACK));
-        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)).mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)).withStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.height", Math.round(te.heightAngle)).withStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)).withStyle(TextFormatting.BLACK));
         return text;
     }
 
@@ -94,7 +94,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         if (te.hasNoConnectedAirHandlers()) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.airLeak"));
         }
-        if (container.inventorySlots.get(5).getStack().isEmpty() && te.getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
+        if (menu.slots.get(5).getItem().isEmpty() && te.getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.air_cannon.no_items"));
         }
         if (!te.hasCoordinate()) {

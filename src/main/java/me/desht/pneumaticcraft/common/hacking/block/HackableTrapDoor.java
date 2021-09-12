@@ -4,7 +4,7 @@ import net.minecraft.block.TrapDoorBlock;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackableTrapDoor extends HackableDoor {
     @Override

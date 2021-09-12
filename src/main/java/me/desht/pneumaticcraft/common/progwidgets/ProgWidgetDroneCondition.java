@@ -46,7 +46,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (!measureVar.isEmpty()) {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").appendString(measureVar));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").append(measureVar));
         }
     }
 
@@ -59,7 +59,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
         } else {
             return new Goal() {//Trick the CC program into thinking this is an executable piece.
                 @Override
-                public boolean shouldExecute() {
+                public boolean canUse() {
                     return false;
                 }
             };
@@ -119,7 +119,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
         buf.writeBoolean(isAndFunction);
         buf.writeByte(operator.ordinal());
         buf.writeVarInt(requiredCount);
-        buf.writeString(measureVar, GlobalVariableManager.MAX_VARIABLE_LEN);
+        buf.writeUtf(measureVar, GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
@@ -128,13 +128,13 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
         isAndFunction = buf.readBoolean();
         operator = Operator.values()[buf.readByte()];
         requiredCount = buf.readVarInt();
-        measureVar = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        measureVar = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
     public List<ITextComponent> getExtraStringInfo() {
         IFormattableTextComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any")
-                .appendString(" " + getOperator().toString() + " " + getRequiredCount());
+                .append(" " + getOperator().toString() + " " + getRequiredCount());
         return measureVar.isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(measureVar));
     }
 

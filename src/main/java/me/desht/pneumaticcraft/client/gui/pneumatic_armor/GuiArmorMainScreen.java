@@ -2,7 +2,9 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -10,7 +12,6 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.NullOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiScreen {
@@ -45,13 +46,13 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
             new ItemStack(ModItems.PNEUMATIC_HELMET.get())
     };
 
-    private final List<UpgradeOption> upgradeOptions = new ArrayList<>();
-    private static int pageNumber;
-    private boolean inInitPhase = true;
-    private final UpgradeOption nullOptionsPage = new UpgradeOption(new NullOptions(this), RL("null"), new ItemStack(Items.BARRIER));
-
     // A static instance which can handle keybinds when the GUI is closed.
     private static GuiArmorMainScreen instance;
+    private static int pageNumber;
+
+    private final List<UpgradeOption> upgradeOptions = new ArrayList<>();
+    private boolean inInitPhase = true;
+    private final UpgradeOption nullOptionsPage = new UpgradeOption(new NullOptions(this), RL("null"), new ItemStack(Items.BARRIER));
 
     private GuiArmorMainScreen() {
         super(new StringTextComponent("Main Screen"));
@@ -64,8 +65,8 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     public static void initHelmetCoreComponents() {
         if (instance == null) {
             instance = new GuiArmorMainScreen();
-            MainWindow mw = Minecraft.getInstance().getMainWindow();
-            instance.init(Minecraft.getInstance(), mw.getScaledWidth(), mw.getScaledHeight());  // causes init() to be called
+            MainWindow mw = Minecraft.getInstance().getWindow();
+            instance.init(Minecraft.getInstance(), mw.getGuiScaledWidth(), mw.getGuiScaledHeight());  // causes init() to be called
 
             for (int i = 1; i < instance.upgradeOptions.size(); i++) {
                 pageNumber = i;
@@ -90,9 +91,9 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
 
         int xPos = 200;
         int yPos = 5;
-        int buttonWidth = font.getStringPropertyWidth(xlate("pneumaticcraft.armor.upgrade.core_components"));
+        int buttonWidth = font.width(xlate("pneumaticcraft.armor.upgrade.core_components"));
         for (UpgradeOption opt : upgradeOptions) {
-            buttonWidth = Math.max(buttonWidth, font.getStringPropertyWidth(opt.page.getPageName()));
+            buttonWidth = Math.max(buttonWidth, font.width(opt.page.getPageName()));
         }
 
         for (int i = 0; i < upgradeOptions.size(); i++) {
@@ -110,9 +111,10 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         }
         pageNumber = Math.min(pageNumber, upgradeOptions.size() - 1);
         if (pageNumber < 0 && !upgradeOptions.isEmpty()) pageNumber = 0;
-        WidgetKeybindCheckBox checkBox = WidgetKeybindCheckBox.getOrCreate(getCurrentOptionsPage().upgradeID, 40, 25, 0xFFFFFFFF, null);
+        ICheckboxWidget checkBox = PneumaticRegistry.getInstance().getHelmetRegistry()
+                .makeKeybindingCheckBox(getCurrentOptionsPage().upgradeID, 40, 25, 0xFFFFFFFF, null);
         if (getCurrentOptionsPage().page.isToggleable()) {
-            addButton(checkBox);
+            addButton(checkBox.asWidget());
         }
         getCurrentOptionsPage().page.populateGui(this);
     }
@@ -137,14 +139,14 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
 
     private void addPages() {
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            List<IArmorUpgradeHandler> renderHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
-            for (int i = 0; i < renderHandlers.size(); i++) {
+            List<IArmorUpgradeHandler<?>> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
+            for (int i = 0; i < upgradeHandlers.size(); i++) {
                 if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, i) || slot == EquipmentSlotType.HEAD && i == 0) {
-                    IArmorUpgradeHandler handler = renderHandlers.get(i);
+                    IArmorUpgradeHandler<?> handler = upgradeHandlers.get(i);
                     if (inInitPhase
                             || ItemPneumaticArmor.isPneumaticArmorPiece(Minecraft.getInstance().player, slot)
                             || handler instanceof CoreComponentsHandler) {
-                        IArmorUpgradeClientHandler clientHandler = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler);
+                        IArmorUpgradeClientHandler<?> clientHandler = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler.getID());
                         IOptionPage optionPage = clientHandler.getGuiOptionsPage(this);
                         if (optionPage != null) {
                             List<ItemStack> stacks = new ArrayList<>();
@@ -163,9 +165,9 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         renderBackground(matrixStack);
         IOptionPage optionPage = getCurrentOptionsPage().page;
         optionPage.renderPre(matrixStack, x, y, partialTicks);
-        drawCenteredString(matrixStack, font, getCurrentOptionsPage().page.getPageName().deepCopy().mergeStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
+        drawCenteredString(matrixStack, font, getCurrentOptionsPage().page.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
-            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").mergeStyle(TextFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
+            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(TextFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
         super.render(matrixStack, x, y, partialTicks);
         optionPage.renderPost(matrixStack, x, y, partialTicks);
@@ -182,6 +184,12 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return getCurrentOptionsPage().page.keyPressed(keyCode, scanCode, modifiers)
+                || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        return getCurrentOptionsPage().page.keyReleased(keyCode, scanCode, modifiers)
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -220,7 +228,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
 
     @Override
     public void setFocusedWidget(Widget w) {
-        setListener(w);
+        setFocused(w);
     }
 
     @Override

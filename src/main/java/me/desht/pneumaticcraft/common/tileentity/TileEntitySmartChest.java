@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -16,7 +17,6 @@ import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
@@ -41,10 +41,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 
 public class TileEntitySmartChest extends TileEntityTickableBase
         implements INamedContainerProvider, IRedstoneControl<TileEntitySmartChest>, IComparatorSupport {
@@ -77,8 +74,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     public void tick() {
         super.tick();
 
-        if (!world.isRemote && rsController.shouldRun()) {
-            if ((world.getGameTime() % Math.max(getTickRate(), cooldown)) == 0) {
+        if (!level.isClientSide && rsController.shouldRun()) {
+            if ((level.getGameTime() % Math.max(getTickRate(), cooldown)) == 0) {
                 boolean didWork = false;
                 for (RelativeFace face : RelativeFace.values()) {
                     switch (getPushPullMode(face)) {
@@ -93,7 +90,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
                 cooldown = didWork ? 0 : Math.min(cooldown + 4, 20);
             }
         }
-        if (world.isRemote) {
+        if (level.isClientSide) {
             if (getUpgrades(EnumUpgrade.MAGNET) == 0) {
                 AreaRenderManager.getInstance().removeHandlers(this);
             }
@@ -108,6 +105,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         return IOHelper.getInventoryForTE(te, dir.getOpposite()).map(dstHandler -> {
+            validateCachedSlot(pushSlots, dir, dstHandler);
+
             ItemStack toPush = findNextItem(inventory, pushSlots, dir);
             if (toPush.isEmpty()) {
                 // empty inventory
@@ -129,12 +128,12 @@ public class TileEntitySmartChest extends TileEntityTickableBase
 
     private boolean tryDispense(Direction dir) {
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            if (!Block.hasEnoughSolidSide(world, pos, dir.getOpposite())) {
+            if (!Block.canSupportCenter(level, worldPosition, dir.getOpposite())) {
                 ItemStack toPush = findNextItem(inventory, pushSlots, dir);
                 if (!toPush.isEmpty()) {
                     ItemStack pushed = inventory.extractItem(pushSlots.getOrDefault(dir, 0), toPush.getCount(), false);
-                    BlockPos dropPos = pos.offset(dir);
-                    PneumaticCraftUtils.dropItemOnGroundPrecisely(pushed, world,dropPos.getX() + 0.5, dropPos.getY() + 0.5, dropPos.getZ() + 0.5);
+                    BlockPos dropPos = worldPosition.relative(dir);
+                    PneumaticCraftUtils.dropItemOnGroundPrecisely(pushed, level,dropPos.getX() + 0.5, dropPos.getY() + 0.5, dropPos.getZ() + 0.5);
                     return true;
                 }
             }
@@ -150,6 +149,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         return IOHelper.getInventoryForTE(getCachedNeighbor(dir), dir.getOpposite()).map(srcHandler -> {
+            validateCachedSlot(pullSlots, dir, srcHandler);
+
             ItemStack toPull = findNextItem(srcHandler, pullSlots, dir);
             if (toPull.isEmpty()) {
                 // source inventory is empty
@@ -172,10 +173,10 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     private boolean tryMagnet(Direction dir) {
         if (getUpgrades(EnumUpgrade.MAGNET) > 0) {
             int range = getUpgrades(EnumUpgrade.RANGE);
-            BlockPos centrePos = pos.offset(dir, range + 2);
-            AxisAlignedBB aabb = new AxisAlignedBB(centrePos).grow(range + 1);
-            List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, aabb,
-                    item -> item != null && item.isAlive() && !item.cannotPickup() && !ItemRegistry.getInstance().shouldSuppressMagnet(item));
+            BlockPos centrePos = worldPosition.relative(dir, range + 2);
+            AxisAlignedBB aabb = new AxisAlignedBB(centrePos).inflate(range + 1);
+            List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, aabb,
+                    item -> item != null && item.isAlive() && !item.hasPickUpDelay() && !ItemRegistry.getInstance().shouldSuppressMagnet(item));
             boolean didWork = false;
             for (ItemEntity item : items) {
                 ItemStack stack = item.getItem();
@@ -186,13 +187,21 @@ public class TileEntitySmartChest extends TileEntityTickableBase
                     item.setItem(excess);
                 }
                 if (excess.getCount() < stack.getCount()) {
-                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, item.getPosX(), item.getPosY() + 0.5, item.getPosZ(), 0, 0, 0, 5, 0.5, 0.5, 0.5), this);
+                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, item.getX(), item.getY() + 0.5, item.getZ(), 0, 0, 0, 5, 0.5, 0.5, 0.5), this);
                     didWork = true;
                 }
             }
             return didWork;
         }
         return false;
+    }
+
+    private void validateCachedSlot(Map<Direction,Integer> slotMap, Direction dir, IItemHandler handler) {
+        // ensure cached slot is still valid for the handler we have
+        // could become invalid if the neighbouring TE has been replaced by one with a smaller inventory?
+        if (slotMap.getOrDefault(dir, 0) >= handler.getSlots()) {
+            slotMap.remove(dir);
+        }
     }
 
     /**
@@ -203,6 +212,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
      * @return the next non-empty item (or ItemStack.EMPTY if the whole inventory is empty)
      */
     private ItemStack findNextItem(IItemHandler handler, EnumMap<Direction,Integer> slotMap, Direction dir) {
+        if (handler.getSlots() <= 0) return ItemStack.EMPTY; // https://github.com/TeamPneumatic/pnc-repressurized/issues/882
+
         if (handler.getStackInSlot(slotMap.getOrDefault(dir, 0)).isEmpty()) {
             slotMap.put(dir, scanForward(handler, slotMap.getOrDefault(dir, 0)));
         }
@@ -239,8 +250,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
             case TOP: return Direction.UP;
             case BOTTOM: return Direction.DOWN;
             case FRONT: return dir;
-            case RIGHT: return dir.rotateYCCW();
-            case LEFT: return dir.rotateY();
+            case RIGHT: return dir.getCounterClockWise();
+            case LEFT: return dir.getClockWise();
             case BACK: return dir.getOpposite();
             default: throw new IllegalArgumentException("impossible direction " + dir);
         }
@@ -277,7 +288,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         if (player instanceof ServerPlayerEntity) {
             NetworkHandler.sendToPlayer(new PacketSyncSmartChest(this), (ServerPlayerEntity) player);
         }
-        return new ContainerSmartChest(windowId, inv, getPos());
+        return new ContainerSmartChest(windowId, inv, getBlockPos());
     }
 
     @Override
@@ -291,16 +302,16 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
+    public CompoundNBT save(CompoundNBT tag) {
         tag.put(NBT_ITEMS, inventory.serializeNBT());
         tag.putInt("pushPull", pushPullModes);
 
-        return super.write(tag);
+        return super.save(tag);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound(NBT_ITEMS));
         pushPullModes = tag.getInt("pushPull");
@@ -464,7 +475,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
                 if (!filter[i].isEmpty()) {
                     CompoundNBT subTag = new CompoundNBT();
                     subTag.putInt("Slot", i);
-                    filter[i].write(subTag);
+                    filter[i].save(subTag);
                     l.add(subTag);
                 }
             }
@@ -482,7 +493,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
             boolean isV2 = nbt.getBoolean("V2");
             for (int i = 0; i < l.size(); i++) {
                 CompoundNBT tag = l.getCompound(i);
-                ItemStack stack = ItemStack.read(tag);
+                ItemStack stack = ItemStack.of(tag);
                 if (!isV2 && stack.getCount() == 1) stack.setCount(stack.getMaxStackSize());
                 filter[tag.getInt("Slot")] = stack;
             }

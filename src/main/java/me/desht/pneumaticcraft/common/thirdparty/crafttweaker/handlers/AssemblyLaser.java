@@ -30,7 +30,7 @@ public class AssemblyLaser implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<?> getRecipeType() {
+    public IRecipeType<AssemblyRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.ASSEMBLY_LASER;
     }
 }

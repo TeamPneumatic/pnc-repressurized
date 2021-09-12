@@ -54,7 +54,7 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
 
     @Override
     public void write(PacketBuffer buffer) {
-        fuel.write(buffer);
+        fuel.toNetwork(buffer);
         buffer.writeInt(airPerBucket);
         buffer.writeFloat(burnRate);
     }
@@ -77,18 +77,18 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
-            Ingredient fluidInput = FluidIngredient.deserialize(json.get("fluid"));
-            int airPerBucket = JSONUtils.getInt(json, "air_per_bucket");
-            float burnRate = JSONUtils.getFloat(json, "burn_rate", 1f);
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
+            Ingredient fluidInput = FluidIngredient.fromJson(json.get("fluid"));
+            int airPerBucket = JSONUtils.getAsInt(json, "air_per_bucket");
+            float burnRate = JSONUtils.getAsFloat(json, "burn_rate", 1f);
 
             return factory.create(recipeId, (FluidIngredient) fluidInput, airPerBucket, burnRate);
         }
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
-            FluidIngredient fluidIn = (FluidIngredient) Ingredient.read(buffer);
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            FluidIngredient fluidIn = (FluidIngredient) Ingredient.fromNetwork(buffer);
             int airPerBucket = buffer.readInt();
             float burnRate = buffer.readFloat();
 
@@ -96,7 +96,7 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

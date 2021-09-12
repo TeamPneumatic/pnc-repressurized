@@ -48,7 +48,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         super.onNeighborBlockUpdate(fromPos);
 
         if (controllerPos != null) {
-            PneumaticCraftUtils.getTileEntityAt(getWorld(), controllerPos, TileEntityAssemblyController.class)
+            PneumaticCraftUtils.getTileEntityAt(getLevel(), controllerPos, TileEntityAssemblyController.class)
                     .ifPresent(TileEntityAssemblyController::invalidateAssemblySystem);
         }
     }
@@ -179,7 +179,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         } else if (targetDirection.secondary == null) {
             return getCachedNeighbor(targetDirection.primary);
         } else {
-            return getWorld().getTileEntity(targetDirection.offset(getPosition()));
+            return getLevel().getBlockEntity(targetDirection.offset(getPosition()));
         }
     }
 
@@ -191,8 +191,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         for (int i = 0; i < 5; i++) {
             angles[i] = tag.getFloat("angle" + i);
@@ -205,8 +205,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         for (int i = 0; i < 5; i++) {
             tag.putFloat("angle" + i, angles[i]);
@@ -222,13 +222,13 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
 
     TargetDirections getPlatformDirection() {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
-            if (getWorld().getTileEntity(getPos().offset(dir)) instanceof TileEntityAssemblyPlatform)
+            if (getLevel().getBlockEntity(getBlockPos().relative(dir)) instanceof TileEntityAssemblyPlatform)
                 return new TargetDirections(dir);
         }
         if (canMoveToDiagonalNeighbours()) {
             for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
                 for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
-                    if (getWorld().getTileEntity(getPos().offset(primDir).offset(secDir)) instanceof TileEntityAssemblyPlatform) {
+                    if (getLevel().getBlockEntity(getBlockPos().relative(primDir).relative(secDir)) instanceof TileEntityAssemblyPlatform) {
                         return new TargetDirections(primDir, secDir);
                     }
                 }
@@ -240,8 +240,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(
-                getPos().getX() - 1, getPos().getY() - 1, getPos().getZ() - 1,
-                getPos().getX() + 2, getPos().getY() + 2, getPos().getZ() + 2
+                getBlockPos().getX() - 1, getBlockPos().getY() - 1, getBlockPos().getZ() - 1,
+                getBlockPos().getX() + 2, getBlockPos().getY() + 2, getBlockPos().getZ() + 2
         );
     }
 
@@ -296,7 +296,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         }
 
         BlockPos offset(BlockPos initial) {
-            return secondary == null ? initial.offset(primary) : initial.offset(primary).offset(secondary);
+            return secondary == null ? initial.relative(primary) : initial.relative(primary).relative(secondary);
         }
 
         static TargetDirections readNBT(CompoundNBT tag) {
@@ -308,8 +308,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         }
 
         void writeNBT(CompoundNBT tag) {
-            tag.putInt("targetDir1", primary.getIndex());
-            if (secondary != null) tag.putInt("targetDir2", secondary.getIndex());
+            tag.putInt("targetDir1", primary.get3DDataValue());
+            if (secondary != null) tag.putInt("targetDir2", secondary.get3DDataValue());
         }
     }
 }

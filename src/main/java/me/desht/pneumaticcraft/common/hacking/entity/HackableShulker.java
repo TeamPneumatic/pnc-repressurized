@@ -11,7 +11,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableShulker implements IHackableEntity {
@@ -51,8 +51,8 @@ public class HackableShulker implements IHackableEntity {
 
     @Override
     public boolean afterHackTick(Entity entity) {
-        if (entity.getEntityWorld().rand.nextInt(5) < 4) {
-            ((ShulkerEntity) entity).updateArmorModifier(100);
+        if (entity.getCommandSenderWorld().random.nextInt(5) < 4) {
+            ((ShulkerEntity) entity).setRawPeekAmount(100);
         }
         return false;
     }

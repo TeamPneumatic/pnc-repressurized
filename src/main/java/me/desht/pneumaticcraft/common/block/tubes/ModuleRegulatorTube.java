@@ -49,7 +49,7 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
         if (neighbourCap == null) {
-            TileEntity neighborTE = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
+            TileEntity neighborTE = pressureTube.getLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
             if (neighborTE != null) {
                 neighbourCap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
                 if (neighbourCap.isPresent()) neighbourCap.addListener(l -> neighbourCap = null);

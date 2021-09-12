@@ -25,9 +25,9 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(guiLeft + 98, guiTop + 14, te.getFluidTank()));
+        addButton(new WidgetTank(leftPos + 98, topPos + 14, te.getFluidTank()));
 
-        addButton(rangeButton = new WidgetRangeToggleButton(guiLeft + 152, guiTop + 66, te));
+        addButton(rangeButton = new WidgetRangeToggleButton(leftPos + 152, topPos + 66, te));
     }
 
     @Override
@@ -37,9 +37,9 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap
 
     @Override
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + (int)(xSize * 0.82), yStart + ySize / 4 - 2);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        return new PointXY(xStart + (int)(imageWidth * 0.82), yStart + imageHeight / 4 - 2);
     }
 
     @Override

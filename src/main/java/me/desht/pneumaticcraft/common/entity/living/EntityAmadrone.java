@@ -38,8 +38,8 @@ public class EntityAmadrone extends EntityDrone {
         EntityAmadrone drone = new EntityAmadrone(ModEntities.AMADRONE.get(), world);
         drone.readFromItemStack(getAmadroneStack());
 
-        int startY = world.getHeight(Heightmap.Type.WORLD_SURFACE, pos.add(30, 0, 0)).getY() + 27 + world.rand.nextInt(6);
-        drone.setPosition(pos.getX() + 27 + world.rand.nextInt(6), startY, pos.getZ() + world.rand.nextInt(6) - 3);
+        int startY = world.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, pos.offset(30, 0, 0)).getY() + 27 + world.random.nextInt(6);
+        drone.setPos(pos.getX() + 27 + world.random.nextInt(6), startY, pos.getZ() + world.random.nextInt(6) - 3);
 
         return drone;
     }
@@ -93,12 +93,12 @@ public class EntityAmadrone extends EntityDrone {
     }
 
     @Override
-    protected boolean canDropLoot() {
+    protected boolean shouldDropExperience() {
         return false;
     }
 
     @Override
-    protected void dropInventory() {
+    protected void dropEquipment() {
         // The DroneSuicideEvent for amadrones *should* ensure the drone's inventory is emptied before death,
         // but see https://github.com/TeamPneumatic/pnc-repressurized/issues/507
         // So let's be extra-paranoid and drop nothing here
@@ -120,28 +120,28 @@ public class EntityAmadrone extends EntityDrone {
     }
 
     @Override
-    public void writeAdditional(CompoundNBT tag) {
-        super.writeAdditional(tag);
+    public void addAdditionalSaveData(CompoundNBT tag) {
+        super.addAdditionalSaveData(tag);
 
         if (handlingOffer != null) {
             CompoundNBT subTag = new CompoundNBT();
             subTag.putString("offerId", handlingOffer.toString());
             subTag.putInt("offerTimes", offerTimes);
             subTag.putString("buyingPlayer", buyingPlayer);
-            if (!usedTablet.isEmpty()) subTag.put("usedTablet", usedTablet.write(new CompoundNBT()));
+            if (!usedTablet.isEmpty()) subTag.put("usedTablet", usedTablet.save(new CompoundNBT()));
             subTag.putString("amadronAction", amadronAction.toString());
             tag.put("amadron", subTag);
         }
     }
 
     @Override
-    public void readAdditional(CompoundNBT tag) {
-        super.readAdditional(tag);
+    public void readAdditionalSaveData(CompoundNBT tag) {
+        super.readAdditionalSaveData(tag);
 
         if (tag.contains("amadron")) {
             CompoundNBT subTag = tag.getCompound("amadron");
             handlingOffer = new ResourceLocation(subTag.getString("offerId"));
-            usedTablet = ItemStack.read(subTag.getCompound("usedTablet"));
+            usedTablet = ItemStack.of(subTag.getCompound("usedTablet"));
             offerTimes = subTag.getInt("offerTimes");
             buyingPlayer = subTag.getString("buyingPlayer");
             amadronAction = AmadronAction.valueOf(subTag.getString("amadronAction"));

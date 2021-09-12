@@ -158,15 +158,15 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public void validate() {
-        super.validate();
+    public void clearRemoved() {
+        super.clearRemoved();
 
         GlobalTileEntityCacheManager.getInstance().aerialInterfaces.add(this);
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
 
         GlobalTileEntityCacheManager.getInstance().aerialInterfaces.remove(this);
 
@@ -192,7 +192,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
         if (wasConnected != isConnectedToPlayer) {
             needUpdateNeighbours = true;
-            markDirty();
+            setChanged();
         }
     }
 
@@ -205,7 +205,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         super.onDescUpdate();
 
         gameProfileClient = playerName.isEmpty() ? null :
-                SkullTileEntity.updateGameProfile(new GameProfile(null, playerName));
+                SkullTileEntity.updateGameprofile(new GameProfile(null, playerName));
     }
 
     @Override
@@ -223,18 +223,18 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public void tick() {
         super.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             if (needUpdateNeighbours) {
                 needUpdateNeighbours = false;
                 updateNeighbours();
             }
-            if (getWorld() instanceof ServerWorld && (getWorld().getGameTime() & 0xf) == 0) {
-                setPlayer(((ServerWorld) getWorld()).getServer().getPlayerList().getPlayerByUUID(playerUUID));
+            if (getLevel() instanceof ServerWorld && (getLevel().getGameTime() & 0xf) == 0) {
+                setPlayer(((ServerWorld) getLevel()).getServer().getPlayerList().getPlayer(playerUUID));
             }
             getPlayer().ifPresent(player -> {
                 if (getPressure() >= getMinWorkingPressure()) {
                     addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
-                    if ((getWorld().getGameTime() & 0x3f) == 0) {
+                    if ((getLevel().getGameTime() & 0x3f) == 0) {
                         scanForChargeableItems(player);
                     }
                     supplyEnergyToPlayer(player);
@@ -274,7 +274,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             } catch (IllegalArgumentException ignored) {
             }
         }
-        markDirty();
+        setChanged();
     }
 
     @Override
@@ -306,8 +306,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         playerUUID = UUID.fromString(tag.getString("playerUUID"));
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
@@ -320,8 +320,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.putString("playerUUID", playerUUID.toString());
         tag.putString("feedMode", feedMode.toString());
@@ -346,8 +346,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         chargeableSlots.clear();
         PlayerInventory inv = player.inventory;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            if (inv.getStackInSlot(i).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            if (inv.getItem(i).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
                 chargeableSlots.add(i);
             }
         }
@@ -357,7 +357,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         if (energyStorage.getEnergyStored() > 0) {
             PlayerInventory inv = player.inventory;
             for (int slot : chargeableSlots) {
-                ItemStack stack = inv.getStackInSlot(slot);
+                ItemStack stack = inv.getItem(slot);
                 int energyLeft = stack.getCapability(CapabilityEnergy.ENERGY).map(receivingStorage -> {
                     int stored = energyStorage.getEnergyStored();
                     if (stored > 0) {
@@ -377,11 +377,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private void supplyAirToPlayer(PlayerEntity player) {
         // A little higher than the pneumatic helmet with scuba upgrade, so aerial interface
         // takes precedence if both are available
-        if (player.getAir() <= 170) {
-            int playerAir = 300 - player.getAir();
-            player.setAir(300);
+        if (player.getAirSupply() <= 170) {
+            int playerAir = 300 - player.getAirSupply();
+            player.setAirSupply(300);
             addAir(-playerAir * PLAYER_AIR_MULTIPLIER);
-            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1f, 0.9f, false), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.blockPosition(), 1f, 0.9f, false), (ServerPlayerEntity) player);
         }
     }
 
@@ -398,7 +398,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     @Nullable
     @Override
     public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerAerialInterface(windowId, playerInventory, getPos());
+        return new ContainerAerialInterface(windowId, playerInventory, getBlockPos());
     }
 
     @Override
@@ -485,7 +485,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
             ItemStack stack = getStackInSlot(slot);
-            return EnchantmentHelper.getEnchantmentLevel(Enchantments.BINDING_CURSE, stack) > 0 ?
+            return EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BINDING_CURSE, stack) > 0 ?
                     ItemStack.EMPTY :
                     super.extractItem(slot, amount, simulate);
         }
@@ -501,7 +501,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private class PlayerEnderInvHandler extends PlayerInvHandler {
         @Override
         protected IItemHandler getInvWrapper(PlayerEntity player) {
-            if (cached == null) cached = new InvWrapper(player.getInventoryEnderChest());
+            if (cached == null) cached = new InvWrapper(player.getEnderChestInventory());
             return cached;
         }
     }
@@ -542,14 +542,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                 ItemStack remainingItem = stack;
                 ItemStack copy = stack.copy();
                 while (stack.getCount() > 0) {
-                    remainingItem = stack.onItemUseFinish(player.world, player);
+                    remainingItem = stack.finishUsingItem(player.level, player);
                     remainingItem = ForgeEventFactory.onItemUseFinish(player, stack, 0, remainingItem);
                     if (remainingItem.getCount() > 0 && (remainingItem != stack || remainingItem.getCount() != startValue)) {
-                        if (!player.inventory.addItemStackToInventory(remainingItem) && remainingItem.getCount() > 0) {
-                            player.dropItem(remainingItem, false);
+                        if (!player.inventory.add(remainingItem) && remainingItem.getCount() > 0) {
+                            player.drop(remainingItem, false);
                         }
                     }
-                    player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.aerial_interface.fedItem", copy.getDisplayName()), true);
+                    player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()), true);
                     if (stack.getCount() == startValue) break;
                 }
                 return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;
@@ -558,7 +558,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         private boolean okToFeed(@Nonnull ItemStack stack, PlayerEntity player) {
             int foodValue = getFoodValue(stack);
-            int curFoodLevel = player.getFoodStats().getFoodLevel();
+            int curFoodLevel = player.getFoodData().getFoodLevel();
             FeedMode effectiveFeedMode = feedMode == FeedMode.SMART ?
                     (player.getHealth() < player.getMaxHealth() ? FeedMode.GREEDY : FeedMode.FRUGAL) :
                     feedMode;
@@ -589,7 +589,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         private int getFoodValue(ItemStack stack) {
             //noinspection ConstantConditions
-            return stack.getItem().isFood() ? stack.getItem().getFood().getHealing() : 0;
+            return stack.getItem().isEdible() ? stack.getItem().getFoodProperties().getNutrition() : 0;
         }
     }
 

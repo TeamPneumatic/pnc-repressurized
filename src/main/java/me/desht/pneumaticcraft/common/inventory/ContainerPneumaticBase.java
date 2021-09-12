@@ -36,7 +36,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     public ContainerPneumaticBase(ContainerType type, int windowId, PlayerInventory invPlayer, BlockPos tilePos) {
         super(type, windowId);
         if (tilePos != null) {
-            TileEntity te0 = invPlayer.player.world.getTileEntity(tilePos);
+            TileEntity te0 = invPlayer.player.level.getBlockEntity(tilePos);
             if (te0 instanceof TileEntityBase) {
                 //noinspection unchecked
                 te = (T) te0;  // should be safe: T extends TileEntityBase, and we're doing an instanceof
@@ -74,13 +74,13 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return te.isGuiUseableByPlayer(player);
     }
 
     @Override
-    public void detectAndSendChanges() {
-        super.detectAndSendChanges();
+    public void broadcastChanges() {
+        super.broadcastChanges();
         for (int i = 0; i < syncedFields.size(); i++) {
             if (syncedFields.get(i).update() || firstTick) {
                 sendToContainerListeners(new PacketUpdateGui(i, syncedFields.get(i)));
@@ -90,7 +90,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     }
 
     void sendToContainerListeners(Object message) {
-        for (IContainerListener listener : listeners) {
+        for (IContainerListener listener : containerListeners) {
             if (listener instanceof ServerPlayerEntity) {
                 NetworkHandler.sendToPlayer(message, (ServerPlayerEntity) listener);
             }
@@ -102,7 +102,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     }
 
     protected void addPlayerSlots(PlayerInventory inventoryPlayer, int xOffset, int yOffset) {
-        playerSlotsStart = inventorySlots.size();
+        playerSlotsStart = slots.size();
 
         // Add the player's inventory slots to the container
         for (int inventoryRowIndex = 0; inventoryRowIndex < 3; ++inventoryRowIndex) {
@@ -143,31 +143,31 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
 
     @Override
     @Nonnull
-    public ItemStack transferStackInSlot(PlayerEntity player, int slot) {
-        Slot srcSlot = inventorySlots.get(slot);
-        if (srcSlot == null || !srcSlot.getHasStack()) {
+    public ItemStack quickMoveStack(PlayerEntity player, int slot) {
+        Slot srcSlot = slots.get(slot);
+        if (srcSlot == null || !srcSlot.hasItem()) {
             return ItemStack.EMPTY;
         }
-        ItemStack srcStack = srcSlot.getStack().copy();
+        ItemStack srcStack = srcSlot.getItem().copy();
         ItemStack copyOfSrcStack = srcStack.copy();
 
         if (slot < playerSlotsStart) {
-            if (!mergeItemStack(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
+            if (!moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
                 return ItemStack.EMPTY;
         } else {
-            if (!mergeItemStack(srcStack, 0, playerSlotsStart, false))
+            if (!moveItemStackTo(srcStack, 0, playerSlotsStart, false))
                 return ItemStack.EMPTY;
         }
 
-        srcSlot.putStack(srcStack);
-        srcSlot.onSlotChange(srcStack, copyOfSrcStack);
+        srcSlot.set(srcStack);
+        srcSlot.onQuickCraft(srcStack, copyOfSrcStack);
         srcSlot.onTake(player, srcStack);
 
         return copyOfSrcStack;
     }
 
     // almost the same as the super method, but pays attention to slot itemstack limits
-    protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
+    protected boolean moveItemStackTo(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
         boolean flag = false;
         int i = startIndex;
         if (reverseDirection) {
@@ -184,21 +184,21 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
                     break;
                 }
 
-                Slot slot = this.inventorySlots.get(i);
-                ItemStack itemstack = slot.getStack();
-                if (!itemstack.isEmpty() && areItemsAndTagsEqual(stack, itemstack)) {
+                Slot slot = this.slots.get(i);
+                ItemStack itemstack = slot.getItem();
+                if (!itemstack.isEmpty() && consideredTheSameItem(stack, itemstack)) {
                     int j = itemstack.getCount() + stack.getCount();
                     // modified HERE
-                    int maxSize = Math.min(slot.getItemStackLimit(itemstack), Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize()));
+                    int maxSize = Math.min(slot.getMaxStackSize(itemstack), Math.min(slot.getMaxStackSize(), stack.getMaxStackSize()));
                     if (j <= maxSize) {
                         stack.setCount(0);
                         itemstack.setCount(j);
-                        slot.onSlotChanged();
+                        slot.setChanged();
                         flag = true;
                     } else if (itemstack.getCount() < maxSize) {
                         stack.shrink(maxSize - itemstack.getCount());
                         itemstack.setCount(maxSize);
-                        slot.onSlotChanged();
+                        slot.setChanged();
                         flag = true;
                     }
                 }
@@ -227,18 +227,18 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
                     break;
                 }
 
-                Slot slot1 = this.inventorySlots.get(i);
-                ItemStack itemstack1 = slot1.getStack();
-                if (itemstack1.isEmpty() && slot1.isItemValid(stack)) {
+                Slot slot1 = this.slots.get(i);
+                ItemStack itemstack1 = slot1.getItem();
+                if (itemstack1.isEmpty() && slot1.mayPlace(stack)) {
                     // modified HERE
-                    int limit = Math.min(slot1.getSlotStackLimit(), slot1.getItemStackLimit(stack));
+                    int limit = Math.min(slot1.getMaxStackSize(), slot1.getMaxStackSize(stack));
                     if (stack.getCount() > limit) {
-                        slot1.putStack(stack.split(limit));
+                        slot1.set(stack.split(limit));
                     } else {
-                        slot1.putStack(stack.split(stack.getCount()));
+                        slot1.set(stack.split(stack.getCount()));
                     }
 
-                    slot1.onSlotChanged();
+                    slot1.setChanged();
                     flag = true;
                     break;
                 }
@@ -256,12 +256,12 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
 
     @Nonnull
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
-        Slot slot = slotId < 0 ? null : inventorySlots.get(slotId);
+    public ItemStack clicked(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
+        Slot slot = slotId < 0 ? null : slots.get(slotId);
         if (slot instanceof IPhantomSlot) {
             return slotClickPhantom(slot, dragType, clickType, player);
         }
-        return super.slotClick(slotId, dragType, clickType, player);
+        return super.clicked(slotId, dragType, clickType, player);
     }
 
     @Nonnull
@@ -271,24 +271,24 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
         if (clickType == ClickType.CLONE && dragType == 2) {
             // middle-click: clear slot
             if (((IPhantomSlot) slot).canAdjust()) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             }
         } else if ((clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE) && (dragType == 0 || dragType == 1)) {
             // left or right-click...
             PlayerInventory playerInv = player.inventory;
-            slot.onSlotChanged();
-            ItemStack stackSlot = slot.getStack();
-            ItemStack stackHeld = playerInv.getItemStack();
+            slot.setChanged();
+            ItemStack stackSlot = slot.getItem();
+            ItemStack stackHeld = playerInv.getCarried();
 
             stack = stackSlot.copy();
             if (stackSlot.isEmpty()) {
-                if (!stackHeld.isEmpty() && slot.isItemValid(stackHeld)) {
+                if (!stackHeld.isEmpty() && slot.mayPlace(stackHeld)) {
                     fillPhantomSlot(slot, stackHeld, dragType);
                 }
             } else if (stackHeld.isEmpty()) {
                 adjustPhantomSlot(slot, clickType, dragType);
-                slot.onTake(player, playerInv.getItemStack());
-            } else if (slot.isItemValid(stackHeld)) {
+                slot.onTake(player, playerInv.getCarried());
+            } else if (slot.mayPlace(stackHeld)) {
                 if (canStacksMerge(stackSlot, stackHeld)) {
                     adjustPhantomSlot(slot, clickType, dragType);
                 } else {
@@ -300,19 +300,19 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     }
 
     private boolean canStacksMerge(ItemStack stack1, ItemStack stack2) {
-        return !(stack1.isEmpty() || stack2.isEmpty()) && stack1.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack1, stack2);
+        return !(stack1.isEmpty() || stack2.isEmpty()) && stack1.sameItem(stack2) && ItemStack.tagMatches(stack1, stack2);
     }
 
     private void adjustPhantomSlot(Slot slot, ClickType clickType, int dragType) {
         if (!((IPhantomSlot) slot).canAdjust()) {
             return;
         }
-        ItemStack stackSlot = slot.getStack().copy();
+        ItemStack stackSlot = slot.getItem().copy();
         if (dragType == 1) {
             if (clickType == ClickType.QUICK_MOVE) {
-                stackSlot.setCount(Math.min(stackSlot.getCount() * 2, slot.getSlotStackLimit())); // shift-r-click: double stack size
+                stackSlot.setCount(Math.min(stackSlot.getCount() * 2, slot.getMaxStackSize())); // shift-r-click: double stack size
             } else {
-                stackSlot.setCount(Math.min(stackSlot.getCount() + 1, slot.getSlotStackLimit())); // r-click: increase stack size
+                stackSlot.setCount(Math.min(stackSlot.getCount() + 1, slot.getMaxStackSize())); // r-click: increase stack size
             }
         } else if (dragType == 0) {
             if (clickType == ClickType.QUICK_MOVE) {
@@ -321,7 +321,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
                 stackSlot.shrink(1); // l-click: decrease stack size
             }
         }
-        slot.putStack(stackSlot);
+        slot.set(stackSlot);
     }
 
     private void fillPhantomSlot(Slot slot, ItemStack stackHeld, int dragType) {
@@ -329,13 +329,13 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
             return;
         }
         int stackSize = dragType == 0 ? stackHeld.getCount() : 1;
-        if (stackSize > slot.getSlotStackLimit()) {
-            stackSize = slot.getSlotStackLimit();
+        if (stackSize > slot.getMaxStackSize()) {
+            stackSize = slot.getMaxStackSize();
         }
         ItemStack phantomStack = stackHeld.copy();
         phantomStack.setCount(stackSize);
 
-        slot.putStack(phantomStack);
+        slot.set(phantomStack);
     }
 
     @Override

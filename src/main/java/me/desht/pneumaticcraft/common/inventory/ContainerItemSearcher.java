@@ -38,8 +38,8 @@ public class ContainerItemSearcher extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
-        return player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get();
+    public boolean stillValid(PlayerEntity player) {
+        return player.getItemBySlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get();
     }
 
     /**
@@ -67,12 +67,12 @@ public class ContainerItemSearcher extends Container {
      * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
      */
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int par2) {
+    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int par2) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void putStackInSlot(int par1, ItemStack par2ItemStack) {
+    public void setItem(int par1, ItemStack par2ItemStack) {
         // override this to do nothing, as NEI tries to place items in this container which makes it crash.
     }
 

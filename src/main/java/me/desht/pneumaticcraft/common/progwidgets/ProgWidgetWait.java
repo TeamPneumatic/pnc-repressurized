@@ -67,14 +67,14 @@ public class ProgWidgetWait extends ProgWidget {
         }
 
         @Override
-        public boolean shouldExecute() {
+        public boolean canUse() {
             return ticks < maxTicks;
         }
 
         @Override
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             ticks++;
-            return shouldExecute();
+            return canUse();
         }
 
     }

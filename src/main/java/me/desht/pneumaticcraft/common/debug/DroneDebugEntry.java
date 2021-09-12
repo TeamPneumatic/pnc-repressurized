@@ -28,14 +28,14 @@ public class DroneDebugEntry {
      * @param buf message buffer
      */
     public DroneDebugEntry(PacketBuffer buf) {
-        message = buf.readString();
+        message = buf.readUtf();
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         progWidgetId = buf.readInt();
         receivedTime = System.currentTimeMillis();
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeString(message);
+        buf.writeUtf(message);
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());
         buf.writeInt(pos.getZ());

@@ -27,7 +27,7 @@ public class ModVillagerProfession extends VillagerProfession {
 
     @Nullable
     @Override
-    public SoundEvent getSound() {
+    public SoundEvent getWorkSound() {
         int n = ThreadLocalRandom.current().nextInt(soundEventSuppliers.size());
         return soundEventSuppliers.get(n).get();
     }

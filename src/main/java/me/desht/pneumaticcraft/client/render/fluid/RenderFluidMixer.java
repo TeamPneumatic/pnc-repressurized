@@ -31,9 +31,9 @@ public class RenderFluidMixer extends AbstractFluidTER<TileEntityFluidMixer> {
     @Override
     Collection<TankRenderInfo> getTanksToRender(TileEntityFluidMixer te) {
         return ImmutableList.of(
-                new TankRenderInfo(te.getInputTank1(), BOUNDS[0][te.getRotation().getHorizontalIndex()]).without(Direction.DOWN),
-                new TankRenderInfo(te.getInputTank2(), BOUNDS[1][te.getRotation().getHorizontalIndex()]).without(Direction.DOWN),
-                new TankRenderInfo(te.getOutputTank(), BOUNDS[2][te.getRotation().getHorizontalIndex()]).without(Direction.DOWN)
+                new TankRenderInfo(te.getInputTank1(), BOUNDS[0][te.getRotation().get2DDataValue()]).without(Direction.DOWN),
+                new TankRenderInfo(te.getInputTank2(), BOUNDS[1][te.getRotation().get2DDataValue()]).without(Direction.DOWN),
+                new TankRenderInfo(te.getOutputTank(), BOUNDS[2][te.getRotation().get2DDataValue()]).without(Direction.DOWN)
         );
     }
 }

@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableButton implements IHackableBlock {
@@ -44,6 +44,6 @@ public class HackableButton implements IHackableBlock {
     @Override
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.onBlockActivated(world, player, Hand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, Hand.MAIN_HAND, rtr));
     }
 }

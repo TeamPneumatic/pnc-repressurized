@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -14,9 +15,9 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.entity.HackableEnderman;
+import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
@@ -25,9 +26,7 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -70,7 +69,7 @@ import net.minecraftforge.fluids.FluidUtil;
 
 import java.util.Iterator;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class EventHandlerPneumaticCraft {
 
@@ -87,7 +86,7 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void explosionCraftingEvent(ExplosionEvent.Detonate event) {
-        if (!PNCConfig.Common.Recipes.explosionCrafting || event.getWorld().isRemote) {
+        if (!PNCConfig.Common.Recipes.explosionCrafting || event.getWorld().isClientSide) {
             return;
         }
 
@@ -106,7 +105,7 @@ public class EventHandlerPneumaticCraft {
                             firstItem = false;
                         } else {
                             // subsequent items: add a new item entity
-                            PneumaticCraftUtils.dropItemOnGround(result, event.getWorld(), entity.getPosition());
+                            PneumaticCraftUtils.dropItemOnGround(result, event.getWorld(), entity.blockPosition());
                         }
                     }
                 }
@@ -132,7 +131,7 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (!event.getWorld().isRemote && event.getEntity() instanceof MobEntity) {
+        if (!event.getWorld().isClientSide && event.getEntity() instanceof MobEntity) {
             MobEntity mob = (MobEntity) event.getEntity();
             mob.goalSelector.addGoal(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone(mob));
         }
@@ -156,7 +155,7 @@ public class EventHandlerPneumaticCraft {
         RayTraceResult rtr = event.getTarget();
         if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
             BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
-            Block b = event.getWorld().getBlockState(brtr.getPos()).getBlock();
+            Block b = event.getWorld().getBlockState(brtr.getBlockPos()).getBlock();
             if (b instanceof FlowingFluidBlock) {
                 Fluid fluid = ((FlowingFluidBlock) b).getFluid();
                 if (TileEntityRefineryController.isInputFluidValid(event.getWorld(), fluid, 4) && event.getPlayer() instanceof ServerPlayerEntity) {
@@ -170,10 +169,10 @@ public class EventHandlerPneumaticCraft {
     public void onModdedWrenchBlock(PlayerInteractEvent.RightClickBlock event) {
         BlockState state = event.getWorld().getBlockState(event.getPos());
         if (!event.isCanceled() && state.getBlock() instanceof IPneumaticWrenchable) {
-            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getHeldItem(Hand.MAIN_HAND))) {
+            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(Hand.MAIN_HAND))) {
                 event.setCanceled(true);
-            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getHeldItem(event.getHand()))) {
-                if (event.getWorld().isRemote) {
+            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(event.getHand()))) {
+                if (event.getWorld().isClientSide) {
                     NetworkHandler.sendToServer(new PacketModWrenchBlock(event.getPos(), event.getFace(), event.getHand()));
                 }
                 event.setCanceled(true);
@@ -184,11 +183,11 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void onModdedWrenchEntity(PlayerInteractEvent.EntityInteract event) {
         if (!event.isCanceled() && event.getTarget() instanceof IPneumaticWrenchable) {
-            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getHeldItem(Hand.MAIN_HAND))) {
+            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(Hand.MAIN_HAND))) {
                 event.setCanceled(true);
-            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getHeldItem(event.getHand()))) {
-                if (event.getWorld().isRemote) {
-                    NetworkHandler.sendToServer(new PacketModWrenchBlock(event.getPos(), event.getHand(), event.getTarget().getEntityId()));
+            } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(event.getHand()))) {
+                if (event.getWorld().isClientSide) {
+                    NetworkHandler.sendToServer(new PacketModWrenchBlock(event.getPos(), event.getHand(), event.getTarget().getId()));
                 }
                 event.setCanceled(true);
             }
@@ -199,7 +198,7 @@ public class EventHandlerPneumaticCraft {
     public void quetziMoo(ServerChatEvent event) {
         if (event.getUsername().equals("Quetzz") && event.getMessage().equals("m00")) {
             for (int i = 0; i < 4; i++)
-                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.ENTITY_COW_AMBIENT, SoundCategory.NEUTRAL, event.getPlayer().getPosX(), event.getPlayer().getPosY(), event.getPlayer().getPosZ(), 1, 1, true), event.getPlayer());
+                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundCategory.NEUTRAL, event.getPlayer().getX(), event.getPlayer().getY(), event.getPlayer().getZ(), 1, 1, true), event.getPlayer());
         }
     }
 
@@ -207,7 +206,7 @@ public class EventHandlerPneumaticCraft {
     public void onWorldLoad(WorldEvent.Load event) {
         if (event.getWorld() instanceof World) {
             World world = (World) event.getWorld();
-            if (!world.isRemote) {
+            if (!world.isClientSide) {
                 ModuleNetworkManager.getInstance(world).invalidateCache();
             }
         }
@@ -242,8 +241,8 @@ public class EventHandlerPneumaticCraft {
     }
 
     private LootPool buildLootPool(String name) {
-        return LootPool.builder()
-                .addEntry(TableLootEntry.builder(RL("inject/" + name)).weight(1))
+        return LootPool.lootPool()
+                .add(TableLootEntry.lootTableReference(RL("inject/" + name)).setWeight(1))
                 .bonusRolls(0, 1)
                 .name("pneumaticcraft_inject")
                 .build();
@@ -253,23 +252,18 @@ public class EventHandlerPneumaticCraft {
     public void onEquipmentChanged(LivingEquipmentChangeEvent event) {
         if (event.getEntityLiving() instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
-            if (event.getSlot().getSlotType() == EquipmentSlotType.Group.HAND && event.getTo().getItem() instanceof IPositionProvider) {
+            if (event.getSlot().getType() == EquipmentSlotType.Group.HAND && event.getTo().getItem() instanceof IPositionProvider) {
                 // sync any variable values in this position provider item to the client for rendering purposes
                 ((IPositionProvider) event.getTo().getItem()).syncVariables(player, event.getTo());
             } else if (event.getSlot() == EquipmentSlotType.MAINHAND) {
-                // tag the minigun with the player's entity ID - it's sync'd to clients
-                // so other clients will know who's wielding it, and render appropriately
-                // See RenderItemMinigun#renderByItem()
-                if (event.getTo().getItem() == ModItems.MINIGUN.get()) {
-                    NBTUtils.initNBTTagCompound(event.getTo());
-                    event.getTo().getTag().putInt("owningPlayerId", player.getEntityId());
-                } else if (event.getFrom().getItem() == ModItems.MINIGUN.get()) {
-                    NBTUtils.initNBTTagCompound(event.getFrom());
-                    event.getFrom().getTag().remove("owningPlayerId");
+                if (event.getTo().getItem() instanceof ItemMinigun) {
+                    ((ItemMinigun) event.getTo().getItem()).onEquipmentChange(player, event.getTo(), true);
+                } else if (event.getFrom().getItem() instanceof ItemMinigun) {
+                    ((ItemMinigun) event.getFrom().getItem()).onEquipmentChange(player, event.getFrom(), false);
                 }
-            } else if (event.getSlot().getSlotType() == EquipmentSlotType.Group.ARMOR) {
+            } else if (event.getSlot().getType() == EquipmentSlotType.Group.ARMOR) {
                 // trigger the "compressed iron man" advancement if wearing a full suit
-                for (ItemStack stack : player.getArmorInventoryList()) {
+                for (ItemStack stack : player.getArmorSlots()) {
                     if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
                         return;
                     }
@@ -294,7 +288,7 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {
-        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlockTags());
+        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlocks());
 
         PneumaticRegistry.getInstance().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
     }

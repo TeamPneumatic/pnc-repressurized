@@ -80,7 +80,7 @@ public class WidgetVerticalScrollbar extends Widget implements ICanRender3d {
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             RenderSystem.color4f(1, 1, 1, 1);
-            Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_VERTICAL_SCROLLBAR);
+            Minecraft.getInstance().getTextureManager().bind(Textures.WIDGET_VERTICAL_SCROLLBAR);
             blit(matrixStack, x, y, 12, 0, width, 1, 26, 15);
             for (int i = 0; i < height - 2; i++)
                 blit(matrixStack, x, y + 1 + i, 12, 1, width, 1, 26, 15);
@@ -118,23 +118,23 @@ public class WidgetVerticalScrollbar extends Widget implements ICanRender3d {
 
         posF(builder, posMat, x, y + height, 0)
                 .color(255, 255, 255, 255)
-                .tex(u1, v2)
-                .lightmap(FULL_BRIGHT)
+                .uv(u1, v2)
+                .uv2(FULL_BRIGHT)
                 .endVertex();
         posF(builder, posMat, x + width, y + height, 0)
                 .color(255, 255, 255, 255)
-                .tex(u2, v2)
-                .lightmap(FULL_BRIGHT)
+                .uv(u2, v2)
+                .uv2(FULL_BRIGHT)
                 .endVertex();
         posF(builder, posMat, x + width, y, 0)
                 .color(255, 255, 255, 255)
-                .tex(u2, v1)
-                .lightmap(FULL_BRIGHT)
+                .uv(u2, v1)
+                .uv2(FULL_BRIGHT)
                 .endVertex();
         posF(builder, posMat, x, y, 0)
                 .color(255, 255, 255, 255)
-                .tex(u1, v1)
-                .lightmap(FULL_BRIGHT)
+                .uv(u1, v1)
+                .uv2(FULL_BRIGHT)
                 .endVertex();
     }
 

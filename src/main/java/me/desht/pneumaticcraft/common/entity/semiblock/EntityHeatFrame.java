@@ -39,8 +39,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class EntityHeatFrame extends EntitySemiblockBase {
-    private static final DataParameter<Byte> STATUS = EntityDataManager.createKey(EntityHeatFrame.class, DataSerializers.BYTE);
-    private static final DataParameter<Integer> TEMPERATURE = EntityDataManager.createKey(EntityHeatFrame.class, DataSerializers.VARINT);
+    private static final DataParameter<Byte> STATUS = EntityDataManager.defineId(EntityHeatFrame.class, DataSerializers.BYTE);
+    private static final DataParameter<Integer> TEMPERATURE = EntityDataManager.defineId(EntityHeatFrame.class, DataSerializers.INT);
 
     private static final int MIN_COOKING_TEMP = 373;
 
@@ -69,11 +69,11 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
+    protected void defineSynchedData() {
+        super.defineSynchedData();
 
-        this.dataManager.register(STATUS, IDLE);
-        this.dataManager.register(TEMPERATURE, 0);
+        this.entityData.define(STATUS, IDLE);
+        this.entityData.define(TEMPERATURE, 0);
     }
 
     @Nonnull
@@ -87,34 +87,36 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
     @Override
     public boolean canPlace(Direction facing) {
-        return getCachedTileEntity() != null && getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
+        return getCachedTileEntity() != null
+                && getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()
+                && !getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent();
     }
 
     private void setStatus(byte status) {
-        getDataManager().set(STATUS, status);
+        getEntityData().set(STATUS, status);
     }
 
     private byte getStatus() {
-        return getDataManager().get(STATUS);
+        return getEntityData().get(STATUS);
     }
 
     private void setSyncedTemperature(int temperature) {
-        getDataManager().set(TEMPERATURE, temperature);
+        getEntityData().set(TEMPERATURE, temperature);
     }
 
     public int getSyncedTemperature() {
-        return getDataManager().get(TEMPERATURE);
+        return getEntityData().get(TEMPERATURE);
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if (ticksExisted == 1) {
-            logic.initializeAmbientTemperature(world, getBlockPos());
+        if (tickCount == 1) {
+            logic.initializeAmbientTemperature(level, getBlockPos());
         }
 
-        if (!getWorld().isRemote) {
+        if (!getWorld().isClientSide) {
             byte newStatus = IDLE;
             if (logic.getTemperature() > MIN_COOKING_TEMP) {
                 newStatus = doCooking();
@@ -134,14 +136,14 @@ public class EntityHeatFrame extends EntitySemiblockBase {
             setSyncedTemperature(syncedTemperature.getSyncedTemp());
         } else {
             // client
-            if ((ticksExisted & 0x3) == 0) {
+            if ((tickCount & 0x3) == 0) {
                 byte status = getStatus();
                 switch (status) {
                     case COOKING:
-                        ClientUtils.emitParticles(world, getBlockPos(), world.rand.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
+                        ClientUtils.emitParticles(level, getBlockPos(), level.random.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
                         break;
                     case COOLING:
-                        ClientUtils.emitParticles(world, getBlockPos(), ParticleTypes.SPIT);
+                        ClientUtils.emitParticles(level, getBlockPos(), ParticleTypes.SPIT);
                         break;
                 }
             }
@@ -178,9 +180,9 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         ItemStack stack = handler.getStackInSlot(slot);
         if (!stack.isEmpty()) {
             Inventory inv = new Inventory(1);
-            inv.setInventorySlotContents(0, stack);
-            return world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, this.world).map(recipe -> {
-                ItemStack result = recipe.getRecipeOutput().copy();
+            inv.setItem(0, stack);
+            return level.getRecipeManager().getRecipeFor(IRecipeType.SMELTING, inv, this.level).map(recipe -> {
+                ItemStack result = recipe.getResultItem().copy();
                 if (!result.isEmpty()) {
                     ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
                     if (remainder.isEmpty()) {
@@ -226,7 +228,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         ItemStack stack = handler.getStackInSlot(slot);
         if (stack.isEmpty()) return false;
 
-        HeatFrameCoolingRecipe recipe = PneumaticCraftRecipeType.HEAT_FRAME_COOLING.findFirst(world, r -> r.matches(stack));
+        HeatFrameCoolingRecipe recipe = PneumaticCraftRecipeType.HEAT_FRAME_COOLING.findFirst(level, r -> r.matches(stack));
 
         if (recipe != null) {
             boolean extractedOK;
@@ -257,8 +259,8 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     }
 
     @Override
-    protected void readAdditional(CompoundNBT tag) {
-        super.readAdditional(tag);
+    protected void readAdditionalSaveData(CompoundNBT tag) {
+        super.readAdditionalSaveData(tag);
 
         logic.deserializeNBT(tag.getCompound("heatExchanger"));
         cookingProgress = tag.getInt("cookingProgress");
@@ -277,7 +279,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     @Override
     public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
         int cook, cool;
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             // TOP
             cook = cookingProgress;
             cool = coolingProgress;
@@ -291,7 +293,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         if (getStatus() != COOKING && cook >= 100) cook = 0;
         if (getStatus() != COOLING && cool >= 100) cool = 0;
         curInfo.add(HeatUtil.formatHeatString(logic.getTemperatureAsInt()));
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooking", cook).mergeStyle(TextFormatting.GRAY));
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooling", cool).mergeStyle(TextFormatting.GRAY));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooking", cook).withStyle(TextFormatting.GRAY));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooling", cool).withStyle(TextFormatting.GRAY));
     }
 }

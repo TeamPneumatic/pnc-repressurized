@@ -60,7 +60,7 @@ public class ProgWidgetStandby extends ProgWidget {
         }
 
         @Override
-        public boolean shouldExecute() {
+        public boolean canUse() {
             drone.setStandby(true);
             return false;
         }

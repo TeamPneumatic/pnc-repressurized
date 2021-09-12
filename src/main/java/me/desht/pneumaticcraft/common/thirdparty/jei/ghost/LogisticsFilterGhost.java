@@ -19,7 +19,7 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
     public <I> List<Target<I>> getTargets(GuiLogisticsBase<T> gui, I ingredient, boolean doStart) {
         if (ingredient instanceof ItemStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
-            for (Slot slot : gui.getContainer().inventorySlots) {
+            for (Slot slot : gui.getMenu().slots) {
                 if (slot instanceof SlotPhantom) {
                     //noinspection unchecked
                     builder.add((Target<I>) new ItemStackTarget((SlotPhantom) slot, gui));
@@ -52,12 +52,12 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
 
         @Override
         public Rectangle2d getArea() {
-            return new Rectangle2d(gui.getGuiLeft() + slot.xPos, gui.getGuiTop() + slot.yPos, 16, 16);
+            return new Rectangle2d(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
         }
 
         @Override
         public void accept(ItemStack ingredient) {
-            gui.updateItemFilter(slot.slotNumber, ingredient.copy());
+            gui.updateItemFilter(slot.getSlotIndex(), ingredient.copy());
         }
     }
 

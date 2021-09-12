@@ -26,7 +26,7 @@ public class NBTToJsonConverter {
     }
 
     public static JsonObject getObject(CompoundNBT tag) {
-        Set<String> keys = tag.keySet();
+        Set<String> keys = tag.getAllKeys();
         JsonObject jsonRoot = new JsonObject();
         for (String key : keys) {
             JsonObject keyObject = new JsonObject();
@@ -38,9 +38,9 @@ public class NBTToJsonConverter {
             if (nbt instanceof CompoundNBT) {
                 keyObject.add("value", getObject((CompoundNBT) nbt));
             } else if (nbt instanceof NumberNBT) {
-                keyObject.addProperty("value", ((NumberNBT) nbt).getDouble());
+                keyObject.addProperty("value", ((NumberNBT) nbt).getAsDouble());
             } else if (nbt instanceof StringNBT) {
-                keyObject.addProperty("value", nbt.getString());
+                keyObject.addProperty("value", nbt.getAsString());
             } else if (nbt instanceof ListNBT) {
                 JsonArray array = new JsonArray();
                 ListNBT tagList = (ListNBT) nbt;
@@ -51,7 +51,7 @@ public class NBTToJsonConverter {
             } else if (nbt instanceof IntArrayNBT) {
                 JsonArray array = new JsonArray();
                 IntArrayNBT intArray = (IntArrayNBT) nbt;
-                for (int i : intArray.getIntArray()) {
+                for (int i : intArray.getAsIntArray()) {
                     array.add(new JsonPrimitive(i));
                 }
                 keyObject.add("value", array);

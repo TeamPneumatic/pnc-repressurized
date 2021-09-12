@@ -34,8 +34,8 @@ public class AssemblyRecipeBuilder extends PneumaticCraftRecipeBuilder<AssemblyR
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            json.add("input", input.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            json.add("input", input.toJson());
             json.add("result", SerializerHelper.serializeOneItemStack(output));
             json.addProperty("program", program.toString().toLowerCase(Locale.ROOT));
         }

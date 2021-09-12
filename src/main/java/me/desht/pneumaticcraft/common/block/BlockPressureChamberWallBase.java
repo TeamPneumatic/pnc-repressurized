@@ -28,21 +28,21 @@ public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft i
     }
 
     @Override
-    public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
-        super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (!par1World.isRemote && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
+    public void setPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
+        super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
+        if (!par1World.isClientSide && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
             AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayerEntity) par5EntityLiving);
         }
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         // forward activation to the pressure chamber valve, which will open the GUI
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(te -> {
             TileEntityPressureChamberValve valve = te.getCore();
             if (valve != null) {
-                if (!world.isRemote) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
+                if (!world.isClientSide) {
+                    NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getBlockPos());
                 }
                 return ActionResultType.SUCCESS;
             }
@@ -51,11 +51,11 @@ public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft i
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock() && !world.isRemote) {
+    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class)
                     .ifPresent(TileEntityPressureChamberWall::onBlockBreak);
         }
-        super.onReplaced(state, world, pos, newState, isMoving);
+        super.onRemove(state, world, pos, newState, isMoving);
     }
 }

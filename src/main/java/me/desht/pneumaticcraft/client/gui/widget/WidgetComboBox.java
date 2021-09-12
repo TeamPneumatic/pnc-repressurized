@@ -58,15 +58,15 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     private List<String> getApplicableElements() {
 //        if (applicable == null) {
         applicable = elements.stream()
-                .filter(element -> fixedOptions || element.toLowerCase().contains(getText().toLowerCase()))
+                .filter(element -> fixedOptions || element.toLowerCase().contains(getValue().toLowerCase()))
                 .collect(Collectors.toList());
 //        }
         return applicable;
     }
 
     @Override
-    public void writeText(String textToWrite) {
-        super.writeText(textToWrite);
+    public void insertText(String textToWrite) {
+        super.insertText(textToWrite);
 
         applicable = null; // force recalc
     }
@@ -75,27 +75,27 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
-        fontRenderer.drawString(matrixStack, isFocused() ? GuiConstants.TRIANGLE_UP : GuiConstants.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
+        fontRenderer.draw(matrixStack, isFocused() ? GuiConstants.TRIANGLE_UP : GuiConstants.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
     }
 
     @Override
     public void renderAfterEverythingElse(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (enabled && active && isFocused()) {
             List<String> applicableElements = getApplicableElements();
-            fill(matrixStack, x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFFA0A0A0);
-            fill(matrixStack, x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFF000000);
+            fill(matrixStack, x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.lineHeight, 0xFFA0A0A0);
+            fill(matrixStack, x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.lineHeight, 0xFF000000);
             for (int i = 0; i < applicableElements.size(); i++) {
                 String element = applicableElements.get(i);
-                // func_238412_a_ = trimStringToWidth
-                fontRenderer.drawStringWithShadow(matrixStack, fontRenderer.func_238412_a_(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.FONT_HEIGHT, 0xE0E0E0);
+                // plainSubstrByWidth = trimStringToWidth
+                fontRenderer.drawShadow(matrixStack, fontRenderer.plainSubstrByWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.lineHeight, 0xE0E0E0);
             }
         }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (getVisible() && active) {
-            int h = baseHeight + (isFocused() ? getApplicableElements().size() * fontRenderer.FONT_HEIGHT : 0);
+        if (isVisible() && active) {
+            int h = baseHeight + (isFocused() ? getApplicableElements().size() * fontRenderer.lineHeight : 0);
             boolean flag = mouseX >= (double)this.x && mouseX < (double)(this.x + this.width)
                     && mouseY >= (double)this.y && mouseY < (double)(this.y + h);
             if (flag) {
@@ -105,9 +105,9 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
                 } else {
                     // in the drop-down area
                     setFocused(false);
-                    int i = ((int) mouseY - y - height) / fontRenderer.FONT_HEIGHT;
+                    int i = ((int) mouseY - y - height) / fontRenderer.lineHeight;
                     if (i < getApplicableElements().size()) {
-                        setText(getApplicableElements().get(i));
+                        setValue(getApplicableElements().get(i));
                         selectedIndex = i;
                         pressable.accept(this);
                     }
@@ -125,7 +125,7 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
         if (enabled && isFocused() && keyCode == GLFW.GLFW_KEY_TAB) { // Tab completion
             List<String> applicableElements = getApplicableElements();
             if (applicableElements.size() > 0) {
-                setText(applicableElements.get(0));
+                setValue(applicableElements.get(0));
                 return true;
             }
         }
@@ -138,8 +138,8 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        super.setEnabled(enabled);
+    public void setEditable(boolean enabled) {
+        super.setEditable(enabled);
         this.enabled = enabled;
     }
 
@@ -156,7 +156,7 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     public void selectElement(int index) {
         if (index >= 0 && index < elements.size()) {
             selectedIndex = index;
-            setText(elements.get(index));
+            setValue(elements.get(index));
         }
     }
 
@@ -184,7 +184,7 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
 
     public final <T extends Enum<T>> WidgetComboBox initFromEnum(T initialValue) {
         if (initialValue instanceof ITranslatableEnum) {
-            return initFromEnum(initialValue, e -> I18n.format(((ITranslatableEnum) e).getTranslationKey()));
+            return initFromEnum(initialValue, e -> I18n.get(((ITranslatableEnum) e).getTranslationKey()));
         } else {
             throw new IllegalArgumentException(initialValue + " must implement ITranslatableEnum!");
         }

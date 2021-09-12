@@ -12,7 +12,7 @@ import net.minecraft.world.server.ServerWorld;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableDispenser implements IHackableBlock {
@@ -41,7 +41,7 @@ public class HackableDispenser implements IHackableBlock {
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         if (world instanceof ServerWorld) {
             BlockState state = world.getBlockState(pos);
-            state.tick((ServerWorld) world, pos, player.getRNG());
+            state.tick((ServerWorld) world, pos, player.getRandom());
         }
     }
 }

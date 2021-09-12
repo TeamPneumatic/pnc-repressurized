@@ -40,9 +40,9 @@ public class WorldPlayersInServerSensor implements IPollSensorSetting {
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
         PlayerList playerList = ServerLifecycleHooks.getCurrentServer().getPlayerList();
         if (textBoxText.equals("")) {
-            return Math.min(15, playerList.getCurrentPlayerCount());
+            return Math.min(15, playerList.getPlayerCount());
         } else {
-            for (String userName : playerList.getOnlinePlayerNames()) {
+            for (String userName : playerList.getPlayerNamesArray()) {
                 if (userName.equalsIgnoreCase(textBoxText)) return 15;
             }
             return 0;

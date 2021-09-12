@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
@@ -11,7 +12,6 @@ import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -55,19 +55,19 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
     };
 
     public ItemMemoryStick() {
-        super(ModItems.defaultProps().maxStackSize(1));
+        super(ModItems.defaultProps().stacksTo(1));
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack stack = playerIn.getHeldItem(handIn);
-        if (stack.getCount() != 1) return ActionResult.resultPass(stack);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
+        if (stack.getCount() != 1) return ActionResult.pass(stack);
 
-        if (!worldIn.isRemote) {
+        if (!worldIn.isClientSide) {
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 int playerXp = EnchantmentUtils.getPlayerXP(playerIn);
-                if (playerIn.isSneaking()) {
+                if (playerIn.isShiftKeyDown()) {
                     // take XP fluid from the stick and give to player
                     int xpToGive = EnchantmentUtils.getExperienceForLevel(playerIn.experienceLevel + 1) - playerXp;
                     int fluidAmount = xpToGive * ratio;
@@ -75,7 +75,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                     if (!toDrain.isEmpty()) {
                         EnchantmentUtils.addPlayerXP(playerIn, toDrain.getAmount() / ratio);
                         handler.drain(toDrain.getAmount(), IFluidHandler.FluidAction.EXECUTE);
-                        playerIn.setHeldItem(handIn, handler.getContainer());
+                        playerIn.setItemInHand(handIn, handler.getContainer());
                     }
                 } else {
                     if (playerXp > 0) {
@@ -90,7 +90,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                         if (filled >= ratio) {
                             EnchantmentUtils.addPlayerXP(playerIn, -(filled / ratio));
                             handler.fill(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), filled), IFluidHandler.FluidAction.EXECUTE);
-                            playerIn.setHeldItem(handIn, handler.getContainer());
+                            playerIn.setItemInHand(handIn, handler.getContainer());
                         }
                     }
                 }
@@ -98,19 +98,19 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         } else {
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
                 int amount = handler.getFluidInTank(0).getAmount();
-                if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isSneaking()
-                        || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isSneaking()) {
-                    playerIn.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.1f,
-                            (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.35F + 0.9F);
+                if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isShiftKeyDown()
+                        || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
+                    playerIn.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.1f,
+                            (worldIn.random.nextFloat() - worldIn.random.nextFloat()) * 0.35F + 0.9F);
                 }
             });
         }
-        return ActionResult.resultSuccess(stack);
+        return ActionResult.success(stack);
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (worldIn != null) {
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
@@ -118,10 +118,10 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                 FluidStack fluidStack = handler.getFluidInTank(0);
                 int amount = fluidStack.getAmount();
                 int levels = EnchantmentUtils.getLevelForExperience(amount/ ratio);
-                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).mergeStyle(TextFormatting.GREEN));
+                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(TextFormatting.GREEN));
             });
             boolean absorb = shouldAbsorbXPOrbs(stack);
-            tooltip.add(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + absorb).mergeStyle(TextFormatting.YELLOW));
+            tooltip.add(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(TextFormatting.YELLOW));
         }
     }
 
@@ -173,7 +173,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
 
     @Override
     public void onLeftClickEmpty(ServerPlayerEntity sender) {
-        toggleXPAbsorption(sender, sender.getHeldItemMainhand());
+        toggleXPAbsorption(sender, sender.getMainHandItem());
     }
 
     @Override
@@ -193,13 +193,13 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         if (stack.getItem() instanceof ItemMemoryStick) {
             boolean absorb = shouldAbsorbXPOrbs(stack);
             setAbsorbXPOrbs(stack, !absorb);
-            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).mergeStyle(TextFormatting.YELLOW), true);
-            player.getEntityWorld().playSound(null, player.getPosition(), SoundEvents.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 1f, absorb ? 1.5f : 2f);
+            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(TextFormatting.YELLOW), true);
+            player.getCommandSenderWorld().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 1f, absorb ? 1.5f : 2f);
         }
     }
 
     public static void cacheMemoryStickLocation(PlayerEntity entityIn, MemoryStickLocator locator) {
-        Listener.memoryStickCache.computeIfAbsent(entityIn.getUniqueID(), k -> new HashSet<>()).add(locator);
+        Listener.memoryStickCache.computeIfAbsent(entityIn.getUUID(), k -> new HashSet<>()).add(locator);
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
@@ -210,12 +210,12 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         @SubscribeEvent
         public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() instanceof ItemMemoryStick) {
-                if (!event.getWorld().isRemote) {
+                if (!event.getWorld().isClientSide) {
                     long now = event.getWorld().getGameTime();
-                    long last = lastEvent.getOrDefault(event.getPlayer().getUniqueID(), 0L);
+                    long last = lastEvent.getOrDefault(event.getPlayer().getUUID(), 0L);
                     if (now - last > 5) {
                         toggleXPAbsorption(event.getPlayer(), event.getItemStack());
-                        lastEvent.put(event.getPlayer().getUniqueID(), now);
+                        lastEvent.put(event.getPlayer().getUUID(), now);
                     }
                 }
                 event.setCanceled(true);
@@ -225,7 +225,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         @SubscribeEvent
         public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
             // client only event, but let's be paranoid...
-            if (event.getWorld().isRemote && event.getItemStack().getItem() instanceof ItemMemoryStick) {
+            if (event.getWorld().isClientSide && event.getItemStack().getItem() instanceof ItemMemoryStick) {
                 NetworkHandler.sendToServer(new PacketLeftClickEmpty());
             }
         }
@@ -246,7 +246,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         }
 
         private static ItemStack findMemoryStick(PlayerEntity player) {
-            Set<MemoryStickLocator> locators = memoryStickCache.get(player.getUniqueID());
+            Set<MemoryStickLocator> locators = memoryStickCache.get(player.getUUID());
             if (locators == null || locators.isEmpty()) return ItemStack.EMPTY;
 
             locators.removeIf(loc -> !shouldAbsorbXPOrbs(loc.getMemoryStick(player))); // prune old entries
@@ -281,7 +281,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
 
         public ItemStack getMemoryStick(PlayerEntity player) {
             if (invName.isEmpty()) {
-                return player.inventory.getStackInSlot(slot);
+                return player.inventory.getItem(slot);
             } else if (Curios.available) {
                 return CuriosUtils.getStack(player, invName, slot);
             }

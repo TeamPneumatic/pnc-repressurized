@@ -35,7 +35,7 @@ public class PlayerHealthSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        PlayerEntity player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(textBoxText);
+        PlayerEntity player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(textBoxText);
         if (player != null) {
             return (int) (15 * player.getHealth() / player.getMaxHealth());
         } else {

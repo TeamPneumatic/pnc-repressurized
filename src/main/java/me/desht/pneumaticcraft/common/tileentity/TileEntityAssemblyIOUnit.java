@@ -54,7 +54,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     @Override
     public void tick() {
         super.tick();
-        if (getWorld().isRemote) {
+        if (getLevel().isClientSide) {
             if (!isClawDone()) moveClaw();
         } else {
             slowMode = false;
@@ -179,7 +179,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         }
         for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
             for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
-                TileEntity te = getWorld().getTileEntity(getPos().offset(primDir).offset(secDir));
+                TileEntity te = getLevel().getBlockEntity(getBlockPos().relative(primDir).relative(secDir));
                 if (te != null) {
                     ItemStack res = searchImportInventory(te);
                     if (!res.isEmpty()) {
@@ -255,7 +255,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
                     for (int i = 0; i < sourceInv.getSlots() && !foundIt; i++) {
                         ItemStack stack = sourceInv.getStackInSlot(i);
                         if (stack.isEmpty()) continue;
-                        if (heldStack.isEmpty() && stack.isItemEqual(searchedItemStack)
+                        if (heldStack.isEmpty() && stack.sameItem(searchedItemStack)
                                 || ItemHandlerHelper.canItemStacksStack(heldStack, stack)) {
                             ItemStack takenStack = sourceInv.extractItem(i, needed, false);
                             ItemStack excess = itemHandler.insertItem(0, takenStack, false);
@@ -352,7 +352,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         } else if (shouldClawClose && clawProgress < 1F) {
             clawProgress = Math.min(clawProgress + TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 1);
         }
-        markDirty();
+        setChanged();
         return isClawDone();
     }
 
@@ -399,14 +399,14 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private TargetDirections getExportLocationForItem(ItemStack exportedItem) {
         if (!exportedItem.isEmpty()) {
             for (Direction dir : DirectionUtil.HORIZONTALS) {
-                TileEntity te = getWorld().getTileEntity(getPos().offset(dir));
+                TileEntity te = getLevel().getBlockEntity(getBlockPos().relative(dir));
                 int slot = getPlacementSlot(exportedItem, te);
                 if (slot >= 0) return new TargetDirections(dir);
             }
             if (canMoveToDiagonalNeighbours()) {
                 for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
                     for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
-                        TileEntity te = getWorld().getTileEntity(getPos().offset(primDir).offset(secDir));
+                        TileEntity te = getLevel().getBlockEntity(getBlockPos().relative(primDir).relative(secDir));
                         int slot = getPlacementSlot(exportedItem, te);
                         if (slot >= 0) return new TargetDirections(primDir, secDir);
                     }
@@ -439,8 +439,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public void read(BlockState blockState, CompoundNBT tag) {
-        super.read(blockState, tag);
+    public void load(BlockState blockState, CompoundNBT tag) {
+        super.load(blockState, tag);
 
         clawProgress = tag.getFloat("clawProgress");
         shouldClawClose = tag.getBoolean("clawClosing");
@@ -454,8 +454,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putFloat("clawProgress", clawProgress);
         tag.putBoolean("clawClosing", shouldClawClose);
         tag.putByte("state", state);

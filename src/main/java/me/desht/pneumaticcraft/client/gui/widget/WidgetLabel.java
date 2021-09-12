@@ -28,8 +28,8 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
     public WidgetLabel(int x, int y, ITextComponent text, int color) {
         super(x, y, 0, 0, text);
         this.color = color;
-        this.width = Minecraft.getInstance().fontRenderer.getStringPropertyWidth(getMessage());
-        this.height = Minecraft.getInstance().fontRenderer.FONT_HEIGHT;
+        this.width = Minecraft.getInstance().font.width(getMessage());
+        this.height = Minecraft.getInstance().font.lineHeight;
     }
 
     public WidgetLabel setAlignment(Alignment alignment) {
@@ -79,14 +79,14 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
     public void setMessage(ITextComponent p_setMessage_1_) {
         super.setMessage(p_setMessage_1_);
 
-        width = Minecraft.getInstance().fontRenderer.getStringPropertyWidth(getMessage());
+        width = Minecraft.getInstance().font.width(getMessage());
     }
 
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int drawX;
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+            FontRenderer fr = Minecraft.getInstance().font;
             switch (alignment) {
                 case LEFT:
                 default:
@@ -100,13 +100,13 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
                     break;
             }
             if (scale != 1.0f) {
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.scale(scale, scale, scale);
                 matrixStack.translate(drawX, y, 0);
-                fr.func_238422_b_(matrixStack, getMessage().func_241878_f(), drawX, y, color);
-                matrixStack.pop();
+                fr.draw(matrixStack, getMessage().getVisualOrderText(), drawX, y, color);
+                matrixStack.popPose();
             } else {
-                fr.func_238422_b_(matrixStack, getMessage().func_241878_f(), drawX, y, color);
+                fr.draw(matrixStack, getMessage().getVisualOrderText(), drawX, y, color);
             }
         }
     }

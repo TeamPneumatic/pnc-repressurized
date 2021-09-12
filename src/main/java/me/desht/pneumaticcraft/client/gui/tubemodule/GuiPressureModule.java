@@ -55,7 +55,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         addLabel(new StringTextComponent("bar"), guiLeft + 50, guiTop + 44);
         addLabel(new StringTextComponent("higher"), guiLeft + 140, guiTop + 33);
 
-        addLabel(title, width / 2 - font.getStringPropertyWidth(title) / 2, guiTop + 5);
+        addLabel(title, width / 2 - font.width(title) / 2, guiTop + 5);
 
         lowerBoundField = new TextFieldWidget(font, xStart + 15, yStart + 43, 30, 10,
                 new StringTextComponent(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1)));
@@ -99,7 +99,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
 
     @Override
     public void drawForeground(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        minecraft.getTextureManager().bindTexture(getTexture());
+        minecraft.getTextureManager().bind(getTexture());
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.lowerBound / (TubeModule.MAX_VALUE + 1)));
         int scrollbarHigherBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.higherBound / (TubeModule.MAX_VALUE + 1)));
 
@@ -112,24 +112,24 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         if (module instanceof TubeModuleRedstoneReceiving) {
             module.onNeighborBlockUpdate();
             hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((TubeModuleRedstoneReceiving) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
-            String status = I18n.format("pneumaticcraft.gui.tubeModule.simpleConfig.threshold")
+            String status = I18n.get("pneumaticcraft.gui.tubeModule.simpleConfig.threshold")
                     + " " + PneumaticCraftUtils.roundNumberTo(((TubeModuleRedstoneReceiving) module).getThreshold(), 1) + " bar";
-            font.drawString(matrixStack, status, guiLeft + xSize / 2f - font.getStringWidth(status) / 2f, guiTop + 175, 0xFF404040);
+            font.draw(matrixStack, status, guiLeft + xSize / 2f - font.width(status) / 2f, guiTop + 175, 0xFF404040);
         }
 
         // the actual graph data
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuilder();
         bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.disableTexture();
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         for (int i = 0; i < 16; i++) {
             float y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
             float x = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30f;
-            bufferBuilder.pos(posMat, x, y, 90f).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
+            bufferBuilder.vertex(posMat, x, y, 90f).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
         }
-        Tessellator.getInstance().draw();
+        Tessellator.getInstance().end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
 
@@ -140,7 +140,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         for (int i = 0; i < 16; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
-                font.drawString(matrixStack, i + "", graphLeft - 5 - font.getStringWidth(i + ""), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF303030);
+                font.draw(matrixStack, i + "", graphLeft - 5 - font.width(i + ""), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF303030);
                 hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF303030 : 0x33000000);
 
             }
@@ -149,7 +149,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         for (int i = 0; i < 31; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
-                font.drawString(matrixStack, i + "", graphLeft + (graphRight - graphLeft) * i / 30f - font.getStringWidth(i + "") / 2f + 1, graphLowY + 6, 0xFF303030);
+                font.draw(matrixStack, i + "", graphLeft + (graphRight - graphLeft) * i / 30f - font.width(i + "") / 2f + 1, graphLowY + 6, 0xFF303030);
                 vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphHighY, graphLowY - 2, 0x33000000);
             }
             vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF303030);
@@ -162,15 +162,15 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
             switch (fieldId) {
                 case 0:
                     prev = module.lowerBound;
-                    module.lowerBound = MathHelper.clamp(Float.parseFloat(lowerBoundField.getText()), -1, TubeModule.MAX_VALUE);
-                    if (!MathHelper.epsilonEquals(module.lowerBound, prev)) {
+                    module.lowerBound = MathHelper.clamp(Float.parseFloat(lowerBoundField.getValue()), -1, TubeModule.MAX_VALUE);
+                    if (!MathHelper.equal(module.lowerBound, prev)) {
                         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
                     }
                     break;
                 case 1:
                     prev = module.higherBound;
-                    module.higherBound = MathHelper.clamp(Float.parseFloat(higherBoundField.getText()), -1, TubeModule.MAX_VALUE);
-                    if (!MathHelper.epsilonEquals(module.higherBound, prev)) {
+                    module.higherBound = MathHelper.clamp(Float.parseFloat(higherBoundField.getValue()), -1, TubeModule.MAX_VALUE);
+                    if (!MathHelper.equal(module.higherBound, prev)) {
                         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
                     }
                     break;
@@ -231,11 +231,11 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     public void tick() {
         super.tick();
 
-        if (!module.advancedConfig) minecraft.displayGuiScreen(new GuiPressureModuleSimple(module));
+        if (!module.advancedConfig) minecraft.setScreen(new GuiPressureModuleSimple(module));
 
         if (!lowerBoundField.isFocused())
-            lowerBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
+            lowerBoundField.setValue(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
         if (!higherBoundField.isFocused())
-            higherBoundField.setText(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
+            higherBoundField.setValue(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
     }
 }

@@ -36,22 +36,22 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableBlock {
-    private static final VoxelShape COLLISION_SHAPE = makeCuboidShape(0, 0, 0, 16, 15, 16);
+    private static final VoxelShape COLLISION_SHAPE = box(0, 0, 0, 16, 15, 16);
 
     private static final EnumProperty<PartType> X_PART = EnumProperty.create("x_part", PartType.class);
     private static final EnumProperty<PartType> Z_PART = EnumProperty.create("z_part", PartType.class);
     private final DyeColor color;
 
     public BlockPlasticBrick(DyeColor color) {
-        super(ModBlocks.defaultProps().sound(SoundType.WOOD).hardnessAndResistance(2f));
+        super(ModBlocks.defaultProps().sound(SoundType.WOOD).strength(2f));
         this.color = color;
 
-        setDefaultState(getStateContainer().getBaseState().with(X_PART, PartType.NONE).with(Z_PART, PartType.NONE));
+        registerDefaultState(getStateDefinition().any().setValue(X_PART, PartType.NONE).setValue(Z_PART, PartType.NONE));
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
     public DyeColor getColor() {
@@ -59,8 +59,8 @@ public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableB
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(X_PART, Z_PART);
     }
@@ -75,11 +75,11 @@ public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableB
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
 
-        return calcParts(ctx.getWorld(), ctx.getPos(), state);
+        return calcParts(ctx.getLevel(), ctx.getClickedPos(), state);
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         return calcParts(worldIn, currentPos, stateIn);
     }
 
@@ -104,16 +104,16 @@ public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableB
             zType = PartType.LEFT;
         }
 
-        return stateIn.with(X_PART, xType).with(Z_PART, zType);
+        return stateIn.setValue(X_PART, xType).setValue(Z_PART, zType);
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
+    public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
         if (entityIn instanceof LivingEntity) {
-            ItemStack stack = ((LivingEntity) entityIn).getItemStackFromSlot(EquipmentSlotType.FEET);
+            ItemStack stack = ((LivingEntity) entityIn).getItemBySlot(EquipmentSlotType.FEET);
             if (stack.isEmpty()) {
-                entityIn.attackEntityFrom(DamageSourcePneumaticCraft.PLASTIC_BLOCK, 3);
-                ((LivingEntity) entityIn).addPotionEffect(new EffectInstance(Effects.SLOWNESS, 40, 1));
+                entityIn.hurt(DamageSourcePneumaticCraft.PLASTIC_BLOCK, 3);
+                ((LivingEntity) entityIn).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 40, 1));
             }
         }
     }
@@ -123,7 +123,7 @@ public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableB
         return getColor().getColorValue();
     }
 
-    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+    public boolean isPathfindable(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
         return false;
     }
 
@@ -139,7 +139,7 @@ public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableB
         }
 
         @Override
-        public String getString() {
+        public String getSerializedName() {
             return name;
         }
     }

@@ -13,7 +13,7 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
     public void update() {
         super.update();
 
-        if (!pressureTube.getWorld().isRemote && pressureTube.getPressure() > getThreshold()) {
+        if (!pressureTube.getLevel().isClientSide && pressureTube.getPressure() > getThreshold()) {
             pressureTube.forceLeak(dir);
         }
     }
@@ -24,6 +24,6 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
 
         // 4.92 instead of 4.9 because if the system is being fed via regulator from a high pressure line,
         // then it will be at 4.9 bar, which would cause safety modules to leak unnecessarily...
-        return getTube().dangerPressure == PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE ? 19.9f : 4.92f;
+        return getTube().getDangerPressure() == PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE ? 19.9f : 4.92f;
     }
 }

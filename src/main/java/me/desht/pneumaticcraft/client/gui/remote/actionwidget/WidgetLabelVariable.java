@@ -14,7 +14,7 @@ public class WidgetLabelVariable extends WidgetLabel {
         super(x, y, text);
 
         this.parser = new TextVariableParser(text.getString());
-        this.width = Minecraft.getInstance().fontRenderer.getStringWidth(parser.parse());
+        this.width = Minecraft.getInstance().font.width(parser.parse());
     }
 
     @Override

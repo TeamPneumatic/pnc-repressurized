@@ -41,7 +41,7 @@ public class SmartSyncTank extends FluidTank {
     public void tick() {
         TileEntity te = owner.get();
         if (te != null) {
-            if (te.getWorld().isRemote) {
+            if (te.getLevel().isClientSide) {
                 if (ClientUtils.isGuiOpen(te)) {
                     super.setFluid(syncedFluidStackGui);
                 } else {
@@ -127,7 +127,7 @@ public class SmartSyncTank extends FluidTank {
         // and we have no way of knowing whether or not this is a simulation.
 
         if (owner.get() != null) {
-            owner.get().markDirty();
+            owner.get().setChanged();
         }
     }
 

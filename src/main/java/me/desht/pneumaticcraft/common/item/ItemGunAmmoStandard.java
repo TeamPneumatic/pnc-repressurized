@@ -40,7 +40,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     @Nonnull
     private static ItemStack getPotion(ItemStack ammo) {
         if (ammo.getTag() != null && ammo.getTag().contains(NBT_POTION)) {
-            return ItemStack.read(ammo.getTag().getCompound(NBT_POTION));
+            return ItemStack.of(ammo.getTag().getCompound(NBT_POTION));
         } else {
             return ItemStack.EMPTY;
         }
@@ -48,13 +48,13 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
 
     public static void setPotion(ItemStack ammo, ItemStack potion) {
         CompoundNBT tag = new CompoundNBT();
-        potion.write(tag);
+        potion.save(tag);
         NBTUtils.setCompoundTag(ammo, "potion", tag);
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public boolean hasEffect(ItemStack stack) {
+    public boolean isFoil(ItemStack stack) {
         return stack.hasTag() && stack.getTag().contains(NBT_POTION);
     }
 
@@ -81,19 +81,19 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
-    public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
-        super.addInformation(stack, world, infoList, extraInfo);
+    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
+        super.appendHoverText(stack, world, infoList, extraInfo);
         ItemStack potion = getPotion(stack);
         if (!potion.isEmpty()) {
             List<ITextComponent> potionInfo = new ArrayList<>();
-            potion.getItem().addInformation(potion, world, potionInfo, extraInfo);
+            potion.getItem().appendHoverText(potion, world, potionInfo, extraInfo);
             String extra = "";
             if (potion.getItem() instanceof SplashPotionItem) {
-                extra = " " + I18n.format("pneumaticcraft.gui.tooltip.gunAmmo.splash");
+                extra = " " + I18n.get("pneumaticcraft.gui.tooltip.gunAmmo.splash");
             } else if (potion.getItem() instanceof LingeringPotionItem) {
-                extra = " " + I18n.format("pneumaticcraft.gui.tooltip.gunAmmo.lingering");
+                extra = " " + I18n.get("pneumaticcraft.gui.tooltip.gunAmmo.lingering");
             }
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").appendString(" ").append(potionInfo.get(0)).appendString(extra));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").append(" ").append(potionInfo.get(0)).append(extra));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion"));
         }
@@ -107,16 +107,16 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
             PlayerEntity shooter = minigun.getPlayer();
             if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.potionProcChance, 0.25f)) {
                 if (potion.getItem() == Items.POTION) {
-                    List<EffectInstance> effects = PotionUtils.getEffectsFromStack(potion);
+                    List<EffectInstance> effects = PotionUtils.getMobEffects(potion);
                     for (EffectInstance effect : effects) {
-                        entity.addPotionEffect(new EffectInstance(effect));
+                        entity.addEffect(new EffectInstance(effect));
                     }
-                    entity.world.playSound(null, entity.getPosition(), SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.PLAYERS, 1f, 1f);
+                    entity.level.playSound(null, entity.blockPosition(), SoundEvents.SPLASH_POTION_BREAK, SoundCategory.PLAYERS, 1f, 1f);
                 } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-                    PotionEntity entityPotion = new PotionEntity(shooter.world, shooter);
+                    PotionEntity entityPotion = new PotionEntity(shooter.level, shooter);
                     entityPotion.setItem(potion);
-                    entityPotion.setPosition(entity.getPosX(), entity.getPosY(), entity.getPosZ());
-                    shooter.world.addEntity(entityPotion);
+                    entityPotion.setPos(entity.getX(), entity.getY(), entity.getZ());
+                    shooter.level.addFreshEntity(entityPotion);
                 }
             }
             return getPotionAmmoCost(potion.getItem());
@@ -131,12 +131,12 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             PlayerEntity shooter = minigun.getPlayer();
             int chance = PNCConfig.Common.Minigun.potionProcChance + minigun.getUpgrades(EnumUpgrade.DISPENSER) * 2;
-            if (shooter.world.rand.nextInt(100) < chance) {
-                PotionEntity entityPotion = new PotionEntity(shooter.world, shooter);
+            if (shooter.level.random.nextInt(100) < chance) {
+                PotionEntity entityPotion = new PotionEntity(shooter.level, shooter);
                 entityPotion.setItem(potion);
-                BlockPos pos2 = brtr.getPos().offset(brtr.getFace());
-                entityPotion.setPosition(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
-                shooter.world.addEntity(entityPotion);
+                BlockPos pos2 = brtr.getBlockPos().relative(brtr.getDirection());
+                entityPotion.setPos(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
+                shooter.level.addFreshEntity(entityPotion);
             }
             return getPotionAmmoCost(potion.getItem());
         } else {

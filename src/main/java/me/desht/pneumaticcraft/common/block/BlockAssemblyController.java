@@ -14,17 +14,17 @@ import net.minecraft.world.IBlockReader;
 
 public class BlockAssemblyController extends BlockPneumaticCraft {
 
-    private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
-    private static final VoxelShape LEG_SHAPE = Block.makeCuboidShape(7, 2, 7, 9, 12, 9);
+    private static final VoxelShape BASE_SHAPE = Block.box(0, 0, 0, 16, 1, 16);
+    private static final VoxelShape LEG_SHAPE = Block.box(7, 2, 7, 9, 12, 9);
     private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, LEG_SHAPE);
 
     public BlockAssemblyController() {
         super(ModBlocks.defaultProps());
-        setDefaultState(getStateContainer().getBaseState()
-                .with(NORTH, false)
-                .with(SOUTH, false)
-                .with(WEST, false)
-                .with(EAST, false)
+        registerDefaultState(getStateDefinition().any()
+                .setValue(NORTH, false)
+                .setValue(SOUTH, false)
+                .setValue(WEST, false)
+                .setValue(EAST, false)
         );
     }
 
@@ -34,7 +34,7 @@ public class BlockAssemblyController extends BlockPneumaticCraft {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(NORTH, SOUTH, WEST, EAST);
     }
 

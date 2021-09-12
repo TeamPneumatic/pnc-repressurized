@@ -12,15 +12,15 @@ import net.minecraft.util.IItemProvider;
 
 public class Criteria {
     private static InventoryChangeTrigger.Instance hasItem(net.minecraft.util.IItemProvider itemIn) {
-        return hasItem(ItemPredicate.Builder.create().item(itemIn).build());
+        return hasItem(ItemPredicate.Builder.item().of(itemIn).build());
     }
 
     private static InventoryChangeTrigger.Instance hasItem(Tag<Item> tagIn) {
-        return hasItem(ItemPredicate.Builder.create().tag(tagIn).build());
+        return hasItem(ItemPredicate.Builder.item().of(tagIn).build());
     }
 
     private static InventoryChangeTrigger.Instance hasItem(ItemPredicate... predicates) {
-        return new InventoryChangeTrigger.Instance(EntityPredicate.AndPredicate.ANY_AND, MinMaxBounds.IntBound.UNBOUNDED, MinMaxBounds.IntBound.UNBOUNDED, MinMaxBounds.IntBound.UNBOUNDED, predicates);
+        return new InventoryChangeTrigger.Instance(EntityPredicate.AndPredicate.ANY, MinMaxBounds.IntBound.ANY, MinMaxBounds.IntBound.ANY, MinMaxBounds.IntBound.ANY, predicates);
     }
 
     public static RecipeCriterion has(IItemProvider provider) {
@@ -28,7 +28,7 @@ public class Criteria {
     }
 
     public static RecipeCriterion has(Ingredient ingredient) {
-        Item item = ingredient.getMatchingStacks()[0].getItem();
+        Item item = ingredient.getItems()[0].getItem();
         return RecipeCriterion.of(item.getRegistryName().getPath(), hasItem(item));
     }
 

@@ -38,7 +38,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     @Override
     protected boolean isValidPosition(BlockPos pos) {
         if (drone.world().getBlockState(pos).getMaterial().isReplaceable()) {
-            if (Vector3d.copyCentered(pos).squareDistanceTo(drone.getDronePos()) < 1.2) {
+            if (Vector3d.atCenterOf(pos).distanceToSqr(drone.getDronePos()) < 1.2) {
                 // too close - placement could be blocked by the drone
                 return false;
             }
@@ -57,8 +57,8 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                     if (state == null) {
                         drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
                         failedOnPlacement = true;
-                    } else if (worldCache.checkNoEntityCollision(null, state.getShape(drone.world(), pos))) {
-                        if (state.isValidPosition(drone.world(), pos)) {
+                    } else if (worldCache.isUnobstructed(null, state.getShape(drone.world(), pos))) {
+                        if (state.canSurvive(drone.world(), pos)) {
                             return true;
                         } else {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
@@ -83,9 +83,9 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack) && worldCache.getBlockState(pos).getMaterial().isReplaceable()) {
                     BlockItem blockItem = (BlockItem) droneStack.getItem();
                     BlockItemUseContext ctx = getPlacementContext(pos, pos, droneStack);
-                    if (progWidget.getCachedAreaSet().contains(ctx.getPos())) {
-                        ActionResultType res = blockItem.tryPlace(ctx);
-                        if (res.isSuccessOrConsume()) {
+                    if (progWidget.getCachedAreaSet().contains(ctx.getClickedPos())) {
+                        ActionResultType res = blockItem.place(ctx);
+                        if (res.consumesAction()) {
                             drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_PLACE);
                             if (slot == 0 && drone.getInv().getStackInSlot(slot).isEmpty()) {
                                 // kludge to force update of visible held item
@@ -104,8 +104,8 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
 
     private BlockPos findClearSide(BlockPos pos) {
         for (Direction side : DirectionUtil.VALUES) {
-            BlockPos pos2 = pos.offset(side);
-            if (drone.world().getBlockState(pos.offset(side)).allowsMovement(drone.world(), pos2, PathType.AIR)) {
+            BlockPos pos2 = pos.relative(side);
+            if (drone.world().getBlockState(pos.relative(side)).isPathfindable(drone.world(), pos2, PathType.AIR)) {
                 return pos2;
             }
         }
@@ -113,9 +113,9 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     }
 
     private BlockItemUseContext getPlacementContext(BlockPos placerPos, BlockPos targetPos, ItemStack droneStack) {
-        BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(
-                Vector3d.copyCentered(placerPos),
-                Vector3d.copyCentered(targetPos),
+        BlockRayTraceResult brtr = drone.world().clip(new RayTraceContext(
+                Vector3d.atCenterOf(placerPos),
+                Vector3d.atCenterOf(targetPos),
                 RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE,
                 drone.getFakePlayer()
         ));
@@ -124,7 +124,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
 
     private static class DroneBlockItemUseContext extends ItemUseContext {
         protected DroneBlockItemUseContext(@Nullable PlayerEntity droneFakePlayer, ItemStack heldItem, BlockRayTraceResult rayTraceResultIn) {
-            super(droneFakePlayer.world, droneFakePlayer, Hand.MAIN_HAND, heldItem, rayTraceResultIn);
+            super(droneFakePlayer.level, droneFakePlayer, Hand.MAIN_HAND, heldItem, rayTraceResultIn);
         }
     }
 }

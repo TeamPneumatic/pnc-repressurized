@@ -28,10 +28,10 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
 
     @Override
     public void render(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos()))) {
-            IVertexBuilder builder = buffer.getBuffer(RenderType.getEntityTranslucentCull(AtlasTexture.LOCATION_BLOCKS_TEXTURE));
+        if (te.getLevel().getChunkSource().isEntityTickingChunk(new ChunkPos(te.getBlockPos()))) {
+            IVertexBuilder builder = buffer.getBuffer(RenderType.entityTranslucentCull(AtlasTexture.LOCATION_BLOCKS));
 
-            Matrix4f posMat = matrixStack.getLast().getMatrix();
+            Matrix4f posMat = matrixStack.last().pose();
             for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
                 doRender(builder, tankRenderInfo, posMat, combinedLightIn, combinedOverlayIn);
             }
@@ -45,7 +45,7 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
         Fluid fluid = tank.getFluid().getFluid();
         ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
         //noinspection deprecation
-        TextureAtlasSprite still = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(texture);
+        TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(texture);
         int[] cols = RenderUtils.decomposeColor(fluid.getAttributes().getColor(tank.getFluid()));
 
         AxisAlignedBB bounds = getRenderBounds(tank, tankRenderInfo.getBounds());
@@ -63,69 +63,69 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
         double bz2 = bounds.maxZ * 16;
         
         if (tankRenderInfo.shouldRender(Direction.DOWN)) {
-            float u1 = still.getInterpolatedU(bx1);
-            float u2 = still.getInterpolatedU(bx2);
-            float v1 = still.getInterpolatedV(bz1);
-            float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
+            float u1 = still.getU(bx1);
+            float u2 = still.getU(bx2);
+            float v1 = still.getV(bz1);
+            float v2 = still.getV(bz2);
+            builder.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, -1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
-            float u1 = still.getInterpolatedU(bx1);
-            float u2 = still.getInterpolatedU(bx2);
-            float v1 = still.getInterpolatedV(bz1);
-            float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
+            float u1 = still.getU(bx1);
+            float u2 = still.getU(bx2);
+            float v1 = still.getV(bz1);
+            float v2 = still.getV(bz2);
+            builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
-            float u1 = still.getInterpolatedU(bx1);
-            float u2 = still.getInterpolatedU(bx2);
-            float v1 = still.getInterpolatedV(by1);
-            float v2 = still.getInterpolatedV(by2);
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
+            float u1 = still.getU(bx1);
+            float u2 = still.getU(bx2);
+            float v1 = still.getV(by1);
+            float v2 = still.getV(by2);
+            builder.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, -1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
-            float u1 = still.getInterpolatedU(bx1);
-            float u2 = still.getInterpolatedU(bx2);
-            float v1 = still.getInterpolatedV(by1);
-            float v2 = still.getInterpolatedV(by2);
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
+            float u1 = still.getU(bx1);
+            float u2 = still.getU(bx2);
+            float v1 = still.getV(by1);
+            float v2 = still.getV(by2);
+            builder.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(0f, 0f, 1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
-            float u1 = still.getInterpolatedU(by1);
-            float u2 = still.getInterpolatedU(by2);
-            float v1 = still.getInterpolatedV(bz1);
-            float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            float u1 = still.getU(by1);
+            float u2 = still.getU(by2);
+            float v1 = still.getV(bz1);
+            float v2 = still.getV(bz2);
+            builder.vertex(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.vertex(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.vertex(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.vertex(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(-1f, 0f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
-            float u1 = still.getInterpolatedU(by1);
-            float u2 = still.getInterpolatedU(by2);
-            float v1 = still.getInterpolatedV(bz1);
-            float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
+            float u1 = still.getU(by1);
+            float u2 = still.getU(by2);
+            float v1 = still.getV(bz1);
+            float v2 = still.getV(bz2);
+            builder.vertex(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.vertex(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v1).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.vertex(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u2, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.vertex(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).uv(u1, v2).overlayCoords(combinedOverlay).uv2(combinedLight).normal(1f, 0f, 0f).endVertex();
         }
     }
 

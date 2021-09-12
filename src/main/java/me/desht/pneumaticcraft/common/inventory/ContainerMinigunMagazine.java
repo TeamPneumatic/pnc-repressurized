@@ -27,34 +27,33 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
         super(ModContainers.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
         this.hand = hand;
 
-        gunInv = ItemMinigun.getMagazine(playerInventory.player.getHeldItem(hand));
-        if (gunInv != null) {
-            for (int i = 0; i < gunInv.getSlots(); i++) {
-                addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
-            }
+        ItemMinigun minigun = (ItemMinigun) playerInventory.player.getItemInHand(hand).getItem();
+        gunInv = minigun.getMagazine(playerInventory.player.getItemInHand(hand));
+        for (int i = 0; i < gunInv.getSlots(); i++) {
+            addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
         }
 
         addPlayerSlots(playerInventory, 84);
     }
 
     @Override
-    public void onContainerClosed(PlayerEntity playerIn) {
-        super.onContainerClosed(playerIn);
+    public void removed(PlayerEntity playerIn) {
+        super.removed(playerIn);
 
         gunInv.save();
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return true;
     }
 
     @Nonnull
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
+    public ItemStack clicked(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
         if (clickType == ClickType.CLONE && dragType == 2 && slotId >= 0 && slotId < ItemMinigun.MAGAZINE_SIZE) {
             // middle-click to lock a slot
-            ItemStack gunStack = player.getHeldItem(hand);
+            ItemStack gunStack = player.getItemInHand(hand);
             if (gunStack.getItem() instanceof ItemMinigun) {
                 int slot = ItemMinigun.getLockedSlot(gunStack);
                 if (slot == slotId) {
@@ -62,13 +61,13 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
                 } else {
                     NBTUtils.setInteger(gunStack, ItemMinigun.NBT_LOCKED_SLOT, slotId);
                 }
-                if (player.world.isRemote) {
+                if (player.level.isClientSide) {
                     player.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1.0f);
                 }
             }
             return ItemStack.EMPTY;
         } else {
-            return super.slotClick(slotId, dragType, clickType, player);
+            return super.clicked(slotId, dragType, clickType, player);
         }
     }
 

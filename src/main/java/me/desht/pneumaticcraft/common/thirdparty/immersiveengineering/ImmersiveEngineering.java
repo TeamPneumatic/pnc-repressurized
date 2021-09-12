@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.harvesting.HarvestHandlerCactusLike;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ImmersiveEngineering implements IThirdParty {
 

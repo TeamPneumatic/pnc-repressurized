@@ -13,8 +13,8 @@ public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction<Prog
     }
 
     @Override
-    public boolean shouldExecute() {
-        if (super.shouldExecute()) {
+    public boolean canUse() {
+        if (super.canUse()) {
             result = ((ICondition) progWidget).isAndFunction();//set the initial value, so it can be modified by the 'evaluate' method later.
             return true;
         } else {

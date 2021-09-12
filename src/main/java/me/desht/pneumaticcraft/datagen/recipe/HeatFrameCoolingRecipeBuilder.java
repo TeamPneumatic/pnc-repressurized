@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HeatFrameCoolingRecipeBuilder extends PneumaticCraftRecipeBuilder<HeatFrameCoolingRecipeBuilder> {
     private final Ingredient input;
@@ -40,8 +40,8 @@ public class HeatFrameCoolingRecipeBuilder extends PneumaticCraftRecipeBuilder<H
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            json.add("input", input.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            json.add("input", input.toJson());
             json.addProperty("max_temp", temperature);
             json.add("result", SerializerHelper.serializeOneItemStack(output));
             if (bonusMultiplier > 0f || bonusLimit > 0f) {

@@ -23,7 +23,7 @@ public class JetBootsStateTracker {
     }
 
     public static JetBootsStateTracker getTracker(PlayerEntity player) {
-        return player.world.isRemote ? getClientTracker() : getServerTracker();
+        return player.level.isClientSide ? getClientTracker() : getServerTracker();
     }
 
     private JetBootsStateTracker() {
@@ -38,15 +38,15 @@ public class JetBootsStateTracker {
      * @param active jet boots firing?
      * @param builderMode in builder mode?
      */
-    void setJetBootsState(PlayerEntity player, boolean enabled, boolean active, boolean builderMode) {
-        if (!player.world.isRemote) {
-            JetBootsState state = stateMap.computeIfAbsent(player.getUniqueID(), uuid -> new JetBootsState(false, false, false));
+    public void setJetBootsState(PlayerEntity player, boolean enabled, boolean active, boolean builderMode) {
+        if (!player.level.isClientSide) {
+            JetBootsState state = stateMap.computeIfAbsent(player.getUUID(), uuid -> new JetBootsState(false, false, false));
 
             boolean sendPacket = state.enabled != enabled || state.active != active || state.builderMode != builderMode;
             state.enabled = enabled;
             state.active = active;
             state.builderMode = builderMode;
-            if (sendPacket) NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player, state), player.world, player.getPosition());
+            if (sendPacket) NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player, state), player.level, player.blockPosition());
         }
     }
 
@@ -61,12 +61,15 @@ public class JetBootsStateTracker {
     }
 
     public JetBootsState getJetBootsState(PlayerEntity player) {
-        return stateMap.getOrDefault(player.getUniqueID(), new JetBootsState(false, false, false));
+        return stateMap.getOrDefault(player.getUUID(), new JetBootsState(false, false, false));
     }
 
+    /**
+     * Synced state: set on the server and sync'd to clients (i.e. other players need to know what this player's state is)
+     */
     public static class JetBootsState {
         private boolean enabled;  // switched on
-        private boolean active;   // actively firing (player holding Jump key)
+        private boolean active;   // actively firing (player holding thrust key)
         private boolean builderMode; // player in builder mode (prevents model rotation)
 
         public JetBootsState(boolean enabled, boolean active, boolean builderMode) {

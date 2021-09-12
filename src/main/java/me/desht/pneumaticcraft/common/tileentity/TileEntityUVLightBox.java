@@ -68,7 +68,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     public void tick() {
         super.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
             boolean didWork = false;
@@ -99,27 +99,27 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     private void checkStateUpdates(ItemStack loadedStack, boolean didWork) {
         BlockState state = getBlockState();
         if (state.getBlock() == ModBlocks.UV_LIGHT_BOX.get()) {
-            boolean loaded = state.get(BlockUVLightBox.LOADED);
+            boolean loaded = state.getValue(BlockUVLightBox.LOADED);
             boolean update = false;
             if (loaded == loadedStack.isEmpty()) {
-                state = state.with(BlockUVLightBox.LOADED, !loadedStack.isEmpty());
+                state = state.setValue(BlockUVLightBox.LOADED, !loadedStack.isEmpty());
                 update = true;
             }
-            if (didWork != getBlockState().get(BlockUVLightBox.LIT)) {
-                state = state.with(BlockUVLightBox.LIT, didWork);
+            if (didWork != getBlockState().getValue(BlockUVLightBox.LIT)) {
+                state = state.setValue(BlockUVLightBox.LIT, didWork);
                 update = true;
             }
-            long now = world.getGameTime();
+            long now = level.getGameTime();
             if (update) {
                 if (now - lastStateUpdate > 10) {
-                    world.setBlockState(pos, state);
+                    level.setBlockAndUpdate(worldPosition, state);
                     pendingState = null;
                     lastStateUpdate = now;
                 } else {
                     pendingState = state;
                 }
             } else if (pendingState != null && now - lastStateUpdate > 10) {
-                world.setBlockState(pos, pendingState);
+                level.setBlockAndUpdate(worldPosition, pendingState);
                 pendingState = null;
                 lastStateUpdate = now;
             }
@@ -141,7 +141,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     private LazyOptional<IItemHandler> getEjectionHandler() {
         if (!cachedEjectHandler.isPresent()) {
             Direction dir = getUpgradeCache().getEjectDirection();
-            TileEntity te = world.getTileEntity(pos.offset(dir));
+            TileEntity te = level.getBlockEntity(worldPosition.relative(dir));
             cachedEjectHandler = IOHelper.getInventoryForTE(te, dir.getOpposite());
             if (cachedEjectHandler.isPresent()) {
                 cachedEjectHandler.addListener(l -> cachedEjectHandler = LazyOptional.empty());
@@ -151,16 +151,16 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         threshold = tag.getInt("threshold");
         inputHandler.deserializeNBT(tag.getCompound("Items"));
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
-        super.write(nbt);
+    public CompoundNBT save(CompoundNBT nbt) {
+        super.save(nbt);
         nbt.putInt("threshold", threshold);
         nbt.put("Items", inputHandler.serializeNBT());
         return nbt;
@@ -198,7 +198,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
 
     @Override
     public void onDescUpdate() {
-        getWorld().getChunkProvider().getLightManager().checkBlock(getPos());
+        getLevel().getChunkSource().getLightEngine().checkBlock(getBlockPos());
 
         super.onDescUpdate();
     }
@@ -214,7 +214,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
             return;
         try {
             threshold = MathHelper.clamp(Integer.parseInt(tag), 1, 100);
-            markDirty();
+            setChanged();
         } catch (IllegalArgumentException ignored) {
         }
     }
@@ -250,7 +250,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerUVLightBox(i, playerInventory, getPos());
+        return new ContainerUVLightBox(i, playerInventory, getBlockPos());
     }
 
     public int getThreshold() {

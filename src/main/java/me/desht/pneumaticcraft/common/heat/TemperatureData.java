@@ -17,7 +17,7 @@ import java.util.Set;
 public class TemperatureData implements INBTSerializable<CompoundNBT> {
     private final Double[] temp = new Double[7];
 
-    private boolean isMultisided = true;
+    private boolean isMultisided;
 
     public static TemperatureData fromNBT(CompoundNBT nbt) {
         TemperatureData data = new TemperatureData();
@@ -25,33 +25,30 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         return data;
     }
 
-    private TemperatureData() {}
+    private TemperatureData() {
+        isMultisided = false;
+    }
 
     public TemperatureData(ICapabilityProvider provider) {
         Arrays.fill(temp, null);
 
         Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
         for (Direction face : DirectionUtil.VALUES) {
-            boolean done = provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face).map(h -> {
-                if (heatExchangers.contains(h)) {
-                    isMultisided = false;
-                    return true;
-                } else {
-                    heatExchangers.add(h);
-                    return false;
-                }
-            }).orElse(false);
-            if (done) break;
+            provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face).ifPresent(heatExchangers::add);
         }
 
-        if (isMultisided) {
+        if (heatExchangers.size() > 1) {
+            isMultisided = true;
             for (Direction face : DirectionUtil.VALUES) {
                 provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face)
-                        .ifPresent(h -> temp[face.getIndex()] = h.getTemperature());
+                        .ifPresent(h -> temp[face.get3DDataValue()] = h.getTemperature());
             }
-        } else {
+        } else if (heatExchangers.size() == 1) {
+            isMultisided = false;
             provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                     .ifPresent(h -> temp[6] = h.getTemperature());
+        } else {
+            isMultisided = false;
         }
     }
 
@@ -60,11 +57,11 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
     }
 
     public double getTemperature(Direction face) {
-        return face == null ? temp[6] : temp[face.getIndex()];
+        return face == null ? temp[6] : temp[face.get3DDataValue()];
     }
 
     public boolean hasData(Direction face) {
-        return face == null ? temp[6] != null : temp[face.getIndex()] != null;
+        return face == null ? temp[6] != null : temp[face.get3DDataValue()] != null;
     }
 
     public CompoundNBT toNBT() {
@@ -72,9 +69,9 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         if (isMultisided()) {
             ListNBT tagList = new ListNBT();
             for (Direction face : DirectionUtil.VALUES) {
-                if (temp[face.getIndex()] != null) {
+                if (temp[face.get3DDataValue()] != null) {
                     CompoundNBT heatTag = new CompoundNBT();
-                    heatTag.putByte("side", (byte) face.getIndex());
+                    heatTag.putByte("side", (byte) face.get3DDataValue());
                     heatTag.putInt("temp", (int) getTemperature(face));
                     tagList.add(heatTag);
                 }
@@ -93,7 +90,7 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
             ListNBT tagList = new ListNBT();
             for (Direction face : DirectionUtil.VALUES) {
                 CompoundNBT heatTag = new CompoundNBT();
-                heatTag.putByte("side", (byte) face.getIndex());
+                heatTag.putByte("side", (byte) face.get3DDataValue());
                 heatTag.putInt("temp", (int) getTemperature(face));
                 tagList.add(heatTag);
             }

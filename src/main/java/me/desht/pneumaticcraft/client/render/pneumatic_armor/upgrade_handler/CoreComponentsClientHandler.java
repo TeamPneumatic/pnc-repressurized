@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.CoreComponentsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -17,7 +18,10 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -28,12 +32,13 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<CoreComponentsHandler> {
     private static final int MAX_BARS = 40;
     private static final String[] BAR_STR_CACHE = new String[MAX_BARS + 1];
-    private static final ITextComponent NO_ARMOR = new StringTextComponent("-").mergeStyle(TextFormatting.DARK_GRAY);
+    private static final ITextComponent NO_ARMOR = new StringTextComponent("-").withStyle(TextFormatting.DARK_GRAY);
 
     private final float[] lastPressure = new float[] { -1, -1, -1, -1 };
     private WidgetAnimatedStat powerStat;
@@ -47,6 +52,19 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     }
 
     @Override
+    public Optional<KeyBinding> getTriggerKeyBinding() {
+        return Optional.of(KeyHandler.getInstance().keybindOpenOptions);
+    }
+
+    @Override
+    public void onTriggered(ICommonArmorHandler armorHandler) {
+        Minecraft mc = Minecraft.getInstance();
+        if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(mc.player)) {
+            mc.setScreen(GuiArmorMainScreen.getInstance());
+        }
+    }
+
+    @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
         boolean needUpdate = forceUpdatePressureStat;
         for (int i = 0; i < 4; i++) {
@@ -55,7 +73,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
                 lastPressure[i] = armorHandler.getArmorPressure(slot);
                 needUpdate = true;
             }
-            ItemStack stack = armorHandler.getPlayer().getItemStackFromSlot(slot);
+            ItemStack stack = armorHandler.getPlayer().getItemBySlot(slot);
             pressureButtons.get(i).setRenderStacks(stack.getItem() instanceof ItemPneumaticArmor ? stack : ItemStack.EMPTY);
         }
         if (needUpdate) {
@@ -94,7 +112,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
             return NO_ARMOR;
         float pressure = handler.getArmorPressure(slot);
         if (showPressureNumerically) {
-            return new StringTextComponent(String.format("%4.1f", Math.max(0f, pressure))).mergeStyle(getColourForPressure(pressure));
+            return new StringTextComponent(String.format("%4.1f", Math.max(0f, pressure))).withStyle(getColourForPressure(pressure));
         } else {
             return new StringTextComponent(getBarStr(pressure));
         }
@@ -130,7 +148,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override

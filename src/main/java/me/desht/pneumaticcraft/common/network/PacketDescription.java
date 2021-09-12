@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;
@@ -50,7 +50,7 @@ public class PacketDescription extends LocationIntPacket {
             byte type = buf.readByte();
             fields.add(new IndexedField(idx, type, SyncedField.fromBytes(buf, type)));
         }
-        extraData = buf.readCompoundTag();
+        extraData = buf.readNbt();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class PacketDescription extends LocationIntPacket {
             buf.writeByte(indexedField.type);
             SyncedField.toBytes(buf, indexedField.value, indexedField.type);
         }
-        buf.writeCompoundTag(extraData);
+        buf.writeNbt(extraData);
     }
 
     public void process(Supplier<NetworkEvent.Context> ctx) {

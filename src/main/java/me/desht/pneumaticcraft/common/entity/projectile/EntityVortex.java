@@ -31,7 +31,7 @@ public class EntityVortex extends ThrowableEntity {
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -40,16 +40,16 @@ public class EntityVortex extends ThrowableEntity {
         super.tick();
 
         // onImpact() is no longer called for blocks with no collision box, like shrubs & crops, as of MC 1.16.2
-        if (!world.isRemote) {
-            if (vortexBreakable(world.getBlockState(getOnPosition()).getBlock())) {
-                handleVortexCollision(getOnPosition());
-            } else if (vortexBreakable(world.getBlockState(getPosition()).getBlock())) {
-                handleVortexCollision(getPosition());
+        if (!level.isClientSide) {
+            if (vortexBreakable(level.getBlockState(getOnPos()).getBlock())) {
+                handleVortexCollision(getOnPos());
+            } else if (vortexBreakable(level.getBlockState(blockPosition()).getBlock())) {
+                handleVortexCollision(blockPosition());
             }
         }
 
-        setMotion(getMotion().scale(0.95));
-        if (getMotion().lengthSquared() < 0.1D) {
+        setDeltaMovement(getDeltaMovement().scale(0.95));
+        if (getDeltaMovement().lengthSqr() < 0.1D) {
             remove();
         }
     }
@@ -67,35 +67,35 @@ public class EntityVortex extends ThrowableEntity {
     }
 
     private boolean tryCutPlants(BlockPos pos) {
-        Block block = world.getBlockState(pos).getBlock();
+        Block block = level.getBlockState(pos).getBlock();
         if (vortexBreakable(block)) {
-            world.destroyBlock(pos, true);
+            level.destroyBlock(pos, true);
             return true;
         }
         return false;
     }
 
     @Override
-    public float getGravityVelocity() {
+    public float getGravity() {
         return 0;
     }
 
     @Override
-    protected void onImpact(RayTraceResult rtr) {
+    protected void onHit(RayTraceResult rtr) {
         if (rtr.getType() == RayTraceResult.Type.ENTITY) {
             Entity entity = ((EntityRayTraceResult) rtr).getEntity();
-            entity.setMotion(entity.getMotion().add(this.getMotion().add(0, 0.4, 0)));
+            entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().add(0, 0.4, 0)));
             ItemStack shears = new ItemStack(Items.SHEARS);
-            // func_234616_v_ = getShooter
+            // getOwner = getShooter
             if (entity instanceof LivingEntity) {
-                PlayerEntity shooter = func_234616_v_() instanceof PlayerEntity ? (PlayerEntity) func_234616_v_() : null;
-                if (shooter != null) shears.getItem().itemInteractionForEntity(shears, shooter, (LivingEntity) entity, Hand.MAIN_HAND);
+                PlayerEntity shooter = getOwner() instanceof PlayerEntity ? (PlayerEntity) getOwner() : null;
+                if (shooter != null) shears.getItem().interactLivingEntity(shears, shooter, (LivingEntity) entity, Hand.MAIN_HAND);
             }
         } else if (rtr.getType() == RayTraceResult.Type.BLOCK) {
-            BlockPos pos = ((BlockRayTraceResult) rtr).getPos();
-            Block block = world.getBlockState(pos).getBlock();
+            BlockPos pos = ((BlockRayTraceResult) rtr).getBlockPos();
+            Block block = level.getBlockState(pos).getBlock();
             if (vortexBreakable(block)) {
-                if (!world.isRemote) {
+                if (!level.isClientSide) {
                     handleVortexCollision(pos);
                 }
             } else {
@@ -114,14 +114,14 @@ public class EntityVortex extends ThrowableEntity {
                 for (int y = -2; y <= 2; y++) {
                     for (int z = -2; z <= 2; z++) {
                         if (x == 0 && y == 0 && z == 0) continue;
-                        mPos.setPos(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+                        mPos.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
                         if (tryCutPlants(mPos)) plantsCut++;
                     }
                 }
             }
             // slow the vortex down for each plant it broke
             double mult = Math.pow(0.85D, plantsCut);
-            setMotion(getMotion().scale(mult));
+            setDeltaMovement(getDeltaMovement().scale(mult));
         }
     }
 
@@ -130,7 +130,7 @@ public class EntityVortex extends ThrowableEntity {
     }
 
     @Override
-    protected void registerData() {
+    protected void defineSynchedData() {
 
     }
 }

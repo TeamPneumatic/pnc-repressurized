@@ -28,24 +28,24 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
 
         pole1 = new ModelRenderer(64, 64, 0, 17);
         pole1.addBox(0F, 0F, 0F, 2, 14, 2);
-        pole1.setRotationPoint(-1F, 9F, -1F);
+        pole1.setPos(-1F, 9F, -1F);
         pole1.mirror = true;
         pole2 = new ModelRenderer(64, 64, 0, 17);
         pole2.addBox(0F, 0F, 0F, 4, 14, 4);
-        pole2.setRotationPoint(-2F, 9F, -2F);
+        pole2.setPos(-2F, 9F, -2F);
         pole2.mirror = true;
         pole3 = new ModelRenderer(64, 64, 0, 17);
         pole3.addBox(0F, 0F, 0F, 6, 14, 6);
-        pole3.setRotationPoint(-3F, 9F, -3F);
+        pole3.setPos(-3F, 9F, -3F);
         pole3.mirror = true;
         pole4 = new ModelRenderer(64, 64, 0, 17);
         pole4.addBox(0F, 0F, 0F, 8, 14, 8);
-        pole4.setRotationPoint(-4F, 9F, -4F);
+        pole4.setPos(-4F, 9F, -4F);
         pole4.mirror = true;
 
         floor = new ModelRenderer(64, 64, 0, 0);
         floor.addBox(0F, 0F, 0F, 16, 1, 16);
-        floor.setRotationPoint(-8F, 8F, -8F);
+        floor.setPos(-8F, 8F, -8F);
         floor.mirror = true;
     }
 
@@ -53,7 +53,7 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
     public void renderModel(TileEntityElevatorBase te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (te.extension == 0) return;
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ELEVATOR));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ELEVATOR));
 
         double extension = MathHelper.lerp(partialTicks, te.oldExtension, te.extension);
         renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole4, 0, extension);
@@ -67,35 +67,35 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
     @Override
     protected void renderExtras(TileEntityElevatorBase te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.fakeFloorTextureUV != null && te.fakeFloorTextureUV.length == 4) {
-            matrixStack.push();
+            matrixStack.pushPose();
             double extension = MathHelper.lerp(partialTicks, te.oldExtension, te.extension);
             matrixStack.translate(0, extension + 1.0005f, 0);
-            IVertexBuilder builder = iRenderTypeBuffer.getBuffer(ModRenderTypes.getTextureRender(AtlasTexture.LOCATION_BLOCKS_TEXTURE));
+            IVertexBuilder builder = iRenderTypeBuffer.getBuffer(ModRenderTypes.getTextureRender(AtlasTexture.LOCATION_BLOCKS));
             float uMin = te.fakeFloorTextureUV[0];
             float vMin = te.fakeFloorTextureUV[1];
             float uMax = te.fakeFloorTextureUV[2];
             float vMax = te.fakeFloorTextureUV[3];
-            Matrix4f posMat = matrixStack.getLast().getMatrix();
-            builder.pos(posMat,0, 0, 1).color(1f, 1f, 1f, 1f).tex(uMin, vMax).lightmap(te.lightAbove).endVertex();
-            builder.pos(posMat,1, 0, 1).color(1f, 1f, 1f, 1f).tex(uMax, vMax).lightmap(te.lightAbove).endVertex();
-            builder.pos(posMat,1, 0, 0).color(1f, 1f, 1f, 1f).tex(uMax, vMin).lightmap(te.lightAbove).endVertex();
-            builder.pos(posMat,0, 0, 0).color(1f, 1f, 1f, 1f).tex(uMin, vMin).lightmap(te.lightAbove).endVertex();
-            matrixStack.pop();
+            Matrix4f posMat = matrixStack.last().pose();
+            builder.vertex(posMat,0, 0, 1).color(1f, 1f, 1f, 1f).uv(uMin, vMax).uv2(te.lightAbove).endVertex();
+            builder.vertex(posMat,1, 0, 1).color(1f, 1f, 1f, 1f).uv(uMax, vMax).uv2(te.lightAbove).endVertex();
+            builder.vertex(posMat,1, 0, 0).color(1f, 1f, 1f, 1f).uv(uMax, vMin).uv2(te.lightAbove).endVertex();
+            builder.vertex(posMat,0, 0, 0).color(1f, 1f, 1f, 1f).uv(uMin, vMin).uv2(te.lightAbove).endVertex();
+            matrixStack.popPose();
         }
     }
 
     private void renderPole(MatrixStack matrixStackIn, IVertexBuilder builder, int combinedLightIn, int combinedOverlayIn, ModelRenderer pole, int idx, double extension) {
         matrixStackIn.translate(0, -extension / 4, 0);
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0, FACTOR, 0);
         matrixStackIn.scale(1, (float) (extension * 16 / 14 / 4), 1);
         matrixStackIn.translate(0, -FACTOR, 0);
         pole.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, SHADE[idx], SHADE[idx], SHADE[idx], 1);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     @Override
-    public boolean isGlobalRenderer(TileEntityElevatorBase te) {
+    public boolean shouldRenderOffScreen(TileEntityElevatorBase te) {
         return true;  // since this can get very tall
     }
 }

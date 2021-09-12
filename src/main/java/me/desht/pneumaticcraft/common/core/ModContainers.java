@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.inventory.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.common.extensions.IForgeContainerType;
@@ -123,6 +123,8 @@ public class ModContainers {
             = register("spawner_extractor", ContainerSpawnerExtractor::new);
     public static final RegistryObject<ContainerType<ContainerPressurizedSpawner>> PRESSURIZED_SPAWNER
             = register("pressurized_spawner", ContainerPressurizedSpawner::new) ;
+    public static final RegistryObject<ContainerType<ContainerCreativeCompressedIronBlock>> CREATIVE_COMPRESSED_IRON_BLOCK
+            = register("creative_compressed_iron_block", ContainerCreativeCompressedIronBlock::new);
 
     private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked

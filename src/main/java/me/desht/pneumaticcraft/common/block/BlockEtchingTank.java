@@ -12,9 +12,9 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 public class BlockEtchingTank extends BlockPneumaticCraft {
-    private static final VoxelShape BASE = makeCuboidShape(1, 0, 1, 15, 10, 15);
-    private static final VoxelShape TOP = makeCuboidShape(2, 10, 2, 14, 16, 14);
-    private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(BASE, TOP, IBooleanFunction.OR);
+    private static final VoxelShape BASE = box(1, 0, 1, 15, 10, 15);
+    private static final VoxelShape TOP = box(2, 10, 2, 14, 16, 14);
+    private static final VoxelShape SHAPE = VoxelShapes.join(BASE, TOP, IBooleanFunction.OR);
 
     public BlockEtchingTank() {
         super(ModBlocks.defaultProps());
@@ -31,7 +31,7 @@ public class BlockEtchingTank extends BlockPneumaticCraft {
     }
 
     @Override
-    public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getOcclusionShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return BlockPneumaticCraft.ALMOST_FULL_SHAPE;
     }
 }

@@ -40,7 +40,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
     private int panelWidth;
 
     public GuiAphorismTile(TileEntityAphorismTile tile, boolean placing) {
-        super(new ItemStack(ModBlocks.APHORISM_TILE.get()).getDisplayName());
+        super(new ItemStack(ModBlocks.APHORISM_TILE.get()).getHoverName());
 
         this.tile = tile;
         textLines = tile.getTextLines();
@@ -59,7 +59,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
 
     @Override
     public void init() {
-        minecraft.keyboardListener.enableRepeatEvents(true);
+        minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         int yPos = (height - PANEL_HEIGHT) / 2;
         addButton(new Slider(5, yPos, 90, 16,  new StringTextComponent("Margin: "), StringTextComponent.EMPTY,
@@ -74,10 +74,10 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
         addButton(new WidgetLabel(5, yPos + 38, xlate("pneumaticcraft.gui.aphorismTile.insert"), 0xFFFFFF80));
 
         ITextComponent txt = xlate("pneumaticcraft.gui.aphorismTile.insertItem");
-        addButton(itemButton = new WidgetButtonExtended(10, yPos + 50, font.getStringPropertyWidth(txt) + 10, 18, txt, b -> openItemSelector()));
+        addButton(itemButton = new WidgetButtonExtended(10, yPos + 50, font.width(txt) + 10, 18, txt, b -> openItemSelector()));
 
         txt = xlate("pneumaticcraft.gui.redstone");
-        addButton(rsButton = new WidgetButtonExtended(10, yPos + 70, font.getStringPropertyWidth(txt) + 10, 18, txt, b -> {
+        addButton(rsButton = new WidgetButtonExtended(10, yPos + 70, font.width(txt) + 10, 18, txt, b -> {
             textLines[cursorY] = textLines[cursorY] + "{redstone}";
             tile.setTextLines(textLines);
         }));
@@ -94,14 +94,14 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
 
     private void openItemSelector() {
         ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Searcher"));
-        if (minecraft.currentScreen instanceof GuiItemSearcher) {
-            itemSearchGui = (GuiItemSearcher) minecraft.currentScreen;
+        if (minecraft.screen instanceof GuiItemSearcher) {
+            itemSearchGui = (GuiItemSearcher) minecraft.screen;
         }
     }
 
     public static void openGui(TileEntityAphorismTile te, boolean placing) {
         if (te != null) {
-            Minecraft.getInstance().displayGuiScreen(new GuiAphorismTile(te, placing));
+            Minecraft.getInstance().setScreen(new GuiAphorismTile(te, placing));
         }
     }
 
@@ -235,7 +235,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
 
     @Override
     public boolean charTyped(char ch, int keyCode) {
-        if (SharedConstants.isAllowedCharacter(ch)) {
+        if (SharedConstants.isAllowedChatCharacter(ch)) {
             if (Screen.hasAltDown()) {
                 if (ch >= 'a' && ch <= 'f' || ch >= 'l' && ch <= 'o' || ch == 'r' || ch >= '0' && ch <= '9') {
                     textLines[cursorY] = textLines[cursorY].substring(0, cursorX) + "\u00a7" + ch + textLines[cursorY].substring(cursorX);
@@ -251,10 +251,10 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
     }
 
     @Override
-    public void onClose() {
-        minecraft.keyboardListener.enableRepeatEvents(false);
+    public void removed() {
+        minecraft.keyboardHandler.setSendRepeatsToGui(false);
         tile.needMaxLineWidthRecalc();
-        super.onClose();
+        super.removed();
     }
 
     private String[] insertLine(String line, int pos) {

@@ -41,7 +41,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
             drillRotation -= 360;
         }
 
-        if (!getWorld().isRemote && drillStep > 0) {
+        if (!getLevel().isClientSide && drillStep > 0) {
             TargetDirections platformDirection = getPlatformDirection();
             if (platformDirection == null) drillStep = 1;
             switch (drillStep) {
@@ -84,13 +84,13 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     public void goDrilling() {
         if (drillStep == 0) {
             drillStep = 1;
-            markDirty();
+            setChanged();
         }
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putBoolean("drill", isDrillOn);
         tag.putFloat("drillSpeed", drillSpeed);
         tag.putInt("drillStep", drillStep);
@@ -98,8 +98,8 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         isDrillOn = tag.getBoolean("drill");
         drillSpeed = tag.getFloat("drillSpeed");
@@ -135,7 +135,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     }
 
     private ItemStack getDrilledOutputForItem(ItemStack input) {
-        return PneumaticCraftRecipeType.ASSEMBLY_DRILL.stream(world)
+        return PneumaticCraftRecipeType.ASSEMBLY_DRILL.stream(level)
                 .filter(recipe -> recipe.matches(input))
                 .findFirst()
                 .map(recipe -> recipe.getOutput().copy())

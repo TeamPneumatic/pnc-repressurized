@@ -52,12 +52,12 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return getHand(player) != null;
     }
 
     @Override
-    public void putStackInSlot(int slot, @Nonnull ItemStack stack) {
+    public void setItem(int slot, @Nonnull ItemStack stack) {
     }
 
     @Override
@@ -68,9 +68,9 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     }
 
     private Hand getHand(PlayerEntity player) {
-        if (player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET.get()) {
+        if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
             return Hand.MAIN_HAND;
-        } else if (player.getHeldItemOffhand().getItem() == ModItems.AMADRON_TABLET.get()) {
+        } else if (player.getOffhandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
             return Hand.OFF_HAND;
         } else {
             return null;

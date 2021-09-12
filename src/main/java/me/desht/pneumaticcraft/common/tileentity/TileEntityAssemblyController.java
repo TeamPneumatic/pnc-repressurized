@@ -81,10 +81,10 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
         } else if (curProgram != null &&
                 (programStack.isEmpty() || curProgram.getType() != ItemAssemblyProgram.getProgram(programStack).getType())) {
             curProgram = null;
-            if (!getWorld().isRemote) goingToHomePosition = true;
+            if (!getLevel().isClientSide) goingToHomePosition = true;
         }
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             setStatus("Standby");
             if (getPressure() >= PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER) {
                 if (curProgram != null || goingToHomePosition) {
@@ -131,7 +131,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
         EnumMachine[] requiredMachines = curProgram != null ? curProgram.getRequiredMachines() : EnumMachine.values();
 
         duplicateMachine = null;
-        AssemblySystem assemblySystem = new AssemblySystem(getPos());
+        AssemblySystem assemblySystem = new AssemblySystem(getBlockPos());
         for (IAssemblyMachine machine : findMachines(requiredMachines.length * 2)) {  // *2 ensures duplicates are noticed
             if (!assemblySystem.addMachine(machine)) {
                 duplicateMachine = machine.getAssemblyType();
@@ -156,16 +156,16 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
 
     public List<IAssemblyMachine> findMachines(int max) {
         List<IAssemblyMachine> machineList = new ArrayList<>();
-        findMachines(machineList, getPos(), max);
+        findMachines(machineList, getBlockPos(), max);
         return machineList;
     }
 
     private void findMachines(List<IAssemblyMachine> machineList, BlockPos pos, int max) {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
-            TileEntity te = getWorld().getTileEntity(pos.offset(dir));
+            TileEntity te = getLevel().getBlockEntity(pos.relative(dir));
             if (te instanceof IAssemblyMachine && !machineList.contains(te) && machineList.size() < max) {
                 machineList.add((IAssemblyMachine) te);
-                findMachines(machineList, te.getPos(), max);
+                findMachines(machineList, te.getBlockPos(), max);
             }
         }
     }
@@ -184,12 +184,12 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         goingToHomePosition = tag.getBoolean("goingToHomePosition");
         displayedText = tag.getString("displayedText");
@@ -201,8 +201,8 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putBoolean("goingToHomePosition", goingToHomePosition);
         tag.putString("displayedText", displayedText);
         if (curProgram != null) curProgram.writeToNBT(tag);
@@ -237,7 +237,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerAssemblyController(i, playerInventory, getPos());
+        return new ContainerAssemblyController(i, playerInventory, getBlockPos());
     }
 
     public static class AssemblySystem {

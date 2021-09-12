@@ -50,14 +50,14 @@ public class CamoModel implements IDynamicBakedModel {
 
         RenderType layer = MinecraftForgeClient.getRenderLayer();
         if (layer == null) {
-            layer = RenderType.getSolid(); // workaround for when this isn't set (digging, etc.)
+            layer = RenderType.solid(); // workaround for when this isn't set (digging, etc.)
         }
-        if (camoState == null && layer == RenderType.getSolid()) {
+        if (camoState == null && layer == RenderType.solid()) {
             // No camo
             return originalModel.getQuads(state, side, rand, modelData);
         } else if (camoState != null && RenderTypeLookup.canRenderInLayer(camoState, layer)) {
             // Steal camo's model
-            IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(camoState);
+            IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(camoState);
             return model.getQuads(camoState, side, rand, modelData);
         } else {
             // Not rendering in this layer
@@ -66,8 +66,8 @@ public class CamoModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
-        return originalModel.isAmbientOcclusion();
+    public boolean useAmbientOcclusion() {
+        return originalModel.useAmbientOcclusion();
     }
 
     @Override
@@ -76,23 +76,23 @@ public class CamoModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isSideLit() {
+    public boolean usesBlockLight() {
         return false;
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
-        return originalModel.isBuiltInRenderer();
+    public boolean isCustomRenderer() {
+        return originalModel.isCustomRenderer();
     }
 
     @Override
-    public TextureAtlasSprite getParticleTexture() {
-        return originalModel.getParticleTexture();
+    public TextureAtlasSprite getParticleIcon() {
+        return originalModel.getParticleIcon();
     }
 
     @Override
-    public ItemCameraTransforms getItemCameraTransforms() {
-        return originalModel.getItemCameraTransforms();
+    public ItemCameraTransforms getTransforms() {
+        return originalModel.getTransforms();
     }
 
     @Override
@@ -109,8 +109,8 @@ public class CamoModel implements IDynamicBakedModel {
 
         @Nullable
         @Override
-        public TileEntity getTileEntity(BlockPos pos) {
-            return compose.getTileEntity(pos);
+        public TileEntity getBlockEntity(BlockPos pos) {
+            return compose.getBlockEntity(pos);
         }
 
         @Nonnull
@@ -118,12 +118,12 @@ public class CamoModel implements IDynamicBakedModel {
         public BlockState getBlockState(@Nonnull BlockPos pos) {
             BlockState state = compose.getBlockState(pos);
             if (state.getBlock() instanceof BlockPneumaticCraftCamo) {
-                TileEntity te = compose.getTileEntity(pos);
+                TileEntity te = compose.getBlockEntity(pos);
                 if (te instanceof ICamouflageableTE) {
                     state = ((ICamouflageableTE) te).getCamouflage();
                 }
             }
-            return state == null ? Blocks.AIR.getDefaultState() : state;
+            return state == null ? Blocks.AIR.defaultBlockState() : state;
         }
 
         @Nonnull

@@ -36,7 +36,7 @@ public class RenderSearchItemBlock {
         // this gets called every frame from the render methods, so some caching is desirable...
         if (world.getGameTime() - lastCheck >= 20) {
             cachedAmount = 0;
-            IOHelper.getInventoryForTE(world.getTileEntity(pos)).ifPresent(handler -> {
+            IOHelper.getInventoryForTE(world.getBlockEntity(pos)).ifPresent(handler -> {
                 int itemCount = 0;
                 Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
                 if (searchedItem != null) {
@@ -70,21 +70,21 @@ public class RenderSearchItemBlock {
     }
 
     public static void renderSearch(MatrixStack matrixStack, IVertexBuilder builder, double x, double y, double z, int itemCount, int totalCount, float partialTicks) {
-        matrixStack.push();
+        matrixStack.pushPose();
 
         matrixStack.translate(x, y, z);
         RenderUtils.rotateToPlayerFacing(matrixStack);
         float ratio = (float) itemCount / totalCount;
         float diff = (1 - ratio) / 1.5F;
         float size = 1 - diff;
-        float f = ((Minecraft.getInstance().world.getGameTime() & 0x1f) + partialTicks) / 5.092f;  // 0 .. 2*pi every 32 ticks
+        float f = ((Minecraft.getInstance().level.getGameTime() & 0x1f) + partialTicks) / 5.092f;  // 0 .. 2*pi every 32 ticks
         float alpha = 0.65F + MathHelper.sin(f) * 0.15f;
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
-        builder.pos(posMat, -size, size, 0).color(0, 1, 0, alpha).tex(0, 1).lightmap(FULL_BRIGHT).endVertex();
-        builder.pos(posMat, size, size, 0).color(0, 1, 0, alpha).tex(1, 1).lightmap(FULL_BRIGHT).endVertex();
-        builder.pos(posMat, size, -size, 0).color(0, 1, 0, alpha).tex(1, 0).lightmap(FULL_BRIGHT).endVertex();
-        builder.pos(posMat, -size, -size, 0).color(0, 1, 0, alpha).tex(0, 0).lightmap(FULL_BRIGHT).endVertex();
+        Matrix4f posMat = matrixStack.last().pose();
+        builder.vertex(posMat, -size, size, 0).color(0, 1, 0, alpha).uv(0, 1).uv2(FULL_BRIGHT).endVertex();
+        builder.vertex(posMat, size, size, 0).color(0, 1, 0, alpha).uv(1, 1).uv2(FULL_BRIGHT).endVertex();
+        builder.vertex(posMat, size, -size, 0).color(0, 1, 0, alpha).uv(1, 0).uv2(FULL_BRIGHT).endVertex();
+        builder.vertex(posMat, -size, -size, 0).color(0, 1, 0, alpha).uv(0, 0).uv2(FULL_BRIGHT).endVertex();
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

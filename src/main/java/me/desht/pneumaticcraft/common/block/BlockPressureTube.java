@@ -58,24 +58,24 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public static final int CORE_MIN = 8 - TUBE_WIDTH;
     public static final int CORE_MAX = 8 + TUBE_WIDTH;
     private static final double PLUG_SIZE = 2.5;
-    private static final VoxelShape CORE = Block.makeCuboidShape(
+    private static final VoxelShape CORE = Block.box(
             8 - TUBE_WIDTH, 8 - TUBE_WIDTH, 8 - TUBE_WIDTH, 8 + TUBE_WIDTH, 8 + TUBE_WIDTH, 8 + TUBE_WIDTH
     );
     private static final VoxelShape[] ARM_CONNECTED = {  // DUNSWE order
-            Block.makeCuboidShape(CORE_MIN, 0, CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX),
-            Block.makeCuboidShape(CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX, 16, CORE_MAX),
-            Block.makeCuboidShape(CORE_MIN, CORE_MIN, 0, CORE_MAX, CORE_MAX, CORE_MIN),
-            Block.makeCuboidShape(CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX, CORE_MAX, 16),
-            Block.makeCuboidShape(0, CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX),
-            Block.makeCuboidShape(CORE_MAX, CORE_MIN, CORE_MIN, 16, CORE_MAX, CORE_MAX)
+            Block.box(CORE_MIN, 0, CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX),
+            Block.box(CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX, 16, CORE_MAX),
+            Block.box(CORE_MIN, CORE_MIN, 0, CORE_MAX, CORE_MAX, CORE_MIN),
+            Block.box(CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX, CORE_MAX, 16),
+            Block.box(0, CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX),
+            Block.box(CORE_MAX, CORE_MIN, CORE_MIN, 16, CORE_MAX, CORE_MAX)
     };
     private static final VoxelShape[] ARM_CLOSED = {  // DUNSWE order
-            Block.makeCuboidShape(CORE_MIN, CORE_MIN - PLUG_SIZE, CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX),
-            Block.makeCuboidShape(CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX, CORE_MAX + PLUG_SIZE, CORE_MAX),
-            Block.makeCuboidShape(CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX, CORE_MIN - PLUG_SIZE),
-            Block.makeCuboidShape(CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX, CORE_MAX, CORE_MAX + PLUG_SIZE),
-            Block.makeCuboidShape(CORE_MIN - PLUG_SIZE, CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX),
-            Block.makeCuboidShape(CORE_MAX, CORE_MIN, CORE_MIN, CORE_MAX + PLUG_SIZE, CORE_MAX, CORE_MAX)
+            Block.box(CORE_MIN, CORE_MIN - PLUG_SIZE, CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX),
+            Block.box(CORE_MIN, CORE_MAX, CORE_MIN, CORE_MAX, CORE_MAX + PLUG_SIZE, CORE_MAX),
+            Block.box(CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX, CORE_MIN - PLUG_SIZE),
+            Block.box(CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX, CORE_MAX, CORE_MAX + PLUG_SIZE),
+            Block.box(CORE_MIN - PLUG_SIZE, CORE_MIN, CORE_MIN, CORE_MIN, CORE_MAX, CORE_MAX),
+            Block.box(CORE_MAX, CORE_MIN, CORE_MIN, CORE_MAX + PLUG_SIZE, CORE_MAX, CORE_MAX)
     };
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[729];  // 3 ^ 6
 
@@ -93,14 +93,14 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     private final Tier tier;
 
     public BlockPressureTube(Tier tier) {
-        super(ModBlocks.defaultProps().notSolid());  // notSolid() because of camo requirements
+        super(ModBlocks.defaultProps().noOcclusion());  // notSolid() because of camo requirements
         this.tier = tier;
 
-        BlockState state = getStateContainer().getBaseState();
+        BlockState state = getStateDefinition().any();
         for (EnumProperty<ConnectionType> p : CONNECTION_PROPERTIES_3) {
-            state = state.with(p, ConnectionType.UNCONNECTED);
+            state = state.setValue(p, ConnectionType.UNCONNECTED);
         }
-        setDefaultState(state.with(WATERLOGGED, false));
+        registerDefaultState(state.setValue(WATERLOGGED, false));
     }
 
     @Override
@@ -109,8 +109,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(CONNECTION_PROPERTIES_3);
         builder.add(WATERLOGGED);
@@ -119,33 +119,33 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        BlockState state = getDefaultState();
+        BlockState state = defaultBlockState();
         List<Direction> l = new ArrayList<>();
         for (Direction dir : DirectionUtil.VALUES) {
-            TileEntity te = ctx.getWorld().getTileEntity(ctx.getPos().offset(dir));
+            TileEntity te = ctx.getLevel().getBlockEntity(ctx.getClickedPos().relative(dir));
             if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
                 state = setSide(state, dir, CONNECTED);
                 l.add(dir);
             }
         }
         if (l.size() == 1) state = setSide(state, l.get(0).getOpposite(), CONNECTED);
-        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
-        return state.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
+        return state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
     }
 
     @Override
     public FluidState getFluidState(BlockState state) {
-        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.get(WATERLOGGED)) {
-            worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (stateIn.getValue(WATERLOGGED)) {
+            worldIn.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
         }
         BlockState newState = recalculateState(worldIn, currentPos, stateIn);
         return newState == null ?
-                super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos) :
+                super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos) :
                 newState;
     }
 
@@ -161,7 +161,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                 if (tePT.isSideClosed(dir)) {
                     type = ConnectionType.CLOSED;
                 } else if (tePT.canConnectPneumatic(dir)) {
-                    TileEntity neighbourTE = worldIn.getTileEntity(currentPos.offset(dir));
+                    TileEntity neighbourTE = worldIn.getBlockEntity(currentPos.relative(dir));
                     if (neighbourTE != null && neighbourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
                         type = CONNECTED;
                     }
@@ -180,7 +180,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
             if (te.getModule(dir) != null) {
                 return state;
             }
-            switch (state.get(CONNECTION_PROPERTIES_3[dir.getIndex()])) {
+            switch (state.getValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()])) {
                 case CONNECTED: connected.add(dir); break;
                 case UNCONNECTED: nUnconnected++; break;
                 case CLOSED: return state;
@@ -205,15 +205,15 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         int idx = 0;
         int mul = 1;
         for (Direction d : Direction.values()) {
-            idx += state.get(CONNECTION_PROPERTIES_3[d.getIndex()]).getIndex() * mul;
+            idx += state.getValue(CONNECTION_PROPERTIES_3[d.get3DDataValue()]).getIndex() * mul;
             mul *= 3;
         }
         if (SHAPE_CACHE[idx] == null) {
             VoxelShape res = CORE;
             for (Direction d : Direction.values()) {
-                switch (state.get(CONNECTION_PROPERTIES_3[d.getIndex()])) {
-                    case CONNECTED: res = VoxelShapes.combineAndSimplify(res, ARM_CONNECTED[d.getIndex()], IBooleanFunction.OR); break;
-                    case CLOSED: res = VoxelShapes.combineAndSimplify(res, ARM_CLOSED[d.getIndex()], IBooleanFunction.OR); break;
+                switch (state.getValue(CONNECTION_PROPERTIES_3[d.get3DDataValue()])) {
+                    case CONNECTED: res = VoxelShapes.join(res, ARM_CONNECTED[d.get3DDataValue()], IBooleanFunction.OR); break;
+                    case CLOSED: res = VoxelShapes.join(res, ARM_CLOSED[d.get3DDataValue()], IBooleanFunction.OR); break;
                 }
             }
             SHAPE_CACHE[idx] = res;
@@ -223,17 +223,17 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (tryPlaceModule(player, world, pos, brtr.getFace(), hand, false)) {
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        if (tryPlaceModule(player, world, pos, brtr.getDirection(), hand, false)) {
             return ActionResultType.SUCCESS;
         }
-        if (!player.isSneaking()) {
+        if (!player.isShiftKeyDown()) {
             TubeModule module = getFocusedModule(world, pos, player);
             if (module != null) {
                 return module.onActivated(player, hand) ? ActionResultType.SUCCESS : ActionResultType.PASS;
             }
         }
-        return super.onBlockActivated(state, world, pos, player, hand, brtr);
+        return super.use(state, world, pos, player, hand, brtr);
     }
 
     public int getTier() {
@@ -241,8 +241,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, entity, stack);
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, entity, stack);
 
         ModuleNetworkManager.getInstance(world).invalidateCache();
         // force TE to calculate its connections immediately so network manager rescanning works
@@ -256,15 +256,15 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         TileEntityPressureTube tePT = getPressureTube(world, pos);
         if (tePT == null) return false;
 
-        ItemStack heldStack = player.getHeldItem(hand);
+        ItemStack heldStack = player.getItemInHand(hand);
         if (heldStack.getItem() instanceof ItemTubeModule) {
             TubeModule module = ((ItemTubeModule) heldStack.getItem()).createModule();
             if (tePT.mayPlaceModule(side)) {
                 if (simulate) module.markFake();
                 tePT.setModule(side, module);
-                if (!simulate && !world.isRemote) {
-                    neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side), false);
-                    world.notifyNeighborsOfStateChange(pos, this);
+                if (!simulate && !world.isClientSide) {
+                    neighborChanged(world.getBlockState(pos), world, pos, this, pos.relative(side), false);
+                    world.updateNeighborsAt(pos, this);
                     if (!player.isCreative()) heldStack.shrink(1);
                     world.playSound(null, pos, SoundType.GLASS.getStepSound(), SoundCategory.BLOCKS, SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f);
                     if (module instanceof INetworkedModule) {
@@ -277,7 +277,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         } else if (heldStack.getItem() == ModItems.ADVANCED_PCB.get() && !simulate) {
             TubeModule module = BlockPressureTube.getFocusedModule(world, pos, player);
             if (module != null && !module.isUpgraded() && module.canUpgrade()) {
-                if (!world.isRemote) {
+                if (!world.isClientSide) {
                     module.upgrade();
                     tePT.sendDescriptionPacket();
                     if (!player.isCreative()) heldStack.shrink(1);
@@ -309,11 +309,11 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     }
 
     private static BlockState setSide(BlockState state, Direction side, ConnectionType type) {
-        return state.with(CONNECTION_PROPERTIES_3[side.getIndex()], type);
+        return state.setValue(CONNECTION_PROPERTIES_3[side.get3DDataValue()], type);
     }
 
     private static TileEntityPressureTube getPressureTube(IBlockReader world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         return te instanceof TileEntityPressureTube ? (TileEntityPressureTube) te : null;
     }
 
@@ -332,7 +332,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
             // return either the tube arm (if connected), or the side of the centre face (if not)
-            return tubeHitInfo.dir == null ? Pair.of(true, rayTraceResult.getFace()) : Pair.of(false, tubeHitInfo.dir);
+            return tubeHitInfo.dir == null ? Pair.of(true, rayTraceResult.getDirection()) : Pair.of(false, tubeHitInfo.dir);
         }
         return null;
     }
@@ -341,7 +341,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         BlockRayTraceResult bestRTR = null;
 
         // first try & trace the tube core (center cube)
-        BlockRayTraceResult brtr = AxisAlignedBB.rayTrace(Collections.singletonList(CORE.getBoundingBox()), origin, direction, pos);
+        BlockRayTraceResult brtr = AxisAlignedBB.clip(Collections.singletonList(CORE.bounds()), origin, direction, pos);
         if (brtr != null) {
             brtr.hitInfo = TubeHitInfo.CENTER;
             bestRTR = brtr;
@@ -352,19 +352,19 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         if (tube == null) return null;
         for (int i = 0; i < 6; i++) {
             AxisAlignedBB arm;
-            switch (state.get(CONNECTION_PROPERTIES_3[i])) {
+            switch (state.getValue(CONNECTION_PROPERTIES_3[i])) {
                 case CLOSED:
-                    arm = ARM_CLOSED[i].getBoundingBox(); break;
+                    arm = ARM_CLOSED[i].bounds(); break;
                 case CONNECTED:
-                    arm = ARM_CONNECTED[i].getBoundingBox(); break;
+                    arm = ARM_CONNECTED[i].bounds(); break;
                 default:
                     arm = null; break;
             }
             if (arm != null) {
-                brtr = AxisAlignedBB.rayTrace(Collections.singletonList(arm), origin, direction, pos);
+                brtr = AxisAlignedBB.clip(Collections.singletonList(arm), origin, direction, pos);
                 if (brtr != null) {
                     if (isCloserIntersection(origin, bestRTR, brtr)) {
-                        brtr.hitInfo = new TubeHitInfo(Direction.byIndex(i), TubeHitInfo.PartType.TUBE);
+                        brtr.hitInfo = new TubeHitInfo(Direction.from3DDataValue(i), TubeHitInfo.PartType.TUBE);
                         bestRTR = brtr;
                     }
                 }
@@ -375,8 +375,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         for (Direction dir : DirectionUtil.VALUES) {
             TubeModule tm = tube.getModule(dir);
             if (tm != null) {
-                AxisAlignedBB tubeAABB = tm.getShape().getBoundingBox();
-                brtr = AxisAlignedBB.rayTrace(Collections.singletonList(tubeAABB), origin, direction, pos);
+                AxisAlignedBB tubeAABB = tm.getShape().bounds();
+                brtr = AxisAlignedBB.clip(Collections.singletonList(tubeAABB), origin, direction, pos);
                 if (isCloserIntersection(origin, bestRTR, brtr)) {
                     brtr.hitInfo = new TubeHitInfo(dir, TubeHitInfo.PartType.MODULE);  // tube module
                     bestRTR = brtr;
@@ -389,7 +389,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
 
     private static boolean isCloserIntersection(Vector3d origin, RayTraceResult oldRTR, RayTraceResult newRTR) {
         return newRTR != null &&
-                (oldRTR == null || origin.squareDistanceTo(newRTR.getHitVec()) <= origin.squareDistanceTo(oldRTR.getHitVec()));
+                (oldRTR == null || origin.distanceToSqr(newRTR.getLocation()) <= origin.distanceToSqr(oldRTR.getLocation()));
     }
 
     @Override
@@ -417,23 +417,23 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         TileEntityPressureTube tube = getPressureTube(world, pos);
         if (tube == null) return false;
         TubeModule module = getFocusedModule(world, pos, player);
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             if (module != null) {
                 // detach and drop the module as an item
                 if (!player.isCreative()) {
                     for (ItemStack drop : module.getDrops()) {
                         ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                         entity.setItem(drop);
-                        world.addEntity(entity);
-                        entity.onCollideWithPlayer(player);
+                        world.addFreshEntity(entity);
+                        entity.playerTouch(player);
                     }
                 }
                 tube.setModule(module.getDirection(), null);
-                neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side), false);
-                world.notifyNeighborsOfStateChange(pos, this);
+                neighborChanged(world.getBlockState(pos), world, pos, this, pos.relative(side), false);
+                world.updateNeighborsAt(pos, this);
             } else {
                 // drop the pressure tube as an item
-                if (!player.isCreative()) spawnDrops(world.getBlockState(pos), world, pos, tube);
+                if (!player.isCreative()) dropResources(world.getBlockState(pos), world, pos, tube);
                 removeBlockSneakWrenched(world, pos);
             }
         } else {
@@ -445,8 +445,8 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                 if (lookData != null) {
                     Direction sideHit = lookData.getRight();
                     tube.setSideClosed(sideHit, !tube.isSideClosed(sideHit));
-                    tube.onNeighborBlockUpdate(pos.offset(sideHit));
-                    world.setBlockState(pos, recalculateState(world, pos, world.getBlockState(pos)));
+                    tube.onNeighborBlockUpdate(pos.relative(sideHit));
+                    world.setBlockAndUpdate(pos, recalculateState(world, pos, world.getBlockState(pos)));
                 }
             }
         }
@@ -455,13 +455,13 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (newState.getBlock() != state.getBlock()) {
             getModuleDrops(getPressureTube(world, pos))
-                    .forEach(drop -> world.addEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
+                    .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
             ModuleNetworkManager.getInstance(world).invalidateCache();
         }
-        super.onReplaced(state, world, pos, newState, isMoving);
+        super.onRemove(state, world, pos, newState, isMoving);
     }
 
     private static NonNullList<ItemStack> getModuleDrops(TileEntityPressureTube tube) {
@@ -503,7 +503,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
 //    }
 
     @Override
-    public int getWeakPower(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
+    public int getSignal(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
         TileEntityPressureTube tePt = getPressureTube(par1IBlockAccess, pos);
         if (tePt != null) {
             int redstoneLevel = 0;
@@ -522,7 +522,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
@@ -535,10 +535,10 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public BlockState rotate(BlockState state, Rotation rotation) {
         ConnectionType[] conns = new ConnectionType[HORIZONTALS.length];
         for (Direction dir : HORIZONTALS) {
-            conns[rotation.rotate(dir).getHorizontalIndex()] = state.get(CONNECTION_PROPERTIES_3[dir.getIndex()]);
+            conns[rotation.rotate(dir).get2DDataValue()] = state.getValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()]);
         }
         for (Direction dir : HORIZONTALS) {
-            state = state.with(CONNECTION_PROPERTIES_3[dir.getIndex()], conns[dir.getHorizontalIndex()]);
+            state = state.setValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()], conns[dir.get2DDataValue()]);
         }
         return super.rotate(state, rotation);
     }
@@ -547,11 +547,11 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
         ConnectionType[] conns = new ConnectionType[HORIZONTALS.length];
         for (Direction dir : HORIZONTALS) {
-            Rotation r = mirrorIn.toRotation(dir);
-            conns[r.rotate(dir).getHorizontalIndex()] = state.get(CONNECTION_PROPERTIES_3[dir.getIndex()]);
+            Rotation r = mirrorIn.getRotation(dir);
+            conns[r.rotate(dir).get2DDataValue()] = state.getValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()]);
         }
         for (Direction dir : HORIZONTALS) {
-            state = state.with(CONNECTION_PROPERTIES_3[dir.getIndex()], conns[dir.getHorizontalIndex()]);
+            state = state.setValue(CONNECTION_PROPERTIES_3[dir.get3DDataValue()], conns[dir.get2DDataValue()]);
         }
         return super.mirror(state, mirrorIn);
     }
@@ -609,7 +609,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         }
 
         @Override
-        public String getString() {
+        public String getSerializedName() {
             return name;
         }
 

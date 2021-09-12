@@ -22,8 +22,8 @@ class CachedTileNeighbours {
     }
 
     public TileEntity getCachedNeighbour(Direction dir) {
-        if (owner.getWorld() == null) return null;
-        TileEntity res = known.get(dir.getIndex()) ? neighbours.get(dir).get() : findNeighbour(dir);
+        if (owner.getLevel() == null) return null;
+        TileEntity res = known.get(dir.get3DDataValue()) ? neighbours.get(dir).get() : findNeighbour(dir);
         if (res != null && res.isRemoved()) {
             // shouldn't happen, but let's be defensive
             res = findNeighbour(dir);
@@ -32,10 +32,10 @@ class CachedTileNeighbours {
     }
 
     private TileEntity findNeighbour(Direction dir) {
-        BlockPos pos2 = owner.getPos().offset(dir);
-        TileEntity te = owner.getWorld().isAreaLoaded(pos2, 0) ? owner.getWorld().getTileEntity(pos2) : null;
+        BlockPos pos2 = owner.getBlockPos().relative(dir);
+        TileEntity te = owner.getLevel().isAreaLoaded(pos2, 0) ? owner.getLevel().getBlockEntity(pos2) : null;
         neighbours.put(dir, new WeakReference<>(te));
-        known.set(dir.getIndex());
+        known.set(dir.get3DDataValue());
         return te;
     }
 

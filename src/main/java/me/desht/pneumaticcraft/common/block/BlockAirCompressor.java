@@ -15,20 +15,20 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 public class BlockAirCompressor extends BlockPneumaticCraft {
-    private static final VoxelShape S1 = Block.makeCuboidShape(0, 0, 2, 16, 16, 14);
-    private static final VoxelShape S2 = Block.makeCuboidShape(2, 0, 0, 14, 16, 16);
-    private static final VoxelShape CROSS_SHAPE = VoxelShapes.combineAndSimplify(S1, S2, IBooleanFunction.OR);
+    private static final VoxelShape S1 = Block.box(0, 0, 2, 16, 16, 14);
+    private static final VoxelShape S2 = Block.box(2, 0, 0, 14, 16, 16);
+    private static final VoxelShape CROSS_SHAPE = VoxelShapes.join(S1, S2, IBooleanFunction.OR);
 
     public static final BooleanProperty ON = BooleanProperty.create("on");
 
     public BlockAirCompressor() {
         super(ModBlocks.defaultProps());
-        setDefaultState(getStateContainer().getBaseState().with(ON, false));
+        registerDefaultState(getStateDefinition().any().setValue(ON, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(ON);
     }
 

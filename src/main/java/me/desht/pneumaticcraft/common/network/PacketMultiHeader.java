@@ -30,12 +30,12 @@ public class PacketMultiHeader {
 
     PacketMultiHeader(PacketBuffer buffer) {
         length = buffer.readInt();
-        className = buffer.readString(32767);
+        className = buffer.readUtf(32767);
     }
 
     public void toBytes(PacketBuffer buf) {
         buf.writeInt(length);
-        buf.writeString(className);
+        buf.writeUtf(className);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -44,7 +44,7 @@ public class PacketMultiHeader {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 if (cl == null) cl = PacketMultiHeader.class.getClassLoader(); // fallback
                 Class<?> clazz = cl.loadClass(className);
-                UUID id = ctx.get().getSender() == null ? ClientUtils.getClientPlayer().getUniqueID() : ctx.get().getSender().getUniqueID();
+                UUID id = ctx.get().getSender() == null ? ClientUtils.getClientPlayer().getUUID() : ctx.get().getSender().getUUID();
                 payloadBuffers.put(id, new PayloadBuffer(clazz.asSubclass(ILargePayload.class), length));
             } catch (ClassNotFoundException|ClassCastException e) {
                 e.printStackTrace();
@@ -54,7 +54,7 @@ public class PacketMultiHeader {
     }
 
     static void receivePayload(PlayerEntity player, byte[] payload) {
-        UUID id = player == null ? ClientUtils.getClientPlayer().getUniqueID() : player.getUniqueID();
+        UUID id = player == null ? ClientUtils.getClientPlayer().getUUID() : player.getUUID();
         PayloadBuffer buffer = payloadBuffers.get(id);
         if (buffer != null) {
             System.arraycopy(payload, 0, buffer.payload, buffer.offset, payload.length);
@@ -71,7 +71,7 @@ public class PacketMultiHeader {
                 }
             }
         } else {
-            Log.error("Received unexpected multi-message payload from player " + player.getName() + " - " + player.getUniqueID());
+            Log.error("Received unexpected multi-message payload from player " + player.getName() + " - " + player.getUUID());
         }
     }
 

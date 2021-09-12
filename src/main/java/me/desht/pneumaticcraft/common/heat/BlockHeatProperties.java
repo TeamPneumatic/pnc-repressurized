@@ -73,7 +73,7 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
             } else if (!PNCConfig.Common.Heat.addDefaultFluidEntries && !fluid.getRegistryName().getNamespace().equals("minecraft")) {
                 continue;
             }
-            Block block = fluid.getDefaultState().getBlockState().getBlock();
+            Block block = fluid.defaultFluidState().createLegacyBlock().getBlock();
             if (!(block instanceof FlowingFluidBlock) || customHeatEntries.containsKey(block)) {
                 // block must be a fluid block and not already have a custom heat entry
                 continue;
@@ -97,18 +97,18 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
         if (temperature >= Fluids.LAVA.getAttributes().getTemperature()) {
             transformHot = null;
             transformHotFlowing = null;
-            transformCold = Blocks.OBSIDIAN.getDefaultState();
-            transformColdFlowing = Blocks.COBBLESTONE.getDefaultState();
+            transformCold = Blocks.OBSIDIAN.defaultBlockState();
+            transformColdFlowing = Blocks.COBBLESTONE.defaultBlockState();
         } else if (temperature <= 273) {
-            transformHot = Blocks.SNOW_BLOCK.getDefaultState();
-            transformHotFlowing = Blocks.SNOW.getDefaultState();
-            transformCold = Blocks.BLUE_ICE.getDefaultState();
-            transformColdFlowing = Blocks.SNOW.getDefaultState();
+            transformHot = Blocks.SNOW_BLOCK.defaultBlockState();
+            transformHotFlowing = Blocks.SNOW.defaultBlockState();
+            transformCold = Blocks.BLUE_ICE.defaultBlockState();
+            transformColdFlowing = Blocks.SNOW.defaultBlockState();
         } else {
-            transformHot = Blocks.AIR.getDefaultState();
-            transformHotFlowing = Blocks.AIR.getDefaultState();
-            transformCold = Blocks.ICE.getDefaultState();
-            transformColdFlowing = Blocks.SNOW.getDefaultState();
+            transformHot = Blocks.AIR.defaultBlockState();
+            transformHotFlowing = Blocks.AIR.defaultBlockState();
+            transformCold = Blocks.ICE.defaultBlockState();
+            transformColdFlowing = Blocks.SNOW.defaultBlockState();
         }
         return new HeatPropertiesRecipeImpl(
                 block.getRegistryName(),

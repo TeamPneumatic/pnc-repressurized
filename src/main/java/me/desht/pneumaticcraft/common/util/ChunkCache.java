@@ -52,7 +52,7 @@ public class ChunkCache implements ICollisionReader {
         for (int x = pos1.getX() >> 4; x <= pos2.getX() >> 4; ++x) {
             for (int z = pos1.getZ() >> 4; z <= pos2.getZ() >> 4; ++z) {
                 IChunk ichunk = this.chunks[x - this.chunkX][z - this.chunkZ];
-                if (ichunk != null && !ichunk.isEmptyBetween(pos1.getY(), pos2.getY())) {
+                if (ichunk != null && !ichunk.isYSpaceEmpty(pos1.getY(), pos2.getY())) {
                     this.empty = false;
                     return;
                 }
@@ -81,26 +81,26 @@ public class ChunkCache implements ICollisionReader {
     }
 
     @Override
-    public IBlockReader getBlockReader(int chunkX, int chunkZ) {
+    public IBlockReader getChunkForCollisions(int chunkX, int chunkZ) {
         return this.getChunk(chunkX, chunkZ);
     }
 
     @Override
-    public Stream<VoxelShape> func_230318_c_(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
+    public Stream<VoxelShape> getEntityCollisions(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
         return Stream.empty();
     }
 
     @Nullable
     @Override
-    public TileEntity getTileEntity(BlockPos pos) {
+    public TileEntity getBlockEntity(BlockPos pos) {
         IChunk ichunk = this.getChunk(pos);
-        return ichunk.getTileEntity(pos);
+        return ichunk.getBlockEntity(pos);
     }
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
         if (World.isOutsideBuildHeight(pos)) {
-            return Blocks.AIR.getDefaultState();
+            return Blocks.AIR.defaultBlockState();
         } else {
             IChunk ichunk = this.getChunk(pos);
             return ichunk.getBlockState(pos);
@@ -110,7 +110,7 @@ public class ChunkCache implements ICollisionReader {
     @Override
     public FluidState getFluidState(BlockPos pos) {
         if (World.isOutsideBuildHeight(pos)) {
-            return Fluids.EMPTY.getDefaultState();
+            return Fluids.EMPTY.defaultFluidState();
         } else {
             IChunk ichunk = this.getChunk(pos);
             return ichunk.getFluidState(pos);

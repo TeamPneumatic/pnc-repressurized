@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.core;
 
 import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.TileEntityDroneInterface;
 import me.desht.pneumaticcraft.common.tileentity.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -128,7 +128,7 @@ public class ModTileEntities {
     public static final RegistryObject<TileEntityType<TileEntityTagWorkbench>> TAG_WORKBENCH
             = register("tag_workbench", () -> new TileEntityType<>(TileEntityTagWorkbench::new, ImmutableSet.of(ModBlocks.TAG_WORKBENCH.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityDisplayTable>> DISPLAY_TABLE
-            = register("display_table", () -> new TileEntityType<>(TileEntityDisplayTable::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get()),
+            = register("display_table", () -> new TileEntityType<>(TileEntityDisplayTable::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.DISPLAY_SHELF.get()),
             null));
     public static final RegistryObject<TileEntityType<TileEntityDroneInterface>> DRONE_INTERFACE
             = register("drone_interface", () -> new TileEntityType<>(TileEntityDroneInterface::new, ImmutableSet.of(ModBlocks.DRONE_INTERFACE.get()),
@@ -141,7 +141,8 @@ public class ModTileEntities {
             = register("spawner_extractor", () -> new TileEntityType<>(TileEntitySpawnerExtractor::new, ImmutableSet.of(ModBlocks.SPAWNER_EXTRACTOR.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityPressurizedSpawner>> PRESSURIZED_SPAWNER
             = register("pressurized_spawner", () -> new TileEntityType<>(TileEntityPressurizedSpawner::new, ImmutableSet.of(ModBlocks.PRESSURIZED_SPAWNER.get()), null));
-
+    public static final RegistryObject<TileEntityType<TileEntityCreativeCompressedIronBlock>> CREATIVE_COMPRESSED_IRON_BLOCK
+            = register("creative_compressed_iron_block", () -> new TileEntityType<>(TileEntityCreativeCompressedIronBlock::new, ImmutableSet.of(ModBlocks.CREATIVE_COMPRESSED_IRON_BLOCK.get()), null));
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);
     }

@@ -30,7 +30,7 @@ public class RenderEntityVortex extends EntityRenderer<EntityVortex> {
     }
 
     @Override
-    public ResourceLocation getEntityTexture(EntityVortex entity) {
+    public ResourceLocation getTextureLocation(EntityVortex entity) {
         return Textures.VORTEX_ENTITY;
     }
 
@@ -40,28 +40,28 @@ public class RenderEntityVortex extends EntityRenderer<EntityVortex> {
             entity.setRenderOffsetX(calculateXoffset());
         }
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 
-        IVertexBuilder builder = bufferIn.getBuffer(ModRenderTypes.getTextureRenderColored(getEntityTexture(entity)));
+        IVertexBuilder builder = bufferIn.getBuffer(ModRenderTypes.getTextureRenderColored(getTextureLocation(entity)));
 
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTicks, entity.prevRotationYaw, entity.rotationYaw)));
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-MathHelper.lerp(partialTicks, entity.prevRotationPitch, entity.rotationPitch)));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(MathHelper.lerp(partialTicks, entity.yRotO, entity.yRot)));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-MathHelper.lerp(partialTicks, entity.xRotO, entity.xRot)));
         float incr = (float) (2 * Math.PI / CIRCLE_POINTS);
         for (float angleRads = 0f; angleRads < 2 * Math.PI; angleRads += incr) {
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             matrixStackIn.translate(RADIUS * MathHelper.sin(angleRads), RADIUS * MathHelper.cos(angleRads), 0);
             renderGust(matrixStackIn, builder, entity.getRenderOffsetX(), packedLightIn);
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
         }
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     private float calculateXoffset() {
         ClientPlayerEntity player = Minecraft.getInstance().player;
-        HandSide hs = player.getPrimaryHand();
-        if (player.getHeldItemMainhand().getItem() != ModItems.VORTEX_CANNON.get()) {
-            hs = hs.opposite();
+        HandSide hs = player.getMainArm();
+        if (player.getMainHandItem().getItem() != ModItems.VORTEX_CANNON.get()) {
+            hs = hs.getOpposite();
         }
         // yeah, this is supposed to be asymmetric; it looks better that way
         return hs == HandSide.RIGHT ? -4.0F : 16.0F;
@@ -75,18 +75,18 @@ public class RenderEntityVortex extends EntityRenderer<EntityVortex> {
 
         matrixStackIn.scale(TEX_SCALE, TEX_SCALE, TEX_SCALE);
         matrixStackIn.translate(xOffset, 0, 0);
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
 
-        Matrix4f posMat = matrixStackIn.getLast().getMatrix();
+        Matrix4f posMat = matrixStackIn.last().pose();
 
-        wr.pos(posMat, -7.0F, -2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).tex(u1, v1).lightmap(packedLightIn).endVertex();
-        wr.pos(posMat, -7.0F, -2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).tex(u2, v1).lightmap(packedLightIn).endVertex();
-        wr.pos(posMat, -7.0F, 2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).tex(u2, v2).lightmap(packedLightIn).endVertex();
-        wr.pos(posMat, -7.0F, 2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).tex(u1, v2).lightmap(packedLightIn).endVertex();
+        wr.vertex(posMat, -7.0F, -2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).uv(u1, v1).uv2(packedLightIn).endVertex();
+        wr.vertex(posMat, -7.0F, -2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).uv(u2, v1).uv2(packedLightIn).endVertex();
+        wr.vertex(posMat, -7.0F, 2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).uv(u2, v2).uv2(packedLightIn).endVertex();
+        wr.vertex(posMat, -7.0F, 2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).uv(u1, v2).uv2(packedLightIn).endVertex();
 
-        wr.pos(posMat, -7.0F, 2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).tex(u1, v1).lightmap(packedLightIn).endVertex();
-        wr.pos(posMat, -7.0F, 2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).tex(u2, v1).lightmap(packedLightIn).endVertex();
-        wr.pos(posMat, -7.0F, -2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).tex(u2, v2).lightmap(packedLightIn).endVertex();
-        wr.pos(posMat, -7.0F, -2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).tex(u1, v2).lightmap(packedLightIn).endVertex();
+        wr.vertex(posMat, -7.0F, 2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).uv(u1, v1).uv2(packedLightIn).endVertex();
+        wr.vertex(posMat, -7.0F, 2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).uv(u2, v1).uv2(packedLightIn).endVertex();
+        wr.vertex(posMat, -7.0F, -2.0F, 2.0F).color(1f, 1f, 1f, 0.5f).uv(u2, v2).uv2(packedLightIn).endVertex();
+        wr.vertex(posMat, -7.0F, -2.0F, -2.0F).color(1f, 1f, 1f, 0.5f).uv(u1, v2).uv2(packedLightIn).endVertex();
     }
 }

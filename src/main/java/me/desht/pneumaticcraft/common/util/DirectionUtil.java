@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.util.Direction;
+import net.minecraft.util.Direction.*;
 
 import static net.minecraft.util.Direction.*;
 
@@ -23,7 +24,7 @@ public class DirectionUtil {
             case X:
                 return dir.getAxis() == Axis.X ? dir : rotateX(dir);
             case Y:
-                return dir.getAxis() == Axis.Y ? dir : dir.rotateY();
+                return dir.getAxis() == Axis.Y ? dir : dir.getClockWise();
             case Z:
                 return dir.getAxis() == Axis.Z ? dir : rotateZ(dir);
             default:

@@ -6,6 +6,6 @@ import net.minecraft.block.Block;
 // a marker interface
 public interface IBlockPressureChamber {
     static Block.Properties pressureChamberBlockProps() {
-        return ModBlocks.defaultProps().hardnessAndResistance(3f, 20000f);
+        return ModBlocks.defaultProps().strength(3f, 20000f);
     }
 }

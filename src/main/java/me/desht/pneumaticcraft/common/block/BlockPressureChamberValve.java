@@ -25,7 +25,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
 
     public BlockPressureChamberValve() {
         super(ModBlocks.defaultProps());
-        setDefaultState(getStateContainer().getBaseState().with(FORMED, false));
+        registerDefaultState(getStateDefinition().any().setValue(FORMED, false));
     }
 
     @Override
@@ -34,9 +34,9 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     @Override
-    public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
-        super.onBlockPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (!par1World.isRemote && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
+    public void setPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
+        super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
+        if (!par1World.isClientSide && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
             AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayerEntity) par5EntityLiving);
         }
     }
@@ -52,17 +52,17 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(FORMED);
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (player.isSneaking()) {
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        if (player.isShiftKeyDown()) {
             return ActionResultType.PASS;
         }
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberValve.class).map(te -> {
                 if (te.multiBlockSize > 0) {
                     NetworkHooks.openGui((ServerPlayerEntity) player, te, pos);
@@ -70,7 +70,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
                     // when this isn't the core valve, track down the core valve
                     for (TileEntityPressureChamberValve valve : te.accessoryValves) {
                         if (valve.multiBlockSize > 0) {
-                            NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
+                            NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getBlockPos());
                             break;
                         }
                     }
@@ -84,15 +84,15 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             invalidateMultiBlock(world, pos);
         }
-        super.onReplaced(state, world, pos, newState, isMoving);
+        super.onRemove(state, world, pos, newState, isMoving);
     }
 
     private void invalidateMultiBlock(World world, BlockPos pos) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberValve.class).ifPresent(teValve -> {
                 if (teValve.multiBlockSize > 0) {
                     teValve.onMultiBlockBreak();

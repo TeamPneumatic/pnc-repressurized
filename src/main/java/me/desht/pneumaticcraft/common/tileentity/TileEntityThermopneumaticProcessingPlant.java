@@ -112,7 +112,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         inputTank.tick();
         outputTank.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             problem = TPProblem.OK;
 
             ThermoPlantRecipe prevRecipe = currentRecipe;
@@ -122,7 +122,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 searchForRecipe = false;
             }
             if (prevRecipe != currentRecipe) {
-                getWorld().updateComparatorOutputLevel(getPos(), getBlockState().getBlock());
+                getLevel().updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
             }
 
             didWork = false;
@@ -172,8 +172,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 requiredPressure = 0;
             }
         } else {
-            if (didWork && getWorld().rand.nextBoolean()) {
-                ClientUtils.emitParticles(getWorld(), getPos(), ParticleTypes.SMOKE, 0.9);
+            if (didWork && getLevel().random.nextBoolean()) {
+                ClientUtils.emitParticles(getLevel(), getBlockPos(), ParticleTypes.SMOKE, 0.9);
             }
         }
     }
@@ -194,7 +194,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
      * @return a recipe, or null for no matching recipe
      */
     private ThermoPlantRecipe findApplicableRecipe() {
-        for (ThermoPlantRecipe recipe : PneumaticCraftRecipeType.THERMO_PLANT.getRecipes(world).values()) {
+        for (ThermoPlantRecipe recipe : PneumaticCraftRecipeType.THERMO_PLANT.getRecipes(level).values()) {
             if (recipe.matches(inputTank.getFluid(), inputItemHandler.getStackInSlot(0))) {
                 requiredPressure = recipe.getRequiredPressure();
                 minTemperature = recipe.getOperatingTemperature().getMin();
@@ -233,8 +233,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.put("Items", inputItemHandler.serializeNBT());
         tag.put("Output", outputItemHandler.serializeNBT());
@@ -243,8 +243,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inputItemHandler.deserializeNBT(tag.getCompound("Items"));
         outputItemHandler.deserializeNBT(tag.getCompound("Output"));
@@ -268,7 +268,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 moved = FluidUtil.tryFluidTransfer(outputTank, inputTank, inputTank.getFluidAmount(), true);
             }
             if (!moved.isEmpty()) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, pos, 1f, 1f, false), player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BUCKET_FILL, SoundCategory.BLOCKS, worldPosition, 1f, 1f, false), player);
             }
         }
     }
@@ -297,7 +297,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerThermopneumaticProcessingPlant(i, playerInventory, getPos());
+        return new ContainerThermopneumaticProcessingPlant(i, playerInventory, getBlockPos());
     }
 
     public IItemHandler getOutputInventory() {
@@ -334,7 +334,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         @Override
         public boolean isFluidValid(FluidStack fluid) {
             if (fluid.isEmpty() || acceptedFluidCache.contains(fluid.getFluid())) return true;
-            boolean accepted = PneumaticCraftRecipeType.THERMO_PLANT.stream(world).anyMatch(r -> r.getInputFluid().testFluid(fluid.getFluid()));
+            boolean accepted = PneumaticCraftRecipeType.THERMO_PLANT.stream(level).anyMatch(r -> r.getInputFluid().testFluid(fluid.getFluid()));
             if (accepted) acceptedFluidCache.add(fluid.getFluid());
             return accepted;
         }
@@ -360,7 +360,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             if (stack.isEmpty() || acceptedItemCache.contains(stack.getItem())) return true;
-            boolean accepted = PneumaticCraftRecipeType.THERMO_PLANT.stream(world).anyMatch(r -> r.getInputItem().test(stack));
+            boolean accepted = PneumaticCraftRecipeType.THERMO_PLANT.stream(level).anyMatch(r -> r.getInputItem().test(stack));
             if (accepted) acceptedItemCache.add(stack.getItem());
             return accepted;
         }

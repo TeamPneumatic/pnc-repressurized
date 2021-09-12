@@ -27,16 +27,16 @@ public class WidgetTextField extends TextFieldWidget implements ITooltipProvider
 
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
-        String oldText = getText();
+        String oldText = getValue();
         int oldCursorPos = getCursorPosition();
         if (passwordBox) {
-            setText(StringUtils.repeat('*', oldText.length()));
-            setCursorPosition(oldCursorPos);
+            setValue(StringUtils.repeat('*', oldText.length()));
+            moveCursorTo(oldCursorPos);
         }
         super.renderButton(matrixStack, mouseX, mouseY, partialTick);
         if (passwordBox) {
-            setText(oldText);
-            setCursorPosition(oldCursorPos);
+            setValue(oldText);
+            moveCursorTo(oldCursorPos);
         }
     }
 
@@ -60,8 +60,8 @@ public class WidgetTextField extends TextFieldWidget implements ITooltipProvider
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (canWrite() && button == 1) {
-            setText("");
+        if (canConsumeInput() && button == 1) {
+            setValue("");
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);

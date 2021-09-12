@@ -10,7 +10,7 @@ import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableEnderman implements IHackableEntity {

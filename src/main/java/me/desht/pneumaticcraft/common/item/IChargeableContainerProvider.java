@@ -33,13 +33,13 @@ public interface IChargeableContainerProvider {
 
         @Override
         public ITextComponent getDisplayName() {
-            return te.getChargingStack().getDisplayName();
+            return te.getChargingStack().getHoverName();
         }
 
         @Nullable
         @Override
         public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-            return new ContainerChargingStationUpgradeManager(type, windowId, playerInventory, te.getPos());
+            return new ContainerChargingStationUpgradeManager(type, windowId, playerInventory, te.getBlockPos());
         }
     }
 }

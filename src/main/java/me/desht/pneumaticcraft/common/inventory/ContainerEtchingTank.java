@@ -40,12 +40,12 @@ public class ContainerEtchingTank extends ContainerPneumaticBase<TileEntityEtchi
         }
 
         @Override
-        public boolean isItemValid(@Nonnull ItemStack stack) {
+        public boolean mayPlace(@Nonnull ItemStack stack) {
             return stack.getItem() == ModItems.EMPTY_PCB.get() && TileEntityUVLightBox.getExposureProgress(stack) > 0;
         }
 
         @Override
-        public int getSlotStackLimit() {
+        public int getMaxStackSize() {
             return 1;
         }
     }

@@ -32,8 +32,8 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
     }
 
     @Override
-    public boolean shouldExecute() {
-        if (super.shouldExecute()) {
+    public boolean canUse() {
+        if (super.canUse()) {
             traversedPositions.clear();
             return true;
         } else {
@@ -50,7 +50,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
     protected boolean isValidPosition(BlockPos pos) {
         if (traversedPositions.add(pos)) {
             curSlot = 0;
-            TileEntity te = drone.world().getTileEntity(pos);
+            TileEntity te = drone.world().getBlockEntity(pos);
             return te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
         }
         return false;
@@ -58,7 +58,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
 
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
-        return IOHelper.getInventoryForTE(drone.world().getTileEntity(pos)).map(this::handleInv).orElse(false);
+        return IOHelper.getInventoryForTE(drone.world().getBlockEntity(pos)).map(this::handleInv).orElse(false);
     }
 
     private boolean handleInv(IItemHandler inv) {

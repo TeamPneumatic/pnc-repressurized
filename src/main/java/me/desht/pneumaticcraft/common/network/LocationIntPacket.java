@@ -38,6 +38,6 @@ public abstract class LocationIntPacket {
     }
 
     PacketDistributor.TargetPoint getTargetPoint(World world, double updateDistance) {
-        return new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), updateDistance, world.getDimensionKey());
+        return new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), updateDistance, world.dimension());
     }
 }

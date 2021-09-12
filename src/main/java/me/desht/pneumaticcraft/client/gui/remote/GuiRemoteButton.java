@@ -62,11 +62,11 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
     }
 
     @Override
-    public void onClose() {
-        actionWidget.settingCoordinate = new BlockPos(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
-        actionWidget.setWidth(widthField.getValue());
-        actionWidget.setHeight(heightField.getValue());
+    public void removed() {
+        actionWidget.settingCoordinate = new BlockPos(xValueField.getIntValue(), yValueField.getIntValue(), zValueField.getIntValue());
+        actionWidget.setWidth(widthField.getIntValue());
+        actionWidget.setHeight(heightField.getIntValue());
 
-        super.onClose();
+        super.removed();
     }
 }

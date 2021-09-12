@@ -15,7 +15,7 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
@@ -76,11 +76,11 @@ public class RenderEntityTarget {
         stat.setTitle(entity.getDisplayName());
         PlayerEntity player = Minecraft.getInstance().player;
 
-        distToEntity = entity.getDistance(ClientUtils.getClientPlayer());
+        distToEntity = entity.distanceTo(ClientUtils.getClientPlayer());
 
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
-            player.world.playSound(player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
+            player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
         }
 
         boolean tagged = entity instanceof EntityDroneBase && ItemPneumaticArmor.isPlayerDebuggingDrone(player, (EntityDroneBase) entity);
@@ -95,7 +95,7 @@ public class RenderEntityTarget {
         isLookingAtTarget = isPlayerLookingAtTarget();
 
         if (hackTime > 0) {
-            IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(entity, ClientUtils.getClientPlayer());
+            IHackableEntity hackableEntity = HackManager.getHackableForEntity(entity, ClientUtils.getClientPlayer());
             if (hackableEntity != null) {
                 hackTime++;
             } else {
@@ -113,16 +113,16 @@ public class RenderEntityTarget {
             tracker.render(matrixStack, buffer, entity, partialTicks);
         }
 
-        double x = MathHelper.lerp(partialTicks, entity.prevPosX, entity.getPosX());
-        double y = MathHelper.lerp(partialTicks, entity.prevPosY, entity.getPosY()) + entity.getHeight() / 2D;
-        double z = MathHelper.lerp(partialTicks, entity.prevPosZ, entity.getPosZ());
+        double x = MathHelper.lerp(partialTicks, entity.xo, entity.getX());
+        double y = MathHelper.lerp(partialTicks, entity.yo, entity.getY()) + entity.getBbHeight() / 2D;
+        double z = MathHelper.lerp(partialTicks, entity.zo, entity.getZ());
 
-        matrixStack.push();
+        matrixStack.pushPose();
 
         matrixStack.translate(x, y, z);
         RenderUtils.rotateToPlayerFacing(matrixStack);
 
-        float size = entity.getHeight() * 0.5F;
+        float size = entity.getBbHeight() * 0.5F;
         float alpha = 0.5F;
         if (ticksExisted < 60) {
             size += 5 - Math.abs(ticksExisted) * 0.083F;
@@ -165,7 +165,7 @@ public class RenderEntityTarget {
             RenderUtils.renderString3d("Lost Target!", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
 
         oldSize = size;
     }
@@ -187,17 +187,17 @@ public class RenderEntityTarget {
     private boolean isPlayerLookingAtTarget() {
         // code used from the Enderman player looking code.
         PlayerEntity player = Minecraft.getInstance().player;
-        Vector3d vec3 = player.getLook(1.0F).normalize();
-        Vector3d vec31 = new Vector3d(entity.getPosX() - player.getPosX(), entity.getBoundingBox().minY + entity.getHeight() / 2.0F - (player.getPosY() + player.getEyeHeight()), entity.getPosZ() - player.getPosZ());
+        Vector3d vec3 = player.getViewVector(1.0F).normalize();
+        Vector3d vec31 = new Vector3d(entity.getX() - player.getX(), entity.getBoundingBox().minY + entity.getBbHeight() / 2.0F - (player.getY() + player.getEyeHeight()), entity.getZ() - player.getZ());
         double d0 = vec31.length();
         vec31 = vec31.normalize();
-        double d1 = vec3.dotProduct(vec31);
+        double d1 = vec3.dot(vec31);
         return d1 > 1.0D - 0.050D / d0;
     }
 
     public void hack() {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, ClientUtils.getClientPlayer());
+            IHackableEntity hackable = HackManager.getHackableForEntity(entity, ClientUtils.getClientPlayer());
             if (hackable != null && (hackTime == 0 || hackTime > hackable.getHackTime(entity, ClientUtils.getClientPlayer())))
                 NetworkHandler.sendToServer(new PacketHackingEntityStart(entity));
         }
@@ -211,7 +211,7 @@ public class RenderEntityTarget {
                 Minecraft.getInstance().player.playSound(ModSounds.SCI_FI.get(), 1.0f, 2.0f);
             } else {
                 if (entity instanceof EntityDrone) {
-                    NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
+                    NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getId()));
                     Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
                 } else if (entity instanceof EntityProgrammableController) {
                     NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(((EntityProgrammableController) entity).getControllerPos()));
@@ -237,6 +237,6 @@ public class RenderEntityTarget {
     }
 
     public void updateColor(int color) {
-        if (stat != null) stat.setBackgroundColor(color);
+        stat.setBackgroundColor(color);
     }
 }

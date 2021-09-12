@@ -5,6 +5,8 @@ import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.lib.Log;
 
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -12,6 +14,7 @@ import java.util.Map;
  * the Computer Control progwidget's "addArea" and "removeArea" methods.
  */
 public class LegacyAreaWidgetConverter {
+    private static final Map<String,EnumOldAreaType> OLD_AREA_TYPE_MAP = new HashMap<>();
     private static final Map<EnumOldAreaType, String> oldFormatToAreaTypes = new EnumMap<>(EnumOldAreaType.class);
 
     static {
@@ -25,6 +28,10 @@ public class LegacyAreaWidgetConverter {
         register(AreaTypeRandom.ID, EnumOldAreaType.RANDOM);
         if (oldFormatToAreaTypes.size() != EnumOldAreaType.values().length)
             throw new IllegalStateException("Not all old formats are handled!");
+
+        for (EnumOldAreaType oldAreaType : EnumOldAreaType.values()) {
+            OLD_AREA_TYPE_MAP.put(oldAreaType.name.toLowerCase(Locale.ROOT), oldAreaType);
+        }
     }
 
     private static void register(String id, EnumOldAreaType... oldTypes) {
@@ -73,6 +80,10 @@ public class LegacyAreaWidgetConverter {
         EnumOldAreaType(String name, boolean utilizesTypeInfo) {
             this.name = name;
             this.utilizesTypeInfo = utilizesTypeInfo;
+        }
+
+        public static EnumOldAreaType byName(String name) {
+            return OLD_AREA_TYPE_MAP.get(name.toLowerCase(Locale.ROOT));
         }
 
         @Override

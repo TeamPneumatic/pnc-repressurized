@@ -39,6 +39,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl<TileEntityChargingStation>, ICamouflageableTE, INamedContainerProvider {
@@ -72,6 +73,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private int pendingRedstoneStatus = -1;
     @GuiSynced
     private final RedstoneController<TileEntityChargingStation> rsController = new RedstoneController<>(this, REDSTONE_MODES);
+    @GuiSynced
+    public boolean upgradeOnly = false;
 
     public TileEntityChargingStation() {
         super(ModTileEntities.CHARGING_STATION.get(), PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
@@ -89,7 +92,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public void tick() {
         super.tick();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             discharging = false;
             charging = false;
 
@@ -127,16 +130,16 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
             boolean shouldEmit = rsController.shouldEmit();
             if (oldRedstoneStatus != shouldEmit) {
-                if (world.getGameTime() - lastRedstoneUpdate > MAX_REDSTONE_UPDATE_FREQ) {
+                if (level.getGameTime() - lastRedstoneUpdate > MAX_REDSTONE_UPDATE_FREQ) {
                     updateRedstoneOutput();
                 } else {
                     pendingRedstoneStatus = shouldEmit ? 1: 0;
                 }
-            } else if (pendingRedstoneStatus != -1 && world.getGameTime() - lastRedstoneUpdate > MAX_REDSTONE_UPDATE_FREQ) {
+            } else if (pendingRedstoneStatus != -1 && level.getGameTime() - lastRedstoneUpdate > MAX_REDSTONE_UPDATE_FREQ) {
                 updateRedstoneOutput();
             }
 
-            airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
+            airHandler.setSideLeaking(!upgradeOnly && hasNoConnectedAirHandlers() ? getRotation() : null);
         }
     }
 
@@ -144,10 +147,12 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         oldRedstoneStatus = rsController.shouldEmit();
         updateNeighbours();
         pendingRedstoneStatus = -1;
-        lastRedstoneUpdate = world.getGameTime();
+        lastRedstoneUpdate = level.getGameTime();
     }
 
     private List<IAirHandler> findChargeable() {
+        if (upgradeOnly) return Collections.emptyList();
+
         List<IAirHandler> res = new ArrayList<>();
 
         if (getChargingStack().getCount() == 1) {
@@ -158,14 +163,14 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         }
 
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            List<Entity> entitiesOnPad = getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(getPos().up()));
+            List<Entity> entitiesOnPad = getLevel().getEntitiesOfClass(Entity.class, new AxisAlignedBB(getBlockPos().above()));
             for (Entity entity : entitiesOnPad) {
                 if (entity instanceof ItemEntity) {
                     ((ItemEntity) entity).getItem().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
                 } else if (entity instanceof PlayerEntity) {
                     PlayerInventory inv = ((PlayerEntity) entity).inventory;
-                    for (int i = 0; i < inv.getSizeInventory(); i++) {
-                        ItemStack stack = inv.getStackInSlot(i);
+                    for (int i = 0; i < inv.getContainerSize(); i++) {
+                        ItemStack stack = inv.getItem(i);
                         if (stack.getCount() == 1) {
                             stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
                         }
@@ -192,11 +197,14 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             case "open_upgrades":
                 if (getChargingStack().getItem() instanceof IChargeableContainerProvider) {
                     INamedContainerProvider provider = ((IChargeableContainerProvider) getChargingStack().getItem()).getContainerProvider(this);
-                    NetworkHooks.openGui((ServerPlayerEntity) player, provider, getPos());
+                    NetworkHooks.openGui((ServerPlayerEntity) player, provider, getBlockPos());
                 }
                 break;
             case "close_upgrades":
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, getPos());
+                NetworkHooks.openGui((ServerPlayerEntity) player, this, getBlockPos());
+                break;
+            case "toggle_upgrade_only":
+                upgradeOnly = !upgradeOnly;
                 break;
         }
     }
@@ -212,11 +220,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     public ChargeableItemHandler getChargeableInventory() {
-        return getWorld().isRemote ? new ChargeableItemHandler(this) : chargeableInventory;
+        return getLevel().isClientSide ? new ChargeableItemHandler(this) : chargeableInventory;
     }
 
     @Override
@@ -225,8 +233,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         itemHandler = new ChargingStationHandler();
         itemHandler.deserializeNBT(tag.getCompound("Items"));
@@ -235,16 +243,23 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         if (chargeSlot.getItem() instanceof IChargeableContainerProvider) {
             chargeableInventory = new ChargeableItemHandler(this);
         }
+        upgradeOnly = tag.getBoolean("UpgradeOnly");
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         if (chargeableInventory != null) {
             chargeableInventory.writeToNBT();
         }
         tag.put("Items", itemHandler.serializeNBT());
+        if (upgradeOnly) tag.putBoolean("UpgradeOnly", true);
         return tag;
+    }
+
+    @Override
+    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+        if (upgradeOnly) blockEntityTag.putBoolean("UpgradeOnly", true);
     }
 
     @Override
@@ -262,8 +277,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void markDirty() {
-        super.markDirty();
+    public void setChanged() {
+        super.setChanged();
         if (chargeableInventory != null) {
             chargeableInventory.writeToNBT();
         }
@@ -273,9 +288,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        if (world != null && !world.isRemote) {
-            BlockState state = world.getBlockState(pos);
-            world.setBlockState(pos, state.with(BlockChargingStation.CHARGE_PAD, getUpgrades(EnumUpgrade.DISPENSER) > 0));
+        if (level != null && !level.isClientSide) {
+            BlockState state = level.getBlockState(worldPosition);
+            level.setBlockAndUpdate(worldPosition, state.setValue(BlockChargingStation.CHARGE_PAD, getUpgrades(EnumUpgrade.DISPENSER) > 0));
         }
     }
 
@@ -301,21 +316,21 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void remove(){
-        super.remove();
+    public void setRemoved(){
+        super.setRemoved();
         GlobalTileEntityCacheManager.getInstance().chargingStations.remove(this);
     }
 
     @Override
-    public void validate(){
-        super.validate();
+    public void clearRemoved(){
+        super.clearRemoved();
         GlobalTileEntityCacheManager.getInstance().chargingStations.add(this);
     }
 
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerChargingStation(i, playerInventory, getPos());
+        return new ContainerChargingStation(i, playerInventory, getBlockPos());
     }
 
     private class ChargingStationHandler extends BaseItemStackHandler {
@@ -339,22 +354,22 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             TileEntityChargingStation teCS = TileEntityChargingStation.this;
 
             ItemStack newStack = getStackInSlot(slot);
-            if (!ItemStack.areItemsEqual(chargingStackSynced, newStack)) {
+            if (!ItemStack.isSame(chargingStackSynced, newStack)) {
                 chargingStackSynced = new ItemStack(newStack.getItem());
             }
 
-            if (teCS.getWorld().isRemote || slot != CHARGE_INVENTORY_INDEX) return;
+            if (teCS.getLevel().isClientSide || slot != CHARGE_INVENTORY_INDEX) return;
 
             teCS.chargeableInventory = newStack.getItem() instanceof IChargeableContainerProvider ?
                     new ChargeableItemHandler(teCS) :
                     null;
 
             // if any other player has a gui open for the previous item, force a reopen of the charging station gui
-            for (PlayerEntity player : teCS.getWorld().getPlayers()) {
+            for (PlayerEntity player : teCS.getLevel().players()) {
                 if (player instanceof ServerPlayerEntity
-                        && player.openContainer instanceof ContainerChargingStationUpgradeManager
-                        && ((ContainerChargingStationUpgradeManager) player.openContainer).te == te) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, TileEntityChargingStation.this, getPos());
+                        && player.containerMenu instanceof ContainerChargingStationUpgradeManager
+                        && ((ContainerChargingStationUpgradeManager) player.containerMenu).te == te) {
+                    NetworkHooks.openGui((ServerPlayerEntity) player, TileEntityChargingStation.this, getBlockPos());
                 }
             }
         }

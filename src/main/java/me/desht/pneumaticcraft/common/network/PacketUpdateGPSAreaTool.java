@@ -26,7 +26,7 @@ public class PacketUpdateGPSAreaTool {
 
     public PacketUpdateGPSAreaTool(PacketBuffer buffer) {
         try {
-            areaWidgetData = buffer.readCompoundTag();
+            areaWidgetData = buffer.readNbt();
             hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
         } catch (Exception e) {
             e.printStackTrace();
@@ -35,7 +35,7 @@ public class PacketUpdateGPSAreaTool {
 
     public void toBytes(PacketBuffer buffer) {
         try {
-            buffer.writeCompoundTag(areaWidgetData);
+            buffer.writeNbt(areaWidgetData);
             buffer.writeBoolean(hand == Hand.MAIN_HAND);
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,7 +45,7 @@ public class PacketUpdateGPSAreaTool {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() != null) {
-                ItemStack stack = ctx.get().getSender().getHeldItem(hand);
+                ItemStack stack = ctx.get().getSender().getItemInHand(hand);
                 if (stack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
                     stack.setTag(areaWidgetData);
                 }

@@ -28,12 +28,12 @@ public class BlockDroneInterface extends BlockPneumaticCraft {
     public BlockDroneInterface() {
         super(ModBlocks.defaultProps());
 
-        setDefaultState(getStateContainer().getBaseState().with(CONNECTED, false));
+        registerDefaultState(getStateDefinition().any().setValue(CONNECTED, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(CONNECTED);
     }
@@ -59,9 +59,9 @@ public class BlockDroneInterface extends BlockPneumaticCraft {
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         if (ThirdPartyManager.instance().isModTypeLoaded(ThirdPartyManager.ModType.COMPUTER)) {
-            super.fillItemGroup(group, items);
+            super.fillItemCategory(group, items);
         }
     }
 }

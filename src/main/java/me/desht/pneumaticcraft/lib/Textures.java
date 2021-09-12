@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.lib;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.util.ResourceLocation;
 
 public class Textures {

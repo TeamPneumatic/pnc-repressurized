@@ -23,16 +23,16 @@ public class GuiRemoteVariable<A extends ActionWidgetVariable<?>> extends GuiRem
         addLabel(new StringTextComponent("#"), guiLeft + 10, guiTop + 81);
 
         variableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 80, 152, 10);
-        variableField.setElements(guiRemote.getContainer().variables);
-        variableField.setText(actionWidget.getVariableName());
+        variableField.setElements(guiRemote.getMenu().variables);
+        variableField.setValue(actionWidget.getVariableName());
         variableField.setTooltip(xlate("pneumaticcraft.gui.remote.variable.tooltip"));
         addButton(variableField);
     }
 
     @Override
-    public void onClose() {
-        actionWidget.setVariableName(variableField.getText());
+    public void removed() {
+        actionWidget.setVariableName(variableField.getValue());
 
-        super.onClose();
+        super.removed();
     }
 }

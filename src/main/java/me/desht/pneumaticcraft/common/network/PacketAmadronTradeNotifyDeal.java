@@ -29,20 +29,20 @@ public class PacketAmadronTradeNotifyDeal extends PacketAbstractAmadronTrade {
     public PacketAmadronTradeNotifyDeal(PacketBuffer buffer) {
         super(buffer);
         offerAmount = buffer.readInt();
-        buyingPlayer = buffer.readString();
+        buyingPlayer = buffer.readUtf();
     }
 
     @Override
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
         buf.writeInt(offerAmount);
-        buf.writeString(buyingPlayer);
+        buf.writeUtf(buyingPlayer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (PNCConfig.Common.Amadron.notifyOfDealMade)
-                ClientUtils.getClientPlayer().sendStatusMessage(
+                ClientUtils.getClientPlayer().displayClientMessage(
                         xlate("pneumaticcraft.message.amadron.playerBought",
                                 buyingPlayer,
                                 offerAmount,

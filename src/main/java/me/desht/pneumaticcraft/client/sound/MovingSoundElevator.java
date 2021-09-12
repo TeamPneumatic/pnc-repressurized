@@ -12,21 +12,21 @@ public class MovingSoundElevator extends TickableSound {
     MovingSoundElevator(TileEntityElevatorBase te) {
         super(ModSounds.ELEVATOR_RISING.get(), SoundCategory.BLOCKS);
         this.te = te;
-        x = te.getPos().getX();
-        y = te.getPos().getY() + te.extension;
-        z = te.getPos().getZ();
-        repeat = true;
-        repeatDelay = 0;
+        x = te.getBlockPos().getX();
+        y = te.getBlockPos().getY() + te.extension;
+        z = te.getBlockPos().getZ();
+        looping = true;
+        delay = 0;
         volume = (float) PNCConfig.Client.Sound.elevatorVolumeRunning;
     }
 
     @Override
     public void tick() {
-        y = te.getPos().getY() + te.extension;
+        y = te.getBlockPos().getY() + te.extension;
     }
 
     @Override
-    public boolean isDonePlaying() {
+    public boolean isStopped() {
         return te.isRemoved() || te.isStopped();
     }
 }

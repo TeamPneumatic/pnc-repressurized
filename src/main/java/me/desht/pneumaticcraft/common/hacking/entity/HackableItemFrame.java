@@ -10,7 +10,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableItemFrame implements IHackableEntity {
@@ -21,7 +21,7 @@ public class HackableItemFrame implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, PlayerEntity player) {
-        return entity instanceof ItemFrameEntity && !((ItemFrameEntity) entity).getDisplayedItem().isEmpty();
+        return entity instanceof ItemFrameEntity && !((ItemFrameEntity) entity).getItem().isEmpty();
     }
 
     @Override
@@ -41,8 +41,8 @@ public class HackableItemFrame implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        if (!entity.world.isRemote) {
-            entity.attackEntityFrom(DamageSource.causePlayerDamage(player), 0.1f);
+        if (!entity.level.isClientSide) {
+            entity.hurt(DamageSource.playerAttack(player), 0.1f);
         }
     }
 

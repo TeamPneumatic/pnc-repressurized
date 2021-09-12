@@ -47,7 +47,7 @@ public class PacketUpdateMicromissileSettings {
         accel = buffer.readFloat();
         damage = buffer.readFloat();
         point = new PointXY(buffer.readInt(), buffer.readInt());
-        entityFilter = buffer.readString(32767);
+        entityFilter = buffer.readUtf(32767);
         fireMode = FireMode.values()[buffer.readByte()];
         saveDefault = buffer.readBoolean();
         hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
@@ -59,7 +59,7 @@ public class PacketUpdateMicromissileSettings {
         buf.writeFloat(damage);
         buf.writeInt(point.x);
         buf.writeInt(point.y);
-        buf.writeString(entityFilter);
+        buf.writeUtf(entityFilter);
         buf.writeByte(fireMode.ordinal());
         buf.writeBoolean(saveDefault);
         buf.writeBoolean(hand == Hand.MAIN_HAND);
@@ -68,7 +68,7 @@ public class PacketUpdateMicromissileSettings {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack stack = player.getHeldItem(hand);
+            ItemStack stack = player.getItemInHand(hand);
             if (!stack.isEmpty()) {
                 applySettings(player, stack);
             } else {
@@ -96,7 +96,7 @@ public class PacketUpdateMicromissileSettings {
                     new MicromissileDefaults.Entry(topSpeed, accel, damage, point, entityFilter, fireMode)
             );
             MicromissileDefaults.INSTANCE.tryWriteToFile();
-            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getX(), player.getY(), player.getZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
         }
     }
 }

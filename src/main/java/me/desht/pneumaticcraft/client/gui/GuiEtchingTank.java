@@ -23,26 +23,26 @@ public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTa
     public GuiEtchingTank(ContainerEtchingTank container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        ySize = 206;
+        imageHeight = 206;
     }
 
     @Override
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(guiLeft + 149, guiTop + 18, te.getAcidTank()));
+        addButton(new WidgetTank(leftPos + 149, topPos + 18, te.getAcidTank()));
 
-        addButton(tempWidget = new WidgetTemperature(guiLeft + 134, guiTop + 18, TemperatureRange.of(273, 773), 323, 50) {
+        addButton(tempWidget = new WidgetTemperature(leftPos + 134, topPos + 18, TemperatureRange.of(273, 773), 323, 50) {
             @Override
             public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
 
                 int interval = te.getTickInterval();
                 int processTimeSecs = interval * 5;
-                curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).mergeStyle(TextFormatting.GREEN));
+                curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).withStyle(TextFormatting.GREEN));
                 if (getTemperature() > 323) {
                     float usage = (30 - interval) / (5f * interval);
-                    curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)).mergeStyle(TextFormatting.YELLOW));
+                    curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)).withStyle(TextFormatting.YELLOW));
                 }
             }
         });

@@ -70,12 +70,12 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
         super.getTooltip(curTooltip);
 
         curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")
-                .appendString(": " + ClientUtils.translateDirection(clickSide)));
+                .append(": " + ClientUtils.translateDirection(clickSide)));
         if (sneaking) {
             curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
         }
         curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.operation")
-                .appendString(": ")
+                .append(": ")
                 .append(new TranslationTextComponent(clickType.getTranslationKey())));
     }
 
@@ -83,7 +83,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         if (sneaking) tag.putBoolean("sneaking", true);
-        tag.putInt("dir", clickSide.getIndex());
+        tag.putInt("dir", clickSide.get3DDataValue());
         tag.putString("clickType", clickType.toString());
     }
 
@@ -91,7 +91,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         sneaking = tag.getBoolean("sneaking");
-        clickSide = Direction.byIndex(tag.getInt("dir"));
+        clickSide = Direction.from3DDataValue(tag.getInt("dir"));
         clickType = tag.contains("clickType") ? RightClickType.valueOf(tag.getString("clickType")) : RightClickType.CLICK_ITEM;
     }
 
@@ -99,7 +99,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(sneaking);
-        buf.writeByte(clickSide.getIndex());
+        buf.writeByte(clickSide.get3DDataValue());
         buf.writeByte(clickType.ordinal());
     }
 
@@ -107,7 +107,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
         sneaking = buf.readBoolean();
-        clickSide = Direction.byIndex(buf.readByte());
+        clickSide = Direction.from3DDataValue(buf.readByte());
         clickType = RightClickType.values()[buf.readByte()];
     }
 

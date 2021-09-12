@@ -31,9 +31,9 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
         if (isSidedWidget()) {
             for (Direction dir : DirectionUtil.VALUES) {
                 ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
-                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
-                        b -> ((ISidedWidget) progWidget).getSides()[dir.getIndex()] = b.checked);
-                checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.getIndex()];
+                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
+                        b -> ((ISidedWidget) progWidget).getSides()[dir.get3DDataValue()] = b.checked);
+                checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.get3DDataValue()];
                 addButton(checkBox);
             }
         }
@@ -66,8 +66,8 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
 
             textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11)
                     .setValue(progWidget.getRequiredCount()).setRange(0, Integer.MAX_VALUE);
-            textField.setFocused2(true);
-            textField.setResponder(s -> progWidget.setRequiredCount(textField.getValue()));
+            textField.setFocus(true);
+            textField.setResponder(s -> progWidget.setRequiredCount(textField.getIntValue()));
             addButton(textField);
         }
 
@@ -75,8 +75,8 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
         label.setTooltip(xlate("pneumaticcraft.gui.progWidget.condition.measure.tooltip"));
         WidgetComboBox measureTextField = new WidgetComboBox(font, guiLeft + label.getWidth() + 8, guiTop + 150, 80, 11);
         measureTextField.setElements(guiProgrammer.te.getAllVariables());
-        measureTextField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
-        measureTextField.setText(progWidget.getMeasureVar());
+        measureTextField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
+        measureTextField.setValue(progWidget.getMeasureVar());
         measureTextField.setResponder(progWidget::setMeasureVar);
         addButton(measureTextField);
     }
@@ -98,10 +98,10 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (isSidedWidget()) {
-            font.func_243248_b(matrixStack, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
+            font.draw(matrixStack, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
         }
         ITextComponent s = progWidget.getExtraStringInfo().get(0);
-        font.func_243248_b(matrixStack, s, guiLeft + xSize / 2f - font.getStringPropertyWidth(s) / 2f, guiTop + 120, 0xFF404060);
+        font.draw(matrixStack, s, guiLeft + xSize / 2f - font.width(s) / 2f, guiTop + 120, 0xFF404060);
     }
 
     public static class Entity extends GuiProgWidgetCondition<ProgWidgetEntityCondition> {

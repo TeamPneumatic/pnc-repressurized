@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
 import me.desht.pneumaticcraft.common.entity.living.*;
@@ -7,7 +8,6 @@ import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.entity.semiblock.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -72,9 +72,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityVortex> vortex() {
-        return EntityType.Builder.create(EntityVortex::new, EntityClassification.MISC)
-                .size(0.5f, 0.5f)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityVortex::new, EntityClassification.MISC)
+                .sized(0.5f, 0.5f)
+                .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(3)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.VORTEX.get().create(world))
@@ -82,8 +82,8 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityDrone> drone() {
-        return EntityType.Builder.<EntityDrone>create(EntityDrone::new, EntityClassification.CREATURE)
-                .size(0.7f, 0.35f)
+        return EntityType.Builder.<EntityDrone>of(EntityDrone::new, EntityClassification.CREATURE)
+                .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
                 .setCustomClientFactory(((spawnEntity, world) -> ModEntities.DRONE.get().create(world)))
@@ -91,8 +91,8 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityAmadrone> amadrone() {
-        return EntityType.Builder.create(EntityAmadrone::new, EntityClassification.CREATURE)
-                .size(0.7f, 0.35f)
+        return EntityType.Builder.of(EntityAmadrone::new, EntityClassification.CREATURE)
+                .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
                 .setCustomClientFactory(((spawnEntity, world) -> ModEntities.AMADRONE.get().create(world)))
@@ -100,8 +100,8 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsDrone> logisticsDrone() {
-        return EntityType.Builder.<EntityLogisticsDrone>create(EntityLogisticsDrone::new, EntityClassification.CREATURE)
-                .size(0.7f, 0.35f)
+        return EntityType.Builder.<EntityLogisticsDrone>of(EntityLogisticsDrone::new, EntityClassification.CREATURE)
+                .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
                 .setCustomClientFactory(((spawnEntity, world) -> ModEntities.LOGISTICS_DRONE.get().create(world)))
@@ -109,8 +109,8 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityHarvestingDrone> harvestingDrone() {
-        return EntityType.Builder.<EntityHarvestingDrone>create(EntityHarvestingDrone::new, EntityClassification.CREATURE)
-                .size(0.7f, 0.35f)
+        return EntityType.Builder.<EntityHarvestingDrone>of(EntityHarvestingDrone::new, EntityClassification.CREATURE)
+                .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
                 .setCustomClientFactory(((spawnEntity, world) -> ModEntities.HARVESTING_DRONE.get().create(world)))
@@ -118,8 +118,8 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityGuardDrone> guardDrone() {
-        return EntityType.Builder.<EntityGuardDrone>create(EntityGuardDrone::new, EntityClassification.CREATURE)
-                .size(0.7f, 0.35f)
+        return EntityType.Builder.<EntityGuardDrone>of(EntityGuardDrone::new, EntityClassification.CREATURE)
+                .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
                 .setCustomClientFactory(((spawnEntity, world) -> ModEntities.GUARD_DRONE.get().create(world)))
@@ -127,8 +127,8 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityCollectorDrone> collectorDrone() {
-        return EntityType.Builder.<EntityCollectorDrone>create(EntityCollectorDrone::new, EntityClassification.CREATURE)
-                .size(0.7f, 0.35f)
+        return EntityType.Builder.<EntityCollectorDrone>of(EntityCollectorDrone::new, EntityClassification.CREATURE)
+                .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
                 .setCustomClientFactory(((spawnEntity, world) -> ModEntities.COLLECTOR_DRONE.get().create(world)))
@@ -136,8 +136,8 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityProgrammableController> programmableController() {
-        return EntityType.Builder.create(EntityProgrammableController::new, EntityClassification.CREATURE)
-                .size(0.35f, 0.175f)
+        return EntityType.Builder.of(EntityProgrammableController::new, EntityClassification.CREATURE)
+                .sized(0.35f, 0.175f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
                 .setCustomClientFactory(((spawnEntity, world) -> ModEntities.PROGRAMMABLE_CONTROLLER.get().create(world)))
@@ -145,9 +145,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityMicromissile> micromissile() {
-        return EntityType.Builder.<EntityMicromissile>create(EntityMicromissile::new, EntityClassification.MISC)
-                .size(0.5f, 0.5f)
-                .immuneToFire()
+        return EntityType.Builder.<EntityMicromissile>of(EntityMicromissile::new, EntityClassification.MISC)
+                .sized(0.5f, 0.5f)
+                .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(20)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.MICROMISSILE.get().create(world))
@@ -155,9 +155,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityTumblingBlock> tumblingBlock() {
-        return EntityType.Builder.<EntityTumblingBlock>create(EntityTumblingBlock::new, EntityClassification.MISC)
-                .size(0.5f, 0.5f)
-                .immuneToFire()
+        return EntityType.Builder.<EntityTumblingBlock>of(EntityTumblingBlock::new, EntityClassification.MISC)
+                .sized(0.5f, 0.5f)
+                .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(20)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.TUMBLING_BLOCK.get().create(world))
@@ -165,9 +165,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityRing> ring() {
-        return EntityType.Builder.<EntityRing>create(EntityRing::new, EntityClassification.MISC)
-                .size(0.5f, 0.5f)
-                .immuneToFire()
+        return EntityType.Builder.<EntityRing>of(EntityRing::new, EntityClassification.MISC)
+                .sized(0.5f, 0.5f)
+                .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(20)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.RING.get().create(world))
@@ -175,9 +175,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityCropSupport> cropSupport() {
-        return EntityType.Builder.create(EntityCropSupport::new, EntityClassification.MISC)
-                .size(10 / 16F, 9 / 16F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityCropSupport::new, EntityClassification.MISC)
+                .sized(10 / 16F, 9 / 16F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.CROP_SUPPORT.get().create(world))
@@ -185,9 +185,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntitySpawnerAgitator> spawnerAgitator() {
-        return EntityType.Builder.create(EntitySpawnerAgitator::new, EntityClassification.MISC)
-                .size(1F, 1F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntitySpawnerAgitator::new, EntityClassification.MISC)
+                .sized(1F, 1F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.SPAWNER_AGITATOR.get().create(world))
@@ -195,9 +195,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityHeatFrame> heatFrame() {
-        return EntityType.Builder.create(EntityHeatFrame::new, EntityClassification.MISC)
-                .size(1F, 1F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityHeatFrame::new, EntityClassification.MISC)
+                .sized(1F, 1F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.HEAT_FRAME.get().create(world))
@@ -205,9 +205,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityTransferGadget> transferGadget() {
-        return EntityType.Builder.create(EntityTransferGadget::new, EntityClassification.MISC)
-                .size(1F, 1F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityTransferGadget::new, EntityClassification.MISC)
+                .sized(1F, 1F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.TRANSFER_GADGET.get().create(world))
@@ -215,9 +215,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsActiveProvider> activeProvider() {
-        return EntityType.Builder.create(EntityLogisticsActiveProvider::new, EntityClassification.MISC)
-                .size(10 / 16F, 9 / 16F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityLogisticsActiveProvider::new, EntityClassification.MISC)
+                .sized(10 / 16F, 9 / 16F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_ACTIVE_PROVIDER.get().create(world))
@@ -225,9 +225,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsPassiveProvider> passiveProvider() {
-        return EntityType.Builder.create(EntityLogisticsPassiveProvider::new, EntityClassification.MISC)
-                .size(10 / 16F, 9 / 16F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityLogisticsPassiveProvider::new, EntityClassification.MISC)
+                .sized(10 / 16F, 9 / 16F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_PASSIVE_PROVIDER.get().create(world))
@@ -235,9 +235,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsStorage> storage() {
-        return EntityType.Builder.create(EntityLogisticsStorage::new, EntityClassification.MISC)
-                .size(10 / 16F, 9 / 16F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityLogisticsStorage::new, EntityClassification.MISC)
+                .sized(10 / 16F, 9 / 16F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_STORAGE.get().create(world))
@@ -245,9 +245,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsDefaultStorage> defaultStorage() {
-        return EntityType.Builder.create(EntityLogisticsDefaultStorage::new, EntityClassification.MISC)
-                .size(10 / 16F, 9 / 16F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityLogisticsDefaultStorage::new, EntityClassification.MISC)
+                .sized(10 / 16F, 9 / 16F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_DEFAULT_STORAGE.get().create(world))
@@ -255,9 +255,9 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsRequester> requester() {
-        return EntityType.Builder.create(EntityLogisticsRequester::new, EntityClassification.MISC)
-                .size(10 / 16F, 9 / 16F)
-                .immuneToFire()
+        return EntityType.Builder.of(EntityLogisticsRequester::new, EntityClassification.MISC)
+                .sized(10 / 16F, 9 / 16F)
+                .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_REQUESTER.get().create(world))
@@ -268,13 +268,13 @@ public class ModEntities {
     public static class Listener {
         @SubscribeEvent
         public static void registerGlobalAttributes(EntityAttributeCreationEvent event) {
-            event.put(ModEntities.DRONE.get(), EntityDrone.prepareAttributes().create());
-            event.put(ModEntities.AMADRONE.get(), EntityDrone.prepareAttributes().create());
-            event.put(ModEntities.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().create());
-            event.put(ModEntities.GUARD_DRONE.get(), EntityDrone.prepareAttributes().create());
-            event.put(ModEntities.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().create());
-            event.put(ModEntities.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().create());
-            event.put(ModEntities.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().create());
+            event.put(ModEntities.DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntities.AMADRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntities.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntities.GUARD_DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntities.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntities.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntities.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().build());
         }
     }
 }

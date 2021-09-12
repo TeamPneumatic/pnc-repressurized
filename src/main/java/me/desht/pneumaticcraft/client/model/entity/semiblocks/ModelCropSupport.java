@@ -7,85 +7,42 @@ import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 
 public class ModelCropSupport extends EntityModel<EntityCropSupport> {
-    private final ModelRenderer stick1;
-    private final ModelRenderer stick2;
-    private final ModelRenderer stick3;
-    private final ModelRenderer stick4;
-    private final ModelRenderer stick5;
-    private final ModelRenderer stick6;
-    private final ModelRenderer stick6_r1;
-    private final ModelRenderer stick7;
-    private final ModelRenderer stick8;
-    private final ModelRenderer stick8_r1;
+    private final ModelRenderer shape1;
+    private final ModelRenderer shape2;
+    private final ModelRenderer shape3;
+    private final ModelRenderer shape4;
 
     public ModelCropSupport() {
-        textureWidth = 64;
-        textureHeight = 16;
+        texWidth = 64;
+        texHeight = 64;
 
-        stick1 = new ModelRenderer(this);
-        stick1.setRotationPoint(-8.5F, 11.5F, -8.5F);
-        stick1.setTextureOffset(48, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 13.0F, 1.0F, 0.0F, true);
-
-        stick2 = new ModelRenderer(this);
-        stick2.setRotationPoint(7.5F, 11.5F, -8.5F);
-        stick2.setTextureOffset(44, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 13.0F, 1.0F, 0.0F, true);
-
-        stick3 = new ModelRenderer(this);
-        stick3.setRotationPoint(-8.5F, 11.5F, 7.5F);
-        stick3.setTextureOffset(40, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 13.0F, 1.0F, 0.0F, true);
-
-        stick4 = new ModelRenderer(this);
-        stick4.setRotationPoint(7.5F, 11.5F, 7.5F);
-        stick4.setTextureOffset(52, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 13.0F, 1.0F, 0.0F, true);
-
-        stick5 = new ModelRenderer(this);
-        stick5.setRotationPoint(0.0F, 24.0F, 0.0F);
-        stick5.setTextureOffset(0, 2).addBox(-9.5F, -13.5F, -8.5F, 19.0F, 1.0F, 1.0F, 0.0F, true);
-
-        stick6 = new ModelRenderer(this);
-        stick6.setRotationPoint(0.0F, 24.0F, 0.0F);
-
-
-        stick6_r1 = new ModelRenderer(this);
-        stick6_r1.setRotationPoint(0.0F, 0.0F, 0.0F);
-        stick6.addChild(stick6_r1);
-        setRotationAngle(stick6_r1, 0.0F, -1.5708F, 0.0F);
-        stick6_r1.setTextureOffset(0, 4).addBox(-9.5F, -13.5F, -8.5F, 19.0F, 1.0F, 1.0F, 0.0F, true);
-
-        stick7 = new ModelRenderer(this);
-        stick7.setRotationPoint(0.0F, 24.0F, 0.0F);
-        stick7.setTextureOffset(0, 0).addBox(-9.5F, -13.5F, 7.5F, 19.0F, 1.0F, 1.0F, 0.0F, true);
-
-        stick8 = new ModelRenderer(this);
-        stick8.setRotationPoint(0.0F, 24.0F, 0.0F);
-
-
-        stick8_r1 = new ModelRenderer(this);
-        stick8_r1.setRotationPoint(0.0F, 0.0F, 0.0F);
-        stick8.addChild(stick8_r1);
-        setRotationAngle(stick8_r1, 0.0F, -1.5708F, 0.0F);
-        stick8_r1.setTextureOffset(0, 6).addBox(-9.5F, -13.5F, 7.5F, 19.0F, 1.0F, 1.0F, 0.0F, true);
+        shape1 = new ModelRenderer(64, 64, 0, 16);
+        shape1.addBox(0F, 0F, 0F, 1, 9, 1);
+        shape1.setPos(-8.5F, 11.5F, -8.5F);
+        shape1.mirror = true;
+        shape2 = new ModelRenderer(64, 64, 4, 16);
+        shape2.addBox(0F, 0F, 0F, 1, 9, 1);
+        shape2.setPos(7.5F, 11.5F, -8.5F);
+        shape2.mirror = true;
+        shape3 = new ModelRenderer(64, 64, 0, 16);
+        shape3.addBox(0F, 0F, 0F, 1, 9, 1);
+        shape3.setPos(-8.5F, 11.5F, 7.5F);
+        shape3.mirror = true;
+        shape4 = new ModelRenderer(64, 64, 0, 16);
+        shape4.addBox(0F, 0F, 0F, 1, 9, 1);
+        shape4.setPos(7.5F, 11.5F, 7.5F);
+        shape4.mirror = true;
     }
 
     @Override
-    public void setRotationAngles(EntityCropSupport entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EntityCropSupport entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        stick1.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick2.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick3.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick4.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick5.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick6.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick7.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick8.render(matrixStack, buffer, packedLight, packedOverlay);
-    }
-
-    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+        shape1.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        shape2.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        shape3.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        shape4.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 }

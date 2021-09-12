@@ -15,14 +15,14 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemDrillBit extends Item implements ColorHandlers.ITintableItem {
     private final DrillBitType type;
 
     public ItemDrillBit(DrillBitType type) {
-        super(ModItems.defaultProps().maxStackSize(1));
+        super(ModItems.defaultProps().stacksTo(1));
 
         this.type = type;
     }
@@ -37,15 +37,15 @@ public class ItemDrillBit extends Item implements ColorHandlers.ITintableItem {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
-        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.tier").mergeStyle(TextFormatting.YELLOW)
-                .append(new StringTextComponent(Integer.toString(getType().tier)).mergeStyle(TextFormatting.GOLD)));
-        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.blocks").mergeStyle(TextFormatting.YELLOW)
-                .append(new StringTextComponent(Integer.toString(getType().getBestDigType().getBlocksDug())).mergeStyle(TextFormatting.GOLD)));
-        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.speed").mergeStyle(TextFormatting.YELLOW)
-                .append(new StringTextComponent(Integer.toString(getType().baseEfficiency)).mergeStyle(TextFormatting.GOLD)));
+        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.tier").withStyle(TextFormatting.YELLOW)
+                .append(new StringTextComponent(Integer.toString(getType().tier)).withStyle(TextFormatting.GOLD)));
+        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.blocks").withStyle(TextFormatting.YELLOW)
+                .append(new StringTextComponent(Integer.toString(getType().getBestDigType().getBlocksDug())).withStyle(TextFormatting.GOLD)));
+        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.speed").withStyle(TextFormatting.YELLOW)
+                .append(new StringTextComponent(Integer.toString(getType().baseEfficiency)).withStyle(TextFormatting.GOLD)));
     }
 
     public enum DrillBitType {

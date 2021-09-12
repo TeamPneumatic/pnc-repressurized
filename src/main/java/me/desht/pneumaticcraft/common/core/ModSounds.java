@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.core;
 
-import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Names.MOD_ID);

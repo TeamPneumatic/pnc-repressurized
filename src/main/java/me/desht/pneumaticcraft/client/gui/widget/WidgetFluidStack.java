@@ -13,6 +13,8 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class WidgetFluidStack extends WidgetFluidFilter {
     private boolean adjustable = false;
 
@@ -41,12 +43,12 @@ public class WidgetFluidStack extends WidgetFluidFilter {
         if (!fluidStack.isEmpty()) {
             int fluidAmount = fluidStack.getAmount() / 1000;
             if (fluidAmount > 1) {
-                FontRenderer fr = Minecraft.getInstance().fontRenderer;
-                matrixStack.push();
+                FontRenderer fr = Minecraft.getInstance().font;
+                matrixStack.pushPose();
                 matrixStack.translate(0, 0, 200);  // ensure amount is drawn in front of the fluid texture
                 String s = fluidAmount + "B";
-                fr.drawStringWithShadow(matrixStack, s, x - fr.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF);
-                matrixStack.pop();
+                fr.drawShadow(matrixStack, s, x - fr.width(s) + 17, y + 9, 0xFFFFFFFF);
+                matrixStack.popPose();
             }
         }
     }
@@ -80,10 +82,10 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
         if (!fluidStack.isEmpty()) {
-            curTip.add(new FluidStack(fluidStack, 1).getDisplayName().deepCopy()
-                    .appendString(" (" + fluidStack.getAmount() + "mB)"));
+            curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
+            curTip.add(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(TextFormatting.GRAY));
             curTip.add(new StringTextComponent(ModNameCache.getModName(fluidStack.getFluid()))
-                    .mergeStyle(TextFormatting.BLUE,  TextFormatting.ITALIC));
+                    .withStyle(TextFormatting.BLUE,  TextFormatting.ITALIC));
         }
     }
 }

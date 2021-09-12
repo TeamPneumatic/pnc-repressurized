@@ -15,7 +15,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryEnergy implements IBlockTrackEntry {
@@ -30,7 +30,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
 
     @Override
     public List<BlockPos> getServerUpdatePositions(TileEntity te) {
-        return Collections.singletonList(te.getPos());
+        return Collections.singletonList(te.getBlockPos());
     }
 
     @Override

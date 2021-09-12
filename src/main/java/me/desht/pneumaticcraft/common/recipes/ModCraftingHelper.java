@@ -11,11 +11,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModCraftingHelper {
     public static FluidStack fluidStackFromJson(JsonObject json) {
-        String fluidName = JSONUtils.getString(json, "fluid");
+        String fluidName = JSONUtils.getAsString(json, "fluid");
         if (fluidName.equals("minecraft:empty")) return FluidStack.EMPTY;
         Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
         if (fluid == null || fluid == Fluids.EMPTY) throw new JsonSyntaxException("unknown fluid: " + fluidName);
-        int amount = JSONUtils.getInt(json, "amount", 1000);
+        int amount = JSONUtils.getAsInt(json, "amount", 1000);
         return new FluidStack(fluid, amount);
     }
 

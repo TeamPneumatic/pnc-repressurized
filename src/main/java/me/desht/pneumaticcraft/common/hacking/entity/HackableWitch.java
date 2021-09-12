@@ -9,7 +9,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableWitch implements IHackableEntity {
@@ -45,8 +45,8 @@ public class HackableWitch implements IHackableEntity {
     @Override
     public boolean afterHackTick(Entity entity) {
         if (entity.isAlive()) {
-            ((WitchEntity) entity).potionUseTimer = 20;
-            ((WitchEntity) entity).setDrinkingPotion(true);
+            ((WitchEntity) entity).usingTime = 20;
+            ((WitchEntity) entity).setUsingItem(true);
             return true;
         } else {
             return false;

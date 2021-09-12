@@ -24,15 +24,15 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     public GuiUVLightBox(ContainerUVLightBox container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        ySize = 196;
+        imageHeight = 196;
     }
 
     @Override
     public void init() {
         super.init();
 
-        addButton(slider = new Slider(guiLeft + 10, guiTop + 45, 95, 16,
-                xlate("pneumaticcraft.gui.uv_light_box.threshold").appendString(" "), new StringTextComponent("%"),
+        addButton(slider = new Slider(leftPos + 10, topPos + 45, 95, 16,
+                xlate("pneumaticcraft.gui.uv_light_box.threshold").append(" "), new StringTextComponent("%"),
                 1, 100, te.getThreshold(), false, true, b -> { }, this));
     }
 
@@ -49,15 +49,15 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     @Override
     protected ResourceLocation getGuiTexture() {
         BlockState state = te.getBlockState();
-        return state.getBlock() == ModBlocks.UV_LIGHT_BOX.get() && state.get(BlockUVLightBox.LIT) ?
+        return state.getBlock() == ModBlocks.UV_LIGHT_BOX.get() && state.getValue(BlockUVLightBox.LIT) ?
                 Textures.GUI_UV_LIGHT_BOX_ON : Textures.GUI_UV_LIGHT_BOX;
     }
 
     @Override
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 - 5);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        return new PointXY(xStart + imageWidth * 3 / 4 + 10, yStart + imageHeight / 4 - 5);
     }
 
     @Override

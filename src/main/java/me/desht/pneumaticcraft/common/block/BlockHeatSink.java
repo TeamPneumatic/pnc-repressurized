@@ -25,12 +25,12 @@ import javax.annotation.Nullable;
 public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
-        Block.makeCuboidShape(0, 0, 0, 16,  8, 16),
-        Block.makeCuboidShape(0, 8, 0, 16, 16, 16),
-        Block.makeCuboidShape(0, 0, 0, 16, 16,  8),
-        Block.makeCuboidShape(0, 0, 8, 16, 16, 16),
-        Block.makeCuboidShape(0, 0, 0,  8, 16, 16),
-        Block.makeCuboidShape(8, 0, 0, 16, 16, 16),
+        Block.box(0, 0, 0, 16,  8, 16),
+        Block.box(0, 8, 0, 16, 16, 16),
+        Block.box(0, 0, 0, 16, 16,  8),
+        Block.box(0, 0, 8, 16, 16, 16),
+        Block.box(0, 0, 0,  8, 16, 16),
+        Block.box(8, 0, 0, 16, 16, 16),
     };
 
     public BlockHeatSink() {
@@ -44,13 +44,13 @@ public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return SHAPES[getRotation(state).getIndex()];
+        return SHAPES[getRotation(state).get3DDataValue()];
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return super.getStateForPlacement(ctx).with(directionProperty(), ctx.getFace().getOpposite());
+        return super.getStateForPlacement(ctx).setValue(directionProperty(), ctx.getClickedFace().getOpposite());
     }
 
     @Override
@@ -64,22 +64,22 @@ public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity)) return;
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityHeatSink.class).ifPresent(te -> {
             double temp = te.getHeatExchanger().getTemperature();
             if (temp > 333) { // +60C
-                entity.attackEntityFrom(DamageSource.HOT_FLOOR, 1f + ((float) temp - 333) * 0.05f);
+                entity.hurt(DamageSource.HOT_FLOOR, 1f + ((float) temp - 333) * 0.05f);
                 if (temp > 373) { // +100C
-                    entity.setFire(3);
+                    entity.setSecondsOnFire(3);
                 }
             } else if (temp < 243) { // -30C
                 int durationTicks = (int) ((243 - temp) * 2);
                 int amplifier = (int) ((243 - temp) / 20);
-                ((LivingEntity) entity).addPotionEffect(new EffectInstance(Effects.SLOWNESS, durationTicks, amplifier));
+                ((LivingEntity) entity).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, durationTicks, amplifier));
                 if (temp < 213) { // -60C
-                    entity.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, 2);
+                    entity.hurt(DamageSourcePneumaticCraft.FREEZING, 2);
                 }
             }
         });

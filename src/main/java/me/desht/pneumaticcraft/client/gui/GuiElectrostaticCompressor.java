@@ -60,8 +60,8 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
         if (ClientUtils.getClientWorld().getGameTime() % 20 == 0) {
             Set<BlockPos> positions = new HashSet<>();
             Set<TileEntityElectrostaticCompressor> compressors = new HashSet<>();
-            positions.add(te.getPos());
-            te.getElectrostaticGrid(positions, compressors, te.getPos());
+            positions.add(te.getBlockPos());
+            te.getElectrostaticGrid(positions, compressors, te.getBlockPos());
             connectedCompressors = compressors.size();
         }
 

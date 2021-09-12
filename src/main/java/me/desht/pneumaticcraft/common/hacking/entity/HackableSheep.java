@@ -11,7 +11,7 @@ import net.minecraft.util.text.ITextComponent;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableSheep implements IHackableEntity {
@@ -44,8 +44,8 @@ public class HackableSheep implements IHackableEntity {
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
         if (entity instanceof SheepEntity) {
-            DyeColor newColor = DyeColor.byId(player.getRNG().nextInt(DyeColor.values().length));
-            ((SheepEntity) entity).setFleeceColor(newColor);
+            DyeColor newColor = DyeColor.byId(player.getRandom().nextInt(DyeColor.values().length));
+            ((SheepEntity) entity).setColor(newColor);
         }
     }
 

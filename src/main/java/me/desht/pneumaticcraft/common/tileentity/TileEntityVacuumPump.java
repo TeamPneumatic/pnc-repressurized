@@ -34,7 +34,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
         IRedstoneControl<TileEntityVacuumPump>, IManoMeasurable, INamedContainerProvider {
     @GuiSynced
-    private final MachineAirHandler vacuumHandler;
+    private final IAirHandlerMachine vacuumHandler;
     private final LazyOptional<IAirHandlerMachine> vacuumCap;
     public int rotation;
     public int oldRotation;
@@ -56,9 +56,9 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY) {
-            if (world == null) return LazyOptional.empty();
+            if (level == null) return LazyOptional.empty();
             if (side == getVacuumSide()) {
-                return PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY.orEmpty(cap, vacuumCap);
+                return vacuumCap.cast();
             } else if (side != getInputSide() && side != null) {
                 return LazyOptional.empty();
             }
@@ -83,7 +83,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
     public void tick() {
         super.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             if (turnTimer >= 0) turnTimer--;
 
             if (airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && vacuumHandler.getPressure() > -0.99F && rsController.shouldRun()) {
@@ -113,20 +113,20 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.put("vacuum", vacuumHandler.serializeNBT());
         tag.putBoolean("turning", turning);
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         vacuumHandler.deserializeNBT(tag.getCompound("vacuum"));
         turning = tag.getBoolean("turning");
@@ -141,7 +141,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         String input = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1);
         String vac = PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 1);
-        curInfo.add(xlate("pneumaticcraft.message.vacuum_pump.manometer", input, vac).mergeStyle(TextFormatting.GREEN));
+        curInfo.add(xlate("pneumaticcraft.message.vacuum_pump.manometer", input, vac).withStyle(TextFormatting.GREEN));
     }
 
     @Override
@@ -152,6 +152,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerVacuumPump(i, playerInventory, getPos());
+        return new ContainerVacuumPump(i, playerInventory, getBlockPos());
     }
 }

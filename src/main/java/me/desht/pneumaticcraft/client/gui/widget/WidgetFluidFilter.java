@@ -44,7 +44,7 @@ public class WidgetFluidFilter extends Widget implements ITooltipProvider {
         if (!fluidStack.isEmpty()) {
             curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
             curTip.add(new StringTextComponent(ModNameCache.getModName(fluidStack.getFluid()))
-                    .mergeStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
+                    .withStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
         }
     }
 

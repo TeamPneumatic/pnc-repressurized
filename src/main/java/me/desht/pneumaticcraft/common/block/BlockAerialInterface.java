@@ -35,23 +35,23 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAerialInterface.class).ifPresent(teAI -> {
             if (entity instanceof PlayerEntity && !(entity instanceof FakePlayer)) {
-                teAI.setPlayerId(entity.getUniqueID());
+                teAI.setPlayerId(entity.getUUID());
             }
         });
 
-        super.onBlockPlacedBy(world, pos, state, entity, stack);
+        super.setPlacedBy(world, pos, state, entity, stack);
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+    public int getSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityAerialInterface.class)
                 .map(teAI -> teAI.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }

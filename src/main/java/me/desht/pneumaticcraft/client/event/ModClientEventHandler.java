@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.event;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
@@ -7,7 +8,6 @@ import me.desht.pneumaticcraft.client.model.custom.PressureGlassModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.BlockModelShapes;
@@ -21,7 +21,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModClientEventHandler {
@@ -30,8 +30,8 @@ public class ModClientEventHandler {
         // set up camo models for camouflageable blocks
         for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof BlockPneumaticCraftCamo) {
-                for (BlockState state : block.get().getStateContainer().getValidStates()) {
-                    ModelResourceLocation loc = BlockModelShapes.getModelLocation(state);
+                for (BlockState state : block.get().getStateDefinition().getPossibleStates()) {
+                    ModelResourceLocation loc = BlockModelShapes.stateToModelLocation(state);
                     IBakedModel model = event.getModelRegistry().get(loc);
                     if (model != null) {
                         event.getModelRegistry().put(loc, new CamoModel(model));

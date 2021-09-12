@@ -23,17 +23,17 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
     };
 
     public DroneUpgradeCrafting(ResourceLocation idIn) {
-        super(idIn, "", new ItemStack(ModItems.DRONE.get()), NonNullList.from(Ingredient.EMPTY,
-                    Ingredient.fromItems(ModItems.PRINTED_CIRCUIT_BOARD.get()),
-                    Ingredient.fromItems(DRONES))
+        super(idIn, "", new ItemStack(ModItems.DRONE.get()), NonNullList.of(Ingredient.EMPTY,
+                    Ingredient.of(ModItems.PRINTED_CIRCUIT_BOARD.get()),
+                    Ingredient.of(DRONES))
         );
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         ItemStack basicDrone = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
             if (isBasicDrone(stack)) {
                 basicDrone = stack.copy();
                 break;

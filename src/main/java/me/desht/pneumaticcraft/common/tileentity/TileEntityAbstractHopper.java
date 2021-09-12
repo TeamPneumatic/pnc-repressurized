@@ -44,7 +44,7 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     }
 
     public Direction getInputDirection() {
-        return getBlockState().get(BlockOmnidirectionalHopper.INPUT_FACING);
+        return getBlockState().getValue(BlockOmnidirectionalHopper.INPUT_FACING);
     }
 
     @Override
@@ -69,15 +69,15 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
 
         super.tick();
 
-        if (!getWorld().isRemote && getRedstoneController().shouldRun()) {
+        if (!getLevel().isClientSide && getRedstoneController().shouldRun()) {
             if (--entityScanCooldown <= 0) {
                 cachedInputEntities.clear();
                 if (shouldScanForEntities(inputDir)) {
-                    cachedInputEntities.addAll(world.getEntitiesWithinAABB(Entity.class, inputAABB, EntityPredicates.IS_ALIVE));
+                    cachedInputEntities.addAll(level.getEntitiesOfClass(Entity.class, inputAABB, EntityPredicates.ENTITY_STILL_ALIVE));
                 }
                 cachedOutputEntities.clear();
                 if (shouldScanForEntities(getRotation())) {
-                    cachedOutputEntities.addAll(world.getEntitiesWithinAABB(Entity.class, outputAABB, EntityPredicates.IS_ALIVE));
+                    cachedOutputEntities.addAll(level.getEntitiesOfClass(Entity.class, outputAABB, EntityPredicates.ENTITY_STILL_ALIVE));
                 }
                 entityScanCooldown = BASE_TICK_RATE;
             }
@@ -126,15 +126,15 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     protected abstract int getComparatorValueInternal();
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putInt("leaveMaterialCount", leaveMaterialCount);
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         if (tag.contains("leaveMaterial")) {
             leaveMaterialCount = (byte)(tag.getBoolean("leaveMaterial") ? 1 : 0);
@@ -157,7 +157,7 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
                 break;
         }
 
-        markDirty();
+        setChanged();
 
     }
 
@@ -174,7 +174,7 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        if (world != null && !world.isRemote) {
+        if (level != null && !level.isClientSide) {
             isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
         }
     }
@@ -186,7 +186,7 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     }
 
     List<ItemEntity> getNeighborItems(AxisAlignedBB aabb) {
-        return aabb == null ? Collections.emptyList() : world.getEntitiesWithinAABB(ItemEntity.class, aabb, EntityPredicates.IS_ALIVE);
+        return aabb == null ? Collections.emptyList() : level.getEntitiesOfClass(ItemEntity.class, aabb, EntityPredicates.ENTITY_STILL_ALIVE);
     }
 
     abstract boolean shouldScanForEntities(Direction dir);

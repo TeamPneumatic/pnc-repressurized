@@ -9,7 +9,7 @@ public class SlotPhantomUnstackable extends SlotPhantom {
     }
 
     @Override
-    public int getSlotStackLimit() {
+    public int getMaxStackSize() {
         return 1;
     }
 

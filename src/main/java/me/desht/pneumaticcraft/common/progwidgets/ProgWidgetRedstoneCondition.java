@@ -32,7 +32,7 @@ public class ProgWidgetRedstoneCondition extends ProgWidgetCondition {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
             @Override
             protected boolean evaluate(BlockPos pos) {
-                int redstoneLevel = drone.world().getRedstonePowerFromNeighbors(pos);
+                int redstoneLevel = drone.world().getBestNeighborSignal(pos);
                 int requiredRedstone = ((ICondition) progWidget).getRequiredCount();
                 maybeRecordMeasuredVal(drone, redstoneLevel);
                 return ((ICondition) progWidget).getOperator().evaluate(redstoneLevel, requiredRedstone);

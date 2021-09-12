@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -24,14 +23,14 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
-    private final AmadronOffer offer;
+    private final AmadronRecipe offer;
     private final List<Widget> subWidgets = new ArrayList<>();
     private int shoppingAmount;
     private boolean canBuy;
     private final Rectangle2d[] tooltipRectangles = new Rectangle2d[2];
     private boolean renderBackground = true;
 
-    public WidgetAmadronOffer(int x, int y, AmadronOffer offer) {
+    public WidgetAmadronOffer(int x, int y, AmadronRecipe offer) {
         super(x, y, 73, 35, StringTextComponent.EMPTY);
         this.offer = offer;
         if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
@@ -66,21 +65,23 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+            FontRenderer fr = Minecraft.getInstance().font;
             if (renderBackground) {
-                Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
-                RenderSystem.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, 1f);
+                Minecraft.getInstance().getTextureManager().bind(Textures.WIDGET_AMADRON_OFFER);
                 AbstractGui.blit(matrixStack, x, y, 0, 0, width, height, 256, 256);
             }
-            IReorderingProcessor r = fr.trimStringToWidth(new StringTextComponent(offer.getVendor()).mergeStyle(canBuy ? TextFormatting.BLACK : TextFormatting.DARK_GRAY), 73).get(0);
-            fr.func_238422_b_(matrixStack, r, x + 2, y + 2, 0xFF000000);
+            IReorderingProcessor r = fr.split(offer.getVendorName(), 73).get(0);
+            fr.draw(matrixStack, r, x + 2, y + 2, 0xFF000000);
             if (shoppingAmount > 0) {
-                String str = "" + shoppingAmount;
-                fr.drawString(matrixStack,str, x + 36 - fr.getStringWidth(str) / 2f, y + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
+                String str = Integer.toString(shoppingAmount);
+                fr.draw(matrixStack,str, x + 36 - fr.width(str) / 2f, y + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
             }
             if (offer.getStock() >= 0) {
                 String str = TextFormatting.DARK_BLUE.toString() + offer.getStock();
-                fr.drawString(matrixStack,str, x + 36 - fr.getStringWidth(str) / 2f, y + 25, 0xFF000000);
+                fr.draw(matrixStack, str, x + 36 - fr.width(str) / 2f, y + 25, 0xFF000000);
+            }
+            if (!canBuy) {
+                AbstractGui.fill(matrixStack, x, y, x + width, y + height, 0xC0804040);
             }
         }
     }
@@ -109,19 +110,19 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             }
         }
         if (!isInBounds) {
-            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", offer.getVendor()));
+            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", offer.getVendorName()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling", offer.getOutput().toString()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying", offer.getInput().toString()));
             if (offer.getStock() >= 0) curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock", offer.getStock()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket", shoppingAmount));
 
-            if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
-                curTip.add(new StringTextComponent(offer.getId().toString()).mergeStyle(TextFormatting.DARK_GRAY));
+            if (Minecraft.getInstance().options.advancedItemTooltips) {
+                curTip.add(new StringTextComponent(offer.getId().toString()).withStyle(TextFormatting.DARK_GRAY));
             }
         }
     }
 
-    public AmadronOffer getOffer() {
+    public AmadronRecipe getOffer() {
         return offer;
     }
 

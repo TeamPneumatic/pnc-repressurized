@@ -24,7 +24,7 @@ public class ContainerAirCannon extends ContainerPneumaticBase<TileEntityAirCann
         // add the gps slot
         addSlot(new SlotItemSpecific(te.getPrimaryInventory(), itemStack -> {
             if (!(itemStack.getItem() instanceof IPositionProvider)) return false;
-            List<BlockPos> l = ((IPositionProvider) itemStack.getItem()).getStoredPositions(te.getWorld(), itemStack);
+            List<BlockPos> l = ((IPositionProvider) itemStack.getItem()).getStoredPositions(te.getLevel(), itemStack);
             return !l.isEmpty() && l.get(0) != null;
         }, 1, 51, 29));
 

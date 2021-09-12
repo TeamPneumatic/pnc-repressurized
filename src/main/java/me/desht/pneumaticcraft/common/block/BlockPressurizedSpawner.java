@@ -6,7 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 
 public class BlockPressurizedSpawner extends BlockPneumaticCraft {
     public BlockPressurizedSpawner() {
-        super(ModBlocks.defaultProps().notSolid());
+        super(ModBlocks.defaultProps().noOcclusion());
     }
 
     @Override

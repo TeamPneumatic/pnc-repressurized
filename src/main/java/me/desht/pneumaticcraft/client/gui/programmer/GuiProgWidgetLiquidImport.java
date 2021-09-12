@@ -34,12 +34,12 @@ public class GuiProgWidgetLiquidImport extends GuiProgWidgetImportExport<ProgWid
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         if (orderSelector.getSelectedElementIndex() >= 0) {
             progWidget.setOrder(IBlockOrdered.Ordering.values()[orderSelector.getSelectedElementIndex()]);
             progWidget.setVoidExcess(voidExcess.checked);
         }
 
-        super.onClose();
+        super.removed();
     }
 }

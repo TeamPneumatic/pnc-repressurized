@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.harvesting.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.*;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
@@ -12,8 +12,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 
-import java.util.Locale;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 public class ModHarvestHandlers {
     public static final DeferredRegister<HarvestHandler> HARVEST_HANDLERS_DEFERRED = DeferredRegister.create(HarvestHandler.class, Names.MOD_ID);
@@ -27,7 +27,7 @@ public class ModHarvestHandlers {
             state.getBlock() == Blocks.SWEET_BERRY_BUSH, SweetBerryBushBlock.AGE, stack -> stack.getItem() == Items.SWEET_BERRIES) {
         @Override
         protected BlockState withMinAge(BlockState state) {
-            return state.with(SweetBerryBushBlock.AGE, 1);
+            return state.setValue(SweetBerryBushBlock.AGE, 1);
         }
     });
     public static final RegistryObject<HarvestHandler> COCOA = register("cocoa_beans", () -> new HarvestHandlerCropLike(state ->
@@ -42,11 +42,19 @@ public class ModHarvestHandlers {
     }
 
     public enum TreePart {
-        LOG, LEAVES, SAPLING;
+        LOG("_log"), LEAVES("_leaves"), SAPLING("_sapling");
+
+        private final String suffix;
+        private final Pattern pattern;
+
+        TreePart(String suffix) {
+            this.suffix = suffix;
+            this.pattern = Pattern.compile(suffix + "$");
+        }
 
         /**
-         * Given a block which is part of tree (log, leaves, or sapling), try to get a different block from the same tree.
-         * This is dependent on the blocks being consistently named (vanilla does this properly); "XXX_log", "XXX_leaves",
+         * Given a block which is part of tree (log, leaves, or sapling), try to get a different part of the same tree.
+         * This is dependent on the blocks being consistently named (vanilla does this properly): "XXX_log", "XXX_leaves",
          * "XXX_sapling".
          *
          * @param in the block to convert
@@ -54,9 +62,9 @@ public class ModHarvestHandlers {
          * @return a block for the new part
          */
         public Block convert(Block in, TreePart to) {
-            ResourceLocation rl = new ResourceLocation(in.getRegistryName().toString().replace(
-                    "_" + this.toString().toLowerCase(Locale.ROOT), "_" + to.toString().toLowerCase(Locale.ROOT))
-            );
+            ResourceLocation rl0 = in.getRegistryName();
+            if (rl0 == null) return Blocks.AIR;
+            ResourceLocation rl = new ResourceLocation(rl0.getNamespace(), pattern.matcher(rl0.getPath()).replaceAll(to.suffix));
             return ForgeRegistries.BLOCKS.getValue(rl);
         }
     }

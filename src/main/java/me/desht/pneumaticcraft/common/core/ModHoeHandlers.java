@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
-import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;

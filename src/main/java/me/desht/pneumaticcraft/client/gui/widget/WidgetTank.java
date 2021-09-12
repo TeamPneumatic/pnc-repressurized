@@ -58,13 +58,13 @@ public class WidgetTank extends Widget implements ITooltipProvider {
 
         // drawing a gauge rather than using the widget_tank texture since for some reason it doesn't work
         // https://github.com/desht/pnc-repressurized/issues/25
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0, 0, 300);
         for (int i = 3; i < height - 1; i += 4) {
             int width = (i - 3) % 20 == 0 ? 16 : 2;
             AbstractGui.fill(matrixStack, x, y + i, x + width, y + i + 1, 0xFF2F2F2F);
         }
-        matrixStack.pop();
+        matrixStack.popPose();
 
 //        GlStateManager.color(1, 1, 1, 1);
 //        Minecraft.getMinecraft().getTextureManager().bindTexture(Textures.WIDGET_TANK);
@@ -79,10 +79,10 @@ public class WidgetTank extends Widget implements ITooltipProvider {
 
         curTip.add(new StringTextComponent(amt + " / " + capacity + " mB"));
         if (fluid == Fluids.EMPTY || tank.getCapacity() == 0 || tank.getFluidAmount() == 0) {
-            curTip.add(xlate("pneumaticcraft.gui.misc.empty").mergeStyle(TextFormatting.GRAY));
+            curTip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.GRAY));
         } else {
-            curTip.add(new FluidStack(fluid, tank.getFluidAmount()).getDisplayName().deepCopy().mergeStyle(TextFormatting.GRAY));
-            curTip.add(new StringTextComponent(ModNameCache.getModName(fluid)).mergeStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
+            curTip.add(new FluidStack(fluid, tank.getFluidAmount()).getDisplayName().copy().withStyle(TextFormatting.GRAY));
+            curTip.add(new StringTextComponent(ModNameCache.getModName(fluid)).withStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
         }
     }
 

@@ -54,11 +54,11 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
 
         int tx = 12 + filterLabel.getWidth();
         textfield = new WidgetTextField(font, guiLeft + tx, guiTop + 20, xSize - tx - 10, 10);
-        textfield.setText(module.getEntityFilterString());
+        textfield.setValue(module.getEntityFilterString());
         textfield.setResponder(s -> sendTimer = 5);
-        textfield.setFocused2(true);
+        textfield.setFocus(true);
         textfield.setVisible(module.isUpgraded());
-        setListener(textfield);
+        setFocused(textfield);
         addButton(textfield);
 
         warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, StringTextComponent.EMPTY)
@@ -72,7 +72,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
         });
         addButton(rangeButton);
 
-        validateEntityFilter(textfield.getText());
+        validateEntityFilter(textfield.getValue());
     }
 
     private ITextComponent getRangeButtonText() {
@@ -86,7 +86,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
             new EntityFilter(filter);  // syntax check
         } catch (IllegalArgumentException e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).mergeStyle(TextFormatting.GOLD));
+            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).withStyle(TextFormatting.GOLD));
         }
     }
 
@@ -104,11 +104,11 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     public void tick() {
         super.tick();
 
-        if (!textfield.isFocused()) textfield.setText(module.getEntityFilterString());
+        if (!textfield.isFocused()) textfield.setValue(module.getEntityFilterString());
 
         if (sendTimer > 0 && --sendTimer == 0) {
-            module.setEntityFilter(textfield.getText());
-            NetworkHandler.sendToServer(new PacketUpdateAirGrateModule(module, textfield.getText()));
+            module.setEntityFilter(textfield.getValue());
+            NetworkHandler.sendToServer(new PacketUpdateAirGrateModule(module, textfield.getValue()));
         }
     }
 

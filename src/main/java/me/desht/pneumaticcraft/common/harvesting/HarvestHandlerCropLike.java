@@ -18,8 +18,8 @@ public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop {
         super(blockChecker);
         this.ageProperty = ageProperty;
         this.isSeed = isSeed;
-        minAge = ageProperty.getAllowedValues().stream().mapToInt(Integer::intValue).min().getAsInt();
-        maxAge = ageProperty.getAllowedValues().stream().mapToInt(Integer::intValue).max().getAsInt();
+        minAge = ageProperty.getPossibleValues().stream().mapToInt(Integer::intValue).min().getAsInt();
+        maxAge = ageProperty.getPossibleValues().stream().mapToInt(Integer::intValue).max().getAsInt();
     }
     
     @Override
@@ -29,11 +29,11 @@ public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop {
     
     @Override
     protected boolean isMaxAge(BlockState state){
-        return state.get(ageProperty) == maxAge;
+        return state.getValue(ageProperty) == maxAge;
     }
     
     @Override
     protected BlockState withMinAge(BlockState state){
-        return state.with(ageProperty, minAge);
+        return state.setValue(ageProperty, minAge);
     }
 }

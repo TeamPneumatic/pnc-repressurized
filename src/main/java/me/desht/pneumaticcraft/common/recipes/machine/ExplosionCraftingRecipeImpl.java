@@ -48,7 +48,7 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
 
     @Override
     public int getAmount() {
-        return input.getMatchingStacks().length > 0 ? input.getMatchingStacks()[0].getCount() : 0;
+        return input.getItems().length > 0 ? input.getItems()[0].getCount() : 0;
     }
 
     @Override
@@ -99,9 +99,9 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
 
     @Override
     public void write(PacketBuffer buffer) {
-        input.write(buffer);
+        input.toNetwork(buffer);
         buffer.writeVarInt(outputs.size());
-        outputs.forEach(buffer::writeItemStack);
+        outputs.forEach(buffer::writeItem);
         buffer.writeVarInt(lossRate);
     }
 
@@ -121,7 +121,7 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     }
 
     @Override
-    public ItemStack getIcon() {
+    public ItemStack getToastSymbol() {
         return new ItemStack(Blocks.TNT);
     }
 
@@ -133,32 +133,32 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input = Ingredient.deserialize(json.get("input"));
-            int loss_rate = JSONUtils.getInt(json,"loss_rate", 0);
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
+            Ingredient input = Ingredient.fromJson(json.get("input"));
+            int loss_rate = JSONUtils.getAsInt(json,"loss_rate", 0);
             JsonArray outputs = json.get("results").getAsJsonArray();
             NonNullList<ItemStack> results = NonNullList.create();
             for (JsonElement e : outputs) {
-                results.add(ShapedRecipe.deserializeItem(e.getAsJsonObject()));
+                results.add(ShapedRecipe.itemFromJson(e.getAsJsonObject()));
             }
             return factory.create(recipeId, input, loss_rate, results.toArray(new ItemStack[0]));
         }
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
-            Ingredient input = Ingredient.read(buffer);
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            Ingredient input = Ingredient.fromNetwork(buffer);
             int nOutputs = buffer.readVarInt();
             List<ItemStack> l = new ArrayList<>();
             for (int i = 0; i < nOutputs; i++) {
-                l.add(buffer.readItemStack());
+                l.add(buffer.readItem());
             }
             int lossRate = buffer.readVarInt();
             return factory.create(recipeId, input, lossRate, l.toArray(new ItemStack[0]));
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

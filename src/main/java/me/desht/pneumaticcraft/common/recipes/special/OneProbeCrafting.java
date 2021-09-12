@@ -22,7 +22,7 @@ public class OneProbeCrafting extends ShapelessRecipe {
 
     public OneProbeCrafting(ResourceLocation idIn) {
         super(idIn, "", makeOutputStack(),
-                NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(ModItems.PNEUMATIC_HELMET.get()), Ingredient.fromItems(ONE_PROBE)));
+                NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.PNEUMATIC_HELMET.get()), Ingredient.of(ONE_PROBE)));
     }
 
     @Override
@@ -30,10 +30,10 @@ public class OneProbeCrafting extends ShapelessRecipe {
         if (ONE_PROBE == null) return false;
 
         boolean probeFound = false, helmetFound = false;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            Item item = inv.getStackInSlot(i).getItem();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            Item item = inv.getItem(i).getItem();
             if (item == ModItems.PNEUMATIC_HELMET.get()) {
-                if (helmetFound || isOneProbeEnabled(inv.getStackInSlot(i))) return false;
+                if (helmetFound || isOneProbeEnabled(inv.getItem(i))) return false;
                 helmetFound = true;
             } else if (item == ONE_PROBE) {
                 if (probeFound) return false;
@@ -46,7 +46,7 @@ public class OneProbeCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         ItemStack helmet = findHelmet(inv);
         if (helmet.isEmpty()) return ItemStack.EMPTY;
         ItemStack output = helmet.copy();
@@ -60,9 +60,9 @@ public class OneProbeCrafting extends ShapelessRecipe {
     }
 
     private ItemStack findHelmet(CraftingInventory inv) {
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            if (inv.getStackInSlot(i).getItem() == ModItems.PNEUMATIC_HELMET.get()) {
-                return inv.getStackInSlot(i).copy();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            if (inv.getItem(i).getItem() == ModItems.PNEUMATIC_HELMET.get()) {
+                return inv.getItem(i).copy();
             }
         }
         return ItemStack.EMPTY;

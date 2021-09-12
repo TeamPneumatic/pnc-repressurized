@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -11,8 +13,6 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,8 +67,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     private static final int ITEM_FILTER_SLOTS = 27;
     public static final int FLUID_FILTER_SLOTS = 9;
 
-    private static final DataParameter<Boolean> INVISIBLE = EntityDataManager.createKey(EntityLogisticsFrame.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Direction> SIDE = EntityDataManager.createKey(EntityLogisticsFrame.class, DataSerializers.DIRECTION);
+    private static final DataParameter<Boolean> INVISIBLE = EntityDataManager.defineId(EntityLogisticsFrame.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Direction> SIDE = EntityDataManager.defineId(EntityLogisticsFrame.class, DataSerializers.DIRECTION);
     private static final float FRAME_WIDTH = 1 / 32f;
 
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
@@ -86,7 +86,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     EntityLogisticsFrame(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
 
-        this.antiZfight = worldIn.rand.nextDouble() * 0.005;
+        this.antiZfight = worldIn.random.nextDouble() * 0.005;
     }
 
     /**
@@ -101,15 +101,15 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         if (stack.getItem() instanceof ItemSemiBlock) {
             EntitySemiblockBase logistics = ((ItemSemiBlock) stack.getItem()).createEntity(world, stack, player, BlockPos.ZERO);
             if (logistics instanceof EntityLogisticsFrame) {
-                if (world.isRemote && stack.hasTag()) {
+                if (world.isClientSide && stack.hasTag()) {
                     // client-side entity creation doesn't load in NBT from the itemstack; we need to do it ourselves in this case
                     // see EntityType#applyItemNBT()
-                    CompoundNBT compoundnbt = logistics.writeWithoutTypeId(new CompoundNBT());
-                    UUID uuid = logistics.getUniqueID();
+                    CompoundNBT compoundnbt = logistics.saveWithoutId(new CompoundNBT());
+                    UUID uuid = logistics.getUUID();
                     //noinspection ConstantConditions
                     compoundnbt.merge(stack.getTag().getCompound(NBTKeys.ENTITY_TAG));
-                    logistics.setUniqueId(uuid);
-                    logistics.read(compoundnbt);
+                    logistics.setUUID(uuid);
+                    logistics.load(compoundnbt);
                 }
                 return (EntityLogisticsFrame) logistics;
             }
@@ -118,11 +118,11 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
+    protected void defineSynchedData() {
+        super.defineSynchedData();
 
-        getDataManager().register(INVISIBLE, false);
-        getDataManager().register(SIDE, Direction.SOUTH);
+        getEntityData().define(INVISIBLE, false);
+        getEntityData().define(SIDE, Direction.SOUTH);
     }
 
     @Override
@@ -170,22 +170,22 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
      * @return true if the semiblock should fade out when not holding a logistics item
      */
     public boolean isSemiblockInvisible() {
-        return getDataManager().get(INVISIBLE);
+        return getEntityData().get(INVISIBLE);
     }
 
     public void setSemiblockInvisible(boolean invisible) {
-        getDataManager().set(INVISIBLE, invisible);
+        getEntityData().set(INVISIBLE, invisible);
     }
 
     @Override
     public Direction getSide() {
-        return getDataManager().get(SIDE);
+        return getEntityData().get(SIDE);
     }
 
     @Override
     public void setSide(Direction facing) {
-        if (SemiblockTracker.getInstance().getSemiblock(world, getBlockPos(), facing) == null) {
-            getDataManager().set(SIDE, facing);
+        if (SemiblockTracker.getInstance().getSemiblock(level, getBlockPos(), facing) == null) {
+            getEntityData().set(SIDE, facing);
         }
     }
 
@@ -237,7 +237,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     public void tick() {
         super.tick();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             Iterator<Map.Entry<ItemStack, Integer>> iterator = incomingStacks.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<ItemStack, Integer> entry = iterator.next();
@@ -319,8 +319,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    protected void readAdditional(CompoundNBT tag) {
-        super.readAdditional(tag);
+    protected void readAdditionalSaveData(CompoundNBT tag) {
+        super.readAdditionalSaveData(tag);
 
         itemFilterHandler.deserializeNBT(tag.getCompound(NBT_ITEM_FILTERS));
         fluidFilters.deserializeNBT(tag.getCompound(NBT_FLUID_FILTERS));
@@ -334,7 +334,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         } else {
             setFluidWhiteList(tag.getBoolean(NBT_FLUID_WHITELIST));
         }
-        setSide(tag.contains(NBT_SIDE) ? Direction.byIndex(tag.getInt(NBT_SIDE)) : Direction.UP);
+        setSide(tag.contains(NBT_SIDE) ? Direction.from3DDataValue(tag.getInt(NBT_SIDE)) : Direction.UP);
 
         if (this instanceof ISpecificRequester) {
             ((ISpecificRequester) this).setMinItemOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_ITEMS)));
@@ -354,7 +354,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         tag.putBoolean(NBT_MATCH_MODID, isMatchModId());
         tag.putBoolean(NBT_ITEM_WHITELIST, isItemWhiteList());
         tag.putBoolean(NBT_FLUID_WHITELIST, isFluidWhiteList());
-        if (getSide() != null) tag.putInt(NBT_SIDE, getSide().getIndex());
+        if (getSide() != null) tag.putInt(NBT_SIDE, getSide().get3DDataValue());
         if (this instanceof ISpecificRequester) {
             tag.putInt(ISpecificRequester.NBT_MIN_ITEMS, ((ISpecificRequester) this).getMinItemOrderSize());
             tag.putInt(ISpecificRequester.NBT_MIN_FLUID, ((ISpecificRequester) this).getMinFluidOrderSize());
@@ -397,34 +397,34 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     @Override
     public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
         curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
-        if (player.isSneaking()) {
+        if (player.isShiftKeyDown()) {
             NonNullList<ItemStack> drops = getDrops();
             if (!drops.isEmpty()) {
-                ItemLogisticsFrame.addLogisticsTooltip(drops.get(0), player.world, curInfo, true);
+                ItemLogisticsFrame.addLogisticsTooltip(drops.get(0), player.level, curInfo, true);
             }
         }
     }
 
     @Override
     public boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
-        if (!player.world.isRemote) {
+        if (!player.level.isClientSide) {
             if (side != getSide()) {
                 return false;
             }
             INamedContainerProvider provider = new INamedContainerProvider() {
                 @Override
                 public ITextComponent getDisplayName() {
-                    return new ItemStack(getDroppedItem()).getDisplayName();
+                    return new ItemStack(getDroppedItem()).getHoverName();
                 }
 
                 @Override
                 public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-                    return new ContainerLogistics(getContainerType(), i, playerInventory, getEntityId());
+                    return new ContainerLogistics(getContainerType(), i, playerInventory, getId());
                 }
             };
 
             NetworkHandler.sendToPlayer(new PacketSyncSemiblock(this), (ServerPlayerEntity) player);
-            NetworkHooks.openGui((ServerPlayerEntity) player, provider, buffer -> buffer.writeVarInt(getEntityId()));
+            NetworkHooks.openGui((ServerPlayerEntity) player, provider, buffer -> buffer.writeVarInt(getId()));
         }
         return true;
     }
@@ -432,7 +432,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     private boolean playerIsHoldingLogisticItems() {
         // only call this client-side!
         PlayerEntity player = ClientUtils.getClientPlayer();
-        ItemStack stack = player.getHeldItemMainhand();
+        ItemStack stack = player.getMainHandItem();
         return (stack.getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()
                 || stack.getItem() == ModItems.LOGISTICS_DRONE.get()
                 || stack.getItem() instanceof ItemSemiBlock);
@@ -446,7 +446,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     public void writeToBuf(PacketBuffer payload) {
         super.writeToBuf(payload);
 
-        payload.writeByte(getSide().getIndex());
+        payload.writeByte(getSide().get3DDataValue());
         payload.writeBoolean(isSemiblockInvisible());
         payload.writeBoolean(itemWhiteList);
         payload.writeBoolean(fluidWhiteList);
@@ -455,7 +455,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         payload.writeBoolean(matchModId);
         payload.writeVarInt(itemFilterHandler.getSlots());
         for (int i = 0; i < itemFilterHandler.getSlots(); i++) {
-            payload.writeItemStack(itemFilterHandler.getStackInSlot(i));
+            payload.writeItem(itemFilterHandler.getStackInSlot(i));
         }
         fluidFilters.write(payload);
         if (this instanceof ISpecificRequester) {
@@ -468,7 +468,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     public void readFromBuf(PacketBuffer payload) {
         super.readFromBuf(payload);
 
-        setSide(Direction.byIndex(payload.readByte()));
+        setSide(Direction.from3DDataValue(payload.readByte()));
         setSemiblockInvisible(payload.readBoolean());
         itemWhiteList = payload.readBoolean();
         fluidWhiteList = payload.readBoolean();
@@ -477,7 +477,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         matchModId = payload.readBoolean();
         int size = payload.readVarInt();
         for (int i = 0; i < size; i++) {
-            itemFilterHandler.setStackInSlot(i, payload.readItemStack());
+            itemFilterHandler.setStackInSlot(i, payload.readItem());
         }
         fluidFilters = new FluidFilter(payload);
         if (this instanceof ISpecificRequester) {
@@ -487,8 +487,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     public boolean isObstructed(PathType pathType) {
-        BlockPos pos = getBlockPos().offset(getSide());
-        return !world.getBlockState(pos).allowsMovement(world, pos, pathType);
+        BlockPos pos = getBlockPos().relative(getSide());
+        return !level.getBlockState(pos).isPathfindable(level, pos, pathType);
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
@@ -499,7 +499,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
                 // pass a left-click on invisible logistics frame through to the block it's on
                 EntityLogisticsFrame frame = (EntityLogisticsFrame) event.getTarget();
                 if (frame.isSemiblockInvisible()) {
-                    frame.getBlockState().onBlockClicked(frame.getWorld(), frame.getBlockPos(), event.getPlayer());
+                    frame.getBlockState().attack(frame.getWorld(), frame.getBlockPos(), event.getPlayer());
                     event.setCanceled(true);
                 }
             }

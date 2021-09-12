@@ -72,7 +72,7 @@ public class ProgWidgetSuicide extends ProgWidget {
         }
 
         @Override
-        public boolean shouldExecute() {
+        public boolean canUse() {
             MinecraftForge.EVENT_BUS.post(new DroneSuicideEvent(drone));
             drone.overload("suicide");
             return false;

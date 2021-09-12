@@ -21,8 +21,8 @@ public class ShapedPressurizableRecipeBuilder extends ShapedRecipeBuilder {
         return new ShapedPressurizableRecipeBuilder(resultIn, countIn);
     }
 
-    public void build(Consumer<IFinishedRecipe> consumerIn, ResourceLocation id) {
+    public void save(Consumer<IFinishedRecipe> consumerIn, ResourceLocation id) {
         Consumer<IFinishedRecipe> c = (finishedRecipe) -> consumerIn.accept(new WrappedBuilderResult(finishedRecipe, ModRecipes.CRAFTING_SHAPED_PRESSURIZABLE));
-        super.build(c, id);
+        super.save(c, id);
     }
 }

@@ -28,7 +28,7 @@ public class PacketBlockDestroyed extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() == null) {
                 World w = ClientUtils.getClientWorld();
-                w.getBlockState(pos).updateNeighbours(w, pos, Constants.BlockFlags.DEFAULT);
+                w.getBlockState(pos).updateNeighbourShapes(w, pos, Constants.BlockFlags.DEFAULT);
             }
         });
         ctx.get().setPacketHandled(true);

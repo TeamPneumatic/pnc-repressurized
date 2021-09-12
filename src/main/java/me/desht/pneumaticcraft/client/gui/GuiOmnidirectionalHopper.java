@@ -26,7 +26,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<ContainerOmnidirectionalHopper,TileEntityOmnidirectionalHopper> {
     private static final ITextComponent ARROW_NO_RR = new StringTextComponent(GuiConstants.ARROW_RIGHT);
-    private static final ITextComponent ARROW_RR = new StringTextComponent(GuiConstants.CIRCULAR_ARROW).mergeStyle(TextFormatting.GREEN);
+    private static final ITextComponent ARROW_RR = new StringTextComponent(GuiConstants.CIRCULAR_ARROW).withStyle(TextFormatting.GREEN);
 
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
@@ -56,7 +56,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        addButton(rrButton = new WidgetButtonExtended(guiLeft + 143, guiTop + 55, 14, 14, StringTextComponent.EMPTY).withTag("rr"));
+        addButton(rrButton = new WidgetButtonExtended(leftPos + 143, topPos + 55, 14, 14, StringTextComponent.EMPTY).withTag("rr"));
     }
 
     @Override

@@ -26,11 +26,11 @@ public class RenderSentryTurret extends AbstractTileModelRenderer<TileEntitySent
     @Override
     protected void renderExtras(TileEntitySentryTurret te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (RenderMinigunTracers.shouldRender(te.getMinigun())) {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(0.5, 0.75, 0.5);
-            BlockPos pos = te.getPos();
+            BlockPos pos = te.getBlockPos();
             RenderMinigunTracers.render(te.getMinigun(), matrixStack, bufferIn, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 1.2);
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 }

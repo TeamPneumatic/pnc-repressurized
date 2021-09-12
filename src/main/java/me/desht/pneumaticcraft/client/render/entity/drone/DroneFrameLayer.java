@@ -30,11 +30,11 @@ public class DroneFrameLayer extends LayerRenderer<EntityDroneBase, ModelDrone> 
     @Override
     public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, EntityDroneBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         // transform is currently upside down; invert so the frame lighting looks right
-        matrixStackIn.push();
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
+        matrixStackIn.pushPose();
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
         matrixStackIn.translate(0, -2.12, 0);
         RenderUtils.renderFrame(matrixStackIn, bufferIn, FRAME_AABB, 1 / 32F, frameColors[1], frameColors[2], frameColors[3], 1f, packedLightIn, false);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
 //    @Override

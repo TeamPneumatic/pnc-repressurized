@@ -9,7 +9,7 @@ public class AirParticleType extends ParticleType<AirParticleData> {
     }
 
     @Override
-    public Codec<AirParticleData> func_230522_e_() {
+    public Codec<AirParticleData> codec() {
         return AirParticleData.CODEC;
     }
 }

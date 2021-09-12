@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.entity.living.*;
 import me.desht.pneumaticcraft.common.fluid.FluidPlastic;
@@ -10,7 +11,6 @@ import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
@@ -226,15 +226,15 @@ public class ModItems {
    /* -----------------------*/
 
     public static Item.Properties defaultProps() {
-        return new Item.Properties().group(ItemGroups.PNC_CREATIVE_TAB);
+        return new Item.Properties().tab(ItemGroups.PNC_CREATIVE_TAB);
     }
 
     public static Item.Properties toolProps() {
-        return defaultProps().maxStackSize(1);
+        return defaultProps().stacksTo(1);
     }
 
     public static Item.Properties bucketProps() {
-        return defaultProps().maxStackSize(1).containerItem(Items.BUCKET);
+        return defaultProps().stacksTo(1).craftRemainder(Items.BUCKET);
     }
 
     private static <T extends Item> RegistryObject<T> register(final String name, final Supplier<T> sup) {
@@ -274,7 +274,7 @@ public class ModItems {
     static class ItemGroups {
         static final ItemGroup PNC_CREATIVE_TAB = new ItemGroup(Names.MOD_ID) {
             @Override
-            public ItemStack createIcon() {
+            public ItemStack makeIcon() {
                 return new ItemStack(ModBlocks.AIR_COMPRESSOR.get());
             }
         };

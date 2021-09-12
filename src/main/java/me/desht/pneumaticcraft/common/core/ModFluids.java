@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.fluid.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.fluid.Fluid;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;

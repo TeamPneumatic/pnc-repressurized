@@ -48,11 +48,11 @@ public class PacketSpawnParticleTrail extends LocationDoublePacket {
         buffer.writeDouble(x2);
         buffer.writeDouble(y2);
         buffer.writeDouble(z2);
-        particle.write(new PacketBuffer(buffer));
+        particle.writeToNetwork(new PacketBuffer(buffer));
     }
 
     private <T extends IParticleData> T readParticle(ParticleType<T> type, PacketBuffer buffer) {
-        return type.getDeserializer().read(type, buffer);
+        return type.getDeserializer().fromNetwork(type, buffer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -65,7 +65,7 @@ public class PacketSpawnParticleTrail extends LocationDoublePacket {
                 double px = MathHelper.lerp(pct, x, x2);
                 double py = MathHelper.lerp(pct, y, y2);
                 double pz = MathHelper.lerp(pct, z, z2);
-                world.addParticle(particle, px + world.rand.nextDouble() * 0.2 - 0.1, py + world.rand.nextDouble() * 0.2 - 0.1, pz + world.rand.nextDouble() * 0.2 - 0.1, 0, 0, 0);
+                world.addParticle(particle, px + world.random.nextDouble() * 0.2 - 0.1, py + world.random.nextDouble() * 0.2 - 0.1, pz + world.random.nextDouble() * 0.2 - 0.1, 0, 0, 0);
             }
         });
         ctx.get().setPacketHandled(true);

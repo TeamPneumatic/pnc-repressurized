@@ -55,7 +55,7 @@ public class DroneAILogistics extends Goal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         if (getLogisticsManager() == null) return false;
         curTask = null;
         return doLogistics();
@@ -73,9 +73,9 @@ public class DroneAILogistics extends Goal {
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
+    public boolean canContinueToUse() {
         if (curTask == null) return false;
-        if (!curAI.shouldContinueExecuting()) {
+        if (!curAI.canContinueToUse()) {
             if (curAI instanceof DroneEntityAIInventoryImport) {
                 curTask.requester.clearIncomingStack(curTask.transportingItem);
                 return clearAIAndProvideAgain();
@@ -120,7 +120,7 @@ public class DroneAILogistics extends Goal {
             curAI = new DroneAILiquidImport<>(drone,
                     new FakeWidgetLogistics(task.provider.getBlockPos(),  task.provider.getSide(), task.transportingFluid));
         }
-        if (curAI.shouldExecute()) {
+        if (curAI.canUse()) {
             task.informRequester();
             return true;
         } else {
@@ -130,7 +130,7 @@ public class DroneAILogistics extends Goal {
 
     private boolean hasNoPathTo(BlockPos pos) {
         for (Direction d : DirectionUtil.VALUES) {
-            if (drone.isBlockValidPathfindBlock(pos.offset(d))) return false;
+            if (drone.isBlockValidPathfindBlock(pos.relative(d))) return false;
         }
         drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.cantNavigate", pos);
         return true;
@@ -148,7 +148,7 @@ public class DroneAILogistics extends Goal {
             this.fluid = FluidStack.EMPTY;
             area = new HashSet<>();
             area.add(pos);
-            sides[side.getIndex()] = true;
+            sides[side.get3DDataValue()] = true;
         }
 
         FakeWidgetLogistics(BlockPos pos, Direction side, FluidStack fluid) {
@@ -157,7 +157,7 @@ public class DroneAILogistics extends Goal {
             this.fluid = fluid;
             area = new HashSet<>();
             area.add(pos);
-            sides[side.getIndex()] = true;
+            sides[side.get3DDataValue()] = true;
         }
 
         @Override
@@ -181,7 +181,7 @@ public class DroneAILogistics extends Goal {
 
         @Override
         public boolean isItemValidForFilters(@Nonnull ItemStack item) {
-            return !item.isEmpty() && item.isItemEqual(stack);
+            return !item.isEmpty() && item.sameItem(stack);
         }
 
         @Override

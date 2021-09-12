@@ -4,6 +4,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
@@ -16,10 +18,10 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
-import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
@@ -124,14 +126,14 @@ public class ItemJackHammer extends ItemPressurizable
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack stack = playerIn.getHeldItem(handIn);
-        if (!playerIn.isCrouching() || stack.getCount() != 1) return ActionResult.resultPass(stack);
-        if (!worldIn.isRemote) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
+        if (!playerIn.isCrouching() || stack.getCount() != 1) return ActionResult.pass(stack);
+        if (!worldIn.isClientSide) {
             NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
                 @Override
                 public ITextComponent getDisplayName() {
-                    return stack.getDisplayName();
+                    return stack.getHoverName();
                 }
 
                 @Override
@@ -140,11 +142,11 @@ public class ItemJackHammer extends ItemPressurizable
                 }
             }, buf -> ContainerPneumaticBase.putHand(buf, handIn));
         }
-        return ActionResult.resultSuccess(stack);
+        return ActionResult.success(stack);
     }
 
     @Override
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+    public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
         if (entityLiving instanceof PlayerEntity && ((PlayerEntity) entityLiving).isCreative()) return true;
         int speed = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.SPEED);
         stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new)
@@ -159,9 +161,9 @@ public class ItemJackHammer extends ItemPressurizable
 
     @Override
     public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, PlayerEntity player) {
-        if (!player.getEntityWorld().isRemote && !player.isCrouching()) {
+        if (!player.getCommandSenderWorld().isClientSide && !player.isCrouching()) {
             ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-            World world = serverPlayer.getEntityWorld();
+            World world = serverPlayer.getCommandSenderWorld();
 
             RayTraceResult brtr = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
             if (brtr instanceof BlockRayTraceResult) {
@@ -177,7 +179,7 @@ public class ItemJackHammer extends ItemPressurizable
                         // sanity check
                         digMode = DigMode.MODE_1X1;
                     }
-                    Set<BlockPos> brokenPos = getBreakPositions(world, pos, ((BlockRayTraceResult) brtr).getFace(), player.getHorizontalFacing(), digMode);
+                    Set<BlockPos> brokenPos = getBreakPositions(world, pos, ((BlockRayTraceResult) brtr).getDirection(), player.getDirection(), digMode);
                     brokenPos.remove(pos); // start pos already broken
 
                     float air = airHandler.getAir();
@@ -187,31 +189,31 @@ public class ItemJackHammer extends ItemPressurizable
 
                     for (BlockPos pos1 : brokenPos) {
                         BlockState state1 = world.getBlockState(pos1);
-                        if (state1.getBlockHardness(world, pos1) < 0) continue;
+                        if (state1.getDestroySpeed(world, pos1) < 0) continue;
 
-                        int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.world, serverPlayer.interactionManager.getGameType(), serverPlayer, pos1);
+                        int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.level, serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
                         if (exp == -1) {
                             continue;
                         }
-                        if (world.getTileEntity(pos1) != null) {
+                        if (world.getBlockEntity(pos1) != null) {
                             continue;
                         }
                         Block block = state1.getBlock();
                         boolean removed = state1.removedByPlayer(world, pos1, player, true, world.getFluidState(pos1));
                         if (removed) {
-                            block.onPlayerDestroy(world, pos1, state1);
+                            block.destroy(world, pos1, state1);
                             if (magnet) {
                                 magnetHarvest(block, world, player, pos, pos1, state1, itemstack);
                             } else {
-                                block.harvestBlock(world, player, pos1, state1, null, itemstack);
+                                block.playerDestroy(world, player, pos1, state1, null, itemstack);
                             }
                             if (exp > 0 && world instanceof ServerWorld) {
-                                block.dropXpOnBlockBreak((ServerWorld) world, magnet ? pos : pos1, exp);
+                                block.popExperience((ServerWorld) world, magnet ? pos : pos1, exp);
                             }
                             if (!player.isCreative()) {
                                 air -= usage;
                             }
-                            player.addStat(Stats.ITEM_USED.get(this));
+                            player.awardStat(Stats.ITEM_USED.get(this));
                         }
                         if (air < usage) break;
                     }
@@ -226,35 +228,35 @@ public class ItemJackHammer extends ItemPressurizable
 
     // just like Block#harvest, except all items are dropped in the same place (the block that was mined)
     private static void magnetHarvest(Block block, World world, PlayerEntity player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
-        player.addStat(Stats.BLOCK_MINED.get(block));
-        player.addExhaustion(0.005F);
+        player.awardStat(Stats.BLOCK_MINED.get(block));
+        player.causeFoodExhaustion(0.005F);
         if (world instanceof ServerWorld) {
             Block.getDrops(state, (ServerWorld)world, pos, null, player, stack).forEach((stackToSpawn) -> {
-                Block.spawnAsEntity(world, pos0, stackToSpawn);
+                Block.popResource(world, pos0, stackToSpawn);
             });
-            state.spawnAdditionalDrops((ServerWorld)world, pos, stack);
+            state.spawnAfterBreak((ServerWorld)world, pos, stack);
         }
     }
 
-    private Set<BlockPos> getBreakPositions(World world, BlockPos pos, Direction dir, Direction playerHoriz, DigMode digMode) {
+    public static Set<BlockPos> getBreakPositions(World world, BlockPos pos, Direction dir, Direction playerHoriz, DigMode digMode) {
         if (digMode.isVeinMining()) {
             return new HashSet<>(getVeinPositions(world, pos, digMode));
         }
 
         Set<BlockPos> res = new HashSet<>();
         if (digMode.atLeast(DigMode.MODE_1X2)) {
-            res.add(dir.getAxis() == Y ? pos.offset(playerHoriz) : pos.down());
+            res.add(dir.getAxis() == Y ? pos.relative(playerHoriz) : pos.below());
         }
         if (digMode.atLeast(DigMode.MODE_1X3)) {
-            res.add(dir.getAxis() == Y ? pos.offset(playerHoriz.getOpposite()) : pos.up());
+            res.add(dir.getAxis() == Y ? pos.relative(playerHoriz.getOpposite()) : pos.above());
         }
         if (digMode.atLeast(DigMode.MODE_3X3_CROSS)) {
             switch (dir.getAxis()) {
                 case X:
                     res.add(pos.north());
                     res.add(pos.south());
-                    res.add(pos.up());
-                    res.add(pos.down());
+                    res.add(pos.above());
+                    res.add(pos.below());
                     break;
                 case Y:
                     res.add(pos.north());
@@ -263,8 +265,8 @@ public class ItemJackHammer extends ItemPressurizable
                     res.add(pos.east());
                     break;
                 case Z:
-                    res.add(pos.up());
-                    res.add(pos.down());
+                    res.add(pos.above());
+                    res.add(pos.below());
                     res.add(pos.west());
                     res.add(pos.east());
                     break;
@@ -273,10 +275,10 @@ public class ItemJackHammer extends ItemPressurizable
         if (digMode.atLeast(DigMode.MODE_3X3_FULL)) {
             switch (dir.getAxis()) {
                 case X:
-                    res.add(pos.up().north());
-                    res.add(pos.up().south());
-                    res.add(pos.down().north());
-                    res.add(pos.down().south());
+                    res.add(pos.above().north());
+                    res.add(pos.above().south());
+                    res.add(pos.below().north());
+                    res.add(pos.below().south());
                     break;
                 case Y:
                     res.add(pos.north().east());
@@ -285,17 +287,17 @@ public class ItemJackHammer extends ItemPressurizable
                     res.add(pos.south().west());
                     break;
                 case Z:
-                    res.add(pos.up().east());
-                    res.add(pos.up().west());
-                    res.add(pos.down().east());
-                    res.add(pos.down().west());
+                    res.add(pos.above().east());
+                    res.add(pos.above().west());
+                    res.add(pos.below().east());
+                    res.add(pos.below().west());
                     break;
             }
         }
         return res;
     }
 
-    private List<BlockPos> getVeinPositions(World world, BlockPos startPos, DigMode mode) {
+    private static List<BlockPos> getVeinPositions(World world, BlockPos startPos, DigMode mode) {
         BlockState state = world.getBlockState(startPos);
 
         if (!mode.okToVeinMine(state)) {
@@ -315,13 +317,13 @@ public class ItemJackHammer extends ItemPressurizable
         // thanks due to Mekanism for this useful & efficient blockfinder algorithm which I shamelessly cribbed ;)
         for (int i = 0; i < found.size(); i++) {
             BlockPos blockPos = found.get(i);
-            for (BlockPos pos : BlockPos.getAllInBoxMutable(blockPos.add(-1, -1, -1), blockPos.add(1, 1, 1))) {
+            for (BlockPos pos : BlockPos.betweenClosed(blockPos.offset(-1, -1, -1), blockPos.offset(1, 1, 1))) {
                 if (!checked.contains(pos)) {
-                    if (mode == DigMode.MODE_VEIN_PLUS && startPos.distanceSq(pos) > maxRangeSq) {
+                    if (mode == DigMode.MODE_VEIN_PLUS && startPos.distSqr(pos) > maxRangeSq) {
                         continue;
                     }
-                    if (world.isBlockPresent(pos) && startBlock == world.getBlockState(pos).getBlock()) {
-                        BlockPos pos1 = pos.toImmutable();
+                    if (world.isLoaded(pos) && startBlock == world.getBlockState(pos).getBlock()) {
+                        BlockPos pos1 = pos.immutable();
                         found.add(pos1);
                         checked.add(pos1);
                         if (found.size() > maxBlocks) {
@@ -341,7 +343,7 @@ public class ItemJackHammer extends ItemPressurizable
 
     @Override
     public String getUpgradeAcceptorTranslationKey() {
-        return getTranslationKey();
+        return getDescriptionId();
     }
 
     @Override
@@ -395,14 +397,14 @@ public class ItemJackHammer extends ItemPressurizable
 
     @Override
     public void onShiftScrolled(PlayerEntity player, boolean forward, Hand hand) {
-        if (!player.world.isRemote) {
-            DigMode newMode = cycleDigMode(player.getHeldItem(hand), forward);
+        if (!player.level.isClientSide) {
+            DigMode newMode = cycleDigMode(player.getItemInHand(hand), forward);
             if (newMode != null) {
-                player.sendStatusMessage(xlate("pneumaticcraft.message.jackhammer.mode")
-                        .append(xlate(newMode.getTranslationKey()).mergeStyle(TextFormatting.YELLOW)), true);
+                player.displayClientMessage(xlate("pneumaticcraft.message.jackhammer.mode")
+                        .append(xlate(newMode.getTranslationKey()).withStyle(TextFormatting.YELLOW)), true);
             }
         } else {
-            lastModeSwitchTime = player.world.getGameTime();
+            lastModeSwitchTime = player.level.getGameTime();
         }
     }
 
@@ -449,7 +451,7 @@ public class ItemJackHammer extends ItemPressurizable
 
         public boolean okToVeinMine(BlockState state) {
             switch (this) {
-                case MODE_VEIN: return state.isIn(PneumaticCraftTags.Blocks.JACKHAMMER_ORES);
+                case MODE_VEIN: return state.is(PneumaticCraftTags.Blocks.JACKHAMMER_ORES);
                 case MODE_VEIN_PLUS: return true;
                 default: return false;
             }
@@ -505,7 +507,7 @@ public class ItemJackHammer extends ItemPressurizable
 
             Map<Enchantment, Integer> ench = EnchantmentHelper.getEnchantments(jackhammerStack);
             for (Map.Entry<Enchantment, Integer> map : ench.entrySet()) {
-                if (map.getKey() == Enchantments.SILK_TOUCH || map.getKey() == Enchantments.FORTUNE) {
+                if (map.getKey() == Enchantments.SILK_TOUCH || map.getKey() == Enchantments.BLOCK_FORTUNE) {
                     ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
                     EnchantmentHelper.setEnchantments(Collections.singletonMap(map.getKey(), map.getValue()), book);
                     setStackInSlot(0, book);
@@ -524,7 +526,7 @@ public class ItemJackHammer extends ItemPressurizable
             ItemStack bookStack = getStackInSlot(0);
             Map<Enchantment, Integer> currentEnchants = EnchantmentHelper.getEnchantments(jackhammerStack);
             currentEnchants.remove(Enchantments.SILK_TOUCH);
-            currentEnchants.remove(Enchantments.FORTUNE);
+            currentEnchants.remove(Enchantments.BLOCK_FORTUNE);
             if (validateBook(bookStack)) {
                 EnchantmentHelper.getEnchantments(bookStack).forEach(currentEnchants::put);
             }
@@ -536,7 +538,7 @@ public class ItemJackHammer extends ItemPressurizable
             if (bookStack.getItem() == Items.ENCHANTED_BOOK) {
                 Map<Enchantment, Integer> ench = EnchantmentHelper.getEnchantments(bookStack);
                 if (ench.size() != 1) return false;
-                return ench.containsKey(Enchantments.FORTUNE) || ench.containsKey(Enchantments.SILK_TOUCH);
+                return ench.containsKey(Enchantments.BLOCK_FORTUNE) || ench.containsKey(Enchantments.SILK_TOUCH);
             }
             return false;
         }
@@ -547,12 +549,12 @@ public class ItemJackHammer extends ItemPressurizable
         @SubscribeEvent
         public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
             PlayerEntity player = event.getPlayer();
-            ItemStack stack = player.getHeldItem(event.getHand());
+            ItemStack stack = player.getItemInHand(event.getHand());
             if (stack.getItem() == ModItems.JACKHAMMER.get() && ((IPressurizableItem) stack.getItem()).getAir(stack) > 0f) {
-                if (event.getWorld().isRemote) {
+                if (event.getWorld().isClientSide) {
                     MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getPlayer());
                 } else {
-                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, player), player.world, player.getPosition());
+                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, SoundSource.of(player)), player.level, player.blockPosition());
                 }
             }
         }

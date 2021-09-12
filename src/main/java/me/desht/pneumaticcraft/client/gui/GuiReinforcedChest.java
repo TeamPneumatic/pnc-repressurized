@@ -11,7 +11,7 @@ public class GuiReinforcedChest extends GuiPneumaticContainerBase<ContainerReinf
     public GuiReinforcedChest(ContainerReinforcedChest container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        ySize = 186;
+        imageHeight = 186;
     }
 
     @Override

@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.NoNBTIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
-import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;

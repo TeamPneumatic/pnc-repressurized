@@ -17,7 +17,7 @@ public class GuiFluidTank extends GuiPneumaticContainerBase<ContainerFluidTank, 
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(guiLeft + 152, guiTop + 15, te.getTank()));
+        addButton(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
     }
 
     @Override

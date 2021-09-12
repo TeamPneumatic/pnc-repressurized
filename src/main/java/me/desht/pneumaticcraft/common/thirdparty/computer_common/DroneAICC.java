@@ -21,7 +21,7 @@ class DroneAICC extends Goal {
         this.widget = widget;
         Set<BlockPos> area = widget.getInterfaceArea();
         for (BlockPos pos : area) {
-            TileEntity te = drone.world.getTileEntity(pos);
+            TileEntity te = drone.level.getBlockEntity(pos);
             if (te instanceof TileEntityDroneInterface) {
                 TileEntityDroneInterface interfaceTE = (TileEntityDroneInterface) te;
                 if (targetAI) {
@@ -46,20 +46,20 @@ class DroneAICC extends Goal {
     }
 
     @Override
-    public synchronized boolean shouldExecute() {
+    public synchronized boolean canUse() {
         newAction = false;
         if (curAction != null) {
-            curActionActive = curAction.shouldExecute();
-            if (curActionActive) curAction.startExecuting();
+            curActionActive = curAction.canUse();
+            if (curActionActive) curAction.start();
         }
         return droneInterface != null && !droneInterface.isRemoved() && droneInterface.getDrone() == drone;
     }
 
     @Override
-    public synchronized boolean shouldContinueExecuting() {
+    public synchronized boolean canContinueToUse() {
         if (!newAction && curActionActive && curAction != null) {
-            boolean shouldContinue = curAction.shouldContinueExecuting();
-            if (!shouldContinue) curAction.resetTask();
+            boolean shouldContinue = curAction.canContinueToUse();
+            if (!shouldContinue) curAction.stop();
             return shouldContinue;
         } else {
             return false;

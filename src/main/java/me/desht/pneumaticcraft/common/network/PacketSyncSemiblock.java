@@ -55,11 +55,11 @@ public class PacketSyncSemiblock {
 
     private void handleServer(ServerPlayerEntity sender) {
         if (entityID == -1) {
-            if (sender.openContainer instanceof ISyncableSemiblockItem) {
-                ((ISyncableSemiblockItem) sender.openContainer).syncSemiblockItemFromClient(sender, payload);
+            if (sender.containerMenu instanceof ISyncableSemiblockItem) {
+                ((ISyncableSemiblockItem) sender.containerMenu).syncSemiblockItemFromClient(sender, payload);
             }
         } else {
-            processEntity(sender.getServerWorld());
+            processEntity(sender.getLevel());
         }
     }
 

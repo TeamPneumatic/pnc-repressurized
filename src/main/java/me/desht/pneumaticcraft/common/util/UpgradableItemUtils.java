@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.GuiConstants;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -49,10 +49,10 @@ public class UpgradableItemUtils {
         }
         if (isItemEmpty) {
             if (!(iStack.getItem() instanceof BlockItem)) {
-                textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.empty").mergeStyle(TextFormatting.DARK_GREEN));
+                textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.empty").withStyle(TextFormatting.DARK_GREEN));
             }
         } else {
-            textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").mergeStyle(TextFormatting.GREEN));
+            textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(TextFormatting.GREEN));
             PneumaticCraftUtils.summariseItemStacks(textList, inventoryStacks, TextFormatting.DARK_GREEN.toString() + GuiConstants.BULLET + " ");
         }
     }
@@ -89,7 +89,7 @@ public class UpgradableItemUtils {
             CompoundNBT slotEntry = itemList.getCompound(i);
             int j = slotEntry.getByte("Slot");
             if (j >= 0 && j < UPGRADE_INV_SIZE) {
-                inventoryStacks[j] = ItemStack.read(slotEntry);
+                inventoryStacks[j] = ItemStack.of(slotEntry);
             }
         }
         return inventoryStacks;
@@ -142,7 +142,7 @@ public class UpgradableItemUtils {
     private static CompoundNBT getSerializedUpgrades(ItemStack stack) {
         if (!stack.hasTag()) return new CompoundNBT();
         if (stack.getTag().contains(NBTKeys.BLOCK_ENTITY_TAG)) {
-            return stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG).getCompound(NBT_UPGRADE_TAG);
+            return stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG).getCompound(NBT_UPGRADE_TAG);
         } else {
             return stack.getTag().getCompound(NBT_UPGRADE_TAG);
         }

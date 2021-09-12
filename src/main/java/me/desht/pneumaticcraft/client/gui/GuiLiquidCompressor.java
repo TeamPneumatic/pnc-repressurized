@@ -40,7 +40,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     @Override
     public void init() {
         super.init();
-        addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
+        addButton(new WidgetTank(leftPos + getFluidOffset(), topPos + 15, te.getTank()));
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFB04000, true);
         Pair<Integer, List<ITextComponent>> p = getAllFuels();
         stat.setMinimumExpandedDimensions(p.getLeft() + 30, 17);
@@ -52,7 +52,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         super.addPressureStatInfo(pressureStatText);
 
         pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.maxProduction",
-                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)).mergeStyle(TextFormatting.BLACK));
+                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)).withStyle(TextFormatting.BLACK));
     }
 
     protected int getFluidOffset() {
@@ -66,9 +66,9 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
 
     @Override
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4 + 5, yStart + ySize / 4 + 4);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        return new PointXY(xStart + imageWidth * 3 / 4 + 5, yStart + imageHeight / 4 + 4);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     private Pair<Integer,List<ITextComponent>> getAllFuels() {
         List<ITextComponent> text = new ArrayList<>();
         TranslationTextComponent header = xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader");
-        text.add(header.mergeStyle(TextFormatting.UNDERLINE, TextFormatting.AQUA));
-        int maxWidth = font.getStringPropertyWidth(header);
+        text.add(header.withStyle(TextFormatting.UNDERLINE, TextFormatting.AQUA));
+        int maxWidth = font.width(header);
 
         FuelRegistry fuelRegistry = FuelRegistry.getInstance();
 
@@ -88,18 +88,18 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         // not a big deal to clear this cache client-side since the fuel manager is only really used here on the client
         fuelRegistry.clearCachedFuelFluids();
 
-        World world = te.getWorld();
+        World world = te.getLevel();
         List<Fluid> fluids = new ArrayList<>(fuelRegistry.registeredFuels(world));
         fluids.sort((o1, o2) -> Integer.compare(fuelRegistry.getFuelValue(world, o2), fuelRegistry.getFuelValue(world, o1)));
 
         Map<String, Integer> counted = fluids.stream()
                 .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getDisplayName().getString(), fluid -> 1, Integer::sum));
 
-        int dotWidth = font.getStringWidth(".");
+        int dotWidth = font.width(".");
         ITextComponent prevLine = StringTextComponent.EMPTY;
         for (Fluid fluid : fluids) {
             String value = String.format("%4d", fuelRegistry.getFuelValue(world, fluid) / 1000);
-            int nSpc = (32 - font.getStringWidth(value)) / dotWidth;
+            int nSpc = (32 - font.width(value)) / dotWidth;
             value = value + StringUtils.repeat('.', nSpc);
             String fluidName = new FluidStack(fluid, 1).getDisplayName().getString();
             float mul = fuelRegistry.getBurnRateMultiplier(world, fluid);
@@ -108,18 +108,18 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
                     new StringTextComponent(value + "| " + StringUtils.abbreviate(fluidName, 20)
                             + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
             if (!line.equals(prevLine)) {
-                maxWidth = Math.max(maxWidth, font.getStringPropertyWidth(line));
+                maxWidth = Math.max(maxWidth, font.width(line));
                 text.add(line);
             }
             prevLine = line;
             if (counted.getOrDefault(fluidName, 0) > 1) {
-                ITextComponent line2 = new StringTextComponent("       " + ModNameCache.getModName(fluid)).mergeStyle(TextFormatting.GOLD);
+                ITextComponent line2 = new StringTextComponent("       " + ModNameCache.getModName(fluid)).withStyle(TextFormatting.GOLD);
                 text.add(line2);
-                maxWidth = Math.max(maxWidth, font.getStringPropertyWidth(line2));
+                maxWidth = Math.max(maxWidth, font.width(line2));
             }
         }
 
-        return Pair.of(Math.min(maxWidth, guiLeft - 10), text);
+        return Pair.of(Math.min(maxWidth, leftPos - 10), text);
     }
 
     @Override

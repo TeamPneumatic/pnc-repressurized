@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -24,7 +24,7 @@ import net.minecraftforge.common.util.Constants;
 import java.util.List;
 
 public class BlockSentryTurret extends BlockPneumaticCraft {
-    private final VoxelShape BOUNDS = Block.makeCuboidShape(3, 0, 3, 13, 14, 13);
+    private final VoxelShape BOUNDS = Block.box(3, 0, 3, 13, 14, 13);
 
     public BlockSentryTurret() {
         super(ModBlocks.defaultProps());
@@ -42,18 +42,18 @@ public class BlockSentryTurret extends BlockPneumaticCraft {
 
     @Override
     public void addExtraInformation(ItemStack stack, IBlockReader world, List<ITextComponent> curInfo, ITooltipFlag flag) {
-        CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+        CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(TileEntitySentryTurret.NBT_ENTITY_FILTER, Constants.NBT.TAG_STRING)) {
             curInfo.add(new TranslationTextComponent("pneumaticcraft.gui.entityFilter")
-                    .appendString(": " + tag.getString(TileEntitySentryTurret.NBT_ENTITY_FILTER)).mergeStyle(TextFormatting.YELLOW));
+                    .append(": " + tag.getString(TileEntitySentryTurret.NBT_ENTITY_FILTER)).withStyle(TextFormatting.YELLOW));
         }
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, entity, stack);
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, entity, stack);
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySentryTurret.class)
-                .ifPresent(te -> te.setIdleYaw(entity.getYaw(0f)));
+                .ifPresent(te -> te.setIdleYaw(entity.getViewYRot(0f)));
     }
 }

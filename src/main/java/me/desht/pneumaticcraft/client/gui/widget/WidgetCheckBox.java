@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
@@ -21,22 +22,22 @@ import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipProvider {
+public class WidgetCheckBox extends Widget implements ICheckboxWidget, ITaggedWidget, ITooltipProvider {
     public boolean checked;
     private final int color;
     private List<ITextComponent> tooltip = new ArrayList<>();
-    private final Consumer<WidgetCheckBox> pressable;
+    private final Consumer<? super WidgetCheckBox> pressable;
 
     private static final int CHECKBOX_WIDTH = 10;
     private static final int CHECKBOX_HEIGHT = 10;
     private String tag = null;
 
-    public WidgetCheckBox(int x, int y, int color, ITextComponent text, Consumer<WidgetCheckBox> pressable) {
+    public WidgetCheckBox(int x, int y, int color, ITextComponent text, Consumer<? super WidgetCheckBox> pressable) {
         super(x, y, CHECKBOX_WIDTH, CHECKBOX_HEIGHT, text);
 
         this.x = x;
         this.y = y;
-        this.width = CHECKBOX_WIDTH + 3 + Minecraft.getInstance().fontRenderer.getStringPropertyWidth(text);
+        this.width = CHECKBOX_WIDTH + 3 + Minecraft.getInstance().font.width(text);
         this.color = color;
         this.pressable = pressable;
     }
@@ -58,8 +59,8 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
             if (checked) {
                 drawTick(matrixStack);
             }
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            fr.func_238422_b_(matrixStack, getMessage().func_241878_f(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - fr.FONT_HEIGHT / 2f, active ? color : 0xFF888888);
+            FontRenderer fr = Minecraft.getInstance().font;
+            fr.draw(matrixStack, getMessage().getVisualOrderText(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - fr.lineHeight / 2f, active ? color : 0xFF888888);
         }
     }
 
@@ -71,14 +72,14 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
         } else {
             r = g = b = 192;
         }
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+        BufferBuilder wr = Tessellator.getInstance().getBuilder();
         RenderSystem.lineWidth(3);
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-        wr.pos(posMat, x + 2, y + 5, 0f).color(r, g, b, 255).endVertex();
-        wr.pos(posMat, x + 5, y + 7, 0f).color(r, g, b, 255).endVertex();
-        wr.pos(posMat, x + 8, y + 3, 0f).color(r, g, b, 255).endVertex();
-        Tessellator.getInstance().draw();
+        wr.vertex(posMat, x + 2, y + 5, 0f).color(r, g, b, 255).endVertex();
+        wr.vertex(posMat, x + 5, y + 7, 0f).color(r, g, b, 255).endVertex();
+        wr.vertex(posMat, x + 8, y + 3, 0f).color(r, g, b, 255).endVertex();
+        Tessellator.getInstance().end();
         RenderSystem.enableTexture();
     }
 
@@ -117,5 +118,10 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
         curTip.addAll(tooltip);
+    }
+
+    @Override
+    public boolean isChecked() {
+        return checked;
     }
 }

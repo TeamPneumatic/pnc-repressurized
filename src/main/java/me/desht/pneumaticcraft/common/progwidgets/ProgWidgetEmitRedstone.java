@@ -86,7 +86,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
             return Collections.singletonList(NONE_TEXT);
         } else {
             List<String> l = Arrays.stream(DirectionUtil.VALUES)
-                    .filter(side -> accessingSides[side.getIndex()])
+                    .filter(side -> accessingSides[side.get3DDataValue()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
             return Collections.singletonList(new StringTextComponent(Strings.join(l, ", ")));
@@ -97,7 +97,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
-            if (accessingSides[i]) tag.putBoolean(Direction.byIndex(i).name(), true);
+            if (accessingSides[i]) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
         }
     }
 
@@ -105,7 +105,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         for (int i = 0; i < 6; i++) {
-            accessingSides[i] = tag.getBoolean(Direction.byIndex(i).name());
+            accessingSides[i] = tag.getBoolean(Direction.from3DDataValue(i).name());
         }
     }
 
@@ -176,11 +176,11 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
         }
 
         @Override
-        public boolean shouldExecute() {
+        public boolean canUse() {
             boolean[] sides = ((ISidedWidget) widget).getSides();
             for (int i = 0; i < 6; i++) {
                 if (sides[i]) {
-                    drone.setEmittingRedstone(Direction.byIndex(i), ((IRedstoneEmissionWidget) widget).getEmittingRedstone());
+                    drone.setEmittingRedstone(Direction.from3DDataValue(i), ((IRedstoneEmissionWidget) widget).getEmittingRedstone());
                 }
             }
             return false;

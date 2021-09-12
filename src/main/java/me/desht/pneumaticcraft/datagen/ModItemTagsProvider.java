@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.datagen;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
@@ -23,7 +23,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
     }
 
     @Override
-    protected void registerTags() {
+    protected void addTags() {
         copy(PneumaticCraftTags.Blocks.SLABS, PneumaticCraftTags.Items.SLABS);
         copy(PneumaticCraftTags.Blocks.STAIRS, PneumaticCraftTags.Items.STAIRS);
         copy(PneumaticCraftTags.Blocks.WALLS, PneumaticCraftTags.Items.WALLS);
@@ -66,16 +66,18 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(PneumaticCraftTags.Items.CURIO, ModItems.MEMORY_STICK);
 
         addItemsToTag(PneumaticCraftTags.Items.BREAD, ModItems.SOURDOUGH_BREAD);
+
+        addItemsToTag(PneumaticCraftTags.Items.WRENCHES, ModItems.PNEUMATIC_WRENCH);
     }
 
     @SafeVarargs
     private final void addItemsToTag(ITag.INamedTag<Item> tag, Supplier<? extends IItemProvider>... items) {
-        getOrCreateBuilder(tag).add(Arrays.stream(items).map(Supplier::get).map(IItemProvider::asItem).toArray(Item[]::new));
+        tag(tag).add(Arrays.stream(items).map(Supplier::get).map(IItemProvider::asItem).toArray(Item[]::new));
     }
 
     @SafeVarargs
     private final void appendToTag(ITag.INamedTag<Item> tag, ITag.INamedTag<Item>... toAppend) {
-        getOrCreateBuilder(tag).addTags(toAppend);
+        tag(tag).addTags(toAppend);
     }
 
     @Override

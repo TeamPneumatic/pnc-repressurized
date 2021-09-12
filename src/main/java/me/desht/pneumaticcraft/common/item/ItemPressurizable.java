@@ -1,9 +1,12 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.enchantment.IVanishable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -66,9 +69,9 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         // too early to use a capability here :(
-        if (this.isInGroup(group)) {
+        if (this.allowdedIn(group)) {
             items.add(new ItemStack(this));
 
             ItemStack stack = new ItemStack(this);
@@ -80,7 +83,9 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return stack.getItem() instanceof ItemPressurizable ? new AirHandlerItemStack(stack, maxPressure) : super.initCapabilities(stack, nbt);
+        return stack.getItem() instanceof ItemPressurizable ?
+                new AirHandlerItemStack(stack, maxPressure) :
+                super.initCapabilities(stack, nbt);
     }
 
     @Nullable
@@ -95,12 +100,23 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
     }
 
     @Override
+    public int getVolumeUpgrades(ItemStack stack) {
+        return UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.VOLUME);
+    }
+
+    @Override
+    public int getAir(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+        return tag != null ? tag.getInt(AirHandlerItemStack.AIR_NBT_KEY) : 0;
+    }
+
+    @Override
     public boolean isEnchantable(ItemStack stack) {
         return true;
     }
 
     @Override
-    public int getItemEnchantability() {
+    public int getEnchantmentValue() {
         return 9;  // same as iron or compressed iron
     }
 
@@ -119,7 +135,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
             // able to reproduce. Hence the direct-access code above via the internal-use IPressurizableItem interface.
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
             CompoundNBT tag2 = tag.copy();
-            int volume = ((IPressurizableItem) stack.getItem()).getUpgradedVolume(stack);
+            int volume = ((IPressurizableItem) stack.getItem()).getEffectiveVolume(stack);
             int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
             tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / PNCConfig.Common.Advanced.pressureSyncPrecision));
             return tag2;

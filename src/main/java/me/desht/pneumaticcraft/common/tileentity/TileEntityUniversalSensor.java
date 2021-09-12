@@ -107,17 +107,17 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
         super.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             boolean invertedRedstone = rsController.getCurrentMode() == RS_MODE_INVERTED;
             tickTimer++;
             ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
             if (updateStatus(sensor) == SensorStatus.OK  && sensor != null && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
                 isSensorActive = true;
-                addAir(-sensor.getAirUsage(getWorld(), getPos()));
+                addAir(-sensor.getAirUsage(getLevel(), getBlockPos()));
                 if (sensor instanceof IPollSensorSetting) {
                     if (tickTimer >= ((IPollSensorSetting) sensor).getPollFrequency(this)) {
                         try {
-                            int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getWorld(), getPos(), getRange(), sensorGuiText);
+                            int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getLevel(), getBlockPos(), getRange(), sensorGuiText);
                             if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
                             if (newRedstoneStrength != redstoneStrength) {
                                 redstoneStrength = newRedstoneStrength;
@@ -218,7 +218,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     private void setSensorSetting(String sensorPath) {
         sensorSetting = sensorPath;
-        if (getWorld() != null && getWorld().isRemote) {
+        if (getLevel() != null && getLevel().isClientSide) {
             GuiUniversalSensor.maybeUpdateButtons();
         }
     }
@@ -242,8 +242,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.put("Items", itemHandler.serializeNBT());
         tag.putString("sensorSetting", sensorSetting);
@@ -254,8 +254,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         setSensorSetting(tag.getString("sensorSetting"));
@@ -331,17 +331,17 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         ItemStack stack = itemHandler.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             int sensorRange = getRange();
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(world, stack);
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(level, stack);
             List<BlockPos> gpsPositions = posList.stream()
                     .filter(pos -> pos != null
-                            && Math.abs(pos.getX() - getPos().getX()) <= sensorRange
-                            && Math.abs(pos.getY() - getPos().getY()) <= sensorRange
-                            && Math.abs(pos.getZ() - getPos().getZ()) <= sensorRange)
+                            && Math.abs(pos.getX() - getBlockPos().getX()) <= sensorRange
+                            && Math.abs(pos.getY() - getBlockPos().getY()) <= sensorRange
+                            && Math.abs(pos.getZ() - getBlockPos().getZ()) <= sensorRange)
                     .collect(Collectors.toList());
             positions.addAll(gpsPositions);
             outOfRange = posList.size() - gpsPositions.size();
         }
-        if (getWorld() != null && getWorld().isRemote) GuiUniversalSensor.maybeUpdateButtons();
+        if (getLevel() != null && getLevel().isClientSide) GuiUniversalSensor.maybeUpdateButtons();
     }
 
     @Override
@@ -356,7 +356,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 lastSensorExceptionText = e.getMessage() == null ? "" : e.getMessage();
             }
         }
-        if (!getWorld().isRemote) scheduleDescriptionPacket();
+        if (!getLevel().isClientSide) scheduleDescriptionPacket();
     }
 
     @Override
@@ -466,7 +466,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 requireArgs(args, 1, "upgrade_slot");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                 if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-                    BlockPos pos = ItemGPSTool.getGPSLocation(world, stack);
+                    BlockPos pos = ItemGPSTool.getGPSLocation(level, stack);
                     if (pos != null) {
                         return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
                     } else {
@@ -506,21 +506,21 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void remove(){
-        super.remove();
+    public void setRemoved(){
+        super.setRemoved();
         GlobalTileEntityCacheManager.getInstance().universalSensors.remove(this);
     }
 
     @Override
-    public void validate(){
-        super.validate();
+    public void clearRemoved(){
+        super.clearRemoved();
         GlobalTileEntityCacheManager.getInstance().universalSensors.add(this);
     }
 
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerUniversalSensor(i, playerInventory, getPos());
+        return new ContainerUniversalSensor(i, playerInventory, getBlockPos());
     }
 
     private class UniversalSensorItemHandler extends ItemStackHandler {
@@ -531,7 +531,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             if (stack.getItem() instanceof IPositionProvider) {
-                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(world, stack);
+                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(level, stack);
                 return !l.isEmpty() && l.get(0) != null;
             }
             return false;

@@ -15,7 +15,7 @@ public class SlotPhantom extends SlotItemHandler implements IPhantomSlot {
     }
 
     @Override
-    public boolean canTakeStack(PlayerEntity par1EntityPlayer) {
+    public boolean mayPickup(PlayerEntity par1EntityPlayer) {
         return false;
     }
 

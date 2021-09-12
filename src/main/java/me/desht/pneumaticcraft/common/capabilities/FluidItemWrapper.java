@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
-import me.desht.pneumaticcraft.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -48,7 +48,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
      */
      private void serializeTank(FluidTank tank, String tagName) {
          ItemStack newStack = stack.copy();
-         CompoundNBT tag = newStack.getOrCreateChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+         CompoundNBT tag = newStack.getOrCreateTagElement(NBTKeys.BLOCK_ENTITY_TAG);
          CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
          if (!tank.getFluid().isEmpty()) {
              subTag.put(tagName, tank.writeToNBT(new CompoundNBT()));
@@ -79,7 +79,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
      * @return the deserialized tank, or null
      */
     private FluidTank deserializeTank(ItemStack stack, String tagName, int capacity) {
-        CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+        CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(NBTKeys.NBT_SAVED_TANKS)) {
             FluidTank tank = new FluidTank(capacity);
             CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
@@ -132,7 +132,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
 
         @Override
         public int fill(FluidStack resource, FluidAction doFill) {
-            if (fluidTank == null) return 0;
+            if (fluidTank == null || !isFluidValid(0, resource)) return 0;
             int filled = fluidTank.fill(resource, doFill);
             if (filled > 0 && doFill == FluidAction.EXECUTE) {
                 serializeTank(fluidTank, tankName);

@@ -32,8 +32,8 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
      * Called when the block is placed in the world.
      */
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, entity, stack);
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, entity, stack);
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoorBase.class).ifPresent(this::updateDoorSide);
     }
 
@@ -42,7 +42,7 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoorBase.class).ifPresent(teDoorBase -> {
             updateDoorSide(teDoorBase);
             teDoorBase.onNeighborBlockUpdate(fromPos);
-            BlockPos doorPos = pos.offset(teDoorBase.getRotation());
+            BlockPos doorPos = pos.relative(teDoorBase.getRotation());
             BlockState doorState = world.getBlockState(doorPos);
             if (doorState.getBlock() instanceof BlockPneumaticDoor) {
                 doorState.neighborChanged(world, doorPos, doorState.getBlock(), pos, false);
@@ -51,13 +51,13 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     }
 
     private void updateDoorSide(TileEntityPneumaticDoorBase doorBase) {
-        PneumaticCraftUtils.getTileEntityAt(doorBase.getWorld(), doorBase.getPos().offset(doorBase.getRotation()), TileEntityPneumaticDoor.class)
+        PneumaticCraftUtils.getTileEntityAt(doorBase.getLevel(), doorBase.getBlockPos().relative(doorBase.getRotation()), TileEntityPneumaticDoor.class)
                 .ifPresent(teDoor -> {
-                    if (doorBase.getRotation().rotateY() == teDoor.getRotation() && teDoor.rightGoing
-                            || doorBase.getRotation().rotateYCCW() == teDoor.getRotation() && !teDoor.rightGoing) {
+                    if (doorBase.getRotation().getClockWise() == teDoor.getRotation() && teDoor.rightGoing
+                            || doorBase.getRotation().getCounterClockWise() == teDoor.getRotation() && !teDoor.rightGoing) {
                         teDoor.rightGoing = !teDoor.rightGoing;
                         teDoor.setRotationAngle(0);
-                        teDoor.markDirty();
+                        teDoor.setChanged();
                     }
                 });
     }
@@ -68,22 +68,17 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    protected boolean canRotateToTopOrBottom() {
-        return false;
-    }
-
-    @Override
     protected boolean reversePlacementRotation() {
         return true;
     }
 
     @Override
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
-        return VoxelShapes.fullCube();
+        return VoxelShapes.block();
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+    public int getSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityPneumaticDoorBase.class)
                 .map(te -> te.shouldPassSignalToDoor() && side == te.getRotation().getOpposite() ? te.getCurrentRedstonePower() : 0)
                 .orElse(0);

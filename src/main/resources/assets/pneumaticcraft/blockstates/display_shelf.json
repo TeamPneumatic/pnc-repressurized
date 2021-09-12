@@ -1,0 +1,12 @@
+{
+  "multipart": [
+    { "when": { "facing":  "north" }, "apply": { "model":  "pneumaticcraft:block/display_shelf_top" } },
+    { "when": { "facing":  "south" }, "apply": { "model":  "pneumaticcraft:block/display_shelf_top", "y": 180 } },
+    { "when": { "facing":  "west" }, "apply": { "model":  "pneumaticcraft:block/display_shelf_top", "y": 90} },
+    { "when": { "facing":  "east" }, "apply": { "model":  "pneumaticcraft:block/display_shelf_top", "y":  270 } },
+    { "when":  { "ne":  "false" }, "apply": { "model": "pneumaticcraft:block/display_shelf_leg", "y":  90 } },
+    { "when":  { "nw":  "false" }, "apply": { "model": "pneumaticcraft:block/display_shelf_leg" } },
+    { "when":  { "sw":  "false" }, "apply": { "model": "pneumaticcraft:block/display_shelf_leg", "y":  270 } },
+    { "when":  { "se":  "false" }, "apply": { "model": "pneumaticcraft:block/display_shelf_leg", "y":  180 } }
+  ]
+}

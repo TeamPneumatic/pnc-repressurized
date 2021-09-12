@@ -32,6 +32,6 @@ public class CTUtils {
     }
 
     public static FluidIngredient toFluidIngredient(CTFluidIngredient ingredient) {
-        return ingredient.mapTo(FluidIngredient::of, (tag, amount) -> FluidIngredient.of(amount, tag), FluidIngredient::of);
+        return ingredient.mapTo(FluidIngredient::of, (tag, amount) -> FluidIngredient.of(amount, tag), FluidIngredient::ofFluidStream);
     }
 }

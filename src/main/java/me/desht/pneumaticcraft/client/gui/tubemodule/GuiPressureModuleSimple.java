@@ -29,7 +29,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
     public void init() {
         super.init();
 
-        addLabel(title, width / 2 - font.getStringPropertyWidth(title) / 2, guiTop + 5);
+        addLabel(title, width / 2 - font.width(title) / 2, guiTop + 5);
 
         WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = true;
@@ -37,22 +37,22 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
         }).setTooltipKey("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip").setChecked(false);
         addButton(advancedMode);
 
-        thresholdField = new WidgetTextFieldNumber(font, guiLeft + 105, guiTop + 35, 30, font.FONT_HEIGHT + 2)
+        thresholdField = new WidgetTextFieldNumber(font, guiLeft + 105, guiTop + 35, 30, font.lineHeight + 2)
                 .setDecimals(1)
                 .setAdjustments(0.1, 1.0);
         addButton(thresholdField);
-        setListener(thresholdField);
+        setFocused(thresholdField);
         thresholdField.setWidth(40);
-        thresholdField.setFocused2(true);
+        thresholdField.setFocus(true);
 
         if (module instanceof TubeModuleRedstoneReceiving) {
             thresholdField.setValue(((TubeModuleRedstoneReceiving) module).getThreshold());
             ITextComponent s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.threshold");
-            addLabel(s, guiLeft + 80 - font.getStringPropertyWidth(s), guiTop + 36);
+            addLabel(s, guiLeft + 80 - font.width(s), guiTop + 36);
         } else {
             thresholdField.setValue(module.lowerBound);
             ITextComponent s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.turn");
-            addLabel(s,guiLeft + 80 - font.getStringPropertyWidth(s), guiTop + 36);
+            addLabel(s,guiLeft + 80 - font.width(s), guiTop + 36);
             moreOrLessButton = new WidgetButtonExtended(guiLeft + 85, guiTop + 33, 16, 16, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
             moreOrLessButton.setTooltipText(xlate(module.lowerBound < module.higherBound ?
                     "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" :
@@ -82,7 +82,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
         super.tick();
         if (module.advancedConfig) {
             module.lowerBound = (float) thresholdField.getDoubleValue();
-            minecraft.displayGuiScreen(new GuiPressureModule(module));
+            minecraft.setScreen(new GuiPressureModule(module));
         }
     }
 
@@ -104,7 +104,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ENTER && thresholdField.isFocused()) {
-            onClose();
+            removed();
             return true;
         } else {
             return super.keyPressed(keyCode, scanCode, modifiers);
@@ -112,9 +112,9 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         updateThreshold();
         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
-        super.onClose();
+        super.removed();
     }
 }

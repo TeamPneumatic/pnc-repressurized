@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +19,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.items.IItemHandler;
@@ -60,7 +60,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerAirCompressor(i, playerInventory, getPos());
+        return new ContainerAirCompressor(i, playerInventory, getBlockPos());
     }
 
     public boolean isActive() {
@@ -71,12 +71,12 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     public void tick() {
         super.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             airPerTick = getBaseProduction() * getSpeedMultiplierFromUpgrades() * getHeatEfficiency() / 100F;
 
             if (rsController.shouldRun() && burnTime < curFuelUsage) {
                 ItemStack fuelStack = itemHandler.getStackInSlot(FUEL_SLOT);
-                int itemBurnTime = PneumaticCraftUtils.getBurnTime(fuelStack);
+                int itemBurnTime = ForgeHooks.getBurnTime(fuelStack);
                 if (itemBurnTime > 0) {
                     burnTime += itemBurnTime;
                     maxBurnTime = burnTime;
@@ -91,7 +91,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
             curFuelUsage = (int) (getBaseProduction() * getSpeedUsageMultiplierFromUpgrades() / 10);
             if (burnTime >= curFuelUsage) {
                 burnTime -= curFuelUsage;
-                if (!getWorld().isRemote) {
+                if (!getLevel().isClientSide) {
                     airBuffer += airPerTick;
                     if (airBuffer >= 1f) {
                         int toAdd = (int) airBuffer;
@@ -104,7 +104,10 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
             boolean wasActive = isActive;
             isActive = burnTime > curFuelUsage;
             if (wasActive != isActive) {
-                getWorld().setBlockState(getPos(), getWorld().getBlockState(getPos()).with(BlockAirCompressor.ON, isActive));
+                BlockState state = getBlockState();
+                if (state.hasProperty(BlockAirCompressor.ON)) {
+                    getLevel().setBlockAndUpdate(getBlockPos(), state.setValue(BlockAirCompressor.ON, isActive));
+                }
             }
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
         } else {
@@ -125,28 +128,28 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     private void spawnBurningParticle() {
-        if (getWorld().rand.nextInt(3) != 0) return;
-        float px = getPos().getX() + 0.5F;
-        float py = getPos().getY() + getWorld().rand.nextFloat() * 6.0F / 16.0F;
-        float pz = getPos().getZ() + 0.5F;
+        if (getLevel().random.nextInt(3) != 0) return;
+        float px = getBlockPos().getX() + 0.5F;
+        float py = getBlockPos().getY() + getLevel().random.nextFloat() * 6.0F / 16.0F;
+        float pz = getBlockPos().getZ() + 0.5F;
         float f3 = 0.5F;
-        float f4 = getWorld().rand.nextFloat() * 0.4F - 0.2F;
+        float f4 = getLevel().random.nextFloat() * 0.4F - 0.2F;
         switch (getRotation()) {
             case EAST:
-                getWorld().addParticle(ParticleTypes.SMOKE, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
-                getWorld().addParticle(ParticleTypes.FLAME, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.SMOKE, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.FLAME, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
                 break;
             case WEST:
-                getWorld().addParticle(ParticleTypes.SMOKE, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
-                getWorld().addParticle(ParticleTypes.FLAME, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.SMOKE, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.FLAME, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
                 break;
             case SOUTH:
-                getWorld().addParticle(ParticleTypes.SMOKE, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
-                getWorld().addParticle(ParticleTypes.FLAME, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.SMOKE, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.FLAME, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
                 break;
             case NORTH:
-                getWorld().addParticle(ParticleTypes.SMOKE, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
-                getWorld().addParticle(ParticleTypes.FLAME, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.SMOKE, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.FLAME, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
                 break;
         }
     }
@@ -168,7 +171,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override
@@ -183,8 +186,8 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         burnTime = tag.getInt("burnTime");
         maxBurnTime = tag.getInt("maxBurn");
@@ -192,8 +195,8 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putInt("burnTime", burnTime);
         tag.putInt("maxBurn", maxBurnTime);
         tag.put("Items", itemHandler.serializeNBT());
@@ -213,7 +216,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == FUEL_SLOT &&
-                    (itemStack.isEmpty() || PneumaticCraftUtils.getBurnTime(itemStack) > 0 && !FluidUtil.getFluidContained(itemStack).isPresent());
+                    (itemStack.isEmpty() || ForgeHooks.getBurnTime(itemStack) > 0 && !FluidUtil.getFluidContained(itemStack).isPresent());
         }
     }
 

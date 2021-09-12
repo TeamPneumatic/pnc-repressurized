@@ -63,8 +63,8 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
 
         searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 35, 90, 10);
         addButton(searchField);
-        setListener(searchField);
-        searchField.setFocused2(true);
+        setFocused(searchField);
+        searchField.setFocus(true);
         searchField.setResponder(s -> textTimer = 5);
 
         scrollbar = new WidgetVerticalScrollbar(guiLeft + 155, guiTop + 47, 112);
@@ -76,7 +76,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
 
     private void addValidFluids() {
         List<Fluid> fluids = ForgeRegistries.FLUIDS.getValues().stream()
-                .filter(fluid -> matchSearch(searchField.getText(), fluid))
+                .filter(fluid -> matchSearch(searchField.getValue(), fluid))
                 .sorted(Comparator.comparing(f -> new FluidStack(f, 1).getDisplayName().getString()))
                 .collect(Collectors.toList());
 
@@ -93,7 +93,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
     }
 
     private boolean matchSearch(String srch, Fluid fluid) {
-        if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.getDefaultState())) return false;
+        if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.defaultFluidState())) return false;
         String srchL = srch.toLowerCase();
         return srch.isEmpty() || new FluidStack(fluid, 1).getDisplayName().getString().toLowerCase().contains(srchL);
     }

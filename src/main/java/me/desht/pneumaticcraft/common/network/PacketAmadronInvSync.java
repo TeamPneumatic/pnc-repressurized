@@ -28,20 +28,20 @@ public class PacketAmadronInvSync {
 
     PacketAmadronInvSync(PacketBuffer buffer) {
         for (int i = 0; i < INV_SIZE; i++) {
-            items.add(buffer.readItemStack());
+            items.add(buffer.readItem());
         }
     }
 
     public void toBytes(PacketBuffer buf) {
         PacketBuffer pb = new PacketBuffer(buf);
-        items.forEach(pb::writeItemStack);
+        items.forEach(pb::writeItem);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            if (player.openContainer instanceof ContainerAmadron) {
-                ContainerAmadron container = (ContainerAmadron) player.openContainer;
+            if (player.containerMenu instanceof ContainerAmadron) {
+                ContainerAmadron container = (ContainerAmadron) player.containerMenu;
                 for (int i = 0; i < items.size(); i++) {
                     container.setStack(i, items.get(i));
                 }

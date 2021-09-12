@@ -40,17 +40,17 @@ public class ItemNetworkComponent extends Item implements IProgrammable {
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
-        super.addInformation(stack, worldIn, curInfo, extraInfo);
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
+        super.appendHoverText(stack, worldIn, curInfo, extraInfo);
 
-        if (worldIn != null && worldIn.isRemote) {
+        if (worldIn != null && worldIn.isClientSide) {
             GuiSecurityStationHacking.addExtraHackInfoStatic(curInfo);
         }
     }
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (!entity.getEntityWorld().isRemote && canProgram(stack) && stack.hasTag() && stack.getTag().contains(IProgrammable.NBT_WIDGETS)) entity.setNoDespawn();
+        if (!entity.getCommandSenderWorld().isClientSide && canProgram(stack) && stack.hasTag() && stack.getTag().contains(IProgrammable.NBT_WIDGETS)) entity.setExtendedLifetime();
         return false;
     }
 

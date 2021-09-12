@@ -61,8 +61,8 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     public void tick() {
         super.tick();
 
-        if (!world.isRemote) {
-            if (world.getGameTime() % 5 == 0) {
+        if (!level.isClientSide) {
+            if (level.getGameTime() % 5 == 0) {
                 airPerTick = (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades()
                         * (getHeatEfficiency() / 100f)
                         * (Machines.fluxCompressorEfficiency / 100f));
@@ -80,10 +80,10 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
                 energy.extractEnergy(rfPerTick, false);
                 newEnabled = true;
             }
-            if ((world.getGameTime() & 0x7) == 0 && newEnabled != isEnabled) {
+            if ((level.getGameTime() & 0x7) == 0 && newEnabled != isEnabled) {
                 isEnabled = newEnabled;
-                BlockState state = world.getBlockState(pos);
-                world.setBlockState(pos, state.with(BlockPneumaticDynamo.ACTIVE, isEnabled));
+                BlockState state = level.getBlockState(worldPosition);
+                level.setBlockAndUpdate(worldPosition, state.setValue(BlockPneumaticDynamo.ACTIVE, isEnabled));
             }
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation().getOpposite() : null);
         }
@@ -110,15 +110,15 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag){
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag){
+        super.save(tag);
         energy.writeToNBT(tag);
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         energy.readFromNBT(tag);
     }
@@ -153,7 +153,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerEnergy<>(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getPos());
+        return new ContainerEnergy<>(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getBlockPos());
     }
 
     @Override

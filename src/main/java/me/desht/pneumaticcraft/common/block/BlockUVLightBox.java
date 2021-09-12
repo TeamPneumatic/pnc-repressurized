@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
-import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RedstoneTorchBlock;
@@ -12,10 +11,8 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
 
@@ -25,28 +22,23 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
-    private static final VoxelShape SHAPE_N = VoxelShapes.combineAndSimplify(Block.makeCuboidShape(1, 0, 2, 15, 14, 14), Block.makeCuboidShape(15, 5, 5, 16, 11, 11), IBooleanFunction.OR);
-    private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
-    private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
-    private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
-
-    private static final VoxelShape[] SHAPES = new VoxelShape[] { SHAPE_E, SHAPE_S, SHAPE_W, SHAPE_N };
+    private static final VoxelShape SHAPE_EW = Block.box(1, 0, 4.5, 15, 7, 11.5);
+    private static final VoxelShape SHAPE_NS = Block.box(4.5, 0, 1, 11.5, 7, 15);
 
     public BlockUVLightBox() {
-        super(ModBlocks.defaultProps().setLightLevel(state -> state.get(LIT) ? 15 : 0));
-        setDefaultState(getStateContainer().getBaseState().with(LOADED, false).with(LIT, false));
+        super(ModBlocks.defaultProps().lightLevel(state -> state.getValue(LIT) ? 15 : 0));
+        registerDefaultState(getStateDefinition().any().setValue(LOADED, false).setValue(LIT, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(LOADED, LIT);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        Direction d = state.get(directionProperty());
-        return SHAPES[d.getHorizontalIndex()];
+        return getRotation(state).getAxis() == Direction.Axis.Z ? SHAPE_NS : SHAPE_EW;
     }
 
     @Override
@@ -56,7 +48,7 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return state.get(LIT) ? 15 : 0;
+        return state.getValue(LIT) ? 15 : 0;
     }
 
 //    @Override
@@ -72,7 +64,7 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     @Override
     public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
-            return state.hasProperty(BlockUVLightBox.LIT) && state.get(BlockUVLightBox.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
+            return state.hasProperty(BlockUVLightBox.LIT) && state.getValue(BlockUVLightBox.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
         }
         return 0xFFAFAFE4;
     }

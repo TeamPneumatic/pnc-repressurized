@@ -34,17 +34,17 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
         this.rotationAngle = rotationAngle;
 
         if (oldRotationAngle < 90f && rotationAngle == 90f) {
-            world.setBlockState(pos, getBlockState().with(DoorBlock.OPEN, true));
+            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(DoorBlock.OPEN, true));
         } else if (oldRotationAngle == 90f && rotationAngle < 90f) {
-            world.setBlockState(pos, getBlockState().with(DoorBlock.OPEN, false));
+            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(DoorBlock.OPEN, false));
         }
 
         // also rotate the TE for the other half of the door
-        TileEntity otherTE = getWorld().getTileEntity(getPos().offset(isTopDoor() ? Direction.DOWN : Direction.UP));
+        TileEntity otherTE = getLevel().getBlockEntity(getBlockPos().relative(isTopDoor() ? Direction.DOWN : Direction.UP));
         if (otherTE instanceof TileEntityPneumaticDoor) {
             TileEntityPneumaticDoor otherDoorHalf = (TileEntityPneumaticDoor) otherTE;
             otherDoorHalf.rightGoing = rightGoing;
-            otherDoorHalf.markDirty();
+            otherDoorHalf.setChanged();
             if (rotationAngle != otherDoorHalf.rotationAngle) {
                 otherDoorHalf.setRotationAngle(rotationAngle);
             }
@@ -52,15 +52,15 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     public boolean setColor(DyeColor dyeColor) {
-        if (color != dyeColor.getId() && !getBlockState().get(BlockPneumaticDoor.TOP_DOOR)) {
+        if (color != dyeColor.getId() && !getBlockState().getValue(BlockPneumaticDoor.TOP_DOOR)) {
             color = (byte) dyeColor.getId();
-            TileEntity topHalf = getWorld().getTileEntity(getPos().up());
+            TileEntity topHalf = getLevel().getBlockEntity(getBlockPos().above());
             if (topHalf instanceof TileEntityPneumaticDoor) {
                 ((TileEntityPneumaticDoor) topHalf).color = color;
             }
-            if (!world.isRemote) {
-                markDirty();
-                topHalf.markDirty();
+            if (!level.isClientSide) {
+                setChanged();
+                topHalf.setChanged();
                 sendDescriptionPacket();
             }
             return true;
@@ -69,12 +69,12 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     private boolean isTopDoor() {
-        return BlockPneumaticDoor.isTopDoor(getWorld().getBlockState(getPos()));
+        return BlockPneumaticDoor.isTopDoor(getLevel().getBlockState(getBlockPos()));
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.putBoolean("rightGoing", rightGoing);
         tag.putInt("color", color);
@@ -82,8 +82,8 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         rightGoing = tag.getBoolean("rightGoing");
         color = tag.getInt("color");
@@ -103,8 +103,8 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(),
-                getPos().getX() + 1, getPos().getY() + 2, getPos().getZ() + 1);
+        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
+                getBlockPos().getX() + 1, getBlockPos().getY() + 2, getBlockPos().getZ() + 1);
     }
 
 //    @Override

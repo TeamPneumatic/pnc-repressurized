@@ -26,7 +26,7 @@ public class PacketLeftClickEmpty {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() != null) {
-                ItemStack stack = ctx.get().getSender().getHeldItemMainhand();
+                ItemStack stack = ctx.get().getSender().getMainHandItem();
                 if (stack.getItem() instanceof ILeftClickableItem) {
                     ((ILeftClickableItem) stack.getItem()).onLeftClickEmpty(ctx.get().getSender());
                 }

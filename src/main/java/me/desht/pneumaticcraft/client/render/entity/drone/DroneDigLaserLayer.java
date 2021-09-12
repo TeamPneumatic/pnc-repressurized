@@ -30,22 +30,22 @@ public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDron
     public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, EntityDroneBase entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         BlockPos diggingPos = entityIn.getDugBlock();
         if (diggingPos != null) {
-            matrixStackIn.push();
-            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
+            matrixStackIn.pushPose();
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
             matrixStackIn.translate(0, -1, 0);
-            BlockState state = entityIn.getEntityWorld().getBlockState(diggingPos);
-            VoxelShape shape = state.getShape(entityIn.getEntityWorld(), diggingPos);
+            BlockState state = entityIn.getCommandSenderWorld().getBlockState(diggingPos);
+            VoxelShape shape = state.getShape(entityIn.getCommandSenderWorld(), diggingPos);
             if (shape.isEmpty()) {
                 renderLaser(matrixStackIn, bufferIn, partialTicks, entityIn,
                         0, -entityIn.getLaserOffsetY(), 0,
-                        diggingPos.getX() + 0.5 - entityIn.getPosX(), diggingPos.getY() + 0.45 - entityIn.getPosY(), diggingPos.getZ() + 0.5 - entityIn.getPosZ());
+                        diggingPos.getX() + 0.5 - entityIn.getX(), diggingPos.getY() + 0.45 - entityIn.getY(), diggingPos.getZ() + 0.5 - entityIn.getZ());
             } else {
-                Vector3d vec = shape.getBoundingBox().getCenter().add(Vector3d.copy(diggingPos));
+                Vector3d vec = shape.bounds().getCenter().add(Vector3d.atLowerCornerOf(diggingPos));
                 renderLaser(matrixStackIn, bufferIn, partialTicks, entityIn,
                         0, -entityIn.getLaserOffsetY(), 0,
-                        vec.getX() - entityIn.getPosX(), vec.getY() - entityIn.getPosY(), vec.getZ() - entityIn.getPosZ());
+                        vec.x() - entityIn.getX(), vec.y() - entityIn.getY(), vec.z() - entityIn.getZ());
             }
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
         }
     }
 
@@ -53,7 +53,7 @@ public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDron
     private void renderLaser(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, EntityDroneBase drone, double x1, double y1, double z1, double x2, double y2, double z2) {
         float laserLength = (float) PneumaticCraftUtils.distBetween(x1, y1, z1, x2, y2, z2);
 
-        matrixStack.push();
+        matrixStack.pushPose();
 
         matrixStack.translate(x1, y1, z1);
 
@@ -64,14 +64,14 @@ public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDron
         double rotYawRad = Math.atan2(dx, dz);
         double rotPitchRad = Math.PI / 2.0 - Math.atan2(dy, f3);
 
-        matrixStack.rotate(Vector3f.YP.rotation((float) rotYawRad));
-        matrixStack.rotate(Vector3f.XP.rotation((float) rotPitchRad));
+        matrixStack.mulPose(Vector3f.YP.rotation((float) rotYawRad));
+        matrixStack.mulPose(Vector3f.XP.rotation((float) rotPitchRad));
 
         matrixStack.scale(LASER_SIZE, LASER_SIZE, LASER_SIZE);
         matrixStack.translate(0, 0.6, 0);
-        matrixStack.rotate(Vector3f.YP.rotationDegrees(drone.ticksExisted + partialTicks));
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(drone.tickCount + partialTicks));
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.scale(1f, laserLength / LASER_SIZE * 2, 1f);
 
         int[] cols = RenderUtils.decomposeColor(drone.getLaserColor());
@@ -79,29 +79,29 @@ public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDron
         // todo 1.15 consider stitching these 4 into one texture for less state switching
         IVertexBuilder builder;
 
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER));
         renderQuad(posMat, builder, cols);  // glow
         builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER_OVERLAY));
         renderQuad(posMat, builder, cols);  // core
 
-        matrixStack.pop();
+        matrixStack.popPose();
 
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(180));
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
 
-        posMat = matrixStack.getLast().getMatrix();
+        posMat = matrixStack.last().pose();
         builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER_START));
         renderQuad(posMat, builder, cols);  // glow
         builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.RENDER_LASER_START_OVERLAY));
         renderQuad(posMat, builder, cols);  // core
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private void renderQuad(Matrix4f posMat, IVertexBuilder builder, int[] cols) {
-        builder.pos(posMat,-0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(0, 0).lightmap(RenderUtils.FULL_BRIGHT).endVertex();
-        builder.pos(posMat,-0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(0, 1).lightmap(RenderUtils.FULL_BRIGHT).endVertex();
-        builder.pos(posMat, 0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(1, 1).lightmap(RenderUtils.FULL_BRIGHT).endVertex();
-        builder.pos(posMat, 0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(1, 0).lightmap(RenderUtils.FULL_BRIGHT).endVertex();
+        builder.vertex(posMat,-0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).uv(0, 0).uv2(RenderUtils.FULL_BRIGHT).endVertex();
+        builder.vertex(posMat,-0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).uv(0, 1).uv2(RenderUtils.FULL_BRIGHT).endVertex();
+        builder.vertex(posMat, 0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).uv(1, 1).uv2(RenderUtils.FULL_BRIGHT).endVertex();
+        builder.vertex(posMat, 0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).uv(1, 0).uv2(RenderUtils.FULL_BRIGHT).endVertex();
     }
 }

@@ -1,16 +1,16 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.ChestplateLauncherClientHandler;
-import net.minecraft.client.util.InputMappings;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import java.util.Optional;
 
-public class ChestplateLauncherOptions extends IOptionPage.SimpleToggleableOptions<ChestplateLauncherClientHandler> {
-    private KeybindingButton changeKeybindingButton;
+public class ChestplateLauncherOptions extends IOptionPage.SimpleOptionPage<ChestplateLauncherClientHandler> {
+    private IKeybindingButton changeKeybindingButton;
 
     public ChestplateLauncherOptions(IGuiScreen screen, ChestplateLauncherClientHandler renderHandler) {
         super(screen, renderHandler);
@@ -18,18 +18,13 @@ public class ChestplateLauncherOptions extends IOptionPage.SimpleToggleableOptio
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        changeKeybindingButton = new KeybindingButton(30, 128, 150, 20, xlate("pneumaticcraft.armor.gui.misc.setKey"), KeyHandler.getInstance().keybindLauncher);
-        gui.addWidget(changeKeybindingButton);
+        changeKeybindingButton = PneumaticHelmetRegistry.getInstance().makeKeybindingButton(128, KeyHandler.getInstance().keybindLauncher);
+        gui.addWidget(changeKeybindingButton.asWidget());
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return changeKeybindingButton.receiveKey(InputMappings.Type.KEYSYM, keyCode);
-    }
-
-    @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        return changeKeybindingButton.receiveKey(InputMappings.Type.MOUSE, button);
+    public Optional<IKeybindingButton> getKeybindingButton() {
+        return Optional.of(changeKeybindingButton);
     }
 
     @Override

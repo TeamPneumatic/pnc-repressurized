@@ -20,20 +20,20 @@ public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> ex
     public void init() {
         super.init();
 
-        variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 42, 160, font.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 42, 160, font.lineHeight + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
-        variableField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
+        variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         addButton(variableField);
-        variableField.setText(progWidget.getVariable());
-        variableField.setFocused2(true);
+        variableField.setValue(progWidget.getVariable());
+        variableField.setFocus(true);
 
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30);
     }
 
     @Override
-    public void onClose() {
-        progWidget.setVariable(variableField.getText());
+    public void removed() {
+        progWidget.setVariable(variableField.getValue());
 
-        super.onClose();
+        super.removed();
     }
 }

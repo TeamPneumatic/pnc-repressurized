@@ -34,7 +34,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
     @Override
     public void init() {
         super.init();
-        addButton(new WidgetTank(guiLeft + 80, guiTop + 15, te.getTank()));
+        addButton(new WidgetTank(leftPos + 80, topPos + 15, te.getTank()));
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.GAS_LIFT.get()), 0xFFFFAA00, false);
 
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFFFFCC00, false);
@@ -81,9 +81,9 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
     private List<ITextComponent> getStatus() {
         List<ITextComponent> textList = new ArrayList<>();
         textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.action"));
-        textList.add(xlate(te.status.getTranslationKey(), te.getTank().getFluid().getDisplayName().getString()).mergeStyle(TextFormatting.BLACK));
+        textList.add(xlate(te.status.getTranslationKey(), te.getTank().getFluid().getDisplayName().getString()).withStyle(TextFormatting.BLACK));
         textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.currentDepth"));
-        textList.add(new StringTextComponent(te.currentDepth + " meter(s)").mergeStyle(TextFormatting.BLACK));
+        textList.add(new StringTextComponent(te.currentDepth + " meter(s)").withStyle(TextFormatting.BLACK));
         return textList;
     }
 

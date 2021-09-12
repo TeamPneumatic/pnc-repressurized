@@ -30,7 +30,7 @@ public class JEIYeastCraftingCategory implements IRecipeCategory<JEIYeastCraftin
     private final IDrawable icon;
 
     public JEIYeastCraftingCategory() {
-        localizedName = I18n.format("pneumaticcraft.gui.jei.title.yeastCrafting");
+        localizedName = I18n.get("pneumaticcraft.gui.jei.title.yeastCrafting");
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_YEAST_CRAFTING, 0, 0, 128, 40);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.YEAST_CULTURE_BUCKET.get()));
     }
@@ -101,7 +101,7 @@ public class JEIYeastCraftingCategory implements IRecipeCategory<JEIYeastCraftin
     public List<ITextComponent> getTooltipStrings(YeastCraftingRecipe recipe, double mouseX, double mouseY) {
         List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 48 && mouseX <= 80) {
-            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.jei.tooltip.yeastCrafting")));
+            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.jei.tooltip.yeastCrafting")));
         }
         return res;
     }

@@ -84,7 +84,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         int x = expandX / 2;
         int y = expandY / 2;
         int z = expandZ / 2;
-        return fromPositions(p1.add(-x, -y, -z), p1.add(x, y, z));
+        return fromPositions(p1.offset(-x, -y, -z), p1.offset(x, y, z));
     }
 
     public static ProgWidgetArea fromPositions(BlockPos p1, BlockPos p2) {
@@ -139,12 +139,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public void addAreaTypeTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(type.getTranslationKey()).mergeStyle(TextFormatting.YELLOW)));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(type.getTranslationKey()).withStyle(TextFormatting.YELLOW)));
 
         List<AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
         for (AreaTypeWidget widget : widgets) {
-            curTooltip.add(xlate(widget.title).appendString(" ").append(new StringTextComponent(widget.getCurValue()).mergeStyle(TextFormatting.YELLOW)));
+            curTooltip.add(xlate(widget.title).append(" ").append(new StringTextComponent(widget.getCurValue()).withStyle(TextFormatting.YELLOW)));
         }
     }
 
@@ -260,7 +260,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 // 2) Programs using variables where we don't necessarily have the values at compile-time
                 IDroneBase drone = aiManager.getDrone();
                 Log.warning(String.format("Drone @ %s (DIM %s) was killed due to excessively large area (%d > %d). See 'maxProgrammingArea' in config.",
-                        drone.getDronePos().toString(), drone.world().getDimensionKey().getLocation().toString(), size, maxSize));
+                        drone.getDronePos().toString(), drone.world().dimension().location().toString(), size, maxSize));
                 drone.overload("areaTooLarge", maxSize);
                 return;
             }
@@ -308,7 +308,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     List<Entity> getEntitiesWithinArea(World world, Predicate<? super Entity> predicate) {
         AxisAlignedBB aabb = getAABB();
-        return aabb != null ? world.getEntitiesInAABBexcluding(null, aabb, predicate) : new ArrayList<>();
+        return aabb != null ? world.getEntities((Entity) null, aabb, predicate) : new ArrayList<>();
     }
 
     @Override
@@ -324,8 +324,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         buf.writeVarInt(z1 - z2 + 127);
         buf.writeVarInt(areaTypeToID.get(type.getName()));
         type.writeToPacket(buf);
-        buf.writeString(coord1Variable);
-        buf.writeString(coord2Variable);
+        buf.writeUtf(coord1Variable);
+        buf.writeUtf(coord2Variable);
     }
 
     @Override
@@ -339,8 +339,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         z2 = z1 - (buf.readVarInt() - 127);
         type = createType(buf.readVarInt());
         type.readFromPacket(buf);
-        coord1Variable = buf.readString(256);
-        coord2Variable = buf.readString(256);
+        coord1Variable = buf.readUtf(256);
+        coord2Variable = buf.readUtf(256);
     }
 
     @Override

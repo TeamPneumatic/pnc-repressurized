@@ -52,7 +52,7 @@ public abstract class GuiPneumaticScreenBase extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
         if (getTexture() != null) {
-            minecraft.getTextureManager().bindTexture(getTexture());
+            minecraft.getTextureManager().bind(getTexture());
             blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
         }
 

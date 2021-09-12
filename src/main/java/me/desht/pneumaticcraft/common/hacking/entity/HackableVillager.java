@@ -14,7 +14,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableVillager implements IHackableEntity {
@@ -45,20 +45,20 @@ public class HackableVillager implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        if (entity instanceof VillagerEntity && !player.world.isRemote) {
+        if (entity instanceof VillagerEntity && !player.level.isClientSide) {
             VillagerEntity villager = (VillagerEntity) entity;
-            if (villager.canResetStock()) {
+            if (villager.shouldRestock()) {
                 villager.restock();
             }
-            int n = villager.world.rand.nextInt(25);
+            int n = villager.level.random.nextInt(25);
             if (n == 0) {
-                ItemStack emeralds = new ItemStack(Items.EMERALD, villager.world.rand.nextInt(3) + 1);
-                villager.world.addEntity(new ItemEntity(villager.world, villager.getPosX(), villager.getPosY(), villager.getPosZ(), emeralds));
+                ItemStack emeralds = new ItemStack(Items.EMERALD, villager.level.random.nextInt(3) + 1);
+                villager.level.addFreshEntity(new ItemEntity(villager.level, villager.getX(), villager.getY(), villager.getZ(), emeralds));
             } else if (n == 1 ) {
                 MerchantOffers offers = villager.getOffers();
-                MerchantOffer offer = offers.get(villager.world.rand.nextInt(offers.size()));
-                if (!offer.getSellingStack().isEmpty() && !offer.hasNoUsesLeft()) {
-                    villager.world.addEntity(new ItemEntity(villager.world, villager.getPosX(), villager.getPosY(), villager.getPosZ(), offer.getSellingStack()));
+                MerchantOffer offer = offers.get(villager.level.random.nextInt(offers.size()));
+                if (!offer.getResult().isEmpty() && !offer.isOutOfStock()) {
+                    villager.level.addFreshEntity(new ItemEntity(villager.level, villager.getX(), villager.getY(), villager.getZ(), offer.getResult()));
                     offer.increaseUses();
                 }
             }

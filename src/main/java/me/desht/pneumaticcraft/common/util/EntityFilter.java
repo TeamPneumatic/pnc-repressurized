@@ -17,10 +17,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.PaintingEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
@@ -31,27 +28,26 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class EntityFilter implements Predicate<Entity>, com.google.common.base.Predicate<Entity> {
+public class EntityFilter implements Predicate<Entity> {
     private static final Pattern ELEMENT_DIVIDER = Pattern.compile(";");
     private static final Pattern ELEMENT_SUBDIVIDER = Pattern.compile("[(),]");
-    private static final Map<String,Class<?>> ENTITY_CLASSES = ImmutableMap.<String,Class<?>>builder()
-            .put("mob", IMob.class)
-            .put("animal", AnimalEntity.class)
-            .put("living", LivingEntity.class)
-            .put("player", PlayerEntity.class)
-            .put("item", ItemEntity.class)
-            .put("drone", EntityDrone.class)
-            .put("boat", BoatEntity.class)
-            .put("minecart", AbstractMinecartEntity.class)
-            .put("painting", PaintingEntity.class)
-            .put("orb", ExperienceOrbEntity.class)
+    private static final Map<String,Predicate<Entity>> ENTITY_PREDICATES = ImmutableMap.<String,Predicate<Entity>>builder()
+            .put("mob", e -> e instanceof IMob && !(e instanceof TameableEntity && ((TameableEntity) e).isTame()))
+            .put("animal", e -> e instanceof AnimalEntity)
+            .put("living", e -> e instanceof LivingEntity)
+            .put("player", e -> e instanceof PlayerEntity)
+            .put("item", e -> e instanceof ItemEntity)
+            .put("drone", e -> e instanceof EntityDrone)
+            .put("boat", e -> e instanceof BoatEntity)
+            .put("minecart", e -> e instanceof AbstractMinecartEntity)
+            .put("painting", e -> e instanceof PaintingEntity)
+            .put("orb", e -> e instanceof ExperienceOrbEntity)
             .build();
 
     private final List<EntityMatcher> matchers = new ArrayList<>();
@@ -114,11 +110,6 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     }
 
     @Override
-    public boolean apply(@Nullable Entity input) {
-        return test(input);
-    }
-
-    @Override
     public boolean test(Entity entity) {
         if (matchers.isEmpty()) return true;
 
@@ -131,7 +122,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     private static final Set<String> DYE_COLORS = new HashSet<>();
     static {
         for (DyeColor d : DyeColor.values()) {
-            DYE_COLORS.add(d.getTranslationKey());
+            DYE_COLORS.add(d.getName());
         }
     }
 
@@ -178,18 +169,18 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
 
         private static boolean testShearable(Entity entity, String val) {
             return entity instanceof IForgeShearable
-                    && ((IForgeShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getEntityWorld(), entity.getPosition()) ?
+                    && ((IForgeShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
         }
 
         private static boolean testBreedable(Entity entity, String val) {
-            return entity instanceof AnimalEntity && (((AnimalEntity) entity).getGrowingAge() == 0 ?
+            return entity instanceof AnimalEntity && (((AnimalEntity) entity).getAge() == 0 ?
                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no")
             );
         }
 
         private static boolean testAge(Entity entity, String val) {
-            return entity instanceof AgeableEntity && (((AgeableEntity) entity).getGrowingAge() >= 0 ?
+            return entity instanceof AgeableEntity && (((AgeableEntity) entity).getAge() >= 0 ?
                     val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby"));
         }
 
@@ -208,11 +199,11 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
 
         private static boolean hasColor(Entity entity, String val) {
             if (entity instanceof SheepEntity) {
-                return ((SheepEntity) entity).getFleeceColor().getTranslationKey().equalsIgnoreCase(val);
+                return ((SheepEntity) entity).getColor().getName().equalsIgnoreCase(val);
             } else if (entity instanceof WolfEntity) {
-                return ((WolfEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
+                return ((WolfEntity) entity).getCollarColor().getName().equalsIgnoreCase(val);
             } else if (entity instanceof CatEntity) {
-                return ((CatEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
+                return ((CatEntity) entity).getCollarColor().getName().equalsIgnoreCase(val);
             } else {
                 return false;
             }
@@ -223,7 +214,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 if (!name.contains(":")) {
                     name = "minecraft:" + name;
                 }
-                ItemStack stack = mainHand ? ((LivingEntity) entity).getHeldItemMainhand() : ((LivingEntity) entity).getHeldItemOffhand();
+                ItemStack stack = mainHand ? ((LivingEntity) entity).getMainHandItem() : ((LivingEntity) entity).getOffhandItem();
                 return stack.getItem().getRegistryName() != null && stack.getItem().getRegistryName().toString().equals(name);
             }
             return false;
@@ -232,7 +223,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
 
     private static class EntityMatcher implements Predicate<Entity> {
         private final Pattern regex;
-        private final Class<?> typeClass;
+        private final Predicate<Entity> entityPredicate;
         private final List<ModifierEntry> modifiers = new ArrayList<>();
 
         private EntityMatcher(String element) {
@@ -242,17 +233,17 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             }
 
             if (splits[0].startsWith("@")) {
-                // match by entity type
+                // match by entity predicate
                 String sub = splits[0].substring(1);
                 if (StringUtils.countMatches(element, "(") != StringUtils.countMatches(element, ")")) {
                     throw new IllegalArgumentException("Mismatched opening/closing braces");
                 }
-                typeClass = ENTITY_CLASSES.get(sub);
-                Validate.isTrue(typeClass != null, "Unknown entity type specifier: @" + sub);
+                entityPredicate = ENTITY_PREDICATES.get(sub);
+                Validate.isTrue(entityPredicate != null, "Unknown entity type specifier: @" + sub);
                 regex = null;
             } else {
                 // wildcard match on entity name
-                typeClass = null;
+                entityPredicate = null;
                 regex = Pattern.compile(wildcardToRegex(splits[0]), Pattern.CASE_INSENSITIVE);
             }
 
@@ -281,8 +272,8 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         @Override
         public boolean test(Entity entity) {
             boolean ok = false;
-            if (typeClass != null) {
-                ok = typeClass.isAssignableFrom(entity.getClass());
+            if (entityPredicate != null) {
+                ok = entityPredicate.test(entity);
             } else if (regex != null) {
                 Matcher m = regex.matcher(entity.getName().getString());
                 ok = m.matches();

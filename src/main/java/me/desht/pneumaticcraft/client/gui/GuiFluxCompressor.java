@@ -35,8 +35,8 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
         super.init();
 
         inputStat = addAnimatedStat(new StringTextComponent("Input"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
-        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage)));
-        addButton(tempWidget = new WidgetTemperature(guiLeft + 97, guiTop + 20, TemperatureRange.of(223, 673), 273, 50)
+        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
+        addButton(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(223, 673), 273, 50)
                 .setOperatingRange(TemperatureRange.of(323, 625)).setShowOperatingRange(false));
     }
 
@@ -62,12 +62,12 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
 
     private List<ITextComponent> getOutputStat() {
         List<ITextComponent> textList = new ArrayList<>();
-        textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.maxEnergyUsage").mergeStyle(TextFormatting.GRAY));
-        textList.add(new StringTextComponent(te.getInfoEnergyPerTick() + " FE/t").mergeStyle(TextFormatting.BLACK));
-        textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.maxInputRate").mergeStyle(TextFormatting.GRAY));
-        textList.add(new StringTextComponent(te.getInfoEnergyPerTick() * 2 + " FE/t").mergeStyle(TextFormatting.BLACK));
-        textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.storedEnergy").mergeStyle(TextFormatting.GRAY));
-        textList.add(new StringTextComponent(te.getInfoEnergyStored() + " FE").mergeStyle(TextFormatting.BLACK));
+        textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.maxEnergyUsage").withStyle(TextFormatting.GRAY));
+        textList.add(new StringTextComponent(te.getInfoEnergyPerTick() + " FE/t").withStyle(TextFormatting.BLACK));
+        textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.maxInputRate").withStyle(TextFormatting.GRAY));
+        textList.add(new StringTextComponent(te.getInfoEnergyPerTick() * 2 + " FE/t").withStyle(TextFormatting.BLACK));
+        textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.storedEnergy").withStyle(TextFormatting.GRAY));
+        textList.add(new StringTextComponent(te.getInfoEnergyStored() + " FE").withStyle(TextFormatting.BLACK));
         return textList;
     }
 

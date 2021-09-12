@@ -16,15 +16,15 @@ public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemB
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        TileEntity te = drone.world().getTileEntity(pos);
+        TileEntity te = drone.world().getBlockEntity(pos);
         if (te instanceof SignTileEntity) {
             SignTileEntity sign = (SignTileEntity) te;
             String[] lines = ((ISignEditWidget) progWidget).getLines();
             for (int i = 0; i < 4; i++) {
-                sign.setText(i, new StringTextComponent(i < lines.length ? lines[i] : ""));
+                sign.setMessage(i, new StringTextComponent(i < lines.length ? lines[i] : ""));
             }
             BlockState state = drone.world().getBlockState(pos);
-            drone.world().notifyBlockUpdate(pos, state, state, 3);
+            drone.world().sendBlockUpdated(pos, state, state, 3);
         } else if (te instanceof TileEntityAphorismTile) {
             TileEntityAphorismTile sign = (TileEntityAphorismTile) te;
             sign.setTextLines(((ISignEditWidget) progWidget).getLines());

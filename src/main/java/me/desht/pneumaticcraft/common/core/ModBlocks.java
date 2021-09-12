@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.BlockDroneInterface;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
@@ -45,28 +45,28 @@ public class ModBlocks {
     }
 
     private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final Supplier<Callable<ItemStackTileEntityRenderer>> renderMethod) {
-        return () -> new BlockItem(block.get(), new Item.Properties().group(ModItems.ItemGroups.PNC_CREATIVE_TAB).setISTER(renderMethod));
+        return () -> new BlockItem(block.get(), new Item.Properties().tab(ModItems.ItemGroups.PNC_CREATIVE_TAB).setISTER(renderMethod));
     }
 
     private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final ItemGroup itemGroup) {
-        return () -> new BlockItem(block.get(), new Item.Properties().group(itemGroup));
+        return () -> new BlockItem(block.get(), new Item.Properties().tab(itemGroup));
     }
 
     public static Block.Properties defaultProps() {
-        return Block.Properties.create(Material.IRON)
-                .hardnessAndResistance(3f, 10f)
+        return Block.Properties.of(Material.METAL)
+                .strength(3f, 10f)
                 .sound(SoundType.METAL);
     }
 
     public static Block.Properties reinforcedStoneProps() {
-        return Block.Properties.create(Material.ROCK, MaterialColor.GRAY)
-                .setRequiresTool()
-                .hardnessAndResistance(3f, 1200f)
+        return Block.Properties.of(Material.STONE, MaterialColor.COLOR_GRAY)
+                .requiresCorrectToolForDrops()
+                .strength(3f, 1200f)
                 .sound(SoundType.STONE);
     }
 
     private static Block.Properties fluidProps() {
-        return Block.Properties.create(Material.WATER).doesNotBlockMovement().hardnessAndResistance(100f).noDrops();
+        return Block.Properties.of(Material.WATER).noCollission().strength(100f).noDrops();
     }
 
     public static final RegistryObject<BlockPressureTube> PRESSURE_TUBE = register("pressure_tube",
@@ -84,7 +84,7 @@ public class ModBlocks {
     public static final RegistryObject<BlockPressureChamberInterface> PRESSURE_CHAMBER_INTERFACE = register("pressure_chamber_interface",
             BlockPressureChamberInterface::new);
     public static final RegistryObject<BlockChargingStation> CHARGING_STATION = register("charging_station",
-            BlockChargingStation::new);
+            BlockChargingStation::new, block -> () -> new BlockChargingStation.ItemBlockChargingStation(block.get()));
     public static final RegistryObject<BlockDrillPipe> DRILL_PIPE = register("drill_pipe",
             BlockDrillPipe::new);
     public static final RegistryObject<BlockElevatorBase> ELEVATOR_BASE = register("elevator_base",
@@ -131,6 +131,8 @@ public class ModBlocks {
             BlockProgrammer::new);
     public static final RegistryObject<BlockCreativeCompressor> CREATIVE_COMPRESSOR = register("creative_compressor",
             BlockCreativeCompressor::new, block -> () -> new BlockCreativeCompressor.ItemBlockCreativeCompressor(block.get()));
+    public static final RegistryObject<BlockCreativeCompressedIron> CREATIVE_COMPRESSED_IRON_BLOCK = register("creative_compressed_iron_block",
+            BlockCreativeCompressedIron::new, block -> () -> new BlockCreativeCompressedIron.ItemBlockCreativeCompressedIron(block.get()));
     public static final RegistryObject<BlockLiquidCompressor> LIQUID_COMPRESSOR = register("liquid_compressor",
             BlockLiquidCompressor::new);
     public static final RegistryObject<BlockAdvancedLiquidCompressor> ADVANCED_LIQUID_COMPRESSOR = register("advanced_liquid_compressor",
@@ -189,6 +191,8 @@ public class ModBlocks {
             BlockTagWorkbench::new);
     public static final RegistryObject<BlockDisplayTable> DISPLAY_TABLE = register("display_table",
             BlockDisplayTable::new);
+    public static final RegistryObject<BlockDisplayShelf> DISPLAY_SHELF = register("display_shelf",
+            BlockDisplayShelf::new);
     public static final RegistryObject<BlockDroneInterface> DRONE_INTERFACE = register("drone_interface",
             BlockDroneInterface::new);
     public static final RegistryObject<BlockThermalLagging> THERMAL_LAGGING = register("thermal_lagging",
@@ -209,11 +213,11 @@ public class ModBlocks {
     public static final List<RegistryObject<BlockWallLamp>> WALL_LAMPS_INVERTED = new ArrayList<>();
     static {
         for (DyeColor color : DyeColor.values()) {
-            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getTranslationKey(), () -> new BlockPlasticBrick(color),
+            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getName(), () -> new BlockPlasticBrick(color),
                     block -> () -> new BlockPlasticBrick.ItemPlasticBrick(block.get())));
-            WALL_LAMPS.add(register("wall_lamp_" + color.getTranslationKey(), () -> new BlockWallLamp(color, false),
+            WALL_LAMPS.add(register("wall_lamp_" + color.getName(), () -> new BlockWallLamp(color, false),
                     block -> () -> new BlockWallLamp.ItemWallLamp(block.get())));
-            WALL_LAMPS_INVERTED.add(register("wall_lamp_inverted_" + color.getTranslationKey(), () -> new BlockWallLamp(color, true),
+            WALL_LAMPS_INVERTED.add(register("wall_lamp_inverted_" + color.getName(), () -> new BlockWallLamp(color, true),
                     block -> () -> new BlockWallLamp.ItemWallLamp(block.get())));
         }
     }
@@ -225,7 +229,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> REINFORCED_BRICK_TILE = register("reinforced_brick_tile",
             () -> new Block(reinforcedStoneProps()));
     public static final RegistryObject<Block> REINFORCED_BRICK_STAIRS = register("reinforced_brick_stairs",
-            () -> new StairsBlock(() -> REINFORCED_BRICKS.get().getDefaultState(),
+            () -> new StairsBlock(() -> REINFORCED_BRICKS.get().defaultBlockState(),
                     reinforcedStoneProps()));
     public static final RegistryObject<Block> REINFORCED_BRICK_SLAB = register("reinforced_brick_slab",
             () -> new SlabBlock(reinforcedStoneProps()));

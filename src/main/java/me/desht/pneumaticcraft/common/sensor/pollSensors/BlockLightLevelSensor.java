@@ -34,7 +34,7 @@ public class BlockLightLevelSensor implements IBlockAndCoordinatePollSensor {
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions) {
         int lightValue = 0;
         for (BlockPos p : positions) {
-            lightValue = Math.max(lightValue, world.getLight(p));
+            lightValue = Math.max(lightValue, world.getMaxLocalRawBrightness(p));
         }
         return lightValue;
     }

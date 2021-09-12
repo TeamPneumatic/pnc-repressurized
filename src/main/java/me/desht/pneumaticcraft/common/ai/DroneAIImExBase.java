@@ -15,10 +15,10 @@ public abstract class DroneAIImExBase<W extends ProgWidgetInventoryBase>
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         boolean countReached = transportCount <= 0;
         transportCount = progWidget.getCount();
-        return !(countReached && useCount()) && super.shouldExecute();
+        return !(countReached && useCount()) && super.canUse();
     }
 
     @Override

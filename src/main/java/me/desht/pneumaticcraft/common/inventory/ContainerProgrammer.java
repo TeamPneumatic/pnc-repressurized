@@ -28,13 +28,13 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         super(ModContainers.PROGRAMMER.get(), i, playerInventory, pos);
 
         // server side doesn't care about slot positioning, so doesn't care about screen res either
-        this.hiRes = playerInventory.player.world.isRemote && ClientUtils.isScreenHiRes();
+        this.hiRes = playerInventory.player.level.isClientSide && ClientUtils.isScreenHiRes();
         int xBase = hiRes ? 270 : 95;
         int yBase = hiRes ? 430 : 174;
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, hiRes ? 676 : 326, 15) {
             @Override
-            public boolean isItemValid(@Nonnull ItemStack stack) {
+            public boolean mayPlace(@Nonnull ItemStack stack) {
                 return isProgrammableItem(stack);
             }
         });
@@ -56,12 +56,12 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     }
 
     @Override
-    public void detectAndSendChanges() {
-        super.detectAndSendChanges();
+    public void broadcastChanges() {
+        super.broadcastChanges();
 
         // update the client about contents of adjacent inventories so the programmer GUI knows what
         // puzzle pieces are available
-        if (te.getWorld().getGameTime() % 20 == 0) {
+        if (te.getLevel().getGameTime() % 20 == 0) {
             for (Direction d : DirectionUtil.VALUES) {
                 TileEntity neighbor = te.getCachedNeighbor(d);
                 if (neighbor != null && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).isPresent()) {
@@ -73,25 +73,25 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int slotIndex) {
+    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int slotIndex) {
         ItemStack stack = ItemStack.EMPTY;
-        Slot srcSlot = inventorySlots.get(slotIndex);
+        Slot srcSlot = slots.get(slotIndex);
 
-        if (srcSlot != null && srcSlot.getHasStack()) {
-            ItemStack stackInSlot = srcSlot.getStack();
+        if (srcSlot != null && srcSlot.hasItem()) {
+            ItemStack stackInSlot = srcSlot.getItem();
             stack = stackInSlot.copy();
 
             if (slotIndex == 0) {
-                if (!mergeItemStack(stackInSlot, 1, 36, false)) return ItemStack.EMPTY;
-                srcSlot.onSlotChange(stackInSlot, stack);
+                if (!moveItemStackTo(stackInSlot, 1, 36, false)) return ItemStack.EMPTY;
+                srcSlot.onQuickCraft(stackInSlot, stack);
             } else if (isProgrammableItem(stack)) {
-                if (!mergeItemStack(stackInSlot, 0, 1, false)) return ItemStack.EMPTY;
-                srcSlot.onSlotChange(stackInSlot, stack);
+                if (!moveItemStackTo(stackInSlot, 0, 1, false)) return ItemStack.EMPTY;
+                srcSlot.onQuickCraft(stackInSlot, stack);
             }
             if (stackInSlot.isEmpty()) {
-                srcSlot.putStack(ItemStack.EMPTY);
+                srcSlot.set(ItemStack.EMPTY);
             } else {
-                srcSlot.onSlotChanged();
+                srcSlot.setChanged();
             }
 
             if (stackInSlot.getCount() == stack.getCount()) return ItemStack.EMPTY;
@@ -103,9 +103,9 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     }
 
     @Override
-    public void onContainerClosed(PlayerEntity playerIn) {
-        super.onContainerClosed(playerIn);
+    public void removed(PlayerEntity playerIn) {
+        super.removed(playerIn);
 
-        if (playerIn.world.isRemote) GuiProgrammer.onCloseFromContainer();
+        if (playerIn.level.isClientSide) GuiProgrammer.onCloseFromContainer();
     }
 }

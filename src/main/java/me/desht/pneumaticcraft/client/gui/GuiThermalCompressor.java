@@ -35,7 +35,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         super.init();
 
         for (Direction d : DirectionUtil.HORIZONTALS) {
-            addButton(tempWidgets[d.getHorizontalIndex()] = new WidgetTemperatureSided(d).setDrawText(false));
+            addButton(tempWidgets[d.get2DDataValue()] = new WidgetTemperatureSided(d).setDrawText(false));
         }
     }
 
@@ -46,9 +46,9 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
 
     @Override
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + (int) (xSize * 0.82), yStart + ySize / 4 + 4);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        return new PointXY(xStart + (int) (imageWidth * 0.82), yStart + imageHeight / 4 + 4);
     }
 
     private int getTemperatureDifferential(Direction side) {
@@ -64,7 +64,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         double prod = te.airProduced(Direction.NORTH) + te.airProduced(Direction.EAST);
         if (prod > 0 && te.getRedstoneController().shouldRun()) {
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.producingAir",
-                    PneumaticCraftUtils.roundNumberTo(prod, 1)).mergeStyle(TextFormatting.BLACK));
+                    PneumaticCraftUtils.roundNumberTo(prod, 1)).withStyle(TextFormatting.BLACK));
         }
     }
 
@@ -95,7 +95,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
         for (Direction d : DirectionUtil.HORIZONTALS) {
             int t = Objects.requireNonNull(te.getHeatExchanger(d)).getTemperatureAsInt();
-            tempWidgets[d.getHorizontalIndex()].setTemperature(t);
+            tempWidgets[d.get2DDataValue()].setTemperature(t);
             min = Math.min(min, t);
             max = Math.max(max, t);
         }
@@ -137,7 +137,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         private final Direction side;
 
         WidgetTemperatureSided(Direction side) {
-            super(guiLeft + getWidgetX(side), guiTop + 20, TemperatureRange.of(0, 2000), 273, 200);
+            super(leftPos + getWidgetX(side), topPos + 20, TemperatureRange.of(0, 2000), 273, 200);
             this.side = side;
         }
 

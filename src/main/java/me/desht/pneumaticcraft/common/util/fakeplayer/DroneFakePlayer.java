@@ -24,11 +24,11 @@ public class DroneFakePlayer extends FakePlayer {
     public void giveExperiencePoints(int amount) {
         Vector3d pos = drone.getDronePos();
         ExperienceOrbEntity orb = new ExperienceOrbEntity(drone.world(), pos.x, pos.y, pos.z, amount);
-        drone.world().addEntity(orb);
+        drone.world().addFreshEntity(orb);
     }
 
     @Override
-    public void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
+    public void playNotifySound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
         drone.playSound(soundEvent, category, volume, pitch);
     }
 
@@ -38,13 +38,13 @@ public class DroneFakePlayer extends FakePlayer {
     }
 
     @Override
-    public void setSneaking(boolean sneaking) {
+    public void setShiftKeyDown(boolean sneaking) {
         this.sneaking = sneaking;
     }
 
     @Override
     public void tick() {
-        ticksSinceLastSwing++;  // without this, drone's melee will be hopeless
+        attackStrengthTicker++;  // without this, drone's melee will be hopeless
     }
 
     @Override
@@ -53,12 +53,12 @@ public class DroneFakePlayer extends FakePlayer {
     }
 
     @Override
-    public Vector3d getPositionVec() {
+    public Vector3d position() {
         return drone.getDronePos();
     }
 
     @Override
-    public BlockPos getPosition() {
+    public BlockPos blockPosition() {
         return new BlockPos(drone.getDronePos());
     }
 }

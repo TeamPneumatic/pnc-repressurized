@@ -74,7 +74,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
             notExported = tryEntityExport(maxItems, outputDir.getOpposite());
         }
         if (notExported == maxItems && PNCConfig.Common.Machines.omniHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            notExported = exportToInventory(new DropInWorldHandler(getWorld(), getPos(), outputDir), maxItems);
+            notExported = exportToInventory(new DropInWorldHandler(getLevel(), getBlockPos(), outputDir), maxItems);
         }
         return notExported < maxItems;
     }
@@ -141,8 +141,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         }
 
         // Suck in item entities in front of the input
-        BlockPos inputPos = pos.offset(inputDir);
-        if (!Block.hasEnoughSolidSide(world, inputPos, inputDir.getOpposite())) {
+        BlockPos inputPos = worldPosition.relative(inputDir);
+        if (!Block.canSupportCenter(level, inputPos, inputDir.getOpposite())) {
             for (Entity e : cachedInputEntities) {
                 if (e.isAlive() && e instanceof ItemEntity) {
                     ItemEntity entity = (ItemEntity) e;
@@ -181,7 +181,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).isEmpty()) continue;
             ItemStack toExtract = inv.extractItem(i, remaining, true);
-            if (playerArmor && EnchantmentHelper.getEnchantmentLevel(Enchantments.BINDING_CURSE, toExtract) > 0) {
+            if (playerArmor && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BINDING_CURSE, toExtract) > 0) {
                 continue;
             }
             ItemStack excess = ItemHandlerHelper.insertItemStacked(itemHandler, toExtract, false);
@@ -210,10 +210,10 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     @Override
     protected void setupInputOutputRegions() {
         // Ensure the input region also contains the hollow part of the hopper itself
-        AxisAlignedBB bowl = BlockOmnidirectionalHopper.INPUT_SHAPES[inputDir.getIndex()].getBoundingBox().offset(pos);
-        inputAABB = bowl.union(new AxisAlignedBB(pos.offset(inputDir)));
+        AxisAlignedBB bowl = BlockOmnidirectionalHopper.INPUT_SHAPES[inputDir.get3DDataValue()].bounds().move(worldPosition);
+        inputAABB = bowl.minmax(new AxisAlignedBB(worldPosition.relative(inputDir)));
         // output zone is a bit simpler
-        outputAABB = new AxisAlignedBB(getPos().offset(getRotation()));
+        outputAABB = new AxisAlignedBB(getBlockPos().relative(getRotation()));
 
         cachedInputEntities.clear();
         cachedOutputEntities.clear();
@@ -221,7 +221,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
     @Override
     boolean shouldScanForEntities(Direction dir) {
-        if (Block.hasEnoughSolidSide(world, pos.offset(dir), dir.getOpposite())
+        if (Block.canSupportCenter(level, worldPosition.relative(dir), dir.getOpposite())
                 || dir == getRotation() && getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
             return false;
         }
@@ -235,8 +235,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.put("Items", itemHandler.serializeNBT());
         tag.putBoolean("RoundRobin", roundRobin);
         if (roundRobin) tag.putInt("RRSlot", rrSlot);
@@ -244,8 +244,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         roundRobin = tag.getBoolean("RoundRobin");
@@ -260,14 +260,14 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerOmnidirectionalHopper(i, playerInventory, getPos());
+        return new ContainerOmnidirectionalHopper(i, playerInventory, getBlockPos());
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (tag.equals("rr")) {
             roundRobin = !roundRobin;
-            markDirty();
+            setChanged();
         } else {
             super.handleGUIButtonPress(tag, shiftHeld, player);
         }
@@ -285,7 +285,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
         public DropInWorldHandler(World world, BlockPos pos, Direction outputDir) {
             this.world = world;
-            this.pos = pos.offset(outputDir);
+            this.pos = pos.relative(outputDir);
             this.outputDir = outputDir;
         }
 
@@ -303,7 +303,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (!Block.hasEnoughSolidSide(world, pos, outputDir.getOpposite())) {
+            if (!Block.canSupportCenter(world, pos, outputDir.getOpposite())) {
                 if (!simulate) {
                     PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                 }

@@ -30,7 +30,7 @@ public class JEIEtchingTankCategory implements IRecipeCategory<JEIEtchingTankCat
     private final IDrawableAnimated progressBar;
 
     JEIEtchingTankCategory() {
-        localizedName = I18n.format(ModBlocks.ETCHING_TANK.get().getTranslationKey());
+        localizedName = I18n.get(ModBlocks.ETCHING_TANK.get().getDescriptionId());
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 0, 0, 83, 42);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ETCHING_TANK.get()));
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 83, 0, 42, 42);
@@ -46,7 +46,7 @@ public class JEIEtchingTankCategory implements IRecipeCategory<JEIEtchingTankCat
 
         return Collections.singletonList(
                 new EtchingTankRecipe(
-                        Ingredient.fromStacks(input),
+                        Ingredient.of(input),
                         new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
                         new ItemStack(ModItems.FAILED_PCB.get())
                 )

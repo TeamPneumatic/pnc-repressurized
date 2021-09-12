@@ -61,7 +61,7 @@ public class FluidItemModel implements IDynamicBakedModel {
             if (tank.getFluid().isEmpty()) continue;
             Fluid fluid = tank.getFluid().getFluid();
             ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
-            TextureAtlasSprite still = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(texture);
+            TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(texture);
             int color = fluid.getAttributes().getColor(tank.getFluid());
             float[] cols = new float[]{(color >> 24 & 0xFF) / 255F, (color >> 16 & 0xFF) / 255F, (color >> 8 & 0xFF) / 255F, (color & 0xFF) / 255F};
             AxisAlignedBB bounds = getRenderBounds(tank, info.getBounds());
@@ -114,7 +114,7 @@ public class FluidItemModel implements IDynamicBakedModel {
 
     private BakedQuad createQuad(List<Vector3d> vecs, float[] cols, TextureAtlasSprite sprite, Direction face, float u1, float u2, float v1, float v2) {
         BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
-        Vector3d normal = Vector3d.copy(face.getDirectionVec());
+        Vector3d normal = Vector3d.atLowerCornerOf(face.getNormal());
         putVertex(builder, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, u1, v1, sprite, cols);
         putVertex(builder, normal, vecs.get(1).x, vecs.get(1).y, vecs.get(1).z, u1, v2, sprite, cols);
         putVertex(builder, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, u2, v2, sprite, cols);
@@ -136,8 +136,8 @@ public class FluidItemModel implements IDynamicBakedModel {
                     break;
                 case UV:
                     if (elements.get(e).getIndex() == 0) {
-                        float iu = sprite.getInterpolatedU(u);
-                        float iv = sprite.getInterpolatedV(v);
+                        float iu = sprite.getU(u);
+                        float iv = sprite.getV(v);
                         builder.put(e, iu, iv);
                     } else {
                         builder.put(e);
@@ -154,8 +154,8 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
-        return bakedBaseModel.isAmbientOcclusion();
+    public boolean useAmbientOcclusion() {
+        return bakedBaseModel.useAmbientOcclusion();
     }
 
     @Override
@@ -164,13 +164,13 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean isSideLit() {
+    public boolean usesBlockLight() {
         return false;
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
-        return bakedBaseModel.isBuiltInRenderer();
+    public boolean isCustomRenderer() {
+        return bakedBaseModel.isCustomRenderer();
     }
 
     @Override
@@ -179,8 +179,8 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public TextureAtlasSprite getParticleTexture() {
-        return bakedBaseModel.getParticleTexture();
+    public TextureAtlasSprite getParticleIcon() {
+        return bakedBaseModel.getParticleIcon();
     }
 
     @Override
@@ -207,12 +207,12 @@ public class FluidItemModel implements IDynamicBakedModel {
 
         @Override
         public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
-            return new FluidItemModel(baseModel.bakeModel(bakery, baseModel.parent, spriteGetter, modelTransform, modelLocation, true), PerspectiveMapWrapper.getTransforms(baseModel.getAllTransforms()));
+            return new FluidItemModel(baseModel.bake(bakery, baseModel.parent, spriteGetter, modelTransform, modelLocation, true), PerspectiveMapWrapper.getTransforms(baseModel.getTransforms()));
         }
 
         @Override
         public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
-            return baseModel.getTextures(modelGetter, missingTextureErrors);
+            return baseModel.getMaterials(modelGetter, missingTextureErrors);
         }
     }
 
@@ -225,7 +225,7 @@ public class FluidItemModel implements IDynamicBakedModel {
 
         @Override
         public Geometry read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-            BlockModel baseModel = deserializationContext.deserialize(JSONUtils.getJsonObject(modelContents, "base_model"), BlockModel.class);
+            BlockModel baseModel = deserializationContext.deserialize(JSONUtils.getAsJsonObject(modelContents, "base_model"), BlockModel.class);
             return new FluidItemModel.Geometry(baseModel);
         }
     }
@@ -239,7 +239,7 @@ public class FluidItemModel implements IDynamicBakedModel {
 
         @Nullable
         @Override
-        public IBakedModel getOverrideModel(IBakedModel original, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+        public IBakedModel resolve(IBakedModel original, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
             if (stack.getItem() instanceof IFluidRendered) {
                 IFluidItemRenderInfoProvider infoProvider = ((IFluidRendered) stack.getItem()).getFluidItemRenderer();
                 modelIn.tanksToRender = infoProvider.getTanksToRender(stack);

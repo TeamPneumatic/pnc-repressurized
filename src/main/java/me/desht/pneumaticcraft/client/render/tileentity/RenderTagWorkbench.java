@@ -16,16 +16,16 @@ public class RenderTagWorkbench extends TileEntityRenderer<TileEntityTagWorkbenc
 
     @Override
     public void render(TileEntityTagWorkbench te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (!te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos()))) return;
+        if (!te.getLevel().getChunkSource().isEntityTickingChunk(new ChunkPos(te.getBlockPos()))) return;
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 1, 0.5);
         RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
-                new ItemStack(Item.getItemById(te.itemId)), 0, -0.25, 0.4f, te.getRotation());
+                te.displayedStack, 0, 0, -0.25, 0.4f, te.getRotation());
         RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
-                new ItemStack(Item.getItemById(te.paperItemId)), -0.25, 0.25, 0.4f, te.getRotation());
+                new ItemStack(Item.byId(te.paperItemId)), -0.25, 0, 0.25, 0.4f, te.getRotation());
         RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
-                new ItemStack(Item.getItemById(te.outputItemId)), 0.25, 0.25, 0.4f, te.getRotation());
-        matrixStackIn.pop();
+                new ItemStack(Item.byId(te.outputItemId)), 0.25, 0, 0.25, 0.4f, te.getRotation());
+        matrixStackIn.popPose();
     }
 }

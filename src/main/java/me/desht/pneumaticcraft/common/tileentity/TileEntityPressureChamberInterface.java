@@ -97,7 +97,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerPressureChamberInterface(i, playerInventory, getPos());
+        return new ContainerPressureChamberInterface(i, playerInventory, getBlockPos());
     }
 
     @Override
@@ -110,7 +110,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         oldOutputProgress = outputProgress;
         TileEntityPressureChamberValve core = getCore();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             doorSpeed = getSpeedMultiplierFromUpgrades();
 
             int itemCount = inventory.getStackInSlot(0).getCount();
@@ -167,8 +167,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             isOpeningOutput = false;
         }
 
-        if (getWorld().isRemote && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningInput || wasOpeningO != isOpeningOutput)) {
-            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, ModSounds.INTERFACE_DOOR.get(), SoundCategory.BLOCKS, 0.5F, 1.0F, true);
+        if (getLevel().isClientSide && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningInput || wasOpeningO != isOpeningOutput)) {
+            getLevel().playLocalSound(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, ModSounds.INTERFACE_DOOR.get(), SoundCategory.BLOCKS, 0.5F, 1.0F, true);
             soundTimer = 0;
         }
     }
@@ -186,8 +186,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             ItemStack leftoverStack = IOHelper.insert(te, stack.copy(), facing.getOpposite(), false);
             stack.shrink(count - leftoverStack.getCount());
         } else if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            BlockPos pos = getPos().offset(getRotation());
-            PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getWorld(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+            BlockPos pos = getBlockPos().relative(getRotation());
+            PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getLevel(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             inventory.setStackInSlot(0, ItemStack.EMPTY);
         }
     }
@@ -200,7 +200,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                 continue;
             }
             ItemStack stackInInterface = inventory.getStackInSlot(0);
-            if ((stackInInterface.isEmpty() || stackInInterface.isItemEqual(chamberStack))) {
+            if ((stackInInterface.isEmpty() || stackInInterface.sameItem(chamberStack))) {
                 IAirHandlerMachine coreAirHandler = core.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
                         .orElseThrow(RuntimeException::new);
                 int maxAllowedItems = Math.abs(coreAirHandler.getAir()) / PneumaticValues.USAGE_CHAMBER_INTERFACE;
@@ -245,18 +245,18 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     // Figure out whether the Interface is exporting or importing.
     private InterfaceDirection getInterfaceMode(TileEntityPressureChamberValve core) {
         if (core != null) {
-            boolean xMid = getPos().getX() != core.multiBlockX && getPos().getX() != core.multiBlockX + core.multiBlockSize - 1;
-            boolean yMid = getPos().getY() != core.multiBlockY && getPos().getY() != core.multiBlockY + core.multiBlockSize - 1;
-            boolean zMid = getPos().getZ() != core.multiBlockZ && getPos().getZ() != core.multiBlockZ + core.multiBlockSize - 1;
+            boolean xMid = getBlockPos().getX() != core.multiBlockX && getBlockPos().getX() != core.multiBlockX + core.multiBlockSize - 1;
+            boolean yMid = getBlockPos().getY() != core.multiBlockY && getBlockPos().getY() != core.multiBlockY + core.multiBlockSize - 1;
+            boolean zMid = getBlockPos().getZ() != core.multiBlockZ && getBlockPos().getZ() != core.multiBlockZ + core.multiBlockSize - 1;
             Direction rotation = getRotation();
             if (xMid && yMid && rotation == Direction.NORTH || xMid && zMid && rotation == Direction.DOWN || yMid && zMid && rotation == Direction.WEST) {
-                if (getPos().getX() == core.multiBlockX || getPos().getY() == core.multiBlockY || getPos().getZ() == core.multiBlockZ) {
+                if (getBlockPos().getX() == core.multiBlockX || getBlockPos().getY() == core.multiBlockY || getBlockPos().getZ() == core.multiBlockZ) {
                     return InterfaceDirection.EXPORT;
                 } else {
                     return InterfaceDirection.IMPORT;
                 }
             } else if (xMid && yMid && rotation == Direction.SOUTH || xMid && zMid && rotation == Direction.UP || yMid && zMid && rotation == Direction.EAST) {
-                if (getPos().getX() == core.multiBlockX || getPos().getY() == core.multiBlockY || getPos().getZ() == core.multiBlockZ) {
+                if (getBlockPos().getX() == core.multiBlockX || getBlockPos().getY() == core.multiBlockY || getBlockPos().getZ() == core.multiBlockZ) {
                     return InterfaceDirection.IMPORT;
                 } else {
                     return InterfaceDirection.EXPORT;
@@ -271,8 +271,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         outputProgress = tag.getFloat("outputProgress");
@@ -282,8 +282,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.put("Items", inventory.serializeNBT());
         tag.putFloat("outputProgress", outputProgress);
         tag.putFloat("inputProgress", inputProgress);
@@ -294,8 +294,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public boolean isGuiUseableByPlayer(PlayerEntity player) {
-        return getWorld().getTileEntity(getPos()) == this
-                && player.getDistanceSq(getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D) <= 64.0D;
+        return getLevel().getBlockEntity(getBlockPos()) == this
+                && player.distanceToSqr(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 0.5D, getBlockPos().getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
@@ -309,7 +309,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             return;
         if (tag.equals("export_mode")) {
             exportAny = !exportAny;
-            markDirty();
+            setChanged();
         }
     }
 
@@ -343,7 +343,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         private boolean isValidItem(ItemStack stack) {
             if (TileEntityPressureChamberInterface.this.interfaceMode == InterfaceDirection.IMPORT) {
                 if (acceptedItemCache.contains(stack.getItem())) return true;
-                boolean accepted = PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(world)
+                boolean accepted = PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(level)
                         .anyMatch(recipe -> recipe.isValidInputItem(stack));
                 if (accepted) acceptedItemCache.add(stack.getItem());
                 return accepted;

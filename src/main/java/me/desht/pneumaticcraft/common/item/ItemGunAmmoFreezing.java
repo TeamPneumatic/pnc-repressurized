@@ -42,7 +42,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     @Override
     protected float getDamageMultiplier(Entity target, ItemStack ammoStack) {
         double mul = super.getDamageMultiplier(target, ammoStack);
-        if (target != null && target.isImmuneToFire()) {
+        if (target != null && target.fireImmune()) {
             mul *= 1.5;
         }
         return (float) mul;
@@ -52,7 +52,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         if (target instanceof LivingEntity) {
             LivingEntity living = (LivingEntity) target;
-            living.addPotionEffect(new EffectInstance(Effects.SLOWNESS, living.getRNG().nextInt(40) + 40, 3));
+            living.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, living.getRandom().nextInt(40) + 40, 3));
             if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoEntityIceChance)) {
                 createFreezeCloud(minigun, target);
             }
@@ -61,57 +61,57 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     }
 
     private void createFreezeCloud(Minigun minigun, Entity target) {
-        World world = target.getEntityWorld();
-        AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, target.getPosX(), target.getPosY(), target.getPosZ());
+        World world = target.getCommandSenderWorld();
+        AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, target.getX(), target.getY(), target.getZ());
         cloud.setPotion(Potions.SLOWNESS);
         cloud.setOwner(minigun.getPlayer());
-        cloud.addEffect(new EffectInstance(Effects.SLOWNESS, 100, 3));
+        cloud.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 100, 3));
         cloud.addEffect(new EffectInstance(Effects.WITHER, 20, 1));
         cloud.setRadius(2.0f);
         cloud.setDuration(60);
         cloud.setRadiusOnUse(-0.5f);
         cloud.setWaitTime(20);
-        cloud.setColor(0xFF00C0FF);
+        cloud.setFixedColor(0xFF00C0FF);
         cloud.setRadiusPerTick(-cloud.getRadius() / cloud.getDuration());
-        world.addEntity(cloud);
+        world.addFreshEntity(cloud);
     }
 
     @Override
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         World world = minigun.getWorld();
-        BlockPos pos = brtr.getPos();
-        if (!world.getDimensionType().isUltrawarm() && minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoBlockIceChance)) {
+        BlockPos pos = brtr.getBlockPos();
+        if (!world.dimensionType().ultraWarm() && minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoBlockIceChance)) {
             BlockPos pos1;
-            if (world.getBlockState(pos).getShape(world, pos) == VoxelShapes.fullCube() || brtr.getFace() != Direction.UP) {
-                pos1 = pos.offset(brtr.getFace());
+            if (world.getBlockState(pos).getShape(world, pos) == VoxelShapes.block() || brtr.getDirection() != Direction.UP) {
+                pos1 = pos.relative(brtr.getDirection());
             } else {
                 pos1 = pos;
             }
             BlockState newState = null;
-            if (world.isAirBlock(pos1) && !world.isAirBlock(pos1.down())) {
+            if (world.isEmptyBlock(pos1) && !world.isEmptyBlock(pos1.below())) {
                 // form snow layers on solid blocks
-                newState = Blocks.SNOW.getDefaultState().with(SnowBlock.LAYERS, 1);
+                newState = Blocks.SNOW.defaultBlockState().setValue(SnowBlock.LAYERS, 1);
             } else if (world.getBlockState(pos1).getBlock() == Blocks.SNOW) {
                 // grow existing snow layers
                 BlockState state = world.getBlockState(pos1);
-                int level = state.get(SnowBlock.LAYERS);
+                int level = state.getValue(SnowBlock.LAYERS);
                 if (level < 8) {
-                    newState = Blocks.SNOW.getDefaultState().with(SnowBlock.LAYERS, level + 1);
+                    newState = Blocks.SNOW.defaultBlockState().setValue(SnowBlock.LAYERS, level + 1);
                 } else {
-                    newState = Blocks.SNOW_BLOCK.getDefaultState();
+                    newState = Blocks.SNOW_BLOCK.defaultBlockState();
                 }
             } else if (world.getBlockState(pos1).getBlock() == Blocks.WATER) {
                 // freeze surface water
                 Vector3d eye = minigun.getPlayer().getEyePosition(0f);
-                RayTraceContext ctx = new RayTraceContext(eye, brtr.getHitVec(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, minigun.getPlayer());
-                BlockRayTraceResult res = world.rayTraceBlocks(ctx);
+                RayTraceContext ctx = new RayTraceContext(eye, brtr.getLocation(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, minigun.getPlayer());
+                BlockRayTraceResult res = world.clip(ctx);
                 if (res.getType() == RayTraceResult.Type.BLOCK) {
-                    pos1 = res.getPos();
-                    newState = Blocks.ICE.getDefaultState();
+                    pos1 = res.getBlockPos();
+                    newState = Blocks.ICE.defaultBlockState();
                 }
             }
             if (newState != null) {
-                PneumaticCraftUtils.tryPlaceBlock(world, pos1, minigun.getPlayer(), brtr.getFace(), newState);
+                PneumaticCraftUtils.tryPlaceBlock(world, pos1, minigun.getPlayer(), brtr.getDirection(), newState);
             }
         }
         return super.onBlockHit(minigun, ammo, brtr);

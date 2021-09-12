@@ -1,17 +1,17 @@
 package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
 import me.desht.pneumaticcraft.lib.ModIds;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID)
 public class ComputerCraft implements IThirdParty {

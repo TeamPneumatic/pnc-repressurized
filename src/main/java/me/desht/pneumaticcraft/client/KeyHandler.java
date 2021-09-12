@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.client.event.InputEvent;
@@ -20,6 +20,7 @@ public class KeyHandler {
     private static final String DESCRIPTION_HELMET_DEBUGGING_DRONE = "pneumaticcraft.helmet.debugging.drone";
     private static final String DESCRIPTION_BOOTS_KICK = "pneumaticcraft.boots.kick";
     private static final String DESCRIPTION_LAUNCHER = "pneumaticcraft.chestplate.launcher";
+    private static final String DESCRIPTION_JET_BOOTS = "pneumaticcraft.boots.jet_boots";
 
     private static final KeyHandler INSTANCE = new KeyHandler();
 
@@ -28,6 +29,7 @@ public class KeyHandler {
     public final KeyBinding keybindDebuggingDrone;
     public final KeyBinding keybindKick;
     public final KeyBinding keybindLauncher;
+    public final KeyBinding keybindJetBoots;
     private final List<IKeyListener> keyListeners = new ArrayList<>();
     private final List<KeyBinding> keys = new ArrayList<>();
 
@@ -48,6 +50,8 @@ public class KeyHandler {
                 KeyModifier.CONTROL, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_X, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
         keybindLauncher = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_LAUNCHER, KeyConflictContext.IN_GAME,
                 KeyModifier.CONTROL, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_C, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+        keybindJetBoots = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_JET_BOOTS, KeyConflictContext.IN_GAME,
+                KeyModifier.NONE, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_SPACE, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
     }
 
     private KeyBinding registerKeyBinding(KeyBinding keyBinding) {
@@ -60,15 +64,10 @@ public class KeyHandler {
         keyListeners.add(listener);
     }
 
-    /**
-     * This will only subscribe when NotEnoughKeys is not installed.
-     *
-     * @param event
-     */
     @SubscribeEvent
     public void onKey(InputEvent.KeyInputEvent event) {
         for (KeyBinding key : keys) {
-            if (key.isPressed()) {
+            if (key.consumeClick()) {
                 dispatchInput(key);
             }
         }
@@ -77,7 +76,7 @@ public class KeyHandler {
     @SubscribeEvent
     public void onMouse(InputEvent.MouseInputEvent event) {
         for (KeyBinding key : keys) {
-            if (key.isPressed()) {
+            if (key.consumeClick()) {
                 dispatchInput(key);
             }
         }

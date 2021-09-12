@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
@@ -38,7 +38,7 @@ public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
 
     @Override
     public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
-        if (world.getBlockState(pos).get(EndPortalFrameBlock.EYE)) {
+        if (world.getBlockState(pos).getValue(EndPortalFrameBlock.HAS_EYE)) {
             infoList.add(xlate("pneumaticcraft.blockTracker.info.endportal.eye"));
         } else {
             infoList.add(xlate("pneumaticcraft.blockTracker.info.endportal.noEye"));

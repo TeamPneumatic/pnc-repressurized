@@ -35,7 +35,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintableItem {
 
     public ItemGunAmmo() {
-        super(ModItems.defaultProps().maxStackSize(1).setNoRepair().defaultMaxDamage(1000));
+        super(ModItems.defaultProps().stacksTo(1).setNoRepair().defaultDurability(1000));
     }
 
     @Override
@@ -97,14 +97,14 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
     }
 
     protected DamageSource getDamageSource(Minigun minigun) {
-        return DamageSource.causePlayerDamage(minigun.getPlayer());
+        return DamageSource.playerAttack(minigun.getPlayer());
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
-        infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamage(), stack.getMaxDamage()));
-        super.addInformation(stack, world, infoList, extraInfo);
+    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
+        infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
+        super.appendHoverText(stack, world, infoList, extraInfo);
     }
 
     @Override
@@ -125,14 +125,14 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
         int times = 1;
         int nSpeed = minigun.getUpgrades(EnumUpgrade.SPEED);
         for (int i = 0; i < nSpeed; i++) {
-            if (minigun.getWorld().rand.nextInt(100) < 20) times++;
+            if (minigun.getWorld().random.nextInt(100) < 20) times++;
         }
 
         double dmgMult = getDamageMultiplier(target, ammo);
         if (dmgMult > 0) {
             // note: can't just check for PartEntity (will get ClassNotFoundException on dedicated server)
             if (target instanceof LivingEntity || target instanceof EnderDragonPartEntity || target instanceof EnderCrystalEntity) {
-                target.attackEntityFrom(getDamageSource(minigun), (float)(PNCConfig.Common.Minigun.baseDamage * dmgMult * times));
+                target.hurt(getDamageSource(minigun), (float)(PNCConfig.Common.Minigun.baseDamage * dmgMult * times));
             } else if (target instanceof ShulkerBulletEntity || target instanceof DamagingProjectileEntity) {
                 target.remove();
             }
@@ -150,13 +150,13 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
      */
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         if (PNCConfig.Common.Minigun.blockHitParticles) {
-            World w = minigun.getPlayer().world;
-            BlockState state = w.getBlockState(brtr.getPos());
-            Direction face = brtr.getFace();
-            Vector3d hitVec = brtr.getHitVec();
+            World w = minigun.getPlayer().level;
+            BlockState state = w.getBlockState(brtr.getBlockPos());
+            Direction face = brtr.getDirection();
+            Vector3d hitVec = brtr.getLocation();
             IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
-            ((ServerWorld) w).spawnParticle(data, hitVec.x, hitVec.y, hitVec.z, 10,
-                    face.getXOffset() * 0.2, face.getYOffset() * 0.2, face.getZOffset() * 0.2, 0.05);
+            ((ServerWorld) w).sendParticles(data, hitVec.x, hitVec.y, hitVec.z, 10,
+                    face.getStepX() * 0.2, face.getStepY() * 0.2, face.getStepZ() * 0.2, 0.05);
         }
 
         // not taking speed upgrades into account here; being kind to players who miss a lot...

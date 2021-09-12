@@ -4,12 +4,12 @@ import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.ShapedPressurizableRecipe;
 import me.desht.pneumaticcraft.api.crafting.ShapedRecipeNoMirror;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.special.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraftforge.fml.RegistryObject;
@@ -80,8 +80,8 @@ public class ModRecipes {
             = RECIPES.register("patchouli_book_crafting", () -> new SpecialRecipeSerializer<>(PatchouliBookCrafting::new));
 
     public static final RegistryObject<ShapedPressurizableRecipe.Serializer> CRAFTING_SHAPED_PRESSURIZABLE
-            = RECIPES.register("crafting_shaped_pressurizable", ShapedPressurizableRecipe.Serializer::new);
+            = RECIPES.register("crafting_shaped_pressurizable", () -> ShapedPressurizableRecipe.SERIALIZER);
     public static final RegistryObject<ShapedRecipeNoMirror.Serializer> CRAFTING_SHAPED_NO_MIRROR
-            = RECIPES.register("crafting_shaped_no_mirror", ShapedRecipeNoMirror.Serializer::new);
+            = RECIPES.register("crafting_shaped_no_mirror", () -> ShapedRecipeNoMirror.SERIALIZER);
 
 }

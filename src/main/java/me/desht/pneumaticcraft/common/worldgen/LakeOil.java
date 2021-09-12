@@ -20,9 +20,9 @@ public class LakeOil extends Placement<ChanceConfig> {
         if (rand.nextInt(100) < chanceConfig.chance) {
             int x = rand.nextInt(16) + pos.getX();
             int z = rand.nextInt(16) + pos.getZ();
-            int y = rand.nextInt(rand.nextInt(helper.func_242891_a() - 8) + 8);
+            int y = rand.nextInt(rand.nextInt(helper.getGenDepth() - 8) + 8);
             // if position is not below sea level, reduced random chance for surface lake
-            if (y < helper.func_242895_b() || rand.nextInt(100) < PNCConfig.Common.General.surfaceOilGenerationChance) {
+            if (y < helper.getSeaLevel() || rand.nextInt(100) < PNCConfig.Common.General.surfaceOilGenerationChance) {
                 return Stream.of(new BlockPos(x, y, z));
             }
         }

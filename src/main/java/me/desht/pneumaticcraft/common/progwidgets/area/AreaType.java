@@ -44,7 +44,7 @@ public abstract class AreaType {
 
     /**
      * Whether or not the area added in addArea is deterministic (used to determine if stuff can be cached or not).
-     * @return
+     * @return true if deterministic, false otherwise
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isDeterministic(){

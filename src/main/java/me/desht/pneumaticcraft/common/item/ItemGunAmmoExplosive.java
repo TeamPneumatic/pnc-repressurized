@@ -34,7 +34,7 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.explosiveAmmoExplosionChance)) {
             Explosion.Mode mode = PNCConfig.Common.Minigun.explosiveAmmoTerrainDamage ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
-            minigun.getWorld().createExplosion(null, target.getPosX(), target.getPosY(), target.getPosZ(),
+            minigun.getWorld().explode(null, target.getX(), target.getY(), target.getZ(),
                     (float) PNCConfig.Common.Minigun.explosiveAmmoExplosionPower, mode);
         }
         return super.onTargetHit(minigun, ammo, target);
@@ -44,15 +44,15 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.explosiveAmmoExplosionChance)) {
             Explosion.Mode mode = PNCConfig.Common.Minigun.explosiveAmmoTerrainDamage ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
-            minigun.getWorld().createExplosion(null, brtr.getHitVec().x, brtr.getHitVec().y, brtr.getHitVec().z,
+            minigun.getWorld().explode(null, brtr.getLocation().x, brtr.getLocation().y, brtr.getLocation().z,
                     (float) PNCConfig.Common.Minigun.explosiveAmmoExplosionPower, mode);
         }
         return super.onBlockHit(minigun, ammo, brtr);
     }
 
     @Override
-    public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
-        super.addInformation(stack, world, infoList, extraInfo);
+    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
+        super.appendHoverText(stack, world, infoList, extraInfo);
         if (PNCConfig.Common.Minigun.explosiveAmmoTerrainDamage) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
         } else {

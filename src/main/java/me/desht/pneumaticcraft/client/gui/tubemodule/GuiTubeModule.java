@@ -11,7 +11,7 @@ public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticSc
     protected final M module;
 
     GuiTubeModule(M module) {
-        super(new ItemStack(module.getItem()).getDisplayName());
+        super(new ItemStack(module.getItem()).getHoverName());
 
         this.module = module;
         this.xSize = 183;
@@ -30,6 +30,6 @@ public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticSc
     }
 
     public static void openGuiForModule(TubeModule module) {
-        Minecraft.getInstance().displayGuiScreen(TubeModuleClientRegistry.createGUI(module));
+        Minecraft.getInstance().setScreen(TubeModuleClientRegistry.createGUI(module));
     }
 }

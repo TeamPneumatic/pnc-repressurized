@@ -18,7 +18,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronA
     public <I> List<Target<I>> getTargets(GuiAmadronAddTrade gui, I ingredient, boolean doStart) {
         if (ingredient instanceof ItemStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
-            for (Slot slot : gui.getContainer().inventorySlots) {
+            for (Slot slot : gui.getMenu().slots) {
                 if (slot instanceof SlotPhantom) {
                     //noinspection unchecked
                     builder.add((Target<I>) new ItemStackTarget((SlotPhantom) slot, gui));
@@ -27,7 +27,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronA
             return builder.build();
         } else if (ingredient instanceof FluidStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
-            for (Slot slot : gui.getContainer().inventorySlots) {
+            for (Slot slot : gui.getMenu().slots) {
                 if (slot instanceof SlotPhantom) {
                     //noinspection unchecked
                     builder.add((Target<I>) new FluidStackTarget((SlotPhantom) slot, gui));
@@ -53,7 +53,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronA
 
         @Override
         public Rectangle2d getArea() {
-            return new Rectangle2d(gui.getGuiLeft() + slot.xPos, gui.getGuiTop() + slot.yPos, 16, 16);
+            return new Rectangle2d(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
         }
     }
 
@@ -64,7 +64,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronA
 
         @Override
         public void accept(FluidStack ingredient) {
-            gui.setFluid(slot.slotNumber, ingredient.getFluid());
+            gui.setFluid(slot.getSlotIndex(), ingredient.getFluid());
         }
     }
 
@@ -75,7 +75,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronA
 
         @Override
         public void accept(ItemStack ingredient) {
-            gui.setStack(slot.slotNumber, ingredient);
+            gui.setStack(slot.getSlotIndex(), ingredient);
         }
     }
 }

@@ -43,7 +43,7 @@ public class BlockProgrammableController extends BlockPneumaticCraft {
      * when checking the bottom of the block.
      */
     @Override
-    public int getWeakPower(BlockState state, IBlockReader blockReader, BlockPos pos, Direction side) {
+    public int getSignal(BlockState state, IBlockReader blockReader, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockReader, pos, TileEntityProgrammableController.class)
                 .map(te -> te.getEmittingRedstone(side.getOpposite())).orElse(0);
     }
@@ -54,11 +54,11 @@ public class BlockProgrammableController extends BlockPneumaticCraft {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         if (entity instanceof PlayerEntity) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityProgrammableController.class)
                     .ifPresent(te -> te.setOwner((PlayerEntity) entity));
         }
-        super.onBlockPlacedBy(world, pos, state, entity, stack);
+        super.setPlacedBy(world, pos, state, entity, stack);
     }
 }

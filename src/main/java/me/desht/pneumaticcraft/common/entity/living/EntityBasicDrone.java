@@ -33,7 +33,7 @@ abstract class EntityBasicDrone extends EntityDrone {
     }
     
     static ProgWidgetArea standard16x16x16Area(BlockPos centerPos){
-        return ProgWidgetArea.fromPositions(centerPos.add(-16, -16, -16), centerPos.add(16, 16, 16));
+        return ProgWidgetArea.fromPositions(centerPos.offset(-16, -16, -16), centerPos.offset(16, 16, 16));
     }
    
 }

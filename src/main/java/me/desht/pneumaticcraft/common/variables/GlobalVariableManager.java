@@ -38,7 +38,7 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         if (EffectiveSide.get() == LogicalSide.CLIENT) {
             return CLIENT_INSTANCE;
         } else {
-            return getOverworld().getSavedData().getOrCreate(GlobalVariableManager::new, DATA_KEY);
+            return getOverworld().getDataStorage().computeIfAbsent(GlobalVariableManager::new, DATA_KEY);
         }
     }
 
@@ -48,7 +48,7 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
 
     private static ServerWorld getOverworld() {
         if (overworld == null) {
-            overworld = ServerLifecycleHooks.getCurrentServer().getWorld(World.OVERWORLD);
+            overworld = ServerLifecycleHooks.getCurrentServer().getLevel(World.OVERWORLD);
             if (overworld == null) {
                 throw new IllegalStateException("Overworld not initialized!");
             }
@@ -71,28 +71,28 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
     public void set(String varName, BlockPos pos) {
         if (!varName.isEmpty()) {
             globalVars.put(varName, pos);
-            markDirty();
+            setDirty();
         }
     }
 
     public void set(UUID ownerUUID, String varName, BlockPos coord) {
         if (!varName.isEmpty()) {
             playerVars.put(ownerUUID, varName, coord);
-            markDirty();
+            setDirty();
         }
     }
 
     public void set(String varName, ItemStack item) {
         if (!varName.isEmpty()) {
             globalItemVars.put(varName, item);
-            markDirty();
+            setDirty();
         }
     }
 
     public void set(UUID ownerUUID, String varName, ItemStack item) {
         if (!varName.isEmpty()) {
             playerItemVars.put(ownerUUID, varName, item);
-            markDirty();
+            setDirty();
         }
     }
 
@@ -131,7 +131,7 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
     }
 
     @Override
-    public void read(CompoundNBT tag) {
+    public void load(CompoundNBT tag) {
         globalVars.clear();
         ListNBT list = tag.getList("globalVars", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
@@ -147,12 +147,12 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         ListNBT list = tag.getList("globalItemVars", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             CompoundNBT t = list.getCompound(i);
-            map.put(t.getString("varName"), ItemStack.read(t.getCompound("item")));
+            map.put(t.getString("varName"), ItemStack.of(t.getCompound("item")));
         }
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
+    public CompoundNBT save(CompoundNBT tag) {
         ListNBT list = new ListNBT();
         for (Map.Entry<String, BlockPos> entry : globalVars.entrySet()) {
             CompoundNBT t = new CompoundNBT();
@@ -175,7 +175,7 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
             CompoundNBT t = new CompoundNBT();
             t.putString("varName", entry.getKey());
             CompoundNBT itemTag = new CompoundNBT();
-            entry.getValue().write(itemTag);
+            entry.getValue().save(itemTag);
             t.put("item", itemTag);
             list.add(t);
         }

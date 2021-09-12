@@ -28,7 +28,7 @@ public class AreaTypePyramid extends AreaType {
 
         @Override
         public String toString() {
-            return I18n.format(name);
+            return I18n.get(name);
         }
     }
 

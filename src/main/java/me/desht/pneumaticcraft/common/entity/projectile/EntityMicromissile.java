@@ -36,10 +36,10 @@ import java.util.List;
 public class EntityMicromissile extends ThrowableEntity {
     private static final double SEEK_RANGE = 24;
 
-    private static final DataParameter<Integer> TARGET_ID = EntityDataManager.createKey(EntityMicromissile.class, DataSerializers.VARINT);
-    private static final DataParameter<Float> MAX_VEL_SQ = EntityDataManager.createKey(EntityMicromissile.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> ACCEL = EntityDataManager.createKey(EntityMicromissile.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> TURN_SPEED = EntityDataManager.createKey(EntityMicromissile.class, DataSerializers.FLOAT);
+    private static final DataParameter<Integer> TARGET_ID = EntityDataManager.defineId(EntityMicromissile.class, DataSerializers.INT);
+    private static final DataParameter<Float> MAX_VEL_SQ = EntityDataManager.defineId(EntityMicromissile.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> ACCEL = EntityDataManager.defineId(EntityMicromissile.class, DataSerializers.FLOAT);
+    private static final DataParameter<Float> TURN_SPEED = EntityDataManager.defineId(EntityMicromissile.class, DataSerializers.FLOAT);
 
     private Entity targetEntity = null;
 
@@ -80,30 +80,30 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected void registerData() {
-        dataManager.register(TARGET_ID, 0);
-        dataManager.register(MAX_VEL_SQ, 0.5f);
-        dataManager.register(ACCEL, 1.05f);
-        dataManager.register(TURN_SPEED, 0.4f);
+    protected void defineSynchedData() {
+        entityData.define(TARGET_ID, 0);
+        entityData.define(MAX_VEL_SQ, 0.5f);
+        entityData.define(ACCEL, 1.05f);
+        entityData.define(TURN_SPEED, 0.4f);
     }
 
     @Override
-    public void notifyDataManagerChange(DataParameter<?> key) {
-        if (getEntityWorld().isRemote) {
+    public void onSyncedDataUpdated(DataParameter<?> key) {
+        if (getCommandSenderWorld().isClientSide) {
             if (key.equals(MAX_VEL_SQ)) {
-                maxVelocitySq = dataManager.get(MAX_VEL_SQ);
+                maxVelocitySq = entityData.get(MAX_VEL_SQ);
             } else if (key.equals(TARGET_ID)) {
-                int id = dataManager.get(TARGET_ID);
-                targetEntity = id > 0 ? getEntityWorld().getEntityByID(dataManager.get(TARGET_ID)) : null;
+                int id = entityData.get(TARGET_ID);
+                targetEntity = id > 0 ? getCommandSenderWorld().getEntity(entityData.get(TARGET_ID)) : null;
             } else if (key.equals(ACCEL)) {
-                accel = dataManager.get(ACCEL);
+                accel = entityData.get(ACCEL);
             } else if (key.equals(TURN_SPEED)) {
-                turnSpeed = dataManager.get(TURN_SPEED);
+                turnSpeed = entityData.get(TURN_SPEED);
             }
         }
     }
@@ -112,78 +112,78 @@ public class EntityMicromissile extends ThrowableEntity {
     public void tick() {
         super.tick();
 
-        if (ticksExisted == 1) {
-            if (getEntityWorld().isRemote) {
-                getEntityWorld().playSound(getPosX(), getPosY(), getPosZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.PLAYERS, 1.0f, 0.8f, true);
+        if (tickCount == 1) {
+            if (getCommandSenderWorld().isClientSide) {
+                getCommandSenderWorld().playLocalSound(getX(), getY(), getZ(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundCategory.PLAYERS, 1.0f, 0.8f, true);
             } else {
-                dataManager.set(MAX_VEL_SQ, maxVelocitySq);
-                dataManager.set(ACCEL, accel);
-                dataManager.set(TURN_SPEED, turnSpeed);
+                entityData.set(MAX_VEL_SQ, maxVelocitySq);
+                entityData.set(ACCEL, accel);
+                entityData.set(TURN_SPEED, turnSpeed);
             }
         }
 
-        if (ticksExisted > PNCConfig.Common.Micromissiles.lifetime) {
+        if (tickCount > PNCConfig.Common.Micromissiles.lifetime) {
             outOfFuel = true;
         }
 
         if (!outOfFuel) {
             // negate default slowdown of projectiles applied in superclass
             if (this.isInWater()) {
-                setMotion(getMotion().scale(1.25));
+                setDeltaMovement(getDeltaMovement().scale(1.25));
             } else {
-                setMotion(getMotion().scale(1 / 0.99));
+                setDeltaMovement(getDeltaMovement().scale(1 / 0.99));
             }
 
-            if ((targetEntity == null || !targetEntity.isAlive()) && fireMode == FireMode.SMART && !getEntityWorld().isRemote && (ticksExisted & 0x3) == 0) {
+            if ((targetEntity == null || !targetEntity.isAlive()) && fireMode == FireMode.SMART && !getCommandSenderWorld().isClientSide && (tickCount & 0x3) == 0) {
                 targetEntity = tryFindNewTarget();
             }
 
             if (targetEntity != null) {
                 // turn toward the target
-                Vector3d diff = targetEntity.getPositionVec().add(0, targetEntity.getEyeHeight(), 0).subtract(getPositionVec()).normalize().scale(turnSpeed);
-                setMotion(getMotion().add(diff));
+                Vector3d diff = targetEntity.position().add(0, targetEntity.getEyeHeight(), 0).subtract(position()).normalize().scale(turnSpeed);
+                setDeltaMovement(getDeltaMovement().add(diff));
             }
 
             // accelerate up to max velocity but cap there
-            double velSq = getMotion().lengthSquared();//motionX * motionX + motionY * motionY + motionZ * motionZ;
+            double velSq = getDeltaMovement().lengthSqr();//motionX * motionX + motionY * motionY + motionZ * motionZ;
             double mul = velSq > maxVelocitySq ? maxVelocitySq / velSq : accel;
-            setMotion(getMotion().scale(mul));
+            setDeltaMovement(getDeltaMovement().scale(mul));
 
-            if (getEntityWorld().isRemote && getEntityWorld().rand.nextBoolean()) {
-                Vector3d m = getMotion();
-                world.addParticle(AirParticleData.DENSE, getPosX(), getPosY(), getPosZ(), -m.x/2, -m.y/2, -m.z/2);
+            if (getCommandSenderWorld().isClientSide && getCommandSenderWorld().random.nextBoolean()) {
+                Vector3d m = getDeltaMovement();
+                level.addParticle(AirParticleData.DENSE, getX(), getY(), getZ(), -m.x/2, -m.y/2, -m.z/2);
             }
         }
     }
 
     private Entity tryFindNewTarget() {
-        AxisAlignedBB aabb = new AxisAlignedBB(getPosX(), getPosY(), getPosZ(), getPosX(), getPosY(), getPosZ()).grow(SEEK_RANGE);
-        List<Entity> l = getEntityWorld().getEntitiesWithinAABB(LivingEntity.class, aabb, EntityPredicates.IS_ALIVE);
+        AxisAlignedBB aabb = new AxisAlignedBB(getX(), getY(), getZ(), getX(), getY(), getZ()).inflate(SEEK_RANGE);
+        List<Entity> l = getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, aabb, EntityPredicates.ENTITY_STILL_ALIVE);
         l.sort(new TargetSorter());
         Entity tgt = null;
         // find the closest entity which matches this missile's entity filter
         for (Entity e : l) {
-            if (isValidTarget(e) && e.getDistanceSq(this) < SEEK_RANGE * SEEK_RANGE) {
-                RayTraceContext ctx = new RayTraceContext(getPositionVec(), e.getPositionVec().add(0, e.getEyeHeight(), 0), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, e);
-                RayTraceResult res = getEntityWorld().rayTraceBlocks(ctx);
+            if (isValidTarget(e) && e.distanceToSqr(this) < SEEK_RANGE * SEEK_RANGE) {
+                RayTraceContext ctx = new RayTraceContext(position(), e.position().add(0, e.getEyeHeight(), 0), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, e);
+                RayTraceResult res = getCommandSenderWorld().clip(ctx);
                 if (res.getType() == RayTraceResult.Type.MISS || res.getType() == RayTraceResult.Type.ENTITY) {
                     tgt = e;
                     break;
                 }
             }
         }
-        dataManager.set(TARGET_ID, tgt == null ? 0 : tgt.getEntityId());
+        entityData.set(TARGET_ID, tgt == null ? 0 : tgt.getId());
         return tgt;
     }
 
     public boolean isValidTarget(Entity e) {
         // never target the player who fired the missile or any of their pets/drones
-        Entity thrower = func_234616_v_();  // getThrower()
+        Entity thrower = getOwner();  // getThrower()
         if (thrower != null) {
             if (e.equals(thrower)
                     || e instanceof TameableEntity && thrower.equals(((TameableEntity) e).getOwner())
-                    || e instanceof EntityDrone && thrower.getUniqueID().equals(((EntityDrone) e).getOwnerUUID())
-                    || e instanceof HorseEntity && thrower.getUniqueID().equals(((HorseEntity) e).getOwnerUniqueId())) {
+                    || e instanceof EntityDrone && thrower.getUUID().equals(((EntityDrone) e).getOwnerUUID())
+                    || e instanceof HorseEntity && thrower.getUUID().equals(((HorseEntity) e).getOwnerUUID())) {
                 return false;
             }
         }
@@ -196,8 +196,8 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     @Override
-    protected void onImpact(RayTraceResult result) {
-        if (ticksExisted > 5 && !getEntityWorld().isRemote && isAlive()) {
+    protected void onHit(RayTraceResult result) {
+        if (tickCount > 5 && !getCommandSenderWorld().isClientSide && isAlive()) {
             explode(result instanceof EntityRayTraceResult ? ((EntityRayTraceResult) result).getEntity() : null);
         }
     }
@@ -207,26 +207,26 @@ public class EntityMicromissile extends ThrowableEntity {
         Explosion.Mode mode = PNCConfig.Common.Micromissiles.damageTerrain ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
         double x, y, z;
         if (e == null) {
-            x = getPosX();
-            y = getPosY();
-            z = getPosZ();
+            x = getX();
+            y = getY();
+            z = getZ();
         } else {
             // make the explosion closer to the target entity (a fast projectile's position could be a little distance away)
-            x = MathHelper.lerp(0.25f, e.getPosX(), getPosX());
-            y = MathHelper.lerp(0.25f, e.getPosY(), getPosY());
-            z = MathHelper.lerp(0.25f, e.getPosZ(), getPosZ());
+            x = MathHelper.lerp(0.25f, e.getX(), getX());
+            y = MathHelper.lerp(0.25f, e.getY(), getY());
+            z = MathHelper.lerp(0.25f, e.getZ(), getZ());
         }
-        getEntityWorld().createExplosion(this, x, y, z, (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
+        getCommandSenderWorld().explode(this, x, y, z, (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
     }
 
     // shoot()
     @Override
-    public void func_234612_a_(Entity entityThrower, float pitch, float yaw, float pitchOffset, float velocity, float inaccuracy) {
+    public void shootFromRotation(Entity entityThrower, float pitch, float yaw, float pitchOffset, float velocity, float inaccuracy) {
         float x = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
         float y = -MathHelper.sin(pitch * 0.017453292F);
         float z = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
         this.shoot(x, y, z, velocity, 0f);
-        setMotion(getMotion().add(entityThrower.getMotion().x, 0, entityThrower.getMotion().z));
+        setDeltaMovement(getDeltaMovement().add(entityThrower.getDeltaMovement().x, 0, entityThrower.getDeltaMovement().z));
     }
 
     @Override
@@ -235,28 +235,28 @@ public class EntityMicromissile extends ThrowableEntity {
         x = x / f * velocity;
         y = y / f * velocity;
         z = z / f * velocity;
-        setMotion(x, y, z);
+        setDeltaMovement(x, y, z);
 
         float f1 = MathHelper.sqrt(x * x + z * z);
-        this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
-        this.rotationPitch = (float)(MathHelper.atan2(y, f1) * (180D / Math.PI));
-        this.prevRotationYaw = this.rotationYaw;
-        this.prevRotationPitch = this.rotationPitch;
+        this.yRot = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
+        this.xRot = (float)(MathHelper.atan2(y, f1) * (180D / Math.PI));
+        this.yRotO = this.yRot;
+        this.xRotO = this.xRot;
     }
 
     @Override
-    protected float getGravityVelocity() {
-        return outOfFuel ? super.getGravityVelocity() : 0f;
+    protected float getGravity() {
+        return outOfFuel ? super.getGravity() : 0f;
     }
 
     @Override
-    public boolean hasNoGravity() {
+    public boolean isNoGravity() {
         return !outOfFuel;
     }
 
     @Override
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putFloat("turnSpeed", turnSpeed);
         compound.putFloat("explosionScaling", explosionPower);
         compound.putFloat("topSpeedSq", maxVelocitySq);
@@ -264,8 +264,8 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     @Override
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         turnSpeed = compound.getFloat("turnSpeed");
         explosionPower = compound.getFloat("explosionScaling");
         maxVelocitySq = compound.getFloat("topSpeedSq");
@@ -280,12 +280,12 @@ public class EntityMicromissile extends ThrowableEntity {
         private final Vector3d vec;
 
         TargetSorter() {
-            vec = getPositionVec();
+            vec = position();
         }
 
         @Override
         public int compare(Entity e1, Entity e2) {
-            return Double.compare(vec.squareDistanceTo(e1.getPositionVec()), vec.squareDistanceTo(e2.getPositionVec()));
+            return Double.compare(vec.distanceToSqr(e1.position()), vec.distanceToSqr(e2.position()));
         }
     }
 }

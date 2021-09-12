@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnIndicatorParticles;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
@@ -53,7 +54,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
      */
     public DroneAIBlockInteraction(IDroneBase drone, W progWidget) {
         this.drone = drone;
-        setMutexFlags(EnumSet.allOf(Flag.class)); // exclusive to all other AI tasks
+        setFlags(EnumSet.allOf(Flag.class)); // exclusive to all other AI tasks
         this.progWidget = progWidget;
         order = progWidget instanceof IBlockOrdered ? ((IBlockOrdered) progWidget).getOrder() : Ordering.CLOSEST;
         area = progWidget.getCachedAreaList();
@@ -75,7 +76,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
      * Returns whether the EntityAIBase should begin execution.
      */
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         if (aborted || maxActions >= 0 && totalActions >= maxActions) {
             return false;
         } else {
@@ -138,7 +139,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean shouldContinueExecuting() {
+    public boolean canContinueToUse() {
         if (aborted) return false;
         if (searching) {
             if (!sorter.isDone()) return true; // wait until the area is sorted according to the given ordering
@@ -189,7 +190,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 if (respectClaims()) {
                     DroneClaimManager.getInstance(drone.world()).claim(curPos);
                 }
-                double distSq = drone.getDronePos().squareDistanceTo(Vector3d.copyCentered(curPos));
+                double distSq = drone.getDronePos().distanceToSqr(Vector3d.atCenterOf(curPos));
                 if (!moveToPositions() || distSq < (moveIntoBlock() ? 1 : 4)) {  // 1 or 2 blocks
                     return doBlockInteraction(curPos, distSq);
                 }
@@ -208,8 +209,8 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         } else {
             ISidedWidget w = progWidget instanceof ISidedWidget ? (ISidedWidget) progWidget : null;
             for (Direction dir : DirectionUtil.VALUES) {
-                BlockPos pos2 = curPos.offset(dir);
-                if (drone.getDronePos().squareDistanceTo(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5) < 0.5) {
+                BlockPos pos2 = curPos.relative(dir);
+                if (drone.getDronePos().distanceToSqr(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5) < 0.5) {
                     // consider that close enough already
                     return movedToBlockOK(pos);
                 }
@@ -226,7 +227,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private boolean blockAllowsMovement(ICollisionReader world, BlockPos pos, BlockState state) {
         return state.getBlock() instanceof FlowingFluidBlock ?
                 drone.canMoveIntoFluid(((FlowingFluidBlock) state.getBlock()).getFluid()) :
-                world.getBlockState(pos).allowsMovement(world, pos, PathType.AIR);
+                world.getBlockState(pos).isPathfindable(world, pos, PathType.AIR);
     }
 
     private boolean movedToBlockOK(BlockPos pos) {
@@ -271,10 +272,9 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private void indicateToListeningPlayers(List<BlockPos> pos) {
         if (!pos.isEmpty()) {
             for (ServerPlayerEntity player : drone.getDebugger().getDebuggingPlayers()) {
-                if (player.getDistanceSq(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < DRONE_DEBUG_PARTICLE_RANGE_SQ) {
+                if (player.distanceToSqr(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < DRONE_DEBUG_PARTICLE_RANGE_SQ) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                    if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()
-                            && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
+                    if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)
                             && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0) {
                         NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), player);
                     }

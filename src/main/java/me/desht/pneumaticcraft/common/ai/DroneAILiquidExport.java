@@ -41,7 +41,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
             abort();
             return false;
         } else {
-            TileEntity te = drone.world().getTileEntity(pos);
+            TileEntity te = drone.world().getBlockEntity(pos);
             if (te != null) {
                 FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
                 if (!exportedFluid.isEmpty() && progWidget.isFluidValid(exportedFluid.getFluid())) {

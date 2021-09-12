@@ -25,7 +25,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
     private final int currentAir;
 
     public PacketUpdatePressureBlock(TileEntity te, Direction handlerDir, Direction leakDir, int currentAir) {
-        super(te.getPos());
+        super(te.getBlockPos());
 
         this.handlerDir = handlerDir;
         this.leakDir = leakDir;
@@ -36,17 +36,17 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
         super(buffer);
         this.currentAir = buffer.readInt();
         byte idx = buffer.readByte();
-        this.handlerDir = idx >= 0 && idx < 6 ? Direction.byIndex(idx) : null;
+        this.handlerDir = idx >= 0 && idx < 6 ? Direction.from3DDataValue(idx) : null;
         idx = buffer.readByte();
-        this.leakDir = idx >= 0 && idx < 6 ? Direction.byIndex(idx) : null;
+        this.leakDir = idx >= 0 && idx < 6 ? Direction.from3DDataValue(idx) : null;
     }
 
     @Override
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
         buf.writeInt(currentAir);
-        buf.writeByte(handlerDir == null ? NO_DIRECTION : handlerDir.getIndex());
-        buf.writeByte(leakDir == null ? NO_DIRECTION : leakDir.getIndex());
+        buf.writeByte(handlerDir == null ? NO_DIRECTION : handlerDir.get3DDataValue());
+        buf.writeByte(leakDir == null ? NO_DIRECTION : leakDir.get3DDataValue());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

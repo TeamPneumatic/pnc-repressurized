@@ -26,19 +26,19 @@ public class MovingSoundMinigun extends TickableSound {
         init(entity instanceof EntityDrone ? (float) PNCConfig.Client.Sound.minigunVolumeDrone : (float) PNCConfig.Client.Sound.minigunVolumeHeld);
     }
 
-    MovingSoundMinigun(TileEntity tileEntity) {
+    MovingSoundMinigun(TileEntity te) {
         super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
         this.entity = null;
-        this.tileEntity = tileEntity;
-        x = tileEntity.getPos().getX();
-        y = tileEntity.getPos().getY();
-        z = tileEntity.getPos().getZ();
+        this.tileEntity = te;
+        x = tileEntity.getBlockPos().getX();
+        y = tileEntity.getBlockPos().getY();
+        z = tileEntity.getBlockPos().getZ();
         init((float) PNCConfig.Client.Sound.minigunVolumeSentryTurret);
     }
 
     private void init(float volume) {
-        this.repeat = true;
-        this.repeatDelay = 0;
+        this.looping = true;
+        this.delay = 0;
         this.volume = volume;
     }
 
@@ -50,12 +50,12 @@ public class MovingSoundMinigun extends TickableSound {
             if (!entity.isAlive()) {
                 finished = true;
             } else {
-                x = (float) entity.getPosX();
-                y = (float) entity.getPosY();
-                z = (float) entity.getPosZ();
+                x = (float) entity.getX();
+                y = (float) entity.getY();
+                z = (float) entity.getZ();
                 if (entity instanceof PlayerEntity) {
                     PlayerEntity player = (PlayerEntity) entity;
-                    ItemStack curItem = player.getHeldItemMainhand();
+                    ItemStack curItem = player.getMainHandItem();
                     if (curItem.getItem() == ModItems.MINIGUN.get()) {
                         minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
                     }
@@ -79,7 +79,7 @@ public class MovingSoundMinigun extends TickableSound {
     }
 
     @Override
-    public boolean isDonePlaying() {
+    public boolean isStopped() {
         return finished;
     }
 }

@@ -33,49 +33,49 @@ public class ItemCamoApplicator extends ItemPressurizable {
     }
 
     @Override
-    public ITextComponent getDisplayName(ItemStack stack) {
+    public ITextComponent getName(ItemStack stack) {
         BlockState camoState = getCamoState(stack);
-        ITextComponent disp = super.getDisplayName(stack);
+        ITextComponent disp = super.getName(stack);
         if (camoState != null) {
-            return disp.deepCopy().appendString(": ").append(getCamoStateDisplayName(camoState)).mergeStyle(TextFormatting.YELLOW);
+            return disp.copy().append(": ").append(getCamoStateDisplayName(camoState)).withStyle(TextFormatting.YELLOW);
         } else {
             return disp;
         }
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (playerIn.isSneaking()) {
-            if (!worldIn.isRemote) {
-                setCamoState(playerIn.getHeldItem(handIn), null);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (playerIn.isShiftKeyDown()) {
+            if (!worldIn.isClientSide) {
+                setCamoState(playerIn.getItemInHand(handIn), null);
             } else {
-                if (getCamoState(playerIn.getHeldItem(handIn)) != null) {
+                if (getCamoState(playerIn.getItemInHand(handIn)) != null) {
                     playerIn.playSound(ModSounds.CHIRP.get(), 1.0f, 1.0f);
                 }
             }
-            return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
+            return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getItemInHand(handIn));
         }
-        return new ActionResult<>(ActionResultType.PASS, playerIn.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.PASS, playerIn.getItemInHand(handIn));
     }
 
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext ctx) {
-        World world = ctx.getWorld();
-        BlockPos pos = ctx.getPos();
+        World world = ctx.getLevel();
+        BlockPos pos = ctx.getClickedPos();
         PlayerEntity player = ctx.getPlayer();
 
-        if (!world.isRemote) {
-            if (player.isSneaking()) {
+        if (!world.isClientSide) {
+            if (player.isShiftKeyDown()) {
                 // sneak-right-click: clear camo
                 setCamoState(stack, null);
-                world.playSound(null, ctx.getPos(), ModSounds.CHIRP.get(), SoundCategory.PLAYERS, 1f, 1f);
+                world.playSound(null, ctx.getClickedPos(), ModSounds.CHIRP.get(), SoundCategory.PLAYERS, 1f, 1f);
             } else {
-                TileEntity te = world.getTileEntity(pos);
+                TileEntity te = world.getBlockEntity(pos);
                 BlockState state = world.getBlockState(pos);
                 if (!(te instanceof ICamouflageableTE)) {
                     // right-click non-camo block: copy its state
                     setCamoState(stack, state);
-                    world.playSound(null, ctx.getPos(), ModSounds.CHIRP.get(), SoundCategory.PLAYERS, 1f, 2f);
+                    world.playSound(null, ctx.getClickedPos(), ModSounds.CHIRP.get(), SoundCategory.PLAYERS, 1f, 2f);
                 } else {
                     // right-click camo block: try to apply (or remove) camo
 
@@ -89,7 +89,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     BlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
 
                     if (existingCamo == newCamo) {
-                        world.playSound(null, ctx.getPos(), SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, 1f, 2f);
+                        world.playSound(null, ctx.getClickedPos(), SoundEvents.COMPARATOR_CLICK, SoundCategory.PLAYERS, 1f, 2f);
                         return ActionResultType.SUCCESS;
                     }
 
@@ -97,9 +97,9 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     if (newCamo != null && !player.isCreative()) {
                         ItemStack camoStack = ICamouflageableTE.getStackForState(newCamo);
                         if (!PneumaticCraftUtils.consumeInventoryItem(player.inventory, camoStack)) {
-                            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.camo.notEnoughBlocks")
-                                    .append(camoStack.getDisplayName())
-                                    .mergeStyle(TextFormatting.RED), true);
+                            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.camo.notEnoughBlocks")
+                                    .append(camoStack.getHoverName())
+                                    .withStyle(TextFormatting.RED), true);
                             NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS,
                                     pos, 1.0F, 2.0F, true), world, pos);
                             return ActionResultType.FAIL;
@@ -110,8 +110,8 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     if (existingCamo != null && !player.isCreative()) {
                         ItemStack camoStack = ICamouflageableTE.getStackForState(existingCamo);
                         ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
-                        world.addEntity(entity);
-                        entity.onCollideWithPlayer(player);
+                        world.addFreshEntity(entity);
+                        entity.playerTouch(player);
                     }
 
                     // and apply the new camouflage
@@ -119,14 +119,14 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     ((ICamouflageableTE) te).setCamouflage(newCamo);
                     BlockState particleState = newCamo == null ? existingCamo : newCamo;
                     if (particleState != null) {
-                        player.getEntityWorld().playEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getStateId(particleState));
+                        player.getCommandSenderWorld().levelEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getId(particleState));
                     }
                     NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, pos, 1.0F, 1.0F, true), world, pos);
                 }
             }
         }
 
-        return ActionResultType.func_233537_a_(world.isRemote);
+        return ActionResultType.sidedSuccess(world.isClientSide);
     }
 
     private static void setCamoState(ItemStack stack, BlockState state) {
@@ -150,7 +150,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
 
     public static ITextComponent getCamoStateDisplayName(BlockState state) {
         if (state != null) {
-            return new ItemStack(state.getBlock().asItem()).getDisplayName();
+            return new ItemStack(state.getBlock().asItem()).getHoverName();
         }
         return new StringTextComponent("<?>");
     }

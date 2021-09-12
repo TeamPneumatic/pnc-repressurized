@@ -18,7 +18,6 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -29,25 +28,15 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.ToIntFunction;
-import java.util.stream.Stream;
 
 import static net.minecraft.state.properties.BlockStateProperties.LIT;
 
 public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
-//    private static final VoxelShape BASE1 = makeCuboidShape(3, 0, 2, 13, 1, 14);
-//    private static final VoxelShape BASE2 = makeCuboidShape(2, 0, 3, 14, 1, 13);
-//    private static final VoxelShape BASE3 = makeCuboidShape(4, 1, 3, 12, 2, 13);
-//    private static final VoxelShape BASE4 = makeCuboidShape(3, 1, 4, 13, 2, 12);
-    private static final VoxelShape SHAPE_UP = Stream.of(
-            Block.makeCuboidShape(3, 0, 3, 13, 1, 13),
-            Block.makeCuboidShape(4, 1, 4, 12, 2, 12),
-            Block.makeCuboidShape(6.15, 2.25, 4.75, 6.65, 3.5, 11.25),
-            Block.makeCuboidShape(5, 2.25, 5, 11, 3.25, 11),
-            Block.makeCuboidShape(4.75, 1.25, 4.75, 11.25, 2.5, 11.25),
-            Block.makeCuboidShape(9.35, 2.25, 4.75, 9.85, 3.5, 11.25),
-            Block.makeCuboidShape(4.75, 2.25, 9.35, 11.25, 3.5, 9.85),
-            Block.makeCuboidShape(4.75, 2.25, 6.15, 11.25, 3.5, 6.65)
-        ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+    private static final VoxelShape BASE1 = box(3, 0, 2, 13, 1, 14);
+    private static final VoxelShape BASE2 = box(2, 0, 3, 14, 1, 13);
+    private static final VoxelShape BASE3 = box(4, 1, 3, 12, 2, 13);
+    private static final VoxelShape BASE4 = box(3, 1, 4, 13, 2, 12);
+    private static final VoxelShape SHAPE_UP = VoxelShapes.or(BASE1, BASE2, BASE3, BASE4);
     private static final VoxelShape SHAPE_NORTH = VoxelShapeUtils.rotateX(SHAPE_UP, 270);
     private static final VoxelShape SHAPE_DOWN = VoxelShapeUtils.rotateX(SHAPE_NORTH, 270);
     private static final VoxelShape SHAPE_SOUTH = VoxelShapeUtils.rotateX(SHAPE_UP, 90);
@@ -67,42 +56,42 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
     private final boolean inverted;
 
     public BlockWallLamp(DyeColor color, boolean inverted) {
-        super(ModBlocks.defaultProps().setLightLevel(getLightValue()));
+        super(ModBlocks.defaultProps().lightLevel(getLightValue()));
 
         this.color = color;
         this.inverted = inverted;
 
-        setDefaultState(getStateContainer().getBaseState().with(LIT, inverted));
+        registerDefaultState(getStateDefinition().any().setValue(LIT, inverted));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(LIT);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return SHAPES[state.get(directionProperty()).getIndex()];
+        return SHAPES[state.getValue(directionProperty()).get3DDataValue()];
     }
 
     @Override
     public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
-        if (state.get(LIT) && !shouldLight(worldIn, pos)) {
-            worldIn.setBlockState(pos, state.func_235896_a_(LIT), Constants.BlockFlags.BLOCK_UPDATE);
+        if (state.getValue(LIT) && !shouldLight(worldIn, pos)) {
+            worldIn.setBlock(pos, state.cycle(LIT), Constants.BlockFlags.BLOCK_UPDATE);
         }
     }
 
     @Override
     public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        if (!worldIn.isRemote) {
-            boolean isLit = state.get(LIT);
+        if (!worldIn.isClientSide) {
+            boolean isLit = state.getValue(LIT);
             if (isLit != shouldLight(worldIn, pos)) {
                 if (isLit) {
-                    worldIn.getPendingBlockTicks().scheduleTick(pos, this, 4);
+                    worldIn.getBlockTicks().scheduleTick(pos, this, 4);
                 } else {
-                    worldIn.setBlockState(pos, state.func_235896_a_(LIT), Constants.BlockFlags.BLOCK_UPDATE);
+                    worldIn.setBlock(pos, state.cycle(LIT), Constants.BlockFlags.BLOCK_UPDATE);
                 }
             }
         }
@@ -111,21 +100,21 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
     @Override
     @Nullable
     public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return getDefaultState()
-                .with(directionProperty(), context.getFace())
-                .with(LIT, shouldLight(context.getWorld(), context.getPos()));
+        return defaultBlockState()
+                .setValue(directionProperty(), context.getClickedFace())
+                .setValue(LIT, shouldLight(context.getLevel(), context.getClickedPos()));
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        return getRotation(stateIn).getOpposite() == facing && !stateIn.isValidPosition(worldIn, currentPos) ?
-                Blocks.AIR.getDefaultState() :
-                super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        return getRotation(stateIn).getOpposite() == facing && !stateIn.canSurvive(worldIn, currentPos) ?
+                Blocks.AIR.defaultBlockState() :
+                super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
-    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-        return HorizontalFaceBlock.isSideSolidForDirection(worldIn, pos, getRotation(state).getOpposite());
+    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+        return HorizontalFaceBlock.canAttach(worldIn, pos, getRotation(state).getOpposite());
     }
 
     @Override
@@ -146,17 +135,17 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
     @Override
     public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
         if (tintIndex == 1 && state != null) {
-            return state.get(LIT) ? color.getColorValue() : DARKENED[color.ordinal()];
+            return state.getValue(LIT) ? color.getColorValue() : DARKENED[color.ordinal()];
         }
         return 0xFFFFFFFF;
     }
 
     private boolean shouldLight(World world, BlockPos pos) {
-        return inverted != world.isBlockPowered(pos);
+        return inverted != world.hasNeighborSignal(pos);
     }
 
     private static ToIntFunction<BlockState> getLightValue() {
-        return (state) -> state.get(BlockStateProperties.LIT) ? 15 : 0;
+        return (state) -> state.getValue(BlockStateProperties.LIT) ? 15 : 0;
     }
 
     public static class ItemWallLamp extends BlockItem implements ICustomTooltipName {

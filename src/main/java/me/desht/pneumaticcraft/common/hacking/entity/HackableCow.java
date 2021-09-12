@@ -12,7 +12,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableCow implements IHackableEntity {
@@ -44,14 +44,14 @@ public class HackableCow implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        if (!entity.world.isRemote) {
+        if (!entity.level.isClientSide) {
             entity.remove();
-            MooshroomEntity entitycow = new MooshroomEntity(EntityType.MOOSHROOM, entity.world);
-            entitycow.setLocationAndAngles(entity.getPosX(), entity.getPosY(), entity.getPosZ(), entity.rotationYaw, entity.rotationPitch);
+            MooshroomEntity entitycow = new MooshroomEntity(EntityType.MOOSHROOM, entity.level);
+            entitycow.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot);
             entitycow.setHealth(((CowEntity) entity).getHealth());
-            entitycow.renderYawOffset = ((CowEntity) entity).renderYawOffset;
-            entity.world.addEntity(entitycow);
-            entity.world.addParticle(ParticleTypes.EXPLOSION, entity.getPosX(), entity.getPosY() + entity.getHeight() / 2.0F, entity.getPosZ(), 0.0D, 0.0D, 0.0D);
+            entitycow.yBodyRot = ((CowEntity) entity).yBodyRot;
+            entity.level.addFreshEntity(entitycow);
+            entity.level.addParticle(ParticleTypes.EXPLOSION, entity.getX(), entity.getY() + entity.getBbHeight() / 2.0F, entity.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 

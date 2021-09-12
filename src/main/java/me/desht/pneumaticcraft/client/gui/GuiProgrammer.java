@@ -72,7 +72,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private final List<RemovingWidget> removingWidgets = new ArrayList<>();
     private BitSet filteredSpawnWidgets;
 
-    private GuiUnitProgrammer programmerUnit;
+    private ProgrammerWidgetAreaRenderer programmerUnit;
     private IProgWidget draggingWidget;
     private int lastMouseX, lastMouseY;
     private double dragMouseStartX, dragMouseStartY;
@@ -97,8 +97,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         super(container, inv, displayString);
 
         hiRes = container.isHiRes();
-        xSize = hiRes ? 700 : 350;
-        ySize = hiRes ? 512 : 256;
+        imageWidth = hiRes ? 700 : 350;
+        imageHeight = hiRes ? 512 : 256;
     }
 
     @Override
@@ -125,12 +125,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
 
         Rectangle2d bounds = getProgrammerBounds();
-        programmerUnit = new GuiUnitProgrammer(te.progWidgets, guiLeft, guiTop, width, height,
+        programmerUnit = new ProgrammerWidgetAreaRenderer(this, te.progWidgets, leftPos, topPos,
                 bounds, te.translatedX, te.translatedY, te.zoomState);
         addButton(programmerUnit.getScrollBar());
 
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
 
         // right and bottom edges of the programming area
         int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
@@ -172,16 +172,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(showFlow = new WidgetCheckBox(xStart + 5, yStart + yBottom + 61, 0xFF404040,
                 xlate("pneumaticcraft.gui.programmer.checkbox.showFlow")).setChecked(te.showFlow));
 
-        WidgetButtonExtended pastebinButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 44, 20, 20, "",
+        WidgetButtonExtended pastebinButton = new WidgetButtonExtended(leftPos - 24, topPos + 44, 20, 20, "",
                 b -> pastebin());
         pastebinButton.setTooltipText(xlate("pneumaticcraft.gui.remote.button.pastebinButton"));
         pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         addButton(pastebinButton);
 
-        undoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 2, 20, 20, "").withTag("undo");
-        redoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 23, 20, 20, "").withTag("redo");
-        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 65, 20, 20, StringTextComponent.EMPTY, b -> clear());
-        convertToRelativeButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 86, 20, 20, "R", b -> convertToRelative());
+        undoButton = new WidgetButtonExtended(leftPos - 24, topPos + 2, 20, 20, "").withTag("undo");
+        redoButton = new WidgetButtonExtended(leftPos - 24, topPos + 23, 20, 20, "").withTag("redo");
+        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(leftPos - 24, topPos + 65, 20, 20, StringTextComponent.EMPTY, b -> clear());
+        convertToRelativeButton = new WidgetButtonExtended(leftPos - 24, topPos + 86, 20, 20, "R", b -> convertToRelative());
 
         undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
@@ -196,19 +196,19 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(clearAllButton);
         addButton(convertToRelativeButton);
 
-        addLabel(title, guiLeft + 7, guiTop + 5, 0xFF404040);
+        addLabel(title, leftPos + 7, topPos + 5, 0xFF404040);
 
-        nameField = new WidgetTextField(font, guiLeft + xRight - 99, guiTop + 5, 98, font.FONT_HEIGHT);
+        nameField = new WidgetTextField(font, leftPos + xRight - 99, topPos + 5, 98, font.lineHeight);
         nameField.setResponder(s -> updateDroneName());
         addButton(nameField);
 
-        filterField = new FilterTextField(font, guiLeft + 78, guiTop + 26, 100, font.FONT_HEIGHT);
+        filterField = new FilterTextField(font, leftPos + 78, topPos + 26, 100, font.lineHeight);
         filterField.setResponder(s -> filterSpawnWidgets());
 
         addButton(filterField);
 
         ITextComponent name = xlate("pneumaticcraft.gui.programmer.name");
-        addLabel(name, guiLeft + xRight - 102 - font.getStringPropertyWidth(name), guiTop + 5, 0xFF404040);
+        addLabel(name, leftPos + xRight - 102 - font.width(name), topPos + 5, 0xFF404040);
 
         updateVisibleProgWidgets();
 
@@ -226,9 +226,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     public static void onCloseFromContainer() {
-        if (Minecraft.getInstance().currentScreen instanceof GuiProgrammer) {
-            GuiProgrammer p = (GuiProgrammer) Minecraft.getInstance().currentScreen;
-            p.onClose();
+        if (Minecraft.getInstance().screen instanceof GuiProgrammer) {
+            GuiProgrammer p = (GuiProgrammer) Minecraft.getInstance().screen;
+            p.removed();
         }
     }
 
@@ -266,7 +266,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 if (showAllWidgets || page == widgetPage) {
                     visibleSpawnWidgets.add(widget);
                 }
-                if (y > ySize - (hiRes ? 260 : 160)) {
+                if (y > imageHeight - (hiRes ? 260 : 160)) {
                     y = 0;
                     x += WIDGET_X_SPACING;
                     page++;
@@ -277,7 +277,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
         maxPage++;
 
-        filterField.x = Math.min(guiLeft + getWidgetTrayRight() - 25 - filterField.getWidth(), guiLeft + getWidgetTrayRight() - (maxPage * WIDGET_X_SPACING) - 2);
+        filterField.x = Math.min(leftPos + getWidgetTrayRight() - 25 - filterField.getWidth(), leftPos + getWidgetTrayRight() - (maxPage * WIDGET_X_SPACING) - 2);
         filterSpawnWidgets();
 
         if (widgetPage >= maxPage) {
@@ -287,12 +287,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     private void filterSpawnWidgets() {
-        String filterText = filterField.getText().trim();
+        String filterText = filterField.getValue().trim();
         if (!visibleSpawnWidgets.isEmpty() && !filterText.isEmpty()) {
             filteredSpawnWidgets = new BitSet(visibleSpawnWidgets.size());
             for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
                 IProgWidget widget = visibleSpawnWidgets.get(i);
-                String widgetName = I18n.format(widget.getTranslationKey());
+                String widgetName = I18n.get(widget.getTranslationKey());
                 filteredSpawnWidgets.set(i, widgetName.toLowerCase().contains(filterText.toLowerCase()));
             }
         } else {
@@ -307,8 +307,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private void updateDroneName() {
         ItemStack stack = te.getItemInProgrammingSlot();
-        if (stack != ItemStack.EMPTY && !stack.getDisplayName().getUnformattedComponentText().equals(nameField.getText())) {
-            stack.setDisplayName(new StringTextComponent(nameField.getText()));
+        if (stack != ItemStack.EMPTY && !stack.getHoverName().getContents().equals(nameField.getValue())) {
+            stack.setHoverName(new StringTextComponent(nameField.getValue()));
             sendDelayed(5);
         }
     }
@@ -332,7 +332,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         showingAllWidgets = !showingAllWidgets;
         allWidgetsButton.setMessage(showingAllWidgets ? TDR : TUL);
         updateVisibleProgWidgets();
-        filterField.setFocused2(showingAllWidgets);
+        filterField.setFocus(showingAllWidgets);
     }
 
     private void updateDifficulty(WidgetDifficulty difficulty) {
@@ -353,7 +353,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private void pastebin() {
         CompoundNBT mainTag = te.writeProgWidgetsToNBT(new CompoundNBT());
-        minecraft.displayGuiScreen(pastebinGui = new GuiPastebin(this, mainTag));
+        minecraft.setScreen(pastebinGui = new GuiPastebin(this, mainTag));
     }
 
     private void clear() {
@@ -387,51 +387,51 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
 
         int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
         String str = widgetPage + 1 + "/" + maxPage;
-        font.drawString(matrixStack, str, xRight + 22 - font.getStringWidth(str) / 2, yBottom + 4, 0x404040);
-        font.func_238422_b_(matrixStack, xlate("pneumaticcraft.gui.programmer.difficulty").func_241878_f(), xRight - 36, yBottom + 20, 0x404040);
+        font.draw(matrixStack, str, xRight + 22 - font.width(str) / 2, yBottom + 4, 0x404040);
+        font.draw(matrixStack, xlate("pneumaticcraft.gui.programmer.difficulty").getVisualOrderText(), xRight - 36, yBottom + 20, 0x404040);
 
         if (showingWidgetProgress == 0) {
-            programmerUnit.renderForeground(matrixStack, x, y, draggingWidget);
+            programmerUnit.renderForeground(matrixStack, x, y, draggingWidget, font);
         }
 
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
             IProgWidget widget = visibleSpawnWidgets.get(i);
-            if (widget != draggingWidget && x - guiLeft >= widget.getX()
-                    && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2
-                    && y - guiTop <= widget.getY() + widget.getHeight() / 2
+            if (widget != draggingWidget && x - leftPos >= widget.getX()
+                    && y - topPos >= widget.getY() && x - leftPos <= widget.getX() + widget.getWidth() / 2
+                    && y - topPos <= widget.getY() + widget.getHeight() / 2
                     && (!showingAllWidgets || filteredSpawnWidgets == null || filteredSpawnWidgets.get(i))) {
                 List<ITextComponent> tooltip = new ArrayList<>();
                 widget.getTooltip(tooltip);
                 ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
-                if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
-                    tooltip.add(new StringTextComponent(widget.getType().getRegistryName().toString()).mergeStyle(TextFormatting.DARK_GRAY));
+                if (Minecraft.getInstance().options.advancedItemTooltips) {
+                    tooltip.add(new StringTextComponent(widget.getType().getRegistryName().toString()).withStyle(TextFormatting.DARK_GRAY));
                 }
                 if (!tooltip.isEmpty()) {
-                    drawHoveringString(matrixStack, tooltip, x - guiLeft, y - guiTop, font);
+                    drawHoveringString(matrixStack, tooltip, x - leftPos, y - topPos, font);
                 }
             }
         }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         renderBackground(matrixStack);
         bindGuiTexture();
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        blit(matrixStack, xStart, yStart, 0, 0, xSize, ySize, xSize, ySize);
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        blit(matrixStack, xStart, yStart, 0, 0, imageWidth, imageHeight, imageWidth, imageHeight);
+        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
 
         programmerUnit.render(matrixStack, mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0);
 
@@ -444,9 +444,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             bindGuiTexture();
             int width = (int)MathHelper.lerp(partialTicks, (float)oldShowingWidgetProgress, (float)showingWidgetProgress);
             for (int i = 0; i < width; i++) {
-                blit(matrixStack, xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, xSize, ySize);
+                blit(matrixStack, xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, imageWidth, imageHeight);
             }
-            blit(matrixStack, xStart + xRight + 20 - width, yStart + 36, xRight + 20, 36, 2, yBottom - 35, xSize, ySize);
+            blit(matrixStack, xStart + xRight + 20 - width, yStart + 36, xRight + 20, 36, 2, yBottom - 35, imageWidth, imageHeight);
 
             if (showingAllWidgets && draggingWidget != null) toggleShowWidgets();
         }
@@ -456,30 +456,30 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
             IProgWidget widget = visibleSpawnWidgets.get(i);
-            matrixStack.push();
-            matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+            matrixStack.pushPose();
+            matrixStack.translate(widget.getX() + leftPos, widget.getY() + topPos, 0);
             matrixStack.scale(0.5f, 0.5f, 1f);
             if (showingAllWidgets && filteredSpawnWidgets != null && !filteredSpawnWidgets.get(i)) {
                 ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget, 48);
             } else {
                 ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget);
             }
-            matrixStack.pop();
+            matrixStack.popPose();
         }
 
         // draw the widget currently being dragged, if any
         float scale = programmerUnit.getScale();
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
         matrixStack.scale(scale, scale, 1f);
         if (draggingWidget != null) {
-            matrixStack.push();
-            matrixStack.translate(draggingWidget.getX() + guiLeft, draggingWidget.getY() + guiTop, 0);
+            matrixStack.pushPose();
+            matrixStack.translate(draggingWidget.getX() + leftPos, draggingWidget.getY() + topPos, 0);
             matrixStack.scale(0.5f, 0.5f, 1f);
             ProgWidgetRenderer.renderProgWidget2d(matrixStack, draggingWidget);
-            matrixStack.pop();
+            matrixStack.popPose();
         }
-        matrixStack.pop();
+        matrixStack.popPose();
 
         RenderSystem.disableBlend();
 
@@ -491,10 +491,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
      */
     private void drawRemovingWidgets(MatrixStack matrixStack) {
         Iterator<RemovingWidget> iter = removingWidgets.iterator();
-        int h = minecraft.getMainWindow().getScaledHeight();
+        int h = minecraft.getWindow().getGuiScaledHeight();
         float scale = programmerUnit.getScale();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
         matrixStack.scale(scale, scale, 1f);
         RenderSystem.enableBlend();
@@ -505,17 +505,17 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             if (w.getY() + rw.ty > h / scale) {
                 iter.remove();
             } else {
-                matrixStack.push();
-                matrixStack.translate(w.getX() + rw.tx + guiLeft, w.getY() + rw.ty + guiTop, 0);
+                matrixStack.pushPose();
+                matrixStack.translate(w.getX() + rw.tx + leftPos, w.getY() + rw.ty + topPos, 0);
                 matrixStack.scale(0.5f, 0.5f, 1f);
                 ProgWidgetRenderer.renderProgWidget2d(matrixStack, w);
-                matrixStack.pop();
+                matrixStack.popPose();
                 rw.tick();
 
             }
         }
         RenderSystem.disableBlend();
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -578,7 +578,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             return true;
         } else {
             for (IProgWidget widget : visibleSpawnWidgets) {
-                if (widget != draggingWidget && x - guiLeft >= widget.getX() && y - guiTop >= widget.getY() && x - guiLeft <= widget.getX() + widget.getWidth() / 2 && y - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                if (widget != draggingWidget && x - leftPos >= widget.getX() && y - topPos >= widget.getY() && x - leftPos <= widget.getX() + widget.getWidth() / 2 && y - topPos <= widget.getY() + widget.getHeight() / 2) {
                     ThirdPartyManager.instance().getDocsProvider().showWidgetDocs(getWidgetId(widget));
                     return true;
                 }
@@ -793,7 +793,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     updateVisibleProgWidgets();
                 }
             } else {
-                setListener(filterField);
+                setFocused(filterField);
             }
         } else {
             showingWidgetProgress -= maxProgress / 5;
@@ -807,13 +807,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         updateExportButtonTooltip(programmedItem);
 
         if (!programmedItem.isEmpty()) {
-            nameField.setEnabled(true);
-            if (!nameField.getText().equals(programmedItem.getDisplayName().getUnformattedComponentText())) {
-                nameField.setText(programmedItem.getDisplayName().getString());
+            nameField.setEditable(true);
+            if (!nameField.getValue().equals(programmedItem.getHoverName().getContents())) {
+                nameField.setValue(programmedItem.getHoverName().getString());
             }
         } else {
-            nameField.setEnabled(false);
-            nameField.setText("");
+            nameField.setEditable(false);
+            nameField.setValue("");
         }
     }
 
@@ -822,9 +822,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export"));
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.programmingWhen",
                 xlate("pneumaticcraft.gui.programmer.button.export." + (te.programOnInsert ? "onItemInsert" : "pressingButton")))
-                .mergeStyle(TextFormatting.AQUA));
+                .withStyle(TextFormatting.AQUA));
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.pressRToChange")
-                .mergeStyle(TextFormatting.ITALIC, TextFormatting.GRAY));
+                .withStyle(TextFormatting.ITALIC, TextFormatting.GRAY));
 
         if (!programmedItem.isEmpty()) {
             int required = te.getRequiredPuzzleCount();
@@ -834,37 +834,37 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             exportButton.active = effectiveRequired <= available;
             if (required > 0) {
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", effectiveRequired)
-                        .mergeStyle(TextFormatting.YELLOW));
+                        .withStyle(TextFormatting.YELLOW));
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.availablePieces", available)
-                        .mergeStyle(TextFormatting.YELLOW));
+                        .withStyle(TextFormatting.YELLOW));
             } else if (required < 0) {
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.returnedPieces", -effectiveRequired)
-                        .mergeStyle(TextFormatting.GREEN));
+                        .withStyle(TextFormatting.GREEN));
             }
             if (required != 0 && minecraft.player.isCreative()) {
-                exportButtonTooltip.add(new StringTextComponent("(Creative mode)").mergeStyle(TextFormatting.LIGHT_PURPLE));
+                exportButtonTooltip.add(new StringTextComponent("(Creative mode)").withStyle(TextFormatting.LIGHT_PURPLE));
             }
             if (effectiveRequired > available) {
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.notEnoughPieces")
-                        .mergeStyle(TextFormatting.RED));
+                        .withStyle(TextFormatting.RED));
             }
         } else {
             exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.noProgrammableItem")
-                    .mergeStyle(TextFormatting.GOLD));
+                    .withStyle(TextFormatting.GOLD));
         }
 
         if (programmerUnit.getTotalErrors() > 0) {
-            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.errorCount", programmerUnit.getTotalErrors()).mergeStyle(TextFormatting.RED));
+            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.errorCount", programmerUnit.getTotalErrors()).withStyle(TextFormatting.RED));
         }
         if (programmerUnit.getTotalWarnings() > 0)
-            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.warningCount", programmerUnit.getTotalWarnings()).mergeStyle(TextFormatting.YELLOW));
+            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.warningCount", programmerUnit.getTotalWarnings()).withStyle(TextFormatting.YELLOW));
 
         exportButton.setTooltipText(exportButtonTooltip);
     }
 
     private int countPlayerPuzzlePieces() {
         int count = 0;
-        for (ItemStack stack : ClientUtils.getClientPlayer().inventory.mainInventory) {
+        for (ItemStack stack : ClientUtils.getClientPlayer().inventory.items) {
             if (stack.getItem() == ModItems.PROGRAMMING_PUZZLE.get()) {
                 count += stack.getCount();
             }
@@ -1006,7 +1006,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (button == 0) {
             // left-click
             IProgWidget hovered = programmerUnit.getHoveredWidget((int) origX, (int) origY);
-            ItemStack heldItem = minecraft.player.inventory.getItemStack();
+            ItemStack heldItem = minecraft.player.inventory.getCarried();
             if (heldItem.getItem() instanceof IPositionProvider) {
                 return mouseClickedWithPosProvider(mouseX, mouseY, hovered, heldItem);
             } if (!heldItem.isEmpty()) {
@@ -1022,8 +1022,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 if (widget != null) {
                     draggingWidget = widget.copy();
                     te.progWidgets.add(draggingWidget);
-                    dragMouseStartX = mouseX - guiLeft;
-                    dragMouseStartY = mouseY - guiTop;
+                    dragMouseStartX = mouseX - leftPos;
+                    dragMouseStartY = mouseY - topPos;
                     dragWidgetStartX = widget.getX();// - (mouseX - guiLeft);
                     dragWidgetStartY = widget.getY();// - (mouseY - guiTop);
                     if (Screen.hasShiftDown()) copyAndConnectConnectingWidgets(widget, draggingWidget);
@@ -1038,10 +1038,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 // right click a prog widget: show its options screen, if any
                 GuiProgWidgetOptionBase<?> gui = ProgWidgetGuiManager.getGui(widget, this);
                 if (gui != null) {
-                    minecraft.displayGuiScreen(gui);
+                    minecraft.setScreen(gui);
                 }
+                return true;
             }
-            return true;
         }
         return super.mouseClicked(origX, origY, button);
     }
@@ -1102,8 +1102,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
             for (int i = 0; i < toCreate.size(); i++) {
                 IProgWidget p = toCreate.get(i);
-                p.setX((int) (mouseX - guiLeft - p.getWidth() / 3d));
-                p.setY((int) (mouseY - guiTop - p.getHeight() / 4d) + i * p.getHeight());
+                p.setX((int) (mouseX - leftPos - p.getWidth() / 3d));
+                p.setY((int) (mouseY - topPos - p.getHeight() / 4d) + i * p.getHeight());
                 if (!programmerUnit.isOutsideProgrammingArea(p)) {
                     te.progWidgets.add(p);
                 }
@@ -1120,8 +1120,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (hovered == null) {
             ProgWidgetItemFilter p = new ProgWidgetItemFilter();
             p.setFilter(heldItem.copy());
-            p.setX((int) (mouseX - guiLeft - p.getWidth() / 3d));
-            p.setY((int) (mouseY - guiTop - p.getHeight() / 4d));
+            p.setX((int) (mouseX - leftPos - p.getWidth() / 3d));
+            p.setY((int) (mouseY - topPos - p.getHeight() / 4d));
             if (!programmerUnit.isOutsideProgrammingArea(p)) {
                 te.progWidgets.add(p);
             }
@@ -1138,18 +1138,18 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private boolean mouseClickedEmpty(double mouseX, double mouseY, double origX, double origY, float scale, IProgWidget hovered) {
         // just a regular click, nothing of interest held
-        if (showingAllWidgets || origX > guiLeft + getProgrammerBounds().getX() + getProgrammerBounds().getWidth()) {
+        if (showingAllWidgets || origX > leftPos + getProgrammerBounds().getX() + getProgrammerBounds().getWidth()) {
             // clicking on a widget in the tray?
             for (IProgWidget widget : visibleSpawnWidgets) {
-                if (origX >= widget.getX() + guiLeft
-                        && origY >= widget.getY() + guiTop
-                        && origX <= widget.getX() + guiLeft + widget.getWidth() / 2f
-                        && origY <= widget.getY() + guiTop + widget.getHeight() / 2f)
+                if (origX >= widget.getX() + leftPos
+                        && origY >= widget.getY() + topPos
+                        && origX <= widget.getX() + leftPos + widget.getWidth() / 2f
+                        && origY <= widget.getY() + topPos + widget.getHeight() / 2f)
                 {
                     draggingWidget = widget.copy();
                     te.progWidgets.add(draggingWidget);
-                    dragMouseStartX = mouseX - (int) (guiLeft / scale);
-                    dragMouseStartY = mouseY - (int) (guiTop / scale);
+                    dragMouseStartX = mouseX - (int) (leftPos / scale);
+                    dragMouseStartY = mouseY - (int) (topPos / scale);
                     dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
                     dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
                     return true;
@@ -1159,12 +1159,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (hovered != null) {
             // clicking on a widget in the main area
             draggingWidget = hovered;
-            dragMouseStartX = mouseX - guiLeft;
-            dragMouseStartY = mouseY - guiTop;
+            dragMouseStartX = mouseX - leftPos;
+            dragMouseStartY = mouseY - topPos;
             dragWidgetStartX = hovered.getX();
             dragWidgetStartY = hovered.getY();
             return true;
-        } else if (getProgrammerBounds().contains((int) origX - guiLeft, (int) origY - guiTop)) {
+        } else if (getProgrammerBounds().contains((int) origX - leftPos, (int) origY - topPos)) {
             draggingBG = true;
         }
         return false;
@@ -1202,8 +1202,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             mouseX = (mouseX - programmerUnit.getTranslatedX()) / programmerUnit.getScale();
             mouseY = (mouseY - programmerUnit.getTranslatedY()) / programmerUnit.getScale();
             setConnectingWidgetsToXY(draggingWidget,
-                    (int)(mouseX - dragMouseStartX + dragWidgetStartX - guiLeft),
-                    (int)(mouseY - dragMouseStartY + dragWidgetStartY - guiTop));
+                    (int)(mouseX - dragMouseStartX + dragWidgetStartX - leftPos),
+                    (int)(mouseY - dragMouseStartY + dragWidgetStartY - topPos));
             return true;
         } else if (draggingBG) {
             return programmerUnit.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
@@ -1213,7 +1213,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         te.translatedX = programmerUnit.getTranslatedX();
         te.translatedY = programmerUnit.getTranslatedY();
         te.zoomState = programmerUnit.getLastZoom();
@@ -1237,10 +1237,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         public void renderButton(MatrixStack matrixStack, int x, int y, float partialTicks) {
             // this is needed to force the textfield to draw on top of any
             // widgets in the programming area
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(0, 0, 300);
             super.renderButton(matrixStack, x, y, partialTicks);
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 
@@ -1257,7 +1257,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         final IProgWidget widget;
         double ty = 0;
         double tx = 0;
-        double velX = (Minecraft.getInstance().world.rand.nextDouble() - 0.5) * 3;
+        double velX = (Minecraft.getInstance().level.random.nextDouble() - 0.5) * 3;
         double velY = -4;
 
         private RemovingWidget(IProgWidget widget) {

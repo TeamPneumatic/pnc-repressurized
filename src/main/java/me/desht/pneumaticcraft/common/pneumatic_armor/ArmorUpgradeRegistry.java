@@ -1,12 +1,9 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,14 +14,8 @@ import java.util.stream.Stream;
 public enum ArmorUpgradeRegistry {
     INSTANCE;
 
-    /**
-     * Used for translation keys and keybind naming
-     */
-    private static final String UPGRADE_PREFIX = "pneumaticcraft.armor.upgrade.";
-
-    private final List<List<IArmorUpgradeHandler>> upgradeHandlers;
-    private final Object2IntMap<IArmorUpgradeHandler> indexMap;
-    private final Map<ResourceLocation, ArmorUpgradeEntry> byID = new HashMap<>();
+    private final List<List<IArmorUpgradeHandler<?>>> upgradeHandlers;
+    private final Map<ResourceLocation, IArmorUpgradeHandler<?>> byID = new HashMap<>();
 
     public static final EquipmentSlotType[] ARMOR_SLOTS = new EquipmentSlotType[] {
             EquipmentSlotType.HEAD,
@@ -33,28 +24,28 @@ public enum ArmorUpgradeRegistry {
             EquipmentSlotType.FEET
     };
 
-    public final IArmorUpgradeHandler coreComponentsHandler;
-    public final IArmorUpgradeHandler blockTrackerHandler;
-    public final IArmorUpgradeHandler entityTrackerHandler;
-    public final IArmorUpgradeHandler searchHandler;
-    public final IArmorUpgradeHandler coordTrackerHandler;
-    public final IArmorUpgradeHandler droneDebugHandler;
-    public final IArmorUpgradeHandler nightVisionHandler;
-    public final IArmorUpgradeHandler scubaHandler;
-    public final IArmorUpgradeHandler hackHandler;
+    public final CoreComponentsHandler coreComponentsHandler;
+    public final BlockTrackerHandler blockTrackerHandler;
+    public final EntityTrackerHandler entityTrackerHandler;
+    public final SearchHandler searchHandler;
+    public final CoordTrackerHandler coordTrackerHandler;
+    public final DroneDebugHandler droneDebugHandler;
+    public final NightVisionHandler nightVisionHandler;
+    public final ScubaHandler scubaHandler;
+    public final HackHandler hackHandler;
 
-    public final IArmorUpgradeHandler magnetHandler;
-    public final IArmorUpgradeHandler chargingHandler;
-    public final IArmorUpgradeHandler chestplateLauncherHandler;
-    public final IArmorUpgradeHandler airConHandler;
-    public final IArmorUpgradeHandler reachDistanceHandler;
+    public final MagnetHandler magnetHandler;
+    public final ChargingHandler chargingHandler;
+    public final ChestplateLauncherHandler chestplateLauncherHandler;
+    public final AirConHandler airConHandler;
+    public final ReachDistanceHandler reachDistanceHandler;
 
-    public final IArmorUpgradeHandler runSpeedHandler;
-    public final IArmorUpgradeHandler jumpBoostHandler;
+    public final SpeedBoostHandler runSpeedHandler;
+    public final JumpBoostHandler jumpBoostHandler;
 
-    public final IArmorUpgradeHandler jetBootsHandler;
-    public final IArmorUpgradeHandler stepAssistHandler;
-    public final IArmorUpgradeHandler kickHandler;
+    public final JetBootsHandler jetBootsHandler;
+    public final StepAssistHandler stepAssistHandler;
+    public final KickHandler kickHandler;
 
     public static ArmorUpgradeRegistry getInstance() {
         return INSTANCE;
@@ -65,8 +56,6 @@ public enum ArmorUpgradeRegistry {
         for (int i = 0; i < 4; i++) {
             upgradeHandlers.add(new ArrayList<>());
         }
-        indexMap = new Object2IntOpenHashMap<>(30);
-        indexMap.defaultReturnValue(-1);
 
         coreComponentsHandler = registerUpgradeHandler(new CoreComponentsHandler());
         blockTrackerHandler = registerUpgradeHandler(new BlockTrackerHandler());
@@ -99,52 +88,24 @@ public enum ArmorUpgradeRegistry {
         return IArmorUpgradeHandler.getStringKey(id);
     }
 
-    IArmorUpgradeHandler registerUpgradeHandler(IArmorUpgradeHandler handler) {
-        List<IArmorUpgradeHandler> l = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
-        indexMap.put(handler, l.size());
-        byID.put(handler.getID(), new ArmorUpgradeEntry(handler, l.size()));
+    <T extends IArmorUpgradeHandler<?>> T registerUpgradeHandler(T handler) {
+        List<IArmorUpgradeHandler<?>> l = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
+        handler.setIndex(l.size());
+        byID.put(handler.getID(), handler);
         l.add(handler);
         return handler;
     }
 
-    public List<IArmorUpgradeHandler> getHandlersForSlot(EquipmentSlotType slotType) {
+    public List<IArmorUpgradeHandler<?>> getHandlersForSlot(EquipmentSlotType slotType) {
         return upgradeHandlers.get(slotType.getIndex());
     }
 
-    public int getIndexForHandler(IArmorUpgradeHandler handler) {
-        int idx = indexMap.getInt(handler);
-        Validate.isTrue(idx >= 0, "unknown handler: " + handler);
-        return idx;
-    }
-
-    public ArmorUpgradeEntry getUpgradeEntry(ResourceLocation upgradeID) {
+    public IArmorUpgradeHandler<?> getUpgradeEntry(ResourceLocation upgradeID) {
         if (upgradeID == null) return null;
         return byID.get(upgradeID);
     }
 
-    public Stream<ArmorUpgradeEntry> entries() {
+    public Stream<IArmorUpgradeHandler<?>> entries() {
         return byID.values().stream();
-    }
-
-    public static class ArmorUpgradeEntry {
-        final IArmorUpgradeHandler handler;
-        final int index;
-
-        public ArmorUpgradeEntry(IArmorUpgradeHandler handler, int index) {
-            this.handler = handler;
-            this.index = index;
-        }
-
-        public IArmorUpgradeHandler getHandler() {
-            return handler;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        public EquipmentSlotType getSlot() {
-            return handler.getEquipmentSlot();
-        }
     }
 }

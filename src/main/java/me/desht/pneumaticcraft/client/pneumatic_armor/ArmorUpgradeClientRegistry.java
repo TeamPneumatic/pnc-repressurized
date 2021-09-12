@@ -13,26 +13,22 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum ArmorUpgradeClientRegistry {
     INSTANCE;
 
-    private final List<List<IArmorUpgradeClientHandler>> clientUpgradeHandlers = new ArrayList<>();
-    private final Map<ResourceLocation, IArmorUpgradeClientHandler> id2HandlerMap = new HashMap<>();
+    private final List<List<IArmorUpgradeClientHandler<?>>> clientUpgradeHandlers = new ArrayList<>();
+    private final Map<ResourceLocation, IArmorUpgradeClientHandler<?>> id2HandlerMap = new HashMap<>();
     private final Map<ResourceLocation, KeyBinding> id2KeyBindMap = new HashMap<>();
-    private final Map<Class<? extends IArmorUpgradeClientHandler>, IArmorUpgradeClientHandler> class2HandlerMap = new HashMap<>();
+    private final Map<String, IArmorUpgradeClientHandler<?>> triggerKeyBindMap = new HashMap<>();
 
     public static ArmorUpgradeClientRegistry getInstance() {
         return INSTANCE;
     }
 
-    public void registerHandler(IArmorUpgradeHandler handler, IArmorUpgradeClientHandler clientHandler) {
+    public <T extends IArmorUpgradeHandler<?>> void registerHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler) {
         id2HandlerMap.put(handler.getID(), clientHandler);
-        class2HandlerMap.put(clientHandler.getClass(), clientHandler);
 
         clientHandler.getInitialKeyBinding().ifPresent(k -> registerKeyBinding(handler.getID(), k));
         clientHandler.getSubKeybinds().forEach(rl -> registerKeyBinding(rl,
@@ -40,6 +36,8 @@ public enum ArmorUpgradeClientRegistry {
                         KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
                         clientHandler.getSubKeybindCategory())
         ));
+
+        clientHandler.getTriggerKeyBinding().ifPresent(k -> registerTriggerKeybinding(k, clientHandler));
     }
 
     private void registerKeyBinding(ResourceLocation upgradeID, KeyBinding keyBinding) {
@@ -47,12 +45,29 @@ public enum ArmorUpgradeClientRegistry {
         ClientRegistry.registerKeyBinding(keyBinding);
     }
 
+    private void registerTriggerKeybinding(KeyBinding keyBinding, IArmorUpgradeClientHandler<?> clientHandler) {
+        triggerKeyBindMap.put(keyBinding.getName(), clientHandler);
+    }
+
     public KeyBinding getKeybindingForUpgrade(ResourceLocation upgradeID) {
         return id2KeyBindMap.get(upgradeID);
     }
 
-    public IArmorUpgradeClientHandler getClientHandler(IArmorUpgradeHandler armorUpgradeHandler) {
-        return id2HandlerMap.get(armorUpgradeHandler.getID());
+    @SuppressWarnings("unused")
+    public <C extends IArmorUpgradeClientHandler<U>, U extends IArmorUpgradeHandler<?>> C getClientHandler(U armorUpgradeHandler, Class<C> clientClass) {
+        List<IArmorUpgradeClientHandler<?>> clientHandlers = getHandlersForSlot(armorUpgradeHandler.getEquipmentSlot());
+        // common & client armor handlers should *always* directly correspond - if they don't,
+        // something went wrong with registration and a ClassCastException is inevitable...
+        //noinspection unchecked
+        return (C) clientHandlers.get(armorUpgradeHandler.getIndex());
+    }
+
+    public IArmorUpgradeClientHandler<?> getClientHandler(ResourceLocation id) {
+        return id2HandlerMap.get(id);
+    }
+
+    public Optional<IArmorUpgradeClientHandler<?>> getTriggeredHandler(KeyBinding keyBinding) {
+        return Optional.ofNullable(triggerKeyBindMap.get(keyBinding.getName()));
     }
 
     /**
@@ -62,7 +77,7 @@ public enum ArmorUpgradeClientRegistry {
      * @param slot the slot to query
      * @return a list of all the client upgrade handlers registered for that slot
      */
-    public List<IArmorUpgradeClientHandler> getHandlersForSlot(EquipmentSlotType slot) {
+    public List<IArmorUpgradeClientHandler<?>> getHandlersForSlot(EquipmentSlotType slot) {
         if (clientUpgradeHandlers.isEmpty()) {
             initHandlerLists();
         }
@@ -78,8 +93,8 @@ public enum ArmorUpgradeClientRegistry {
         }
 
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            for (IArmorUpgradeHandler handler : ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot)) {
-                IArmorUpgradeClientHandler clientHandler = getClientHandler(handler);
+            for (IArmorUpgradeHandler<?> handler : ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot)) {
+                IArmorUpgradeClientHandler<?> clientHandler = id2HandlerMap.get(handler.getID());
                 // sanity check - catch missed registrations early
                 Validate.notNull(clientHandler, "Null client-handler for upgrade handler '"
                         + handler.getID() + "'! Did you forget to register it?");
@@ -91,18 +106,13 @@ public enum ArmorUpgradeClientRegistry {
         refreshConfig();
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends IArmorUpgradeClientHandler> T byClass(Class<T> clazz) {
-        return (T) class2HandlerMap.get(clazz);
-    }
-
     public void refreshConfig() {
         // we will get called really early (when client config is first loaded)
         // at that point, no upgrade handlers (client or common) are yet registered
         if (clientUpgradeHandlers.isEmpty()) return;
 
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            for (IArmorUpgradeClientHandler renderHandler : getHandlersForSlot(slot)) {
+            for (IArmorUpgradeClientHandler<?> renderHandler : getHandlersForSlot(slot)) {
                 renderHandler.initConfig();
             }
         }

@@ -18,7 +18,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     public static final ResourceLocation ID = RL("pressure_chamber_enchanting");
@@ -60,7 +60,7 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
             // same type which is equal to or stronger than the book's enchantment level...
 
             if (enchantable.canApplyAtEnchantingTable(entry.getKey())
-                    && EnchantmentHelper.getEnchantmentLevel(entry.getKey(), enchantable) < entry.getValue()) {
+                    && EnchantmentHelper.getItemEnchantmentLevel(entry.getKey(), enchantable) < entry.getValue()) {
                 return true;
             }
         }
@@ -76,8 +76,8 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
         Set<Enchantment> itemEnchantments = EnchantmentHelper.getEnchantments(enchantable).keySet();
         List<Enchantment> toTransfer = new ArrayList<>();
         bookEnchantments.forEach((enchantment, level) -> {
-            if (enchantment.canApply(enchantable) && itemEnchantments.stream().allMatch(e -> e.isCompatibleWith(enchantment))) {
-                enchantable.addEnchantment(enchantment, level);
+            if (enchantment.canEnchant(enchantable) && itemEnchantments.stream().allMatch(e -> e.isCompatibleWith(enchantment))) {
+                enchantable.enchant(enchantment, level);
                 toTransfer.add(enchantment);
             }
         });
@@ -90,28 +90,28 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
         } else {
             // some of the enchantments could transfer
             newBook = new ItemStack(Items.ENCHANTED_BOOK);
-            bookEnchantments.forEach(newBook::addEnchantment);
+            bookEnchantments.forEach(newBook::enchant);
         }
 
         chamberHandler.extractItem(ingredientSlots.get(0), 1, simulate);
         chamberHandler.extractItem(ingredientSlots.get(1), 1, simulate);
-        return NonNullList.from(ItemStack.EMPTY, newBook, enchantable);
+        return NonNullList.of(ItemStack.EMPTY, newBook, enchantable);
     }
 
     @Override
     public List<Ingredient> getInputsForDisplay() {
         ItemStack enchBook = new ItemStack(Items.ENCHANTED_BOOK);
-        enchBook.addEnchantment(Enchantments.FORTUNE, 1);
+        enchBook.enchant(Enchantments.BLOCK_FORTUNE, 1);
 
-        return ImmutableList.of(Ingredient.fromItems(Items.DIAMOND_PICKAXE), Ingredient.fromStacks(enchBook));
+        return ImmutableList.of(Ingredient.of(Items.DIAMOND_PICKAXE), Ingredient.of(enchBook));
     }
 
     @Override
     public List<ItemStack> getSingleResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        pick.addEnchantment(Enchantments.FORTUNE, 1);
+        pick.enchant(Enchantments.BLOCK_FORTUNE, 1);
         ItemStack book = new ItemStack(Items.BOOK);
-        return NonNullList.from(ItemStack.EMPTY, pick, book);
+        return NonNullList.of(ItemStack.EMPTY, pick, book);
     }
 
     @Override

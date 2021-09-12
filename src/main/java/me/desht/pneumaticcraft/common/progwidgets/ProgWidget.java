@@ -49,7 +49,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate(getTranslationKey()).mergeStyle(TextFormatting.DARK_AQUA, TextFormatting.UNDERLINE));
+        curTooltip.add(xlate(getTranslationKey()).withStyle(TextFormatting.DARK_AQUA, TextFormatting.UNDERLINE));
         if (freeToUse()) {
             curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.comment.tooltip.freeToUse"));
         }
@@ -240,7 +240,7 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public void writeToPacket(PacketBuffer buf) {
         // since most or all widgets have a 'pneumaticcraft:' namespace, omitting that saves 15 bytes per widget
-        buf.writeString(PneumaticCraftUtils.modDefaultedString(getTypeID()));
+        buf.writeUtf(PneumaticCraftUtils.modDefaultedString(getTypeID()));
         buf.writeInt(x);
         buf.writeInt(y);
     }
@@ -278,7 +278,7 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     public static IProgWidget fromPacket(PacketBuffer buf) {
-        ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(buf.readString(256));
+        ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(buf.readUtf(256));
         ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
         if (type != null) {
             IProgWidget newWidget = IProgWidget.create(type);

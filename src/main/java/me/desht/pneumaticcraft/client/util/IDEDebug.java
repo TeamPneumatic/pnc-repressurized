@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
  *
  * @author MineMaarten
  */
+@SuppressWarnings("unused")
 public class IDEDebug {
     /**
      * This can be used as an IntelliJ break condition to ensure mouse pointer is
@@ -21,7 +22,7 @@ public class IDEDebug {
      */
     @SuppressWarnings("unused")
     public static boolean ungrabMouse() {
-        Minecraft.getInstance().mouseHelper.ungrabMouse();
+        Minecraft.getInstance().mouseHandler.releaseMouse();
         return true;
     }
 }

@@ -77,11 +77,11 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     public void update() {
         super.update();
 
-        if (!pressureTube.getWorld().isRemote) {
+        if (!pressureTube.getLevel().isClientSide) {
             byte[] levels = new byte[16];
 
             if (redstoneDirection == EnumRedstoneDirection.OUTPUT) {
-                for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getWorld()).getConnectedModules(this)) {
+                for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getLevel()).getConnectedModules(this)) {
                     if (module instanceof ModuleRedstone) {
                         ModuleRedstone mr = (ModuleRedstone) module;
                         if (mr.getRedstoneDirection() == EnumRedstoneDirection.INPUT && mr.getInputLevel() > levels[mr.getColorChannel()])
@@ -128,7 +128,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             case COMPARE:
                 return s1 > constantVal ? 15 : 0;
             case CLOCK:
-                return s1 == 0 && getTube().getWorld().getGameTime() % constantVal < 2 ? 15 : 0;
+                return s1 == 0 && getTube().getLevel().getGameTime() % constantVal < 2 ? 15 : 0;
             case TOGGLE:
                 if (s1 > prevLevels[getColorChannel()]) {
                     return lastOutput > 0 ? 0 : 15;
@@ -276,10 +276,10 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     private void addAdvancedInfo(List<ITextComponent> curInfo) {
         IFormattableTextComponent s = new TranslationTextComponent("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
         if (operation.useOtherColor) {
-            s = s.appendString(" (").append(PneumaticCraftUtils.dyeColorDesc(otherColor)).appendString(")");
+            s = s.append(" (").append(PneumaticCraftUtils.dyeColorDesc(otherColor)).append(")");
         }
         if (operation.useConst) {
-            s = s.appendString(" (" + constantVal + ")");
+            s = s.append(" (" + constantVal + ")");
         }
         curInfo.add(s);
         if (inverted) curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.inverted"));
@@ -287,7 +287,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
     @Override
     public boolean onActivated(PlayerEntity player, Hand hand) {
-        ItemStack heldStack = player.getHeldItem(hand);
+        ItemStack heldStack = player.getItemInHand(hand);
         DyeColor dyeColor = DyeColor.getColor(heldStack);
         if (dyeColor != null) {
             int colorId = dyeColor.getId();
@@ -326,13 +326,13 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     private int readInputLevel() {
-        World world = Objects.requireNonNull(pressureTube.getWorld());
+        World world = Objects.requireNonNull(pressureTube.getLevel());
         if (comparatorInput && upgraded) {
-            BlockPos pos2 = pressureTube.getPos().offset(getDirection());
+            BlockPos pos2 = pressureTube.getBlockPos().relative(getDirection());
             BlockState state = world.getBlockState(pos2);
-            return state.hasComparatorInputOverride() ? state.getComparatorInputOverride(world, pos2) : 0;
+            return state.hasAnalogOutputSignal() ? state.getAnalogOutputSignal(world, pos2) : 0;
         } else {
-            return world.getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection());
+            return world.getSignal(pressureTube.getBlockPos().relative(getDirection()), getDirection());
         }
     }
 

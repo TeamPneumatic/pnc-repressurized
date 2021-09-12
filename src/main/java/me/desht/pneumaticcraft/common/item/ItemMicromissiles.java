@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.GuiMicromissile;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
@@ -7,7 +8,6 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -61,7 +61,7 @@ public class ItemMicromissiles extends Item {
     }
 
     public ItemMicromissiles() {
-        super(ModItems.defaultProps().maxStackSize(1).defaultMaxDamage(100));
+        super(ModItems.defaultProps().stacksTo(1).defaultDurability(100));
     }
 
     @Override
@@ -70,29 +70,29 @@ public class ItemMicromissiles extends Item {
     }
 
     @Override
-    public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
         return toRepair.getItem() == this && repair.getItem() == Blocks.TNT.asItem();
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack stack = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
 
-        if (playerIn.isSneaking()) {
-            if (worldIn.isRemote) {
-                GuiMicromissile.openGui(stack.getDisplayName(), handIn);
+        if (playerIn.isShiftKeyDown()) {
+            if (worldIn.isClientSide) {
+                GuiMicromissile.openGui(stack.getHoverName(), handIn);
             }
-            return ActionResult.resultSuccess(stack);
+            return ActionResult.success(stack);
         }
 
         EntityMicromissile missile = new EntityMicromissile(worldIn, playerIn, stack);
-        Vector3d newPos = missile.getPositionVec().add(playerIn.getLookVec().normalize());
-        missile.setPosition(newPos.x, newPos.y, newPos.z);
-        missile.func_234612_a_(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, getInitialVelocity(stack), 0.0F);
+        Vector3d newPos = missile.position().add(playerIn.getLookAngle().normalize());
+        missile.setPos(newPos.x, newPos.y, newPos.z);
+        missile.shootFromRotation(playerIn, playerIn.xRot, playerIn.yRot, 0.0F, getInitialVelocity(stack), 0.0F);
 
-        playerIn.getCooldownTracker().setCooldown(this, PNCConfig.Common.Micromissiles.launchCooldown);
+        playerIn.getCooldowns().addCooldown(this, PNCConfig.Common.Micromissiles.launchCooldown);
 
-        if (!worldIn.isRemote) {
+        if (!worldIn.isClientSide) {
             RayTraceResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);
             if (res instanceof EntityRayTraceResult) {
                 EntityRayTraceResult ertr = (EntityRayTraceResult) res;
@@ -100,13 +100,13 @@ public class ItemMicromissiles extends Item {
                     missile.setTarget(ertr.getEntity());
                 }
             }
-            worldIn.addEntity(missile);
+            worldIn.addFreshEntity(missile);
         }
 
         if (!playerIn.isCreative()) {
-            stack.damageItem(1, playerIn, playerEntity -> { });
+            stack.hurtAndBreak(1, playerIn, playerEntity -> { });
         }
-        return ActionResult.resultSuccess(stack);
+        return ActionResult.success(stack);
     }
 
     private float getInitialVelocity(ItemStack stack) {
@@ -124,11 +124,11 @@ public class ItemMicromissiles extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
-        super.addInformation(stack, worldIn, curInfo, extraInfo);
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
+        super.appendHoverText(stack, worldIn, curInfo, extraInfo);
 
         curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining")
-                .append(new StringTextComponent(Integer.toString(stack.getMaxDamage() - stack.getDamage())).mergeStyle(TextFormatting.AQUA))
+                .append(new StringTextComponent(Integer.toString(stack.getMaxDamage() - stack.getDamageValue())).withStyle(TextFormatting.AQUA))
         );
         if (stack.hasTag()) {
             FireMode mode = getFireMode(stack);
@@ -140,13 +140,13 @@ public class ItemMicromissiles extends Item {
                 String filter = tag.getString(NBT_FILTER);
                 if (!filter.isEmpty()) {
                     curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter")
-                            .appendString(": ")
-                            .appendString(TextFormatting.AQUA + filter));
+                            .append(": ")
+                            .append(TextFormatting.AQUA + filter));
                 }
             }
             curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
-                    .appendString(": ")
-                    .append(xlate(mode.getTranslationKey()).mergeStyle(TextFormatting.AQUA)));
+                    .append(": ")
+                    .append(xlate(mode.getTranslationKey()).withStyle(TextFormatting.AQUA)));
             if (PNCConfig.Common.Micromissiles.damageTerrain) {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
             } else {

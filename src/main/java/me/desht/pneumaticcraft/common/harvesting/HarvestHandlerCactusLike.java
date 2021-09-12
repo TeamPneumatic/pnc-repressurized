@@ -21,7 +21,7 @@ public class HarvestHandlerCactusLike extends HarvestHandler {
     @Override
     public boolean canHarvest(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone){
         if(blockChecker.test(state)){
-            BlockState stateBelow = chunkCache.getBlockState(pos.offset(Direction.DOWN));
+            BlockState stateBelow = chunkCache.getBlockState(pos.relative(Direction.DOWN));
             return blockChecker.test(stateBelow);
         }
         return false;

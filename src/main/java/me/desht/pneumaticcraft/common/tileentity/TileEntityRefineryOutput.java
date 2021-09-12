@@ -88,25 +88,25 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase implements
     @Override
     public Container createMenu(int windowId, PlayerInventory inventory, PlayerEntity player) {
         TileEntityRefineryController controller = getRefineryController();
-        return controller == null ? null : new ContainerRefinery(windowId, inventory, controller.getPos());
+        return controller == null ? null : new ContainerRefinery(windowId, inventory, controller.getBlockPos());
     }
 
     public TileEntityRefineryController getRefineryController() {
         if (controllerTE != null && controllerTE.isRemoved()) controllerTE = null;
 
         if (controllerTE == null) {
-            BlockPos checkPos = this.pos;
-            while (world.getBlockState(checkPos.down()).getBlock() == ModBlocks.REFINERY_OUTPUT.get()) {
-                checkPos = checkPos.down();
+            BlockPos checkPos = this.worldPosition;
+            while (level.getBlockState(checkPos.below()).getBlock() == ModBlocks.REFINERY_OUTPUT.get()) {
+                checkPos = checkPos.below();
             }
-            if (world.getBlockState(checkPos.down()).getBlock() == ModBlocks.REFINERY.get()) {
+            if (level.getBlockState(checkPos.below()).getBlock() == ModBlocks.REFINERY.get()) {
                 // refinery directly under the output stack
-                controllerTE = (TileEntityRefineryController) world.getTileEntity(checkPos.down());
+                controllerTE = (TileEntityRefineryController) level.getBlockEntity(checkPos.below());
             } else {
                 // is refinery horizontally adjacent to bottom of stack?
                 for (Direction d : Direction.Plane.HORIZONTAL) {
-                    if (world.getBlockState(checkPos.offset(d)).getBlock() == ModBlocks.REFINERY.get()) {
-                        controllerTE = (TileEntityRefineryController) world.getTileEntity(checkPos.offset(d));
+                    if (level.getBlockState(checkPos.relative(d)).getBlock() == ModBlocks.REFINERY.get()) {
+                        controllerTE = (TileEntityRefineryController) level.getBlockEntity(checkPos.relative(d));
                     }
                 }
             }
@@ -129,8 +129,8 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase implements
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
 
         fluidCap.invalidate();
     }

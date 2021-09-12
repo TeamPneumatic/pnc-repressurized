@@ -33,7 +33,7 @@ public class BlockPresenceSensor implements IBlockAndCoordinatePollSensor {
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions) {
         for (BlockPos p : positions) {
-            if (!world.isAirBlock(p)) return 15;
+            if (!world.isEmptyBlock(p)) return 15;
         }
         return 0;
     }

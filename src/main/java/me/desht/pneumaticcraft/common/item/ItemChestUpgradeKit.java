@@ -4,10 +4,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ChestBlock;
+import net.minecraft.block.*;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,7 +23,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static net.minecraft.block.HorizontalBlock.HORIZONTAL_FACING;
 
 public class ItemChestUpgradeKit extends Item {
     private final Supplier<? extends Block> chestBlock;
@@ -40,23 +36,23 @@ public class ItemChestUpgradeKit extends Item {
     }
 
     protected void onUpgraded(BlockState oldState, ItemUseContext context) {
-        if (oldState.getBlock().isIn(Tags.Blocks.CHESTS_WOODEN)) {
+        if (oldState.getBlock().is(Tags.Blocks.CHESTS_WOODEN)) {
             // give back one wooden chest, since the upgrade kit cost a chest to make
-            PneumaticCraftUtils.dropItemOnGround(new ItemStack(oldState.getBlock()), context.getWorld(), context.getPos().offset(context.getFace()));
+            PneumaticCraftUtils.dropItemOnGround(new ItemStack(oldState.getBlock()), context.getLevel(), context.getClickedPos().relative(context.getClickedFace()));
         }
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        final World world = context.getWorld();
-        final BlockPos pos = context.getPos();
+    public ActionResultType useOn(ItemUseContext context) {
+        final World world = context.getLevel();
+        final BlockPos pos = context.getClickedPos();
         final BlockState state = world.getBlockState(pos);
         if (blockPredicate.test(state.getBlock())) {
-            if (!world.isRemote) {
-                Direction facing = state.hasProperty(HORIZONTAL_FACING) ? state.get(HORIZONTAL_FACING) : Direction.NORTH;
+            if (!world.isClientSide) {
+                Direction facing = state.hasProperty(HorizontalBlock.FACING) ? state.getValue(HorizontalBlock.FACING) : Direction.NORTH;
 
                 // 1. copy & clear the existing inventory
-                TileEntity te = world.getTileEntity(pos);
+                TileEntity te = world.getBlockEntity(pos);
                 NonNullList<ItemStack> inv = NonNullList.create();
                 if (te != null) {
                     te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
@@ -68,11 +64,11 @@ public class ItemChestUpgradeKit extends Item {
                 }
 
                 // 2. replace the (now empty) wooden chest with the upgraded chest
-                BlockState newState = chestBlock.get().getDefaultState();
-                world.setBlockState(pos, newState.with(BlockStateProperties.HORIZONTAL_FACING, facing));
+                BlockState newState = chestBlock.get().defaultBlockState();
+                world.setBlockAndUpdate(pos, newState.setValue(BlockStateProperties.HORIZONTAL_FACING, facing));
                 if (context.getPlayer() instanceof ServerPlayerEntity) {
-                    world.playSound(null, pos, SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 1f, 1f);
-                    world.playEvent(context.getPlayer(), Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getStateId(newState));
+                    world.playSound(null, pos, SoundEvents.ANVIL_PLACE, SoundCategory.BLOCKS, 1f, 1f);
+                    world.levelEvent(context.getPlayer(), Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getId(newState));
                 }
 
                 // 3. fill the upgraded chest with the copied inventory
@@ -83,14 +79,14 @@ public class ItemChestUpgradeKit extends Item {
                             chestInv.insertItem(i, inv.get(i), false);
                         } else {
                             // just in case...
-                            PneumaticCraftUtils.dropItemOnGround(inv.get(i), world, pos.offset(context.getFace()));
+                            PneumaticCraftUtils.dropItemOnGround(inv.get(i), world, pos.relative(context.getClickedFace()));
                         }
                     }
                 });
 
                 onUpgraded(state, context);
 
-                context.getItem().shrink(1);
+                context.getItemInHand().shrink(1);
             }
             return ActionResultType.SUCCESS;
         }
@@ -100,7 +96,7 @@ public class ItemChestUpgradeKit extends Item {
     private Pair<Integer,Integer> getInvRange(BlockState state, IItemHandler handler) {
         if (state.getBlock() == Blocks.CHEST && state.hasProperty(ChestBlock.TYPE)) {
             // special case for (possibly double) vanilla chests
-            switch (state.get(ChestBlock.TYPE)) {
+            switch (state.getValue(ChestBlock.TYPE)) {
                 case RIGHT: return Pair.of(0, handler.getSlots() / 2);
                 case LEFT: return Pair.of(handler.getSlots() / 2, handler.getSlots());
                 case SINGLE: return Pair.of(0, handler.getSlots());
@@ -111,20 +107,20 @@ public class ItemChestUpgradeKit extends Item {
 
     public static class ItemReinforcedChestKit extends ItemChestUpgradeKit {
         public ItemReinforcedChestKit() {
-            super(ModItems.defaultProps(), ModBlocks.REINFORCED_CHEST, b -> b.isIn(Tags.Blocks.CHESTS_WOODEN));
+            super(ModItems.defaultProps(), ModBlocks.REINFORCED_CHEST, b -> b.is(Tags.Blocks.CHESTS_WOODEN));
         }
     }
 
     public static class ItemSmartChestKit extends ItemChestUpgradeKit {
         public ItemSmartChestKit() {
-            super(ModItems.defaultProps(), ModBlocks.SMART_CHEST, b -> b.isIn(Tags.Blocks.CHESTS_WOODEN) || b == ModBlocks.REINFORCED_CHEST.get());
+            super(ModItems.defaultProps(), ModBlocks.SMART_CHEST, b -> b.is(Tags.Blocks.CHESTS_WOODEN) || b == ModBlocks.REINFORCED_CHEST.get());
         }
 
         @Override
         protected void onUpgraded(BlockState oldState, ItemUseContext context) {
             if (oldState.getBlock() == ModBlocks.REINFORCED_CHEST.get()) {
                 // give back one reinforced chest, since the smart chest upgrade kit cost two reinforced chests to make
-                PneumaticCraftUtils.dropItemOnGround(new ItemStack(ModBlocks.REINFORCED_CHEST.get()), context.getWorld(), context.getPos().offset(context.getFace()));
+                PneumaticCraftUtils.dropItemOnGround(new ItemStack(ModBlocks.REINFORCED_CHEST.get()), context.getLevel(), context.getClickedPos().relative(context.getClickedFace()));
             } else {
                 super.onUpgraded(oldState, context);
             }

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -20,7 +21,7 @@ import net.minecraftforge.fluids.ForgeFlowingFluid;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class FluidYeastCulture {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
@@ -37,19 +38,20 @@ public class FluidYeastCulture {
         }
 
         @Override
-        public int getTickRate(IWorldReader world) {
+        public int getTickDelay(IWorldReader world) {
             return 30;
         }
 
         @Override
         public void tick(World worldIn, BlockPos pos, FluidState state) {
             if (PNCConfig.Common.Recipes.inWorldYeastCrafting) {
-                List<ItemEntity> entities = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
+                List<ItemEntity> entities = worldIn.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
                 if (!entities.isEmpty()) {
                     for (Direction d : DirectionUtil.VALUES) {
-                        FluidState fluidState = worldIn.getFluidState(pos.offset(d));
-                        if (fluidState.isSource() && fluidState.getFluid() == Fluids.WATER) {
-                            worldIn.setBlockState(pos.offset(d), ModFluids.YEAST_CULTURE.get().getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);
+                        BlockPos pos1 = pos.relative(d);
+                        FluidState fluidState = worldIn.getFluidState(pos1);
+                        if (fluidState.isSource() && fluidState.getType() == Fluids.WATER && worldIn.getBlockState(pos1).getBlock() == Blocks.WATER) {
+                            worldIn.setBlock(pos1, ModFluids.YEAST_CULTURE.get().defaultFluidState().createLegacyBlock(), Constants.BlockFlags.DEFAULT);
                             entities.get(0).getItem().shrink(1);
                             if (entities.get(0).getItem().isEmpty()) {
                                 entities.get(0).remove();

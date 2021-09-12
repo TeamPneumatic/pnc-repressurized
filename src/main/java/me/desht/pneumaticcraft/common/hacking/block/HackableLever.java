@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableLever implements IHackableBlock {
@@ -24,7 +24,7 @@ public class HackableLever implements IHackableBlock {
 
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
-        if (world.getBlockState(pos).get(LeverBlock.POWERED)) {
+        if (world.getBlockState(pos).getValue(LeverBlock.POWERED)) {
             curInfo.add(xlate("pneumaticcraft.armor.hacking.result.deactivate"));
         } else {
             curInfo.add(xlate("pneumaticcraft.armor.hacking.result.activate"));
@@ -33,7 +33,7 @@ public class HackableLever implements IHackableBlock {
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
-        if (world.getBlockState(pos).get(LeverBlock.POWERED)) {
+        if (world.getBlockState(pos).getValue(LeverBlock.POWERED)) {
             curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.activated"));
         } else {
             curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.deactivated"));
@@ -48,6 +48,6 @@ public class HackableLever implements IHackableBlock {
     @Override
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.onBlockActivated(world, player, Hand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, Hand.MAIN_HAND, rtr));
     }
 }

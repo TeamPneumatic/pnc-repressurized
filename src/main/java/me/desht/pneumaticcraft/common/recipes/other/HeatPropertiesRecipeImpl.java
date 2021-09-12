@@ -83,11 +83,11 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                 String str = block.getRegistryName().toString() + "[" + String.join(",", l) + "]";
                 parser = (new BlockStateParser(new StringReader(str), false)).parse(false);
             } catch (CommandSyntaxException e) {
-                return block.getDefaultState();
+                return block.defaultBlockState();
             }
             return parser.getState();
         } else {
-            return block.getDefaultState();
+            return block.defaultBlockState();
         }
     }
 
@@ -150,13 +150,13 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         PacketUtil.writeNullableBlockState(buffer, transformColdFlowing);
         buffer.writeVarInt(predicates.size());
         predicates.forEach((key, val) -> {
-            buffer.writeString(key);
-            buffer.writeString(val);
+            buffer.writeUtf(key);
+            buffer.writeUtf(val);
         });
         buffer.writeInt(temperature);
         buffer.writeInt(heatCapacity);
         buffer.writeDouble(thermalResistance);
-        buffer.writeString(descriptionKey);
+        buffer.writeUtf(descriptionKey);
     }
 
     @Override
@@ -173,13 +173,13 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     public boolean matchState(BlockState state) {
         if (predicates.isEmpty()) return true;
         for (Map.Entry<String, String> entry : predicates.entrySet()) {
-            Property<?> iproperty = state.getBlock().getStateContainer().getProperty(entry.getKey());
+            Property<?> iproperty = state.getBlock().getStateDefinition().getProperty(entry.getKey());
             if (iproperty == null) {
                 return false;
             }
-            Comparable<?> comparable = iproperty.parseValue(entry.getValue()).orElse(null);
+            Comparable<?> comparable = iproperty.getValue(entry.getValue()).orElse(null);
             // looks weird, but should be OK, at least for boolean/enum/integer properties
-            if (comparable == null || state.get(iproperty) != comparable) {
+            if (comparable == null || state.getValue(iproperty) != comparable) {
                 return false;
             }
         }
@@ -204,7 +204,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
             BlockState transformHot = null;
             BlockState transformHotFlowing = null;
             BlockState transformCold = null;
@@ -218,7 +218,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                 throw new JsonSyntaxException("heat properties entry must have only one of \"block\" or \"fluid\" fields!");
             }
             if (json.has("block")) {
-                ResourceLocation blockId = new ResourceLocation(JSONUtils.getString(json, "block"));
+                ResourceLocation blockId = new ResourceLocation(JSONUtils.getAsString(json, "block"));
                 if (blockId.toString().equals("minecraft:air")) {
                     throw new JsonSyntaxException("minecraft:air block heat properties may not be changed!");
                 }
@@ -228,9 +228,9 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                 }
                 block = ForgeRegistries.BLOCKS.getValue(blockId);
                 validateBlock(blockId, block);
-                fluid = Objects.requireNonNull(block).getDefaultState().getFluidState().getFluid();  // ok if this is absent
+                fluid = Objects.requireNonNull(block).defaultBlockState().getFluidState().getType();  // ok if this is absent
             } else if (json.has("fluid")) {
-                ResourceLocation fluidId = new ResourceLocation(JSONUtils.getString(json, "fluid"));
+                ResourceLocation fluidId = new ResourceLocation(JSONUtils.getAsString(json, "fluid"));
                 if (!ModList.get().isLoaded(fluidId.getNamespace())) {
                     Log.info("ignoring heat properties for fluid %s: mod not loaded", fluidId);
                     return null;
@@ -239,7 +239,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                 if (fluid == null || fluid == Fluids.EMPTY) {
                     throw new JsonSyntaxException("unknown fluid " + fluidId);
                 }
-                block = fluid.getDefaultState().getBlockState().getBlock();  // not ok if this is absent!
+                block = fluid.defaultFluidState().createLegacyBlock().getBlock();  // not ok if this is absent!
                 validateBlock(fluidId, block);
             } else {
                 throw new JsonSyntaxException("heat properties entry must have a \"block\" or \"fluid\" field!");
@@ -261,7 +261,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
             int temperature;
             if (json.has("temperature")) {
-                temperature = JSONUtils.getInt(json, "temperature");
+                temperature = JSONUtils.getAsInt(json, "temperature");
             } else {
                 if (fluid == Fluids.EMPTY) {
                     throw new JsonSyntaxException(block.toString() + ": Non-fluid definitions must have a 'temperature' field!");
@@ -281,14 +281,14 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
             if (json.has("statePredicate")) {
                 json.getAsJsonObject("statePredicate").entrySet().forEach(entry -> {
-                    if (block.getStateContainer().getProperty(entry.getKey()) == null) {
+                    if (block.getStateDefinition().getProperty(entry.getKey()) == null) {
                         throw new JsonSyntaxException("unknown blockstate property " + entry.getKey() + " for block" + block.getRegistryName());
                     }
                     predicates.put(entry.getKey(), entry.getValue().getAsString());
                 });
             }
 
-            String descriptionKey = JSONUtils.getString(json, "description", "");
+            String descriptionKey = JSONUtils.getAsString(json, "description", "");
 
             return factory.create(recipeId, block,
                     transformHot, transformHotFlowing, transformCold, transformColdFlowing,
@@ -298,7 +298,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             Block block = buffer.readRegistryId();
             BlockState transformHot = PacketUtil.readNullableBlockState(buffer);
             BlockState transformCold = PacketUtil.readNullableBlockState(buffer);
@@ -307,12 +307,12 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             ImmutableMap.Builder<String,String> predBuilder = ImmutableMap.builder();
             int nPredicates = buffer.readVarInt();
             for (int i = 0; i < nPredicates; i++) {
-                predBuilder.put(buffer.readString(), buffer.readString());
+                predBuilder.put(buffer.readUtf(), buffer.readUtf());
             }
             int temperature = buffer.readInt();
             int heatCapacity = buffer.readInt();
             double thermalResistance = buffer.readDouble();
-            String descriptionKey = buffer.readString();
+            String descriptionKey = buffer.readUtf();
 
             return factory.create(recipeId, block,
                     transformHot, transformHotFlowing, transformCold, transformColdFlowing,
@@ -321,7 +321,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 
@@ -345,12 +345,12 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
             JsonObject sub = json.get(field).getAsJsonObject();
             if (sub.has("block")) {
-                return parseBlockState(JSONUtils.getString(sub, "block"));
+                return parseBlockState(JSONUtils.getAsString(sub, "block"));
             } else if (sub.has("fluid")) {
-                ResourceLocation fluidId = new ResourceLocation(JSONUtils.getString(sub, "fluid"));
+                ResourceLocation fluidId = new ResourceLocation(JSONUtils.getAsString(sub, "fluid"));
                 if (ForgeRegistries.FLUIDS.containsKey(fluidId)) {
                     //noinspection ConstantConditions
-                    return ForgeRegistries.FLUIDS.getValue(fluidId).getDefaultState().getBlockState();
+                    return ForgeRegistries.FLUIDS.getValue(fluidId).defaultFluidState().createLegacyBlock();
                 } else {
                     throw new JsonSyntaxException(String.format("unknown fluid '%s' for field '%s' in block '%s'", fluidId, field, b.getRegistryName()));
                 }

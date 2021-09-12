@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
@@ -107,7 +107,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
             }
             setMarginSize(subTag.getByte(NBT_MARGIN));
             setInvisible(subTag.getBoolean(NBT_INVISIBLE));
-            if (world != null) rerenderTileEntity();
+            if (level != null) rerenderTileEntity();
         }
     }
 
@@ -123,7 +123,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
         this.textLines = textLines;
         this.maxLineWidth = -1; // force recalc
         icons = new ItemStack[textLines.length];
-        if (world.isRemote) {
+        if (level.isClientSide) {
             updateLineMetadata();
         } else {
             // server
@@ -158,7 +158,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
 
     public void setBorderColor(int color) {
         this.borderColor = color;
-        if (!world.isRemote) sendDescriptionPacket();
+        if (!level.isClientSide) sendDescriptionPacket();
     }
 
     public int getBorderColor() {
@@ -171,7 +171,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
 
     public void setBackgroundColor(int color) {
         this.backgroundColor = color;
-        if (!world.isRemote) sendDescriptionPacket();
+        if (!level.isClientSide) sendDescriptionPacket();
     }
 
     public byte getMarginSize() {
@@ -189,10 +189,10 @@ public class TileEntityAphorismTile extends TileEntityBase {
 
     public void setInvisible(boolean invisible) {
         this.invisible = invisible;
-        if (world != null) {
+        if (level != null) {
             BlockState state = getBlockState();
             if (state.getBlock() instanceof BlockAphorismTile) {
-                world.setBlockState(pos, getBlockState().with(BlockAphorismTile.INVISIBLE, invisible));
+                level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockAphorismTile.INVISIBLE, invisible));
             }
         }
     }
@@ -219,12 +219,12 @@ public class TileEntityAphorismTile extends TileEntityBase {
     }
 
     public int pollRedstone() {
-        if (world.getGameTime() - lastPoll >= 2) {
+        if (level.getGameTime() - lastPoll >= 2) {
             Direction d = getRotation();
-            int p = world.getRedstonePower(pos.offset(d), d);
+            int p = level.getSignal(worldPosition.relative(d), d);
             if (p != currentRedstonePower) needMaxLineWidthRecalc();
             currentRedstonePower = p;
-            lastPoll = world.getGameTime();
+            lastPoll = level.getGameTime();
         }
         return currentRedstonePower;
     }

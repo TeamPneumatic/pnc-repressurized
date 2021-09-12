@@ -39,12 +39,12 @@ public class ContainerUVLightBox extends ContainerPneumaticBase<TileEntityUVLigh
         }
 
         @Override
-        public boolean isItemValid(@Nonnull ItemStack stack) {
+        public boolean mayPlace(@Nonnull ItemStack stack) {
             return stack.getItem() == ModItems.EMPTY_PCB.get() && ItemEmptyPCB.getEtchProgress(stack) == 0;
         }
 
         @Override
-        public int getSlotStackLimit() {
+        public int getMaxStackSize() {
             return 1;
         }
     }

@@ -38,8 +38,8 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     }
 
     public static void showGUI(ItemStack stack, Hand handIn, BlockPos pos) {
-        Minecraft.getInstance().displayGuiScreen(
-                new GuiGPSTool(stack.getDisplayName(), handIn, pos != null ? pos : BlockPos.ZERO, ItemGPSTool.getVariable(stack))
+        Minecraft.getInstance().setScreen(
+                new GuiGPSTool(stack.getHoverName(), handIn, pos != null ? pos : BlockPos.ZERO, ItemGPSTool.getVariable(stack))
         );
     }
 
@@ -53,14 +53,14 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
             oldText[2] = oldGPSLoc.getZ();
         } else {
             for (int i = 0; i < 3; i++)
-                oldText[i] = textFields[i].getValue();
+                oldText[i] = textFields[i].getIntValue();
         }
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         for (int i = 0; i < 3; i++) {
             int min = i == 1 ? PneumaticCraftUtils.getMinHeight(ClientUtils.getClientWorld()) : Integer.MIN_VALUE;
-            int max = i == 1 ? ClientUtils.getClientWorld().getHeight() : Integer.MAX_VALUE;
-            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 15 + i * 22, TEXTFIELD_WIDTH, font.FONT_HEIGHT)
+            int max = i == 1 ? ClientUtils.getClientWorld().getMaxBuildHeight() : Integer.MAX_VALUE;
+            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 15 + i * 22, TEXTFIELD_WIDTH, font.lineHeight)
                     .setValue(oldText[i])
                     .setRange(min, max)
                     .setAdjustments(1, 10);
@@ -79,13 +79,13 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
                     new StringTextComponent("+10"), b -> updateTextField(idx, 10)));
         }
 
-        if (variableField != null) oldVarName = variableField.getText();
-        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 60, 100, font.FONT_HEIGHT);
-        variableField.setText(oldVarName);
+        if (variableField != null) oldVarName = variableField.getValue();
+        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 60, 100, font.lineHeight);
+        variableField.setValue(oldVarName);
         addButton(variableField);
 
-        ITextComponent var = xlate("pneumaticcraft.gui.progWidget.coordinate.variable").appendString(" #");
-        addButton(new WidgetLabel(variableField.x - 1 - font.getStringPropertyWidth(var), yMiddle + 61, var, 0xc0c0c0));
+        ITextComponent var = xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(" #");
+        addButton(new WidgetLabel(variableField.x - 1 - font.width(var), yMiddle + 61, var, 0xc0c0c0));
     }
 
     private void updateTextField(int idx, int amount) {
@@ -101,22 +101,22 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         int yMiddle = height / 2;
         int stringX = xMiddle - 60 - TEXTFIELD_WIDTH / 2;
         drawCenteredString(matrixStack, font, getTitle(), xMiddle, yMiddle - 58, 0xFFFFFFFF);
-        drawString(matrixStack, font, "X:", stringX, yMiddle - 10 - font.FONT_HEIGHT / 2, 0xFFFFFFFF);
-        drawString(matrixStack, font, "Y:", stringX, yMiddle + 4 + font.FONT_HEIGHT / 2, 0xFFFFFFFF);
-        drawString(matrixStack, font, "Z:", stringX, yMiddle + 34 - font.FONT_HEIGHT / 2, 0xFFFFFFFF);
+        drawString(matrixStack, font, "X:", stringX, yMiddle - 10 - font.lineHeight / 2, 0xFFFFFFFF);
+        drawString(matrixStack, font, "Y:", stringX, yMiddle + 4 + font.lineHeight / 2, 0xFFFFFFFF);
+        drawString(matrixStack, font, "Z:", stringX, yMiddle + 34 - font.lineHeight / 2, 0xFFFFFFFF);
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         syncToServer();
-        super.onClose();
+        super.removed();
     }
 
     protected void syncToServer() {
-        BlockPos newPos = new BlockPos(textFields[0].getValue(), textFields[1].getValue(), textFields[2].getValue());
+        BlockPos newPos = new BlockPos(textFields[0].getIntValue(), textFields[1].getIntValue(), textFields[2].getIntValue());
         NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(
                 newPos.equals(oldGPSLoc) ? new BlockPos(-1, -1, -1) : newPos,
-                hand, variableField.getText(), getIndex())
+                hand, variableField.getValue(), getIndex())
         );
 
     }

@@ -29,11 +29,11 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(guiLeft + 152, guiTop + 15, te.getTank()));
-        addButton(rangeLabel = new WidgetLabel(guiLeft + 20, guiTop + 55, StringTextComponent.EMPTY));
+        addButton(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
+        addButton(rangeLabel = new WidgetLabel(leftPos + 20, topPos + 55, StringTextComponent.EMPTY));
 
-        addButton(slider = new Slider(guiLeft + 7, guiTop + 30, 118, 20,
-                xlate("pneumaticcraft.gui.keroseneLamp.maxRange").appendString(" "), StringTextComponent.EMPTY,
+        addButton(slider = new Slider(leftPos + 7, topPos + 30, 118, 20,
+                xlate("pneumaticcraft.gui.keroseneLamp.maxRange").append(" "), StringTextComponent.EMPTY,
                 1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true,
                 b -> { }, this));
     }
@@ -48,7 +48,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
             slider.updateSlider();
         }
 
-        rangeLabel.setMessage(xlate("pneumaticcraft.gui.keroseneLamp.currentRange", te.getRange()));
+        rangeLabel.setMessage(xlate("pneumaticcraft.message.misc.range", te.getRange()));
     }
 
     @Override

@@ -105,7 +105,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         buf.writeInt(x);
         buf.writeInt(y);
         buf.writeInt(z);
-        buf.writeString(variable);
+        buf.writeUtf(variable);
         buf.writeBoolean(useVariable);
     }
 
@@ -115,7 +115,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         x = buf.readInt();
         y = buf.readInt();
         z = buf.readInt();
-        variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
         useVariable = buf.readBoolean();
     }
 

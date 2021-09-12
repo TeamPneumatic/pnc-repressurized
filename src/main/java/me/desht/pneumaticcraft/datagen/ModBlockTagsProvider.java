@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.datagen;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.BlockTagsProvider;
@@ -22,7 +22,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     }
 
     @Override
-    public void registerTags() {
+    public void addTags() {
 
         createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE, Tags.Blocks.STONE,
                 ModBlocks.REINFORCED_STONE);
@@ -67,9 +67,11 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 () -> Blocks.INFESTED_MOSSY_STONE_BRICKS, () -> Blocks.INFESTED_STONE_BRICKS
         );
 
-        getOrCreateBuilder(Tags.Blocks.ORES);
-        getOrCreateBuilder(BlockTags.LOGS);
-        getOrCreateBuilder(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
+        createTag(PneumaticCraftTags.Blocks.PROBE_TARGET);
+
+        tag(Tags.Blocks.ORES);
+        tag(BlockTags.LOGS);
+        tag(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
     }
 
 // with thanks to Tropicraft for these helper methods
@@ -81,12 +83,12 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @SafeVarargs
     private final void createTag(ITag.INamedTag<Block> tag, Supplier<? extends Block>... blocks) {
-        getOrCreateBuilder(tag).add(resolveAll(Block[]::new, blocks));
+        tag(tag).add(resolveAll(Block[]::new, blocks));
     }
 
     @SafeVarargs
     private final void appendToTag(ITag.INamedTag<Block> tag, ITag.INamedTag<Block>... toAppend) {
-        getOrCreateBuilder(tag).addTags(toAppend);
+        tag(tag).addTags(toAppend);
     }
 
     @SafeVarargs

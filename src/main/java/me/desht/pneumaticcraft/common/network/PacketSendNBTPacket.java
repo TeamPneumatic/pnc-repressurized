@@ -17,20 +17,20 @@ public class PacketSendNBTPacket extends LocationIntPacket {
     private final CompoundNBT tag;
 
     public PacketSendNBTPacket(TileEntity te) {
-        super(te.getPos());
+        super(te.getBlockPos());
 
-        tag = te.write(new CompoundNBT());
+        tag = te.save(new CompoundNBT());
     }
 
     public PacketSendNBTPacket(PacketBuffer buffer) {
         super(buffer);
-        tag = buffer.readCompoundTag();
+        tag = buffer.readNbt();
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        buffer.writeCompoundTag(tag);
+        buffer.writeNbt(tag);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -38,7 +38,7 @@ public class PacketSendNBTPacket extends LocationIntPacket {
             TileEntity te = ClientUtils.getClientTE(pos);
             if (te != null) {
                 try {
-                    te.read(te.getBlockState(), tag);
+                    te.load(te.getBlockState(), tag);
                 } catch (Throwable e) {
                     TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
                 }

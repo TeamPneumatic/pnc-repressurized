@@ -73,10 +73,10 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
 
         acidTank.tick();
 
-        if (!world.isRemote && !acidTank.getFluid().isEmpty()) {
+        if (!level.isClientSide && !acidTank.getFluid().isEmpty()) {
             int tickInterval = getTickInterval();
 
-            if (world.getGameTime() % tickInterval == 0) {
+            if (level.getGameTime() % tickInterval == 0) {
                 boolean didWork = false;
                 for (int i = 0; i < ETCHING_SLOTS; i++) {
                     ItemStack stack = itemHandler.getStackInSlot(i);
@@ -87,7 +87,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
                             didWork = true;
                         } else if (!isOutputFull() && !isFailedOutputFull()) {
                             int uvProgress = TileEntityUVLightBox.getExposureProgress(stack);
-                            boolean success = world.rand.nextInt(100) <= uvProgress;
+                            boolean success = level.random.nextInt(100) <= uvProgress;
                             tryMoveFinishedItem(i, success);
                         }
                     }
@@ -95,7 +95,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
 
                 if (didWork && tickInterval < 30) {
                     // heated - chance to use up some acid
-                    if (world.rand.nextInt(100) < 30 - tickInterval) {
+                    if (level.random.nextInt(100) < 30 - tickInterval) {
                         acidTank.drain(1, IFluidHandler.FluidAction.EXECUTE);
                     }
                     heatExchanger.addHeat(-(30 - tickInterval));
@@ -192,7 +192,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     @Nullable
     @Override
     public Container createMenu(int windowId, PlayerInventory playerInv, PlayerEntity player) {
-        return new ContainerEtchingTank(windowId, playerInv, getPos());
+        return new ContainerEtchingTank(windowId, playerInv, getBlockPos());
     }
 
     @Nonnull
@@ -202,8 +202,8 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.put("Inventory", itemHandler.serializeNBT());
         tag.put("Output", outputHandler.serializeNBT());
@@ -213,8 +213,8 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Inventory"));
         outputHandler.deserializeNBT(tag.getCompound("Output"));
@@ -312,7 +312,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
 
         @Override
         public boolean isFluidValid(FluidStack stack) {
-            return stack.getFluid().isIn(PneumaticCraftTags.Fluids.ETCHING_ACID);
+            return stack.getFluid().is(PneumaticCraftTags.Fluids.ETCHING_ACID);
         }
     }
 }

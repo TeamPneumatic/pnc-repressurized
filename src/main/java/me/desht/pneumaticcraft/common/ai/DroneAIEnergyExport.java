@@ -29,7 +29,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
         if (energy == 0) {
             abort();
         } else {
-            TileEntity te = drone.world().getTileEntity(pos);
+            TileEntity te = drone.world().getBlockEntity(pos);
             if (te != null) {
                 for (Direction face : DirectionUtil.VALUES) {
                     if (progWidget.isSideSelected(face)) {

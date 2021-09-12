@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -66,7 +66,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
             T te = teRef.get();
             if (te != null) {
                 te.onRedstoneModeChanged(this.currentMode);
-                te.markDirty();
+                te.setChanged();
             }
         }
     }
@@ -123,7 +123,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     public void updateRedstonePower() {
         T te = teRef.get();
         if (te != null) {
-            currentRedstonePower = te.getWorld().getRedstonePowerFromNeighbors(te.getPos());
+            currentRedstonePower = te.getLevel().getBestNeighborSignal(te.getBlockPos());
         }
     }
 
@@ -139,7 +139,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     public ITextComponent getDescription() {
         T te = teRef.get();
         if (te != null) {
-            return te.getRedstoneTabTitle().appendString(": ").append(xlate(modes.get(currentMode).getTranslationKey()).mergeStyle(TextFormatting.YELLOW));
+            return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(currentMode).getTranslationKey()).withStyle(TextFormatting.YELLOW));
         } else {
             return StringTextComponent.EMPTY;
         }

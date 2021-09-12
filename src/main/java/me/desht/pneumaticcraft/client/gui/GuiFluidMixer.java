@@ -30,19 +30,19 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
 
     public GuiFluidMixer(ContainerFluidMixer container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
-        ySize = 212;
+        imageHeight = 212;
     }
 
     @Override
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(guiLeft + 13, guiTop + 19, te.getInputTank1()));
-        addButton(new WidgetTank(guiLeft + 33, guiTop + 19, te.getInputTank2()));
-        addButton(new WidgetTank(guiLeft + 99, guiTop + 19, te.getOutputTank()));
+        addButton(new WidgetTank(leftPos + 13, topPos + 19, te.getInputTank1()));
+        addButton(new WidgetTank(leftPos + 33, topPos + 19, te.getInputTank2()));
+        addButton(new WidgetTank(leftPos + 99, topPos + 19, te.getOutputTank()));
 
         for (int i = 0; i < 2; i++) {
-            dumpButtons[i] = new WidgetButtonExtended(guiLeft + 14 + i * 20, guiTop + 86, 14, 14, StringTextComponent.EMPTY)
+            dumpButtons[i] = new WidgetButtonExtended(leftPos + 14 + i * 20, topPos + 86, 14, 14, StringTextComponent.EMPTY)
                     .withTag("dump" + (i + 1));
             addButton(dumpButtons[i]);
         }
@@ -54,20 +54,20 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        super.renderBg(matrixStack, partialTicks, x, y);
 
         // animated progress bar
         int progressWidth = (int) (te.getCraftingPercentage() * 48);
         bindGuiTexture();
-        blit(matrixStack, guiLeft + 50, guiTop + 36, xSize, 0, progressWidth, 30);
+        blit(matrixStack, leftPos + 50, topPos + 36, imageWidth, 0, progressWidth, 30);
     }
 
     @Override
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4 + 14, yStart + ySize / 4 - 2);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        return new PointXY(xStart + imageWidth * 3 / 4 + 14, yStart + imageHeight / 4 - 2);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
 
         for (int i = 0; i < 2; i++) {
             String k = hasShiftDown() ? "dumpInput" : "moveInput";
-            dumpButtons[i].setMessage(hasShiftDown() ? new StringTextComponent("X").mergeStyle(TextFormatting.RED) : new StringTextComponent(GuiConstants.TRIANGLE_RIGHT).mergeStyle(TextFormatting.DARK_AQUA));
+            dumpButtons[i].setMessage(hasShiftDown() ? new StringTextComponent("X").withStyle(TextFormatting.RED) : new StringTextComponent(GuiConstants.TRIANGLE_RIGHT).withStyle(TextFormatting.DARK_AQUA));
             dumpButtons[i].setTooltipKey("pneumaticcraft.gui.thermopneumatic." + k);
         }
     }

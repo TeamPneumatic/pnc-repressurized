@@ -22,14 +22,14 @@ import java.util.Optional;
 
 public class PacketUtil {
     public static void writeGlobalPos(PacketBuffer buf, GlobalPos gPos) {
-        buf.writeResourceLocation(gPos.getDimension().getLocation());
-        buf.writeBlockPos(gPos.getPos());
+        buf.writeResourceLocation(gPos.dimension().location());
+        buf.writeBlockPos(gPos.pos());
     }
 
     public static GlobalPos readGlobalPos(PacketBuffer buf) {
-        RegistryKey<World> worldKey = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, buf.readResourceLocation());
+        RegistryKey<World> worldKey = RegistryKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
         BlockPos pos = buf.readBlockPos();
-        return GlobalPos.getPosition(worldKey, pos);
+        return GlobalPos.of(worldKey, pos);
     }
 
     /**
@@ -57,9 +57,9 @@ public class PacketUtil {
         } else {
             // server-side: don't trust the blockpos the client sent us
             // instead get the TE from the player's open container
-            if (player.openContainer instanceof ContainerPneumaticBase) {
-                TileEntity te = ((ContainerPneumaticBase<?>) player.openContainer).te;
-                if (te != null && cls.isAssignableFrom(te.getClass()) && (pos == null || te.getPos().equals(pos))) {
+            if (player.containerMenu instanceof ContainerPneumaticBase) {
+                TileEntity te = ((ContainerPneumaticBase<?>) player.containerMenu).te;
+                if (te != null && cls.isAssignableFrom(te.getClass()) && (pos == null || te.getBlockPos().equals(pos))) {
                     //noinspection unchecked
                     return Optional.of((T) te);
                 }
@@ -77,7 +77,7 @@ public class PacketUtil {
      */
     @Nonnull
     public static <T extends TileEntity> Optional<T> getTE(PlayerEntity player, Class<T> cls) {
-        if (player.world.isRemote) throw new RuntimeException("don't call this method client side!");
+        if (player.level.isClientSide) throw new RuntimeException("don't call this method client side!");
         return getTE(player, null, cls);
     }
 
@@ -91,7 +91,7 @@ public class PacketUtil {
             buf.writeBoolean(false);
         } else {
             buf.writeBoolean(true);
-            buf.writeCompoundTag(NBTUtil.writeBlockState(state));
+            buf.writeNbt(NBTUtil.writeBlockState(state));
         }
     }
 
@@ -103,7 +103,7 @@ public class PacketUtil {
     @Nullable
     public static BlockState readNullableBlockState(PacketBuffer buf) {
         if (buf.readBoolean()) {
-            CompoundNBT tag = buf.readCompoundTag();
+            CompoundNBT tag = buf.readNbt();
             return NBTUtil.readBlockState(Objects.requireNonNull(tag));
         } else {
             return null;

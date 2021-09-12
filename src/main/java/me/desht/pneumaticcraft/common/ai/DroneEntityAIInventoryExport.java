@@ -25,7 +25,7 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
     }
 
     private boolean export(BlockPos pos, boolean simulate) {
-        TileEntity te = drone.world().getTileEntity(pos);
+        TileEntity te = drone.world().getBlockEntity(pos);
         if (te != null) {
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
@@ -38,7 +38,7 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
                                 if (progWidget.useCount()) {
                                     droneStack.setCount(Math.min(droneStack.getCount(), getRemainingCount()));
                                 }
-                                ItemStack remainder = IOHelper.insert(te, droneStack.copy(), Direction.byIndex(side), simulate);
+                                ItemStack remainder = IOHelper.insert(te, droneStack.copy(), Direction.from3DDataValue(side), simulate);
                                 int stackSize = drone.getInv().getStackInSlot(i).getCount() - (remainder.isEmpty() ? droneStack.getCount() : droneStack.getCount() - remainder.getCount());
                                 droneStack.setCount(stackSize);
                                 int exportedItems = oldCount - stackSize;

@@ -22,12 +22,12 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
     public void tick() {
         super.tick();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             AbstractSpawner spawner = getSpawner();
             if (spawner != null) {
                 // just altering the range when added isn't enough - needs to be kept updated each tick
-                spawner.activatingRangeFromPlayer = Integer.MAX_VALUE;
-                if (ticksExisted == 1) {
+                spawner.requiredPlayerRange = Integer.MAX_VALUE;
+                if (tickCount == 1) {
                     setSpawnPersistentEntities(getSpawner(), true);
                 }
             }
@@ -38,10 +38,10 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
     public void onBroken() {
         super.onBroken();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             AbstractSpawner spawner = getSpawner();
             if (spawner != null) {
-                spawner.activatingRangeFromPlayer = 16;
+                spawner.requiredPlayerRange = 16;
                 setSpawnPersistentEntities(spawner, false);
             }
         }
@@ -49,10 +49,10 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
 
     private AbstractSpawner getSpawner() {
         TileEntity te = getCachedTileEntity();
-        return te instanceof MobSpawnerTileEntity ? ((MobSpawnerTileEntity) te).getSpawnerBaseLogic() : null;
+        return te instanceof MobSpawnerTileEntity ? ((MobSpawnerTileEntity) te).getSpawner() : null;
     }
 
     private void setSpawnPersistentEntities(AbstractSpawner spawner, boolean persistent) {
-        spawner.spawnData.getNbt().putBoolean("PersistenceRequired", persistent);
+        spawner.nextSpawnData.getTag().putBoolean("PersistenceRequired", persistent);
     }
 }

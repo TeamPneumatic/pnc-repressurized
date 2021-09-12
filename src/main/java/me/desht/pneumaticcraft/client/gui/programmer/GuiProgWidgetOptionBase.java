@@ -33,7 +33,7 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
         super.init();
 
         ITextComponent title = xlate(progWidget.getTranslationKey());
-        addLabel(title, width / 2 - font.getStringPropertyWidth(title) / 2, guiTop + 5);
+        addLabel(title, width / 2 - font.width(title) / 2, guiTop + 5);
     }
 
     @Override
@@ -44,19 +44,19 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     }
 
     @Override
-    public void closeScreen() {
-        minecraft.displayGuiScreen(guiProgrammer);
+    public void onClose() {
+        minecraft.setScreen(guiProgrammer);
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         // Important: when overriding this in subclasses, copy any update gui data into the
         // progwidget BEFORE calling super.close() !
 
         if (guiProgrammer != null) {
             NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
         } else {
-            super.onClose();
+            super.removed();
         }
     }
 
@@ -71,6 +71,6 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     }
 
     public Container getProgrammerContainer() {
-        return guiProgrammer == null ? null : guiProgrammer.getContainer();
+        return guiProgrammer == null ? null : guiProgrammer.getMenu();
     }
 }

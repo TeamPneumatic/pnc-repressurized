@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.event.world.WorldEvent;
@@ -65,7 +65,7 @@ public class GlobalTileEntityCacheManager{
         }
         
         public void removeFromWorld(IWorld world){
-            tileEntities.removeIf(te -> te.getWorld() == world);
+            tileEntities.removeIf(te -> te.getLevel() == world);
         }
         
         public Stream<T> stream(){

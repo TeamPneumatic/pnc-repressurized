@@ -32,37 +32,37 @@ public class AirParticle extends SpriteTexturedParticle {
 //            }
 //        }
 
-        maxAge = 50;
-        particleScale = scale;
+        lifetime = 50;
+        quadSize = scale;
 
-        motionX = xSpeedIn + worldIn.rand.nextDouble() * 0.1 - 0.05;
-        motionY = ySpeedIn + worldIn.rand.nextDouble() * 0.1 - 0.05;
-        motionZ = zSpeedIn + worldIn.rand.nextDouble() * 0.1 - 0.05;
+        xd = xSpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
+        yd = ySpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
+        zd = zSpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
 
-        selectSpriteWithAge(sprite);
+        setSpriteFromAge(sprite);
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if (!world.isAirBlock(new BlockPos(posX, posY, posZ)) || onGround) {
-            setExpired();
+        if (!level.isEmptyBlock(new BlockPos(x, y, z)) || onGround) {
+            remove();
         }
 
         // fades out and gets bigger as it gets older
-        selectSpriteWithAge(sprite);
-        multiplyParticleScaleBy(1.03f);
-        particleAlpha *= 0.975;
+        setSpriteFromAge(sprite);
+        scale(1.03f);
+        alpha *= 0.975;
 
-        if (world.rand.nextInt(5) == 0) {
-            motionX += world.rand.nextDouble() * 0.1 - 0.05;
+        if (level.random.nextInt(5) == 0) {
+            xd += level.random.nextDouble() * 0.1 - 0.05;
         }
-        if (world.rand.nextInt(5) == 0) {
-            motionY += world.rand.nextDouble() * 0.1 - 0.05;
+        if (level.random.nextInt(5) == 0) {
+            yd += level.random.nextDouble() * 0.1 - 0.05;
         }
-        if (world.rand.nextInt(5) == 0) {
-            motionY += world.rand.nextDouble() * 0.1 - 0.05;
+        if (level.random.nextInt(5) == 0) {
+            yd += level.random.nextDouble() * 0.1 - 0.05;
         }
     }
 
@@ -80,32 +80,32 @@ public class AirParticle extends SpriteTexturedParticle {
 
         @Nullable
         @Override
-        public Particle makeParticle(AirParticleData airParticleData, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle createParticle(AirParticleData airParticleData, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
             AirParticle p = new AirParticle(world, x, y, z, dx, dy, dz, 0.2f, spriteSet);
-            p.setAlphaF(airParticleData.getAlpha());
+            p.setAlpha(airParticleData.getAlpha());
             return p;
         }
     }
 
     private static final IParticleRenderType AIR_PARTICLE_RENDER = new IParticleRenderType() {
         @Override
-        public void beginRender(BufferBuilder bufferBuilder, TextureManager textureManager) {
+        public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
             RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F);
             RenderSystem.disableLighting();
 
-            textureManager.bindTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE);
-            textureManager.getTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE).setBlurMipmap(true, false);
-            bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+            textureManager.bind(AtlasTexture.LOCATION_PARTICLES);
+            textureManager.getTexture(AtlasTexture.LOCATION_PARTICLES).setBlurMipmap(true, false);
+            bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE);
         }
 
         @Override
-        public void finishRender(Tessellator tessellator) {
-            tessellator.draw();
+        public void end(Tessellator tessellator) {
+            tessellator.end();
 
-            Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_PARTICLES_TEXTURE).restoreLastBlurMipmap();
+            Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_PARTICLES).restoreLastBlurMipmap();
             RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);

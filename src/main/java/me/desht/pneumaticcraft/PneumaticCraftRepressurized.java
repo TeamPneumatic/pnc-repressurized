@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -15,7 +16,7 @@ import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
 import me.desht.pneumaticcraft.common.event.*;
 import me.desht.pneumaticcraft.common.fluid.FluidSetup;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -32,7 +33,6 @@ import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.datagen.loot.ModLootFunctions;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.data.BlockTagsProvider;
@@ -89,6 +89,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(new DroneSpecialVariableHandler());
         forgeBus.register(ItemGPSAreaTool.EventHandler.class);
         forgeBus.register(HackTickHandler.instance());
+        forgeBus.addListener(VillageStructures::addMechanicHouse);
 
         forgeBus.addListener(EventPriority.HIGH, ModWorldGen::onBiomeLoading);
     }
@@ -125,10 +126,10 @@ public class PneumaticCraftRepressurized {
         NetworkHandler.init();
         FluidSetup.init();
         ArmorUpgradeRegistry.init();
-        HackableHandler.addDefaultEntries();
+        HackManager.addDefaultEntries();
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
-        VillageStructures.init();
+//        VillageStructures.init();
         ModNameCache.init();
         HeatBehaviourManager.getInstance().init();
 
@@ -136,9 +137,9 @@ public class PneumaticCraftRepressurized {
             ModWorldGen.registerConfiguredFeatures();
             AdvancementTriggers.registerTriggers();
 
-            DispenserBlock.registerDispenseBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
-            DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
-            DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
+            DispenserBlock.registerBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
+            DispenserBlock.registerBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
+            DispenserBlock.registerBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
 
             ThirdPartyManager.instance().postInit();
 

@@ -15,6 +15,6 @@ public interface IActionWidgetLabeled {
     List<ITextComponent> getTooltip();
 
     default ITextComponent deserializeTextComponent(String s) {
-        return s.startsWith("{") ? ITextComponent.Serializer.getComponentFromJson(s) : new StringTextComponent(s);
+        return s.startsWith("{") ? ITextComponent.Serializer.fromJson(s) : new StringTextComponent(s);
     }
 }

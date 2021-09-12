@@ -18,24 +18,24 @@ import java.util.List;
 
 public class BlockDroneRedstoneEmitter extends AirBlock {
     public BlockDroneRedstoneEmitter() {
-        super(Block.Properties.from(Blocks.AIR));
+        super(Block.Properties.copy(Blocks.AIR));
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    public int getStrongPower(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
+    public int getDirectSignal(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
         return 0;
     }
 
     @Override
-    public int getWeakPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
+    public int getSignal(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
         if (blockAccess instanceof IEntityReader) {
             IEntityReader world = (IEntityReader) blockAccess;
-            List<EntityDrone> drones = world.getEntitiesWithinAABB(EntityDrone.class, new AxisAlignedBB(pos, pos.add(1, 1, 1)));
+            List<EntityDrone> drones = world.getEntitiesOfClass(EntityDrone.class, new AxisAlignedBB(pos, pos.offset(1, 1, 1)));
             int signal = 0;
             for (EntityDrone drone : drones) {
                 signal = Math.max(signal, drone.getEmittingRedstone(side.getOpposite()));

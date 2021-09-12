@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -22,6 +24,7 @@ import java.util.function.Supplier;
  */
 public class PacketUpdateArmorExtraData {
     private static final List<Map<String, Integer>> VALID_KEYS = new ArrayList<>();
+    private final ResourceLocation upgradeID;
 
     private static void addKey(EquipmentSlotType slot, String key, int nbtType) {
         VALID_KEYS.get(slot.getIndex()).put(key, nbtType);
@@ -38,38 +41,45 @@ public class PacketUpdateArmorExtraData {
         addKey(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_BUILDER_MODE, NBT.TAG_BYTE);
         addKey(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, NBT.TAG_INT);
         addKey(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, NBT.TAG_BYTE);
+        addKey(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_SMART_HOVER, NBT.TAG_BYTE);
     }
 
     private final EquipmentSlotType slot;
     private final CompoundNBT data;
 
-    public PacketUpdateArmorExtraData(EquipmentSlotType slot, CompoundNBT data) {
+    public PacketUpdateArmorExtraData(EquipmentSlotType slot, CompoundNBT data, ResourceLocation upgradeID) {
         this.slot = slot;
         this.data = data;
+        this.upgradeID = upgradeID;
     }
 
     PacketUpdateArmorExtraData(PacketBuffer buffer) {
         slot = EquipmentSlotType.values()[buffer.readByte()];
-        data = buffer.readCompoundTag();
+        data = buffer.readNbt();
+        upgradeID = buffer.readResourceLocation();
     }
 
     public void toBytes(PacketBuffer buf) {
         buf.writeByte(slot.ordinal());
-        buf.writeCompoundTag(data);
+        buf.writeNbt(data);
+        buf.writeResourceLocation(upgradeID);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack stack = player.getItemStackFromSlot(slot);
+            ItemStack stack = player.getItemBySlot(slot);
             if (stack.getItem() instanceof ItemPneumaticArmor) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 NBTUtils.initNBTTagCompound(stack);
-                for (String key : data.keySet()) {
+                for (String key : data.getAllKeys()) {
                     INBT dataTag = data.get(key);
                     if (isKeyOKForSlot(key, slot, dataTag.getId())) {
                         stack.getTag().put(key, dataTag);
-                        handler.onDataFieldUpdated(key, dataTag);
+                        IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
+                        if (upgradeHandler != null) {
+                            upgradeHandler.onDataFieldUpdated(handler, key, dataTag);
+                        }
                     }
                 }
             }

@@ -79,8 +79,8 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putBoolean("clawClosing", shouldClawClose);
         tag.putFloat("clawProgress", clawProgress);
         tag.putFloat("speed", speed);
@@ -89,8 +89,8 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         shouldClawClose = tag.getBoolean("clawClosing");
         clawProgress = tag.getFloat("clawProgress");
@@ -126,7 +126,7 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
 
     private void invalidateSystem() {
         if (controllerPos != null) {
-            TileEntity te = getWorld().getTileEntity(controllerPos);
+            TileEntity te = getLevel().getBlockEntity(controllerPos);
             if (te instanceof TileEntityAssemblyController) {
                 ((TileEntityAssemblyController) te).invalidateAssemblySystem();
             }

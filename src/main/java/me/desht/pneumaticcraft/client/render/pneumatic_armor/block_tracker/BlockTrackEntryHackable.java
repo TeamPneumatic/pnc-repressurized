@@ -6,7 +6,8 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -20,7 +21,7 @@ import net.minecraft.world.World;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryHackable implements IBlockTrackEntry {
@@ -29,7 +30,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
         return HackClientHandler.enabledForPlayer(ClientUtils.getClientPlayer())
-                && HackableHandler.getHackableForBlock(world, pos, ClientUtils.getClientPlayer()) != null;
+                && HackManager.getHackableForBlock(world, pos, ClientUtils.getClientPlayer()) != null;
     }
 
     @Override
@@ -45,9 +46,11 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
     @Override
     public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
         PlayerEntity player = ClientUtils.getClientPlayer();
-        IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(world, pos, player);
+        IHackableBlock hackableBlock = HackManager.getHackableForBlock(world, pos, player);
         assert hackableBlock != null;
-        int hackTime = ArmorUpgradeClientRegistry.getInstance().byClass(BlockTrackerClientHandler.class).getTargetForCoord(pos).getHackTime();
+        int hackTime = ArmorUpgradeClientRegistry.getInstance()
+                .getClientHandler(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, BlockTrackerClientHandler.class)
+                .getTargetForCoord(pos).getHackTime();
         if (hackTime == 0) {
             hackableBlock.addInfo(world, pos, infoList, player);
             HackClientHandler.addKeybindTooltip(infoList);

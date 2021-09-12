@@ -4,15 +4,17 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 
 public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     public BlockPressureChamberGlass() {
-        super(IBlockPressureChamber.pressureChamberBlockProps().notSolid());
+        super(IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
     }
 
     @Override
@@ -21,8 +23,8 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (worldIn.isRemote()) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (worldIn.isClientSide()) {
             PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, TileEntityPressureChamberGlass.class).ifPresent(teGlass -> {
                 teGlass.requestModelDataUpdate();
                 // handle any glass that's diagonally connected
@@ -34,16 +36,21 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
                 }
             });
         }
-        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
-    public boolean isSideInvisible(BlockState ourState, BlockState theirState, Direction side) {
-        return ourState.getBlock() == theirState.getBlock() || super.isSideInvisible(ourState, theirState, side);
+    public boolean shouldDisplayFluidOverlay(BlockState state, IBlockDisplayReader world, BlockPos pos, FluidState fluidState) {
+        return true;
     }
 
     @Override
-    public float getAmbientOcclusionLightValue(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
+    public boolean skipRendering(BlockState ourState, BlockState theirState, Direction side) {
+        return ourState.getBlock() == theirState.getBlock() || super.skipRendering(ourState, theirState, side);
+    }
+
+    @Override
+    public float getShadeBrightness(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
         return 0.2F;
     }
 

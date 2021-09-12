@@ -19,7 +19,7 @@ public class GuiStatBalloon {
     }
 
     public void render(MatrixStack matrixStack) {
-        Minecraft.getInstance().fontRenderer.drawString(matrixStack, text, x, y, -90);
+        Minecraft.getInstance().font.draw(matrixStack, text, x, y, -90);
     }
 
 }

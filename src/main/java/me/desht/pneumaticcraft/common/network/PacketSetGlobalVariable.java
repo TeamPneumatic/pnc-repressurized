@@ -31,12 +31,12 @@ public class PacketSetGlobalVariable extends LocationIntPacket {
 
     public PacketSetGlobalVariable(PacketBuffer buf) {
         super(buf);
-        this.varName = buf.readString(32767);
+        this.varName = buf.readUtf(32767);
     }
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeString(varName);
+        buf.writeUtf(varName);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

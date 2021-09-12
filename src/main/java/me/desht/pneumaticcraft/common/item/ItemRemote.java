@@ -43,33 +43,33 @@ public class ItemRemote extends Item {
     private static final String NBT_SECURITY_POS = "securityPos";
 
     public ItemRemote() {
-        super(ModItems.defaultProps().maxStackSize(1));
+        super(ModItems.defaultProps().stacksTo(1));
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
-        ItemStack stack = player.getHeldItem(handIn);
-        if (!world.isRemote) {
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
+        ItemStack stack = player.getItemInHand(handIn);
+        if (!world.isClientSide) {
             openGui(player, stack, handIn);
         }
-        return ActionResult.resultSuccess(stack);
+        return ActionResult.success(stack);
     }
 
     @Override
     public ActionResultType onItemUseFirst(ItemStack remote, ItemUseContext ctx) {
         PlayerEntity player = ctx.getPlayer();
-        World world = ctx.getWorld();
-        BlockPos pos = ctx.getPos();
-        TileEntity te = world.getTileEntity(pos);
+        World world = ctx.getLevel();
+        BlockPos pos = ctx.getClickedPos();
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof TileEntitySecurityStation) {
-            if (!world.isRemote && player.isSneaking() && isAllowedToEdit(player, remote)) {
+            if (!world.isClientSide && player.isShiftKeyDown() && isAllowedToEdit(player, remote)) {
                 if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {
                     GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                     setSecurityStationPos(remote, gPos);
-                    player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", GlobalPosHelper.prettyPrint(gPos)), false);
+                    player.displayClientMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", GlobalPosHelper.prettyPrint(gPos)), false);
                     return ActionResultType.SUCCESS;
                 } else {
-                    player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
+                    player.displayClientMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
                 }
             }
         }
@@ -81,8 +81,8 @@ public class ItemRemote extends Item {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack remote, World world, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
-        super.addInformation(remote, world, curInfo, moreInfo);
+    public void appendHoverText(ItemStack remote, World world, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
+        super.appendHoverText(remote, world, curInfo, moreInfo);
         curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.sneakRightClickToEdit"));
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
@@ -116,7 +116,7 @@ public class ItemRemote extends Item {
             if (te instanceof TileEntitySecurityStation) {
                 boolean canAccess = ((TileEntitySecurityStation) te).doesAllowPlayer(player);
                 if (!canAccess) {
-                    player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.remote.noEditRights", gPos).mergeStyle(TextFormatting.RED), false);
+                    player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(TextFormatting.RED), false);
                 }
                 return canAccess;
             }
@@ -135,7 +135,7 @@ public class ItemRemote extends Item {
 
     @Override
     public void inventoryTick(ItemStack remote, World world, Entity entity, int slot, boolean holdingItem) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             GlobalPos gPos = getSecurityStationPos(remote);
             if (gPos != null) {
                 TileEntity te = GlobalPosHelper.getTileEntity(gPos);
@@ -157,7 +157,7 @@ public class ItemRemote extends Item {
 
         @Override
         public ITextComponent getDisplayName() {
-            return stack.getDisplayName();
+            return stack.getHoverName();
         }
 
         @Nullable

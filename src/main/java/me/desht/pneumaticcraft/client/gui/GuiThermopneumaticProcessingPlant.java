@@ -35,7 +35,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
     public GuiThermopneumaticProcessingPlant(ContainerThermopneumaticProcessingPlant container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
-        ySize = 212;
+        imageHeight = 212;
     }
 
     @Override
@@ -47,13 +47,13 @@ public class GuiThermopneumaticProcessingPlant extends
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(guiLeft + 13, guiTop + 19, te.getInputTank()));
-        addButton(new WidgetTank(guiLeft + 79, guiTop + 19, te.getOutputTank()));
+        addButton(new WidgetTank(leftPos + 13, topPos + 19, te.getInputTank()));
+        addButton(new WidgetTank(leftPos + 79, topPos + 19, te.getOutputTank()));
 
-        tempWidget = new WidgetTemperature(guiLeft + 105, guiTop + 25, TemperatureRange.of(273, 673), 273, 50);
+        tempWidget = new WidgetTemperature(leftPos + 105, topPos + 25, TemperatureRange.of(273, 673), 273, 50);
         addButton(tempWidget);
 
-        dumpButton = new WidgetButtonExtended(guiLeft + 14, guiTop + 86, 14, 14, StringTextComponent.EMPTY)
+        dumpButton = new WidgetButtonExtended(leftPos + 14, topPos + 86, 14, 14, StringTextComponent.EMPTY)
                 .withTag("dump");
         addButton(dumpButton);
 
@@ -73,32 +73,32 @@ public class GuiThermopneumaticProcessingPlant extends
         tempWidget.autoScaleForTemperature();
 
         if (hasShiftDown()) {
-            dumpButton.setMessage(new StringTextComponent("X").mergeStyle(TextFormatting.RED));
+            dumpButton.setMessage(new StringTextComponent("X").withStyle(TextFormatting.RED));
             dumpButton.setTooltipKey("pneumaticcraft.gui.thermopneumatic.dumpInput");
         } else {
-            dumpButton.setMessage(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT).mergeStyle(TextFormatting.DARK_AQUA));
+            dumpButton.setMessage(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT).withStyle(TextFormatting.DARK_AQUA));
             dumpButton.setTooltipKey("pneumaticcraft.gui.thermopneumatic.moveInput");
         }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        super.renderBg(matrixStack, partialTicks, x, y);
 
         // animated progress bar
         double progress = te.getCraftingPercentage();
         int progressWidth = (int) (progress * 48);
         bindGuiTexture();
-        blit(matrixStack, guiLeft + 30, guiTop + 36, xSize, 0, progressWidth, 30);
+        blit(matrixStack, leftPos + 30, topPos + 36, imageWidth, 0, progressWidth, 30);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        matrixStack.push();
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        matrixStack.pushPose();
         matrixStack.scale(0.95f, 1f, 1f);
-        font.func_238422_b_(matrixStack, title.func_241878_f(), xSize / 2f - font.getStringPropertyWidth(title) / 2.1f , 5, 0x404040);
-        matrixStack.pop();
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+        font.draw(matrixStack, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2.1f , 5, 0x404040);
+        matrixStack.popPose();
+        super.renderLabels(matrixStack, x, y);
 
     }
 
@@ -109,9 +109,9 @@ public class GuiThermopneumaticProcessingPlant extends
 
     @Override
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4 + 14, yStart + ySize / 4 - 2);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        return new PointXY(xStart + imageWidth * 3 / 4 + 14, yStart + imageHeight / 4 - 2);
     }
 
     @Override

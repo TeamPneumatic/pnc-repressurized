@@ -117,11 +117,11 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
 
         tank.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             ticker++;
             if (currentDepth > 0) {
                 int curCheckingPipe = ticker % currentDepth;
-                if (curCheckingPipe > 0 && !isPipe(world, getPos().offset(Direction.DOWN, curCheckingPipe))) {
+                if (curCheckingPipe > 0 && !isPipe(level, getBlockPos().relative(Direction.DOWN, curCheckingPipe))) {
                     currentDepth = curCheckingPipe - 1;
                 }
             }
@@ -152,12 +152,12 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     private void retractPipes() {
         if (currentDepth > 0) {
             status = Status.RETRACTING;
-            if (isPipe(world, getPos().add(0, -currentDepth, 0))) {
-                BlockPos pos1 = getPos().offset(Direction.DOWN, currentDepth);
-                ItemStack toInsert = new ItemStack(world.getBlockState(pos1).getBlock());
+            if (isPipe(level, getBlockPos().offset(0, -currentDepth, 0))) {
+                BlockPos pos1 = getBlockPos().relative(Direction.DOWN, currentDepth);
+                ItemStack toInsert = new ItemStack(level.getBlockState(pos1).getBlock());
                 if (inventory.insertItem(0, toInsert, true).isEmpty()) {
                     inventory.insertItem(0, toInsert, false);
-                    world.destroyBlock(pos1, false);
+                    level.destroyBlock(pos1, false);
                     addAir(-100);
                     currentDepth--;
                 } else {
@@ -170,23 +170,23 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     }
 
     private boolean tryDigDown() {
-        if (isUnbreakable(getPos().offset(Direction.DOWN, currentDepth + 1))) {
+        if (isUnbreakable(getBlockPos().relative(Direction.DOWN, currentDepth + 1))) {
             status = Status.STUCK;
-        } else if (getPos().getY() - currentDepth >= 0) {
+        } else if (getBlockPos().getY() - currentDepth >= 0) {
             status = Status.DIGGING;
             currentDepth++;
-            BlockPos pos1 = getPos().offset(Direction.DOWN, currentDepth);
-            if (!isPipe(world, pos1)) {
+            BlockPos pos1 = getBlockPos().relative(Direction.DOWN, currentDepth);
+            if (!isPipe(level, pos1)) {
                 ItemStack extracted = inventory.extractItem(0, 1, true);
                 if (extracted.getItem() == ModBlocks.DRILL_PIPE.get().asItem()) {
-                    BlockState currentState = world.getBlockState(pos1);
-                    BlockState newState = ((BlockItem) extracted.getItem()).getBlock().getDefaultState();
+                    BlockState currentState = level.getBlockState(pos1);
+                    BlockState newState = ((BlockItem) extracted.getItem()).getBlock().defaultBlockState();
 
-                    int airRequired = Math.round(66.66f * currentState.getBlockHardness(world, pos1));
+                    int airRequired = Math.round(66.66f * currentState.getDestroySpeed(level, pos1));
                     if (airHandler.getAir() > airRequired) {
                         inventory.extractItem(0, 1, false);
-                        world.destroyBlock(pos1, false);
-                        world.setBlockState(pos1, newState);
+                        level.destroyBlock(pos1, false);
+                        level.setBlockAndUpdate(pos1, newState);
                         // kludge: don't permit placing more than one tube per tick
                         // causes TE cache problems - root cause to be determined
                         workTimer = 19;
@@ -211,18 +211,18 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     }
 
     private boolean isUnbreakable(BlockPos pos) {
-        return getWorld().getBlockState(pos).getBlockHardness(world, pos) < 0;
+        return getLevel().getBlockState(pos).getDestroySpeed(level, pos) < 0;
     }
 
     private boolean suckLiquid() {
-        BlockPos pos = getPos().offset(Direction.DOWN, currentDepth + 1);
+        BlockPos pos = getBlockPos().relative(Direction.DOWN, currentDepth + 1);
 
-        FluidState fluidState = world.getFluidState(pos);
-        if (fluidState.getFluid() == Fluids.EMPTY) {
+        FluidState fluidState = level.getFluidState(pos);
+        if (fluidState.getType() == Fluids.EMPTY) {
             pumpingLake = null;
             return false;
         }
-        FluidStack fluidStack = new FluidStack(fluidState.getFluid(), FluidAttributes.BUCKET_VOLUME);
+        FluidStack fluidStack = new FluidStack(fluidState.getType(), FluidAttributes.BUCKET_VOLUME);
 
         if (tank.fill(fluidStack, FluidAction.SIMULATE) == fluidStack.getAmount()) {
             if (pumpingLake == null) {
@@ -232,7 +232,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
             BlockPos curPos = null;
             while (pumpingLake.size() > 0) {
                 curPos = pumpingLake.get(0);
-                if (FluidUtils.isSourceFluidBlock(getWorld(), curPos, fluidStack.getFluid())) {
+                if (FluidUtils.isSourceFluidBlock(getLevel(), curPos, fluidStack.getFluid())) {
                     foundSource = true;
                     break;
                 }
@@ -241,7 +241,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
             if (pumpingLake.isEmpty()) {
                 pumpingLake = null;
             } else if (foundSource) {
-                FluidStack taken = FluidUtils.tryPickupFluid(fluidCap, world, curPos, false, FluidAction.EXECUTE);
+                FluidStack taken = FluidUtils.tryPickupFluid(fluidCap, level, curPos, false, FluidAction.EXECUTE);
                 if (taken.getAmount() == FluidAttributes.BUCKET_VOLUME) {
                     addAir(-100);
                     status = Status.PUMPING;
@@ -254,23 +254,23 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     private void findLake(Fluid fluid) {
         pumpingLake = new ArrayList<>();
         Stack<BlockPos> pendingPositions = new Stack<>();
-        BlockPos thisPos = getPos().offset(Direction.DOWN, currentDepth + 1);
+        BlockPos thisPos = getBlockPos().relative(Direction.DOWN, currentDepth + 1);
         pendingPositions.add(thisPos);
         pumpingLake.add(thisPos);
         while (!pendingPositions.empty()) {
             BlockPos checkingPos = pendingPositions.pop();
             for (Direction d : DirectionUtil.VALUES) {
                 if (d == Direction.DOWN) continue;
-                BlockPos newPos = checkingPos.offset(d);
+                BlockPos newPos = checkingPos.relative(d);
                 if (PneumaticCraftUtils.distBetweenSq(newPos, thisPos) <= MAX_PUMP_RANGE_SQUARED
-                        && FluidUtils.isSourceFluidBlock(getWorld(), newPos, fluid)
+                        && FluidUtils.isSourceFluidBlock(getLevel(), newPos, fluid)
                         && !pumpingLake.contains(newPos)) {
                     pendingPositions.add(newPos);
                     pumpingLake.add(newPos);
                 }
             }
         }
-        pumpingLake.sort(new ChunkPositionSorter(getPos().getX() + 0.5, getPos().getY() - currentDepth - 1, getPos().getZ() + 0.5, IBlockOrdered.Ordering.HIGH_TO_LOW));
+        pumpingLake.sort(new ChunkPositionSorter(getBlockPos().getX() + 0.5, getBlockPos().getY() - currentDepth - 1, getBlockPos().getZ() + 0.5, IBlockOrdered.Ordering.HIGH_TO_LOW));
         Collections.reverse(pumpingLake);
     }
 
@@ -296,8 +296,8 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.put("Items", inventory.serializeNBT());
         tag.putString("mode", pumpMode.toString());
@@ -306,8 +306,8 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
@@ -336,7 +336,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerGasLift(i, playerInventory, getPos());
+        return new ContainerGasLift(i, playerInventory, getBlockPos());
     }
 
     @Nonnull

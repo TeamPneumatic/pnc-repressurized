@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -27,13 +28,16 @@ public class MovingSounds {
         MINIGUN,
         ELEVATOR,
         AIR_LEAK,
-        JACKHAMMER
+        JACKHAMMER;
     }
 
     // track existing moving sound objects for blocks that can't easily tell when to start playing a sound
     private static final Map<BlockPos, TickableSound> posToTickableSound = new HashMap<>();
 
     private static TickableSound createMovingSound(Sound s, Object focus, Object... extraData) {
+        ClientWorld world = Minecraft.getInstance().level;
+        if (world == null) return null;
+
         switch (s) {
             case JET_BOOTS:
                 if (focus instanceof PlayerEntity) {
@@ -44,26 +48,24 @@ public class MovingSounds {
                 if (focus instanceof PlayerEntity || focus instanceof EntityDrone) {
                     return new MovingSoundMinigun((Entity) focus);
                 } else if (focus instanceof BlockPos) {
-                    TileEntity te = Minecraft.getInstance().world.getTileEntity((BlockPos) focus);
+                    TileEntity te = world.getBlockEntity((BlockPos) focus);
                     return te == null ? null : new MovingSoundMinigun(te);
                 }
                 break;
             case ELEVATOR:
                 if (focus instanceof BlockPos) {
-                    TileEntity te = Minecraft.getInstance().world.getTileEntity((BlockPos) focus);
-                    if (te instanceof TileEntityElevatorBase) {
-                        return new MovingSoundElevator((TileEntityElevatorBase) te);
-                    }
+                    TileEntity te = world.getBlockEntity((BlockPos) focus);
+                    return te instanceof TileEntityElevatorBase ? new MovingSoundElevator((TileEntityElevatorBase) te) : null;
                 }
                 break;
             case AIR_LEAK:
                 if (focus instanceof BlockPos) {
                     TickableSound sound = posToTickableSound.get(focus);
-                    if (sound != null && !sound.isDonePlaying()) {
+                    if (sound != null && !sound.isStopped()) {
                         return null;  // a sound is still playing; don't start another one
                     }
-                    TileEntity te = Minecraft.getInstance().world.getTileEntity((BlockPos) focus);
-                    if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
+                    TileEntity te = world.getBlockEntity((BlockPos) focus);
+                    if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
                         sound = new MovingSoundAirLeak(te, (Direction) extraData[0]);
                         posToTickableSound.put((BlockPos) focus, sound);
                         return sound;
@@ -81,7 +83,7 @@ public class MovingSounds {
     public static void playMovingSound(Sound s, Object focus, Object... extraData) {
         TickableSound movingSound = createMovingSound(s, focus, extraData);
         if (movingSound != null) {
-            Minecraft.getInstance().getSoundHandler().play(movingSound);
+            Minecraft.getInstance().getSoundManager().play(movingSound);
         }
     }
 
@@ -89,14 +91,14 @@ public class MovingSounds {
     private static class Listener {
         @SubscribeEvent
         public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
-            if (event.getWorld().isRemote && event.getEntity() instanceof ClientPlayerEntity) {
+            if (event.getWorld().isClientSide && event.getEntity() instanceof ClientPlayerEntity) {
                 posToTickableSound.clear();
             }
         }
 
         @SubscribeEvent
         public static void clientTick(TickEvent.ClientTickEvent event) {
-            posToTickableSound.values().removeIf(TickableSound::isDonePlaying);
+            posToTickableSound.values().removeIf(TickableSound::isStopped);
         }
     }
 }

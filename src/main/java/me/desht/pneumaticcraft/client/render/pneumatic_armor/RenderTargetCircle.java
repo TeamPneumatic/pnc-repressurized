@@ -54,9 +54,9 @@ public class RenderTargetCircle {
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float size, float partialTicks, float alpha) {
         double renderRotationAngle = MathHelper.lerp(partialTicks, oldRotationAngle, rotationAngle);
 
-        matrixStack.push();
+        matrixStack.pushPose();
 
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees((float) renderRotationAngle));
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) renderRotationAngle));
 
         for (int pass = 0; pass < 2; pass++) {
             RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
@@ -85,9 +85,9 @@ public class RenderTargetCircle {
                 });
             }
 
-            matrixStack.rotate(Vector3f.ZP.rotationDegrees(180));
+            matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private float[] getCircleColour(Entity entity) {

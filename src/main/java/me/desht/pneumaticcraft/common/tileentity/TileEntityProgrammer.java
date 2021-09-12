@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -19,7 +20,6 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -82,8 +82,8 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         if (tag.contains(NBTKeys.NBT_REDSTONE_MODE)) {
@@ -98,13 +98,13 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.put("Items", inventory.serializeNBT());
         tag.put("history", history);
         tag.putBoolean("ProgramOnInsert", programOnInsert);
@@ -134,7 +134,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 lab.setY(w.getY());
                 result.add(lab);
                 ProgWidgetText text = new ProgWidgetText();
-                text.string = "Merge #" + world.getGameTime();
+                text.string = "Merge #" + level.getGameTime();
                 text.setX(lab.getX() + lab.getWidth() / 2);
                 text.setY(lab.getY());
                 result.add(text);
@@ -313,14 +313,14 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public void setText(int textFieldID, String text) {
         ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT).copy();
         if (textFieldID == 0 && !stack.isEmpty()) {
-            stack.setDisplayName(new StringTextComponent(text));
+            stack.setHoverName(new StringTextComponent(text));
             inventory.setStackInSlot(PROGRAM_SLOT, stack);
         }
     }
 
     @Override
     public String getText(int textFieldID) {
-        return inventory.getStackInSlot(PROGRAM_SLOT).getDisplayName().getString();
+        return inventory.getStackInSlot(PROGRAM_SLOT).getHoverName().getString();
     }
 
     private void tryImport(boolean merge) {
@@ -341,7 +341,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
                 if (required > 0) {
                     if (!takePuzzlePieces(player, true)) {
                         if (player instanceof ServerPlayerEntity) {
-                            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.BLOCKS, getPos(), 1.0f, 1.5f, false), (ServerPlayerEntity) player);
+                            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.BLOCKS, getBlockPos(), 1.0f, 1.5f, false), (ServerPlayerEntity) player);
                         }
                         return;
                     }
@@ -353,7 +353,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
             writeProgWidgetsToNBT(stack.getOrCreateTag());
             if (player instanceof ServerPlayerEntity) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundCategory.BLOCKS, getPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundCategory.BLOCKS, getBlockPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
                 AdvancementTriggers.PROGRAM_DRONE.trigger((ServerPlayerEntity) player);
             }
         }
@@ -391,7 +391,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             if (player != null) {
                 ItemHandlerHelper.giveItemToPlayer(player, ItemHandlerHelper.copyStackWithSize(stack, size));
             } else {
-                PneumaticCraftUtils.dropItemOnGround(ItemHandlerHelper.copyStackWithSize(stack, size), getWorld(), getPos());
+                PneumaticCraftUtils.dropItemOnGround(ItemHandlerHelper.copyStackWithSize(stack, size), getLevel(), getBlockPos());
             }
             count -= size;
         }
@@ -409,7 +409,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             List<IProgWidget> inDrone = getProgWidgets(stackInSlot);
             int dronePieces = (int) inDrone.stream().filter(p -> !p.freeToUse()).count();
             int required = (int) progWidgets.stream().filter(p -> !p.freeToUse()).count();
-            return required - dronePieces;
+            return (required - dronePieces) * stackInSlot.getCount();
         } else {
             return 0;
         }
@@ -485,7 +485,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public void tick() {
         super.tick();
 
-        if (!world.isRemote && (world.getGameTime() & 0xf) == 0 && countPlayersUsing() > 0) {
+        if (!level.isClientSide && (level.getGameTime() & 0xf) == 0 && countPlayersUsing() > 0) {
             int total = 0;
             for (Direction dir : DirectionUtil.VALUES) {
                 TileEntity te = getCachedNeighbor(dir);
@@ -548,7 +548,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerProgrammer(i, playerInventory, getPos());
+        return new ContainerProgrammer(i, playerInventory, getBlockPos());
     }
 
     /**
@@ -561,7 +561,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         progWidgets.clear();
         progWidgets.addAll(widgets);
         updatePuzzleConnections(progWidgets);
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             saveToHistory();
             syncToClient(player);
         }
@@ -574,10 +574,10 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
      * @param updatingPlayer the player doing the updating; if non-null, sync packet will not be sent to this player
      */
     private void syncToClient(PlayerEntity updatingPlayer) {
-        if (!getWorld().isRemote) {
-            List<ServerPlayerEntity> players = world.getEntitiesWithinAABB(ServerPlayerEntity.class, new AxisAlignedBB(pos).grow(5));
+        if (!getLevel().isClientSide) {
+            List<ServerPlayerEntity> players = level.getEntitiesOfClass(ServerPlayerEntity.class, new AxisAlignedBB(worldPosition).inflate(5));
             for (ServerPlayerEntity player : players) {
-                if (player != updatingPlayer && player.openContainer instanceof ContainerProgrammer) {
+                if (player != updatingPlayer && player.containerMenu instanceof ContainerProgrammer) {
                     NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(this), player);
                 }
             }
@@ -592,7 +592,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
-            if (programOnInsert && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getWorld().isRemote) {
+            if (programOnInsert && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getLevel().isClientSide) {
                 tryProgramDrone(null);
             }
         }

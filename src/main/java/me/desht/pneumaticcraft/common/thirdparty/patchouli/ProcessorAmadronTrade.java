@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource.Type;
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -13,13 +13,13 @@ import vazkii.patchouli.api.IVariableProvider;
 
 @SuppressWarnings("unused")
 public class ProcessorAmadronTrade implements IComponentProcessor {
-    private AmadronOffer recipe = null;
+    private AmadronRecipe recipe = null;
     private String text = null;
 
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        recipe = PneumaticCraftRecipeType.AMADRON_OFFERS.getRecipe(Minecraft.getInstance().world, recipeId);
+        recipe = PneumaticCraftRecipeType.AMADRON_OFFERS.getRecipe(Minecraft.getInstance().level, recipeId);
         if (recipe == null) {
             Log.warning("Missing amadron offer recipe: " + recipeId);
         }
@@ -37,9 +37,9 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
             case "output":
                 return IVariable.from(recipe.getOutput().getType() == Type.ITEM ? recipe.getOutput().getItem() : recipe.getOutput().getFluid());
             case "name":
-                return IVariable.wrap(recipe.getOutput().getItem().getDisplayName().getString());
+                return IVariable.wrap(recipe.getOutput().getItem().getHoverName().getString());
             case "text":
-                return IVariable.wrap(text == null ? "" : I18n.format(text));
+                return IVariable.wrap(text == null ? "" : I18n.get(text));
         }
 
         return null;

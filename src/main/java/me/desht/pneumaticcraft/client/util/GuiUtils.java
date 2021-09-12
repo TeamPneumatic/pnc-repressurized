@@ -60,12 +60,12 @@ public class GuiUtils {
      */
     public static void renderItemStack(MatrixStack matrixStack, ItemStack stack, int x, int y) {
         if (!stack.isEmpty()) {
-            IBakedModel bakedmodel = itemRenderer.getItemModelWithOverrides(stack, (World)null, Minecraft.getInstance().player);
+            IBakedModel bakedmodel = itemRenderer.getModel(stack, (World)null, Minecraft.getInstance().player);
 
-            matrixStack.push();
+            matrixStack.pushPose();
 
-            Minecraft.getInstance().textureManager.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-            Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
+            Minecraft.getInstance().textureManager.bind(AtlasTexture.LOCATION_BLOCKS);
+            Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS).setFilter(false, false);
             RenderSystem.enableRescaleNormal();
             RenderSystem.enableAlphaTest();
             RenderSystem.defaultAlphaFunc();
@@ -76,21 +76,21 @@ public class GuiUtils {
             matrixStack.translate(8.0F, 8.0F, 0.0F);
             matrixStack.scale(1.0F, -1.0F, 1.0F);
             matrixStack.scale(16.0F, 16.0F, 16.0F);
-            IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-            boolean flag = !bakedmodel.isSideLit();
-            if (!bakedmodel.isSideLit()) {
-                RenderHelper.setupGuiFlatDiffuseLighting();
+            IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+            boolean flag = !bakedmodel.usesBlockLight();
+            if (!bakedmodel.usesBlockLight()) {
+                RenderHelper.setupForFlatItems();
             }
-            itemRenderer.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
-            buffer.finish();
+            itemRenderer.render(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
+            buffer.endBatch();
             RenderSystem.enableDepthTest();
             if (flag) {
-                RenderHelper.setupGui3DDiffuseLighting();
+                RenderHelper.setupFor3DItems();
             }
 
             RenderSystem.disableAlphaTest();
             RenderSystem.disableRescaleNormal();
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 
@@ -99,9 +99,9 @@ public class GuiUtils {
             if (stack.getCount() != 1 || text != null) {
                 String s = text == null ? String.valueOf(stack.getCount()) : text;
                 matrixStack.translate(0.0D, 0.0D, 250F);
-                IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.getImpl(Tessellator.getInstance().getBuffer());
-                fr.renderString(s, (float)(xPosition + 19 - 2 - fr.getStringWidth(s)), (float)(yPosition + 6 + 3), 16777215, true, matrixStack.getLast().getMatrix(), buffer, false, 0, 15728880);
-                buffer.finish();
+                IRenderTypeBuffer.Impl buffer = IRenderTypeBuffer.immediate(Tessellator.getInstance().getBuilder());
+                fr.drawInBatch(s, (float)(xPosition + 19 - 2 - fr.width(s)), (float)(yPosition + 6 + 3), 16777215, true, matrixStack.last().pose(), buffer, false, 0, 15728880);
+                buffer.endBatch();
             }
 
             if (stack.getItem().showDurabilityBar(stack)) {
@@ -110,7 +110,7 @@ public class GuiUtils {
                 RenderSystem.disableAlphaTest();
                 RenderSystem.disableBlend();
                 Tessellator tessellator = Tessellator.getInstance();
-                BufferBuilder bufferbuilder = tessellator.getBuffer();
+                BufferBuilder bufferbuilder = tessellator.getBuilder();
                 double health = stack.getItem().getDurabilityForDisplay(stack);
                 int i = Math.round(13.0F - (float)health * 13.0F);
                 int j = stack.getItem().getRGBDurabilityForDisplay(stack);
@@ -123,14 +123,14 @@ public class GuiUtils {
             }
 
             ClientPlayerEntity clientplayerentity = Minecraft.getInstance().player;
-            float f3 = clientplayerentity == null ? 0.0F : clientplayerentity.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getInstance().getRenderPartialTicks());
+            float f3 = clientplayerentity == null ? 0.0F : clientplayerentity.getCooldowns().getCooldownPercent(stack.getItem(), Minecraft.getInstance().getFrameTime());
             if (f3 > 0.0F) {
                 RenderSystem.disableDepthTest();
                 RenderSystem.disableTexture();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
                 Tessellator tessellator1 = Tessellator.getInstance();
-                BufferBuilder bufferbuilder1 = tessellator1.getBuffer();
+                BufferBuilder bufferbuilder1 = tessellator1.getBuilder();
                 drawUntexturedQuad(matrixStack, bufferbuilder1, xPosition, yPosition + MathHelper.floor(16.0F * (1.0F - f3)), 0F, 16, MathHelper.ceil(16.0F * f3), 255, 255, 255, 127);
                 RenderSystem.enableTexture();
                 RenderSystem.enableDepthTest();
@@ -140,25 +140,25 @@ public class GuiUtils {
 
     public static void renderBlockInGui(MatrixStack matrixStack, BlockState block, float x, float y, float z, float rotate, float scale) {
         final Minecraft mc = Minecraft.getInstance();
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(x, y, z);
         matrixStack.scale(scale, -scale, scale);
         matrixStack.translate(-0.5F, -1F, 0);
 
-        matrixStack.rotate(Vector3f.XP.rotationDegrees(30F));
+        matrixStack.mulPose(Vector3f.XP.rotationDegrees(30F));
 
         matrixStack.translate(0.5F, 0, -0.5F);
-        matrixStack.rotate(Vector3f.YP.rotationDegrees(rotate));
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(rotate));
         matrixStack.translate(-0.5F, 0, 0.5F);
 
         matrixStack.translate(0, 0, -1);
 
-        mc.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-        final IRenderTypeBuffer.Impl buffers = mc.getRenderTypeBuffers().getBufferSource();
-        mc.getBlockRendererDispatcher().renderBlock(block, matrixStack, buffers, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
-        buffers.finish();
+        mc.getTextureManager().bind(PlayerContainer.BLOCK_ATLAS);
+        final IRenderTypeBuffer.Impl buffers = mc.renderBuffers().bufferSource();
+        mc.getBlockRenderer().renderBlock(block, matrixStack, buffers, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+        buffers.endBatch();
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public static void drawFluid(MatrixStack matrixStack, final Rectangle2d bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
@@ -169,7 +169,7 @@ public class GuiUtils {
         Fluid fluid = fluidStack.getFluid();
         ResourceLocation fluidStill = fluid.getAttributes().getStillTexture(fluidStack);
         if (fluidStill == null) fluidStill = MissingTextureSprite.getLocation();
-        TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE).apply(fluidStill);
+        TextureAtlasSprite fluidStillSprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(fluidStill);
 
         int scaledAmount = tank == null ? bounds.getHeight() : fluidStack.getAmount() * bounds.getHeight() / tank.getCapacity();
         if (fluidStack.getAmount() > 0 && scaledAmount < 1) {
@@ -177,7 +177,7 @@ public class GuiUtils {
         }
         scaledAmount = Math.min(scaledAmount, bounds.getHeight());
 
-        Minecraft.getInstance().getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+        Minecraft.getInstance().getTextureManager().bind(AtlasTexture.LOCATION_BLOCKS);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -208,31 +208,31 @@ public class GuiUtils {
     }
 
     private static void drawFluidTexture(MatrixStack matrixStack, float xCoord, float yCoord, TextureAtlasSprite textureSprite, int maskTop, int maskRight, float zLevel, int[] cols) {
-        float uMin = textureSprite.getMinU();
-        float uMax = textureSprite.getMaxU();
-        float vMin = textureSprite.getMinV();
-        float vMax = textureSprite.getMaxV();
+        float uMin = textureSprite.getU0();
+        float uMax = textureSprite.getU1();
+        float vMin = textureSprite.getV0();
+        float vMax = textureSprite.getV1();
         uMax = uMax - maskRight / 16.0f * (uMax - uMin);
         vMax = vMax - maskTop / 16.0f * (vMax - vMin);
 
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder worldrenderer = tessellator.getBuffer();
+        BufferBuilder worldrenderer = tessellator.getBuilder();
         worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
-        worldrenderer.pos(posMat, xCoord, yCoord + 16, zLevel).color(cols[1], cols[2], cols[3], cols[0]).tex(uMin, vMax).endVertex();
-        worldrenderer.pos(posMat,xCoord + 16 - maskRight, yCoord + 16, zLevel).color(cols[1], cols[2], cols[3], cols[0]).tex(uMax, vMax).endVertex();
-        worldrenderer.pos(posMat, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).color(cols[1], cols[2], cols[3], cols[0]).tex(uMax, vMin).endVertex();
-        worldrenderer.pos(posMat, xCoord, yCoord + maskTop, zLevel).color(cols[1], cols[2], cols[3], cols[0]).tex(uMin, vMin).endVertex();
-        tessellator.draw();
+        worldrenderer.vertex(posMat, xCoord, yCoord + 16, zLevel).color(cols[1], cols[2], cols[3], cols[0]).uv(uMin, vMax).endVertex();
+        worldrenderer.vertex(posMat,xCoord + 16 - maskRight, yCoord + 16, zLevel).color(cols[1], cols[2], cols[3], cols[0]).uv(uMax, vMax).endVertex();
+        worldrenderer.vertex(posMat, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).color(cols[1], cols[2], cols[3], cols[0]).uv(uMax, vMin).endVertex();
+        worldrenderer.vertex(posMat, xCoord, yCoord + maskTop, zLevel).color(cols[1], cols[2], cols[3], cols[0]).uv(uMin, vMin).endVertex();
+        tessellator.end();
     }
 
     public static void showPopupHelpScreen(MatrixStack matrixStack, Screen screen, FontRenderer fontRenderer, List<ITextComponent> helpText) {
         List<IReorderingProcessor> l = GuiUtils.wrapTextComponentList(helpText, screen.width / 2, fontRenderer);
-        int lineSpacing = fontRenderer.FONT_HEIGHT + 1;
+        int lineSpacing = fontRenderer.lineHeight + 1;
         int boxHeight = Math.min(screen.height, l.size() * lineSpacing);
         int maxLines = boxHeight / lineSpacing;
-        int boxWidth = l.stream().max(Comparator.comparingInt(fontRenderer::func_243245_a)).map(fontRenderer::func_243245_a).orElse(0);
+        int boxWidth = l.stream().max(Comparator.comparingInt(fontRenderer::width)).map(fontRenderer::width).orElse(0);
 
         int x, y;
         if (screen instanceof ContainerScreen) {
@@ -242,16 +242,16 @@ public class GuiUtils {
             x = (screen.width - boxWidth) / 2;
             y = (screen.height - boxHeight) / 2;
         }
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(0, 0, 400);
         drawPanel(matrixStack, x, y, boxHeight, boxWidth);
 
         for (IReorderingProcessor line : l) {
-            fontRenderer.func_238422_b_(matrixStack, line, x, y, 0xFFE0E0E0);  // draw reordering processor w/o drop shadow
+            fontRenderer.draw(matrixStack, line, x, y, 0xFFE0E0E0);  // draw reordering processor w/o drop shadow
             y += lineSpacing;
             if (maxLines-- == 0) break;
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public static void drawPanel(MatrixStack matrixStack, int x, int y, int panelHeight, int panelWidth) {
@@ -264,36 +264,36 @@ public class GuiUtils {
 
 
     public static void drawTexture(MatrixStack matrixStack, ResourceLocation texture, int x, int y) {
-        Minecraft.getInstance().getTextureManager().bindTexture(texture);
+        Minecraft.getInstance().getTextureManager().bind(texture);
         RenderSystem.enableTexture();
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
-        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+        Matrix4f posMat = matrixStack.last().pose();
+        BufferBuilder builder = Tessellator.getInstance().getBuilder();
         builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
-        builder.pos(posMat, x, y + 16, 0).color(255, 255, 255, 255).tex(0.0f, 1.0f).endVertex();
-        builder.pos(posMat, x + 16, y + 16, 0).color(255, 255, 255, 255).tex(1.0f, 1.0f).endVertex();
-        builder.pos(posMat, x + 16, y, 0).color(255, 255, 255, 255).tex(1.0f, 0.0f).endVertex();
-        builder.pos(posMat, x, y, 0).color(255, 255, 255, 255).tex(0.0f, 0.0f).endVertex();
-        Tessellator.getInstance().draw();
+        builder.vertex(posMat, x, y + 16, 0).color(255, 255, 255, 255).uv(0.0f, 1.0f).endVertex();
+        builder.vertex(posMat, x + 16, y + 16, 0).color(255, 255, 255, 255).uv(1.0f, 1.0f).endVertex();
+        builder.vertex(posMat, x + 16, y, 0).color(255, 255, 255, 255).uv(1.0f, 0.0f).endVertex();
+        builder.vertex(posMat, x, y, 0).color(255, 255, 255, 255).uv(0.0f, 0.0f).endVertex();
+        Tessellator.getInstance().end();
     }
 
     public static void drawUntexturedQuad(MatrixStack matrixStack, BufferBuilder renderer, float x, float y, float z, float width, float height, int red, int green, int blue, int alpha) {
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         renderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        renderer.pos(posMat, x, y, z).color(red, green, blue, alpha).endVertex();
-        renderer.pos(posMat, x, y + height, z).color(red, green, blue, alpha).endVertex();
-        renderer.pos(posMat, x + width, y + height, z).color(red, green, blue, alpha).endVertex();
-        renderer.pos(posMat, x + width,  y, z).color(red, green, blue, alpha).endVertex();
-        Tessellator.getInstance().draw();
+        renderer.vertex(posMat, x, y, z).color(red, green, blue, alpha).endVertex();
+        renderer.vertex(posMat, x, y + height, z).color(red, green, blue, alpha).endVertex();
+        renderer.vertex(posMat, x + width, y + height, z).color(red, green, blue, alpha).endVertex();
+        renderer.vertex(posMat, x + width,  y, z).color(red, green, blue, alpha).endVertex();
+        Tessellator.getInstance().end();
     }
 
     public static void drawOutline(MatrixStack matrixStack, BufferBuilder renderer, float x, float y, float z, float width, float height, int red, int green, int blue, int alpha) {
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         renderer.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
-        renderer.pos(posMat, x, y, z).color(red, green, blue, alpha).endVertex();
-        renderer.pos(posMat, x, y + height, z).color(red, green, blue, alpha).endVertex();
-        renderer.pos(posMat, x + width, y + height, z).color(red, green, blue, alpha).endVertex();
-        renderer.pos(posMat, x + width,  y, z).color(red, green, blue, alpha).endVertex();
-        Tessellator.getInstance().draw();
+        renderer.vertex(posMat, x, y, z).color(red, green, blue, alpha).endVertex();
+        renderer.vertex(posMat, x, y + height, z).color(red, green, blue, alpha).endVertex();
+        renderer.vertex(posMat, x + width, y + height, z).color(red, green, blue, alpha).endVertex();
+        renderer.vertex(posMat, x + width,  y, z).color(red, green, blue, alpha).endVertex();
+        Tessellator.getInstance().end();
     }
 
     /**
@@ -310,26 +310,26 @@ public class GuiUtils {
 
     public static void drawScaledText(MatrixStack matrixStack, FontRenderer fr, String text, int x, int y, int color, float scale) {
         if (scale != 1.0f) {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(x, y, 0);
             matrixStack.scale(scale, scale, scale);
-            fr.drawString(matrixStack, text, 0, 0, color);
-            matrixStack.pop();
+            fr.draw(matrixStack, text, 0, 0, color);
+            matrixStack.popPose();
         } else {
-            fr.drawString(matrixStack, text, x, y, color);
+            fr.draw(matrixStack, text, x, y, color);
         }
     }
 
     public static List<IReorderingProcessor> wrapTextComponentList(List<ITextComponent> text, int maxWidth, FontRenderer font) {
         ImmutableList.Builder<IReorderingProcessor> builder = ImmutableList.builder();
         for (ITextComponent line : text) {
-            builder.addAll(RenderComponentsUtil.func_238505_a_(line, maxWidth, font));
+            builder.addAll(RenderComponentsUtil.wrapComponents(line, maxWidth, font));
         }
         return builder.build();
     }
 
     public static List<ITextComponent> xlateAndSplit(String key, Object... params) {
-        return Arrays.stream(StringUtils.splitByWholeSeparator(I18n.format(key, params), TRANSLATION_LINE_BREAK))
+        return Arrays.stream(StringUtils.splitByWholeSeparator(I18n.get(key, params), TRANSLATION_LINE_BREAK))
                 .map(StringTextComponent::new)
                 .collect(Collectors.toList());
     }

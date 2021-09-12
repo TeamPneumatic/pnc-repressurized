@@ -23,13 +23,13 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
     private final byte side;
 
     public PacketSyncRedstoneModuleToClient(ModuleRedstone module) {
-        super(module.getTube().getPos());
+        super(module.getTube().getBlockPos());
 
         this.dir = module.getRedstoneDirection();
         this.outputLevel = module.getRedstoneLevel();
         this.inputLevel = module.getInputLevel();
         this.channel = module.getColorChannel();
-        this.side = (byte) module.getDirection().getIndex();
+        this.side = (byte) module.getDirection().get3DDataValue();
     }
 
     PacketSyncRedstoneModuleToClient(PacketBuffer buffer) {
@@ -54,7 +54,7 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() ->
                 PneumaticCraftUtils.getTileEntityAt(ClientUtils.getClientWorld(), pos, TileEntityPressureTube.class).ifPresent(te -> {
-                    TubeModule module = te.getModule(Direction.byIndex(side));
+                    TubeModule module = te.getModule(Direction.from3DDataValue(side));
                     if (module instanceof ModuleRedstone) {
                         ModuleRedstone mr = (ModuleRedstone) module;
                         mr.setColorChannel(channel);

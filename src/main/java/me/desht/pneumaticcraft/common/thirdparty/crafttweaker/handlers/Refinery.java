@@ -8,6 +8,7 @@ import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.RefineryRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
@@ -30,7 +31,7 @@ public class Refinery implements IRecipeManager {
 	}
 
 	@Override
-	public IRecipeType<RefineryRecipeImpl> getRecipeType() {
+	public IRecipeType<RefineryRecipe> getRecipeType() {
 		return PneumaticCraftRecipeType.REFINERY;
 	}
 }

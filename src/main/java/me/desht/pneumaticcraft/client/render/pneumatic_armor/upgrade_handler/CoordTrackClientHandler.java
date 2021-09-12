@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.CoordinateTrackerOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
@@ -24,9 +25,9 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.MobEntity;
@@ -49,7 +50,7 @@ import java.util.Collections;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<CoordTrackerHandler> {
 //    public static final int SEARCH_RANGE = 150;
 
     private RenderCoordWireframe coordTracker;
@@ -92,9 +93,9 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
         if (coordTracker != null) {
             coordTracker.ticksExisted++;
         } else {
-            BlockPos pos = ItemPneumaticArmor.getCoordTrackerPos(ClientUtils.getWornArmor(EquipmentSlotType.HEAD), armorHandler.getPlayer().world);
+            BlockPos pos = ItemPneumaticArmor.getCoordTrackerPos(ClientUtils.getWornArmor(EquipmentSlotType.HEAD), armorHandler.getPlayer().level);
             if (pos != null) {
-                coordTracker = new RenderCoordWireframe(armorHandler.getPlayer().world, pos);
+                coordTracker = new RenderCoordWireframe(armorHandler.getPlayer().level, pos);
                 navigator = new RenderNavigator(coordTracker.pos);
             }
         }
@@ -113,7 +114,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     @Override
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         if (coordTracker != null) {
-            if (!Minecraft.getInstance().player.world.getDimensionKey().getLocation().equals(coordTracker.worldKey.getLocation()))
+            if (!Minecraft.getInstance().player.level.dimension().location().equals(coordTracker.worldKey.location()))
                 return;
             coordTracker.render(matrixStack, buffer, partialTicks);
             if (PNCConfig.Client.Armor.pathEnabled && navigator != null) {
@@ -123,7 +124,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean upgradeEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -134,15 +135,15 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
 
 
     public EnumNavigationResult navigateToSurface(PlayerEntity player) {
-        World world = player.world;
-        BlockPos navigatingPos = world.getHeight(Heightmap.Type.WORLD_SURFACE, player.getPosition());
+        World world = player.level;
+        BlockPos navigatingPos = world.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, player.blockPosition());
         MobEntity e = PneumaticCraftUtils.createDummyEntity(player);
-        Path path = e.getNavigator().getPathToPos(navigatingPos, 0);
+        Path path = e.getNavigation().createPath(navigatingPos, 0);
         if (path != null) {
-            for (int i = 0; i < path.getCurrentPathLength(); i++) {
-                PathPoint pathPoint = path.getPathPointFromIndex(i);
+            for (int i = 0; i < path.getNodeCount(); i++) {
+                PathPoint pathPoint = path.getNode(i);
                 BlockPos pathPos = new BlockPos(pathPoint.x, pathPoint.y, pathPoint.z);
-                if (world.canBlockSeeSky(pathPos)) {
+                if (world.canSeeSkyFromBelowWater(pathPos)) {
                     coordTracker = new RenderCoordWireframe(world, pathPos);
                     navigator = new RenderNavigator(pathPos);
                     return EnumNavigationResult.EASY_PATH;
@@ -151,10 +152,10 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
         }
         path = getDronePath(player, navigatingPos);
         if (path != null) {
-            for (int i = 0; i < path.getCurrentPathLength(); i++) {
-                PathPoint pathPoint = path.getPathPointFromIndex(i);
+            for (int i = 0; i < path.getNodeCount(); i++) {
+                PathPoint pathPoint = path.getNode(i);
                 BlockPos pathPos = new BlockPos(pathPoint.x, pathPoint.y, pathPoint.z);
-                if (world.canBlockSeeSky(pathPos)) {
+                if (world.canSeeSkyFromBelowWater(pathPos)) {
                     coordTracker = new RenderCoordWireframe(world, pathPos);
                     navigator = new RenderNavigator(pathPos);
                     return EnumNavigationResult.DRONE_PATH;
@@ -165,10 +166,10 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     public static Path getDronePath(PlayerEntity player, BlockPos pos) {
-        World world = player.world;
+        World world = player.level;
         EntityDrone drone = new EntityDrone(ModEntities.DRONE.get(), world);
-        drone.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
-        return new EntityPathNavigateDrone(drone, world).getPathToPos(pos, 0);
+        drone.setPos(player.getX(), player.getY(), player.getZ());
+        return new EntityPathNavigateDrone(drone, world).createPath(pos, 0);
     }
 
     @Override
@@ -180,24 +181,25 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     public static class Listener {
         @SubscribeEvent
         public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
-            ItemStack helmetStack = event.getPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
-            if (!event.getWorld().isRemote || event.getPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
+            ItemStack helmetStack = event.getPlayer().getItemBySlot(EquipmentSlotType.HEAD);
+            if (!event.getWorld().isClientSide || event.getPlayer().getItemBySlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
                 return;
             }
             CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
             if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.COORDINATE_TRACKER) == 0) return;
 
-            CoordTrackClientHandler handler = (CoordTrackClientHandler) ArmorUpgradeClientRegistry.getInstance().getClientHandler(ArmorUpgradeRegistry.getInstance().coordTrackerHandler);
+            CoordTrackClientHandler handler = ArmorUpgradeClientRegistry.getInstance()
+                    .getClientHandler(ArmorUpgradeRegistry.getInstance().coordTrackerHandler, CoordTrackClientHandler.class);
             if (handler.isListeningToCoordTrackerSetting) {
                 handler.isListeningToCoordTrackerSetting = false;
                 if (event.getFace() != null) {
                     handler.reset();
-                    GlobalPos gPos = GlobalPosHelper.makeGlobalPos(event.getWorld(), event.getPos().offset(event.getFace()));
+                    GlobalPos gPos = GlobalPosHelper.makeGlobalPos(event.getWorld(), event.getPos().relative(event.getFace()));
                     ItemPneumaticArmor.setCoordTrackerPos(helmetStack, gPos);
                     CompoundNBT tag = new CompoundNBT();
                     tag.put(ItemPneumaticArmor.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
-                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag));
-                    HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.selectedTarget", PneumaticCraftUtils.posToString(gPos.getPos())), Collections.emptyList(), 60, 0x8000AA00);
+                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag, handler.getCommonHandler().getID()));
+                    HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.selectedTarget", PneumaticCraftUtils.posToString(gPos.pos())), Collections.emptyList(), 60, 0x8000AA00);
                 }
             }
         }

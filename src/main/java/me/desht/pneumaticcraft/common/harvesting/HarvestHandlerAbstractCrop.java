@@ -29,10 +29,10 @@ public abstract class HarvestHandlerAbstractCrop extends HarvestHandler {
     @Override
     public boolean harvestAndReplant(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone){
         harvest(world, chunkCache, pos, state, drone);
-        List<ItemEntity> seedItems = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos), entityItem -> isSeed(world, pos, state, entityItem.getItem()));
+        List<ItemEntity> seedItems = world.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(pos), entityItem -> isSeed(world, pos, state, entityItem.getItem()));
         if(!seedItems.isEmpty()){
             seedItems.get(0).getItem().shrink(1);//Use a seed
-            world.setBlockState(pos, withMinAge(state)); //And plant it.
+            world.setBlockAndUpdate(pos, withMinAge(state)); //And plant it.
             return true;
         }else{
             return false;

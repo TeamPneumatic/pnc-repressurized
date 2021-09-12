@@ -12,7 +12,7 @@ public abstract class FluidEtchingAcid {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(
             new ResourceLocation("minecraft:block/water_still"),
             new ResourceLocation("minecraft:block/water_flow")
-    ).color(MaterialColor.EMERALD.colorValue | 0xFF000000);
+    ).color(MaterialColor.EMERALD.col | 0xFF000000);
 
     private static final ForgeFlowingFluid.Properties PROPS =
             new ForgeFlowingFluid.Properties(ModFluids.ETCHING_ACID, ModFluids.ETCHING_ACID_FLOWING, ATTRS)

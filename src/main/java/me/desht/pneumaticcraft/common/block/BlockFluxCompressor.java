@@ -11,12 +11,12 @@ public class BlockFluxCompressor extends BlockPneumaticCraft {
     public BlockFluxCompressor() {
         super(ModBlocks.defaultProps());
 
-        setDefaultState(getStateContainer().getBaseState().with(BlockPneumaticDynamo.ACTIVE, false));
+        registerDefaultState(getStateDefinition().any().setValue(BlockPneumaticDynamo.ACTIVE, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(BlockPneumaticDynamo.ACTIVE);
     }

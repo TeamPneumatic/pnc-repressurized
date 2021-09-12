@@ -27,44 +27,44 @@ public class RenderAssemblyDrill extends AbstractTileModelRenderer<TileEntityAss
 
         baseTurn = new ModelRenderer(64, 64, 0, 17);
         baseTurn.addBox(0F, 0F, 0F, 7, 1, 7);
-        baseTurn.setRotationPoint(-3.5F, 22F, -3.5F);
+        baseTurn.setPos(-3.5F, 22F, -3.5F);
         baseTurn.mirror = true;
         baseTurn2 = new ModelRenderer(64, 64, 28, 17);
         baseTurn2.addBox(0F, 0F, 0F, 4, 5, 4);
-        baseTurn2.setRotationPoint(-2F, 17F, -2F);
+        baseTurn2.setPos(-2F, 17F, -2F);
         baseTurn2.mirror = true;
 
         armBase1 = new ModelRenderer(64, 64, 0, 25);
         armBase1.addBox(0F, 0F, 0F, 1, 2, 8);
-        armBase1.setRotationPoint(2F, 17F, -1F);
+        armBase1.setPos(2F, 17F, -1F);
         armBase1.mirror = true;
         armBase2 = new ModelRenderer(64, 64, 0, 25);
         armBase2.addBox(0F, 0F, 0F, 1, 2, 8);
-        armBase2.setRotationPoint(-3F, 17F, -1F);
+        armBase2.setPos(-3F, 17F, -1F);
         armBase2.mirror = true;
 
         supportMiddle = new ModelRenderer(64, 64, 0, 57);
         supportMiddle.addBox(0F, 0F, 0F, 2, 1, 1);
-        supportMiddle.setRotationPoint(-1F, 17.5F, 5.5F);
+        supportMiddle.setPos(-1F, 17.5F, 5.5F);
         supportMiddle.mirror = true;
 
         armMiddle1 = new ModelRenderer(64, 64, 0, 35);
         armMiddle1.addBox(0F, 0F, 0F, 1, 17, 2);
-        armMiddle1.setRotationPoint(-2F, 2F, 5F);
+        armMiddle1.setPos(-2F, 2F, 5F);
         armMiddle1.mirror = true;
         armMiddle2 = new ModelRenderer(64, 64, 0, 35);
         armMiddle2.addBox(0F, 0F, 0F, 1, 17, 2);
-        armMiddle2.setRotationPoint(1F, 2F, 5F);
+        armMiddle2.setPos(1F, 2F, 5F);
         armMiddle2.mirror = true;
 
         drillBase = new ModelRenderer(64, 64, 8, 38);
         drillBase.addBox(0F, 0F, 0F, 2, 2, 3);
-        drillBase.setRotationPoint(-1F, 2F, 4.5F);
+        drillBase.setPos(-1F, 2F, 4.5F);
         drillBase.mirror = true;
 
         drill = new ModelRenderer(64, 64, 23, 54);
         drill.addBox(0F, 0F, 0F, 1, 1, 4);
-        drill.setRotationPoint(-0.5F, 2.5F, 1F);
+        drill.setPos(-0.5F, 2.5F, 1F);
         drill.mirror = true;
     }
 
@@ -76,28 +76,28 @@ public class RenderAssemblyDrill extends AbstractTileModelRenderer<TileEntityAss
         }
         angles[4] = MathHelper.lerp(partialTicks, te.oldDrillRotation, te.drillRotation);
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
 
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(angles[0]));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(angles[0]));
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         matrixStackIn.translate(0, 18 / 16F, 0);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(angles[1]));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[1]));
         matrixStackIn.translate(0, -18 / 16F, 0);
         armBase1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         armBase2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         supportMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(angles[2]));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[2]));
         matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
         armMiddle1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         armMiddle2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(angles[3]));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[3]));
         matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
         drillBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         matrixStackIn.translate(0, 3 / 16F, 0);
-        matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(angles[4]));
+        matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(angles[4]));
         matrixStackIn.translate(0, -3 / 16F, 0);
         drill.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
     }

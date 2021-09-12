@@ -18,7 +18,7 @@ public class DroneAIVoidItem extends Goal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack stack = drone.getInv().getStackInSlot(i);
             if (!stack.isEmpty() && widget.isItemValidForFilters(stack)) {
@@ -29,7 +29,7 @@ public class DroneAIVoidItem extends Goal {
     }
 
     @Override
-    public void startExecuting() {
+    public void start() {
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack stack = drone.getInv().getStackInSlot(i);
             if (!stack.isEmpty() && widget.isItemValidForFilters(stack)) {
@@ -37,7 +37,7 @@ public class DroneAIVoidItem extends Goal {
                 drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_VOID * stack.getCount());
                 if (drone.world() instanceof ServerWorld) {
                     Vector3d vec = drone.getDronePos();
-                    ((ServerWorld)drone.world()).spawnParticle(ParticleTypes.LAVA, vec.x, vec.y, vec.z, 5, 0, 0, 0, 0);
+                    ((ServerWorld)drone.world()).sendParticles(ParticleTypes.LAVA, vec.x, vec.y, vec.z, 5, 0, 0, 0, 0);
                 }
             }
         }
