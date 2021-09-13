@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -31,13 +32,10 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall
         implements ITickableTileEntity, IRedstoneControl<TileEntityPressureChamberInterface>, INamedContainerProvider {
@@ -46,7 +44,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     private static final int MIN_SOUND_INTERVAL = 400;  // ticks - the sound effect is ~2.5s long
 
     // cache items we know are accepted to reduce recipe searching
-    private static final Set<Item> acceptedItemCache = new HashSet<>();
+//    private static final Set<Item> acceptedItemCache = new HashSet<>();
+    private static final AcceptabilityCache<Item> acceptedItemCache = new AcceptabilityCache<>();
 
     @DescSynced
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
@@ -193,7 +192,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     private void importFromChamber(TileEntityPressureChamberValve core) {
-        IItemHandlerModifiable chamberHandler = exportAny ? core.allItems : core.craftedItems;
+        IItemHandler chamberHandler = exportAny ? core.allItems : core.craftedItems;
         for (int i = 0; i < chamberHandler.getSlots(); i++) {
             ItemStack chamberStack = chamberHandler.getStackInSlot(i);
             if (chamberStack.isEmpty()) {
@@ -342,11 +341,10 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
         private boolean isValidItem(ItemStack stack) {
             if (TileEntityPressureChamberInterface.this.interfaceMode == InterfaceDirection.IMPORT) {
-                if (acceptedItemCache.contains(stack.getItem())) return true;
-                boolean accepted = PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(level)
-                        .anyMatch(recipe -> recipe.isValidInputItem(stack));
-                if (accepted) acceptedItemCache.add(stack.getItem());
-                return accepted;
+                return acceptedItemCache.isAcceptable(stack.getItem(), () ->
+                        PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(level)
+                                .anyMatch(recipe -> recipe.isValidInputItem(stack))
+                );
             } else return TileEntityPressureChamberInterface.this.interfaceMode == InterfaceDirection.EXPORT;
         }
     }

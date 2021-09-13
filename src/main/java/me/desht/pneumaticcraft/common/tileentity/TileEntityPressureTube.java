@@ -158,7 +158,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
 
         if (pendingCacheShapeClear > 0 && --pendingCacheShapeClear == 0) {
             cachedTubeShape = null;
-            pendingCacheShapeClear = 0;
         }
 
         if (!getLevel().isClientSide) airHandler.setSideLeaking(null);

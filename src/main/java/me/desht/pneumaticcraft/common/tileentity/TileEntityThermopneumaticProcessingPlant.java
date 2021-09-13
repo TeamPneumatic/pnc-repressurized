@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -43,9 +44,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase implements
         IMinWorkingPressure, IRedstoneControl<TileEntityThermopneumaticProcessingPlant>, ISerializableTanks,
@@ -55,8 +54,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     private static final int CRAFTING_TIME = 60 * 100;  // 60 ticks base crafting time
     private static final double MAX_SPEED_UP = 2.5;  // speed-up due to temperature
 
-    private static final Set<Item> acceptedItemCache = new HashSet<>();
-    private static final Set<Fluid> acceptedFluidCache = new HashSet<>();
+    private static final AcceptabilityCache<Item> acceptedItemCache = new AcceptabilityCache<>();
+    private static final AcceptabilityCache<Fluid> acceptedFluidCache = new AcceptabilityCache<>();
 
     @GuiSynced
     @DescSynced
@@ -333,10 +332,10 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         
         @Override
         public boolean isFluidValid(FluidStack fluid) {
-            if (fluid.isEmpty() || acceptedFluidCache.contains(fluid.getFluid())) return true;
-            boolean accepted = PneumaticCraftRecipeType.THERMO_PLANT.stream(level).anyMatch(r -> r.getInputFluid().testFluid(fluid.getFluid()));
-            if (accepted) acceptedFluidCache.add(fluid.getFluid());
-            return accepted;
+            return fluid.isEmpty() || acceptedFluidCache.isAcceptable(fluid.getFluid(), () ->
+                    PneumaticCraftRecipeType.THERMO_PLANT.stream(level)
+                            .anyMatch(r -> r.getInputFluid().testFluid(fluid.getFluid()))
+            );
         }
 
         @Override
@@ -359,10 +358,9 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-            if (stack.isEmpty() || acceptedItemCache.contains(stack.getItem())) return true;
-            boolean accepted = PneumaticCraftRecipeType.THERMO_PLANT.stream(level).anyMatch(r -> r.getInputItem().test(stack));
-            if (accepted) acceptedItemCache.add(stack.getItem());
-            return accepted;
+            return stack.isEmpty() || acceptedItemCache.isAcceptable(stack.getItem(), () ->
+                    PneumaticCraftRecipeType.THERMO_PLANT.stream(level).anyMatch(r -> r.getInputItem().test(stack))
+            );
         }
 
         @Override
