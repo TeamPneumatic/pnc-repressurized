@@ -27,7 +27,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     private WidgetComboBox comboBox;
     private WidgetLabel constLabel;
-    private WidgetTextFieldNumber textField;
+    private WidgetTextFieldNumber constTextField;
     private WidgetLabel otherColorLabel;
     private WidgetColorSelector otherColorButton;
     private int ourColor;
@@ -109,12 +109,12 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
             otherColorButton.active = upgraded;
             addButton(otherColorButton);
 
-            textField = new WidgetTextFieldNumber(font, xBase, guiTop + 63, 30, 12);
-            textField.minValue = 0;
-            textField.setDecimals(0);
-            textField.setValue(module.getConstantVal());
-            textField.active = upgraded;
-            addButton(textField);
+            constTextField = new WidgetTextFieldNumber(font, xBase, guiTop + 63, 30, 12);
+            constTextField.minValue = 0;
+            constTextField.setDecimals(0);
+            constTextField.setValue(module.getConstantVal());
+            constTextField.active = upgraded;
+            addButton(constTextField);
 
             invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 85, 0xFF404040, xlate("pneumaticcraft.gui.redstoneModule.invert")) {
                 @Override
@@ -145,9 +145,9 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
 
     private void updateWidgetVisibility() {
         Operation op = getSelectedOp();
-        constLabel.visible = op.useConst();
-        textField.setVisible(op.useConst());
-        textField.setRange(op.getMin(), op.getMax());
+        constLabel.visible = op.useConstant();
+        constTextField.setVisible(op.useConstant());
+        constTextField.setRange(op.getConstMin(), op.getConstMax());
         otherColorLabel.visible = op.useOtherColor();
         otherColorButton.visible = op.useOtherColor();
         otherColorButton.setVisible(op.useOtherColor());
@@ -159,8 +159,8 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         Operation op = getSelectedOp();
         String key = op.getTranslationKey() + ".tooltip";
         List<ITextComponent> l = new ArrayList<>();
-        if (op.useConst()) {
-            l.add(xlate(key, dyeColorDesc(ourColor), textField.getValue()));
+        if (op.useConstant()) {
+            l.add(xlate(key, dyeColorDesc(ourColor), constTextField.getValue()));
         } else if (op.useOtherColor()) {
             l.add(xlate(key, dyeColorDesc(ourColor), dyeColorDesc(otherColor)));
         } else {
@@ -193,7 +193,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         module.setColorChannel(ourColor);
         if (output) {
             module.setInverted(invertCheckBox.checked);
-            module.setOperation(getSelectedOp(), otherColor, textField.getIntValue());
+            module.setOperation(getSelectedOp(), otherColor, constTextField.getIntValue());
         } else {
             module.setComparatorInput(comparatorInputCheckBox.checked);
         }

@@ -77,7 +77,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     public void update() {
         super.update();
 
-        if (!pressureTube.getLevel().isClientSide) {
+        if (!getTube().getLevel().isClientSide) {
             byte[] levels = new byte[16];
 
             if (redstoneDirection == EnumRedstoneDirection.OUTPUT) {
@@ -110,43 +110,10 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
     private int computeOutputSignal(int lastOutput, byte[] levels) {
         byte s1 = levels[getColorChannel()];
+        byte s1prev = prevLevels[getColorChannel()];
         byte s2 = levels[otherColor];
 
-        switch (operation) {
-            case PASSTHROUGH:
-                return s1;
-            case AND:
-                return s1 > 0 && s2 > 0 ? 15 : 0;
-            case OR:
-                return s1 > 0 || s2 > 0 ? 15 : 0;
-            case XOR:
-                return s1 == 0 && s2 == 0 || s1 > 0 && s2 > 0 ? 0 : 15;
-            case COMPARATOR:
-                return s1 > s2 ? 15 : 0;
-            case SUBTRACT:
-                return MathHelper.clamp(s1 - s2, 0, 15);
-            case COMPARE:
-                return s1 > constantVal ? 15 : 0;
-            case CLOCK:
-                return s1 == 0 && getTube().getLevel().getGameTime() % constantVal < 2 ? 15 : 0;
-            case TOGGLE:
-                if (s1 > prevLevels[getColorChannel()]) {
-                    return lastOutput > 0 ? 0 : 15;
-                } else {
-                    return lastOutput;
-                }
-            case CONSTANT:
-                return MathHelper.clamp(constantVal, 0, 15);
-            case COUNTER:
-                if (s1 > prevLevels[getColorChannel()]) {
-                    lastOutput++;
-                    return lastOutput > Math.min(15, constantVal) ? 0 : lastOutput;
-                } else {
-                    return lastOutput;
-                }
-            default:
-                return 0;
-        }
+        return operation.signalFunction.compute(lastOutput, s1, s2, getTube().getLevel().getGameTime(), constantVal, s1 > s1prev);
     }
 
     @Override
@@ -371,32 +338,45 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     public enum Operation implements ITranslatableEnum {
-        PASSTHROUGH(false, false),
-        AND(true, false),
-        OR(true, false),
-        XOR(true, false),
-        CLOCK(false, true, 4, Integer.MAX_VALUE),
-        COMPARATOR(true, false),
-        SUBTRACT(true, false),
-        COMPARE(false, true, 0, 15),
-        TOGGLE(false, false),
-        CONSTANT(false, true, 0, 15),
-        COUNTER(false, true, 0, 15);
+        PASSTHROUGH(false, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1),
+        AND(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1 > 0 && s2 > 0 ? 15 : 0),
+        OR(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1 > 0 || s2 > 0 ? 15 : 0),
+        XOR(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1 == 0 && s2 == 0 || s1 > 0 && s2 > 0 ? 0 : 15),
+        CLOCK(false, true, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1 == 0 && timer % constant < 2 ? 15 : 0, 4, Integer.MAX_VALUE),
+        COMPARATOR(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1 > s2 ? 15 : 0),
+        SUBTRACT(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                MathHelper.clamp(s1 - s2, 0, 15)),
+        COMPARE(false, true, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1 > constant ? 15 : 0, 0, 15),
+        TOGGLE(false, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1rising ? (lastOutput > 0 ? 0 : 15) : lastOutput),
+        CONSTANT(false, true, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                constant, 0, 15),
+        COUNTER(false, true, (lastOutput, s1, s2, timer, constant, s1rising) ->
+                s1rising ? Math.min(lastOutput + 1, Math.min(15, constant)) : lastOutput, 0, 15);
 
         private final boolean useOtherColor;
         private final boolean useConst;
-        private final int min;
-        private final int max;
+        private final int constMin;
+        private final int constMax;
+        private final SignalFunction signalFunction;
 
-        Operation(boolean useOtherColor, boolean useConst) {
-            this(useOtherColor, useConst, 0, 0);
+        Operation(boolean useOtherColor, boolean useConst, SignalFunction signalFunction) {
+            this(useOtherColor, useConst, signalFunction, 0, 0);
         }
 
-        Operation(boolean useOtherColor, boolean useConst, int min, int max) {
+        Operation(boolean useOtherColor, boolean useConst, SignalFunction signalFunction, int constMin, int constMax) {
             this.useOtherColor = useOtherColor;
             this.useConst = useConst;
-            this.min = min;
-            this.max = max;
+            this.signalFunction = signalFunction;
+            this.constMin = constMin;
+            this.constMax = constMax;
         }
 
         @Override
@@ -408,16 +388,32 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             return useOtherColor;
         }
 
-        public boolean useConst() {
+        public boolean useConstant() {
             return useConst;
         }
 
-        public int getMin() {
-            return min;
+        public int getConstMin() {
+            return constMin;
         }
 
-        public int getMax() {
-            return max;
+        public int getConstMax() {
+            return constMax;
         }
+    }
+
+    @FunctionalInterface
+    private interface SignalFunction {
+        /**
+         * Compute the output signal for this function
+         *
+         * @param lastOutput output signal from the last computation
+         * @param s1 input signal 1 (0..15)
+         * @param s2 input signal 2 (0..15)
+         * @param timer the world time
+         * @param constant the constant value
+         * @param s1rising true if input 1 is higher than on the last computation
+         * @return the desired output signal (0..15 - will also be lastOutput the next time this is called)
+         */
+        int compute(int lastOutput, byte s1, byte s2, long timer, int constant, boolean s1rising);
     }
 }
