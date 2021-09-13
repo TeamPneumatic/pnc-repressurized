@@ -44,7 +44,8 @@ public enum ModdedWrenchUtils {
      * @return true if it's a modded wrench, false otherwise
      */
     public boolean isModdedWrench(@Nonnull ItemStack stack) {
-        return stack.getItem().is(PneumaticCraftTags.Items.WRENCHES) || wrenches.contains(stack.getItem().getRegistryName());
+        return !(stack.getItem() instanceof ItemPneumaticWrench) &&
+                (stack.getItem().is(PneumaticCraftTags.Items.WRENCHES) || wrenches.contains(stack.getItem().getRegistryName()));
     }
 
     /**
