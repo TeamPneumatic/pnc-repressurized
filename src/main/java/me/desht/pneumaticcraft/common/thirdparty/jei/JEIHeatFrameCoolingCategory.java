@@ -11,10 +11,8 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -22,48 +20,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoolingRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCoolingRecipe> {
     private final IDrawable bonusIcon;
     private final IDrawableAnimated progressBar;
 
     JEIHeatFrameCoolingCategory() {
-        localizedName = I18n.get("pneumaticcraft.gui.nei.title.heatFrameCooling");
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME.get()));
-        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
-        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 30, IDrawableAnimated.StartDirection.LEFT, false);
-        bonusIcon = JEIPlugin.jeiHelpers.getGuiHelper()
+        super(ModCategoryUid.HEAT_FRAME_COOLING, HeatFrameCoolingRecipe.class,
+                xlate("pneumaticcraft.gui.nei.title.heatFrameCooling"),
+                guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
+                guiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME.get()))
+        );
+        IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
+        progressBar = guiHelper().createAnimatedDrawable(d, 30, IDrawableAnimated.StartDirection.LEFT, false);
+        bonusIcon = guiHelper()
                 .drawableBuilder(Textures.GUI_JEI_BONUS, 0, 0, 16, 16)
                 .setTextureSize(16, 16)
                 .build();
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.HEAT_FRAME_COOLING;
-    }
-
-    @Override
-    public Class<? extends HeatFrameCoolingRecipe> getRecipeClass() {
-        return HeatFrameCoolingRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
     }
 
     @Override

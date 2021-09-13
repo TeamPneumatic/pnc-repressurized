@@ -71,7 +71,7 @@ public enum EnumUpgrade {
     }
 
     public Item getItem(int tier) {
-        return tier > maxTier ? Items.AIR : ForgeRegistries.ITEMS.getValue(PneumaticRegistry.getInstance().RL(getItemName(tier)));
+        return tier > maxTier ? Items.AIR : ForgeRegistries.ITEMS.getValue(PneumaticRegistry.RL(getItemName(tier)));
     }
 
     public Item getItem() {

@@ -13,7 +13,6 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,7 +23,6 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -36,10 +34,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPropertiesRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatPropertiesRecipe> {
     private final IDrawable hotArea;
     private final IDrawable coldArea;
     private final IDrawable air;
@@ -50,15 +45,17 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
     private static final Rectangle2d[] OUTPUT_AREAS = new Rectangle2d[] { COLD_AREA, HOT_AREA };
 
     public JEIBlockHeatPropertiesCategory() {
-        this.localizedName = I18n.get("pneumaticcraft.gui.jei.title.heatProperties");
-        this.background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 0, 0, 146, 73);
-        this.icon = JEIPlugin.jeiHelpers.getGuiHelper()
-                .drawableBuilder(Textures.JEI_THERMOMETER, 0, 0, 16, 16)
-                .setTextureSize(16, 16)
-                .build();
-        this.hotArea = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 150, 0, 31, 18);
-        this.coldArea = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 150, 18, 31, 18);
-        this.air = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 150, 36, 16, 16);
+        super(ModCategoryUid.HEAT_PROPERTIES, HeatPropertiesRecipe.class,
+                xlate("pneumaticcraft.gui.jei.title.heatProperties"),
+                guiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 0, 0, 146, 73),
+                guiHelper()
+                        .drawableBuilder(Textures.JEI_THERMOMETER, 0, 0, 16, 16)
+                        .setTextureSize(16, 16)
+                        .build()
+        );
+        this.hotArea = guiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 150, 0, 31, 18);
+        this.coldArea = guiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 150, 18, 31, 18);
+        this.air = guiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 150, 36, 16, 16);
     }
 
     public static Collection<HeatPropertiesRecipe> getAllRecipes() {
@@ -71,31 +68,6 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
                 .sorted(Comparator.comparingInt(HeatPropertiesRecipe::getTemperature)
                         .thenComparing(o -> o.getInputDisplayName().getString()))
                 .collect(ImmutableList.toImmutableList());
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.HEAT_PROPERTIES;
-    }
-
-    @Override
-    public Class<? extends HeatPropertiesRecipe> getRecipeClass() {
-        return HeatPropertiesRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
     }
 
     @Override
@@ -189,8 +161,10 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
         renderBlock(recipe.getTransformHot(), matrixStack, HOT_AREA.getX() + 9, HOT_AREA.getY() + 1);
 
         if (showCapacity) {
-            fontRenderer.draw(matrixStack, I18n.get("pneumaticcraft.gui.jei.heatCapacity",
-                    NumberFormat.getNumberInstance(Locale.getDefault()).format(recipe.getHeatCapacity())), 0, background.getHeight() - h, 0x404040);
+            fontRenderer.draw(matrixStack, xlate("pneumaticcraft.gui.jei.heatCapacity",
+                    NumberFormat.getNumberInstance(Locale.getDefault()).format(recipe.getHeatCapacity())),
+                    0, getBackground().getHeight() - h, 0x404040
+            );
         }
     }
 

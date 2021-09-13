@@ -6,54 +6,26 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class JEIExplosionCraftingCategory implements IRecipeCategory<ExplosionCraftingRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+public class JEIExplosionCraftingCategory extends AbstractPNCCategory<ExplosionCraftingRecipe> {
     JEIExplosionCraftingCategory() {
-        localizedName = I18n.get("pneumaticcraft.gui.nei.title.explosionCrafting");
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper()
-                .drawableBuilder(Textures.JEI_EXPLOSION, 0, 0, 16, 16)
-                .setTextureSize(16, 16)
-                .build();
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.EXPLOSION_CRAFTING;
-    }
-
-    @Override
-    public Class<? extends ExplosionCraftingRecipe> getRecipeClass() {
-        return ExplosionCraftingRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        super(ModCategoryUid.EXPLOSION_CRAFTING, ExplosionCraftingRecipe.class,
+                xlate("pneumaticcraft.gui.nei.title.explosionCrafting"),
+                guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
+                guiHelper()
+                        .drawableBuilder(Textures.JEI_EXPLOSION, 0, 0, 16, 16)
+                        .setTextureSize(16, 16)
+                        .build()
+        );
     }
 
     @Override
@@ -72,7 +44,7 @@ public class JEIExplosionCraftingCategory implements IRecipeCategory<ExplosionCr
 
     @Override
     public void draw(ExplosionCraftingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-        icon.draw(matrixStack, 30, 0);
+        getIcon().draw(matrixStack, 30, 0);
     }
 
     @Override

@@ -9,15 +9,12 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
@@ -25,10 +22,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe> {
     private final IDrawableAnimated progressBar;
 
     private static final List<UVLightBoxRecipe> UV_LIGHT_BOX_RECIPES;
@@ -40,36 +36,13 @@ public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> 
     }
 
     JEIUVLightBoxCategory() {
-        localizedName = I18n.get(ModBlocks.UV_LIGHT_BOX.get().getDescriptionId());
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()));
-        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
-        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.UV_LIGHT_BOX;
-    }
-
-    @Override
-    public Class<? extends UVLightBoxRecipe> getRecipeClass() {
-        return UVLightBoxRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        super(ModCategoryUid.UV_LIGHT_BOX, UVLightBoxRecipe.class,
+                xlate(ModBlocks.UV_LIGHT_BOX.get().getDescriptionId()),
+                guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
+                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()))
+        );
+        IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
+        progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override
@@ -90,7 +63,7 @@ public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> 
     @Override
     public void draw(UVLightBoxRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 22, 0);
-        icon.draw(matrixStack, 30, -2);
+        getIcon().draw(matrixStack, 30, -2);
     }
 
     @Override

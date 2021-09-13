@@ -12,13 +12,10 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -28,46 +25,20 @@ import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategory<ThermoPlantRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCategory<ThermoPlantRecipe> {
     private final ITickTimer tickTimer;
     private final Map<ResourceLocation, WidgetTemperature> tempWidgets = new HashMap<>();
     private final IDrawableAnimated progressBar;
 
     JEIThermopneumaticProcessingPlantCategory() {
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()));
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT, 0, 0, 166, 70);
-        localizedName = I18n.get(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getDescriptionId());
-        tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
-        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT, 176, 0, 48, 30);
-        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.THERMO_PLANT;
-    }
-
-    @Override
-    public Class<? extends ThermoPlantRecipe> getRecipeClass() {
-        return ThermoPlantRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        super(ModCategoryUid.THERMO_PLANT, ThermoPlantRecipe.class,
+                xlate(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getDescriptionId()),
+                guiHelper().createDrawable(Textures.GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT, 0, 0, 166, 70),
+                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()))
+        );
+        tickTimer = guiHelper().createTickTimer(60, 60, false);
+        IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT, 176, 0, 48, 30);
+        progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override

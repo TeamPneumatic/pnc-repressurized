@@ -8,14 +8,11 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -24,41 +21,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JEIYeastCraftingCategory implements IRecipeCategory<JEIYeastCraftingCategory.YeastCraftingRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCraftingCategory.YeastCraftingRecipe> {
     public JEIYeastCraftingCategory() {
-        localizedName = I18n.get("pneumaticcraft.gui.jei.title.yeastCrafting");
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_YEAST_CRAFTING, 0, 0, 128, 40);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.YEAST_CULTURE_BUCKET.get()));
+        super(ModCategoryUid.YEAST_CRAFTING, YeastCraftingRecipe.class,
+                xlate("pneumaticcraft.gui.jei.title.yeastCrafting"),
+                guiHelper().createDrawable(Textures.GUI_JEI_YEAST_CRAFTING, 0, 0, 128, 40),
+                guiHelper().createDrawableIngredient(new ItemStack(ModItems.YEAST_CULTURE_BUCKET.get()))
+        );
     }
 
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.YEAST_CRAFTING;
-    }
-
-    @Override
-    public Class<? extends YeastCraftingRecipe> getRecipeClass() {
-        return YeastCraftingRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
-    }
 
     @Override
     public void setIngredients(YeastCraftingRecipe recipe, IIngredients ingredients) {

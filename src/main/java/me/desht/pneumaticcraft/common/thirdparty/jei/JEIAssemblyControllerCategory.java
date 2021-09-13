@@ -8,59 +8,31 @@ import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyRecipe> {
     private final IDrawableAnimated progressBar;
 
     JEIAssemblyControllerCategory() {
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 5, 11, 158, 98);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()));
-        localizedName = I18n.get(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId());
-        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 173, 0, 24, 17);
-        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.ASSEMBLY_CONTROLLER;
-    }
-
-    @Override
-    public Class<? extends AssemblyRecipe> getRecipeClass() {
-        return AssemblyRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        super(ModCategoryUid.ASSEMBLY_CONTROLLER, AssemblyRecipe.class,
+                xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId()),
+                guiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 5, 11, 158, 98),
+                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()))
+        );
+        IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 173, 0, 24, 17);
+        progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override

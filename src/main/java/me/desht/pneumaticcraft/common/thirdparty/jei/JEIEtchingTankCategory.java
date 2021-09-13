@@ -9,73 +9,29 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public class JEIEtchingTankCategory implements IRecipeCategory<JEIEtchingTankCategory.EtchingTankRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCategory.EtchingTankRecipe> {
     private final IDrawableAnimated progressBar;
 
     JEIEtchingTankCategory() {
-        localizedName = I18n.get(ModBlocks.ETCHING_TANK.get().getDescriptionId());
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 0, 0, 83, 42);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ETCHING_TANK.get()));
-        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 83, 0, 42, 42);
-        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
-    }
-
-    public static Collection<?> getAllRecipes() {
-        ItemStack[] input = new ItemStack[4];
-        for (int i = 0; i < input.length; i++) {
-            input[i] = new ItemStack(ModItems.EMPTY_PCB.get());
-            TileEntityUVLightBox.setExposureProgress(input[i], 25 + 25 * i);
-        }
-
-        return Collections.singletonList(
-                new EtchingTankRecipe(
-                        Ingredient.of(input),
-                        new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
-                        new ItemStack(ModItems.FAILED_PCB.get())
-                )
+        super(ModCategoryUid.ETCHING_TANK, EtchingTankRecipe.class,
+                xlate(ModBlocks.ETCHING_TANK.get().getDescriptionId()),
+                guiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 0, 0, 83, 42),
+                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ETCHING_TANK.get()))
         );
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.ETCHING_TANK;
-    }
-
-    @Override
-    public Class<? extends EtchingTankRecipe> getRecipeClass() {
-        return EtchingTankRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 83, 0, 42, 42);
+        progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override
@@ -103,6 +59,22 @@ public class JEIEtchingTankCategory implements IRecipeCategory<JEIEtchingTankCat
     @Override
     public void draw(EtchingTankRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 20, 0);
+    }
+
+    static Collection<?> getAllRecipes() {
+        ItemStack[] input = new ItemStack[4];
+        for (int i = 0; i < input.length; i++) {
+            input[i] = new ItemStack(ModItems.EMPTY_PCB.get());
+            TileEntityUVLightBox.setExposureProgress(input[i], 25 + 25 * i);
+        }
+
+        return Collections.singletonList(
+                new EtchingTankRecipe(
+                        Ingredient.of(input),
+                        new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
+                        new ItemStack(ModItems.FAILED_PCB.get())
+                )
+        );
     }
 
     static class EtchingTankRecipe {

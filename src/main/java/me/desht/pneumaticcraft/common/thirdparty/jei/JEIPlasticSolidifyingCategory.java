@@ -8,13 +8,10 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
@@ -22,40 +19,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlasticSolidifyingCategory.PlasticSolidifyingRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasticSolidifyingCategory.PlasticSolidifyingRecipe> {
     JEIPlasticSolidifyingCategory() {
-        localizedName = I18n.get("pneumaticcraft.gui.jei.title.plasticSolidifying");
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.PLASTIC.get()));
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.PLASTIC_SOLIDIFYING;
-    }
-
-    @Override
-    public Class<PlasticSolidifyingRecipe> getRecipeClass() {
-        return PlasticSolidifyingRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        super(ModCategoryUid.PLASTIC_SOLIDIFYING, PlasticSolidifyingRecipe.class,
+                xlate("pneumaticcraft.gui.jei.title.plasticSolidifying"),
+                guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
+                guiHelper().createDrawableIngredient(new ItemStack(ModItems.PLASTIC.get()))
+        );
     }
 
     @Override

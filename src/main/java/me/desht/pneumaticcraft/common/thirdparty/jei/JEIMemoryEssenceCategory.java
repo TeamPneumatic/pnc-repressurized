@@ -11,54 +11,24 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
 
-public class JEIMemoryEssenceCategory implements IRecipeCategory<JEIMemoryEssenceCategory.MemoryEssenceRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
-
+public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssenceCategory.MemoryEssenceRecipe> {
     public JEIMemoryEssenceCategory() {
-        localizedName = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000).getDisplayName().getString();
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MEMORY_ESSENCE, 0, 0, 146, 73);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()));
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.MEMORY_ESSENCE;
-    }
-
-    @Override
-    public Class<? extends MemoryEssenceRecipe> getRecipeClass() {
-        return MemoryEssenceRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        super(ModCategoryUid.MEMORY_ESSENCE, MemoryEssenceRecipe.class,
+                new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000).getDisplayName(),
+                guiHelper().createDrawable(Textures.GUI_JEI_MEMORY_ESSENCE, 0, 0, 146, 73),
+                guiHelper().createDrawableIngredient(new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()))
+        );
     }
 
     @Override
@@ -98,7 +68,7 @@ public class JEIMemoryEssenceCategory implements IRecipeCategory<JEIMemoryEssenc
         int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
         String s = "1 XP = " + ratio + " mB";
         int w = fr.width(s);
-        Minecraft.getInstance().font.draw(matrixStack, s, (background.getWidth() - w) / 2f, 0, 0x404040);
+        Minecraft.getInstance().font.draw(matrixStack, s, (getBackground().getWidth() - w) / 2f, 0, 0x404040);
     }
 
     static Collection<MemoryEssenceRecipe> getAllRecipes() {

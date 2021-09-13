@@ -14,52 +14,27 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class JEIPressureChamberRecipeCategory implements IRecipeCategory<PressureChamberRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<PressureChamberRecipe> {
     private final ITickTimer tickTimer;
 
     JEIPressureChamberRecipeCategory() {
-//        super(jeiHelpers);
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER, 5, 11, 166, 116);
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()));
-        localizedName = I18n.get("pneumaticcraft.gui.pressureChamber");
+        super(ModCategoryUid.PRESSURE_CHAMBER, PressureChamberRecipe.class,
+                xlate("pneumaticcraft.gui.pressureChamber"),
+                guiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER, 5, 11, 166, 116),
+                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()))
+        );
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.PRESSURE_CHAMBER;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
     }
 
     /**
@@ -157,11 +132,6 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
     public void draw(PressureChamberRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         float pressure = recipe.getCraftingPressureForDisplay() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
         PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressureForDisplay(), pressure, 130, 27);
-    }
-
-    @Override
-    public Class<? extends PressureChamberRecipe> getRecipeClass() {
-        return PressureChamberRecipe.class;
     }
 
     @Override

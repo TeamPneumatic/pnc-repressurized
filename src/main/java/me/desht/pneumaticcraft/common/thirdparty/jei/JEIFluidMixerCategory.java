@@ -10,15 +10,11 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -30,45 +26,19 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class JEIFluidMixerCategory implements IRecipeCategory<FluidMixerRecipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe> {
     private final ITickTimer tickTimer;
     private final IDrawableAnimated progressBar;
 
     public JEIFluidMixerCategory() {
-        icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.FLUID_MIXER.get()));
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_FLUID_MIXER, 0, 0, 166, 70);
-        localizedName = I18n.get(ModBlocks.FLUID_MIXER.get().getDescriptionId());
-        tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
-        IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_FLUID_MIXER, 180, 0, 44, 30);
-        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.FLUID_MIXER;
-    }
-
-    @Override
-    public Class<? extends FluidMixerRecipe> getRecipeClass() {
-        return FluidMixerRecipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        super(ModCategoryUid.FLUID_MIXER, FluidMixerRecipe.class,
+                xlate(ModBlocks.FLUID_MIXER.get().getDescriptionId()),
+                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.FLUID_MIXER.get())),
+                guiHelper().createDrawable(Textures.GUI_JEI_FLUID_MIXER, 0, 0, 166, 70)
+        );
+        tickTimer = guiHelper().createTickTimer(60, 60, false);
+        IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_FLUID_MIXER, 180, 0, 44, 30);
+        progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override

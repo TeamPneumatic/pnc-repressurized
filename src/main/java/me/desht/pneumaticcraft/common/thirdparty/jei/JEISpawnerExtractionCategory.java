@@ -8,54 +8,25 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
-import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JEISpawnerExtractionCategory implements IRecipeCategory<JEISpawnerExtractionCategory.Recipe> {
-    private final String localizedName;
-    private final IDrawable background;
-    private final IDrawable icon;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawnerExtractionCategory.Recipe> {
     public JEISpawnerExtractionCategory() {
-        this.localizedName = I18n.get("pneumaticcraft.gui.jei.title.spawnerExtraction");
-        this.background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_SPAWNER_EXTRACTION, 0, 0, 120, 64);
-        this.icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()));
-    }
-
-    @Override
-    public ResourceLocation getUid() {
-        return ModCategoryUid.SPAWNER_EXTRACTION;
-    }
-
-    @Override
-    public Class<? extends Recipe> getRecipeClass() {
-        return Recipe.class;
-    }
-
-    @Override
-    public String getTitle() {
-        return localizedName;
-    }
-
-    @Override
-    public IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
-    public IDrawable getIcon() {
-        return icon;
+        super(ModCategoryUid.SPAWNER_EXTRACTION, Recipe.class,
+                xlate("pneumaticcraft.gui.jei.title.spawnerExtraction"),
+                guiHelper().createDrawable(Textures.GUI_JEI_SPAWNER_EXTRACTION, 0, 0, 120, 64),
+                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()))
+        );
     }
 
     @Override
