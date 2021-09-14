@@ -359,7 +359,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         CONSTANT(false, true, (lastOutput, s1, s2, timer, constant, s1rising) ->
                 constant, 0, 15),
         COUNTER(false, true, (lastOutput, s1, s2, timer, constant, s1rising) ->
-                s1rising ? Math.min(lastOutput + 1, Math.min(15, constant)) : lastOutput, 0, 15);
+                s1rising ? (lastOutput + 1 > Math.min(15, constant) ? 0 : lastOutput + 1) : lastOutput, 0, 15);
 
         private final boolean useOtherColor;
         private final boolean useConst;
