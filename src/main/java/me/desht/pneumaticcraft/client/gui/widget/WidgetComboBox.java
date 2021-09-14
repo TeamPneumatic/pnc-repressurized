@@ -84,10 +84,10 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
             List<String> applicableElements = getApplicableElements();
             fill(matrixStack, x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.lineHeight, 0xFFA0A0A0);
             fill(matrixStack, x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.lineHeight, 0xFF000000);
+            int hovered = (mouseY - y - height) / fontRenderer.lineHeight;
             for (int i = 0; i < applicableElements.size(); i++) {
                 String element = applicableElements.get(i);
-                // plainSubstrByWidth = trimStringToWidth
-                fontRenderer.drawShadow(matrixStack, fontRenderer.plainSubstrByWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.lineHeight, 0xE0E0E0);
+                fontRenderer.drawShadow(matrixStack, fontRenderer.plainSubstrByWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.lineHeight, i == hovered ? 0xFFE080 : 0xE0E0E0);
             }
         }
     }
