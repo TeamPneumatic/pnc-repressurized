@@ -52,6 +52,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
@@ -217,7 +218,7 @@ public class PneumaticCraftUtils {
      * @return a formatted string representation
      */
     public static String roundNumberTo(double value, int decimals) {
-        return new BigDecimal(value).setScale(decimals, BigDecimal.ROUND_HALF_DOWN).toPlainString();
+        return new BigDecimal(value).setScale(decimals, RoundingMode.HALF_DOWN).toPlainString();
     }
 
     /**
@@ -228,7 +229,7 @@ public class PneumaticCraftUtils {
      * @return the rounded value as a double-precision quantity
      */
     public static double roundNumberToDouble(double value, int decimals) {
-        return new BigDecimal(value).setScale(decimals, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+        return new BigDecimal(value).setScale(decimals, RoundingMode.HALF_DOWN).doubleValue();
     }
 
     /**

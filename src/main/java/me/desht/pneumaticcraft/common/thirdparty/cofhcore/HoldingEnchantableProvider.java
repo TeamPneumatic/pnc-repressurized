@@ -13,8 +13,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class HoldingEnchantableProvider implements ICapabilityProvider {
+    @SuppressWarnings("FieldMayBeFinal")
     @CapabilityInject(IEnchantableItem.class)
-    public static final Capability<IEnchantableItem> CAPABILITY_ENCHANTABLE_ITEM = null;
+    public static Capability<IEnchantableItem> CAPABILITY_ENCHANTABLE_ITEM = null;
 
     private final AllowHoldingEnchant ench = new AllowHoldingEnchant();
     private final LazyOptional<IEnchantableItem> lazy = LazyOptional.of(() -> ench);

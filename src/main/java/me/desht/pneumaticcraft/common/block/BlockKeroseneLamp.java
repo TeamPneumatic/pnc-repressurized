@@ -49,7 +49,8 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return super.getStateForPlacement(ctx).setValue(CONNECTED, getConnectedDirection(ctx.getLevel(), ctx.getClickedPos()));
+        BlockState state = super.getStateForPlacement(ctx);
+        return state == null ? null : state.setValue(CONNECTED, getConnectedDirection(ctx.getLevel(), ctx.getClickedPos()));
     }
 
     @Override

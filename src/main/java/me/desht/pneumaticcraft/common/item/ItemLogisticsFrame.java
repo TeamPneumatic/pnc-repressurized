@@ -88,7 +88,7 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                     stacks[i] = handler.getStackInSlot(i);
                 }
                 int l = curInfo.size();
-                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, TextFormatting.GOLD.toString() + GuiConstants.BULLET + " ");
+                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, TextFormatting.GOLD + GuiConstants.BULLET + " ");
                 if (curInfo.size() == l) curInfo.add(bullet().withStyle(TextFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_items").withStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
                 l = curInfo.size();
 

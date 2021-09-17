@@ -19,7 +19,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IJeiRuntime;
@@ -29,7 +29,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,13 +46,13 @@ public class JEIPlugin implements IModPlugin {
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             if (item.get() instanceof ItemPressurizable) {
                 registration.registerSubtypeInterpreter(item.get(),
-                        s -> s.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                        (s, ctx) -> s.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                                 .map(h2 -> String.valueOf(h2.getPressure()))
-                                .orElse(ISubtypeInterpreter.NONE)
+                                .orElse(IIngredientSubtypeInterpreter.NONE)
                 );
             }
         }
-        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB.get(), s -> String.valueOf(TileEntityUVLightBox.getExposureProgress(s)));
+        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB.get(), (s, ctx) -> String.valueOf(TileEntityUVLightBox.getExposureProgress(s)));
     }
 
     @Override
@@ -127,9 +127,8 @@ public class JEIPlugin implements IModPlugin {
     private void addStackInfo(IRecipeRegistration registry, ItemStack stack) {
         String k = ICustomTooltipName.getTranslationKey(stack, false);
         if (I18n.exists(k)) {
-            String raw = TextFormatting.stripFormatting(I18n.get(k));
-            if (raw != null) {
-                registry.addIngredientInfo(stack, VanillaTypes.ITEM, StringUtils.splitByWholeSeparator(raw, GuiUtils.TRANSLATION_LINE_BREAK));
+            for (String s : StringUtils.splitByWholeSeparator(I18n.get(k), GuiUtils.TRANSLATION_LINE_BREAK)) {
+                registry.addIngredientInfo(stack, VanillaTypes.ITEM, new StringTextComponent(s));
             }
         }
     }

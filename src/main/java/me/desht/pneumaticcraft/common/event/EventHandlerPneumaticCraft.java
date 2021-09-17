@@ -31,10 +31,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.BoatEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
+import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -56,7 +58,7 @@ import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+import net.minecraftforge.event.entity.living.EntityTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -143,9 +145,9 @@ public class EventHandlerPneumaticCraft {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onEnderTeleport(EnderTeleportEvent event) {
-        Entity e = event.getEntity();
-        if (!HackableEnderman.onEndermanTeleport(e)) {
+    public void onEnderTeleport(EntityTeleportEvent.EnderEntity event) {
+        LivingEntity e = event.getEntityLiving();
+        if (e instanceof EndermanEntity && !HackableEnderman.onEndermanTeleport(e)) {
             event.setCanceled(true);
         }
     }

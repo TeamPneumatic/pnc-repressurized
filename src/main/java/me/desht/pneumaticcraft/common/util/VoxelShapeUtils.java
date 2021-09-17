@@ -34,7 +34,7 @@ public class VoxelShapeUtils {
             }
         });
 
-        return rotatedShapes.stream().reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+        return rotatedShapes.stream().reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).orElse(shape);
     }
 
     public static VoxelShape rotateX(VoxelShape shape, int rotation) {
@@ -59,7 +59,7 @@ public class VoxelShapeUtils {
             }
         });
 
-        return rotatedShapes.stream().reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+        return rotatedShapes.stream().reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).orElse(shape);
     }
 
     public static VoxelShape combine(IBooleanFunction func, VoxelShape... shapes) {

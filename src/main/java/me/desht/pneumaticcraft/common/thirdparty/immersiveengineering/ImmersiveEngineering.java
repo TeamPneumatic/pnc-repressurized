@@ -17,7 +17,7 @@ import net.minecraftforge.registries.ObjectHolder;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ImmersiveEngineering implements IThirdParty {
-
+    @SuppressWarnings("FieldMayBeFinal")
     @ObjectHolder("immersiveengineering:hemp")
     private static Block HEMP_BLOCK = null;
 

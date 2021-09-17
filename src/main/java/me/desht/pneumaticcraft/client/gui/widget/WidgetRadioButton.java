@@ -26,7 +26,6 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     private static final int BUTTON_HEIGHT = 10;
 
     private boolean checked;
-    public boolean enabled = true;
     public final int color;
     private final Consumer<WidgetRadioButton> pressable;
     private final FontRenderer fontRenderer = Minecraft.getInstance().font;
@@ -48,13 +47,13 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
 
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f, enabled ? 0xFFA0A0A0 : 0xFF999999);
-        drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f - 1, enabled ? 0XFF202020 : 0xFFAAAAAA);
+        drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f, active ? 0xFFA0A0A0 : 0xFF999999);
+        drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f - 1, active ? 0XFF202020 : 0xFFAAAAAA);
         if (checked) {
-            drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, 1, enabled ? 0xFFFFFFFF : 0xFFAAAAAA);
+            drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, 1, active ? 0xFFFFFFFF : 0xFFAAAAAA);
         }
         fontRenderer.draw(matrixStack, getMessage().getVisualOrderText(), x + 1 + BUTTON_WIDTH,
-                y + BUTTON_HEIGHT / 2f - fontRenderer.lineHeight / 2f, enabled ? color : 0xFF888888);
+                y + BUTTON_HEIGHT / 2f - fontRenderer.lineHeight / 2f, active ? color : 0xFF888888);
     }
 
     public boolean isChecked() {
@@ -92,7 +91,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        if (enabled && !checked) {
+        if (active && !checked) {
             for (WidgetRadioButton radioButton : otherChoices) {
                 radioButton.checked = false;
             }

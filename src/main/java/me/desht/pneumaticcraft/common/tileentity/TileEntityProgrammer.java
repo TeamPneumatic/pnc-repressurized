@@ -98,11 +98,6 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public void setRemoved() {
-        super.setRemoved();
-    }
-
-    @Override
     public CompoundNBT save(CompoundNBT tag) {
         super.save(tag);
         tag.put("Items", inventory.serializeNBT());

@@ -231,6 +231,7 @@ public abstract class TubeModule {
         return Objects.hash(pressureTube.getBlockPos(), dir);
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void onPlaced() {
     }
 

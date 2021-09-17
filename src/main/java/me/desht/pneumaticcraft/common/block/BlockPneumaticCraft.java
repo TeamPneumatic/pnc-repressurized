@@ -129,9 +129,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                         world.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
                         return ActionResultType.SUCCESS;
                     }
-                    if (te instanceof INamedContainerProvider) {
-                        NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
-                    }
+                    // te must be a INamedContainerProvider at this point: see instanceof check above
+                    NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
                 }
             }
 
@@ -380,7 +379,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
      */
     @Override
     public int getAnalogOutputSignal(BlockState state, World world, BlockPos pos) {
-        return ((IComparatorSupport) world.getBlockEntity(pos)).getComparatorValue();
+        TileEntity te = world.getBlockEntity(pos);
+        return te instanceof IComparatorSupport ? ((IComparatorSupport) te).getComparatorValue() : 0;
     }
 
     @Override

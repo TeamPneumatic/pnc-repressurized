@@ -330,7 +330,7 @@ public class RenderUtils {
     }
 
     /**
-     * Convenience method to get double coords into {@link IVertexBuilder#pos(Matrix4f, float, float, float)}
+     * Convenience method to get double coords into {@link IVertexBuilder#vertex(Matrix4f, float, float, float)}
      * @param builder the vertex builder
      * @param posMat the positioning matrix
      * @param x X

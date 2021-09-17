@@ -74,7 +74,7 @@ class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
         }
         widget = blacklistWidget;
         while (widget != null) {
-            entities.removeAll(widget.getEntitiesWithinArea(world, entityWhitelist));
+            widget.getEntitiesWithinArea(world, entityWhitelist).forEach(entities::remove);
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
         if (entityBlacklist != null) {

@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class PatchouliBookCrafting extends ShapelessRecipe {
+    @SuppressWarnings("FieldMayBeFinal")
     @ObjectHolder("patchouli:guide_book")
     public static Item GUIDE_BOOK = null;
 

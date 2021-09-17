@@ -354,6 +354,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return isUpgradeEnabled(EquipmentSlotType.HEAD, ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getIndex());
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isValid() {
         return isValid;
     }

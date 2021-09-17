@@ -15,12 +15,12 @@ public class PacketLeftClickEmpty {
     public PacketLeftClickEmpty() {
     }
 
+    @SuppressWarnings("EmptyMethod")
     public PacketLeftClickEmpty(@SuppressWarnings("unused") PacketBuffer buf) {
-        // nothing
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void toBytes(@SuppressWarnings("unused") PacketBuffer buf) {
-        // nothing
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

@@ -164,15 +164,11 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     }
 
     public boolean hasOutputSpace() {
-        if (!currentRecipe.getOutputItem().isEmpty()
-                && !outputInv.insertItem(0, currentRecipe.getOutputItem(), true).isEmpty()) {
+        if (!currentRecipe.getOutputItem().isEmpty() && !outputInv.insertItem(0, currentRecipe.getOutputItem(), true).isEmpty()) {
             return false;
         }
-        if (!currentRecipe.getOutputFluid().isEmpty()
-                && outputTank.fill(currentRecipe.getOutputFluid(), IFluidHandler.FluidAction.SIMULATE) < currentRecipe.getOutputFluid().getAmount()) {
-            return false;
-        }
-        return true;
+        return currentRecipe.getOutputFluid().isEmpty()
+                || outputTank.fill(currentRecipe.getOutputFluid(), IFluidHandler.FluidAction.SIMULATE) >= currentRecipe.getOutputFluid().getAmount();
     }
 
     private FluidMixerRecipe findApplicableRecipe() {

@@ -59,7 +59,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private WidgetButtonExtended importButton;
     private WidgetButtonExtended exportButton;
     private WidgetButtonExtended allWidgetsButton;
-    private List<DifficultyButton> difficultyButtons;
     private WidgetCheckBox showInfo, showFlow;
     private WidgetTextField nameField;
     private WidgetTextField filterField;
@@ -159,7 +158,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             dButton.setTooltip(xlate(difficulty.getTooltipTranslationKey()));
             rbb.addRadioButton(dButton, difficulty == PNCConfig.Client.programmerDifficulty);
         }
-        difficultyButtons = rbb.build(this::addButton);
+        rbb.build(this::addButton);
 
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
                 xlate("pneumaticcraft.gui.programmer.button.showStart"), b -> gotoStart())
@@ -394,7 +393,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
         String str = widgetPage + 1 + "/" + maxPage;
-        font.draw(matrixStack, str, xRight + 22 - font.width(str) / 2, yBottom + 4, 0x404040);
+        font.draw(matrixStack, str, xRight + 22 - font.width(str) / 2f, yBottom + 4, 0x404040);
         font.draw(matrixStack, xlate("pneumaticcraft.gui.programmer.difficulty").getVisualOrderText(), xRight - 36, yBottom + 20, 0x404040);
 
         if (showingWidgetProgress == 0) {
@@ -1257,7 +1256,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         final IProgWidget widget;
         double ty = 0;
         double tx = 0;
-        double velX = (Minecraft.getInstance().level.random.nextDouble() - 0.5) * 3;
+        final double velX = (Minecraft.getInstance().level.random.nextDouble() - 0.5) * 3;
         double velY = -4;
 
         private RemovingWidget(IProgWidget widget) {

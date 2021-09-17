@@ -10,6 +10,7 @@ public class ModLootFunctions {
             RL("te_serializer"), new LootFunctionType(new TileEntitySerializerFunction.Serializer())
     );
 
+    @SuppressWarnings("EmptyMethod")
     public static void init() {
         // poke
     }

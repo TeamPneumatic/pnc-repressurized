@@ -50,7 +50,8 @@ public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return super.getStateForPlacement(ctx).setValue(directionProperty(), ctx.getClickedFace().getOpposite());
+        BlockState state = super.getStateForPlacement(ctx);
+        return state == null ? null : state.setValue(directionProperty(), ctx.getClickedFace().getOpposite());
     }
 
     @Override

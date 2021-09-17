@@ -3,10 +3,11 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class HackableEnderman implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, PlayerEntity player) {
-        return onEndermanTeleport(entity);
+        return entity instanceof EndermanEntity && onEndermanTeleport((EndermanEntity) entity);
     }
 
     @Override
@@ -51,18 +52,13 @@ public class HackableEnderman implements IHackableEntity {
     }
 
     /**
-     * See {@link me.desht.pneumaticcraft.common.event.EventHandlerPneumaticCraft#onEnderTeleport(EnderTeleportEvent)}
+     * See {@link me.desht.pneumaticcraft.common.event.EventHandlerPneumaticCraft#onEnderTeleport(net.minecraftforge.event.entity.living.EntityTeleportEvent.EnderEntity)}
      * @param entity the enderman
      * @return false if enderman should be disallowed from teleporting
      */
-    public static boolean onEndermanTeleport(Entity entity) {
+    public static boolean onEndermanTeleport(LivingEntity entity) {
         List<IHackableEntity> hacks = PneumaticRegistry.getInstance().getHelmetRegistry().getCurrentEntityHacks(entity);
-        for (IHackableEntity hack : hacks) {
-            if (hack instanceof HackableEnderman) {
-                return false;
-            }
-        }
-        return true;
+        return hacks.stream().noneMatch(hack -> hack instanceof HackableEnderman);
     }
 
 }

@@ -34,8 +34,8 @@ public class PacketPneumaticKick {
         // empty
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void toBytes(@SuppressWarnings("unused") PacketBuffer buf) {
-        // empty
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

@@ -197,11 +197,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             case "open_upgrades":
                 if (getChargingStack().getItem() instanceof IChargeableContainerProvider) {
                     INamedContainerProvider provider = ((IChargeableContainerProvider) getChargingStack().getItem()).getContainerProvider(this);
-                    NetworkHooks.openGui((ServerPlayerEntity) player, provider, getBlockPos());
+                    NetworkHooks.openGui(player, provider, getBlockPos());
                 }
                 break;
             case "close_upgrades":
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, getBlockPos());
+                NetworkHooks.openGui(player, this, getBlockPos());
                 break;
             case "toggle_upgrade_only":
                 upgradeOnly = !upgradeOnly;

@@ -18,8 +18,9 @@ import javax.annotation.Nullable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEventManager.IComputerEventSender {
+    @SuppressWarnings("FieldMayBeFinal")
     @CapabilityInject(IPeripheral.class)
-    public static final Capability<IPeripheral> PERIPHERAL_CAPABILITY = null;
+    public static Capability<IPeripheral> PERIPHERAL_CAPABILITY = null;
 
     private final ILuaMethodProvider provider;
     private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();

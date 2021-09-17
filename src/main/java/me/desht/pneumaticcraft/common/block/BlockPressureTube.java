@@ -47,6 +47,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType.CONNECTED;
 import static me.desht.pneumaticcraft.common.util.DirectionUtil.HORIZONTALS;
@@ -332,7 +333,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
             // return either the tube arm (if connected), or the side of the centre face (if not)
-            return tubeHitInfo.dir == null ? Pair.of(true, rayTraceResult.getDirection()) : Pair.of(false, tubeHitInfo.dir);
+            return tubeHitInfo.dir == null ? Pair.of(true, Objects.requireNonNull(rayTraceResult).getDirection()) : Pair.of(false, tubeHitInfo.dir);
         }
         return null;
     }

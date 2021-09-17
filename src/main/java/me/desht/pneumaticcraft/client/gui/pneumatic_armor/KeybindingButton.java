@@ -22,7 +22,7 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
     private boolean modifier = false;
     private Action action = Action.NONE;
 
-    private enum Action { NONE, ADD, REMOVE };
+    private enum Action { NONE, ADD, REMOVE }
 
     public KeybindingButton(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, KeyBinding keyBinding) {
         super(startX, startY, xSize, ySize, buttonText);

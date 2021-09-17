@@ -82,6 +82,7 @@ public enum ArmorUpgradeRegistry {
     }
 
     public static void init() {
+        // poke
     }
 
     public static String getStringKey(ResourceLocation id) {

@@ -365,11 +365,6 @@ public abstract class TileEntityBase extends TileEntity
         return state.getBlock() instanceof BlockPneumaticCraft ? ((BlockPneumaticCraft) state.getBlock()).getRotation(state) : Direction.NORTH;
     }
 
-    @Override
-    public void clearCache() {
-        super.clearCache();
-    }
-
     public int getUpgrades(EnumUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
     }

@@ -36,11 +36,6 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     }
 
     @Override
-    protected void onFirstServerTick() {
-        super.onFirstServerTick();
-    }
-
-    @Override
     public void tick() {
         super.tick();
 

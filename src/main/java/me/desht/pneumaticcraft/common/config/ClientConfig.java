@@ -45,9 +45,9 @@ public class ClientConfig {
         ForgeConfigSpec.DoubleValue jackhammerVolume;
     }
 
-    public ClientConfig.General general = new General();
-    public ClientConfig.Armor armor = new Armor();
-    public ClientConfig.Sound sound = new Sound();
+    public final ClientConfig.General general = new General();
+    public final ClientConfig.Armor armor = new Armor();
+    public final ClientConfig.Sound sound = new Sound();
 
     ClientConfig(ForgeConfigSpec.Builder builder) {
         builder.push("general");

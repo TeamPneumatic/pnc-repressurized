@@ -190,7 +190,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
 
     /**
      * Stores a copy of the item being used, so the player's held version doesn't get modified when
-     * {@link BlockItem#tryPlace(BlockItemUseContext)} is called by {@link #tryPlaceAsBlock(BlockRayTraceResult)}
+     * {@link BlockItem#place(BlockItemUseContext)} is called by {@link #tryPlaceAsBlock(BlockRayTraceResult)}
      * (the item has already been taken from the player, when the entity was created)
      */
     private static class LocalBlockItemUseContext extends BlockItemUseContext {

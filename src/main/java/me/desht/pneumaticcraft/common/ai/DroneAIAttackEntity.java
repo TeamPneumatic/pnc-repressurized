@@ -92,11 +92,6 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
     }
 
     @Override
-    public void stop() {
-        super.stop();
-    }
-
-    @Override
     public void tick() {
         if (isRanged) {
             LivingEntity target = attacker.getTarget();

@@ -48,7 +48,7 @@ public class SemiblockProvider {
                     ISemiBlock entity = ISemiBlock.byTrackingId(accessor.getWorld(), entityId);
                     if (entity instanceof EntitySemiblockBase) {
                         if (!(entity instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) entity).getSide() == accessor.getSide()) {
-                            ITextComponent title = new StringTextComponent(TextFormatting.YELLOW.toString() + "[")
+                            ITextComponent title = new StringTextComponent(TextFormatting.YELLOW + "[")
                                     .append(entity.getDisplayName()).append("]");
                             tooltip.add(title);
                             entity.addTooltip(tooltip, accessor.getPlayer(), tag.getCompound(name), accessor.getPlayer().isShiftKeyDown());

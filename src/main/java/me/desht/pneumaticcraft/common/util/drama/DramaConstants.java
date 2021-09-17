@@ -470,7 +470,7 @@ public class DramaConstants {
         });
     }
 
-    static String[] SENTENCES = new String[] {
+    static final String[] SENTENCES = new String[] {
             "%{people} launched a DoS attack on the website of %{things}",
             "%{sites} urges everyone to stop using %{things}",
             "After a %{enormous} amount of requests, %{packs} removes %{things}",

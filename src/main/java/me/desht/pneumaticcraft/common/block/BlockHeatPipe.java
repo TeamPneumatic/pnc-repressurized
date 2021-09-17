@@ -69,6 +69,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
+        if (state == null) return null;
 
         FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
         return state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);

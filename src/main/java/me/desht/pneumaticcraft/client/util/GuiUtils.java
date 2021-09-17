@@ -30,7 +30,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.*;
-import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
@@ -60,7 +59,7 @@ public class GuiUtils {
      */
     public static void renderItemStack(MatrixStack matrixStack, ItemStack stack, int x, int y) {
         if (!stack.isEmpty()) {
-            IBakedModel bakedmodel = itemRenderer.getModel(stack, (World)null, Minecraft.getInstance().player);
+            IBakedModel bakedmodel = itemRenderer.getModel(stack, null, Minecraft.getInstance().player);
 
             matrixStack.pushPose();
 

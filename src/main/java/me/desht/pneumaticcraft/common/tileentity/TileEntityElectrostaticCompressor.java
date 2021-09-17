@@ -41,6 +41,7 @@ import java.util.*;
 public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
         implements IRedstoneControl<TileEntityElectrostaticCompressor>, INamedContainerProvider {
 
+    @SuppressWarnings("FieldMayBeFinal")
     @ObjectHolder("chisel:ironpane")
     private static Block CHISELED_BARS = null;
 

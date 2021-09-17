@@ -264,7 +264,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                 temperature = JSONUtils.getAsInt(json, "temperature");
             } else {
                 if (fluid == Fluids.EMPTY) {
-                    throw new JsonSyntaxException(block.toString() + ": Non-fluid definitions must have a 'temperature' field!");
+                    throw new JsonSyntaxException(block + ": Non-fluid definitions must have a 'temperature' field!");
                 } else {
                     temperature = fluid.getAttributes().getTemperature();
                 }

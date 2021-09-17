@@ -82,10 +82,9 @@ public class UpgradesDBSetup {
         List<Builder> armor = Arrays.asList(new Builder(), new Builder(), new Builder(), new Builder());
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             // upgrades automatically added due to an upgrade handler being registered
-            ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).forEach(handler ->
-                    Arrays.stream(handler.getRequiredUpgrades()).forEach(upgrade -> {
-                        armor.get(slot.getIndex()).with(upgrade, handler.getMaxInstallableUpgrades(upgrade));
-                    })
+            ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot)
+                    .forEach(handler -> Arrays.stream(handler.getRequiredUpgrades())
+                            .forEach(upgrade -> armor.get(slot.getIndex()).with(upgrade, handler.getMaxInstallableUpgrades(upgrade)))
             );
             // upgrades common to all armor pieces without a specific upgrade handler
             armor.get(slot.getIndex()).with(EnumUpgrade.SPEED, 10)

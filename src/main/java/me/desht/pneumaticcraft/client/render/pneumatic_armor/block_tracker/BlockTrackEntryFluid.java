@@ -33,7 +33,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
 
     @Override
     public List<BlockPos> getServerUpdatePositions(TileEntity te) {
-        return Collections.singletonList(te.getBlockPos());
+        return te == null ? Collections.emptyList() : Collections.singletonList(te.getBlockPos());
     }
 
     @Override

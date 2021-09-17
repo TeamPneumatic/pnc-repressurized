@@ -189,7 +189,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
 
     public void setJetBootsActive(ICommonArmorHandler commonArmorHandler, boolean newActive) {
         PlayerEntity player = commonArmorHandler.getPlayer();
-        JetBootsStateTracker.JetBootsState jbs = JetBootsStateTracker.getTracker(player).getJetBootsState(player);;
+        JetBootsStateTracker.JetBootsState jbs = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
         JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
 
         if (!newActive) {

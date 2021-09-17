@@ -134,7 +134,7 @@ public class ModProgWidgets {
     public static final RegistryObject<ProgWidgetType<ProgWidgetDroneConditionEnergy>> DRONE_CONDITION_RF
             = register("drone_condition_rf", ProgWidgetDroneConditionEnergy::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetCC>> COMPUTER_CONTROL
-            = register("computer_control", ProgWidgetCC::new);;
+            = register("computer_control", ProgWidgetCC::new);
 
     private static <P extends IProgWidgetBase, T extends ProgWidgetType<P>> RegistryObject<T> register(String name, Supplier<P> sup) {
         //noinspection unchecked

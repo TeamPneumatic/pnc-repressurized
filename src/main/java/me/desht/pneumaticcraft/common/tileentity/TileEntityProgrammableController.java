@@ -314,7 +314,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         if (ownerID == null) {
             ownerID = UUID.randomUUID();
             ownerName = new StringTextComponent("[Programmable Controller]");
-            Log.warning(String.format("Programmable controller with owner '%s' has no UUID! Substituting a random UUID (%s).", ownerName, ownerID.toString()));
+            Log.warning(String.format("Programmable controller with owner '%s' has no UUID! Substituting a random UUID (%s).", ownerName, ownerID));
         }
         return ownerID;
     }

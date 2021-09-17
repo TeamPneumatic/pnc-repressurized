@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.network.PacketBuffer;
 
 public abstract class PacketAbstractAmadronTrade {
-    private AmadronPlayerOffer offer;
+    private final AmadronPlayerOffer offer;
 
     public PacketAbstractAmadronTrade(AmadronPlayerOffer offer) {
         this.offer = offer;

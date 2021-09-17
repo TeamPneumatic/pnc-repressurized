@@ -231,9 +231,8 @@ public class ItemJackHammer extends ItemPressurizable
         player.awardStat(Stats.BLOCK_MINED.get(block));
         player.causeFoodExhaustion(0.005F);
         if (world instanceof ServerWorld) {
-            Block.getDrops(state, (ServerWorld)world, pos, null, player, stack).forEach((stackToSpawn) -> {
-                Block.popResource(world, pos0, stackToSpawn);
-            });
+            Block.getDrops(state, (ServerWorld)world, pos, null, player, stack)
+                    .forEach((stackToSpawn) -> Block.popResource(world, pos0, stackToSpawn));
             state.spawnAfterBreak((ServerWorld)world, pos, stack);
         }
     }
@@ -528,7 +527,7 @@ public class ItemJackHammer extends ItemPressurizable
             currentEnchants.remove(Enchantments.SILK_TOUCH);
             currentEnchants.remove(Enchantments.BLOCK_FORTUNE);
             if (validateBook(bookStack)) {
-                EnchantmentHelper.getEnchantments(bookStack).forEach(currentEnchants::put);
+                currentEnchants.putAll(EnchantmentHelper.getEnchantments(bookStack));
             }
             EnchantmentHelper.setEnchantments(currentEnchants, jackhammerStack);
         }

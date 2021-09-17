@@ -118,7 +118,7 @@ public enum AmadronOfferManager {
     /**
      * Called client-side (from PacketSyncAmadronOffers) to sync up the active offer list.
      * @param newOffers the new offers
-     * @param notifyPlayer
+     * @param notifyPlayer true to notify players of new offers
      */
     public void syncOffers(Collection<AmadronRecipe> newOffers, boolean notifyPlayer) {
         activeOffers.clear();
@@ -325,7 +325,7 @@ public enum AmadronOfferManager {
                     try {
                         String key = profession.toString() + "_" + level;
                         MerchantOffer offer = trades[i].getOffer(null, rand);
-                        ResourceLocation offerId = new ResourceLocation(profession.toString() + "_" + level + "_" + i);
+                        ResourceLocation offerId = new ResourceLocation(profession + "_" + level + "_" + i);
                         villagerTrades.computeIfAbsent(key, k -> new ArrayList<>()).add(new AmadronOffer(offerId,
                                 AmadronTradeResource.of(offer.getBaseCostA()),
                                 AmadronTradeResource.of(offer.getResult()),

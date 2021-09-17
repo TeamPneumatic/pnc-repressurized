@@ -74,7 +74,8 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
-        return super.getStateForPlacement(ctx).setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
+        BlockState state = super.getStateForPlacement(ctx);
+        return state == null ? null : state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
     }
 
     @Override

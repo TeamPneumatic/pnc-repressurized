@@ -17,6 +17,7 @@ public class PacketClearRecipeCache {
     public PacketClearRecipeCache(@SuppressWarnings("unused") PacketBuffer buffer) {
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void toBytes(@SuppressWarnings("unused") PacketBuffer buf) {
     }
 

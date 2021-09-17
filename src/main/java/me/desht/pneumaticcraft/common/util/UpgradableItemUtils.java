@@ -53,7 +53,7 @@ public class UpgradableItemUtils {
             }
         } else {
             textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(TextFormatting.GREEN));
-            PneumaticCraftUtils.summariseItemStacks(textList, inventoryStacks, TextFormatting.DARK_GREEN.toString() + GuiConstants.BULLET + " ");
+            PneumaticCraftUtils.summariseItemStacks(textList, inventoryStacks, TextFormatting.DARK_GREEN + GuiConstants.BULLET + " ");
         }
     }
 

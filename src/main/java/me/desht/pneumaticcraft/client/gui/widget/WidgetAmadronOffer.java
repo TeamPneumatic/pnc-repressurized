@@ -139,9 +139,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
         public WidgetItemStack(int startX, int startY, ItemStack stack) {
             super(startX, startY, 16, 16);
             setRenderStacks(stack);
-            List<ITextComponent> tooltip = new ArrayList<>();
-            tooltip.addAll(stack.getTooltipLines(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.NORMAL));
-            setTooltipText(tooltip);
+            setTooltipText(stack.getTooltipLines(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.NORMAL));
             setVisible(false);
             setRenderStackSize(true);
         }

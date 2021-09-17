@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
  * Just like a regular shaped recipe, but any air in any input ingredients is added up and put into the output item.
  */
 public class ShapedPressurizableRecipe extends ShapedRecipe {
-    public static Serializer SERIALIZER = new Serializer();
+    public static final Serializer SERIALIZER = new Serializer();
 
     private ShapedPressurizableRecipe(ResourceLocation idIn, String groupIn, int recipeWidthIn, int recipeHeightIn, NonNullList<Ingredient> recipeItemsIn, ItemStack recipeOutputIn) {
         super(idIn, groupIn, recipeWidthIn, recipeHeightIn, recipeItemsIn, recipeOutputIn);

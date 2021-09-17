@@ -77,7 +77,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         IFormattableTextComponent blockName = worldIn.getChunkSource().isEntityTickingChunk(new ChunkPos(pos)) ?
                 new StringTextComponent(" (").append(translated).append(")") :
                 StringTextComponent.EMPTY.plainCopy();
-        String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW.toString(), pos.getX(), pos.getY(), pos.getZ());
+        String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW, pos.getX(), pos.getY(), pos.getZ());
         return new StringTextComponent(str).withStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN).append(blockName.withStyle(TextFormatting.GREEN));
     }
 

@@ -259,7 +259,7 @@ public class EntityDrone extends EntityDroneBase implements
         CompoundNBT stackTag = droneStack.getTag();
         if (stackTag != null) {
             upgradeInventory.deserializeNBT(stackTag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
-            EnchantmentHelper.getEnchantments(droneStack).forEach(stackEnchants::put);
+            stackEnchants.putAll(EnchantmentHelper.getEnchantments(droneStack));
             int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getAir();
             getAirHandler().addAir(air);
             if (((ItemDrone) droneStack.getItem()).canProgram(droneStack)) {

@@ -63,7 +63,8 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraft {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         // coil faces the block it's placed against
-        return super.getStateForPlacement(ctx).setValue(directionProperty(), ctx.getClickedFace());
+        BlockState state = super.getStateForPlacement(ctx);
+        return state == null ? null : state.setValue(directionProperty(), ctx.getClickedFace());
     }
 
     @Override

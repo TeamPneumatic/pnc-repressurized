@@ -332,14 +332,18 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         double deltaX = gpsX - getBlockPos().getX();
         double deltaZ = gpsZ - getBlockPos().getZ();
         float calculatedRotationAngle;
+        double angleXZ = Math.atan(Math.abs(deltaX / deltaZ)) / Math.PI * 180D;
         if (deltaX >= 0 && deltaZ < 0) {
-            calculatedRotationAngle = (float) (Math.atan(Math.abs(deltaX / deltaZ)) / Math.PI * 180D);
-        } else if (deltaX >= 0 && deltaZ >= 0) {
-            calculatedRotationAngle = (float) (Math.atan(Math.abs(deltaZ / deltaX)) / Math.PI * 180D) + 90;
-        } else if (deltaX < 0 && deltaZ >= 0) {
-            calculatedRotationAngle = (float) (Math.atan(Math.abs(deltaX / deltaZ)) / Math.PI * 180D) + 180;
+            calculatedRotationAngle = (float) angleXZ;
         } else {
-            calculatedRotationAngle = (float) (Math.atan(Math.abs(deltaZ / deltaX)) / Math.PI * 180D) + 270;
+            double angleZX = Math.atan(Math.abs(deltaZ / deltaX)) / Math.PI * 180D;
+            if (deltaX >= 0) {
+                calculatedRotationAngle = (float) angleZX + 90;
+            } else if (deltaZ >= 0) {
+                calculatedRotationAngle = (float) angleXZ + 180;
+            } else {
+                calculatedRotationAngle = (float) angleZX + 270;
+            }
         }
 
         // calculate the height angle.

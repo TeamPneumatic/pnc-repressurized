@@ -242,7 +242,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         }
         widget = blacklistWidget;
         while (widget != null) {
-            entities.removeAll(widget.getEntitiesWithinArea(world, whitelistPredicate));
+            widget.getEntitiesWithinArea(world, whitelistPredicate).forEach(entities::remove);
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
         if (blacklistPredicate != null) {
