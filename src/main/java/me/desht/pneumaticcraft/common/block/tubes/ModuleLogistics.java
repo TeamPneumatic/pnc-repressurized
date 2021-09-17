@@ -162,9 +162,9 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
                 for (LogisticsTask task : tasks) {
                     if (task.isStillValid(task.transportingItem.isEmpty() ? task.transportingFluid : task.transportingItem)) {
                         if (!task.transportingItem.isEmpty()) {
-                            handleItems(frame2module.get(task.provider.getSemiblockId()), frame2module.get(task.requester.getSemiblockId()), task);
+                            handleItems(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task);
                         } else {
-                            handleFluids(frame2module.get(task.provider.getSemiblockId()), frame2module.get(task.requester.getSemiblockId()), task);
+                            handleFluids(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task);
                         }
                     }
                 }
