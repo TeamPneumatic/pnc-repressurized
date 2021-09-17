@@ -51,8 +51,8 @@ public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
             wobble(entityIn, partialTicks, matrixStackIn);
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entityIn)));
-        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entityIn, packedLightIn), OverlayTexture.getPackedUV(0F, false), 0, 0, 0, 1);
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
+        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entityIn, packedLightIn), OverlayTexture.pack(0F, false), 0, 0, 0, 1);
         matrixStackIn.popPose();
     }
 

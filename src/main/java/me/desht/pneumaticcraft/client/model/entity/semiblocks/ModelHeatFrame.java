@@ -120,7 +120,7 @@ public class ModelHeatFrame extends EntityModel<EntityHeatFrame> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         bottom.render(matrixStack, buffer, packedLight, packedOverlay);
         side1.render(matrixStack, buffer, packedLight, packedOverlay);
         side2.render(matrixStack, buffer, packedLight, packedOverlay);
@@ -149,8 +149,8 @@ public class ModelHeatFrame extends EntityModel<EntityHeatFrame> {
     }
 
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+        modelRenderer.xRot = x;
+        modelRenderer.yRot = y;
+        modelRenderer.zRot = z;
     }
 }
