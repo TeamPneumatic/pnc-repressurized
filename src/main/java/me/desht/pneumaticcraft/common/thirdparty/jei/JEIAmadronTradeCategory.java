@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -31,36 +30,42 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
 
     @Override
     public void setIngredients(AmadronRecipe recipe, IIngredients ingredients) {
-        if (recipe.getInput().getType() == AmadronTradeResource.Type.ITEM) {
-            ingredients.setInput(VanillaTypes.ITEM, recipe.getInput().getItem());
-        } else if (recipe.getInput().getType() == AmadronTradeResource.Type.FLUID) {
-            ingredients.setInput(VanillaTypes.FLUID, recipe.getInput().getFluid());
-        }
-        if (recipe.getOutput().getType() == AmadronTradeResource.Type.ITEM) {
-            ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput().getItem());
-        } else if (recipe.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
-            ingredients.setOutput(VanillaTypes.FLUID, recipe.getOutput().getFluid());
-        }
+        recipe.getInput().accept(
+                itemStack -> ingredients.setInput(VanillaTypes.ITEM, itemStack),
+                fluidStack -> ingredients.setInput(VanillaTypes.FLUID, fluidStack)
+        );
+        recipe.getOutput().accept(
+                itemStack -> ingredients.setOutput(VanillaTypes.ITEM, itemStack),
+                fluidStack -> ingredients.setOutput(VanillaTypes.FLUID, fluidStack)
+        );
     }
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, AmadronRecipe recipe, IIngredients ingredients) {
-        if (recipe.getInput().getType() == AmadronTradeResource.Type.ITEM) {
-            recipeLayout.getItemStacks().init(0, true, 5, 14);
-            recipeLayout.getItemStacks().set(0, recipe.getInput().getItem());
-        } else if (recipe.getInput().getType() == AmadronTradeResource.Type.FLUID) {
-            recipeLayout.getFluidStacks().init(0, true, 6, 15, 16, 16,
-                    1000, false, new FluidTextOverlay(recipe.getInput().getFluid()));
-            recipeLayout.getFluidStacks().set(0, recipe.getInput().getFluid());
-        }
-        if (recipe.getOutput().getType() == AmadronTradeResource.Type.ITEM) {
-            recipeLayout.getItemStacks().init(1, false, 50, 14);
-            recipeLayout.getItemStacks().set(1, recipe.getOutput().getItem());
-        } else if (recipe.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
-            recipeLayout.getFluidStacks().init(1, false, 51, 15, 16, 16,
-                    1000, false, new FluidTextOverlay(recipe.getOutput().getFluid()));
-            recipeLayout.getFluidStacks().set(1, recipe.getOutput().getFluid());
-        }
+        recipe.getInput().accept(
+                itemStack -> {
+                    recipeLayout.getItemStacks().init(0, true, 5, 14);
+                    recipeLayout.getItemStacks().set(0, itemStack);
+                },
+                fluidStack -> {
+                    recipeLayout.getFluidStacks().init(0, true, 6, 15, 16, 16,
+                            1000, false, new FluidTextOverlay(fluidStack));
+                    recipeLayout.getFluidStacks().set(0, fluidStack);
+                }
+        );
+
+        recipe.getOutput().accept(
+                itemStack -> {
+                    recipeLayout.getItemStacks().init(1, false, 50, 14);
+                    recipeLayout.getItemStacks().set(1, itemStack);
+                },
+                fluidStack -> {
+                    recipeLayout.getFluidStacks().init(1, false, 51, 15, 16, 16,
+                            1000, false, new FluidTextOverlay(fluidStack));
+                    recipeLayout.getFluidStacks().set(1, fluidStack);
+                }
+        );
+
     }
 
     @Override

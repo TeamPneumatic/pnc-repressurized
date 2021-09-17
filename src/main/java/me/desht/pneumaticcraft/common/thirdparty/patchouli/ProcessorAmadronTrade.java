@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
-import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource.Type;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.Log;
@@ -33,11 +32,11 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
 
         switch (key) {
             case "input":
-                return IVariable.from(recipe.getInput().getType() == Type.ITEM ? recipe.getInput().getItem() : recipe.getInput().getFluid());
+                return IVariable.from(recipe.getInput().apply(itemStack -> itemStack, fluidStack -> fluidStack));
             case "output":
-                return IVariable.from(recipe.getOutput().getType() == Type.ITEM ? recipe.getOutput().getItem() : recipe.getOutput().getFluid());
+                return IVariable.from(recipe.getOutput().apply(itemStack -> itemStack, fluidStack -> fluidStack));
             case "name":
-                return IVariable.wrap(recipe.getOutput().getItem().getHoverName().getString());
+                return IVariable.wrap(recipe.getOutput().getName());
             case "text":
                 return IVariable.wrap(text == null ? "" : I18n.get(text));
         }

@@ -1,0 +1,160 @@
+package me.desht.pneumaticcraft.common.amadron;
+
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
+import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
+import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
+import me.desht.pneumaticcraft.common.DroneRegistry;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
+import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
+import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
+import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketAmadronStockUpdate;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.items.ItemHandlerHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class EventHandlerAmadron {
+    private static long reshuffleCounter = 0;
+
+    @SubscribeEvent
+    public void onDroneSuicide(DroneSuicideEvent event) {
+        if (event.drone instanceof EntityAmadrone) {
+            EntityAmadrone drone = (EntityAmadrone) event.drone;
+            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(drone.getHandlingOffer());
+            if (offer != null) {
+                offer.getInput().accept(
+                        itemStack -> {
+                            int requiredCount = offer.getInput().getAmount() * drone.getOfferTimes();
+                            for (int i = 0; i < drone.getInv().getSlots(); i++) {
+                                requiredCount -= drone.getInv().getStackInSlot(i).getCount();
+                            }
+                            if (requiredCount <= 0) {
+                                for (int i = 0; i < drone.getInv().getSlots(); i++) {
+                                    drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                                }
+                                MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
+                            } else {
+                                onAmadronFailure(drone, offer);
+                            }
+                        },
+                        fluidStack -> {
+                            int requiredCount = offer.getInput().getAmount() * drone.getOfferTimes();
+                            if (drone.getFluidTank().getFluidAmount() >= requiredCount) {
+                                MinecraftForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
+                            } else {
+                                onAmadronFailure(drone, offer);
+                            }
+                        }
+                );
+            }
+        }
+    }
+
+    private void onAmadronFailure(EntityAmadrone drone, AmadronRecipe offer) {
+        // order failed - Amadrone didn't get enough of the purchase price (maybe player removed items after placing order?)
+        if (offer instanceof AmadronPlayerOffer || offer.getMaxStock() >= 0) {
+            // restore stock to previous level (we reduced stock in ContainerAmadron#retrieveOrderItems())
+            offer.setStock(offer.getStock() + drone.getOfferTimes());
+            if (offer instanceof AmadronPlayerOffer) AmadronPlayerOffers.save();
+            NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getId(), offer.getStock()));
+        }
+    }
+
+    @SubscribeEvent
+    public void onAmadronSuccess(AmadronRetrievalEvent event) {
+        EntityAmadrone drone = (EntityAmadrone) event.drone;
+
+        AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(drone.getHandlingOffer());
+
+        AmadronPlayerOffer playerOffer = getPlayerOffer(offer);
+        if (playerOffer == null) {
+            // A normal (non-player) trade; just deliver the result
+            doDelivery(drone, offer);
+        } else {
+            if (drone.getAmadronAction() == AmadronAction.TAKING_PAYMENT) {
+                // Drone has just taken payment for player offer
+                // Add a pending payment, and remove Amadron stock
+                if (offer instanceof AmadronPlayerOffer) ((AmadronPlayerOffer) offer).addPayment(drone.getOfferTimes()); // don't use playerOffer here!
+                playerOffer.onTrade(drone.getOfferTimes(), drone.getBuyingPlayer());
+                doDelivery(drone, offer);
+            } else if (drone.getAmadronAction() == AmadronAction.RESTOCKING) {
+                // Drone is restocking Amadron - add stock
+                playerOffer.setStock(playerOffer.getStock() + drone.getOfferTimes());
+                NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(playerOffer.getId(), playerOffer.getStock()));
+                playerOffer.notifyRestock();
+            }
+            AmadronPlayerOffers.save();
+        }
+    }
+
+    private void doDelivery(EntityAmadrone drone, AmadronRecipe offer) {
+        ItemStack usedTablet = drone.getUsedTablet();
+        offer.getOutput().accept(
+                itemStack -> {
+                    GlobalPos itemPos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
+                    if (itemPos != null) {
+                        int toDeliver = itemStack.getCount() * drone.getOfferTimes();
+                        List<ItemStack> stacks = new ArrayList<>();
+                        while (toDeliver > 0) {
+                            ItemStack stack = ItemHandlerHelper.copyStackWithSize(itemStack, Math.min(toDeliver, itemStack.getMaxStackSize()));
+                            stacks.add(stack);
+                            toDeliver -= stack.getCount();
+                        }
+                        DroneRegistry.getInstance().deliverItemsAmazonStyle(itemPos, stacks.toArray(new ItemStack[0]));
+                    }
+                },
+                fluidStack -> {
+                    GlobalPos fluidPos = ItemAmadronTablet.getFluidProvidingLocation(usedTablet);
+                    if (fluidPos != null) {
+                        FluidStack offeringFluid = fluidStack.copy();
+                        offeringFluid.setAmount(offeringFluid.getAmount() * drone.getOfferTimes());
+                        DroneRegistry.getInstance().deliverFluidAmazonStyle(fluidPos, offeringFluid);
+                    }
+                }
+        );
+    }
+
+    @SubscribeEvent
+    public void amadronHousekeeping(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+
+            if (reshuffleCounter++ >= PNCConfig.Common.Amadron.reshuffleInterval && !anyPlayerUsingAmadron(server)) {
+                // don't reshuffle if any player has a tablet open, to avoid confusion
+                AmadronOfferManager.getInstance().compileActiveOffersList();
+                reshuffleCounter = 0;
+            }
+            if (server.getTickCount() % 600 == 0) {
+                AmadronOfferManager.getInstance().tryRestockPlayerOffers();
+            }
+            World overWorld = server.getLevel(World.OVERWORLD);
+            if (overWorld != null) {
+                AmadronOfferManager.getInstance().checkForFullRebuild(overWorld);
+            }
+        }
+    }
+
+    private boolean anyPlayerUsingAmadron(MinecraftServer server) {
+        return server.getPlayerList().getPlayers().stream()
+                .anyMatch(player -> player.containerMenu instanceof ContainerAmadron);
+    }
+
+    private AmadronPlayerOffer getPlayerOffer(AmadronRecipe offer) {
+        AmadronRecipe o = AmadronOfferManager.getInstance().getOffer(AmadronPlayerOffer.getReversedId(offer.getId()));
+        return o instanceof AmadronPlayerOffer ? (AmadronPlayerOffer) o : null;
+    }
+}

@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.pathfinding.FlyingNodeProcessor;
 import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
@@ -21,17 +19,18 @@ public class NodeProcessorDrone extends FlyingNodeProcessor {
      */
     @Override
     public int getNeighbors(PathPoint[] pathOptions, PathPoint currentPoint) {
+        return super.getNeighbors(pathOptions, currentPoint);
         // findPathOptions
 
-        int i = 0;
-
-        for(Direction dir : DirectionUtil.VALUES){
-            PathPoint point = getNode(currentPoint.x + dir.getStepX(), currentPoint.y + dir.getStepY(), currentPoint.z + dir.getStepZ());
-            if(point != null && !point.closed) {
-                pathOptions[i++] = point;
-            }
-        }
-
-        return i;
+//        int i = 0;
+//
+//        for(Direction dir : DirectionUtil.VALUES){
+//            PathPoint point = getNode(currentPoint.x + dir.getStepX(), currentPoint.y + dir.getStepY(), currentPoint.z + dir.getStepZ());
+//            if(point != null && !point.closed) {
+//                pathOptions[i++] = point;
+//            }
+//        }
+//
+//        return i;
     }
 }

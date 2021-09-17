@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -12,24 +13,24 @@ import java.util.function.Supplier;
  * Sent from client when an offer widget is clicked in the Amadron GUI to update the server-side order amount
  */
 public class PacketAmadronOrderUpdate {
-    private final int orderId;
+    private final ResourceLocation orderId;
     private final int mouseButton;
     private final boolean sneaking;
 
-    public PacketAmadronOrderUpdate(int orderId, int mouseButton, boolean sneaking) {
+    public PacketAmadronOrderUpdate(ResourceLocation orderId, int mouseButton, boolean sneaking) {
         this.orderId = orderId;
         this.mouseButton = mouseButton;
         this.sneaking = sneaking;
     }
 
     public PacketAmadronOrderUpdate(PacketBuffer buffer) {
-        orderId = buffer.readVarInt();
+        orderId = buffer.readResourceLocation();
         mouseButton = buffer.readByte();
         sneaking = buffer.readBoolean();
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeVarInt(orderId);
+        buf.writeResourceLocation(orderId);
         buf.writeByte(mouseButton);
         buf.writeBoolean(sneaking);
     }

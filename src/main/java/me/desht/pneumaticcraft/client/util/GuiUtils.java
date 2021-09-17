@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.util;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.RenderComponentsUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.*;
@@ -29,8 +29,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.fluids.FluidStack;
@@ -42,6 +41,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GuiUtils {
@@ -52,7 +52,7 @@ public class GuiUtils {
     public static final String TRANSLATION_LINE_BREAK = "${br}";
 
     /**
-     * Like {@link ItemRenderer#renderItemAndEffectIntoGUI(ItemStack, int, int)} but takes a MatrixStack
+     * Like {@link ItemRenderer#renderGuiItem(ItemStack, int, int)} but takes a MatrixStack
      * @param matrixStack the matrix stack
      * @param stack the item
      * @param x X pos
@@ -96,6 +96,7 @@ public class GuiUtils {
 
     public static void renderItemStackOverlay(MatrixStack matrixStack, FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
         if (!stack.isEmpty()) {
+            matrixStack.pushPose();
             if (stack.getCount() != 1 || text != null) {
                 String s = text == null ? String.valueOf(stack.getCount()) : text;
                 matrixStack.translate(0.0D, 0.0D, 250F);
@@ -135,6 +136,7 @@ public class GuiUtils {
                 RenderSystem.enableTexture();
                 RenderSystem.enableDepthTest();
             }
+            matrixStack.popPose();
         }
     }
 
@@ -323,7 +325,8 @@ public class GuiUtils {
     public static List<IReorderingProcessor> wrapTextComponentList(List<ITextComponent> text, int maxWidth, FontRenderer font) {
         ImmutableList.Builder<IReorderingProcessor> builder = ImmutableList.builder();
         for (ITextComponent line : text) {
-            builder.addAll(RenderComponentsUtil.wrapComponents(line, maxWidth, font));
+            // note: using workaround method below instead of RenderComponentsUtil.wrapComponents()
+            builder.addAll(wrapComponents(line, maxWidth, font));
         }
         return builder.build();
     }
@@ -332,5 +335,35 @@ public class GuiUtils {
         return Arrays.stream(StringUtils.splitByWholeSeparator(I18n.get(key, params), TRANSLATION_LINE_BREAK))
                 .map(StringTextComponent::new)
                 .collect(Collectors.toList());
+    }
+
+    //
+    // next 2 methods are temporary workaround for clashing 'pStyle' params in ITextProperties.of() leading to styles being lost
+    //
+    private static final IReorderingProcessor INDENT = IReorderingProcessor.codepoint(' ', Style.EMPTY);
+    private static List<IReorderingProcessor> wrapComponents(ITextProperties textProperties, int maxWidth, FontRenderer font) {
+        // use instead of RenderComponentsUtil.wrapComponents()
+        TextPropertiesManager textpropertiesmanager = new TextPropertiesManager();
+        textProperties.visit((style, str) -> {
+            textpropertiesmanager.append(makeProperties(str, style));
+            return Optional.empty();
+        }, Style.EMPTY);
+        List<IReorderingProcessor> list = Lists.newArrayList();
+        font.getSplitter().splitLines(textpropertiesmanager.getResultOrEmpty(), maxWidth, Style.EMPTY, (props, bool) -> {
+            IReorderingProcessor ireorderingprocessor = LanguageMap.getInstance().getVisualOrder(props);
+            list.add(bool ? IReorderingProcessor.composite(INDENT, ireorderingprocessor) : ireorderingprocessor);
+        });
+        return list.isEmpty() ? Lists.newArrayList(IReorderingProcessor.EMPTY) : list;
+    }
+
+    private static ITextProperties makeProperties(final String pText, final Style pStyle) {
+        return new ITextProperties() {
+            public <T> Optional<T> visit(ITextProperties.ITextAcceptor<T> pAcceptor) {
+                return pAcceptor.accept(pText);
+            }
+            public <T> Optional<T> visit(ITextProperties.IStyledTextAcceptor<T> pAcceptor, Style pStyle2) {
+                return pAcceptor.accept(pStyle2.applyTo(pStyle), pText);
+            }
+        };
     }
 }

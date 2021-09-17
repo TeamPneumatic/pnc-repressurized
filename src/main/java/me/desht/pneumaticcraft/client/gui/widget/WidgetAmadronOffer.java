@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -12,6 +11,8 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -33,12 +34,16 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
     public WidgetAmadronOffer(int x, int y, AmadronRecipe offer) {
         super(x, y, 73, 35, StringTextComponent.EMPTY);
         this.offer = offer;
-        if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
-            subWidgets.add(new WidgetFluidStack(x + 6, y + 15, offer.getInput().getFluid().copy(), null));
-        }
-        if (offer.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
-            subWidgets.add(new WidgetFluidStack(x + 51, y + 15, offer.getOutput().getFluid().copy(), null));
-        }
+
+        offer.getInput().accept(
+                itemStack -> subWidgets.add(new WidgetItemStack(x + 6, y + 13, itemStack)),
+                fluidStack -> subWidgets.add(new WidgetFluidStack(x + 6, y + 15, fluidStack.copy(), null))
+        );
+        offer.getOutput().accept(
+                itemStack -> subWidgets.add(new WidgetItemStack(x + 51, y + 13, itemStack)),
+                fluidStack -> subWidgets.add(new WidgetFluidStack(x + 51, y + 15, fluidStack.copy(), null))
+        );
+
         if (offer.isRemovableBy(Minecraft.getInstance().player)) {
             List<ITextComponent> l = new ArrayList<>(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
             l.add(StringTextComponent.EMPTY);
@@ -91,7 +96,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
         return this;
     }
 
-    public WidgetAmadronOffer setCanBuy(boolean canBuy) {
+    public WidgetAmadronOffer setAffordable(boolean canBuy) {
         this.canBuy = canBuy;
         return this;
     }
@@ -128,5 +133,22 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
 
     public void setShoppingAmount(int amount) {
         shoppingAmount = amount;
+    }
+
+    private static class WidgetItemStack extends WidgetButtonExtended {
+        public WidgetItemStack(int startX, int startY, ItemStack stack) {
+            super(startX, startY, 16, 16);
+            setRenderStacks(stack);
+            List<ITextComponent> tooltip = new ArrayList<>();
+            tooltip.addAll(stack.getTooltipLines(Minecraft.getInstance().player, ITooltipFlag.TooltipFlags.NORMAL));
+            setTooltipText(tooltip);
+            setVisible(false);
+            setRenderStackSize(true);
+        }
+
+        @Override
+        protected boolean isValidClickButton(int pButton) {
+            return false;  // not a clickable widget; just for display
+        }
     }
 }

@@ -46,7 +46,7 @@ import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_CLIENT;
 import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_SERVER;
 
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "6";
+    private static final String PROTOCOL_VERSION = "7";
     private static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder
             .named(RL("main_channel"))
             .clientAcceptedVersions(PROTOCOL_VERSION::equals)
@@ -109,6 +109,8 @@ public class NetworkHandler {
 				PacketUpdatePressureBlock::toBytes, PacketUpdatePressureBlock::new, PacketUpdatePressureBlock::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketSyncAmadronOffers.class,
 				PacketSyncAmadronOffers::toBytes, PacketSyncAmadronOffers::new, PacketSyncAmadronOffers::handle, PLAY_TO_CLIENT);
+		registerMessage(PacketAmadronOrderResponse.class,
+				PacketAmadronOrderResponse::toBytes, PacketAmadronOrderResponse::new, PacketAmadronOrderResponse::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketAmadronOrderUpdate.class,
 				PacketAmadronOrderUpdate::toBytes, PacketAmadronOrderUpdate::new, PacketAmadronOrderUpdate::handle, PLAY_TO_SERVER);
 		registerMessage(PacketAmadronStockUpdate.class,
@@ -155,8 +157,8 @@ public class NetworkHandler {
 				PacketSetEntityMotion::toBytes, PacketSetEntityMotion::new, PacketSetEntityMotion::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketDebugBlock.class,
 				PacketDebugBlock::toBytes, PacketDebugBlock::new, PacketDebugBlock::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketAmadronInvSync.class,
-				PacketAmadronInvSync::toBytes, PacketAmadronInvSync::new, PacketAmadronInvSync::handle, PLAY_TO_SERVER);
+//		registerMessage(PacketAmadronInvSync.class,
+//				PacketAmadronInvSync::toBytes, PacketAmadronInvSync::new, PacketAmadronInvSync::handle, PLAY_TO_SERVER);
 		registerMessage(PacketMultiHeader.class,
 				PacketMultiHeader::toBytes, PacketMultiHeader::new, PacketMultiHeader::handle);
 		registerMessage(PacketMultiPart.class,

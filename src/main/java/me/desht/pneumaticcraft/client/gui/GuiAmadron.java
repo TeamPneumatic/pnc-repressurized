@@ -5,16 +5,15 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
-import me.desht.pneumaticcraft.common.inventory.SlotUntouchable;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketAmadronInvSync;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,7 +23,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -33,10 +31,14 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileEntityBase> {
+    private static final int ROWS = 4;
+    public static final int OFFERS_PER_PAGE = ROWS * 2;
+
     private WidgetTextField searchBar;
     private WidgetVerticalScrollbar scrollbar;
-    private int page;
-    private final List<WidgetAmadronOffer> widgetOffers = new ArrayList<>();
+    private WidgetLabel pageLabel;
+    private int page = 0;
+    private final List<WidgetAmadronOfferAdjustable> offerWidgets = new ArrayList<>();
     private boolean needsRefreshing;
     private boolean hadProblem = false;
     private WidgetButtonExtended orderButton;
@@ -87,7 +89,17 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
                 ));
         customTradesTab.addSubWidget(addTradeButton);
 
+        addButton(pageLabel = new WidgetLabel(leftPos + 158, topPos + 49, new StringTextComponent("")));
+        pageLabel.setScale(0.5f);
+        pageLabel.setColor(0xFFE0E0E0);
+
         needsRefreshing = true;
+    }
+
+    public static void basketUpdated() {
+        if (Minecraft.getInstance().screen instanceof GuiAmadron) {
+            ((GuiAmadron) Minecraft.getInstance().screen).needTooltipUpdate = true;
+        }
     }
 
     @Override
@@ -118,18 +130,18 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         if (needsRefreshing || page != scrollbar.getState()) {
             setPage(scrollbar.getState());
         }
-        for (WidgetAmadronOffer offer : widgetOffers) {
-            offer.setCanBuy(menu.buyableOffers[menu.activeOffers.indexOf(offer.getOffer())]);
-            offer.setShoppingAmount(menu.getShoppingCartAmount(offer.getOffer()));
+        for (WidgetAmadronOfferAdjustable offerWidget : offerWidgets) {
+            offerWidget.setAffordable(menu.affordableOffers[offerWidget.index]);
+            offerWidget.setShoppingAmount(menu.getShoppingBasketUnits(offerWidget.getOffer().getId()));
         }
         if (!hadProblem && menu.problemState != EnumProblemState.NO_PROBLEMS) {
             problemTab.openStat();
         }
         hadProblem = menu.problemState != EnumProblemState.NO_PROBLEMS;
-        addTradeButton.active = menu.currentOffers < menu.maxOffers;
+        addTradeButton.active = menu.currentPlayerOffers < menu.maxPlayerOffers;
         ITextComponent text = xlate("pneumaticcraft.gui.amadron.button.addTrade.tooltip.offerCount",
-                menu.currentOffers,
-                menu.maxOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : menu.maxOffers);
+                menu.currentPlayerOffers,
+                menu.maxPlayerOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : menu.maxPlayerOffers);
         customTradesTab.setText(text);
 
         orderButton.active = !menu.isBasketEmpty() && menu.problemState == EnumProblemState.NO_PROBLEMS;
@@ -155,7 +167,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
             builder.add(StringTextComponent.EMPTY);
             builder.add(xlate("pneumaticcraft.gui.amadron.basket").withStyle(TextFormatting.AQUA, TextFormatting.UNDERLINE));
             for (AmadronRecipe offer : AmadronOfferManager.getInstance().getActiveOffers()) {
-                int nOrders = menu.getShoppingCartAmount(offer);
+                int nOrders = menu.getShoppingBasketUnits(offer.getId());
                 if (nOrders > 0) {
                     String in = (offer.getInput().getAmount() * nOrders) + " x " + offer.getInput().getName();
                     String out = (offer.getOutput().getAmount() * nOrders) + " x " + offer.getOutput().getName();
@@ -180,14 +192,16 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
 
     public void setPage(int page) {
         this.page = page;
+
         updateVisibleOffers();
+
+        int nPages = ((menu.activeOffers.size() - 1) / OFFERS_PER_PAGE) + 1;
+        pageLabel.setMessage(new StringTextComponent((page + 1) + "/" + nPages));
     }
 
     private void updateVisibleOffers() {
         needsRefreshing = false;
-        int invSize = ContainerAmadron.ROWS * 2;
-        menu.clearStacks();
-        List<Pair<Integer,AmadronRecipe>> visibleOffers = new ArrayList<>();
+        List<AmadronRecipe> visibleOffers = new ArrayList<>();
         int skippedOffers = 0;
         int applicableOffers = 0;
 
@@ -195,43 +209,28 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
             AmadronRecipe offer = menu.activeOffers.get(i);
             if (offer.passesQuery(searchBar.getValue())) {
                 applicableOffers++;
-                if (skippedOffers < page * invSize) {
+                if (skippedOffers < page * OFFERS_PER_PAGE) {
                     skippedOffers++;
-                } else if (visibleOffers.size() < invSize) {
-                    visibleOffers.add(Pair.of(i, offer));
+                } else if (visibleOffers.size() < OFFERS_PER_PAGE) {
+                    visibleOffers.add(offer);
                 }
             }
         }
 
-        scrollbar.setStates(Math.max(1, (applicableOffers + invSize - 1) / invSize - 1));
+        scrollbar.setStates(Math.max(1, (applicableOffers + OFFERS_PER_PAGE - 1) / OFFERS_PER_PAGE - 1));
 
-        buttons.removeAll(widgetOffers);
-        children.removeAll(widgetOffers);
+        buttons.removeAll(offerWidgets);
+        children.removeAll(offerWidgets);
+        offerWidgets.clear();
         for (int i = 0; i < visibleOffers.size(); i++) {
-            int offerId = visibleOffers.get(i).getLeft();
-            AmadronRecipe offer = visibleOffers.get(i).getRight();
-            if (!offer.getInput().getItem().isEmpty()) {
-                menu.getSlot(i * 2).set(offer.getInput().getItem());
-                ((SlotUntouchable) menu.getSlot(i * 2)).setEnabled(true);
+            AmadronRecipe offer = visibleOffers.get(i);
+            int idx = menu.activeOffers.indexOf(offer);
+            if (idx >= 0) {  // should always be the case; sanity check
+                WidgetAmadronOfferAdjustable widget = new WidgetAmadronOfferAdjustable(leftPos + 6 + 73 * (i % 2), topPos + 55 + 35 * (i / 2), offer, idx);
+                addButton(widget);
+                offerWidgets.add(widget);
             }
-            if (!offer.getOutput().getItem().isEmpty()) {
-                menu.getSlot(i * 2 + 1).set(offer.getOutput().getItem());
-                ((SlotUntouchable) menu.getSlot(i * 2 + 1)).setEnabled(true);
-            }
-
-            WidgetAmadronOffer widget = new WidgetAmadronOfferAdjustable(offerId, leftPos + 6 + 73 * (i % 2), topPos + 55 + 35 * (i / 2), offer);
-            addButton(widget);
-            widgetOffers.add(widget);
         }
-
-        // avoid drawing phantom slot highlights where there's no widget
-        for (int i = visibleOffers.size() * 2; i < menu.slots.size(); i++) {
-            ((SlotUntouchable) menu.getSlot(i)).setEnabled(false);
-        }
-
-        // the server also needs to know what's in the tablet, or the next
-        // "window items" packet will empty all the client-side slots
-        NetworkHandler.sendToServer(new PacketAmadronInvSync(menu.getItems()));
     }
 
     @Override
@@ -253,18 +252,19 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     }
 
     static class WidgetAmadronOfferAdjustable extends WidgetAmadronOffer {
-        private final int offerId;
+        // index into the current active offers list
+        private final int index;
 
-        WidgetAmadronOfferAdjustable(int offerId, int x, int y, AmadronRecipe offer) {
+        WidgetAmadronOfferAdjustable(int x, int y, AmadronRecipe offer, int index) {
             super(x, y, offer);
-            this.offerId = offerId;
+            this.index = index;
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
             if (super.mouseClicked(mouseX, mouseY, mouseButton)) return true;
             if (clicked(mouseX, mouseY)) {
-                NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(offerId, mouseButton, Screen.hasShiftDown()));
+                NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(getOffer().getId(), mouseButton, Screen.hasShiftDown()));
                 return true;
             } else {
                 return false;

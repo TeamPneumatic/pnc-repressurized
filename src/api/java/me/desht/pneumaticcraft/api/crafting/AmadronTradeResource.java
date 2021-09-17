@@ -3,11 +3,14 @@ package me.desht.pneumaticcraft.api.crafting;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.network.PacketBuffer;
@@ -24,6 +27,8 @@ import org.apache.commons.lang3.Validate;
 import javax.annotation.Nonnull;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 /**
@@ -32,24 +37,32 @@ import java.util.stream.IntStream;
 public class AmadronTradeResource {
     public enum Type { ITEM, FLUID }
 
-    private final Type type;
-    private final ItemStack item;
-    private final FluidStack fluid;
+    private final Either<ItemStack,FluidStack> resource;
 
     private AmadronTradeResource(@Nonnull ItemStack stack) {
-        item = stack;
-        type = Type.ITEM;
-        fluid = FluidStack.EMPTY;
+        resource = Either.left(stack);
     }
 
     private AmadronTradeResource(@Nonnull FluidStack stack) {
-        item = ItemStack.EMPTY;
-        type = Type.FLUID;
-        fluid = stack;
+        resource = Either.right(stack);
     }
 
     public boolean isEmpty() {
-        return item.isEmpty() && fluid.isEmpty();
+        return resource.map(ItemStack::isEmpty, FluidStack::isEmpty);
+    }
+
+    /**
+     * Get the type of this resource. Here for historical reasons; there are better alternatives - see
+     * {@link #accept(Consumer, Consumer)} and {@link #apply(Function, Function)} for general purpose methods to call on
+     * a trade resource. This method will be removed in 1.17+.
+     *
+     * @return the resource type
+     * @deprecated don't use this; this class is designed to be type-agnostic
+     */
+    @Deprecated
+    public Type getType() {
+        // TODO 1.17 remove this method
+        return resource.map(item -> Type.ITEM, fluidStack -> Type.FLUID);
     }
 
     /**
@@ -58,14 +71,10 @@ public class AmadronTradeResource {
      * @return true if the two are equivalent, false if not
      */
     public boolean equivalentTo(AmadronTradeResource other) {
-        if (type != other.type) return false;
-        switch (type) {
-            case ITEM:
-                return getItem().getItem() == other.getItem().getItem();
-            case FLUID:
-                return getFluid().getFluid() == other.getFluid().getFluid();
-        }
-        return false;
+        return resource.map(
+                itemStack -> itemStack.getItem() == other.getItem().getItem(),
+                fluidStack -> fluidStack.getFluid() == other.getFluid().getFluid()
+        );
     }
 
     public static AmadronTradeResource of(ItemStack stack) {
@@ -77,63 +86,71 @@ public class AmadronTradeResource {
     }
 
     public static AmadronTradeResource fromPacketBuf(PacketBuffer pb) {
-        Type type = Type.values()[pb.readByte()];
+        Type type = pb.readEnum(Type.class);
         switch (type) {
-            case ITEM:
-                return new AmadronTradeResource(pb.readItem());
-            case FLUID:
-                return new AmadronTradeResource(FluidStack.loadFluidStackFromNBT(pb.readNbt()));
+            case ITEM: return new AmadronTradeResource(pb.readItem());
+            case FLUID: return new AmadronTradeResource(FluidStack.loadFluidStackFromNBT(pb.readNbt()));
         }
         throw new IllegalStateException("bad trade resource type: " + type);
     }
 
-    public Type getType() {
-        return type;
-    }
-
     public ItemStack getItem() {
-        return type == Type.ITEM ? item : ItemStack.EMPTY;
+        return resource.left().orElse(ItemStack.EMPTY);
     }
 
     public FluidStack getFluid() {
-        return type == Type.FLUID ? fluid : FluidStack.EMPTY;
+        return resource.right().orElse(FluidStack.EMPTY);
+    }
+
+    public void accept(Consumer<ItemStack> cStack, Consumer<FluidStack> cFluid) {
+        resource.ifLeft(cStack).ifRight(cFluid);
+    }
+
+    public <T> T apply(Function<ItemStack,T> fStack, Function<FluidStack,T> fFluid) {
+        return resource.map(fStack, fFluid);
+    }
+
+    /**
+     * The total space required for this resource, in stacks for an item resource, and in mB for a fluid resource
+     * @param units number of offer units
+     * @return total space required
+     */
+    public int totalSpaceRequired(int units) {
+        return resource.map(
+                itemStack -> (((itemStack.getCount() * units) - 1) / itemStack.getMaxStackSize()) + 1,
+                fluidStack -> fluidStack.getAmount() * units
+        );
     }
 
     public int countTradesInInventory(LazyOptional<IItemHandler> inv) {
-        return countItemsInHandler(item, inv) / item.getCount();
+        return resource.left().map(item -> countItemsInHandler(item, inv) / item.getCount()).orElse(0);
     }
 
     public int findSpaceInItemOutput(LazyOptional<IItemHandler> inv, int wantedTradeCount) {
-        return Math.min(wantedTradeCount, findSpaceInHandler(item, wantedTradeCount, inv));
+        return resource.left().map(item -> Math.min(wantedTradeCount, findSpaceInHandler(item, wantedTradeCount, inv))).orElse(0);
     }
 
     public int countTradesInTank(LazyOptional<IFluidHandler> lazy) {
-        return lazy.map(fluidHandler -> {
+        return resource.right().map(fluid -> lazy.map(fluidHandler -> {
             FluidStack searchingFluid = fluid.copy();
             searchingFluid.setAmount(Integer.MAX_VALUE);
             FluidStack extracted = fluidHandler.drain(searchingFluid, IFluidHandler.FluidAction.SIMULATE);
             return extracted.getAmount() / fluid.getAmount();
-        }).orElse(0);
+        }).orElse(0)).orElse(0);
     }
 
     public int findSpaceInFluidOutput(LazyOptional<IFluidHandler> lazy, int wantedTradeCount) {
-        return lazy.map(fluidHandler -> {
+        return resource.right().map(fluid -> lazy.map(fluidHandler -> {
             FluidStack providingFluid = fluid.copy();
             providingFluid.setAmount(providingFluid.getAmount() * wantedTradeCount);
             int amountFilled = fluidHandler.fill(providingFluid, IFluidHandler.FluidAction.SIMULATE);
             return amountFilled / fluid.getAmount();
-        }).orElse(0);
+        }).orElse(0)).orElse(0);
     }
 
     public AmadronTradeResource validate() {
-        switch (type) {
-            case ITEM:
-                Validate.isTrue(!item.isEmpty());
-                break;
-            case FLUID:
-                Validate.isTrue(!fluid.isEmpty());
-                break;
-        }
+        resource.ifLeft(stack -> Validate.isTrue(!stack.isEmpty()))
+                .ifRight(fluidStack -> Validate.isTrue(!fluidStack.isEmpty()));
         return this;
     }
 
@@ -144,13 +161,15 @@ public class AmadronTradeResource {
         switch (type) {
             case ITEM:
                 Item item = ForgeRegistries.ITEMS.getValue(rl);
-                ItemStack stack = new ItemStack(item, amount);
+                if (item == null || item == Items.AIR) throw new JsonSyntaxException("unknown item " + rl + "!");
+                ItemStack itemStack = new ItemStack(item, amount);
                 if (obj.has("nbt")) {
-                    stack.setTag(JsonToNBT.parseTag(JSONUtils.getAsString(obj, "nbt")));
+                    itemStack.setTag(JsonToNBT.parseTag(JSONUtils.getAsString(obj, "nbt")));
                 }
-                return new AmadronTradeResource(stack);
+                return new AmadronTradeResource(itemStack);
             case FLUID:
                 Fluid fluid = ForgeRegistries.FLUIDS.getValue(rl);
+                if (fluid == null || fluid == Fluids.EMPTY) throw new JsonSyntaxException("unknown fluid " + rl + "!");
                 FluidStack fluidStack = new FluidStack(fluid, amount);
                 return new AmadronTradeResource(fluidStack);
             default:
@@ -160,71 +179,61 @@ public class AmadronTradeResource {
 
     public JsonObject toJson() {
         JsonObject res = new JsonObject();
-        res.addProperty("type", type.name());
-        switch (type) {
-            case ITEM:
-                ResourceLocation name = item.getItem().getRegistryName();
-                res.addProperty("id", name == null ? "" : name.toString());
-                res.addProperty("amount", item.getCount());
-                if (item.hasTag()) {
-                    res.addProperty("nbt", item.getTag().toString()); //NBTToJsonConverter.getObject(item.getTag()));
-                }
-                break;
-            case FLUID:
-                res.addProperty("id", fluid.getFluid().getRegistryName().toString());
-                res.addProperty("amount", fluid.getAmount());
-                break;
-        }
+        resource.ifLeft(item -> {
+            res.addProperty("type", Type.ITEM.name());
+            ResourceLocation name = item.getItem().getRegistryName();
+            res.addProperty("id", name == null ? "" : name.toString());
+            res.addProperty("amount", item.getCount());
+            if (item.hasTag()) {
+                res.addProperty("nbt", item.getTag().toString()); //NBTToJsonConverter.getObject(item.getTag()));
+            }
+        }).ifRight(fluid -> {
+            res.addProperty("type", Type.FLUID.name());
+            res.addProperty("id", fluid.getFluid().getRegistryName().toString());
+            res.addProperty("amount", fluid.getAmount());
+        });
         return res;
     }
 
     public void writeToBuf(PacketBuffer pb) {
-        pb.writeByte(type.ordinal());
-        switch (type) {
-            case ITEM:
-                pb.writeItem(item);
-                break;
-            case FLUID:
-                pb.writeNbt(fluid.writeToNBT(new CompoundNBT()));
-                break;
-        }
+        resource.ifLeft(pStack -> {
+                    pb.writeEnum(Type.ITEM);
+                    pb.writeItem(pStack);
+                })
+                .ifRight(fluidStack -> {
+                    pb.writeEnum(Type.FLUID);
+                    fluidStack.writeToNBT(new CompoundNBT());
+                });
     }
 
     public String getName() {
-        switch (type) {
-            case ITEM:
-                return item.getHoverName().getString();
-            case FLUID:
-                return fluid.getDisplayName().getString();
-            default:
-                return null;
-        }
+        return resource.map(
+                itemStack -> itemStack.getHoverName().getString(),
+                fluidStack -> fluidStack.getDisplayName().getString()
+        );
     }
 
     public ResourceLocation getId() {
-        switch (type) {
-            case ITEM:
-                return item.getItem().getRegistryName();
-            case FLUID:
-                return fluid.getFluid().getRegistryName();
-            default:
-                return null;
-        }
+        return resource.map(
+                itemStack -> itemStack.getItem().getRegistryName(),
+                fluidStack -> fluidStack.getFluid().getRegistryName()
+        );
     }
 
     public int getAmount() {
-        switch (type) {
-            case ITEM: return item.getCount();
-            case FLUID: return fluid.getAmount();
-        }
-        return 0;
+        return resource.map(ItemStack::getCount, FluidStack::getAmount);
     }
 
     public CompoundNBT writeToNBT() {
         CompoundNBT tag = new CompoundNBT();
-        tag.putString("type", type.toString());
-        CompoundNBT subTag = type == Type.ITEM ? item.save(new CompoundNBT()) : fluid.writeToNBT(new CompoundNBT());
-        tag.put("resource", subTag);
+        resource.ifLeft(itemStack -> {
+                    tag.putString("type", Type.ITEM.toString());
+                    tag.put("resource", itemStack.save(new CompoundNBT()));
+                })
+                .ifRight(fluidStack -> {
+                    tag.putString("type", Type.FLUID.toString());
+                    tag.put("resource", fluidStack.writeToNBT(new CompoundNBT()));
+                });
         return tag;
     }
 
@@ -233,24 +242,23 @@ public class AmadronTradeResource {
         if (this == o) return true;
         if (!(o instanceof AmadronTradeResource)) return false;
         AmadronTradeResource that = (AmadronTradeResource) o;
-        return type == Type.ITEM && ItemStack.matches(item, that.item)
-                || type == Type.FLUID && fluid.equals(that.fluid) && fluid.getAmount() == that.fluid.getAmount();
+        return resource.map(
+                itemStack -> ItemStack.matches(itemStack, that.getItem()),
+                fluidStack -> fluidStack.isFluidStackIdentical(that.getFluid())
+        );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, item, fluid);
+        return resource.map(Objects::hash, Objects::hash);
     }
 
     @Override
     public String toString() {
-        switch (type) {
-            case ITEM:
-                return item.getCount() + " x " + item.getHoverName().getString();
-            case FLUID:
-                return fluid.getAmount() + "mB " + fluid.getDisplayName().getString();
-        }
-        return super.toString();
+        return resource.map(
+                itemStack -> itemStack.getCount() + " x " + itemStack.getHoverName().getString(),
+                fluidStack -> fluidStack.getAmount() + "mB " + fluidStack.getDisplayName().getString()
+        );
     }
 
     /**
@@ -272,7 +280,7 @@ public class AmadronTradeResource {
     }
 
     /**
-     * Check how many time we can insert the given itemstack into the (lazy) item handler.
+     * Check how many times we can insert the given itemstack into the (lazy) item handler.
      *
      * @param item the item stack, whose size may be > 1
      * @param multiplier the number of times we want to insert it

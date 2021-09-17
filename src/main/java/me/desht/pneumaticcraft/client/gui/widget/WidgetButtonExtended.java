@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -30,14 +29,13 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
 
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
-
     private ResourceLocation resLoc;
     private final List<ITextComponent> tooltipText = new ArrayList<>();
-    private final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
     private int invisibleHoverColor;
     private boolean thisVisible = true;
     private IconPosition iconPosition = IconPosition.MIDDLE;
     private String tag = null;
+    private boolean renderStackSize = false;
 
     public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, Button.IPressable pressable) {
         super(startX, startY, xSize, ySize, buttonText, pressable);
@@ -160,6 +158,10 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return height;
     }
 
+    public void setRenderStackSize(boolean renderStackSize) {
+        this.renderStackSize = renderStackSize;
+    }
+
     @Override
     public void renderButton(MatrixStack matrixStack, int x, int y, float partialTicks) {
         if (thisVisible) super.renderButton(matrixStack, x, y, partialTicks);
@@ -170,6 +172,9 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
                 RenderHelper.turnBackOn();
                 for (int i = renderedStacks.length - 1; i >= 0; i--) {
                     GuiUtils.renderItemStack(matrixStack, renderedStacks[i], startX + i * iconSpacing, this.y + 2);
+                    if (renderStackSize) {
+                        GuiUtils.renderItemStackOverlay(matrixStack, Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.y + 2, null);
+                    }
                 }
                 RenderHelper.turnOff();
             }

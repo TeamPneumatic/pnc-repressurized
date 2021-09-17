@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;

@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.recipes.amadron;
+package me.desht.pneumaticcraft.common.amadron;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
@@ -12,6 +12,8 @@ import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
@@ -76,7 +78,7 @@ public enum AmadronOfferManager {
      */
     public boolean addPlayerOffer(AmadronPlayerOffer offer) {
         if (hasSimilarPlayerOffer(offer)) return false;
-        if (offer.input.isEmpty() || offer.output.isEmpty()) return false;
+        if (offer.getInput().isEmpty() || offer.getOutput().isEmpty()) return false;
 
         getPlayerOffers().put(offer.getId(), offer);
         addOffer(activeOffers, offer);
@@ -180,17 +182,12 @@ public enum AmadronOfferManager {
         for (AmadronPlayerOffer offer : getPlayerOffers().values()) {
             AmadronPlayerOffer reversed = offer.getReversedOffer();
             TileEntity provider = offer.getProvidingTileEntity();
-            int possiblePickups = 0;
-            switch (offer.getOutput().getType()) {
-                case ITEM:
-                    possiblePickups = offer.getOutput().countTradesInInventory(IOHelper.getInventoryForTE(provider));
-                    break;
-                case FLUID:
-                    possiblePickups = offer.getOutput().countTradesInTank(IOHelper.getFluidHandlerForTE(provider));
-                    break;
-            }
+            int possiblePickups = offer.getOutput().apply(
+                    itemStack -> offer.getOutput().countTradesInInventory(IOHelper.getInventoryForTE(provider)),
+                    fluidStack -> offer.getOutput().countTradesInTank(IOHelper.getFluidHandlerForTE(provider))
+            );
             if (possiblePickups > 0) {
-                EntityAmadrone drone = ContainerAmadron.retrieveOrderItems(null, offer.getReversedOffer(), possiblePickups,
+                EntityAmadrone drone = ContainerAmadron.retrieveOrder(null, offer.getReversedOffer(), possiblePickups,
                         offer.getProvidingPos(), offer.getProvidingPos());
                 if (drone != null) {
                     drone.setHandlingOffer(reversed.getId(), possiblePickups, ItemStack.EMPTY,
@@ -350,7 +347,7 @@ public enum AmadronOfferManager {
         rebuildRequired = true;
     }
 
-    public void maybeRebuildActiveOffers(World world) {
+    public void checkForFullRebuild(World world) {
         if (rebuildRequired) {
             Log.debug("Rebuilding Amadron offer list");
 
@@ -370,6 +367,10 @@ public enum AmadronOfferManager {
 
             rebuildRequired = false;
         }
+    }
+
+    public boolean isActive(ResourceLocation offerId) {
+        return activeOffers.containsKey(offerId);
     }
 
 

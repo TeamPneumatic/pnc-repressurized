@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.DroneRegistry;
+import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
@@ -13,7 +15,6 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.JSONUtils;
@@ -21,11 +22,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.ItemHandlerHelper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -120,43 +117,23 @@ public class AmadronPlayerOffer extends AmadronOffer {
         }
     }
 
-    boolean payout() {
-        boolean madePayment = false;
+    public boolean payout() {
         TileEntity returning = getReturningTileEntity();
         if (pendingPayments > 0) {
-            int paying = Math.min(pendingPayments, 50);
-            switch (getInput().getType()) {
-                case ITEM:
-                    paying = getInput().findSpaceInItemOutput(IOHelper.getInventoryForTE(returning), paying);
-                    break;
-                case FLUID:
-                    paying = getInput().findSpaceInFluidOutput(IOHelper.getFluidHandlerForTE(returning), paying);
-                    break;
-            }
+            final int pay0 = Math.min(pendingPayments, 50);
+            int paying = getInput().apply(
+                    itemStack -> getInput().findSpaceInItemOutput(IOHelper.getInventoryForTE(returning), pay0),
+                    fluidStack -> getInput().findSpaceInFluidOutput(IOHelper.getFluidHandlerForTE(returning), pay0)
+            );
             if (paying > 0) {
                 pendingPayments -= paying;
-                madePayment = true;
-                switch (getInput().getType()) {
-                    case ITEM:
-                        ItemStack deliveringItems = getInput().getItem();
-                        int amount = deliveringItems.getCount() * paying;
-                        List<ItemStack> stacks = new ArrayList<>();
-                        while (amount > 0) {
-                            ItemStack stack = ItemHandlerHelper.copyStackWithSize(deliveringItems, Math.min(amount, deliveringItems.getMaxStackSize()));
-                            stacks.add(stack);
-                            amount -= stack.getCount();
-                        }
-                        DroneRegistry.getInstance().deliverItemsAmazonStyle(returningPos, stacks.toArray(new ItemStack[0]));
-                        break;
-                    case FLUID:
-                        FluidStack deliveringFluid = getInput().getFluid().copy();
-                        deliveringFluid.setAmount(deliveringFluid.getAmount() * paying);
-                        DroneRegistry.getInstance().deliverFluidAmazonStyle(returningPos, deliveringFluid);
-                        break;
-                }
+                getInput().accept(
+                        itemStack -> DroneRegistry.getInstance().deliverItemsAmazonStyle(returningPos, AmadronUtil.buildStacks(itemStack, paying)),
+                        fluidStack -> DroneRegistry.getInstance().deliverFluidAmazonStyle(returningPos, AmadronUtil.buildFluidStack(fluidStack, paying)));
+                return true;
             }
         }
-        return madePayment;
+        return false;
     }
 
     /**
@@ -167,28 +144,14 @@ public class AmadronPlayerOffer extends AmadronOffer {
         while (inStock > 0) {
             int stock = Math.min(inStock, 64);
             inStock -= stock;
-            switch (getOutput().getType()) {
-                case ITEM:
-                    ItemStack deliveringItems = getOutput().getItem();
-                    int amount = deliveringItems.getCount() * stock;
-                    List<ItemStack> stacks = new ArrayList<>();
-                    while (amount > 0) {
-                        ItemStack stack = ItemHandlerHelper.copyStackWithSize(deliveringItems, Math.min(amount, deliveringItems.getMaxStackSize()));
-                        stacks.add(stack);
-                        amount -= stack.getCount();
-                    }
-                    DroneRegistry.getInstance().deliverItemsAmazonStyle(providingPos, stacks.toArray(new ItemStack[0]));
-                    break;
-                case FLUID:
-                    FluidStack deliveringFluid = getOutput().getFluid().copy();
-                    deliveringFluid.setAmount(deliveringFluid.getAmount() * stock);
-                    DroneRegistry.getInstance().deliverFluidAmazonStyle(providingPos, deliveringFluid);
-                    break;
-            }
+            getOutput().accept(
+                    itemStack -> DroneRegistry.getInstance().deliverItemsAmazonStyle(providingPos, AmadronUtil.buildStacks(itemStack, stock)),
+                    fluidStack -> DroneRegistry.getInstance().deliverFluidAmazonStyle(providingPos, AmadronUtil.buildFluidStack(fluidStack, stock))
+            );
         }
     }
 
-    TileEntity getProvidingTileEntity() {
+    public TileEntity getProvidingTileEntity() {
         if (cachedInput == null || cachedInput.isRemoved()) {
             if (providingPos != null) {
                 cachedInput = GlobalPosHelper.getTileEntity(providingPos);
@@ -206,7 +169,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
         return cachedOutput;
     }
 
-    GlobalPos getProvidingPos() {
+    public GlobalPos getProvidingPos() {
         return providingPos;
     }
 

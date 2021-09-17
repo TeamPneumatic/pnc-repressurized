@@ -386,7 +386,7 @@ public class PneumaticCraftUtils {
         if (filterStack.getItem() != stack.getItem()) return false;
 
         boolean durabilityOK = !checkDurability || (filterStack.getMaxDamage() > 0 && filterStack.getDamageValue() == stack.getDamageValue());
-        boolean nbtOK = !checkNBT || (filterStack.hasTag() ? filterStack.getTag().equals(stack.getTag()) : !stack.hasTag());
+        boolean nbtOK = !checkNBT || ItemStack.tagMatches(filterStack, stack);
 
         return durabilityOK && nbtOK;
     }

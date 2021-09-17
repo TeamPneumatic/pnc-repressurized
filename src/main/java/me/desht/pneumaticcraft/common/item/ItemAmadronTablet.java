@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
@@ -17,9 +18,11 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.text.ITextComponent;
@@ -34,9 +37,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -143,22 +144,16 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         NBTUtils.setCompoundTag(tablet, "liquidPos", GlobalPosHelper.toNBT(globalPos));
     }
 
-    public static Map<ResourceLocation, Integer> loadShoppingCart(ItemStack tablet) {
-        Map<ResourceLocation, Integer> offers = new HashMap<>();
-
-        CompoundNBT subTag = tablet.getTagElement("shoppingCart");
-        if (subTag != null) {
-            for (String key : subTag.getAllKeys()) {
-                offers.put(new ResourceLocation(key), subTag.getInt(key));
-            }
-        }
-        return offers;
+    @Nonnull
+    public static ShoppingBasket loadShoppingCart(ItemStack tablet) {
+        if (!(tablet.getItem() instanceof ItemAmadronTablet)) return new ShoppingBasket();
+        return ShoppingBasket.fromNBT(tablet.getTagElement("shoppingCart"));
     }
 
-    public static void saveShoppingCart(ItemStack tablet, Map<ResourceLocation, Integer> cart) {
-        CompoundNBT subTag = new CompoundNBT();
-        cart.forEach((key, value) -> subTag.putInt(key.toString(), value));
-        NBTUtils.setCompoundTag(tablet, "shoppingCart", subTag);
+    public static void saveShoppingCart(ItemStack tablet, ShoppingBasket cart) {
+        if (tablet.getItem() instanceof ItemAmadronTablet) {
+            NBTUtils.setCompoundTag(tablet, "shoppingCart", cart.toNBT());
+        }
     }
 
     @Override
