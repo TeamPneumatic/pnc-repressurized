@@ -61,7 +61,7 @@ public class ModLootTablesProvider extends LootTableProvider {
                         && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
                     addStandardSerializedDrop(b);
                 } else if (b == ModBlocks.REINFORCED_BRICK_SLAB.get() || b == ModBlocks.REINFORCED_STONE_SLAB.get() || b == ModBlocks.COMPRESSED_BRICK_SLAB.get() || b == ModBlocks.COMPRESSED_STONE_SLAB.get()) {
-                    add(b, BlockLootTables::droppingSlab);
+                    add(b, BlockLootTables::createSlabItemTable);
                 } else if (b.asItem() != Items.AIR) {
                     dropSelf(b);
                 }

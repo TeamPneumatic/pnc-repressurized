@@ -53,7 +53,7 @@ public class BlockRefineryController extends BlockPneumaticCraft {
             Block.box(1.5, 11, 0.5, 14.5, 12, 1.5),
             Block.box(2.5, 10.5, 10.5, 9, 12.5, 12.5),
             Block.box(2.75, 1, 10.75, 8.75, 11, 12.25)
-    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);

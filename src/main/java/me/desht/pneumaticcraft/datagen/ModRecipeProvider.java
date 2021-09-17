@@ -1121,42 +1121,42 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.COMPRESSED_STONE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "B/B",
                 'B', ModBlocks.COMPRESSED_STONE_SLAB.get()
-        ).build(consumer, RL("compressed_stone_from_slab"));
+        ).save(consumer, RL("compressed_stone_from_slab"));
         shaped(ModBlocks.COMPRESSED_BRICKS.get(), 4, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SS/SS",
                 'S', ModBlocks.COMPRESSED_STONE.get()
-        ).build(consumer);
+        ).save(consumer);
         shapeless(ModBlocks.COMPRESSED_BRICKS.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 ModBlocks.COMPRESSED_BRICK_TILE.get()
-        ).build(consumer, RL("compressed_bricks_from_tile"));
+        ).save(consumer, RL("compressed_bricks_from_tile"));
         shaped(ModBlocks.COMPRESSED_BRICKS.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "B/B",
                 'B', ModBlocks.COMPRESSED_BRICK_SLAB.get()
-        ).build(consumer, RL("compressed_brick_from_slab"));
+        ).save(consumer, RL("compressed_brick_from_slab"));
         shaped(ModBlocks.COMPRESSED_BRICK_SLAB.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BBB",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).build(consumer);
+        ).save(consumer);
         shaped(ModBlocks.COMPRESSED_STONE_SLAB.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BBB",
                 'B', ModBlocks.COMPRESSED_STONE.get()
-        ).build(consumer);
+        ).save(consumer);
         shaped(ModBlocks.COMPRESSED_BRICK_STAIRS.get(), 4, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "B  /BB /BBB",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).build(consumer);
+        ).save(consumer);
         shaped(ModBlocks.COMPRESSED_BRICK_PILLAR.get(), 3, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "B/B/B",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).build(consumer);
+        ).save(consumer);
         shaped(ModBlocks.COMPRESSED_BRICK_TILE.get(), 4, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BB/BB",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).build(consumer);
+        ).save(consumer);
         shaped(ModBlocks.COMPRESSED_BRICK_WALL.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BBB/BBB",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).build(consumer);
+        ).save(consumer);
 
         // plastic bricks & wall lamps
         for (DyeColor dye : DyeColor.values()) {
@@ -1251,7 +1251,7 @@ public class ModRecipeProvider extends RecipeProvider {
         pressureChamber(ImmutableList.of(Ingredient.of(Tags.Items.CROPS_WHEAT)),
                 1.5f, new ItemStack(ModItems.WHEAT_FLOUR.get(), 3))
                 .build(consumer, RL("pressure_chamber/wheat_flour"));
-        pressureChamber(ImmutableList.of(Ingredient.fromTag(Tags.Items.STONE)),
+        pressureChamber(ImmutableList.of(Ingredient.of(Tags.Items.STONE)),
                 1f, new ItemStack(ModBlocks.COMPRESSED_STONE.get()))
                 .build(consumer, RL("pressure_chamber/compressed_stone"));
 
