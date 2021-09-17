@@ -202,7 +202,7 @@ public class AmadronTradeResource {
                 })
                 .ifRight(fluidStack -> {
                     pb.writeEnum(Type.FLUID);
-                    fluidStack.writeToNBT(new CompoundNBT());
+                    pb.writeNbt(fluidStack.writeToNBT(new CompoundNBT()));
                 });
     }
 
