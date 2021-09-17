@@ -36,7 +36,7 @@ public class RenderAerialInterface extends TileEntityRenderer<TileEntityAerialIn
         // code adapted from SkullTileEntityRenderer
         if (tileEntityIn.gameProfileClient != null) {
             GameProfile gameProfile = tileEntityIn.gameProfileClient;
-            Direction dir = tileEntityIn.getRotation().getOpposite();
+            Direction dir = tileEntityIn.getRotation();
             SkinManager skinManager = Minecraft.getInstance().getSkinManager();
             Map<Type, MinecraftProfileTexture> map = skinManager.getInsecureSkinInformation(gameProfile);
             RenderType renderType = map.containsKey(Type.SKIN) ?
