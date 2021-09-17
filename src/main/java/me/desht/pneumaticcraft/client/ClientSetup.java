@@ -146,7 +146,7 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_MEDIUM.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_LARGE.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_HUGE.get(), RenderType.cutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.VACUUM_PUMP.get(), RenderType.getTranslucent());
+        RenderTypeLookup.setRenderLayer(ModBlocks.VACUUM_PUMP.get(), RenderType.translucent());
         RenderTypeLookup.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), layer -> layer == RenderType.cutoutMipped() || layer == RenderType.translucent());
         RenderTypeLookup.setRenderLayer(ModBlocks.THERMAL_LAGGING.get(), RenderType.translucent());

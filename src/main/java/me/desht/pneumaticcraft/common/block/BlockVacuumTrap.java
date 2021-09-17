@@ -53,7 +53,7 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
             Block.box(0, 14, 7, 8, 16, 9),
             Block.box(2, 11, 8, 14, 12, 13),
             Block.box(2, 11, 3, 14, 12, 8)
-    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
     private static final VoxelShape SHAPE_EW_OPEN_BASE = Stream.of(
             Block.box(0, 1, 3, 16, 11, 13),
             Block.box(1, 0, 4, 15, 1, 12),
@@ -61,7 +61,7 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
             Block.box(0, 11, 6, 2, 12, 10),
             Block.box(14, 11, 6, 16, 12, 10),
             Block.box(0, 14, 7, 8, 16, 9)
-    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
     private static final VoxelShape SHAPE_EW_OPEN = VoxelShapeUtils.combine(IBooleanFunction.OR, SHAPE_EW_OPEN_BASE, FLAP1, FLAP2);
     private static final VoxelShape SHAPE_NS_CLOSED = VoxelShapeUtils.rotateY(SHAPE_EW_CLOSED, 90);
     private static final VoxelShape SHAPE_NS_OPEN = VoxelShapeUtils.rotateY(SHAPE_EW_OPEN, 90);
