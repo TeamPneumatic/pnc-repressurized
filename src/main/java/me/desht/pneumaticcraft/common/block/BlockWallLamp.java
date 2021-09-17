@@ -43,7 +43,7 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
             Block.box(9.35, 2.25, 4.75, 9.85, 3.5, 11.25),
             Block.box(4.75, 2.25, 9.35, 11.25, 3.5, 9.85),
             Block.box(4.75, 2.25, 6.15, 11.25, 3.5, 6.65)
-        ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+        ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
     private static final VoxelShape SHAPE_NORTH = VoxelShapeUtils.rotateX(SHAPE_UP, 270);
     private static final VoxelShape SHAPE_DOWN = VoxelShapeUtils.rotateX(SHAPE_NORTH, 270);
     private static final VoxelShape SHAPE_SOUTH = VoxelShapeUtils.rotateX(SHAPE_UP, 90);

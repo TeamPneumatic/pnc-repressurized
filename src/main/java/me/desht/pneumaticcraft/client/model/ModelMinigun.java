@@ -152,7 +152,6 @@ public class ModelMinigun {
         magazineColor = new ModelRenderer(64, 32, 8, 0);
         magazineColor.setPos(4.3F, 22.5F, 10.0F);
         magazineColor.texOffs(54, 7).addBox(-9.6F, -2.0F, 2.0F, 1.0F, 2.0F, 4.0F, 0.0F, true);
->>>>>>> Initial Push
     }
 
     public void renderMinigun(MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay, Minigun minigun, float partialTick, boolean renderMount) {
@@ -203,8 +202,8 @@ public class ModelMinigun {
     }
 
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+        modelRenderer.xRot = x;
+        modelRenderer.yRot = y;
+        modelRenderer.zRot = z;
     }
 }

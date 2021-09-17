@@ -30,8 +30,8 @@ public abstract class TubeModuleRendererBase<T extends TubeModule> {
         float a = module.isFake() ? 0.3f : 1f;
 
         IVertexBuilder builder = module.isFake() ?
-	buffer.getBuffer(RenderType.getEntityTranslucent(getTexture())) :
-	buffer.getBuffer(RenderType.getEntityCutout(getTexture()));
+                buffer.getBuffer(RenderType.entityTranslucent(getTexture())) :
+                buffer.getBuffer(RenderType.entityCutout(getTexture()));
         renderDynamic(module, matrixStack, builder, partialTicks, combinedLight, combinedOverlay, 1, 1, 1, a);
 
         matrixStack.popPose();
