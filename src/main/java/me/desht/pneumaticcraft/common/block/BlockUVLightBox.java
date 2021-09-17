@@ -45,8 +45,8 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        Direction d = state.get(directionProperty());
-        return SHAPES[d.getHorizontalIndex()];
+        Direction d = state.getValue(directionProperty());
+        return SHAPES[d.get2DDataValue()];
     }
 
     @Override
