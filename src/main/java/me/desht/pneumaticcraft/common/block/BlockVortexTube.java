@@ -62,7 +62,7 @@ public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandler
             Block.box(10, 10, 13, 11, 11, 14),
             Block.box(5, 5, 13, 6, 6, 14),
             Block.box(5, 10, 13, 6, 11, 14)
-    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);

@@ -378,10 +378,10 @@ public class ModelDrone extends EntityModel<EntityDroneBase> {
 //        laserOffsetY = (1F - laserExtension) * -4.5F / 16F;
 
         float propRotation = MathHelper.lerp(partialTicks, drone.oldPropRotation, drone.propRotation);
-        prop_1.rotateAngleY = propRotation;
-        prop_2.rotateAngleY = propRotation;
-        prop_3.rotateAngleY = -propRotation;
-        prop_4.rotateAngleY = -propRotation;
+        prop_1.yRot = propRotation;
+        prop_2.yRot = propRotation;
+        prop_3.yRot = -propRotation;
+        prop_4.yRot = -propRotation;
     }
 
     @SuppressWarnings("SameParameterValue")

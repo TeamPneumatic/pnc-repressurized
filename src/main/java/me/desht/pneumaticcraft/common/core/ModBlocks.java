@@ -247,7 +247,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> COMPRESSED_BRICK_TILE = register("compressed_brick_tile",
             () -> new Block(reinforcedStoneProps()));
     public static final RegistryObject<Block> COMPRESSED_BRICK_STAIRS = register("compressed_brick_stairs",
-            () -> new StairsBlock(() -> COMPRESSED_BRICKS.get().getDefaultState(),
+            () -> new StairsBlock(() -> COMPRESSED_BRICKS.get().defaultBlockState(),
                     reinforcedStoneProps()));
     public static final RegistryObject<Block> COMPRESSED_BRICK_SLAB = register("compressed_brick_slab",
             () -> new SlabBlock(reinforcedStoneProps()));

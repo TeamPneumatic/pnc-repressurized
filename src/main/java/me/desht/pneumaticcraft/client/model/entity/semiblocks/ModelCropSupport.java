@@ -19,8 +19,8 @@ public class ModelCropSupport extends EntityModel<EntityCropSupport> {
     private final ModelRenderer stick8_r1;
 
     public ModelCropSupport() {
-        textureWidth = 64;
-        textureHeight = 16;
+        texWidth = 64;
+        texHeight = 16;
 
         stick1 = new ModelRenderer(this);
         stick1.setPos(-8.5F, 11.5F, -8.5F);
@@ -84,8 +84,8 @@ public class ModelCropSupport extends EntityModel<EntityCropSupport> {
     }
 
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+        modelRenderer.xRot = x;
+        modelRenderer.yRot = y;
+        modelRenderer.zRot = z;
     }
 }
