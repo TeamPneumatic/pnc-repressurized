@@ -36,19 +36,19 @@ public class RenderAerialInterface extends TileEntityRenderer<TileEntityAerialIn
         // code adapted from SkullTileEntityRenderer
         if (tileEntityIn.gameProfileClient != null) {
             GameProfile gameProfile = tileEntityIn.gameProfileClient;
-            Direction dir = tileEntityIn.getRotation();
+            Direction dir = tileEntityIn.getRotation().getOpposite();
             SkinManager skinManager = Minecraft.getInstance().getSkinManager();
-            Map<Type, MinecraftProfileTexture> map = skinManager.loadSkinFromCache(gameProfile);
+            Map<Type, MinecraftProfileTexture> map = skinManager.getInsecureSkinInformation(gameProfile);
             RenderType renderType = map.containsKey(Type.SKIN) ?
-                    RenderType.getEntityTranslucent(skinManager.loadSkin(map.get(Type.SKIN), Type.SKIN)) :
-                    RenderType.getEntityCutoutNoCull(DefaultPlayerSkin.getDefaultSkin(PlayerEntity.getUUID(gameProfile)));
-            matrixStackIn.push();
-            matrixStackIn.translate(0.5 + dir.getXOffset() * 0.25, 0.5D + (0.25 + EXTRUSION), 0.5 + dir.getZOffset() * 0.25);
+                    RenderType.entityTranslucent(skinManager.registerTexture(map.get(Type.SKIN), Type.SKIN)) :
+                    RenderType.entityCutoutNoCull(DefaultPlayerSkin.getDefaultSkin(PlayerEntity.createPlayerUUID(gameProfile)));
+            matrixStackIn.pushPose();
+            matrixStackIn.translate(0.5 + dir.getStepX() * 0.25, 0.5D + (0.25 + EXTRUSION), 0.5 + dir.getStepZ() * 0.25);
             matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
             IVertexBuilder builder = bufferIn.getBuffer(renderType);
-            headModel.func_225603_a_(0F, dir.getOpposite().getHorizontalIndex() * 90F, -90F);  // setRotations?
-            headModel.render(matrixStackIn, builder, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-            matrixStackIn.pop();
+            headModel.setupAnim(0F, dir.getOpposite().get2DDataValue() * 90F, -90F);  // setRotations?
+            headModel.renderToBuffer(matrixStackIn, builder, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            matrixStackIn.popPose();
         }
     }
 }

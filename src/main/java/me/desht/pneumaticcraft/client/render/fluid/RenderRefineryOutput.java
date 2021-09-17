@@ -26,7 +26,7 @@ public class RenderRefineryOutput extends AbstractFluidTER<TileEntityRefineryOut
 
     @Override
     Collection<TankRenderInfo> getTanksToRender(TileEntityRefineryOutput te) {
-        return Collections.singletonList(new TankRenderInfo(te.getOutputTank(), BOUNDS[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN));
+        return Collections.singletonList(new TankRenderInfo(te.getOutputTank(), BOUNDS[te.getRotation().get2DDataValue()]).without(Direction.DOWN));
     }
 
 

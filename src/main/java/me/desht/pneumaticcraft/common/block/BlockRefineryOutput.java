@@ -71,7 +71,7 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
             Block.box(14.5, 1, 9.75, 15.5, 8, 10.75),
             Block.box(0.5, 1, 3.5, 2.5, 4, 5.5),
             Block.box(14.5, 11, 1.5, 15.5, 12, 14.5)
-    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
@@ -122,8 +122,8 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        Direction d = state.get(directionProperty());
-        return SHAPES[d.getHorizontalIndex()];
+        Direction d = state.getValue(directionProperty());
+        return SHAPES[d.get2DDataValue()];
     }
 
     @Override
