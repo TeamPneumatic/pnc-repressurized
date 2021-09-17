@@ -172,7 +172,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
             if (!isDone()) {
                 followThePath();
                 if (path != null && !path.isDone()) {
-                    if (PNCConfig.Common.Advanced.stuckDroneTeleportTicks > 0 && mob.getDeltaMovement().lengthSqr() < 0.003) {
+                    if (PNCConfig.Common.Advanced.stuckDroneTeleportTicks > 0 && mob.getDeltaMovement().lengthSqr() < 0.0001) {
                         if (stuckTicks++ > PNCConfig.Common.Advanced.stuckDroneTeleportTicks) {
                             Vector3d v = droneEntity.getDronePos();
                             droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.stuckBlock",
