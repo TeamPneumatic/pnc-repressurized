@@ -32,7 +32,7 @@ public class BlockVacuumPump extends BlockPneumaticCraft {
             Block.box(0, 5, 5, 3, 11, 11),
             Block.box(12.5, 12, 7, 14.5, 12.25, 9),
             Block.box(0.5, 11, 7, 2.5, 11.25, 9)
-    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
@@ -48,8 +48,8 @@ public class BlockVacuumPump extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        Direction d = state.get(directionProperty());
-        return SHAPES[d.getHorizontalIndex()];
+        Direction d = state.getValue(directionProperty());
+        return SHAPES[d.get2DDataValue()];
     }
 
 //    @Override
