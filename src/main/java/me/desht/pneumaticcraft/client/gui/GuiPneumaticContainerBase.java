@@ -139,12 +139,12 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return addAnimatedStat(title, StatIcon.NONE, backgroundColor, leftSided);
     }
 
-    protected void addLabel(ITextComponent text, int x, int y) {
-        addButton(new WidgetLabel(x, y, text));
+    protected WidgetLabel addLabel(ITextComponent text, int x, int y) {
+        return addButton(new WidgetLabel(x, y, text));
     }
 
-    protected void addLabel(ITextComponent text, int x, int y, int color) {
-        addButton(new WidgetLabel(x, y, text, color));
+    protected WidgetLabel addLabel(ITextComponent text, int x, int y, int color) {
+        return addButton(new WidgetLabel(x, y, text, color));
     }
 
     void removeWidget(Widget widget) {
@@ -381,7 +381,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
 
         if (!tooltip.isEmpty()) {
-            int max = Math.min(imageWidth * 4 / 3, width / 3);
+            int max = Math.min(imageWidth * 4 / 3, width * 4 / 3);
             renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
         }
     }

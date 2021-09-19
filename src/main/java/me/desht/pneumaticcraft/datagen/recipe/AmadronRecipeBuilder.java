@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
+import me.desht.pneumaticcraft.common.amadron.LocationFilter;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import net.minecraft.util.ResourceLocation;
 
@@ -14,18 +15,23 @@ public class AmadronRecipeBuilder extends PneumaticCraftRecipeBuilder<AmadronRec
     private final boolean isStatic;
     private final int level;
     private final int maxStock;
+    private final LocationFilter whitelist;
+    private final LocationFilter blacklist;
 
-    public AmadronRecipeBuilder(AmadronTradeResource input, AmadronTradeResource output, boolean isStatic, int level, int maxStock) {
+    public AmadronRecipeBuilder(AmadronTradeResource input, AmadronTradeResource output, boolean isStatic, int level,
+                                int maxStock, LocationFilter whitelist, LocationFilter blacklist) {
         super(RL(PneumaticCraftRecipeTypes.AMADRON_OFFERS));
         this.input = input;
         this.output = output;
         this.isStatic = isStatic;
         this.level = level;
         this.maxStock = maxStock;
+        this.whitelist = whitelist;
+        this.blacklist = blacklist;
     }
 
     public AmadronRecipeBuilder(AmadronTradeResource input, AmadronTradeResource output, boolean isStatic, int level) {
-        this(input, output, isStatic, level, -1);
+        this(input, output, isStatic, level, -1, LocationFilter.YES, LocationFilter.NO);
     }
 
     @Override
@@ -40,7 +46,7 @@ public class AmadronRecipeBuilder extends PneumaticCraftRecipeBuilder<AmadronRec
 
         @Override
         public void serializeRecipeData(JsonObject json) {
-            new AmadronOffer(getId(), input, output, isStatic, level, maxStock).toJson(json);
+            new AmadronOffer(getId(), input, output, isStatic, level, maxStock, maxStock, whitelist, blacklist).toJson(json);
         }
     }
 }

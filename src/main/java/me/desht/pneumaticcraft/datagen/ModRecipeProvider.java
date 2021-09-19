@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
+import me.desht.pneumaticcraft.common.amadron.LocationFilter;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -1634,7 +1635,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private AmadronRecipeBuilder amadronPeriodic(AmadronTradeResource in, AmadronTradeResource out, int tradeLevel, int maxStock) {
-        return new AmadronRecipeBuilder(in, out, false, tradeLevel, maxStock)
+        return new AmadronRecipeBuilder(in, out, false, tradeLevel, maxStock, LocationFilter.YES, LocationFilter.NO)
                 .addCriterion(Criteria.has(ModItems.AMADRON_TABLET.get()));
     }
 

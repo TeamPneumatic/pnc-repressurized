@@ -20,6 +20,7 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
     private int color;
     private Alignment alignment = Alignment.LEFT;
     private List<ITextComponent> tooltip = new ArrayList<>();
+    private boolean dropShadow = false;
 
     public WidgetLabel(int x, int y, ITextComponent text) {
         this(x, y, text, 0xFF404040);
@@ -75,6 +76,11 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
         return this;
     }
 
+    public WidgetLabel setDropShadow(boolean dropShadow) {
+        this.dropShadow = dropShadow;
+        return this;
+    }
+
     @Override
     public void setMessage(ITextComponent p_setMessage_1_) {
         super.setMessage(p_setMessage_1_);
@@ -103,10 +109,14 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
                 matrixStack.pushPose();
                 matrixStack.scale(scale, scale, scale);
                 matrixStack.translate(drawX, y, 0);
-                fr.draw(matrixStack, getMessage().getVisualOrderText(), drawX, y, color);
-                matrixStack.popPose();
+            }
+            if (dropShadow) {
+                fr.drawShadow(matrixStack, getMessage().getVisualOrderText(), drawX, y, color);
             } else {
                 fr.draw(matrixStack, getMessage().getVisualOrderText(), drawX, y, color);
+            }
+            if (scale != 1.0f) {
+                matrixStack.popPose();
             }
         }
     }

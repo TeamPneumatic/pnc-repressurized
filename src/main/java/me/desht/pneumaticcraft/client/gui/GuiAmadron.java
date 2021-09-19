@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
@@ -58,7 +59,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         super.init();
 
         ITextComponent amadron = xlate("pneumaticcraft.gui.amadron.title");
-        addLabel(amadron, leftPos + imageWidth / 2 - font.width(amadron) / 2, topPos + 5, 0xFFFFFF);
+        addLabel(amadron, leftPos + imageWidth / 2 - font.width(amadron) / 2, topPos + 5, 0xFFFFFF).setDropShadow(true);
         addLabel(xlate("pneumaticcraft.gui.search"), leftPos + 76 - font.width(I18n.get("pneumaticcraft.gui.search")), topPos + 41, 0xFFFFFF);
 
         addInfoTab(xlate("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
@@ -263,7 +264,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
             if (super.mouseClicked(mouseX, mouseY, mouseButton)) return true;
-            if (clicked(mouseX, mouseY)) {
+            if (clicked(mouseX, mouseY) && getOffer().isAvailableAtLocation(ClientUtils.getClientWorld(), ClientUtils.getClientPlayer().blockPosition())) {
                 NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(getOffer().getId(), mouseButton, Screen.hasShiftDown()));
                 return true;
             } else {

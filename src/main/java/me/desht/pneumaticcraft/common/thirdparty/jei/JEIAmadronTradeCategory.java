@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
@@ -20,12 +21,19 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> {
+    private final IDrawable limitedIcon;
+
     JEIAmadronTradeCategory() {
         super(ModCategoryUid.AMADRON_TRADE, AmadronRecipe.class,
                 xlate(ModItems.AMADRON_TABLET.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.WIDGET_AMADRON_OFFER, 0, 0, 73, 35),
                 guiHelper().createDrawableIngredient(new ItemStack(ModItems.AMADRON_TABLET.get()))
         );
+
+        limitedIcon = guiHelper()
+                .drawableBuilder(Textures.GUI_OK_LOCATION, 0, 0, 16, 16)
+                .setTextureSize(16, 16)
+                .build();
     }
 
     @Override
@@ -72,16 +80,17 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     public void draw(AmadronRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         FontRenderer fr = Minecraft.getInstance().font;
         int x = (getBackground().getWidth() - fr.width(recipe.getVendorName())) / 2;
+        if (recipe.isLocationLimited()) {
+            limitedIcon.draw(matrixStack, 60, -4);
+        }
         fr.draw(matrixStack, recipe.getVendorName(), x, 3, 0xFF404040);
     }
 
     @Override
     public List<ITextComponent> getTooltipStrings(AmadronRecipe recipe, double mouseX, double mouseY) {
         List<ITextComponent> res = new ArrayList<>();
-        if (mouseX >= 22 && mouseX <= 51 && mouseY >= 12) {
-            res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", recipe.getVendorName()));
-            res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling", recipe.getOutput().toString()));
-            res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying", recipe.getInput().toString()));
+        if (mouseX >= 22 && mouseX <= 51) {
+            WidgetAmadronOffer.addTooltip(recipe, res, -1);
         }
         return res;
     }

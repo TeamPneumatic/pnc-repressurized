@@ -3,8 +3,13 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
+
+import javax.annotation.Nonnull;
+import java.util.List;
 
 /**
  * An Amadron trade offer, loaded from datapack.  Note that any trades discovered from villager trades,
@@ -26,12 +31,14 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * Get the offer's input, i.e. what the Amadrone will collect from the player's Amadron inventory.
      * @return the input
      */
+    @Nonnull
     public abstract AmadronTradeResource getInput();
 
     /**
      * Get the offer's output, i.e. what the player will receive in return from the Amadrone
      * @return the output
      */
+    @Nonnull
     public abstract AmadronTradeResource getOutput();
 
     /**
@@ -108,6 +115,18 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     }
 
     /**
+     * Is this offer available at the given position in the given world?  By default, all offers are available
+     * everywhere, but offers can be whitelisted/blacklisted by dimension and biome category in data packs.  This
+     * could be used, for example, to only allow selling snow in a desert biome, or only purchasing ender pearls
+     * in the End.
+     *
+     * @param world the world to check
+     * @param pos position in the world to check
+     * @return true if the offer is available here, false otherwise
+     */
+    public abstract boolean isAvailableAtLocation(World world, BlockPos pos);
+
+    /**
      * Does this offer match the given query string? The input resource, output resource and vendor names are all
      * tested (case-insensitive) for the query.
      *
@@ -125,5 +144,16 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
         return getInput().getName().toLowerCase().contains(queryLow)
                 || getOutput().getName().toLowerCase().contains(queryLow)
                 || getVendorName().getString().toLowerCase().contains(queryLow);
+    }
+
+    /**
+     * Add some information about where this offer is available, in the case of offers with limited availablity.
+     * @param curTip tooltip to add information to
+     */
+    public void addAvailabilityData(List<ITextComponent> curTip) {
+    }
+
+    public boolean isLocationLimited() {
+        return false;
     }
 }

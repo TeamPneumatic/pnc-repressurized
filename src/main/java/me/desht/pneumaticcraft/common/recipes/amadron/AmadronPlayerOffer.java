@@ -3,10 +3,13 @@ package me.desht.pneumaticcraft.common.recipes.amadron;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
+import me.desht.pneumaticcraft.common.amadron.LocationFilter;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
@@ -38,15 +41,19 @@ public class AmadronPlayerOffer extends AmadronOffer {
     private int pendingPayments;
     private TileEntity cachedInput, cachedOutput;
 
-    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer) {
-        this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId());
-    }
-
-    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId) {
-        super(id, input, output, true, 0, -1);
+    private AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId, LocationFilter whitelist, LocationFilter blacklist) {
+        super(id, input, output, true, 0, -1, 0, whitelist, blacklist);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
         inStock = 0;
+    }
+
+    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer, LocationFilter whitelist, LocationFilter blacklist) {
+        this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId(), whitelist, blacklist);
+    }
+
+    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity player) {
+        this(id, input, output, player, LocationFilter.YES, LocationFilter.NO);
     }
 
     public AmadronPlayerOffer setProvidingPosition(GlobalPos pos) {
@@ -71,7 +78,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
      */
     public AmadronPlayerOffer getReversedOffer() {
         ResourceLocation reversedId = getReversedId(getId());
-        AmadronPlayerOffer reversed = new AmadronPlayerOffer(reversedId, getOutput(), getInput(), offeringPlayerName, offeringPlayerId);
+        AmadronPlayerOffer reversed = new AmadronPlayerOffer(reversedId, getOutput(), getInput(), offeringPlayerName, offeringPlayerId, whitelist, blacklist);
         reversed.providingPos = providingPos;
         reversed.returningPos = returningPos;
         reversed.inStock = this.inStock;
@@ -175,8 +182,8 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     @Override
     public void write(PacketBuffer buf) {
-        input.writeToBuf(buf);
-        output.writeToBuf(buf);
+        super.write(buf);
+
         buf.writeUtf(offeringPlayerName);
         buf.writeUUID(offeringPlayerId);
         buf.writeBoolean(providingPos != null);
@@ -192,19 +199,24 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public static AmadronPlayerOffer playerOfferFromBuf(ResourceLocation id, PacketBuffer buf) {
-        AmadronPlayerOffer offer = new AmadronPlayerOffer(id,
-                AmadronTradeResource.fromPacketBuf(buf), AmadronTradeResource.fromPacketBuf(buf),
-                buf.readUtf(100), buf.readUUID()
-        );
-        if (buf.readBoolean()) {
-            offer.setProvidingPosition(PacketUtil.readGlobalPos(buf));
+        AmadronRecipe recipe = ModRecipes.AMADRON_OFFERS.get().fromNetwork(id, buf);
+
+        if (recipe instanceof AmadronOffer) {
+            AmadronOffer offer = (AmadronOffer) recipe;
+            AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getId(),
+                    offer.getInput(), offer.getOutput(), buf.readUtf(100), buf.readUUID(),
+                    offer.whitelist, offer.blacklist);
+            if (buf.readBoolean()) {
+                playerOffer.setProvidingPosition(PacketUtil.readGlobalPos(buf));
+            }
+            if (buf.readBoolean()) {
+                playerOffer.setReturningPosition(PacketUtil.readGlobalPos(buf));
+            }
+            playerOffer.inStock = buf.readVarInt();
+            playerOffer.pendingPayments = buf.readVarInt();
+            return playerOffer;
         }
-        if (buf.readBoolean()) {
-            offer.setReturningPosition(PacketUtil.readGlobalPos(buf));
-        }
-        offer.inStock = buf.readVarInt();
-        offer.pendingPayments = buf.readVarInt();
-        return offer;
+        return null;  // shouldn't happen
     }
 
     @Override
@@ -224,18 +236,25 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public static AmadronPlayerOffer fromJson(JsonObject json) throws CommandSyntaxException {
-        AmadronOffer offer = AmadronOffer.fromJson(new ResourceLocation(JSONUtils.getAsString(json, "id")), json);
-        AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getId(), offer.input, offer.output,
-                json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()));
-        custom.inStock = json.get("inStock").getAsInt();
-        custom.pendingPayments = json.get("pendingPayments").getAsInt();
-        if (json.has("providingPos")) {
-            custom.providingPos = GlobalPosHelper.fromJson(json.get("providingPos").getAsJsonObject());
+        ResourceLocation id = new ResourceLocation(JSONUtils.getAsString(json, "id"));
+        AmadronRecipe recipe = ModRecipes.AMADRON_OFFERS.get().fromJson(id, json);
+        if (recipe instanceof AmadronOffer) {
+            AmadronOffer offer = (AmadronOffer) recipe;
+            AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getId(), offer.getInput(), offer.getOutput(),
+                    json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()),
+                    offer.whitelist, offer.blacklist);
+
+            playerOffer.inStock = json.get("inStock").getAsInt();
+            playerOffer.pendingPayments = json.get("pendingPayments").getAsInt();
+            if (json.has("providingPos")) {
+                playerOffer.providingPos = GlobalPosHelper.fromJson(json.get("providingPos").getAsJsonObject());
+            }
+            if (json.has("returningPos")) {
+                playerOffer.returningPos = GlobalPosHelper.fromJson(json.get("returningPos").getAsJsonObject());
+            }
+            return playerOffer;
         }
-        if (json.has("returningPos")) {
-            custom.returningPos = GlobalPosHelper.fromJson(json.get("returningPos").getAsJsonObject());
-        }
-        return custom;
+        return null;
     }
 
     @Override

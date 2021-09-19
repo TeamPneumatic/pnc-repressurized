@@ -102,18 +102,16 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
         CountedItemStacks itemAmounts = itemCap.map(CountedItemStacks::new).orElse(new CountedItemStacks());
         Map<Fluid, Integer> fluidAmounts = countFluids(fluidCap);
 
-        for (ResourceLocation offerId : basket.keySet()) {
+        // make sure the inventory and/or tank are actually present for each available offer
+        if (basket.keySet().removeIf(offerId -> {
             AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(offerId);
-
-            // make sure the inventory and/or tank are actually present
             boolean inputOk = offer.getInput().apply(itemStack -> itemCap.isPresent(), fluidStack -> fluidCap.isPresent());
             boolean outputOk = offer.getOutput().apply(itemStack -> itemCap.isPresent(), fluidStack -> fluidCap.isPresent());
+            return !inputOk || !outputOk;
+        })) problem = EnumProblemState.NO_INVENTORY;
 
-            if (!inputOk || !outputOk) {
-                problem = EnumProblemState.NO_INVENTORY;
-                basket.remove(offerId);
-                continue;
-            }
+        for (ResourceLocation offerId : basket.keySet()) {
+            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(offerId);
 
             // check there's enough in stock, if the order has limited stock
             int units0 = basket.get(offerId);
@@ -174,7 +172,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
             ));
         }
 
-        basket.keySet().removeIf(k -> basket.get(k) == 0);
+        basket.keySet().removeIf(offerId -> basket.get(offerId) == 0);
 
         return problem;
     }
