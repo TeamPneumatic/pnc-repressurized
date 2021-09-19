@@ -89,7 +89,7 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     }
 
     private void updateTextField(int idx, int amount) {
-        textFields[idx].setValue(textFields[idx].getValue() + amount);
+        textFields[idx].setValue(textFields[idx].getIntValue() + amount);
     }
 
     @Override
