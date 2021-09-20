@@ -115,10 +115,12 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         if (worldIn != null) {
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
-                FluidStack fluidStack = handler.getFluidInTank(0);
-                int amount = fluidStack.getAmount();
-                int levels = EnchantmentUtils.getLevelForExperience(amount/ ratio);
-                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(TextFormatting.GREEN));
+                if (ratio > 0) {  // could be 0 if queried too early, e.g. JEI item scanning
+                    FluidStack fluidStack = handler.getFluidInTank(0);
+                    int amount = fluidStack.getAmount();
+                    int levels = EnchantmentUtils.getLevelForExperience(amount / ratio);
+                    tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(TextFormatting.GREEN));
+                }
             });
             boolean absorb = shouldAbsorbXPOrbs(stack);
             tooltip.add(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(TextFormatting.YELLOW));
