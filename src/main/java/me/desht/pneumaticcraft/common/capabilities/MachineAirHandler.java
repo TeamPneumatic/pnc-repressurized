@@ -114,10 +114,16 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
             BlockPos pos = ownerTE.getBlockPos();
             if (hasSecurityUpgrade) {
-                if (!safetyLeak && getPressure() >= dangerPressure) {
+                float pressure = getPressure();
+                if (!safetyLeak && pressure >= dangerPressure) {
                     safetyLeak = true;
-                } else if (safetyLeak && getPressure() < dangerPressure - 0.2) {
+                } else if (safetyLeak && pressure < dangerPressure - 0.2) {
                     safetyLeak = false;
+                }
+                // also cap pressure at critical level (it's still possible for air to added faster than it can vent)
+                if (pressure >= criticalPressure) {
+                    int wanted = (int)(criticalPressure * getVolume());
+                    addAir(wanted - getAir());
                 }
             } else if (world.getServer().getTickCount() > 20) {
                 // little kludge: no overpressure checks right after server starts up (just to be safe)
