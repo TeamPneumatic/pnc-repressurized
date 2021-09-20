@@ -33,8 +33,8 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
     public JEIFluidMixerCategory() {
         super(ModCategoryUid.FLUID_MIXER, FluidMixerRecipe.class,
                 xlate(ModBlocks.FLUID_MIXER.get().getDescriptionId()),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.FLUID_MIXER.get())),
-                guiHelper().createDrawable(Textures.GUI_JEI_FLUID_MIXER, 0, 0, 166, 70)
+                guiHelper().createDrawable(Textures.GUI_JEI_FLUID_MIXER, 0, 0, 166, 70),
+                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.FLUID_MIXER.get()))
         );
         tickTimer = guiHelper().createTickTimer(60, 60, false);
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_FLUID_MIXER, 180, 0, 44, 30);
