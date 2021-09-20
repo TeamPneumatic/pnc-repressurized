@@ -381,7 +381,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
 
         if (!tooltip.isEmpty()) {
-            int max = Math.min(imageWidth * 4 / 3, width / 3);
+            int max = Math.min(imageWidth * 4 / 3, width * 4 / 3);
             renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
         }
     }

@@ -37,6 +37,10 @@ public class LocationFilter implements BiPredicate<World, BlockPos> {
         this.categories = categories;
     }
 
+    public boolean isReal() {
+        return op != Op.YES && op != Op.NO;
+    }
+
     public static LocationFilter fromJson(JsonObject json) {
         for (String opStr : new String[] { "or", "and" }) {
             if (json.has(opStr)) {
@@ -52,7 +56,8 @@ public class LocationFilter implements BiPredicate<World, BlockPos> {
                     JSONUtils.getAsJsonArray(jsonSub, "biome_categories")
                             .forEach(element -> {
                                 Biome.Category cat = Biome.Category.byName(element.getAsString());
-                                if (cat == null) {
+                                //noinspection ConstantConditions
+                                if (cat == null) {  // yes, the category can be null here... shut up Intellij
                                     throw new JsonSyntaxException("unknown biome category: " + element.getAsString());
                                 }
                                 categories.add(cat);
@@ -94,19 +99,17 @@ public class LocationFilter implements BiPredicate<World, BlockPos> {
     }
 
     public JsonObject toJson() {
-        JsonObject res = new JsonObject();
 
         JsonObject sub = new JsonObject();
         JsonArray dims = new JsonArray();
         dimensionIds.forEach(id -> dims.add(id.toString()));
         sub.add("dimensions", dims);
-
         JsonArray cats = new JsonArray();
         categories.forEach(cat -> cats.add(cat.name()));
         sub.add("biome_categories", cats);
 
+        JsonObject res = new JsonObject();
         res.add(op.name(), sub);
-
         return res;
     }
 
@@ -125,20 +128,21 @@ public class LocationFilter implements BiPredicate<World, BlockPos> {
     }
 
     public void getDescription(List<ITextComponent> tooltip) {
-        if (op == Op.YES || op == Op.NO) return;  // not real filters
+        if (isReal()) {
+            if (!dimensionIds.isEmpty()) {
+                tooltip.add(xlate("pneumaticcraft.gui.amadron.location.dimensions").withStyle(TextFormatting.GOLD));
+                dimensionIds.forEach(dimId -> tooltip.add(new StringTextComponent("  ")
+                        .append(GuiConstants.bullet().append(dimId.toString()).withStyle(TextFormatting.GOLD))));
+            }
+            if (!dimensionIds.isEmpty() && !categories.isEmpty()) {
+                tooltip.add(new StringTextComponent("-- " + op + " --").withStyle(TextFormatting.GOLD));
+            }
+            if (!categories.isEmpty()) {
+                tooltip.add(xlate("pneumaticcraft.gui.amadron.location.biomes").withStyle(TextFormatting.GOLD));
+                categories.forEach(cat -> tooltip.add(new StringTextComponent("  ")
+                        .append(GuiConstants.bullet().append(cat.getName()).withStyle(TextFormatting.GOLD))));
+            }
+        }
 
-        if (!dimensionIds.isEmpty()) {
-            tooltip.add(xlate("pneumaticcraft.gui.amadron.location.dimensions").withStyle(TextFormatting.GOLD));
-            dimensionIds.forEach(dimId -> tooltip.add(new StringTextComponent("  ")
-                    .append(GuiConstants.bullet().append(dimId.toString()).withStyle(TextFormatting.GOLD))));
-        }
-        if (!dimensionIds.isEmpty() && !categories.isEmpty()) {
-            tooltip.add(new StringTextComponent("-- " + op + " --").withStyle(TextFormatting.GOLD));
-        }
-        if (!categories.isEmpty()) {
-            tooltip.add(xlate("pneumaticcraft.gui.amadron.location.biomes").withStyle(TextFormatting.GOLD));
-            categories.forEach(cat -> tooltip.add(new StringTextComponent("  ")
-                    .append(GuiConstants.bullet().append(cat.getName()).withStyle(TextFormatting.GOLD))));
-        }
     }
 }

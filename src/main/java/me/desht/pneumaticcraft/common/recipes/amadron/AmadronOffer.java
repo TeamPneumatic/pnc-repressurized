@@ -136,8 +136,8 @@ public class AmadronOffer extends AmadronRecipe {
         json.addProperty("static", isStaticOffer);
         json.addProperty("level", tradeLevel);
         if (maxStock > 0) json.addProperty("maxStock", maxStock);
-        if (whitelist != LocationFilter.YES) json.add("whitelist", whitelist.toJson());
-        if (blacklist != LocationFilter.NO) json.add("blacklist", blacklist.toJson());
+        if (whitelist.isReal()) json.add("whitelist", whitelist.toJson());
+        if (blacklist.isReal()) json.add("blacklist", blacklist.toJson());
 
         return json;
     }
@@ -186,17 +186,17 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public boolean isAvailableAtLocation(World world, BlockPos pos) {
-        if (whitelist != LocationFilter.YES) return whitelist.test(world, pos);
-        if (blacklist != LocationFilter.NO) return !blacklist.test(world, pos);
+        if (whitelist.isReal()) return whitelist.test(world, pos);
+        if (blacklist.isReal()) return !blacklist.test(world, pos);
         return true;
     }
 
     @Override
     public void addAvailabilityData(List<ITextComponent> curTip) {
-        if (whitelist != LocationFilter.YES) {
+        if (whitelist.isReal()) {
             curTip.add(xlate("pneumaticcraft.gui.amadron.location.whitelist").withStyle(TextFormatting.GOLD));
             whitelist.getDescription(curTip);
-        } else if (blacklist != LocationFilter.NO) {
+        } else if (blacklist.isReal()) {
             curTip.add(xlate("pneumaticcraft.gui.amadron.location.blacklist").withStyle(TextFormatting.GOLD));
             blacklist.getDescription(curTip);
         }
@@ -204,7 +204,7 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public boolean isLocationLimited() {
-        return whitelist != LocationFilter.YES || blacklist != LocationFilter.NO;
+        return whitelist.isReal() || blacklist.isReal();
     }
 
     public static class Serializer<T extends AmadronRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {

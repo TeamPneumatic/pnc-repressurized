@@ -125,31 +125,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             }
         }
         if (!isInBounds) {
-            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor",
-                    offer.getVendorName().copy().withStyle(TextFormatting.WHITE))
-                    .withStyle(TextFormatting.YELLOW));
-            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling",
-                    new StringTextComponent(offer.getOutput().toString()).withStyle(TextFormatting.WHITE))
-                    .withStyle(TextFormatting.YELLOW));
-            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying",
-                    new StringTextComponent(offer.getInput().toString()).withStyle(TextFormatting.WHITE))
-                    .withStyle(TextFormatting.YELLOW));
-            if (offer.getStock() >= 0) {
-                curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock",
-                        new StringTextComponent(Integer.toString(offer.getStock())).withStyle(TextFormatting.WHITE))
-                        .withStyle(TextFormatting.AQUA));
-            }
-            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket",
-                    new StringTextComponent(Integer.toString(shoppingAmount)).withStyle(TextFormatting.WHITE))
-                    .withStyle(TextFormatting.AQUA));
-
-            if (Minecraft.getInstance().options.advancedItemTooltips) {
-                curTip.add(new StringTextComponent(offer.getId().toString()).withStyle(TextFormatting.DARK_GRAY));
-            }
-            if (!offer.isAvailableAtLocation(ClientUtils.getClientWorld(), ClientUtils.getClientPlayer().blockPosition())) {
-                curTip.add(xlate("pneumaticcraft.gui.amadron.location.unavailable").withStyle(TextFormatting.RED));
-            }
-            offer.addAvailabilityData(curTip);
+            addTooltip(offer, curTip, shoppingAmount);
         }
     }
 
@@ -159,6 +135,35 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
 
     public void setShoppingAmount(int amount) {
         shoppingAmount = amount;
+    }
+
+    public static void addTooltip(AmadronRecipe offer, List<ITextComponent> curTip, int shoppingAmount) {
+        curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor",
+                offer.getVendorName().copy().withStyle(TextFormatting.WHITE))
+                .withStyle(TextFormatting.YELLOW));
+        curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling",
+                new StringTextComponent(offer.getOutput().toString()).withStyle(TextFormatting.WHITE))
+                .withStyle(TextFormatting.YELLOW));
+        curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying",
+                new StringTextComponent(offer.getInput().toString()).withStyle(TextFormatting.WHITE))
+                .withStyle(TextFormatting.YELLOW));
+        if (shoppingAmount >= 0) {
+            if (offer.getStock() >= 0) {
+                curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock",
+                        new StringTextComponent(Integer.toString(offer.getStock())).withStyle(TextFormatting.WHITE))
+                        .withStyle(TextFormatting.AQUA));
+            }
+            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket",
+                    new StringTextComponent(Integer.toString(shoppingAmount)).withStyle(TextFormatting.WHITE))
+                    .withStyle(TextFormatting.AQUA));
+        }
+        if (!offer.isAvailableAtLocation(ClientUtils.getClientWorld(), ClientUtils.getClientPlayer().blockPosition())) {
+            curTip.add(xlate("pneumaticcraft.gui.amadron.location.unavailable").withStyle(TextFormatting.RED));
+        }
+        offer.addAvailabilityData(curTip);
+        if (Minecraft.getInstance().options.advancedItemTooltips) {
+            curTip.add(new StringTextComponent(offer.getId().toString()).withStyle(TextFormatting.DARK_GRAY));
+        }
     }
 
     private static class WidgetItemStack extends WidgetButtonExtended {
