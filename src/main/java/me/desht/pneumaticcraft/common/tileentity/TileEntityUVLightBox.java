@@ -90,8 +90,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
             ItemStack stack = getLoadedPCB();
             boolean didWork = false;
             if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
-                threshold = (rsController.getCurrentRedstonePower() * 100) / 15;
-                threshold = (threshold / 10) * 10;  // round to multiple of 10
+                threshold = Math.min(100, 25 + rsController.getCurrentRedstonePower() * 5);
             }
             if (!stack.isEmpty() && rsController.shouldRun()) {
                 int progress = getExposureProgress(stack);

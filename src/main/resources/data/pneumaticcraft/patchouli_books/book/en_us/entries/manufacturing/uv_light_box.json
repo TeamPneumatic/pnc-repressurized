@@ -15,7 +15,7 @@
     {
       "type": "text",
       "title": "Threshold Automation",
-      "text": "You can manually adjust the completion threshold via the GUI slider, but it's also possible to set this via a redstone signal; set the redstone mode to $(thing)Interpolate Threshold/$. In this mode, the threshold depends on the incoming signal level, clamped to multiples of 10% (so some signals map to the same threshold).$(p)This may be handy if you want to set the threshold of many lightboxes at once."
+      "text": "You can manually adjust the completion threshold via the GUI slider, but it's also possible to set this via a redstone signal; set the redstone mode to $(thing)Interpolate Threshold/$. In this mode, the threshold is fixed to 25% + 5% per signal level (although a signal of 0 disables the machine, so 30%-100% in effect).$(p)This may be handy if you want to set the threshold of many lightboxes at once."
     },
     {
       "type": "crafting",

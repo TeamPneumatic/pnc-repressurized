@@ -6,6 +6,8 @@ import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerInventory;
@@ -38,12 +40,15 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
 
     @Override
     public void tick() {
-        if (firstUpdate || te.rsController.getCurrentMode() == TileEntityUVLightBox.RS_MODE_INTERPOLATE) {
+        boolean interpolate = te.rsController.getCurrentMode() == TileEntityUVLightBox.RS_MODE_INTERPOLATE;
+        if (firstUpdate || interpolate) {
             // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
             slider.setValue(te.getThreshold());
             slider.updateSlider();
         }
-        slider.active = te.rsController.getCurrentMode() != TileEntityUVLightBox.RS_MODE_INTERPOLATE;
+        slider.active = !interpolate;
+        slider.visible = !interpolate || te.getRedstoneController().getCurrentRedstonePower() > 0;
+
         super.tick();
     }
 
@@ -67,6 +72,16 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
 
         if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_SLOT).isEmpty()) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.uv_light_box.no_item"));
+        }
+    }
+
+    @Override
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+        super.addPressureStatInfo(pressureStatText);
+        BlockState state = te.getBlockState();
+        if (state.getBlock() instanceof BlockUVLightBox && state.getValue(BlockUVLightBox.LIT)) {
+            float usage = PneumaticValues.USAGE_UV_LIGHTBOX * te.getSpeedUsageMultiplierFromUpgrades();
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.airUsage", PneumaticCraftUtils.roundNumberTo(usage, 2)));
         }
     }
 
