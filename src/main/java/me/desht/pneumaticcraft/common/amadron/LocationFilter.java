@@ -14,10 +14,12 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -25,20 +27,28 @@ public class LocationFilter implements BiPredicate<World, BlockPos> {
     public static final LocationFilter YES = new LocationFilter(Op.YES, Collections.emptySet(), EnumSet.noneOf(Biome.Category.class));
     public static final LocationFilter NO = new LocationFilter(Op.NO, Collections.emptySet(), EnumSet.noneOf(Biome.Category.class));
 
-    private enum Op { YES, NO, AND, OR }
+    private enum Op {
+        YES, NO, AND, OR;
+
+        public boolean isFake() {
+            return this == YES || this == NO;
+        }
+    }
 
     private final Set<ResourceLocation> dimensionIds;
     private final Set<Biome.Category> categories;
     private final Op op;
 
     private LocationFilter(Op op, @Nonnull Set<ResourceLocation> dimensionIds, @Nonnull Set<Biome.Category> categories) {
+        Validate.isTrue(op.isFake() || !dimensionIds.isEmpty() || !categories.isEmpty(),
+            "received empty location filter (empty dimensionIds and categories)!");
         this.op = op;
         this.dimensionIds = dimensionIds;
         this.categories = categories;
     }
 
     public boolean isReal() {
-        return op != Op.YES && op != Op.NO;
+        return !op.isFake();
     }
 
     public static LocationFilter fromJson(JsonObject json) {
@@ -99,7 +109,6 @@ public class LocationFilter implements BiPredicate<World, BlockPos> {
     }
 
     public JsonObject toJson() {
-
         JsonObject sub = new JsonObject();
         JsonArray dims = new JsonArray();
         dimensionIds.forEach(id -> dims.add(id.toString()));
@@ -121,8 +130,8 @@ public class LocationFilter implements BiPredicate<World, BlockPos> {
         switch (op) {
             case YES: return true;
             case NO: return false;
-            case OR: return dimensionIds.contains(dimId) || categories.contains(biome.getBiomeCategory());
-            case AND: return dimensionIds.contains(dimId) && categories.contains(biome.getBiomeCategory());
+            case OR: return dimensionIds.isEmpty() || dimensionIds.contains(dimId) || categories.isEmpty() || categories.contains(biome.getBiomeCategory());
+            case AND: return dimensionIds.isEmpty() || dimensionIds.contains(dimId) && categories.isEmpty() || categories.contains(biome.getBiomeCategory());
         }
         return false;
     }
@@ -143,6 +152,12 @@ public class LocationFilter implements BiPredicate<World, BlockPos> {
                         .append(GuiConstants.bullet().append(cat.getName()).withStyle(TextFormatting.GOLD))));
             }
         }
+    }
 
+    @Override
+    public String toString() {
+        return "[" + dimensionIds.stream().map(ResourceLocation::toString).collect(Collectors.joining(",")) + "] "
+                + op +
+                " [" + categories.stream().map(Biome.Category::getName).collect(Collectors.joining(",")) + "]";
     }
 }
