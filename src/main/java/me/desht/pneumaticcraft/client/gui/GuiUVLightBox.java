@@ -38,11 +38,12 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
 
     @Override
     public void tick() {
-        if (firstUpdate) {
+        if (firstUpdate || te.rsController.getCurrentMode() == TileEntityUVLightBox.RS_MODE_INTERPOLATE) {
             // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
             slider.setValue(te.getThreshold());
             slider.updateSlider();
         }
+        slider.active = te.rsController.getCurrentMode() != TileEntityUVLightBox.RS_MODE_INTERPOLATE;
         super.tick();
     }
 

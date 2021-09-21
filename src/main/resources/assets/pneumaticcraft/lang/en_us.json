@@ -1529,6 +1529,7 @@
    "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.inverted" : "Inverted",
    "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.normal" : "Normal",
    "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.redstoneEmission" : "Redstone Emission",
+   "pneumaticcraft.gui.tab.redstoneBehaviour.uvLightBox.interpolate" : "Interpolate Threshold",
    "pneumaticcraft.gui.tab.smartChestStatus.header" : "§0Per side:",
    "pneumaticcraft.gui.tab.smartChestStatus.itemsPerOperation" : "§fItem Transfer:${br}§0%d item(s)/operation",
    "pneumaticcraft.gui.tab.smartChestStatus.tickInterval" : "§fTick Rate:${br}§0%d tick(s)",

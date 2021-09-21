@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -8,6 +9,8 @@ import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -17,6 +20,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -29,6 +33,7 @@ import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 //import elucent.albedo.lighting.ILightProvider;
 //import elucent.albedo.lighting.Light;
@@ -41,6 +46,18 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     public static final int INVENTORY_SIZE = 1;
     public static final int PCB_SLOT = 0;
 
+    private static final List<RedstoneMode<TileEntityUVLightBox>> REDSTONE_MODES = ImmutableList.of(
+            new ReceivingRedstoneMode<>("standard.always", new ItemStack(Items.GUNPOWDER),
+                    te -> true),
+            new ReceivingRedstoneMode<>("standard.high_signal", new ItemStack(Items.REDSTONE),
+                    te -> te.getCurrentRedstonePower() > 0),
+            new ReceivingRedstoneMode<>("standard.low_signal", new ItemStack(Items.REDSTONE_TORCH),
+                    te -> te.getCurrentRedstonePower() == 0),
+            new ReceivingRedstoneMode<>("uvLightBox.interpolate", new ItemStack(Items.COMPARATOR),
+                    te -> te.getCurrentRedstonePower() > 0)
+    );
+    public static final int RS_MODE_INTERPOLATE = 3;
+
 //    private Object light = null;
 
     // avoid rapid blockstate switching, which is a framerate killer
@@ -48,7 +65,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     private BlockState pendingState;
 
     @GuiSynced
-    public final RedstoneController<TileEntityUVLightBox> rsController = new RedstoneController<>(this);
+    public final RedstoneController<TileEntityUVLightBox> rsController = new RedstoneController<>(this, REDSTONE_MODES);
     @GuiSynced
     public int threshold = 100;
 
@@ -72,6 +89,10 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
             boolean didWork = false;
+            if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
+                threshold = (rsController.getCurrentRedstonePower() * 100) / 15;
+                threshold = (threshold / 10) * 10;  // round to multiple of 10
+            }
             if (!stack.isEmpty() && rsController.shouldRun()) {
                 int progress = getExposureProgress(stack);
                 if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && progress < 100) {
