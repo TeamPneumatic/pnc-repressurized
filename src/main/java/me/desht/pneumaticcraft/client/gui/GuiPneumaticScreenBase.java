@@ -9,12 +9,14 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GuiPneumaticScreenBase extends Screen {
     public int guiLeft, guiTop, xSize, ySize;
+    private final List<Slider> sliders = new ArrayList<>();
 
     public GuiPneumaticScreenBase(ITextComponent title) {
         super(title);
@@ -37,9 +39,25 @@ public abstract class GuiPneumaticScreenBase extends Screen {
         return addButton(new WidgetLabel(x, y, text).setAlignment(alignment));
     }
 
+    @Override
+    protected <T extends Widget> T addButton(T widget) {
+        if (widget instanceof Slider) sliders.add((Slider) widget);
+
+        return super.addButton(widget);
+    }
+
     protected void removeWidget(Widget widget) {
         buttons.remove(widget);
         children.remove(widget);
+        if (widget instanceof Slider) sliders.remove(widget);
+    }
+
+    @Override
+    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
+        // if mouse is not over slider, then Slider#onRelease() won't get called to release any in-progress drag
+        sliders.forEach(slider -> slider.dragging = false);
+
+        return super.mouseReleased(pMouseX, pMouseY, pButton);
     }
 
     @Override

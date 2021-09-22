@@ -49,6 +49,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -66,6 +67,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     boolean firstUpdate = true;
     private final List<IGuiAnimatedStat> statWidgets = new ArrayList<>();
     private int sendDelay = -1;
+    private final List<Slider> sliders = new ArrayList<>();
 
     public GuiPneumaticContainerBase(C container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -139,6 +141,12 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return addAnimatedStat(title, StatIcon.NONE, backgroundColor, leftSided);
     }
 
+    @Override
+    protected <T extends Widget> T addButton(T widget) {
+        if (widget instanceof Slider) sliders.add((Slider)widget);
+        return super.addButton(widget);
+    }
+
     protected WidgetLabel addLabel(ITextComponent text, int x, int y) {
         return addButton(new WidgetLabel(x, y, text));
     }
@@ -151,6 +159,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         buttons.remove(widget);
         children.remove(widget);
         if (widget instanceof IGuiAnimatedStat) statWidgets.remove(widget);
+        else if (widget instanceof Slider) sliders.remove(widget);
     }
 
     public List<IGuiAnimatedStat> getStatWidgets() {
@@ -212,14 +221,6 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     protected void addExtraUpgradeText(List<ITextComponent> upgradeText) {
     }
-
-//    private int getWidestRedstoneLabel() {
-//        int max = 0;
-//        for (int i = 0; i < te.getRedstoneModeCount(); i++) {
-//            max = Math.max(max, font.getStringPropertyWidth(te.getRedstoneButtonText(i)));
-//        }
-//        return max;
-//    }
 
     private void addSideConfiguratorTabs() {
         for (SideConfigurator<?> sc : ((ISideConfigurable) te).getSideConfigurators()) {
@@ -347,6 +348,14 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     protected abstract ResourceLocation getGuiTexture();
+
+    @Override
+    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
+        // if mouse is not over slider, then Slider#onRelease() won't get called to release any in-progress drag
+        sliders.forEach(slider -> slider.dragging = false);
+
+        return super.mouseReleased(pMouseX, pMouseY, pButton);
+    }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
