@@ -8,6 +8,32 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.14.3-??? (unreleased)
+
+### Updates
+* Added the ability to filter Amadron offers by the player's location, intended for modpack makers
+  * This allows for certain offers only to be available in certain places
+  * Filtering can be by whitelist or blacklist, and by dimension ID's and/or biome categories
+  * No existing offers are filtered by default
+  * See https://github.com/TeamPneumatic/pnc-repressurized/wiki/Amadron-and-Datapacks for more info
+* Added `drones_can_be_picked_up` config setting (default is true, following previous behaviour)
+  * If set to false, nothing will be able to pick drones up (boats, minecarts or any other entity)
+* Added an "Interpolate Threshold" redstone mode for the UV Lightbox
+  * In this mode, the completion threshold percentage is 25 + (signal_level * 5)
+  * Threshold cannot be manually adjusted in this mode
+  * A signal of 0 in this mode disables processing (so effective range 30% to 100% in increments of 5)
+
+### Fixes
+* Fixed slider widgets holding onto a mouse drag if mouse button released while not over the widget in question
+* Prevent machine pressures rising to silly levels if machine has a Security Upgrade but is receiving air faster than it can vent it
+  * Pressure now clamped to machine's critical level (7 or 25 bar)
+* Fixed GPS Tool '+' and '-' buttons messing up the numeric value
+  * Another artifact of the switch to Mojang mappings in 2.14.0 (a method name got mixed up)
+* Fixed server crash when Smart Chest tries to push items into a Blood Altar under certain circumstances
+* Fixed villager house generation ignoring the `addMechanicHouse` config setting
+* Fixed Patchouli manual breakage if Tough as Nails is installed
+  * This was caused by the manual referring to some old 1.12.2 TAN items which the 1.16.5 version doesn't have
+
 ## 2.14.2-247 (6 Sep 2021)
 
 ### New
