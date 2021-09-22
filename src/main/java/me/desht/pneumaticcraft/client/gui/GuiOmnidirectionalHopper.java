@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -89,10 +90,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
     }
 
     @Override
-    protected void addExtraUpgradeText(List<ITextComponent> text) {
-        if (PNCConfig.Common.Machines.omniHopperDispenser) {
-            text.add(xlate("pneumaticcraft.gui.tab.upgrades.tile.omnidirectional_hopper.dispenser"));
-        }
-        text.add(xlate("pneumaticcraft.gui.tab.upgrades.creative"));
+    protected boolean isUpgradeAvailable(EnumUpgrade upgrade) {
+        return upgrade != EnumUpgrade.DISPENSER || PNCConfig.Common.Machines.omniHopperDispenser;
     }
 }

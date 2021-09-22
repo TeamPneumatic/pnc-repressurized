@@ -205,13 +205,15 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         te.getApplicableUpgrades().keySet().stream()
                 .sorted(Comparator.comparing(o -> o.getItemStack().getHoverName().getString()))
                 .forEach(upgrade -> {
-                    int max = te.getApplicableUpgrades().get(upgrade);
-                    text.add(upgrade.getItemStack().getHoverName().copy().withStyle(TextFormatting.WHITE, TextFormatting.UNDERLINE));
-                    text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(TextFormatting.GRAY));
-                    String upgradeName = upgrade.toString().toLowerCase(Locale.ROOT);
-                    String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
-                    text.addAll(I18n.exists(k) ? GuiUtils.xlateAndSplit(k) : GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName));
-                    text.add(StringTextComponent.EMPTY);
+                    if (isUpgradeAvailable(upgrade)) {
+                        int max = te.getApplicableUpgrades().get(upgrade);
+                        text.add(upgrade.getItemStack().getHoverName().copy().withStyle(TextFormatting.WHITE, TextFormatting.UNDERLINE));
+                        text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(TextFormatting.GRAY));
+                        String upgradeName = upgrade.toString().toLowerCase(Locale.ROOT);
+                        String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
+                        text.addAll(I18n.exists(k) ? GuiUtils.xlateAndSplit(k) : GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName));
+                        text.add(StringTextComponent.EMPTY);
+                    }
                 });
         if (!text.isEmpty()) {
             addAnimatedStat(xlate("pneumaticcraft.gui.tab.upgrades"), Textures.GUI_UPGRADES_LOCATION, 0xFF244BB3, true)
@@ -219,7 +221,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    protected void addExtraUpgradeText(List<ITextComponent> upgradeText) {
+    protected boolean isUpgradeAvailable(EnumUpgrade upgrade) {
+        return true;
     }
 
     private void addSideConfiguratorTabs() {

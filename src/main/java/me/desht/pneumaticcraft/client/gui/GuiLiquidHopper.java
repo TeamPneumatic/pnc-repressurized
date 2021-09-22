@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -55,6 +56,11 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     }
 
     @Override
+    protected boolean isUpgradeAvailable(EnumUpgrade upgrade) {
+        return upgrade != EnumUpgrade.DISPENSER || PNCConfig.Common.Machines.liquidHopperDispenser;
+    }
+
+    @Override
     protected PointXY getInvNameOffset() {
         return new PointXY(0, -1);
     }
@@ -82,12 +88,5 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.hopperStatus.liquidTransferPerSecond", transferInterval == 0 ? "2000" : PneumaticCraftUtils.roundNumberTo(2000F / transferInterval, 1)));
         }
         return textList;
-    }
-
-    @Override
-    protected void addExtraUpgradeText(List<ITextComponent> text) {
-        if (PNCConfig.Common.Machines.liquidHopperDispenser) {
-            text.add(xlate("pneumaticcraft.gui.tab.upgrades.tile.liquid_hopper.dispenser"));
-        }
     }
 }
