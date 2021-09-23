@@ -147,7 +147,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
                 return false;
             case RS_MODE_WOODEN_DOOR:
             case RS_MODE_IRON_DOOR:
-                return opening;
+                return rsController.getCurrentRedstonePower() > 0;
         }
         return false;
     }
