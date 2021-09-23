@@ -87,7 +87,7 @@ repositories {
 		url "https://maven.tterrag.com/"
 	}
 	maven {
-		name 'Crafttweaker/Patchouli/Botania/Immersive Engineering'
+		name 'Crafttweaker/Patchouli/Botania/Immersive Engineering/Gamestages'
 		url 'https://maven.blamejared.com/'
 	}
 	maven {
@@ -143,6 +143,7 @@ dependencies {
 	runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
 	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
 	runtimeOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
+	runtimeOnly fg.deobf("net.darkhax.gamestages:GameStages-${project.mc_version}:${gamestages_version}")
 
 	// Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
 	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
