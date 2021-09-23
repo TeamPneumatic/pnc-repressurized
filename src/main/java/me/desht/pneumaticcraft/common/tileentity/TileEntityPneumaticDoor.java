@@ -4,13 +4,14 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityPneumaticDoor extends TileEntityTickableBase {
@@ -40,29 +41,27 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
         }
 
         // also rotate the TE for the other half of the door
-        TileEntity otherTE = getLevel().getBlockEntity(getBlockPos().relative(isTopDoor() ? Direction.DOWN : Direction.UP));
-        if (otherTE instanceof TileEntityPneumaticDoor) {
-            TileEntityPneumaticDoor otherDoorHalf = (TileEntityPneumaticDoor) otherTE;
+        BlockPos otherPos = getBlockPos().relative(isTopDoor() ? Direction.DOWN : Direction.UP);
+        PneumaticCraftUtils.getTileEntityAt(getLevel(), otherPos, TileEntityPneumaticDoor.class).ifPresent(otherDoorHalf -> {
             otherDoorHalf.rightGoing = rightGoing;
             otherDoorHalf.setChanged();
             if (rotationAngle != otherDoorHalf.rotationAngle) {
                 otherDoorHalf.setRotationAngle(rotationAngle);
             }
-        }
+        });
     }
 
     public boolean setColor(DyeColor dyeColor) {
         if (color != dyeColor.getId() && !getBlockState().getValue(BlockPneumaticDoor.TOP_DOOR)) {
             color = (byte) dyeColor.getId();
-            TileEntity topHalf = getLevel().getBlockEntity(getBlockPos().above());
-            if (topHalf instanceof TileEntityPneumaticDoor) {
-                ((TileEntityPneumaticDoor) topHalf).color = color;
-            }
-            if (!level.isClientSide) {
-                setChanged();
-                topHalf.setChanged();
-                sendDescriptionPacket();
-            }
+            PneumaticCraftUtils.getTileEntityAt(level, getBlockPos(), TileEntityPneumaticDoor.class).ifPresent(topHalf -> {
+                topHalf.color = color;
+                if (!getLevel().isClientSide) {
+                    setChanged();
+                    topHalf.setChanged();
+                    sendDescriptionPacket();
+                }
+            });
             return true;
         }
         return false;
@@ -106,11 +105,6 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
         return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
                 getBlockPos().getX() + 1, getBlockPos().getY() + 2, getBlockPos().getZ() + 1);
     }
-
-//    @Override
-//    public boolean canRenderBreaking() {
-//        return true;
-//    }
 
     @Override
     public boolean shouldPreserveStateOnBreak() {

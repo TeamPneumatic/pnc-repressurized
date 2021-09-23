@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -23,13 +24,13 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_EXTENSION;
@@ -49,6 +50,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     );
 
     public static final int INVENTORY_SIZE = 1;
+
     private static final int RS_MODE_NEAR = 0;
     private static final int RS_MODE_NEAR_LOOKING = 1;
     public static final int RS_MODE_WOODEN_DOOR = 2;
@@ -72,6 +74,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     private float speedMultiplier;
     @GuiSynced
     private boolean passSignal;
+
+    private int rangeSq;
 
     public TileEntityPneumaticDoorBase() {
         super(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
@@ -125,31 +129,44 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         }
     }
 
+    @Override
+    public void onUpgradesChanged() {
+        super.onUpgradesChanged();
+
+        rangeSq = IntMath.pow(TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(EnumUpgrade.RANGE), 2);
+    }
+
     private boolean shouldOpen() {
         if (door == null) return false;
         switch (rsController.getCurrentMode()) {
             case RS_MODE_NEAR:
+                return hasAnyValidPlayer(player -> true);
             case RS_MODE_NEAR_LOOKING:
-                int range = TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(EnumUpgrade.RANGE);
-                AxisAlignedBB aabb = new AxisAlignedBB(getBlockPos()).inflate(range);
-                for (PlayerEntity player : getLevel().getEntitiesOfClass(PlayerEntity.class, aabb)) {
-                    if (TileEntitySecurityStation.isProtectedFromPlayer(player, getBlockPos(), false)) {
-                        continue;
-                    }
-                    if (rsController.getCurrentMode() == RS_MODE_NEAR) {
-                        return true;
-                    } else {
-                        Vector3d eyePos = player.getEyePosition(0f);
-                        Vector3d endPos = eyePos.add(player.getLookAngle().normalize().scale(range * 1.4142f));
-                        return door.getRenderBoundingBox().clip(eyePos, endPos).isPresent();
-                    }
-                }
-                return false;
+                return hasAnyValidPlayer(this::isPlayerLookingAtDoor);
             case RS_MODE_WOODEN_DOOR:
+                return rsController.getCurrentRedstonePower() > 0 || opening;
             case RS_MODE_IRON_DOOR:
                 return rsController.getCurrentRedstonePower() > 0;
         }
         return false;
+    }
+
+    private boolean hasAnyValidPlayer(Predicate<ServerPlayerEntity> pred) {
+        if (level != null && level.getServer() != null) {
+            Vector3d vec = Vector3d.atCenterOf(getBlockPos().relative(getRotation()));
+            return level.getServer().getPlayerList().getPlayers().stream()
+                    .filter(player -> player.distanceToSqr(vec) <= rangeSq)
+                    .filter(player -> !TileEntitySecurityStation.isProtectedFromPlayer(player, getBlockPos(), false))
+                    .anyMatch(pred);
+        }
+        return false;
+    }
+
+    private boolean isPlayerLookingAtDoor(ServerPlayerEntity player) {
+        Vector3d eyePos = player.getEyePosition(0f);
+        // rangeSq is longer than we need, but we've already done a proximity check, so...
+        Vector3d endPos = eyePos.add(player.getLookAngle().scale(rangeSq));
+        return door.getRenderBoundingBox().clip(eyePos, endPos).isPresent();
     }
 
     public void setOpening(boolean opening) {
