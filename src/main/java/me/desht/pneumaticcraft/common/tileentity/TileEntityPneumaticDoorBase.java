@@ -144,9 +144,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
             case RS_MODE_NEAR_LOOKING:
                 return hasAnyValidPlayer(this::isPlayerLookingAtDoor);
             case RS_MODE_WOODEN_DOOR:
-                return rsController.getCurrentRedstonePower() > 0 || opening;
             case RS_MODE_IRON_DOOR:
-                return rsController.getCurrentRedstonePower() > 0;
+                return rsController.getCurrentRedstonePower() > 0 || opening;
         }
         return false;
     }
