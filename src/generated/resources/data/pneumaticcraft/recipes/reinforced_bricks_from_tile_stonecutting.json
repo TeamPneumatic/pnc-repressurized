@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "pneumaticcraft:reinforced_brick_tile"
+  },
+  "result": "pneumaticcraft:reinforced_bricks",
+  "count": 1
+}
