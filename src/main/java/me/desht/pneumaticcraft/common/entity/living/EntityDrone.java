@@ -198,6 +198,7 @@ public class EntityDrone extends EntityDroneBase implements
     private boolean standby; // If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
     private Minigun minigun;
     private int attackCount; // tracks number of times drone has starting attacking something
+    private BlockPos deployPos; // where the drone was deployed, accessible to programs as '$deploy_pos'
 
     private final DroneDebugger debugger = new DroneDebugger(this);
 
@@ -654,6 +655,18 @@ public class EntityDrone extends EntityDroneBase implements
     private void setAmmoColor(ItemStack ammo) {
         int color = ammo.getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammo.getItem()).getAmmoColor(ammo) : 0xFFFF0000;
         entityData.set(AMMO, color);
+    }
+
+    @Override
+    public BlockPos getDeployPos() {
+        return deployPos;
+    }
+
+    public void setDeployPos(BlockPos deployPos) {
+        if (this.deployPos != null) {
+            throw new IllegalStateException("deployPos has already been set!");
+        }
+        this.deployPos = deployPos;
     }
 
     /**

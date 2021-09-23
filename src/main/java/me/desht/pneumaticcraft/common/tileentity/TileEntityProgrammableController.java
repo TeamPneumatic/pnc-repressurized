@@ -320,6 +320,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
+    public BlockPos getDeployPos() {
+        return getBlockPos();
+    }
+
+    @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (tag.equals("charging")) {
             shouldChargeHeldItem = !shouldChargeHeldItem;

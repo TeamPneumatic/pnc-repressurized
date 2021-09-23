@@ -93,6 +93,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
         drone.setPos(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
         drone.readFromItemStack(iStack);
         world.addFreshEntity(drone);
+        drone.setDeployPos(placePos);
 
         if (drone.addProgram(clickPos, facing, placePos, iStack, drone.progWidgets)) {
             TileEntityProgrammer.updatePuzzleConnections(drone.progWidgets);

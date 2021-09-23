@@ -21,6 +21,7 @@ public class DroneSpecialVariableHandler {
         DISPATCH_MAP.put("controller_pos", (event, extra) -> event.drone.getControllerPos());
         DISPATCH_MAP.put("owner_pos", (event, extra) -> getPosForPlayer(event.drone.getOwner()));
         DISPATCH_MAP.put("player_pos", (event, extra) -> getPosForPlayer(PneumaticCraftUtils.getPlayerFromName(extra)));
+        DISPATCH_MAP.put("deploy_pos", (event, extra) -> event.drone.getDeployPos());
         DISPATCH_MAP.put("owner_look", (event, extra) -> getPlayerLookVec(event.drone.getOwner()));
 
         // old generation - they will stay around for backwards compatibility, but prefer to use the new vars above

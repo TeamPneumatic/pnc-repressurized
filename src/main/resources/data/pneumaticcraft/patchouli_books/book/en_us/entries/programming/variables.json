@@ -47,7 +47,7 @@
       "type": "text",
       "anchor": "special",
       "title": "Special Variables (cont.)",
-      "text": "$(li)$(thing)$owner_look/$: a vector representing the owning player's facing on each axis; each value will be -1, 0 or 1.$(li)$(thing)$controller_pos/$: the blockpos of the controlling $(l:programming/programmable_controller)Programmable Controller/$ block, or (0,0,0) if the drone is an actual drone, rather than a Programmable Controller."
+      "text": "$(li)$(thing)$owner_look/$: a vector representing the owning player's facing on each axis; each value will be -1, 0 or 1.$(li)$(thing)$controller_pos/$: the blockpos of the controlling $(l:programming/programmable_controller)Programmable Controller/$ block, or (0,0,0) if the drone is an actual drone, rather than a Programmable Controller.$(li)$(thing)$deploy_pos/$: the blockpos where this drone was deployed, or the Programmable Controller's blockpos."
     },
     {
       "type": "text",

@@ -186,4 +186,12 @@ public interface IDrone extends ICapabilityProvider {
      */
     @Nonnull
     UUID getOwnerUUID();
+
+    /**
+     * Get the blockpos at which this drone was deployed (by player or dispenser).  For the Programmable Controller,
+     * this will simply return the controller's block position.
+     *
+     * @return the deployment pos
+     */
+    BlockPos getDeployPos();
 }
