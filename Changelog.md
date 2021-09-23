@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.14.3-??? (unreleased)
+## 2.14.3-257 (23rd Sep 2021)
 
 ### Updates
 * Added the ability to filter Amadron offers by the player's location, intended for modpack makers
@@ -23,6 +23,9 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Threshold cannot be manually adjusted in this mode
   * A signal of 0 in this mode disables processing (so effective range 30% to 100% in increments of 5)
 * Added Stonecutter recipes for the various Reinforced Stone blocks
+* Added `$deploy_pos` special Drone variable
+  * This returns the blockpos at which the drone was deployed
+  * For Programmable Controller, it returns the blockpos at which the controller was placed
 
 ### Fixes
 * Fixed slider widgets holding onto a mouse drag if mouse button released while not over the widget in question
@@ -32,6 +35,9 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Another artifact of the switch to Mojang mappings in 2.14.0 (a method name got mixed up)
 * Fixed server crash when Smart Chest tries to push items into a Blood Altar under certain circumstances
 * Fixed villager house generation ignoring the `addMechanicHouse` config setting
+* Fixed Pneumatic Door in "wooden door" or "iron door" mode not opening on world load even if signal present (until block update received)
+* Fixed Pneumatic Door in "nearby and looking" mode requiring *all* nearby players to be looking at the door
+  * Only one player needs to be looking at the door
 
 ## 2.14.2-247 (6 Sep 2021)
 
