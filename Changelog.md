@@ -22,6 +22,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * In this mode, the completion threshold percentage is 25 + (signal_level * 5)
   * Threshold cannot be manually adjusted in this mode
   * A signal of 0 in this mode disables processing (so effective range 30% to 100% in increments of 5)
+* Added Stonecutter recipes for the various Reinforced Stone blocks
 
 ### Fixes
 * Fixed slider widgets holding onto a mouse drag if mouse button released while not over the widget in question
@@ -31,8 +32,6 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Another artifact of the switch to Mojang mappings in 2.14.0 (a method name got mixed up)
 * Fixed server crash when Smart Chest tries to push items into a Blood Altar under certain circumstances
 * Fixed villager house generation ignoring the `addMechanicHouse` config setting
-* Fixed Patchouli manual breakage if Tough as Nails is installed
-  * This was caused by the manual referring to some old 1.12.2 TAN items which the 1.16.5 version doesn't have
 
 ## 2.14.2-247 (6 Sep 2021)
 
