@@ -86,6 +86,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
 
         rightGoing = tag.getBoolean("rightGoing");
         color = tag.getInt("color");
+        scheduleDescriptionPacket();
     }
 
     @Override
