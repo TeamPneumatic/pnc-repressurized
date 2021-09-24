@@ -8,6 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.14.3-258 (24th Sep 2021)
+
+### Fixes
+
+* Hotfix: fix server crash related to changes made in 2.14.3 with Amadron villager trade scanning
+  * Appears to be an unexpected interaction between Quark and/or Terraforged
+
 ## 2.14.3-257 (23rd Sep 2021)
 
 ### Updates
