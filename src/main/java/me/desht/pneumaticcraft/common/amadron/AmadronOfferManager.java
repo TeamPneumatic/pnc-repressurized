@@ -16,8 +16,6 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.entity.player.PlayerEntity;
@@ -317,19 +315,17 @@ public enum AmadronOfferManager {
         }
     }
 
-    private void setupVillagerTrades(World world) {
+    private void setupVillagerTrades() {
         // this only needs to be done once, on first load
         if (villagerTrades.isEmpty()) {
             Set<VillagerProfession> validSet = new HashSet<>();
             Random rand = ThreadLocalRandom.current();
-            VillagerEntity fakeVillager = EntityType.VILLAGER.create(world);
-            if (fakeVillager == null) return;
             VillagerTrades.TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
                 IntStream.range(0, trades.length).forEach(i -> {
-                    String key = profession.toString() + "_" + level;
-                    MerchantOffer offer = trades[i].getOffer(fakeVillager, rand);
+                    MerchantOffer offer = getOfferForNullVillager(trades[i], rand);
                     if (offer != null) {
                         ResourceLocation offerId = new ResourceLocation(profession + "_" + level + "_" + i);
+                        String key = profession.toString() + "_" + level;
                         villagerTrades.computeIfAbsent(key, k -> new ArrayList<>()).add(new AmadronOffer(offerId,
                                 AmadronTradeResource.of(offer.getBaseCostA()),
                                 AmadronTradeResource.of(offer.getResult()),
@@ -342,6 +338,17 @@ public enum AmadronOfferManager {
                 });
             }));
             validProfessions.addAll(validSet);
+        }
+    }
+
+    private MerchantOffer getOfferForNullVillager(VillagerTrades.ITrade trade, Random rand) {
+        try {
+            // shouldn't really pass null here, but creating a fake villager can cause worldgen-related server lockups
+            // https://github.com/TeamPneumatic/pnc-repressurized/issues/899
+            //noinspection ConstantConditions
+            return trade.getOffer(null, rand);
+        }catch (NullPointerException ignored) {
+            return null;
         }
     }
 
@@ -364,7 +371,7 @@ public enum AmadronOfferManager {
                 }
             });
 
-            setupVillagerTrades(world);
+            setupVillagerTrades();
             compileActiveOffersList();
 
             rebuildRequired = false;
