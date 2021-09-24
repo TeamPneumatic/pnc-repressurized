@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -14,8 +15,10 @@ import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreItemHandle
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -28,10 +31,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.ITag;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
@@ -45,29 +47,19 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
         IMinWorkingPressure, INamedContainerProvider, ISerializableTanks, IRangedTE {
     static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
     public static final int MEMORY_ESSENCE_AMOUNT = 100;
 
-    public enum Problems implements ITranslatableEnum {
-        OK,
-        NO_CORE,
-        CORE_FULL,
-        TRAP_CLOSED;
-
-        @Override
-        public String getTranslationKey() {
-            return "pneumaticcraft.gui.tab.problems.vacuum_trap." + this.toString().toLowerCase();
-        }
-    }
+    private static final Set<EntityType<?>> entityBlacklist = new ObjectOpenHashSet<>();
+    private static boolean needBlacklistRebuild = true;
 
     private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inv);
@@ -157,7 +149,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
         return e.canChangeDimensions()
                 && !(e instanceof EntityDrone)
                 && !(e instanceof TameableEntity && ((TameableEntity) e).isTame())
-                && !PNCConfig.Common.General.vacuumTrapBlacklist.contains(e.getType().getRegistryName());
+                && !isEntityBlacklisted(e.getType());
     }
 
     @Nonnull
@@ -252,6 +244,50 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
+    }
+
+    private static boolean isEntityBlacklisted(EntityType<?> type) {
+        if (needBlacklistRebuild) {
+            for (String id : PNCConfig.Common.General.vacuumTrapBlacklist) {
+                try {
+                    if (id.startsWith("#")) {
+                        ITag<EntityType<?>> tag = EntityTypeTags.getAllTags().getTag(new ResourceLocation(id.substring(1)));
+                        if (tag != null) {
+                            entityBlacklist.addAll(tag.getValues());
+                        } else {
+                            Log.warning("unknown entity type tag '%s' in pneumaticcraft-common.toml / vacuum_trap_blacklist", id);
+                        }
+                    } else {
+                        ResourceLocation rl = new ResourceLocation(id);
+                        if (ForgeRegistries.ENTITIES.containsKey(rl)) {
+                            entityBlacklist.add(ForgeRegistries.ENTITIES.getValue(rl));
+                        } else {
+                            Log.warning("unknown entity type '%s' in pneumaticcraft-common.toml / vacuum_trap_blacklist", id);
+                        }
+                    }
+                } catch (ResourceLocationException e) {
+                    Log.error("bad resource location '%s' in pneumaticcraft-common.toml / vacuum_trap_blacklist", id);
+                }
+            }
+            needBlacklistRebuild = false;
+        }
+        return entityBlacklist.contains(type);
+    }
+
+    public static void clearBlacklistCache() {
+        needBlacklistRebuild = true;
+    }
+
+    public enum Problems implements ITranslatableEnum {
+        OK,
+        NO_CORE,
+        CORE_FULL,
+        TRAP_CLOSED;
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.tab.problems.vacuum_trap." + this.toString().toLowerCase(Locale.ROOT);
+        }
     }
 
     private class XPTank extends SmartSyncTank {

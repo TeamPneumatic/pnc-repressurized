@@ -60,7 +60,7 @@ public class PNCConfig {
             public static boolean useUpDyesWhenColoring;
             public static boolean dronesRenderHeldItem;
             public static boolean dronesCanImportXPOrbs;
-            public static Set<ResourceLocation> vacuumTrapBlacklist;
+            public static Set<String> vacuumTrapBlacklist;
             public static Set<String> oilWorldGenCategoryBlacklist;
             public static int surfaceOilGenerationChance;
             public static boolean droneDebuggerPathParticles;

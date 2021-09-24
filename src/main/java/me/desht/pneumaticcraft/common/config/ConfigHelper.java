@@ -6,9 +6,11 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.config.ClientConfig.PathUpdateSetting;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -74,8 +76,8 @@ public class ConfigHelper {
         PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();
         PNCConfig.Common.General.dronesCanBePickedUp = common.general.dronesCanBePickedUp.get();
         PNCConfig.Common.General.droneDebuggerPathParticles = common.general.droneDebuggerPathParticles.get();
-        PNCConfig.Common.General.vacuumTrapBlacklist = common.general.vacuumTrapBlacklist.get()
-                .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
+        PNCConfig.Common.General.vacuumTrapBlacklist = new HashSet<>(common.general.vacuumTrapBlacklist.get());
+        TileEntityVacuumTrap.clearBlacklistCache();
 
         PNCConfig.Common.Machines.aerialInterfaceArmorCompat = common.machines.aerialInterfaceArmorCompat.get();
         PNCConfig.Common.Machines.cropSticksGrowthBoostChance = common.machines.cropSticksGrowthBoostChance.get();

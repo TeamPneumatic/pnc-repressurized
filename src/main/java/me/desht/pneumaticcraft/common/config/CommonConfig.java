@@ -228,7 +228,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.general.drone_debugger_path_particles")
                 .define("drone_debugger_path_particles", true);
         general.vacuumTrapBlacklist = builder
-                .comment("Blacklisted entity ID's, which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
+                .comment("Blacklisted entity type ID's or tags (use '#' prefix), which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
                 .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
                 .define("vacuum_trap_blacklist", Lists.newArrayList());
         builder.pop();

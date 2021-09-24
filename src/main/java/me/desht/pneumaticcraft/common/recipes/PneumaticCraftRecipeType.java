@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
@@ -107,6 +108,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         ItemSeismicSensor.clearCachedFluids();
         BlockHeatProperties.getInstance().clear();
         CraftingRecipeCache.INSTANCE.clear();
+        TileEntityVacuumTrap.clearBlacklistCache();
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {
