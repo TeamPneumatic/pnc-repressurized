@@ -1,0 +1,10 @@
+{
+  "parent": "forge:block/default",
+  "textures": {
+    "pipe": "pneumaticcraft:block/pressure_tube",
+    "particle": "pneumaticcraft:block/compressed_iron_block"
+  },
+  "loader": "forge:obj",
+  "model": "pneumaticcraft:models/block/gas_lift.obj",
+  "flip-v": true
+}
