@@ -135,6 +135,7 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.EMPTY_SPAWNER.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.FLUID_MIXER.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.GAS_LIFT.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.cutout());
@@ -206,6 +207,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ETCHING_TANK.get(), RenderEtchingTank::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.FLUID_MIXER.get(), RenderFluidMixer::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.KEROSENE_LAMP.get(), RenderKeroseneLamp::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.GAS_LIFT.get(), RenderGasLift::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.LIQUID_HOPPER.get(), RenderLiquidHopper::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), RenderPressureChamberInterface::new);
