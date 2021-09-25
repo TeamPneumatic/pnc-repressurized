@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -38,14 +39,40 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import java.util.stream.Stream;
+
 public class BlockChargingStation extends BlockPneumaticCraftCamo {
     public static final BooleanProperty CHARGE_PAD = BooleanProperty.create("charge_pad");
 
-    private static final VoxelShape BASE = Block.box(1, 0, 1, 15, 1, 15);
-    private static final VoxelShape FRAME = Block.box(4, 1, 4, 12, 6, 12);
-    private static final VoxelShape PAD_FRAME = Block.box(3, 1, 3, 13, 16, 13);
-    private static final VoxelShape SHAPE = VoxelShapes.join(BASE, FRAME, IBooleanFunction.OR);
-    private static final VoxelShape PAD_SHAPE = VoxelShapes.join(BASE, PAD_FRAME, IBooleanFunction.OR);
+//    private static final VoxelShape PAD_FRAME = Block.box(3, 1, 3, 13, 16, 13);
+
+    private static final VoxelShape SHAPE_N = Stream.of(
+        Block.box(0, 0, 0, 16, 1, 16),
+        Block.box(1, 1, 1, 15, 3, 15),
+        Block.box(6, 6, 0, 10, 10, 1),
+        Block.box(5, 3, 1, 11, 11, 3),
+        Block.box(3, 3, 3, 13, 4, 13),
+        Block.box(11, 7.25, 1.25, 12.5, 7.75, 1.75),
+        Block.box(12, 3.25, 1.25, 12.5, 7.25, 1.75),
+        Block.box(11.25, 3.25, 2, 11.75, 8.25, 2.5),
+        Block.box(11.25, 3.25, 2.5, 11.75, 3.75, 3),
+        Block.box(12, 3.25, 1.75, 12.5, 3.75, 3.25),
+        Block.box(3.5, 7.25, 1.25, 5, 7.75, 1.75),
+        Block.box(3.5, 3.25, 1.75, 4, 3.75, 3.25),
+        Block.box(10.75, 8.25, 2, 11.75, 8.75, 2.5),
+        Block.box(3.5, 3.25, 1.25, 4, 7.25, 1.75),
+        Block.box(4.25, 8.25, 2, 5.25, 8.75, 2.5),
+        Block.box(4.25, 3.25, 2, 4.75, 8.25, 2.5),
+        Block.box(4.25, 3.25, 2.5, 4.75, 3.75, 3),
+        Block.box(5, 1, 0, 11, 5, 1)
+).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+
+    private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
+    private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
+    private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
+    private static final VoxelShape[] SHAPES = new VoxelShape[] { SHAPE_S, SHAPE_W, SHAPE_N, SHAPE_E };
+
+//    private static final VoxelShape PAD_SHAPE = VoxelShapes.join(SHAPES, PAD_FRAME, IBooleanFunction.OR);
 
     public BlockChargingStation() {
         super(ModBlocks.defaultProps());
@@ -60,7 +87,9 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
 
     @Override
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return state.getValue(CHARGE_PAD) ? PAD_SHAPE : SHAPE;
+        Direction d = state.getValue(directionProperty());
+        return SHAPES[d.get2DDataValue()];
+//        return state.getValue(CHARGE_PAD) ? PAD_SHAPE : SHAPE;
     }
 
     @Override

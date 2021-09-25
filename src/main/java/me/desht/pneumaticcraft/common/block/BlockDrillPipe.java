@@ -28,10 +28,23 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import java.util.stream.Stream;
+
 public class BlockDrillPipe extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE1 = Block.box(6, 0, 7, 10, 16, 9);
-    private static final VoxelShape SHAPE2 = Block.box(7, 0, 6, 9, 16, 10);
-    private static final VoxelShape SHAPE = VoxelShapes.join(SHAPE1, SHAPE2, IBooleanFunction.OR);
+    private static final VoxelShape SHAPE = Stream.of(
+            Block.box(6, 0, 6, 7, 16, 10),
+            Block.box(7, 0, 6, 9, 16, 7),
+            Block.box(7, 0, 9, 9, 16, 10),
+            Block.box(10, 14, 6, 10.25, 18, 10),
+            Block.box(5.75, 14, 10, 10.25, 18, 10.25),
+            Block.box(5.75, 2, 6, 6, 3, 10),
+            Block.box(5.75, 2, 5.75, 10.25, 3, 6),
+            Block.box(9, 0, 6, 10, 16, 10),
+            Block.box(5.75, 14, 5.75, 10.25, 18, 6),
+            Block.box(5.75, 14, 6, 6, 18, 10),
+            Block.box(10, 2, 6, 10.25, 3, 10),
+            Block.box(5.75, 2, 10, 10.25, 3, 10.25)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
 
     public BlockDrillPipe() {
         super(ModBlocks.defaultProps());

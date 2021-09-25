@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE_N = Stream.of(
+            Block.box(2, 11, 0.5, 4, 12, 1.5),
             Block.box(14, 5, 5, 16, 10, 9),
             Block.box(0, 5, 5, 2, 10, 9),
             Block.box(4, 1, 0, 12, 13, 1),
@@ -30,14 +31,8 @@ public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraft {
             Block.box(0, 15, 1, 1, 16, 15),
             Block.box(0, 15, 0, 16, 16, 1),
             Block.box(0, 0, 0, 16, 1, 16),
-            Block.box(9, 13, 11, 16, 13, 16),
-            Block.box(0, 13, 11, 7, 13, 16),
-            Block.box(16, 1, 11, 16, 13, 16),
-            Block.box(7, 1, 11, 7, 13, 16),
-            Block.box(9, 1, 11, 9, 13, 16),
-            Block.box(0, 1, 11, 0, 13, 16),
-            Block.box(9, 1, 16, 16, 13, 16),
-            Block.box(0, 1, 16, 7, 13, 16),
+            Block.box(9, 1, 11, 16, 13, 16),
+            Block.box(0, 1, 11, 7, 13, 16),
             Block.box(14, 1, 9, 16, 13, 11),
             Block.box(0, 1, 9, 2, 13, 11),
             Block.box(2, 1, 1, 14, 16, 11),
@@ -55,9 +50,9 @@ public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraft {
             Block.box(11, 13, 12, 13, 13.25, 14),
             Block.box(3, 13, 12, 5, 13.25, 14),
             Block.box(0, 15, 15, 16, 16, 16),
-            Block.box(12, 11, 0.5, 14, 12, 1.5),
-            Block.box(2, 11, 0.5, 4, 12, 1.5)
-    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+            Block.box(12, 11, 0.5, 14, 12, 1.5)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_N, 180);
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_N, 270);
