@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.util.*;
@@ -82,6 +83,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
         PUMP_EMPTY, PUMP_LEAVE_FLUID, RETRACT
     }
 
+    @DescSynced
     @GuiSynced
     private final GasLiftFluidTank tank = new GasLiftFluidTank();
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);

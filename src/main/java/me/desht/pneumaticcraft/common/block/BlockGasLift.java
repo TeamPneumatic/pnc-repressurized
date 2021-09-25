@@ -24,17 +24,31 @@ import net.minecraft.block.BlockState;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import java.util.stream.Stream;
+
 public class BlockGasLift extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE1 = Block.box(0, 0, 0, 16, 2, 16);
-    private static final VoxelShape SHAPE2 = Block.box(2, 2, 2, 14, 4, 14);
-    private static final VoxelShape SHAPE3 = Block.box(4, 4, 4, 12, 6, 12);
-    private static final VoxelShape SHAPE4 = Block.box(6, 6, 6, 10, 10, 10);
-    private static final VoxelShape SHAPE = VoxelShapes.or(SHAPE1, VoxelShapes.or(SHAPE2, VoxelShapes.or(SHAPE3, SHAPE4)));
+    private static final VoxelShape SHAPE = Stream.of(
+            Block.box(0, 0, 0, 16, 2, 16),
+            Block.box(0, 4, 0, 5, 14, 5),
+            Block.box(0, 4, 11, 5, 14, 16),
+            Block.box(11, 4, 11, 16, 14, 16),
+            Block.box(11, 4, 0, 16, 14, 5),
+            Block.box(2, 14, 2, 14, 15, 14),
+            Block.box(2, 2, 2, 14, 4, 14),
+            Block.box(11, 4, 5, 16, 14, 11),
+            Block.box(0, 4, 5, 5, 14, 11),
+            Block.box(5, 4, 0, 11, 14, 16),
+            Block.box(0, 14, 0, 16, 16, 2),
+            Block.box(0, 14, 14, 16, 16, 16),
+            Block.box(0, 14, 2, 2, 16, 14),
+            Block.box(14, 14, 2, 16, 16, 14)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
 
     public BlockGasLift() {
         super(ModBlocks.defaultProps());
