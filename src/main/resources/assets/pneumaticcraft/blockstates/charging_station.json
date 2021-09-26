@@ -12,8 +12,17 @@
 		{   "when": { "facing": "west" },
 			"apply": { "model": "pneumaticcraft:block/charging_station", "y": 90 }
 		},
-		{   "when": { "charge_pad": "true" },
+		{   "when": { "charge_pad": "true", "facing": "north" },
 			"apply": { "model": "pneumaticcraft:block/charge_pad" }
+		},
+		{   "when": { "charge_pad": "true", "facing": "south" },
+			"apply": { "model": "pneumaticcraft:block/charge_pad", "y": 180 }
+		},
+		{   "when": { "charge_pad": "true", "facing": "east" },
+			"apply": { "model": "pneumaticcraft:block/charge_pad", "y": 90 }
+		},
+		{   "when": { "charge_pad": "true", "facing": "west" },
+			"apply": { "model": "pneumaticcraft:block/charge_pad", "y": 270 }
 		}
 	]
 }
