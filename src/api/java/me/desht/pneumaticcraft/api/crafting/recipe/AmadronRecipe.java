@@ -3,10 +3,8 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -124,7 +122,9 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * @param pos position in the world to check
      * @return true if the offer is available here, false otherwise
      */
-    public abstract boolean isAvailableAtLocation(World world, BlockPos pos);
+//    public abstract boolean isAvailableAtLocation(World world, BlockPos pos);
+
+    public abstract boolean isUseableByPlayer(PlayerEntity playerEntity);
 
     /**
      * Does this offer match the given query string? The input resource, output resource and vendor names are all

@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
-import me.desht.pneumaticcraft.common.amadron.LocationFilter;
+import me.desht.pneumaticcraft.common.amadron.AmadronPlayerFilter;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import net.minecraft.util.ResourceLocation;
 
@@ -15,11 +15,11 @@ public class AmadronRecipeBuilder extends PneumaticCraftRecipeBuilder<AmadronRec
     private final boolean isStatic;
     private final int level;
     private final int maxStock;
-    private final LocationFilter whitelist;
-    private final LocationFilter blacklist;
+    private final AmadronPlayerFilter whitelist;
+    private final AmadronPlayerFilter blacklist;
 
     public AmadronRecipeBuilder(AmadronTradeResource input, AmadronTradeResource output, boolean isStatic, int level,
-                                int maxStock, LocationFilter whitelist, LocationFilter blacklist) {
+                                int maxStock, AmadronPlayerFilter whitelist, AmadronPlayerFilter blacklist) {
         super(RL(PneumaticCraftRecipeTypes.AMADRON_OFFERS));
         this.input = input;
         this.output = output;
@@ -31,7 +31,7 @@ public class AmadronRecipeBuilder extends PneumaticCraftRecipeBuilder<AmadronRec
     }
 
     public AmadronRecipeBuilder(AmadronTradeResource input, AmadronTradeResource output, boolean isStatic, int level) {
-        this(input, output, isStatic, level, -1, LocationFilter.YES, LocationFilter.NO);
+        this(input, output, isStatic, level, -1, AmadronPlayerFilter.YES, AmadronPlayerFilter.NO);
     }
 
     @Override

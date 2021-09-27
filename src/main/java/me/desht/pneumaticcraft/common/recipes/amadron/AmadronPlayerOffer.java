@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.amadron.AmadronPlayerFilter;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
-import me.desht.pneumaticcraft.common.amadron.LocationFilter;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -41,19 +41,19 @@ public class AmadronPlayerOffer extends AmadronOffer {
     private int pendingPayments;
     private TileEntity cachedInput, cachedOutput;
 
-    private AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId, LocationFilter whitelist, LocationFilter blacklist) {
+    private AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId, AmadronPlayerFilter whitelist, AmadronPlayerFilter blacklist) {
         super(id, input, output, true, 0, -1, 0, whitelist, blacklist);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
         inStock = 0;
     }
 
-    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer, LocationFilter whitelist, LocationFilter blacklist) {
+    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer, AmadronPlayerFilter whitelist, AmadronPlayerFilter blacklist) {
         this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId(), whitelist, blacklist);
     }
 
     public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity player) {
-        this(id, input, output, player, LocationFilter.YES, LocationFilter.NO);
+        this(id, input, output, player, AmadronPlayerFilter.YES, AmadronPlayerFilter.NO);
     }
 
     public AmadronPlayerOffer setProvidingPosition(GlobalPos pos) {

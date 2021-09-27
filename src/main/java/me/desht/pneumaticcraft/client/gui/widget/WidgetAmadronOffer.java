@@ -88,7 +88,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
                 String str = TextFormatting.DARK_BLUE.toString() + offer.getStock();
                 fr.draw(matrixStack, str, x + 36 - fr.width(str) / 2f, y + 25, 0xFF000000);
             }
-            boolean availableHere = offer.isAvailableAtLocation(ClientUtils.getClientWorld(), ClientUtils.getClientPlayer().blockPosition());
+            boolean availableHere = offer.isUseableByPlayer(ClientUtils.getClientPlayer());
             if (offer.isLocationLimited()) {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -157,7 +157,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
                     new StringTextComponent(Integer.toString(shoppingAmount)).withStyle(TextFormatting.WHITE))
                     .withStyle(TextFormatting.AQUA));
         }
-        if (!offer.isAvailableAtLocation(ClientUtils.getClientWorld(), ClientUtils.getClientPlayer().blockPosition())) {
+        if (!offer.isUseableByPlayer(ClientUtils.getClientPlayer())) {
             curTip.add(xlate("pneumaticcraft.gui.amadron.location.unavailable").withStyle(TextFormatting.RED));
         }
         offer.addAvailabilityData(curTip);
