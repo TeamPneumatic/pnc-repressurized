@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent.CoordinateVariable.Drone;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -17,19 +18,27 @@ public class DroneSpecialVariableHandler {
 
     static {
         // new generation of special vars, all end in _pos; recommended to use these in new programs
-        DISPATCH_MAP.put("drone_pos", (event, extra) -> new BlockPos(event.drone.getDronePos()));
-        DISPATCH_MAP.put("controller_pos", (event, extra) -> event.drone.getControllerPos());
-        DISPATCH_MAP.put("owner_pos", (event, extra) -> getPosForPlayer(event.drone.getOwner()));
-        DISPATCH_MAP.put("player_pos", (event, extra) -> getPosForPlayer(PneumaticCraftUtils.getPlayerFromName(extra)));
-        DISPATCH_MAP.put("deploy_pos", (event, extra) -> event.drone.getDeployPos());
-        DISPATCH_MAP.put("owner_look", (event, extra) -> getPlayerLookVec(event.drone.getOwner()));
+        register("drone_pos", (event, extra) -> new BlockPos(event.drone.getDronePos()));
+        register("controller_pos", (event, extra) -> event.drone.getControllerPos());
+        register("owner_pos", (event, extra) -> getPosForPlayer(event.drone.getOwner()));
+        register("player_pos", (event, extra) -> getPosForPlayer(PneumaticCraftUtils.getPlayerFromName(extra)));
+        register("deploy_pos", (event, extra) -> event.drone.getDeployPos());
+        register("owner_look", (event, extra) -> getPlayerLookVec(event.drone.getOwner()));
 
         // old generation - they will stay around for backwards compatibility, but prefer to use the new vars above
-        DISPATCH_MAP.put("owner", (event, extra) -> getPosForPlayer(event.drone.getOwner()));
-        DISPATCH_MAP.put("player", (event, extra) -> getPosForPlayer(PneumaticCraftUtils.getPlayerFromName(extra)));
+        register("owner", (event, extra) -> getPosForPlayer(event.drone.getOwner()));
+        register("player", (event, extra) -> getPosForPlayer(PneumaticCraftUtils.getPlayerFromName(extra)));
         // this method gets the block above the drone's position for historical reasons
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/601 for more discussion
-        DISPATCH_MAP.put("drone", (event, extra) -> new BlockPos(event.drone.getDronePos()).relative(Direction.UP));
+        register("drone", (event, extra) -> new BlockPos(event.drone.getDronePos()).relative(Direction.UP));
+    }
+
+    private static void register(String var, BiFunction<Drone, String, BlockPos> func) {
+        if (DISPATCH_MAP.containsKey(var)) {
+            Log.warning("special variable '%s' is already registered! ignoring");
+        } else {
+            DISPATCH_MAP.put(var, func);
+        }
     }
 
     @SubscribeEvent

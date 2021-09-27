@@ -2,12 +2,17 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.event.entity.living.EntityTeleportEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 
@@ -23,7 +28,7 @@ public class HackableEnderman implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, PlayerEntity player) {
-        return entity instanceof EndermanEntity && onEndermanTeleport((EndermanEntity) entity);
+        return entity instanceof EndermanEntity && canEndermanTeleport((EndermanEntity) entity);
     }
 
     @Override
@@ -43,7 +48,7 @@ public class HackableEnderman implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        // enderman teleport suppression is handled in EventHandlerPneumaticCraft#onEnderTeleport
+        // enderman teleport suppression is handled in onEnderTeleport()
     }
 
     @Override
@@ -51,14 +56,19 @@ public class HackableEnderman implements IHackableEntity {
         return entity.isAlive();
     }
 
-    /**
-     * See {@link me.desht.pneumaticcraft.common.event.EventHandlerPneumaticCraft#onEnderTeleport(net.minecraftforge.event.entity.living.EntityTeleportEvent.EnderEntity)}
-     * @param entity the enderman
-     * @return false if enderman should be disallowed from teleporting
-     */
-    public static boolean onEndermanTeleport(LivingEntity entity) {
+    private static boolean canEndermanTeleport(LivingEntity entity) {
         List<IHackableEntity> hacks = PneumaticRegistry.getInstance().getHelmetRegistry().getCurrentEntityHacks(entity);
         return hacks.stream().noneMatch(hack -> hack instanceof HackableEnderman);
     }
 
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent(priority = EventPriority.LOWEST)
+        public void onEnderTeleport(EntityTeleportEvent.EnderEntity event) {
+            LivingEntity e = event.getEntityLiving();
+            if (e instanceof EndermanEntity && !canEndermanTeleport(e)) {
+                event.setCanceled(true);
+            }
+        }
+    }
 }

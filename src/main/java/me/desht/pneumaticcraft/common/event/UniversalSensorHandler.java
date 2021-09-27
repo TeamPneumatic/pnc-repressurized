@@ -9,7 +9,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-public class EventHandlerUniversalSensor {
+public class UniversalSensorHandler {
     @SubscribeEvent
     public void onInteraction(PlayerInteractEvent event) {
         sendEventToSensors(event.getEntity().level, event);

@@ -82,11 +82,10 @@ public class PneumaticCraftRepressurized {
 
         ModLootFunctions.init();
 
-        forgeBus.register(new TickHandlerPneumaticCraft());
-        forgeBus.register(new EventHandlerPneumaticCraft());
+        forgeBus.register(new MiscEventHandler());
         forgeBus.register(new EventHandlerAmadron());
-        forgeBus.register(new EventHandlerPneumaticArmor());
-        forgeBus.register(new EventHandlerUniversalSensor());
+        forgeBus.register(new PneumaticArmorHandler());
+        forgeBus.register(new UniversalSensorHandler());
         forgeBus.register(new DroneSpecialVariableHandler());
         forgeBus.register(ItemGPSAreaTool.EventHandler.class);
         forgeBus.register(HackTickHandler.instance());

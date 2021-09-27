@@ -48,7 +48,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 /**
  * Events related to Pneumatic Armor.  Note any player-tick events are handled in CommonHUDHandler#tickArmorPiece()
  */
-public class EventHandlerPneumaticArmor {
+public class PneumaticArmorHandler {
     private static final Map<Integer, Integer> targetingTracker = new HashMap<>();
     private static final Map<UUID, Map<String, Integer>> targetWarnings = new HashMap<>();
 
