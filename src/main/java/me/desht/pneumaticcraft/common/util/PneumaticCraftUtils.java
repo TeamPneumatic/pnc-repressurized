@@ -4,10 +4,10 @@ import com.google.common.base.Splitter;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -60,6 +60,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PneumaticCraftUtils {
+    private static final int MAX_CHAR_PER_LINE = 45;
+
     /**
      * Returns the EnumFacing of the given entity.
      *
@@ -121,7 +123,7 @@ public class PneumaticCraftUtils {
     }
 
     public static List<ITextComponent> splitStringComponent(String text) {
-        return asStringComponent(splitString(text, GuiConstants.MAX_CHAR_PER_LINE));
+        return asStringComponent(splitString(text, MAX_CHAR_PER_LINE));
     }
 
     public static List<ITextComponent> splitStringComponent(String text, int maxCharPerLine) {
@@ -169,7 +171,7 @@ public class PneumaticCraftUtils {
     }
 
     public static List<String> splitString(String text) {
-        return splitString(text, GuiConstants.MAX_CHAR_PER_LINE);
+        return splitString(text, MAX_CHAR_PER_LINE);
     }
 
     public static List<ITextComponent> asStringComponent(List<String> l) {
@@ -271,7 +273,7 @@ public class PneumaticCraftUtils {
      * @param originalStacks array of item stacks to sort & combine
      */
     public static void summariseItemStacks(List<ITextComponent> textList, ItemStack[] originalStacks) {
-        summariseItemStacks(textList, originalStacks, GuiConstants.bullet().getString());
+        summariseItemStacks(textList, originalStacks, Symbols.bullet().getString());
     }
 
     /**
@@ -298,7 +300,7 @@ public class PneumaticCraftUtils {
                         addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString());
                     }
                     if (prevInventoryItems != null) {
-                        summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
+                        summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + Symbols.ARROW_DOWN_RIGHT + " ");
                     }
                     prevItemStack = stack;
                     itemCount = stack.getCount();
@@ -310,7 +312,7 @@ public class PneumaticCraftUtils {
         }
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
             addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString());
-            summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
+            summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + Symbols.ARROW_DOWN_RIGHT + " ");
         }
     }
 

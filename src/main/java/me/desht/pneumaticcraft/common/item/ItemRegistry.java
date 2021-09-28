@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.*;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
@@ -54,7 +54,7 @@ public enum ItemRegistry implements IItemRegistry {
         if (acceptors != null) {
             List<String> tempList = new ArrayList<>(acceptors.size());
             for (IUpgradeAcceptor acceptor : acceptors) {
-                tempList.add(GuiConstants.BULLET + " " + I18n.get(acceptor.getUpgradeAcceptorTranslationKey()));
+                tempList.add(Symbols.BULLET + " " + I18n.get(acceptor.getUpgradeAcceptorTranslationKey()));
             }
             Collections.sort(tempList);
             tooltip.addAll(tempList.stream().map(StringTextComponent::new).collect(Collectors.toList()));

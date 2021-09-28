@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -9,7 +10,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerFluidMixer;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -76,7 +76,7 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
 
         for (int i = 0; i < 2; i++) {
             String k = hasShiftDown() ? "dumpInput" : "moveInput";
-            dumpButtons[i].setMessage(hasShiftDown() ? new StringTextComponent("X").withStyle(TextFormatting.RED) : new StringTextComponent(GuiConstants.TRIANGLE_RIGHT).withStyle(TextFormatting.DARK_AQUA));
+            dumpButtons[i].setMessage(hasShiftDown() ? new StringTextComponent("X").withStyle(TextFormatting.RED) : new StringTextComponent(Symbols.TRIANGLE_RIGHT).withStyle(TextFormatting.DARK_AQUA));
             dumpButtons[i].setTooltipKey("pneumaticcraft.gui.thermopneumatic." + k);
         }
     }

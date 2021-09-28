@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -11,7 +12,6 @@ import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -87,7 +87,7 @@ public class ProgrammerWidgetAreaRenderer {
         if (!msgList.isEmpty()) {
             tooltip.add(xlate(key).withStyle(color, TextFormatting.UNDERLINE));
             for (ITextComponent msg : msgList) {
-                tooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " ").append(msg).withStyle(color));
+                tooltip.add(new StringTextComponent(Symbols.TRIANGLE_RIGHT + " ").append(msg).withStyle(color));
             }
         }
     }

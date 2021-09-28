@@ -23,9 +23,9 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.api.misc.Symbols.ARROW_LEFT;
+import static me.desht.pneumaticcraft.api.misc.Symbols.ARROW_RIGHT;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static me.desht.pneumaticcraft.lib.GuiConstants.ARROW_LEFT;
-import static me.desht.pneumaticcraft.lib.GuiConstants.ARROW_RIGHT;
 
 public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, TileEntityElevatorBase> {
     private WidgetAnimatedStat statusStat;

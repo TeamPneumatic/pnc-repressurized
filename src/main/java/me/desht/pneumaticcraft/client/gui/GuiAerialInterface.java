@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
@@ -11,7 +12,6 @@ import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface.FeedMode;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
@@ -150,7 +150,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
                 FluidStack stack = new FluidStack(f, 1000);
                 String modName = ModNameCache.getModName(f.getRegistryName().getNamespace());
                 StringTextComponent modNameText = new StringTextComponent(" (" + modName + ")");
-                liquidXpText.add(GuiConstants.bullet().withStyle(TextFormatting.BLACK)
+                liquidXpText.add(Symbols.bullet().withStyle(TextFormatting.BLACK)
                         .append(stack.getDisplayName().copy().withStyle(TextFormatting.BLACK))
                         .append(modNameText.withStyle(TextFormatting.DARK_BLUE))
                 );

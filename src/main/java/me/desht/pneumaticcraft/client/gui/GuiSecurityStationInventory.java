@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
@@ -17,7 +18,6 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation.EnumNetworkValidityProblem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
@@ -184,7 +184,7 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
         } else if (te.isHacked()) {
             text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.hackedBy")).withStyle(TextFormatting.DARK_RED));
             for (GameProfile hacker : te.hackedUsers) {
-                text.add(new StringTextComponent("  ").append(GuiConstants.bullet()).append(hacker.getName()).withStyle(TextFormatting.RED));
+                text.add(new StringTextComponent("  ").append(Symbols.bullet()).append(hacker.getName()).withStyle(TextFormatting.RED));
             }
         } else {
             text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.secure")).withStyle(TextFormatting.GREEN));
@@ -206,7 +206,7 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
         List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().collect(Collectors.toList());
         for (String name : names) {
             String str = first ? name + " \u2654" : name;
-            textList.add(GuiConstants.bullet().append(str).withStyle(first ? TextFormatting.YELLOW : TextFormatting.WHITE));
+            textList.add(Symbols.bullet().append(str).withStyle(first ? TextFormatting.YELLOW : TextFormatting.WHITE));
             first = false;
         }
         return textList;

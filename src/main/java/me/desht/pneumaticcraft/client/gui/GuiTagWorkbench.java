@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetList;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -9,7 +10,6 @@ import me.desht.pneumaticcraft.common.item.ItemTagFilter;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityTagWorkbench;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -55,9 +55,9 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
         addButton(writeButton = new WidgetButtonExtended(leftPos + 162, topPos + 16, 20, 20, StringTextComponent.EMPTY, b -> writeTags())
                 .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK))
                 .setTooltipText(xlate("pneumaticcraft.gui.tooltip.tag_workbench.write_button")));
-        addButton(addButton = new WidgetButtonExtended(leftPos + 108, topPos + 90, 13, 13, GuiConstants.TRIANGLE_RIGHT,
+        addButton(addButton = new WidgetButtonExtended(leftPos + 108, topPos + 90, 13, 13, Symbols.TRIANGLE_RIGHT,
                 b -> addAvailable()));
-        addButton(removeButton = new WidgetButtonExtended(leftPos + 108, topPos + 106, 13, 13, GuiConstants.TRIANGLE_LEFT,
+        addButton(removeButton = new WidgetButtonExtended(leftPos + 108, topPos + 106, 13, 13, Symbols.TRIANGLE_LEFT,
                 b -> removeSelected()));
 
         addButton(availableList = new WidgetList<>(leftPos + AVAILABLE_X, topPos + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));

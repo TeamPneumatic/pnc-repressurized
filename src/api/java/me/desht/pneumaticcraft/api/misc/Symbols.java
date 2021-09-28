@@ -1,12 +1,12 @@
-package me.desht.pneumaticcraft.lib;
+package me.desht.pneumaticcraft.api.misc;
 
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-public class GuiConstants {
-    public static final int MAX_CHAR_PER_LINE = 45;
-
-    // some useful unicode symbols
+/**
+ * A small collection of handy Unicode symbols
+ */
+public class Symbols {
     public static final String BULLET = "\u2022";
     public static final String ARROW_LEFT_SHORT = "\u2b05";
     public static final String ARROW_LEFT = "\u27f5";

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -59,13 +59,13 @@ public class CustomRecipeClickArea {
                     builder.add(new StringTextComponent("Current Recipe:").withStyle(TextFormatting.GRAY));
                     for (ItemStack stack : items) {
                         if (!stack.isEmpty()) {
-                            builder.add(new StringTextComponent(GuiConstants.ARROW_RIGHT + " ").append(stack.getHoverName())
+                            builder.add(new StringTextComponent(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
                                     .withStyle(TextFormatting.YELLOW));
                         }
                     }
                     for (FluidStack stack : fluids) {
                         if (!stack.isEmpty()) {
-                            builder.add(new StringTextComponent(GuiConstants.ARROW_RIGHT + " ").append(stack.getDisplayName())
+                            builder.add(new StringTextComponent(Symbols.ARROW_RIGHT + " ").append(stack.getDisplayName())
                                     .withStyle(TextFormatting.AQUA));
                         }
                     }

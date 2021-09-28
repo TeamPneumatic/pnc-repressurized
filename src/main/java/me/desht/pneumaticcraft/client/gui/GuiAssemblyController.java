@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -8,7 +9,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.tileentity.IAssemblyMachine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -66,8 +66,8 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
         for (EnumMachine m : EnumMachine.values()) {
             if (m == EnumMachine.CONTROLLER) continue; // we *are* the controller!
             IFormattableTextComponent s = foundMachines.contains(m) ?
-                    new StringTextComponent(GuiConstants.TICK_MARK).withStyle(TextFormatting.DARK_GREEN) :
-                    new StringTextComponent(GuiConstants.X_MARK).withStyle(TextFormatting.RED);
+                    new StringTextComponent(Symbols.TICK_MARK).withStyle(TextFormatting.DARK_GREEN) :
+                    new StringTextComponent(Symbols.X_MARK).withStyle(TextFormatting.RED);
             text.add(s.append(" ").append(xlate(m.getTranslationKey()).withStyle(TextFormatting.WHITE)));
         }
         return text;

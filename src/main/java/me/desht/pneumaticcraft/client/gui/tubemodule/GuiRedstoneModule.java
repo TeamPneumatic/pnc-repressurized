@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
@@ -10,7 +11,6 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.Operation;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.IReorderingProcessor;
@@ -211,7 +211,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
 
     private String getDirText(ModuleRedstone module) {
         return module.getRedstoneDirection() == EnumRedstoneDirection.INPUT ?
-                TextFormatting.DARK_RED + GuiConstants.TRIANGLE_LEFT :
-                TextFormatting.RED + GuiConstants.TRIANGLE_RIGHT;
+                TextFormatting.DARK_RED + Symbols.TRIANGLE_LEFT :
+                TextFormatting.RED + Symbols.TRIANGLE_RIGHT;
     }
 }

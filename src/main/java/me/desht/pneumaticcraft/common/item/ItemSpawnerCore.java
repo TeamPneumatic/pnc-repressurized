@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -50,11 +50,11 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
             if (stats.getUnusedPercentage() < 100) {
                 stats.getEntities().stream()
                         .sorted(Comparator.comparing(t -> I18n.get(t.getDescriptionId())))
-                        .forEach(type -> tooltip.add(GuiConstants.bullet()
+                        .forEach(type -> tooltip.add(Symbols.bullet()
                                 .append(xlate(type.getDescriptionId()).withStyle(TextFormatting.YELLOW))
                                 .append(": " + stats.getPercentage(type) + "%").withStyle(TextFormatting.WHITE))
                         );
-                tooltip.add(GuiConstants.bullet()
+                tooltip.add(Symbols.bullet()
                         .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.YELLOW, TextFormatting.ITALIC))
                         .append(": " + stats.getUnusedPercentage() + "%").withStyle(TextFormatting.WHITE));
             } else {

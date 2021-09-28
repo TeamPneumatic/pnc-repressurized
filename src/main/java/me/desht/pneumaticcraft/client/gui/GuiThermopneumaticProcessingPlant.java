@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -12,7 +13,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessi
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant.TPProblem;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -76,7 +76,7 @@ public class GuiThermopneumaticProcessingPlant extends
             dumpButton.setMessage(new StringTextComponent("X").withStyle(TextFormatting.RED));
             dumpButton.setTooltipKey("pneumaticcraft.gui.thermopneumatic.dumpInput");
         } else {
-            dumpButton.setMessage(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT).withStyle(TextFormatting.DARK_AQUA));
+            dumpButton.setMessage(new StringTextComponent(Symbols.TRIANGLE_RIGHT).withStyle(TextFormatting.DARK_AQUA));
             dumpButton.setTooltipKey("pneumaticcraft.gui.thermopneumatic.moveInput");
         }
     }

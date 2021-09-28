@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static me.desht.pneumaticcraft.api.misc.Symbols.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static me.desht.pneumaticcraft.lib.GuiConstants.*;
 
 public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUniversalSensor,TileEntityUniversalSensor> {
     private static final int MAX_TEXTFIELD_LENGTH = 256;

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
@@ -14,7 +15,6 @@ import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
@@ -60,7 +60,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
 
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
-        guiBackButton = new WidgetButtonExtended(xStart + 8, yStart + 5, 16, 16, GuiConstants.TRIANGLE_LEFT).withTag("close_upgrades");
+        guiBackButton = new WidgetButtonExtended(xStart + 8, yStart + 5, 16, 16, Symbols.TRIANGLE_LEFT).withTag("close_upgrades");
         addButton(guiBackButton);
     }
 
@@ -77,7 +77,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     protected void addExtraVolumeModifierInfo(List<ITextComponent> text) {
         int nHolding = CoFHCore.getHoldingUpgrades(itemStack);
         if (nHolding > 0) {
-            text.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " ").append(CoFHCore.holdingEnchantmentName(nHolding)));
+            text.add(new StringTextComponent(Symbols.TRIANGLE_RIGHT + " ").append(CoFHCore.holdingEnchantmentName(nHolding)));
         }
     }
 

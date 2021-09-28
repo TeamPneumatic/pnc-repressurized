@@ -11,8 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -99,6 +97,10 @@ public class PlayerFilter implements Predicate<PlayerEntity> {
         return !op.isFake();
     }
 
+    public boolean matchAll() {
+        return op == Op.AND;
+    }
+
     private static ResourceLocation getId(String key) {
         return key.contains(":") ? new ResourceLocation(key) : RL(key);
     }
@@ -131,13 +133,9 @@ public class PlayerFilter implements Predicate<PlayerEntity> {
         return false;
     }
 
-    public void getDescription(List<ITextComponent> tooltip) {
+    public void getDescription(PlayerEntity player, List<ITextComponent> tooltip) {
         if (isReal()) {
-            matchers.values().forEach(matcher -> {
-                matcher.addDescription(tooltip);
-                tooltip.add(new StringTextComponent("  -- " + op + " --").withStyle(TextFormatting.GOLD));
-            });
-            if (tooltip.size() > 1) tooltip.remove(tooltip.size() - 1);
+            matchers.values().forEach(matcher -> matcher.addDescription(player, tooltip));
         }
     }
 

@@ -143,7 +143,7 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public String toString() {
-        return String.format("[id = %s, in = %s, out = %s, level = %d, maxStock = %d]", getId().toString(), input.toString(), output.toString(), tradeLevel, maxStock);
+        return String.format("[id = %s, in = %s, out = %s, level = %d, maxStock = %d]", getId().toString(), input, output, tradeLevel, maxStock);
     }
 
     /**
@@ -151,7 +151,7 @@ public class AmadronOffer extends AmadronRecipe {
      * @return a description string
      */
     public ITextComponent getDescription() {
-        return new StringTextComponent(String.format("[%s -> %s]", input.toString(), output.toString()));
+        return new StringTextComponent(String.format("[%s -> %s]", input, output));
     }
 
     @Override
@@ -185,19 +185,20 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public boolean isUsableByPlayer(PlayerEntity player) {
-        if (whitelist.isReal()) return whitelist.test(player);
-        if (blacklist.isReal()) return !blacklist.test(player);
-        return true;
+        return whitelist.test(player) && !blacklist.test(player);
     }
 
     @Override
-    public void addAvailabilityData(List<ITextComponent> curTip) {
+    public void addAvailabilityData(PlayerEntity player, List<ITextComponent> curTip) {
         if (whitelist.isReal()) {
-            curTip.add(xlate("pneumaticcraft.gui.amadron.location.whitelist").withStyle(TextFormatting.GOLD));
-            whitelist.getDescription(curTip);
-        } else if (blacklist.isReal()) {
-            curTip.add(xlate("pneumaticcraft.gui.amadron.location.blacklist").withStyle(TextFormatting.GOLD));
-            blacklist.getDescription(curTip);
+            ITextComponent suffix = xlate("pneumaticcraft.gui.misc." + (whitelist.matchAll() ? "all" : "any"));
+            curTip.add(xlate("pneumaticcraft.playerFilter.whitelist").append(" (").append(suffix).append(")").withStyle(TextFormatting.GOLD));
+            whitelist.getDescription(player, curTip);
+        }
+        if (blacklist.isReal()) {
+            ITextComponent suffix = xlate("pneumaticcraft.gui.misc." + (blacklist.matchAll() ? "all" : "any"));
+            curTip.add(xlate("pneumaticcraft.playerFilter.blacklist").append(" (").append(suffix).append(")").withStyle(TextFormatting.GOLD));
+            blacklist.getDescription(player, curTip);
         }
     }
 

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -12,7 +13,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemStat
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -142,7 +142,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         addTradeButton.active = menu.currentPlayerOffers < menu.maxPlayerOffers;
         ITextComponent text = xlate("pneumaticcraft.gui.amadron.button.addTrade.tooltip.offerCount",
                 menu.currentPlayerOffers,
-                menu.maxPlayerOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : menu.maxPlayerOffers);
+                menu.maxPlayerOffers == Integer.MAX_VALUE ? Symbols.INFINITY : menu.maxPlayerOffers);
         customTradesTab.setText(text);
 
         orderButton.active = !menu.isBasketEmpty() && menu.problemState == EnumProblemState.NO_PROBLEMS;
@@ -172,7 +172,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
                 if (nOrders > 0) {
                     String in = (offer.getInput().getAmount() * nOrders) + " x " + offer.getInput().getName();
                     String out = (offer.getOutput().getAmount() * nOrders) + " x " + offer.getOutput().getName();
-                    builder.add(new StringTextComponent(GuiConstants.BULLET + " " + TextFormatting.YELLOW + out));
+                    builder.add(new StringTextComponent(Symbols.BULLET + " " + TextFormatting.YELLOW + out));
                     builder.add(new StringTextComponent(TextFormatting.GOLD + "   for " + TextFormatting.YELLOW + in));
                 }
             }

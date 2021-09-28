@@ -4,6 +4,7 @@ import mcjty.theoneprobe.api.IProbeHitData;
 import mcjty.theoneprobe.api.IProbeInfo;
 import mcjty.theoneprobe.api.ProbeMode;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
@@ -17,7 +18,6 @@ import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -94,7 +94,7 @@ public class TOPInfoProvider {
                         .element(new ElementPressure(pneumaticMachine, airHandler))
                         .vertical()
                         .text(StringTextComponent.EMPTY)
-                        .text(new StringTextComponent(" " + GuiConstants.ARROW_LEFT_SHORT + " " + pressure + " bar"));
+                        .text(new StringTextComponent(" " + Symbols.ARROW_LEFT_SHORT + " " + pressure + " bar"));
             } else {
                 probeInfo.text(xlate("pneumaticcraft.gui.tooltip.pressure", pressure));
             }

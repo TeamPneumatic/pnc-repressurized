@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.common.util;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -53,7 +53,7 @@ public class UpgradableItemUtils {
             }
         } else {
             textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(TextFormatting.GREEN));
-            PneumaticCraftUtils.summariseItemStacks(textList, inventoryStacks, TextFormatting.DARK_GREEN + GuiConstants.BULLET + " ");
+            PneumaticCraftUtils.summariseItemStacks(textList, inventoryStacks, TextFormatting.DARK_GREEN + Symbols.BULLET + " ");
         }
     }
 

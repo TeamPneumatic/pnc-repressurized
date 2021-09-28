@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
@@ -9,7 +10,6 @@ import me.desht.pneumaticcraft.common.item.ItemTagFilter;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -105,7 +105,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                     .append(": ").append(filter.getHoverName()));
             if (filter.getItem() == ModItems.TAG_FILTER.get()) {
                 curTooltip.addAll(ItemTagFilter.getConfiguredTagList(filter).stream()
-                        .map(s -> GuiConstants.bullet().append(new StringTextComponent(s.toString()).withStyle(TextFormatting.YELLOW)))
+                        .map(s -> Symbols.bullet().append(new StringTextComponent(s.toString()).withStyle(TextFormatting.YELLOW)))
                         .collect(Collectors.toList()));
             }
         }

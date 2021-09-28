@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -28,8 +28,8 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.api.misc.Symbols.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static me.desht.pneumaticcraft.lib.GuiConstants.bullet;
 
 public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorHandlers.ITintableItem {
     @Override
@@ -88,7 +88,7 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                     stacks[i] = handler.getStackInSlot(i);
                 }
                 int l = curInfo.size();
-                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, TextFormatting.GOLD + GuiConstants.BULLET + " ");
+                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, TextFormatting.GOLD + Symbols.BULLET + " ");
                 if (curInfo.size() == l) curInfo.add(bullet().withStyle(TextFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_items").withStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
                 l = curInfo.size();
 

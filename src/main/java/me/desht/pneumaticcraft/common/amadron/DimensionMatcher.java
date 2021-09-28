@@ -5,16 +5,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -39,10 +38,11 @@ public class DimensionMatcher implements IPlayerMatcher {
     }
 
     @Override
-    public void addDescription(List<ITextComponent> tooltip) {
-        tooltip.add(xlate("pneumaticcraft.gui.amadron.location.dimensions").withStyle(TextFormatting.GOLD));
-        dimensionIds.forEach(dimId -> tooltip.add(new StringTextComponent("  ")
-                .append(GuiConstants.bullet().append(dimId.toString()).withStyle(TextFormatting.GOLD))));
+    public void addDescription(PlayerEntity player, List<ITextComponent> tooltip) {
+        if (!dimensionIds.isEmpty()) {
+            List<ITextComponent> items = dimensionIds.stream().map(id -> new StringTextComponent(id.toString())).collect(Collectors.toList());
+            standardTooltip(player, tooltip, xlate("pneumaticcraft.playerFilter.dimensions"), items);
+        }
     }
 
     @Override

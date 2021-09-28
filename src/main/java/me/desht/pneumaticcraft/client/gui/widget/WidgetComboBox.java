@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.glfw.GLFW;
@@ -75,7 +75,7 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
-        fontRenderer.draw(matrixStack, isFocused() ? GuiConstants.TRIANGLE_UP : GuiConstants.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
+        fontRenderer.draw(matrixStack, isFocused() ? Symbols.TRIANGLE_UP : Symbols.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
     }
 
     @Override

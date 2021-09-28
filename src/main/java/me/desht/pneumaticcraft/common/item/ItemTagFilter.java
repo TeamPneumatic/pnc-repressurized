@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -37,7 +37,7 @@ public class ItemTagFilter extends Item implements ITagFilteringItem {
         if (worldIn != null) {
             tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(TextFormatting.YELLOW));
             for (ResourceLocation rl : getConfiguredTagList(stack)) {
-                tooltip.add(GuiConstants.bullet().append(rl.toString()).withStyle(TextFormatting.GOLD));
+                tooltip.add(Symbols.bullet().append(rl.toString()).withStyle(TextFormatting.GOLD));
             }
         }
     }

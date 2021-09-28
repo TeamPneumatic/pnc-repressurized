@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -30,7 +31,6 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -135,19 +135,19 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3; // 171 or 427
 
-        importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, GuiConstants.ARROW_LEFT)
+        importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, Symbols.ARROW_LEFT)
                 .withTag("import")
                 .setTooltipKey("pneumaticcraft.gui.programmer.button.import");
         addButton(importButton);
 
-        exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, GuiConstants.ARROW_RIGHT)
+        exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, Symbols.ARROW_RIGHT)
                 .withTag("export");
         addButton(exportButton);
 
-        addButton(new WidgetButtonExtended(xStart + xRight - 3, yStart + yBottom, 13, 10, GuiConstants.TRIANGLE_LEFT, b -> adjustPage(-1)));
-        addButton(new WidgetButtonExtended(xStart + xRight + 34, yStart + yBottom, 13, 10, GuiConstants.TRIANGLE_RIGHT, b -> adjustPage(1)));
+        addButton(new WidgetButtonExtended(xStart + xRight - 3, yStart + yBottom, 13, 10, Symbols.TRIANGLE_LEFT, b -> adjustPage(-1)));
+        addButton(new WidgetButtonExtended(xStart + xRight + 34, yStart + yBottom, 13, 10, Symbols.TRIANGLE_RIGHT, b -> adjustPage(1)));
 
-        allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, GuiConstants.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
+        allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, Symbols.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
         allWidgetsButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.openPanel.tooltip"));
         addButton(allWidgetsButton);
 
@@ -324,8 +324,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         updateVisibleProgWidgets();
     }
 
-    private static final ITextComponent TDR = new StringTextComponent(GuiConstants.TRIANGLE_DOWN_RIGHT);
-    private static final ITextComponent TUL = new StringTextComponent(GuiConstants.TRIANGLE_UP_LEFT);
+    private static final ITextComponent TDR = new StringTextComponent(Symbols.TRIANGLE_DOWN_RIGHT);
+    private static final ITextComponent TUL = new StringTextComponent(Symbols.TRIANGLE_UP_LEFT);
 
     private void toggleShowWidgets() {
         showingAllWidgets = !showingAllWidgets;

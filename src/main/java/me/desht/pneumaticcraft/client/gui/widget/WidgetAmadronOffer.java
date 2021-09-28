@@ -158,9 +158,9 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
                     .withStyle(TextFormatting.AQUA));
         }
         if (!offer.isUsableByPlayer(ClientUtils.getClientPlayer())) {
-            curTip.add(xlate("pneumaticcraft.gui.amadron.location.unavailable").withStyle(TextFormatting.RED));
+            curTip.add(xlate("pneumaticcraft.playerFilter.unavailable").withStyle(TextFormatting.RED));
         }
-        offer.addAvailabilityData(curTip);
+        offer.addAvailabilityData(ClientUtils.getClientPlayer(), curTip);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
             curTip.add(new StringTextComponent(offer.getId().toString()).withStyle(TextFormatting.DARK_GRAY));
         }

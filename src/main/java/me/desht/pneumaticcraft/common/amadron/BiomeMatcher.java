@@ -5,17 +5,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.biome.Biome;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -40,11 +39,10 @@ public class BiomeMatcher implements IPlayerMatcher {
     }
 
     @Override
-    public void addDescription(List<ITextComponent> tooltip) {
+    public void addDescription(PlayerEntity player, List<ITextComponent> tooltip) {
         if (!categories.isEmpty()) {
-            tooltip.add(xlate("pneumaticcraft.gui.amadron.location.biomes").withStyle(TextFormatting.GOLD));
-            categories.forEach(cat -> tooltip.add(new StringTextComponent("  ")
-                    .append(GuiConstants.bullet().append(cat.getName()).withStyle(TextFormatting.GOLD))));
+            List<ITextComponent> items = categories.stream().map(cat -> new StringTextComponent(cat.getName())).collect(Collectors.toList());
+            standardTooltip(player, tooltip, xlate("pneumaticcraft.playerFilter.biomes"), items);
         }
     }
 

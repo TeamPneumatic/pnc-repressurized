@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
@@ -19,7 +20,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -129,7 +129,7 @@ public class TooltipEventHandler {
                         hasInvalidPrograms = true;
                     }
                 }
-                addedEntries.add(new StringTextComponent(GuiConstants.BULLET + " " + entry.getValue() + " x ")
+                addedEntries.add(new StringTextComponent(Symbols.BULLET + " " + entry.getValue() + " x ")
                         .append(xlate(widgetType.getTranslationKey()))
                         .withStyle(prefix));
             }

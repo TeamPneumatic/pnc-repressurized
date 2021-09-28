@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
@@ -9,7 +10,6 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourTransition;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -109,7 +109,7 @@ public class ItemManometer extends ItemPressurizable {
 
             if (curInfo.size() > 0) {
                 for (int i = 1; i < curInfo.size(); i++) {
-                    curInfo.set(i, GuiConstants.bullet().append(curInfo.get(i)));
+                    curInfo.set(i, Symbols.bullet().append(curInfo.get(i)));
                 }
                 h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
                 curInfo.forEach(s -> player.displayClientMessage(s, false));
@@ -147,7 +147,7 @@ public class ItemManometer extends ItemPressurizable {
             if (h.getPressure() >= 0.1f) {
                 double temp = HeatExchangerLogicAmbient.getAmbientTemperature(worldIn, playerIn.blockPosition());
                 playerIn.displayClientMessage(ItemStack.EMPTY.getHoverName().copy().withStyle(TextFormatting.AQUA), false);
-                playerIn.displayClientMessage(GuiConstants.bullet().append(HeatUtil.formatHeatString((int) temp)), false);
+                playerIn.displayClientMessage(Symbols.bullet().append(HeatUtil.formatHeatString((int) temp)), false);
                 return ActionResult.consume(stack);
             }
             return ActionResult.fail(stack);
@@ -171,7 +171,7 @@ public class ItemManometer extends ItemPressurizable {
                 if (curInfo.size() > 0) {
                     h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
                     for (int i = 1; i < curInfo.size(); i++) {
-                        curInfo.set(i, GuiConstants.bullet().append(curInfo.get(i)));
+                        curInfo.set(i, Symbols.bullet().append(curInfo.get(i)));
                     }
                     curInfo.forEach(s -> player.displayClientMessage(s, false));
                 }

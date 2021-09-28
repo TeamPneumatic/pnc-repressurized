@@ -149,7 +149,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * Add some information about where this offer is available, in the case of offers with limited availablity.
      * @param curTip tooltip to add information to
      */
-    public void addAvailabilityData(List<ITextComponent> curTip) {
+    public void addAvailabilityData(PlayerEntity player, List<ITextComponent> curTip) {
     }
 
     public boolean isLocationLimited() {

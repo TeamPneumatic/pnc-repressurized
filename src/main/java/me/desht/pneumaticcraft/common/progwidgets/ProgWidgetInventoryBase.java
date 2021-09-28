@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
@@ -75,7 +75,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (isUsingSides()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"));
-        curTooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().get(0)));
+        curTooltip.add(new StringTextComponent(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().get(0)));
         if (useCount) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", count));
     }
 
