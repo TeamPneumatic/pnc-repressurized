@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.amadron.AmadronPlayerFilter;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
@@ -15,6 +14,7 @@ import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -41,19 +41,19 @@ public class AmadronPlayerOffer extends AmadronOffer {
     private int pendingPayments;
     private TileEntity cachedInput, cachedOutput;
 
-    private AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId, AmadronPlayerFilter whitelist, AmadronPlayerFilter blacklist) {
+    private AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId, PlayerFilter whitelist, PlayerFilter blacklist) {
         super(id, input, output, true, 0, -1, 0, whitelist, blacklist);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
         inStock = 0;
     }
 
-    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer, AmadronPlayerFilter whitelist, AmadronPlayerFilter blacklist) {
+    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer, PlayerFilter whitelist, PlayerFilter blacklist) {
         this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId(), whitelist, blacklist);
     }
 
     public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity player) {
-        this(id, input, output, player, AmadronPlayerFilter.YES, AmadronPlayerFilter.NO);
+        this(id, input, output, player, PlayerFilter.YES, PlayerFilter.NO);
     }
 
     public AmadronPlayerOffer setProvidingPosition(GlobalPos pos) {

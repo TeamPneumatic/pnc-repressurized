@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -17,7 +18,7 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class DimensionMatcher implements AmadronPlayerFilter.Matcher {
+public class DimensionMatcher implements IPlayerMatcher {
     private final Set<ResourceLocation> dimensionIds;
 
     public DimensionMatcher(Set<ResourceLocation> dimensionIds) {
@@ -49,7 +50,7 @@ public class DimensionMatcher implements AmadronPlayerFilter.Matcher {
         return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level.dimension().location());
     }
 
-    static class Factory implements AmadronPlayerFilter.MatcherFactory<DimensionMatcher> {
+    public static class Factory implements MatcherFactory<DimensionMatcher> {
         @Override
         public DimensionMatcher fromJson(JsonElement json) {
             Set<ResourceLocation> dimensionIds = new ObjectOpenHashSet<>();

@@ -9,12 +9,12 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.amadron.AmadronPlayerFilter;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
+import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Blocks;
@@ -1661,7 +1661,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private AmadronRecipeBuilder amadronPeriodic(AmadronTradeResource in, AmadronTradeResource out, int tradeLevel, int maxStock) {
-        return new AmadronRecipeBuilder(in, out, false, tradeLevel, maxStock, AmadronPlayerFilter.YES, AmadronPlayerFilter.NO)
+        return new AmadronRecipeBuilder(in, out, false, tradeLevel, maxStock, PlayerFilter.YES, PlayerFilter.NO)
                 .addCriterion(Criteria.has(ModItems.AMADRON_TABLET.get()));
     }
 

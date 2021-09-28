@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
+import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class BiomeMatcher implements AmadronPlayerFilter.Matcher {
+public class BiomeMatcher implements IPlayerMatcher {
     private final Set<Biome.Category> categories;
 
     public BiomeMatcher(Set<Biome.Category> categories) {
@@ -52,7 +53,7 @@ public class BiomeMatcher implements AmadronPlayerFilter.Matcher {
         return categories.isEmpty() || categories.contains(playerEntity.level.getBiome(playerEntity.blockPosition()).getBiomeCategory());
     }
 
-    static class Factory implements AmadronPlayerFilter.MatcherFactory<BiomeMatcher> {
+    public static class Factory implements MatcherFactory<BiomeMatcher> {
         @Override
         public BiomeMatcher fromJson(JsonElement json) {
             Set<Biome.Category> categories = EnumSet.noneOf(Biome.Category.class);

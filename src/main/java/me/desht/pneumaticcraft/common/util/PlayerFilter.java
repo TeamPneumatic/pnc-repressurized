@@ -1,9 +1,12 @@
-package me.desht.pneumaticcraft.common.amadron;
+package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
+import me.desht.pneumaticcraft.common.amadron.BiomeMatcher;
+import me.desht.pneumaticcraft.common.amadron.DimensionMatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
@@ -20,9 +23,14 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class AmadronPlayerFilter implements Predicate<PlayerEntity> {
-    public static final AmadronPlayerFilter YES = new AmadronPlayerFilter(Op.YES, Collections.emptyMap());
-    public static final AmadronPlayerFilter NO = new AmadronPlayerFilter(Op.NO, Collections.emptyMap());
+/**
+ * A player filter is a collection of individual matcher objects with either match-any or match-all behaviour.
+ * Custom matcher objects can be registered and have support for reading & writing to JSON and packet buffers, so
+ * are suitable for use in recipes, for example.
+ */
+public class PlayerFilter implements Predicate<PlayerEntity> {
+    public static final PlayerFilter YES = new PlayerFilter(Op.YES, Collections.emptyMap());
+    public static final PlayerFilter NO = new PlayerFilter(Op.NO, Collections.emptyMap());
 
     private enum Op {
         YES, NO, AND, OR;
@@ -32,37 +40,20 @@ public class AmadronPlayerFilter implements Predicate<PlayerEntity> {
         }
     }
 
-    private static final Map<ResourceLocation, MatcherFactory<?>> matcherFactories = new ConcurrentHashMap<>();
+    private static final Map<ResourceLocation, IPlayerMatcher.MatcherFactory<?>> matcherFactories = new ConcurrentHashMap<>();
 
-    private final Map<ResourceLocation,Matcher> matchers;
+    private final Map<ResourceLocation, IPlayerMatcher> matchers;
     private final Op op;
 
-    private AmadronPlayerFilter(Op op, @Nonnull Map<ResourceLocation,Matcher> matchers) {
+    private PlayerFilter(Op op, @Nonnull Map<ResourceLocation, IPlayerMatcher> matchers) {
         Validate.isTrue(op.isFake() || !matchers.isEmpty(), "received empty matcher list!");
         this.op = op;
         this.matchers = ImmutableMap.copyOf(matchers);
     }
 
-    public static void addDefaultMatchers() {
-        registerMatcher("dimensions", new DimensionMatcher.Factory());
-        registerMatcher("biome_categories", new BiomeMatcher.Factory());
-    }
-
-    public static void registerMatcher(String id, MatcherFactory<?> matcher) {
-        matcherFactories.put(getId(id), matcher);
-    }
-
-    public boolean isReal() {
-        return !op.isFake();
-    }
-
-    private static ResourceLocation getId(String key) {
-        return key.contains(":") ? new ResourceLocation(key) : RL(key);
-    }
-
-    public static AmadronPlayerFilter fromJson(JsonObject json) {
+    public static PlayerFilter fromJson(JsonObject json) {
         for (String opStr : new String[] { "or", "and" }) {
-            Map<ResourceLocation,Matcher> matchers = new HashMap<>();
+            Map<ResourceLocation, IPlayerMatcher> matchers = new HashMap<>();
             if (json.has(opStr)) {
                 Op op = Op.valueOf(opStr.toUpperCase(Locale.ROOT));
                 JsonObject jsonSub = json.getAsJsonObject(opStr);
@@ -76,23 +67,40 @@ public class AmadronPlayerFilter implements Predicate<PlayerEntity> {
                     }
                 }
 
-                return new AmadronPlayerFilter(op, matchers);
+                return new PlayerFilter(op, matchers);
             }
         }
         throw new JsonSyntaxException("must provide one of 'and' or 'or'!");
     }
 
-    public static AmadronPlayerFilter fromBytes(PacketBuffer buffer) {
+    public static PlayerFilter fromBytes(PacketBuffer buffer) {
         Op op = buffer.readEnum(Op.class);
         int nMatchers = buffer.readVarInt();
 
-        Map<ResourceLocation,Matcher> map = new HashMap<>();
+        Map<ResourceLocation, IPlayerMatcher> map = new HashMap<>();
         for (int i = 0; i < nMatchers; i++) {
             ResourceLocation id = buffer.readResourceLocation();
             map.put(id, matcherFactories.get(id).fromBytes(buffer));
         }
 
-        return new AmadronPlayerFilter(op, map);
+        return new PlayerFilter(op, map);
+    }
+
+    public static void registerDefaultMatchers() {
+        registerMatcher("dimensions", new DimensionMatcher.Factory());
+        registerMatcher("biome_categories", new BiomeMatcher.Factory());
+    }
+
+    public static void registerMatcher(String id, IPlayerMatcher.MatcherFactory<?> matcher) {
+        matcherFactories.put(getId(id), matcher);
+    }
+
+    public boolean isReal() {
+        return !op.isFake();
+    }
+
+    private static ResourceLocation getId(String key) {
+        return key.contains(":") ? new ResourceLocation(key) : RL(key);
     }
 
     public void toBytes(PacketBuffer buffer) {
@@ -137,16 +145,5 @@ public class AmadronPlayerFilter implements Predicate<PlayerEntity> {
     public String toString() {
         String delimiter = " " + op.toString() + " ";
         return "[" + matchers.values().stream().map(Object::toString).collect(Collectors.joining(delimiter)) + "]";
-    }
-
-    public interface Matcher extends Predicate<PlayerEntity> {
-        void toBytes(PacketBuffer buffer);
-        JsonElement toJson();
-        void addDescription(List<ITextComponent> tooltip);
-    }
-
-    public interface MatcherFactory<T extends Matcher> {
-        T fromJson(JsonElement json);
-        T fromBytes(PacketBuffer buffer);
     }
 }

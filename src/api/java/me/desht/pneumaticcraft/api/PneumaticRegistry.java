@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -148,6 +149,16 @@ public final class PneumaticRegistry {
          * @param varName the global variable name (with or without the leading '#')
          */
         void syncGlobalVariable(ServerPlayerEntity player, String varName);
+
+        /**
+         * Register a custom player matcher object. This is safe to call from a
+         * {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} handler. Note that matchers should be
+         * able to run on both client and server.
+         *
+         * @param id matcher ID, can be used as a key in recipe JSON's
+         * @param factory a factory object used to create instances of this matcher from JSON or a packet buffer
+         */
+        void registerPlayerMatcher(ResourceLocation id, IPlayerMatcher.MatcherFactory<?> factory);
     }
 
 }

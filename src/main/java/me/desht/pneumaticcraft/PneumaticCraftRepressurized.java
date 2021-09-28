@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.amadron.AmadronPlayerFilter;
 import me.desht.pneumaticcraft.common.amadron.EventHandlerAmadron;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
@@ -28,6 +27,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
@@ -133,7 +133,7 @@ public class PneumaticCraftRepressurized {
 //        VillageStructures.init();
         ModNameCache.init();
         HeatBehaviourManager.getInstance().init();
-        AmadronPlayerFilter.addDefaultMatchers();
+        PlayerFilter.registerDefaultMatchers();
 
         event.enqueueWork(() -> {
             ModWorldGen.registerConfiguredFeatures();

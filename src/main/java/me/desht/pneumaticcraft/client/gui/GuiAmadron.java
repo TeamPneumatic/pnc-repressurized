@@ -264,7 +264,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
             if (super.mouseClicked(mouseX, mouseY, mouseButton)) return true;
-            if (clicked(mouseX, mouseY) && getOffer().isUseableByPlayer(ClientUtils.getClientPlayer())) {
+            if (clicked(mouseX, mouseY) && getOffer().isUsableByPlayer(ClientUtils.getClientPlayer())) {
                 NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(getOffer().getId(), mouseButton, Screen.hasShiftDown()));
                 return true;
             } else {

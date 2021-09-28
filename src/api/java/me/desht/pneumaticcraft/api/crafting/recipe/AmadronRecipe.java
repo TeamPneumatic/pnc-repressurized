@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -113,18 +114,16 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     }
 
     /**
-     * Is this offer available at the given position in the given world?  By default, all offers are available
-     * everywhere, but offers can be whitelisted/blacklisted by dimension and biome category in data packs.  This
-     * could be used, for example, to only allow selling snow in a desert biome, or only purchasing ender pearls
-     * in the End.
+     * Is this offer available to the given player?  By default, all offers are available, but offers can be
+     * whitelisted/blacklisted in data packs with the "whitelist" and "blacklist" fields in the Amadron recipe JSON.
+     * This could be used, for example, to only allow selling snow in a desert biome, or only purchasing ender pearls
+     * in the End.  Default filters are "dimensions" and "biome_categories", but others can be added via
+     * {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#registerPlayerMatcher(ResourceLocation, IPlayerMatcher.MatcherFactory)}
      *
-     * @param world the world to check
-     * @param pos position in the world to check
-     * @return true if the offer is available here, false otherwise
+     * @param player the player to check
+     * @return true if the offer is available to the player at the time of use, false otherwise
      */
-//    public abstract boolean isAvailableAtLocation(World world, BlockPos pos);
-
-    public abstract boolean isUseableByPlayer(PlayerEntity playerEntity);
+    public abstract boolean isUsableByPlayer(PlayerEntity player);
 
     /**
      * Does this offer match the given query string? The input resource, output resource and vendor names are all

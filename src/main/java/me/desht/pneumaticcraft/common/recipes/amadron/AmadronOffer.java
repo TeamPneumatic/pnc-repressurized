@@ -5,9 +5,9 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
-import me.desht.pneumaticcraft.common.amadron.AmadronPlayerFilter;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -33,8 +33,8 @@ public class AmadronOffer extends AmadronRecipe {
     protected final AmadronTradeResource input;
     @Nonnull
     protected final AmadronTradeResource output;
-    protected final AmadronPlayerFilter whitelist;
-    protected final AmadronPlayerFilter blacklist;
+    protected final PlayerFilter whitelist;
+    protected final PlayerFilter blacklist;
     private final boolean isStaticOffer;
     private final int tradeLevel;  // determines rarity of periodic offers (1 = common, 5 = very rare)
     private final int maxStock; // max number of trades available; negative number indicates unlimited trades (or a player trade)
@@ -43,7 +43,7 @@ public class AmadronOffer extends AmadronRecipe {
     private boolean isVillagerTrade = false;
 
     public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer,
-                        int tradeLevel, int maxStock, int inStock, AmadronPlayerFilter whitelist, AmadronPlayerFilter blacklist) {
+                        int tradeLevel, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist) {
         super(id);
         this.input = Objects.requireNonNull(input).validate();
         this.output = Objects.requireNonNull(output).validate();
@@ -56,7 +56,7 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer, int tradeLevel, int maxStock) {
-        this(id, input, output, isStaticOffer, tradeLevel, maxStock, maxStock, AmadronPlayerFilter.YES, AmadronPlayerFilter.NO);
+        this(id, input, output, isStaticOffer, tradeLevel, maxStock, maxStock, PlayerFilter.YES, PlayerFilter.NO);
     }
 
     @Override
@@ -184,7 +184,7 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     @Override
-    public boolean isUseableByPlayer(PlayerEntity player) {
+    public boolean isUsableByPlayer(PlayerEntity player) {
         if (whitelist.isReal()) return whitelist.test(player);
         if (blacklist.isReal()) return !blacklist.test(player);
         return true;
@@ -223,8 +223,8 @@ public class AmadronOffer extends AmadronRecipe {
                         JSONUtils.getAsBoolean(json, "static", true),
                         JSONUtils.getAsInt(json, "level", 1),
                         maxStock, maxStock,
-                        json.has("whitelist") ? AmadronPlayerFilter.fromJson(json.getAsJsonObject("whitelist")) : AmadronPlayerFilter.YES,
-                        json.has("blacklist") ? AmadronPlayerFilter.fromJson(json.getAsJsonObject("blacklist")) : AmadronPlayerFilter.NO
+                        json.has("whitelist") ? PlayerFilter.fromJson(json.getAsJsonObject("whitelist")) : PlayerFilter.YES,
+                        json.has("blacklist") ? PlayerFilter.fromJson(json.getAsJsonObject("blacklist")) : PlayerFilter.NO
                 );
             } catch (CommandSyntaxException e) {
                 throw new JsonSyntaxException(e.getMessage());
@@ -241,8 +241,8 @@ public class AmadronOffer extends AmadronRecipe {
                     buffer.readByte(),
                     buffer.readVarInt(),
                     buffer.readVarInt(),
-                    AmadronPlayerFilter.fromBytes(buffer),
-                    AmadronPlayerFilter.fromBytes(buffer)
+                    PlayerFilter.fromBytes(buffer),
+                    PlayerFilter.fromBytes(buffer)
             );
         }
 
@@ -252,7 +252,7 @@ public class AmadronOffer extends AmadronRecipe {
         }
 
         public interface IFactory<T extends AmadronRecipe> {
-            T create(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer, int level, int maxStock, int inStock, AmadronPlayerFilter whitelist, AmadronPlayerFilter blacklist);
+            T create(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer, int level, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist);
         }
     }
 }
