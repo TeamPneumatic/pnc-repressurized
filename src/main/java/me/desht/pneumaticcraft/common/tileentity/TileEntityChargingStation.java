@@ -215,7 +215,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     private boolean isIdle() {
-        return !charging && !discharging && getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent();
+        return !charging && !discharging &&
+                !getChargingStack().isEmpty() &&
+                getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent();
     }
 
     @Override
