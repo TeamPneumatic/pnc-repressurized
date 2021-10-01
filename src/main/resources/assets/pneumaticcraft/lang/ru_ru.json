@@ -1027,7 +1027,7 @@
   "pneumaticcraft.gui.progWidget.area.type.sphere.sphereType.hollow": "Полая",
   "pneumaticcraft.gui.progWidget.area.type.sphere.sphereType": "Тип сферы:",
   "pneumaticcraft.gui.progWidget.area.type.wall.name": "Стена",
-  "pneumaticcraft.gui.progWidget.blockCondition..allBlocksMatch": "All blocks match the criteria.",
+  "pneumaticcraft.gui.progWidget.blockCondition.debug.allBlocksMatch": "Все блоки соответствуют критериям.",
   "pneumaticcraft.gui.progWidget.blockCondition.debug.blockDoesNotMatch": "Один или несколько блоков не соответствуют критериям.",
   "pneumaticcraft.gui.progWidget.blockCondition.debug.blockMatches": "Один или несколько блоков соответствуют критериям.",
   "pneumaticcraft.gui.progWidget.blockCondition.debug.noBlocksMatch": "Нет блоков, соответствующих критериям.",
@@ -1887,6 +1887,5 @@
   "programmingPuzzle.pneumaticcraft.text.name": "Текст",
   "programmingPuzzle.pneumaticcraft.void_item.name": "Очистить предмет",
   "programmingPuzzle.pneumaticcraft.void_liquid.name": "Очистить жидкость",
-  "programmingPuzzle.pneumaticcraft.wait.name": "Ждать",
-  "pneumaticcraft.gui.progWidget.blockCondition.debug.allBlocksMatch": "Все блоки соответствуют критериям."
+  "programmingPuzzle.pneumaticcraft.wait.name": "Ждать"
 }
