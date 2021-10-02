@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -94,6 +95,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
             onTransition(getPos());
         } else {
             // a flowing block: follow it back to the source
+            if (turningBlockFlowing == null) turningBlockFlowing = Blocks.AIR.defaultBlockState();
             Set<BlockPos> traversed = new HashSet<>();
             Stack<BlockPos> pending = new Stack<>();
             pending.push(getPos());
