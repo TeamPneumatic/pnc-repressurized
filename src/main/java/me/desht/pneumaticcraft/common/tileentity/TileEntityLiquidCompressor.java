@@ -59,6 +59,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
 
+    @DescSynced
     @GuiSynced
     private final SmartSyncTank tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY) {
         @Override

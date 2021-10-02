@@ -68,7 +68,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     private static final VoxelShape CHARGING_STATION_E = VoxelShapeUtils.rotateY(CHARGING_STATION_N, 90);
     private static final VoxelShape CHARGING_STATION_S = VoxelShapeUtils.rotateY(CHARGING_STATION_E, 90);
     private static final VoxelShape CHARGING_STATION_W = VoxelShapeUtils.rotateY(CHARGING_STATION_S, 90);
-    
+
     private static final VoxelShape CHARGING_PAD_N = Stream.of(
             Block.box(4, 15.05, 4, 12, 16.05, 12),
             Block.box(2, 2, 13, 3, 15, 14),
