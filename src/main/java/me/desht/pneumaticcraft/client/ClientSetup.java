@@ -130,6 +130,7 @@ public class ClientSetup {
     }
 
     private static void setBlockRenderLayers() {
+        RenderTypeLookup.setRenderLayer(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.EMPTY_SPAWNER.get(), RenderType.cutout());
@@ -138,6 +139,7 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.GAS_LIFT.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_COMPRESSOR.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_TUBE.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURIZED_SPAWNER.get(), RenderType.cutout());
@@ -190,6 +192,7 @@ public class ClientSetup {
 
     private static void registerTileEntityRenderers() {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ADVANCED_PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR.get(), RenderAdvancedLiquidCompressor::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.AIR_CANNON.get(), RenderAirCannon::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.AERIAL_INTERFACE.get(), RenderAerialInterface::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.APHORISM_TILE.get(), RenderAphorismTile::new);
@@ -209,6 +212,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.KEROSENE_LAMP.get(), RenderKeroseneLamp::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.GAS_LIFT.get(), RenderGasLift::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.LIQUID_HOPPER.get(), RenderLiquidHopper::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.LIQUID_COMPRESSOR.get(), RenderLiquidCompressor::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), RenderPressureChamberInterface::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
