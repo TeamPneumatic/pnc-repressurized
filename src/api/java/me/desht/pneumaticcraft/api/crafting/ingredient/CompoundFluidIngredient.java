@@ -15,7 +15,7 @@ public class CompoundFluidIngredient extends FluidIngredient {
     private int dynamicAmount;
 
     CompoundFluidIngredient(Stream<FluidIngredient> ingredients) {
-        super(null, 0, null, null);
+        super(null, 0, null, null, null, false);
         this.ingredients = ingredients;
     }
 
