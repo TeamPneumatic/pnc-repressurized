@@ -1,26 +1,6 @@
 {
-  "parent": "forge:block/default",
+  "parent": "pneumaticcraft:block/flux_compressor_off",
   "textures": {
-    "particle": "pneumaticcraft:block/flux_compressor_front_off",
-    "down": "pneumaticcraft:block/flux_compressor_bottom",
-    "up": "pneumaticcraft:block/flux_compressor_top",
-    "north": "pneumaticcraft:block/flux_compressor_back",
-    "south": "pneumaticcraft:block/flux_compressor_front_on",
-    "west": "pneumaticcraft:block/flux_compressor_side",
-    "east": "pneumaticcraft:block/flux_compressor_side"
-  },
-  "elements": [
-    {
-      "from": [ 0, 0, 0 ],
-      "to": [ 16, 16, 16 ],
-      "faces": {
-        "down":  { "texture": "#down", "cullface": "down" },
-        "up":    { "texture": "#up", "cullface": "up" },
-        "north": { "texture": "#north", "cullface": "north" },
-        "south": { "texture": "#south", "cullface": "south" },
-        "west":  { "texture": "#west", "cullface": "west" },
-        "east":  { "texture": "#east", "cullface": "east" }
-      }
-    }
-  ]
+    "0": "pneumaticcraft:model/flux_compressor_on"
+  }
 }

@@ -19,12 +19,39 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluxCompressor;
+import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+
+import java.util.stream.Stream;
 
 public class BlockFluxCompressor extends BlockPneumaticCraft {
+
+    private static final VoxelShape SHAPE_N = Stream.of(
+            Block.box(15, 1, 4, 16, 16, 12),
+            Block.box(3, 15, 4, 15, 16, 12),
+            Block.box(2, 13, 4, 3, 16, 12),
+            Block.box(3, 1, 1, 15, 15, 15),
+            Block.box(0, 1, 0, 3, 13, 16),
+            Block.box(0, 0, 0, 16, 1, 16),
+            Block.box(3, 3, 15, 13, 13, 16),
+            Block.box(3, 3, 0, 13, 13, 1)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+
+    private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
+    private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
+    private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
+    private static final VoxelShape[] SHAPES = new VoxelShape[] { SHAPE_S, SHAPE_W, SHAPE_N, SHAPE_E };
+
     public BlockFluxCompressor() {
         super(ModBlocks.defaultProps());
 
@@ -51,5 +78,11 @@ public class BlockFluxCompressor extends BlockPneumaticCraft {
     @Override
     protected boolean reversePlacementRotation() {
         return true;
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        Direction d = state.getValue(directionProperty());
+        return SHAPES[d.get2DDataValue()];
     }
 }

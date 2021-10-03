@@ -140,6 +140,8 @@ dependencies {
 	runtimeOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
 	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-${project.mc_version}:${gamestages_version}")
 	runtimeOnly fg.deobf("net.darkhax.gamestages:GameStages-${project.mc_version}:${gamestages_version}")
+	compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-${project.mc_version}:10.3.29")
+	runtimeOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-${project.mc_version}:10.3.29")
 
 	// Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
 	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
