@@ -55,35 +55,98 @@ public class FluidIngredient extends Ingredient {
         this.fuzzyNBT = fuzzyNBT;
     }
 
+    /**
+     * Create a fluid ingredient from the given FluidStack. If the FluidStack has any NBT, this will also be required
+     * as an ingredient match, in a non-fuzzy way (exact match of all fields required).
+     * @param fluidStack the fluidstack to match against
+     * @return the fluid ingredient
+     */
     public static FluidIngredient of(FluidStack fluidStack) {
         return of(fluidStack.getAmount(), fluidStack.getTag(), false, fluidStack.getFluid());
     }
 
-    public static FluidIngredient of(int amount, CompoundNBT nbt, boolean fuzzyNBT, Fluid... fluids) {
+    /**
+     * Create a fluid ingredient from the given list of fluids
+     * @param amount the amount, in mB
+     * @param nbt the NBT, or null for no NBT matching
+     * @param fuzzyNBT true for a fuzzy match (only fields in the ingredient will be matched), false for an exact match.
+     *                Ignored if the nbt parameter is null.
+     * @param fluids the list of fluids
+     * @return the fluid ingredient
+     */
+    public static FluidIngredient of(int amount, @Nullable CompoundNBT nbt, boolean fuzzyNBT, Fluid... fluids) {
         return new FluidIngredient(Arrays.asList(fluids), amount, null, null, nbt, fuzzyNBT);
     }
 
+    /**
+     * Create a fluid ingredient from the given list of fluids
+     * @param amount the amount, in mB
+     * @param fluids the list of fluids
+     * @return the fluid ingredient
+     */
     public static FluidIngredient of(int amount, Fluid... fluids) {
         return of(amount, null, false, fluids);
     }
 
-    public static FluidIngredient of(int amount, CompoundNBT nbt, boolean fuzzyNBT, ITag<Fluid> fluidTag) {
+    /**
+     * Create a fluid ingredient from the given fluid tag
+     * @param amount the amount, in mB
+     * @param nbt the NBT, or null for no NBT matching
+     * @param fuzzyNBT true for a fuzzy match (only fields in the ingredient will be matched), false for an exact match.
+     *                Ignored if the nbt parameter is null.
+     * @param fluidTag the fluid tag
+     * @return the fluid ingredient
+     */
+    public static FluidIngredient of(int amount, @Nullable CompoundNBT nbt, boolean fuzzyNBT, ITag<Fluid> fluidTag) {
         return new FluidIngredient(null, amount, null, fluidTag, nbt, fuzzyNBT);
     }
 
+    /**
+     * Create a fluid ingredient from the given fluid tag
+     * @param amount the amount, in mB
+     * @param fluidTag the fluid tag
+     * @return the fluid ingredient
+     */
     public static FluidIngredient of(int amount, ITag<Fluid> fluidTag) {
         return of(amount, null, false, fluidTag);
     }
 
-    public static FluidIngredient of(int amount, CompoundNBT nbt, boolean fuzzyNBT, ResourceLocation fluidId) {
+    /**
+     * Create a fluid ingredient from the given fluid registry ID. Use this if the fluid might not exist at runtime
+     * (e.g. it's from another mod which may or may not be loaded). If the fluid does not exist at runtime, this
+     * ingredient will never match anything.
+     *
+     * @param amount the amount, in mB
+     * @param nbt the NBT, or null for no NBT matching
+     * @param fuzzyNBT true for a fuzzy match (only fields in the ingredient will be matched), false for an exact match.
+     *                Ignored if the nbt parameter is null.
+     * @param fluidId the fluid's registry ID
+     * @return the fluid ingredient
+     */
+    public static FluidIngredient of(int amount, @Nullable CompoundNBT nbt, boolean fuzzyNBT, ResourceLocation fluidId) {
         return new FluidIngredient(null, amount, fluidId, null, nbt, fuzzyNBT);
     }
 
+    /**
+     * Create a fluid ingredient from the given fluid registry ID. Use this if the fluid might not exist at runtime
+     * (e.g. it's from another mod which may or may not be loaded). If the fluid does not exist at runtime, this
+     * ingredient will never match anything.
+     *
+     * @param amount the amount, in mB
+     * @param fluidId the fluid's registry ID
+     * @return the fluid ingredient
+     */
     public static FluidIngredient of(int amount, ResourceLocation fluidId) {
         return of(amount, null, false, fluidId);
     }
 
-    // not called "of" due to clash with Ingredient.of
+    /**
+     * Create a fluid ingredient from the given stream of other fluid ingredients. This new compound ingredient is
+     * effectively a logical OR of all the constituent ingredients.
+     * @param stream a stream of ingredients
+     * @return the fluid ingredient
+     * @apiNote this method is called "ofFluidStream" rather than "of" to avoid confusion with {@link Ingredient#of(Stream)}
+     */
     public static FluidIngredient ofFluidStream(Stream<FluidIngredient> stream) {
         return new CompoundFluidIngredient(stream);
     }
@@ -110,11 +173,17 @@ public class FluidIngredient extends Ingredient {
         return getFluidList().isEmpty();
     }
 
+    /**
+     * Test the given item against this ingredient. The item must be a fluid container item (providing the
+     * {@link CapabilityFluidHandler#FLUID_HANDLER_ITEM_CAPABILITY} capability) containing fluid which matches
+     * this ingredient, AND it must be a container item
+     * ({@link net.minecraftforge.common.extensions.IForgeItem#hasContainerItem(ItemStack)} must return true).
+     *
+     * @param stack the itemstack to test
+     * @return true if the fluid in the given itemstack matches this ingredient
+     */
     @Override
     public boolean test(@Nullable ItemStack stack) {
-        // an item can be used as fluid ingredient (e.g. speed upgrade crafting using bucket or tank of lubricant) iff
-        // 1. it provides a fluid handler capability, AND
-        // 2. it acts a container item so it doesn't just get voided when crafted with
         return stack != null && stack.hasContainerItem() && FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
     }
 
@@ -126,16 +195,39 @@ public class FluidIngredient extends Ingredient {
                 FluidStack fluidStack = new FluidStack(f, 1000);
                 ItemStack bucket = FluidUtil.getFilledBucket(fluidStack);
                 if (!bucket.isEmpty()) tankList.add(bucket);
-                for (String tankName : new String[] { "small", "medium", "large", "huge" }) {
-                    Block tankBlock = ForgeRegistries.BLOCKS.getValue(PneumaticRegistry.RL(tankName + "_tank"));
-                    if (tankBlock != null && tankBlock != Blocks.AIR) {
-                        maybeAddTank(tankList, tankBlock, fluidStack);
-                    }
-                }
+                Stream.of("small", "medium", "large", "huge")
+                        .map(tankName -> ForgeRegistries.BLOCKS.getValue(PneumaticRegistry.RL(tankName + "_tank")))
+                        .filter(tankBlock -> tankBlock != null && tankBlock != Blocks.AIR)
+                        .forEach(tankBlock -> maybeAddTank(tankList, tankBlock, fluidStack));
             }
             cachedStacks = tankList.toArray(new ItemStack[0]);
         }
         return cachedStacks;
+    }
+
+    /**
+     * Test the given fluid stack against this ingredient. The fluid must match, and the fluid stack amount must be at
+     * least as large. In addition, if the ingredient specifies any NBT, that must also match.
+     *
+     * @param fluidStack the fluid stack to test
+     * @return true if the fluid stack matches, false otherwise
+     */
+    public boolean testFluid(FluidStack fluidStack) {
+        return getFluidList().stream().anyMatch(f ->
+                fluidStack.getFluid() == f &&
+                        fluidStack.getAmount() >= getAmount() &&
+                        matchNBT(fluidStack)
+        );
+    }
+
+    /**
+     * Test the given fluid against this ingredient. Just a fluid match; no amount or NBT matching is done.
+     *
+     * @param fluid the fluid to test
+     * @return true if the fluid matches, false otherwise
+     */
+    public boolean testFluid(Fluid fluid) {
+        return getFluidList().stream().anyMatch(f -> f == fluid);
     }
 
     private void maybeAddTank(List<ItemStack> l, Block tankBlock, FluidStack stack) {
@@ -146,14 +238,6 @@ public class FluidIngredient extends Ingredient {
         });
     }
 
-    public boolean testFluid(FluidStack fluidStack) {
-        return getFluidList().stream().anyMatch(f ->
-                fluidStack.getFluid() == f &&
-                fluidStack.getAmount() >= getAmount() &&
-                matchNBT(fluidStack)
-        );
-    }
-
     private boolean matchNBT(FluidStack fluidStack) {
         if (nbt == null) return true;  // null means "don't care" in this context
         if (fluidStack.getTag() == null) return false;
@@ -162,12 +246,9 @@ public class FluidIngredient extends Ingredient {
             // match only the fields which are actually present in the ingredient
             return nbt.getAllKeys().stream().allMatch(key -> NBTUtil.compareNbt(nbt.get(key), fluidStack.getTag().get(key), true));
         } else {
+            // exact match of all fields is required
             return NBTUtil.compareNbt(nbt, fluidStack.getTag(), true);
         }
-    }
-
-    public boolean testFluid(Fluid otherFluid) {
-        return getFluidList().stream().anyMatch(f -> f == otherFluid);
     }
 
     @Override
