@@ -10,8 +10,8 @@ import net.minecraft.world.gen.placement.Placement;
 import java.util.Random;
 import java.util.stream.Stream;
 
-public class LakeOil extends Placement<ChanceConfig> {
-    public LakeOil(Codec<ChanceConfig> codec) {
+public class OilLakePlacement extends Placement<ChanceConfig> {
+    public OilLakePlacement(Codec<ChanceConfig> codec) {
         super(codec);
     }
 

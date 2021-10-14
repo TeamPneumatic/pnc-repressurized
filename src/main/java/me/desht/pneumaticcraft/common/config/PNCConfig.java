@@ -62,6 +62,7 @@ public class PNCConfig {
             public static boolean dronesCanImportXPOrbs;
             public static Set<String> vacuumTrapBlacklist;
             public static Set<String> oilWorldGenCategoryBlacklist;
+            public static Set<String> oilWorldGenDimensionBlacklist;
             public static int surfaceOilGenerationChance;
             public static boolean droneDebuggerPathParticles;
             public static boolean dronesCanBePickedUp;

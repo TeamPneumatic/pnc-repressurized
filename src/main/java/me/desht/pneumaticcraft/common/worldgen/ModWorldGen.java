@@ -4,12 +4,12 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig.Common.General;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModDecorators;
+import me.desht.pneumaticcraft.common.core.ModFeatures;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.BlockStateFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.placement.ChanceConfig;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 
@@ -21,7 +21,7 @@ public class ModWorldGen {
     public static void registerConfiguredFeatures() {
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
 
-        OIL_LAKES = Feature.LAKE
+        OIL_LAKES = ModFeatures.OIL_LAKE.get()
                 .configured(new BlockStateFeatureConfig(ModBlocks.OIL.get().defaultBlockState()))
                 .decorated(ModDecorators.OIL_LAKE.get().configured(new ChanceConfig(ConfigHelper.getOilLakeChance())));
         Registry.register(registry, RL("oil_lakes"), OIL_LAKES);

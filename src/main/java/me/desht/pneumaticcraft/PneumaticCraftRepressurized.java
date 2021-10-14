@@ -106,6 +106,7 @@ public class PneumaticCraftRepressurized {
         ModParticleTypes.PARTICLES.register(modBus);
         ModRecipes.RECIPES.register(modBus);
         ModDecorators.DECORATORS.register(modBus);
+        ModFeatures.FEATURES.register(modBus);
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
 

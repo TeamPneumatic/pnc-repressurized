@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.common.config.ClientConfig.PathUpdateSetting;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
+import me.desht.pneumaticcraft.common.worldgen.OilLakeFeature;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 
@@ -71,6 +72,8 @@ public class ConfigHelper {
         PNCConfig.Common.General.oilWorldGenBlacklist = common.general.oilWorldGenBlacklist.get()
                 .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
         PNCConfig.Common.General.oilWorldGenCategoryBlacklist = ImmutableSet.copyOf(common.general.oilWorldGenCategoryBlacklist.get());
+        PNCConfig.Common.General.oilWorldGenDimensionBlacklist = ImmutableSet.copyOf(common.general.oilWorldGenDimensionBlacklist.get());
+        OilLakeFeature.clearBlacklistCache();
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
         PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
         PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();
