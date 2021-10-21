@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.common.config.ClientConfig.PathUpdateSetting;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
-import me.desht.pneumaticcraft.common.worldgen.OilLakeFeature;
+import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 
@@ -69,18 +69,18 @@ public class ConfigHelper {
         PNCConfig.Common.General.minFluidFuelTemperature = common.general.minFluidFuelTemperature.get();
         PNCConfig.Common.General.oilGenerationChance = common.general.oilGenerationChance.get();
         PNCConfig.Common.General.surfaceOilGenerationChance = common.general.surfaceOilGenerationChance.get();
-        PNCConfig.Common.General.oilWorldGenBlacklist = common.general.oilWorldGenBlacklist.get()
-                .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
+        PNCConfig.Common.General.oilWorldGenBlacklist = ImmutableSet.copyOf(common.general.oilWorldGenBlacklist.get());
         PNCConfig.Common.General.oilWorldGenCategoryBlacklist = ImmutableSet.copyOf(common.general.oilWorldGenCategoryBlacklist.get());
         PNCConfig.Common.General.oilWorldGenDimensionBlacklist = ImmutableSet.copyOf(common.general.oilWorldGenDimensionBlacklist.get());
-        OilLakeFeature.clearBlacklistCache();
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
         PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
         PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();
         PNCConfig.Common.General.dronesCanBePickedUp = common.general.dronesCanBePickedUp.get();
         PNCConfig.Common.General.droneDebuggerPathParticles = common.general.droneDebuggerPathParticles.get();
         PNCConfig.Common.General.vacuumTrapBlacklist = new HashSet<>(common.general.vacuumTrapBlacklist.get());
+
         TileEntityVacuumTrap.clearBlacklistCache();
+        ModWorldGen.clearBlacklistCache();
 
         PNCConfig.Common.Machines.aerialInterfaceArmorCompat = common.machines.aerialInterfaceArmorCompat.get();
         PNCConfig.Common.Machines.cropSticksGrowthBoostChance = common.machines.cropSticksGrowthBoostChance.get();

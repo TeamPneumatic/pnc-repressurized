@@ -55,7 +55,7 @@ public class PNCConfig {
             public static boolean enableDroneSuffocation;
             public static double fuelBucketEfficiency;
             public static int maxProgrammingArea;
-            public static Set<ResourceLocation> oilWorldGenBlacklist;
+            public static Set<String> oilWorldGenBlacklist;
             public static int minFluidFuelTemperature;
             public static boolean useUpDyesWhenColoring;
             public static boolean dronesRenderHeldItem;

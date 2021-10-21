@@ -195,7 +195,7 @@ public class CommonConfig {
                 .defineInRange("max_programming_area", 250000, 1, Integer.MAX_VALUE);
         general.oilWorldGenBlacklist = builder
                 .worldRestart()
-                .comment("Oil worldgen blacklist: add biome IDs to this list if you don't want oil lake worldgen to happen there.  This works in conjunction with 'oil_world_gen_category_blacklist' - if a biome matches either, then no oil lakes will generate there.")
+                .comment("Oil worldgen blacklist by biome: add biome IDs to this list if you don't want oil lake worldgen to happen there.  This works in conjunction with 'oil_world_gen_category_blacklist' - if a biome matches either, then no oil lakes will generate there. You can wildcard this; e.g 'modid:*' blacklists ALL biomes of namespace 'modid'.")
                 .translation("pneumaticcraft.config.common.general.oil_world_gen_blacklist")
                 .define("oil_world_gen_blacklist", Lists.newArrayList("minecraft:soul_sand_valley", "minecraft:crimson_forest", "minecraft:warped_forest", "minecraft:nether_wastes", "minecraft:the_void", "minecraft:the_end", "minecraft:small_end_islands", "minecraft:end_midlands", "minecraft:end_highlands", "minecraft:end_barrens"));
         general.oilWorldGenCategoryBlacklist = builder

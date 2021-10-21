@@ -5,8 +5,11 @@ import me.desht.pneumaticcraft.common.config.PNCConfig.Common.General;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModDecorators;
 import me.desht.pneumaticcraft.common.core.ModFeatures;
+import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
+import net.minecraft.world.ISeedReader;
 import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.BlockStateFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -18,6 +21,9 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class ModWorldGen {
     public static ConfiguredFeature<?,?> OIL_LAKES;
 
+    static WildcardedRLMatcher dimensionMatcher = null;
+    static WildcardedRLMatcher biomeMatcher = null;
+
     public static void registerConfiguredFeatures() {
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
 
@@ -28,8 +34,27 @@ public class ModWorldGen {
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {
-        if (!General.oilWorldGenBlacklist.contains(event.getName()) && !General.oilWorldGenCategoryBlacklist.contains(event.getCategory().getName())) {
+        if (!isBiomeBlacklisted(event.getName()) && !General.oilWorldGenCategoryBlacklist.contains(event.getCategory().getName())) {
             event.getGeneration().addFeature(GenerationStage.Decoration.LAKES, OIL_LAKES);
         }
+    }
+
+    public static void clearBlacklistCache() {
+        dimensionMatcher = null;
+        biomeMatcher = null;
+    }
+
+    static boolean isBiomeBlacklisted(ResourceLocation biomeName) {
+        if (biomeMatcher == null) {
+            biomeMatcher = new WildcardedRLMatcher(General.oilWorldGenBlacklist);
+        }
+        return biomeMatcher.test(biomeName);
+    }
+
+    static boolean isDimensionBlacklisted(ISeedReader level) {
+        if (dimensionMatcher == null) {
+            dimensionMatcher = new WildcardedRLMatcher(General.oilWorldGenDimensionBlacklist);
+        }
+        return dimensionMatcher.test(level.getLevel().dimension().getRegistryName());
     }
 }
