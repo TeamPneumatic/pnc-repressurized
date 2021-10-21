@@ -4,13 +4,6 @@ buildscript {
 		maven { url = 'https://maven.parchmentmc.org' }
 		mavenCentral()
 	}
-	// This is only here while FG is under active development
-	configurations.classpath {
-		resolutionStrategy {
-			cacheDynamicVersionsFor 10, 'seconds'
-			cacheChangingModulesFor 0, 'seconds'
-		}
-	}
 	dependencies {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
 		classpath 'org.parchmentmc:librarian:1.+'
