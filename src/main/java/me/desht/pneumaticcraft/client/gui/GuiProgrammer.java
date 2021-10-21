@@ -245,6 +245,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     private void updateVisibleProgWidgets() {
+        updateVisibleProgWidgets(PNCConfig.Client.programmerDifficulty);
+    }
+
+    private void updateVisibleProgWidgets(WidgetDifficulty difficulty) {
         int y = 0, page = 0;
         int x = getWidgetTrayRight() - maxPage * WIDGET_X_SPACING;
         boolean showAllWidgets = showingWidgetProgress == WIDGET_X_SPACING * maxPage && showingAllWidgets;
@@ -256,7 +260,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int nWidgets = ModProgWidgets.PROG_WIDGETS.get().getValues().size();
         for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
             IProgWidget widget = IProgWidget.create(type);
-            if (widget.isAvailable() && widget.isDifficultyOK(PNCConfig.Client.programmerDifficulty)) {
+            if (widget.isAvailable() && widget.isDifficultyOK(difficulty)) {
                 widget.setY(y + 40);
                 widget.setX(showAllWidgets ? x : getWidgetTrayRight());
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;
@@ -337,7 +341,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private void updateDifficulty(WidgetDifficulty difficulty) {
         ConfigHelper.setProgrammerDifficulty(difficulty);
         if (showingAllWidgets) toggleShowWidgets();
-        updateVisibleProgWidgets();
+        updateVisibleProgWidgets(difficulty);
     }
 
     private void gotoLatest() {

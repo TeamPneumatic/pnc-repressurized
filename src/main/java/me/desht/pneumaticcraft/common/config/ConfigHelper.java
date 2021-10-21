@@ -9,16 +9,20 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ConfigHelper {
     private static net.minecraftforge.fml.config.ModConfig clientConfig;
     private static net.minecraftforge.fml.config.ModConfig commonConfig;
+
+    private static int needClientRefresh = 0;
 
     static void refreshClient(net.minecraftforge.fml.config.ModConfig config) {
         clientConfig = config;
@@ -204,12 +208,12 @@ public class ConfigHelper {
 
     public static void setProgrammerDifficulty(WidgetDifficulty difficulty) {
         setValueAndSave(clientConfig, "general.programmer_difficulty", difficulty);
-        refreshClient(clientConfig);
+        needClientRefresh = 2;//refreshClient(clientConfig);
     }
 
     public static void setGuiRemoteGridSnap(boolean snap) {
         setValueAndSave(clientConfig, "general.gui_remote_grid_snap", snap);
-        refreshClient(clientConfig);
+        needClientRefresh = 2;//refreshClient(clientConfig);
     }
 
     public static void updateCoordTracker(boolean pathEnabled, boolean wirePath, boolean xRayEnabled, PathUpdateSetting pathUpdateSetting) {
@@ -219,12 +223,12 @@ public class ConfigHelper {
                 "armor.xray_enabled", xRayEnabled,
                 "armor.path_update_setting", pathUpdateSetting)
         );
-        refreshClient(clientConfig);
+        needClientRefresh = 2;//refreshClient(clientConfig);
     }
 
     public static void setShowPressureNumerically(boolean numeric) {
         setValueAndSave(clientConfig, "armor.show_pressure_numerically", numeric);
-        refreshClient(clientConfig);
+        needClientRefresh = 2;//refreshClient(clientConfig);
     }
 
     public static int getOilLakeChance() {
@@ -233,6 +237,13 @@ public class ConfigHelper {
 
     public static void setShowEnchantGlint(boolean show) {
         setValueAndSave(clientConfig, "armor.show_enchant_glint", show);
-        refreshClient(clientConfig);
+        needClientRefresh = 2;//refreshClient(clientConfig);
+    }
+
+    @SubscribeEvent
+    public static void clientTick(final TickEvent.ClientTickEvent event) {
+        if (needClientRefresh > 0 && --needClientRefresh == 0) {
+            ConfigHelper.refreshClient(clientConfig);
+        }
     }
 }
