@@ -204,12 +204,10 @@ public class ConfigHelper {
 
     public static void setProgrammerDifficulty(WidgetDifficulty difficulty) {
         setValueAndSave(clientConfig, "general.programmer_difficulty", difficulty);
-        refreshClient(clientConfig);
     }
 
     public static void setGuiRemoteGridSnap(boolean snap) {
         setValueAndSave(clientConfig, "general.gui_remote_grid_snap", snap);
-        refreshClient(clientConfig);
     }
 
     public static void updateCoordTracker(boolean pathEnabled, boolean wirePath, boolean xRayEnabled, PathUpdateSetting pathUpdateSetting) {
@@ -219,12 +217,10 @@ public class ConfigHelper {
                 "armor.xray_enabled", xRayEnabled,
                 "armor.path_update_setting", pathUpdateSetting)
         );
-        refreshClient(clientConfig);
     }
 
     public static void setShowPressureNumerically(boolean numeric) {
         setValueAndSave(clientConfig, "armor.show_pressure_numerically", numeric);
-        refreshClient(clientConfig);
     }
 
     public static int getOilLakeChance() {
@@ -233,6 +229,5 @@ public class ConfigHelper {
 
     public static void setShowEnchantGlint(boolean show) {
         setValueAndSave(clientConfig, "armor.show_enchant_glint", show);
-        refreshClient(clientConfig);
     }
 }
