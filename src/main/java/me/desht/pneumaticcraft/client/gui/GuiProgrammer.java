@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -100,6 +101,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         imageWidth = hiRes ? 700 : 350;
         imageHeight = hiRes ? 512 : 256;
 
+        Log.debug("PNC-DEBUG [%s]: open programmer GUI: difficulty = %s", Thread.currentThread().getName(), PNCConfig.Client.programmerDifficulty);
         programmerDifficulty = PNCConfig.Client.programmerDifficulty;
     }
 
