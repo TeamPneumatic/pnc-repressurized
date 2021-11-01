@@ -101,7 +101,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         imageWidth = hiRes ? 700 : 350;
         imageHeight = hiRes ? 512 : 256;
 
-        Log.debug("PNC-DEBUG [%s]: open programmer GUI: difficulty = %s", Thread.currentThread().getName(), PNCConfig.Client.programmerDifficulty);
+        Log.info("PNC-DEBUG [%s]: open programmer GUI: difficulty = %s", Thread.currentThread().getName(), PNCConfig.Client.programmerDifficulty);
         programmerDifficulty = PNCConfig.Client.programmerDifficulty;
     }
 

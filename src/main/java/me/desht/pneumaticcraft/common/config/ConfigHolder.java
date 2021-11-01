@@ -32,7 +32,7 @@ public class ConfigHolder {
         net.minecraftforge.fml.config.ModConfig config = event.getConfig();
         if (config.getSpec() == ConfigHolder.configClientSpec) {
             ConfigHelper.refreshClient(config);
-            Log.debug("PNC-DEBUG [%s]: refreshed client config: programmer difficulty = %s", Thread.currentThread().getName(), PNCConfig.Client.programmerDifficulty);
+            Log.info("PNC-DEBUG [%s]: refreshed client config: programmer difficulty = %s", Thread.currentThread().getName(), PNCConfig.Client.programmerDifficulty);
         } else if (config.getSpec() == ConfigHolder.configCommonSpec) {
             ConfigHelper.refreshCommon(config);
         }

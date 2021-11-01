@@ -194,10 +194,10 @@ public class ConfigHelper {
     }
 
     private static void setValueAndSave(final net.minecraftforge.fml.config.ModConfig modConfig, final String path, final Object newValue) {
-        Log.debug("PNC-DEBUG [%s]: setValueAndSave %s - %s", Thread.currentThread().getName(), path, newValue);
+        Log.info("PNC-DEBUG [%s]: setValueAndSave %s - %s", Thread.currentThread().getName(), path, newValue);
         modConfig.getConfigData().set(path, newValue);
         modConfig.save();
-        Log.debug("PNC-DEBUG[%s]: config saved", Thread.currentThread().getName());
+        Log.info("PNC-DEBUG[%s]: config saved", Thread.currentThread().getName());
     }
 
     private static void setValuesAndSave(final net.minecraftforge.fml.config.ModConfig modConfig, final Map<String,Object>values) {
