@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Advanced;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
@@ -36,7 +36,8 @@ public class DroneGoToChargingStation extends Goal {
         List<TileEntityChargingStation> validChargingStations = new ArrayList<>();
         drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
             if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE) {
-                int maxDistSq = Advanced.maxDroneChargingStationSearchRange * Advanced.maxDroneChargingStationSearchRange;
+                int r = ConfigHelper.common().advanced.maxDroneChargingStationSearchRange.get();
+                int maxDistSq = r * r;
                 for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
                     if (station.getLevel() == drone.level && drone.distanceToSqr(Vector3d.atCenterOf(station.getBlockPos())) <= maxDistSq) {
                         if (DroneClaimManager.getInstance(drone.level).isClaimed(station.getBlockPos())) {

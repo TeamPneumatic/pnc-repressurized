@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Integration;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import mekanism.api.heat.IHeatHandler;
 import mekanism.api.heat.ISidedHeatHandler;
 import net.minecraft.tileentity.TileEntity;
@@ -88,7 +88,7 @@ public class PNC2MekHeatProvider implements ICapabilityProvider {
 
         @Override
         public double getInverseConduction(int i, @Nullable Direction direction) {
-            return heatExchanger.map(h -> h.getThermalResistance() * Integration.mekThermalResistanceFactor).orElse(1d);
+            return heatExchanger.map(h -> h.getThermalResistance() * ConfigHelper.common().integration.mekThermalResistanceFactor.get()).orElse(1d);
         }
 
         @Override
@@ -98,7 +98,7 @@ public class PNC2MekHeatProvider implements ICapabilityProvider {
 
         @Override
         public void handleHeat(int i, double amount, @Nullable Direction direction) {
-                heatExchanger.ifPresent(h -> h.addHeat(amount * Integration.mekThermalEfficiencyFactor));
+                heatExchanger.ifPresent(h -> h.addHeat(amount * ConfigHelper.common().integration.mekThermalEfficiencyFactor.get()));
         }
     }
 }

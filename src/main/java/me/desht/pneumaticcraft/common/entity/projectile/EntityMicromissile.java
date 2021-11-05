@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
@@ -122,7 +122,7 @@ public class EntityMicromissile extends ThrowableEntity {
             }
         }
 
-        if (tickCount > PNCConfig.Common.Micromissiles.lifetime) {
+        if (tickCount > ConfigHelper.common().micromissiles.lifetime.get()) {
             outOfFuel = true;
         }
 
@@ -204,7 +204,7 @@ public class EntityMicromissile extends ThrowableEntity {
 
     private void explode(Entity e) {
         remove();
-        Explosion.Mode mode = PNCConfig.Common.Micromissiles.damageTerrain ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
+        Explosion.Mode mode = ConfigHelper.common().micromissiles.damageTerrain.get() ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
         double x, y, z;
         if (e == null) {
             x = getX();
@@ -216,7 +216,8 @@ public class EntityMicromissile extends ThrowableEntity {
             y = MathHelper.lerp(0.25f, e.getY(), getY());
             z = MathHelper.lerp(0.25f, e.getZ(), getZ());
         }
-        getCommandSenderWorld().explode(this, x, y, z, (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
+        float radius = ConfigHelper.common().micromissiles.baseExplosionDamage.get().floatValue() * explosionPower;
+        getCommandSenderWorld().explode(this, x, y, z, radius, false, mode);
     }
 
     // shoot()

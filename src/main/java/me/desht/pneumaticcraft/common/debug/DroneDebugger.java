@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.debug;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -108,7 +108,7 @@ public class DroneDebugger {
         // with thanks to @Zorn_Taov for this code, slightly adapted for drone debugger integration by desht...
         @SubscribeEvent
         public static void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
-            if (!PNCConfig.Common.General.droneDebuggerPathParticles
+            if (!ConfigHelper.common().general.droneDebuggerPathParticles.get()
                     || !(event.getEntityLiving() instanceof EntityDrone)
                     || event.getEntityLiving().level.isClientSide) {
                 return;

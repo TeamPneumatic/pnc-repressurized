@@ -16,7 +16,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
@@ -31,7 +30,6 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -92,7 +90,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private static final int WIDGET_X_SPACING = 22; // x size of widgets in the widget tray
 
     private final boolean hiRes;
-    private WidgetDifficulty programmerDifficulty;
 
     public GuiProgrammer(ContainerProgrammer container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -100,9 +97,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         hiRes = container.isHiRes();
         imageWidth = hiRes ? 700 : 350;
         imageHeight = hiRes ? 512 : 256;
-
-        Log.info("PNC-DEBUG [%s]: open programmer GUI: difficulty = %s", Thread.currentThread().getName(), PNCConfig.Client.programmerDifficulty);
-        programmerDifficulty = PNCConfig.Client.programmerDifficulty;
     }
 
     @Override
@@ -161,7 +155,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             DifficultyButton dButton = new DifficultyButton(xStart + xRight - 36, yStart + yBottom + 29 + wd.ordinal() * 12,
                     0xFF404040, wd, b -> updateDifficulty(wd));
             dButton.setTooltip(xlate(wd.getTooltipTranslationKey()));
-            rbb.addRadioButton(dButton, wd == programmerDifficulty);
+            rbb.addRadioButton(dButton, wd == ConfigHelper.client().general.programmerDifficulty.get());
         }
         rbb.build(this::addButton);
 
@@ -226,7 +220,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     @Override
     public boolean isPauseScreen() {
-        return PNCConfig.Client.programmerGuiPauses;
+        return ConfigHelper.client().general.programmerGuiPauses.get();
     }
 
     public static void onCloseFromContainer() {
@@ -250,7 +244,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     private void updateVisibleProgWidgets() {
-        updateVisibleProgWidgets(programmerDifficulty);
+        updateVisibleProgWidgets(ConfigHelper.client().general.programmerDifficulty.get());
     }
 
     private void updateVisibleProgWidgets(WidgetDifficulty difficulty) {
@@ -344,7 +338,6 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     private void updateDifficulty(WidgetDifficulty difficulty) {
-        this.programmerDifficulty = difficulty;
         ConfigHelper.setProgrammerDifficulty(difficulty);
         if (showingAllWidgets) toggleShowWidgets();
         updateVisibleProgWidgets(difficulty);

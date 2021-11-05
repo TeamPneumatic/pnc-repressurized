@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -19,7 +19,7 @@ public class ItemGunAmmoArmorPiercing extends ItemGunAmmo {
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return PNCConfig.Common.Minigun.armorPiercingAmmoCartridgeSize;
+        return ConfigHelper.common().minigun.armorPiercingAmmoCartridgeSize.get();
     }
 
     @Override
@@ -29,12 +29,12 @@ public class ItemGunAmmoArmorPiercing extends ItemGunAmmo {
 
     @Override
     public float getDamageMultiplier(Entity target, ItemStack ammoStack) {
-        return (float) PNCConfig.Common.Minigun.apAmmoDamageMultiplier;
+        return ConfigHelper.common().minigun.apAmmoDamageMultiplier.get().floatValue();
     }
 
     @Override
     protected DamageSource getDamageSource(Minigun minigun) {
-        return minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.apAmmoIgnoreArmorChance) ?
+        return minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.apAmmoIgnoreArmorChance.get()) ?
                 new DamageSourceArmorPiercing(minigun.getPlayer()) :
                 super.getDamageSource(minigun);
     }

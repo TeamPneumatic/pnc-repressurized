@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.resources.I18n;
@@ -34,7 +34,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return PNCConfig.Common.Minigun.standardAmmoCartridgeSize;
+        return ConfigHelper.common().minigun.standardAmmoCartridgeSize.get();
     }
 
     @Nonnull
@@ -105,7 +105,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         if (!potion.isEmpty() && target instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) target;
             PlayerEntity shooter = minigun.getPlayer();
-            if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.potionProcChance, 0.25f)) {
+            if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.potionProcChance.get(), 0.25f)) {
                 if (potion.getItem() == Items.POTION) {
                     List<EffectInstance> effects = PotionUtils.getMobEffects(potion);
                     for (EffectInstance effect : effects) {
@@ -130,7 +130,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         ItemStack potion = getPotion(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             PlayerEntity shooter = minigun.getPlayer();
-            int chance = PNCConfig.Common.Minigun.potionProcChance + minigun.getUpgrades(EnumUpgrade.DISPENSER) * 2;
+            int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(EnumUpgrade.DISPENSER) * 2;
             if (shooter.level.random.nextInt(100) < chance) {
                 PotionEntity entityPotion = new PotionEntity(shooter.level, shooter);
                 entityPotion.setItem(potion);

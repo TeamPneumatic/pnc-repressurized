@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -179,7 +179,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
             if (getLevel().isClientSide()) {
                 getLevel().playLocalSound(getBlockPos().getX() + 0.5, getBlockPos().getY() + extension, getBlockPos().getZ() + 0.5,
                         isStopped ? ModSounds.ELEVATOR_RISING_STOP.get() : ModSounds.ELEVATOR_RISING_START.get(),
-                        SoundCategory.BLOCKS, (float) PNCConfig.Client.Sound.elevatorVolumeStartStop, 1.0F, true);
+                        SoundCategory.BLOCKS, ConfigHelper.client().sound.elevatorVolumeStartStop.get().floatValue(), 1.0F, true);
             } else if (!isStopped) {
                 NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, SoundSource.of(getCoreElevator())), this);
             }
@@ -285,7 +285,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
             elevatorBases++;
         } while (getLevel().getBlockState(getBlockPos().offset(0, -elevatorBases, 0)).getBlock() == ModBlocks.ELEVATOR_BASE.get());
 
-        maxFloorHeight = Math.min(i, elevatorBases * PNCConfig.Common.Machines.elevatorBaseBlocksPerBase);
+        maxFloorHeight = Math.min(i, elevatorBases * ConfigHelper.common().machines.elevatorBaseBlocksPerBase.get());
         setChanged();
     }
 

@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerJackhammerSetup;
@@ -303,7 +303,7 @@ public class ItemJackHammer extends ItemPressurizable
             return Collections.emptyList();
         }
 
-        int maxRange = PNCConfig.Common.Jackhammer.maxVeinMinerRange;
+        int maxRange = ConfigHelper.common().jackhammer.maxVeinMinerRange.get();
         int maxRangeSq = maxRange * maxRange;
 
         List<BlockPos> found = new ArrayList<>();

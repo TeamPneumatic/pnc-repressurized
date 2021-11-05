@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
@@ -80,7 +80,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 if (jbState.isBuilderMode() && jetbootsCount >= BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
                     setYMotion(player, player.isShiftKeyDown() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
-                    jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
+                    jetbootsAirUsage = (int) (ConfigHelper.common().armor.jetBootsAirUsage.get() * jetbootsCount / 2.5F);
                 } else {
                     // jetboots firing - move in direction of looking
                     Vector3d lookVec = player.getLookAngle().scale(0.3 * jetbootsCount);
@@ -104,7 +104,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 double zMotion = stopped ? 0 : player.getDeltaMovement().z;
                 player.setDeltaMovement(new Vector3d(xMotion, yMotion, zMotion));
                 if (reallyHovering) player.fallDistance = 0;
-                jetbootsAirUsage = reallyHovering ? (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isShiftKeyDown() ? 0.25F : 0.5F)) : 0;
+                jetbootsAirUsage = reallyHovering ? (int) (ConfigHelper.common().armor.jetBootsAirUsage.get() * (player.isShiftKeyDown() ? 0.25F : 0.5F)) : 0;
                 jbLocal.resetAccel();
             } else if (player.isOnGround()) {
                 jbLocal.setHovering(false);
@@ -277,7 +277,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         }
 
         public int calcAirUsage(int jetbootsCount) {
-            return (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount * jetBootsPower);
+            return (int) (ConfigHelper.common().armor.jetBootsAirUsage.get() * jetbootsCount * jetBootsPower);
         }
 
         public boolean isSmartHover() {

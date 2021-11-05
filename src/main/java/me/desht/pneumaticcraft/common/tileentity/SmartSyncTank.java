@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.fluid.Fluid;
@@ -61,7 +61,7 @@ public class SmartSyncTank extends FluidTank {
                     if (pending) {
                         syncedFluidStackDesc = getFluid().copy();
                         pending = false;
-                        syncTimer = PNCConfig.Common.Advanced.fluidTankUpdateRate;
+                        syncTimer = ConfigHelper.common().advanced.fluidTankUpdateRate.get();
                     } else {
                         syncTimer = -1;
                     }
@@ -86,7 +86,7 @@ public class SmartSyncTank extends FluidTank {
         // more careful checking for the desc-synced value
         int delta = Math.abs(syncedFluidStackDesc.getAmount() - newFluid.getAmount());
         if (delta >= threshold || syncedFluidStackDesc.getFluid() != newFluid.getFluid()) {
-            deferredSync(PNCConfig.Common.Advanced.fluidTankUpdateRate);
+            deferredSync(ConfigHelper.common().advanced.fluidTankUpdateRate.get());
         }
     }
 

@@ -20,7 +20,7 @@ import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -572,7 +572,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return PNCConfig.Common.General.dronesRenderHeldItem ? entityData.get(HELD_ITEM) : ItemStack.EMPTY;
+        return ConfigHelper.common().general.dronesRenderHeldItem.get() ? entityData.get(HELD_ITEM) : ItemStack.EMPTY;
     }
 
     @Override
@@ -757,7 +757,7 @@ public class EntityDrone extends EntityDroneBase implements
             if (color != null) {
                 if (!level.isClientSide) {
                     setDroneColor(color.getId());
-                    if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
+                    if (ConfigHelper.common().general.useUpDyesWhenColoring.get() && !player.isCreative()) {
                         stack.shrink(1);
                         if (stack.getCount() <= 0) {
                             player.setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
@@ -902,7 +902,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public boolean startRiding(Entity entity, boolean force) {
-        return PNCConfig.Common.General.dronesCanBePickedUp && super.startRiding(entity, force);
+        return ConfigHelper.common().general.dronesCanBePickedUp.get() && super.startRiding(entity, force);
     }
 
     protected BasicAirHandler getAirHandler() {
@@ -1094,7 +1094,7 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
         if (source == DamageSource.IN_WALL) {
-            return suffocationCounter > 0 || !PNCConfig.Common.General.enableDroneSuffocation;
+            return suffocationCounter > 0 || !ConfigHelper.common().general.enableDroneSuffocation.get();
         }
         if (RadiationSourceCheck.INSTANCE.isRadiation(source)) {
             return true;
@@ -1295,7 +1295,7 @@ public class EntityDrone extends EntityDroneBase implements
             for (Entity e : getCarryingEntities()) {
                 e.stopRiding();
                 double y = e.getY();
-                if (PNCConfig.Common.General.dronesCanBePickedUp && (e instanceof AbstractMinecartEntity || e instanceof BoatEntity)) {
+                if (ConfigHelper.common().general.dronesCanBePickedUp.get() && (e instanceof AbstractMinecartEntity || e instanceof BoatEntity)) {
                     // little kludge to prevent the dropped minecart/boat immediately picking up the drone
                     y -= 2;
                     BlockPos pos = PneumaticCraftUtils.getPosForEntity(e);
@@ -1539,7 +1539,7 @@ public class EntityDrone extends EntityDroneBase implements
         public void copyItemToFakePlayer(int slot) {
             super.copyItemToFakePlayer(slot);
 
-            if (isFakePlayerReady() && slot == getFakePlayer().inventory.selected && PNCConfig.Common.General.dronesRenderHeldItem) {
+            if (isFakePlayerReady() && slot == getFakePlayer().inventory.selected && ConfigHelper.common().general.dronesRenderHeldItem.get()) {
                 entityData.set(HELD_ITEM, getStackInSlot(slot));
             }
         }

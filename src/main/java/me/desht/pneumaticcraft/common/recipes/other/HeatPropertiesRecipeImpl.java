@@ -7,7 +7,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicConstant;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
@@ -250,7 +250,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             if (json.has("heatCapacity")) {
                 totalHeat = json.get("heatCapacity").getAsInt();
             } else if (fluid != Fluids.EMPTY) {
-                totalHeat = PNCConfig.Common.Heat.defaultFluidHeatCapacity;
+                totalHeat = ConfigHelper.common().heat.defaultFluidHeatCapacity.get();
             }
             if (totalHeat != 0) {
                 transformHot = maybeGetBlockState(block, json, "transformHot");
@@ -274,9 +274,9 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             if (json.has("thermalResistance")) {
                 thermalResistance = json.get("thermalResistance").getAsDouble();
             } else if (fluid == Fluids.EMPTY) {
-                thermalResistance = PNCConfig.Common.Heat.defaultBlockThermalResistance;
+                thermalResistance = ConfigHelper.common().heat.blockThermalResistance.get();
             } else {
-                thermalResistance = PNCConfig.Common.Heat.defaultFluidThermalResistance;
+                thermalResistance = ConfigHelper.common().heat.fluidThermalResistance.get();
             }
 
             if (json.has("statePredicate")) {

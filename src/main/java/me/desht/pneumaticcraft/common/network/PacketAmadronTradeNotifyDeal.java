@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -41,7 +41,7 @@ public class PacketAmadronTradeNotifyDeal extends PacketAbstractAmadronTrade {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (PNCConfig.Common.Amadron.notifyOfDealMade)
+            if (ConfigHelper.common().amadron.notifyOfDealMade.get())
                 ClientUtils.getClientPlayer().displayClientMessage(
                         xlate("pneumaticcraft.message.amadron.playerBought",
                                 buyingPlayer,

@@ -14,9 +14,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWirefram
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderNavigator;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.EntityPathNavigateDrone;
-import me.desht.pneumaticcraft.common.config.ClientConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -61,7 +59,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     public boolean pathEnabled;
     public boolean wirePath;
     public boolean xRayEnabled;
-    public ClientConfig.PathUpdateSetting pathUpdateSetting = ClientConfig.PathUpdateSetting.NORMAL;
+    public CoordTrackerHandler.PathUpdateSetting pathUpdateSetting = CoordTrackerHandler.PathUpdateSetting.NORMAL;
     // Timer used to delay the client recalculating a path when it didn't last time. This prevents
     // gigantic lag, as it uses much performance to find a path when it doesn't have anything cached.
     private int pathCalculateCooldown;
@@ -77,10 +75,10 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
 
     @Override
     public void initConfig() {
-        pathEnabled = PNCConfig.Client.Armor.pathEnabled;
-        wirePath = PNCConfig.Client.Armor.wirePath;
-        xRayEnabled = PNCConfig.Client.Armor.xRayEnabled;
-        pathUpdateSetting = PNCConfig.Client.Armor.pathUpdateSetting;
+        pathEnabled = ConfigHelper.client().armor.pathEnabled.get();
+        wirePath = ConfigHelper.client().armor.wirePath.get();
+        xRayEnabled = ConfigHelper.client().armor.xRayEnabled.get();
+        pathUpdateSetting = ConfigHelper.client().armor.pathUpdateSetting.get();
     }
 
     @Override
@@ -102,12 +100,12 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
         if (noPathCooldown > 0) {
             noPathCooldown--;
         }
-        if (navigator != null && PNCConfig.Client.Armor.pathEnabled && noPathCooldown == 0 && --pathCalculateCooldown <= 0) {
+        if (navigator != null && ConfigHelper.client().armor.pathEnabled.get() && noPathCooldown == 0 && --pathCalculateCooldown <= 0) {
             navigator.updatePath();
             if (!navigator.tracedToDestination()) {
                 noPathCooldown = 100; // wait 5 seconds before recalculating a path.
             }
-            pathCalculateCooldown = PNCConfig.Client.Armor.pathUpdateSetting.getTicks(); // == 2 ? 1 : pathUpdateSetting == 1 ? 20 : 100;
+            pathCalculateCooldown = ConfigHelper.client().armor.pathUpdateSetting.get().getTicks(); // == 2 ? 1 : pathUpdateSetting == 1 ? 20 : 100;
         }
     }
 
@@ -117,8 +115,8 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
             if (!Minecraft.getInstance().player.level.dimension().location().equals(coordTracker.worldKey.location()))
                 return;
             coordTracker.render(matrixStack, buffer, partialTicks);
-            if (PNCConfig.Client.Armor.pathEnabled && navigator != null) {
-                navigator.render(matrixStack, buffer, PNCConfig.Client.Armor.wirePath, PNCConfig.Client.Armor.xRayEnabled, partialTicks);
+            if (ConfigHelper.client().armor.pathEnabled.get() && navigator != null) {
+                navigator.render(matrixStack, buffer, ConfigHelper.client().armor.wirePath.get(), ConfigHelper.client().armor.xRayEnabled.get(), partialTicks);
             }
         }
     }

@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ChunkCache;
 import net.minecraft.block.BlockState;
@@ -59,8 +59,8 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
         }
         Set<BlockPos> areaSet = getCachedAreaSet();
-        if (areaSet.size() > PNCConfig.Common.General.maxProgrammingArea) {
-            curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.areaTooBig", PNCConfig.Common.General.maxProgrammingArea));
+        if (areaSet.size() > ConfigHelper.common().general.maxProgrammingArea.get()) {
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.areaTooBig", ConfigHelper.common().general.maxProgrammingArea.get()));
         }
         EntityFilterPair.addErrors(this, curInfo);
     }

@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -239,7 +239,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
 
     @Override
     protected int getBackgroundTint() {
-        if (!PNCConfig.Client.logisticsGuiTint) return super.getBackgroundTint();
+        if (!ConfigHelper.client().general.logisticsGuiTint.get()) return super.getBackgroundTint();
 
         int c = logistics.getColor();
         // desaturate; this is a background colour...

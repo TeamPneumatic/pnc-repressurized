@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.block.BlockState;
@@ -40,7 +40,7 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return PNCConfig.Common.Minigun.standardAmmoCartridgeSize;
+        return ConfigHelper.common().minigun.standardAmmoCartridgeSize.get();
     }
 
     /**
@@ -132,7 +132,7 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
         if (dmgMult > 0) {
             // note: can't just check for PartEntity (will get ClassNotFoundException on dedicated server)
             if (target instanceof LivingEntity || target instanceof EnderDragonPartEntity || target instanceof EnderCrystalEntity) {
-                target.hurt(getDamageSource(minigun), (float)(PNCConfig.Common.Minigun.baseDamage * dmgMult * times));
+                target.hurt(getDamageSource(minigun), (float)(ConfigHelper.common().minigun.baseDamage.get() * dmgMult * times));
             } else if (target instanceof ShulkerBulletEntity || target instanceof DamagingProjectileEntity) {
                 target.remove();
             }
@@ -149,7 +149,7 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
      * @return the number of rounds fired
      */
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
-        if (PNCConfig.Common.Minigun.blockHitParticles) {
+        if (ConfigHelper.common().minigun.blockHitParticles.get()) {
             World w = minigun.getPlayer().level;
             BlockState state = w.getBlockState(brtr.getBlockPos());
             Direction face = brtr.getDirection();

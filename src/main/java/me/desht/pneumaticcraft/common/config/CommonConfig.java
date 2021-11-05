@@ -9,146 +9,146 @@ import java.util.List;
 
 public class CommonConfig {
     public static class General {
-        ForgeConfigSpec.BooleanValue droneDebuggerPathParticles;
-        ForgeConfigSpec.IntValue oilGenerationChance;
-        ForgeConfigSpec.IntValue surfaceOilGenerationChance;
-        ForgeConfigSpec.BooleanValue enableDungeonLoot;
-        ForgeConfigSpec.BooleanValue enableDroneSuffocation;
-        ForgeConfigSpec.DoubleValue fuelBucketEfficiency;
-        ForgeConfigSpec.IntValue maxProgrammingArea;
-        ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
-        ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenCategoryBlacklist;
-        ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionBlacklist;
-        ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
-        ForgeConfigSpec.IntValue minFluidFuelTemperature;
-        ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
-        ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
-        ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
-        ForgeConfigSpec.BooleanValue dronesCanBePickedUp;
+        public ForgeConfigSpec.BooleanValue droneDebuggerPathParticles;
+        public ForgeConfigSpec.IntValue oilGenerationChance;
+        public ForgeConfigSpec.IntValue surfaceOilGenerationChance;
+        public ForgeConfigSpec.BooleanValue enableDungeonLoot;
+        public ForgeConfigSpec.BooleanValue enableDroneSuffocation;
+        public ForgeConfigSpec.DoubleValue fuelBucketEfficiency;
+        public ForgeConfigSpec.IntValue maxProgrammingArea;
+        public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
+        public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenCategoryBlacklist;
+        public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionBlacklist;
+        public ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
+        public ForgeConfigSpec.IntValue minFluidFuelTemperature;
+        public ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
+        public ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
+        public ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
+        public ForgeConfigSpec.BooleanValue dronesCanBePickedUp;
     }
     public static class Machines {
-        ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
-        ForgeConfigSpec.DoubleValue cropSticksGrowthBoostChance;
-        ForgeConfigSpec.IntValue electricCompressorEfficiency;
-        ForgeConfigSpec.IntValue electrostaticLightningChance;
-        ForgeConfigSpec.IntValue elevatorBaseBlocksPerBase;
-        ForgeConfigSpec.IntValue fluxCompressorEfficiency;
-        ForgeConfigSpec.BooleanValue keroseneLampCanUseAnyFuel;
-        ForgeConfigSpec.DoubleValue keroseneLampFuelEfficiency;
-        ForgeConfigSpec.IntValue kineticCompressorEfficiency;
-        ForgeConfigSpec.BooleanValue liquidHopperDispenser;
-        ForgeConfigSpec.BooleanValue omniHopperDispenser;
-        ForgeConfigSpec.IntValue pneumaticDynamoEfficiency;
-        ForgeConfigSpec.IntValue pneumaticEngineEfficiency;
-        ForgeConfigSpec.IntValue pneumaticGeneratorEfficiency;
-        ForgeConfigSpec.IntValue pneumaticPumpEfficiency;
-        ForgeConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
-        ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
-        ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluids;
-        ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluidTags;
-        ForgeConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
+        public ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
+        public ForgeConfigSpec.DoubleValue cropSticksGrowthBoostChance;
+        public ForgeConfigSpec.IntValue electricCompressorEfficiency;
+        public ForgeConfigSpec.IntValue electrostaticLightningChance;
+        public ForgeConfigSpec.IntValue elevatorBaseBlocksPerBase;
+        public ForgeConfigSpec.IntValue fluxCompressorEfficiency;
+        public ForgeConfigSpec.BooleanValue keroseneLampCanUseAnyFuel;
+        public ForgeConfigSpec.DoubleValue keroseneLampFuelEfficiency;
+        public ForgeConfigSpec.IntValue kineticCompressorEfficiency;
+        public ForgeConfigSpec.BooleanValue liquidHopperDispenser;
+        public ForgeConfigSpec.BooleanValue omniHopperDispenser;
+        public ForgeConfigSpec.IntValue pneumaticDynamoEfficiency;
+        public ForgeConfigSpec.IntValue pneumaticEngineEfficiency;
+        public ForgeConfigSpec.IntValue pneumaticGeneratorEfficiency;
+        public ForgeConfigSpec.IntValue pneumaticPumpEfficiency;
+        public ForgeConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
+        public ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
+        public ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluids;
+        public ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluidTags;
+        public ForgeConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
     }
     public static class Armor {
-        ForgeConfigSpec.IntValue jetBootsAirUsage;
-        ForgeConfigSpec.IntValue armorStartupTime;
-        ForgeConfigSpec.DoubleValue flippersSpeedBoostGround;
-        ForgeConfigSpec.DoubleValue flippersSpeedBoostFloating;
-        ForgeConfigSpec.IntValue repairAirUsage;
-        ForgeConfigSpec.IntValue magnetAirUsage;
-        ForgeConfigSpec.IntValue scubaMultiplier;
+        public ForgeConfigSpec.IntValue jetBootsAirUsage;
+        public ForgeConfigSpec.IntValue armorStartupTime;
+        public ForgeConfigSpec.DoubleValue flippersSpeedBoostGround;
+        public ForgeConfigSpec.DoubleValue flippersSpeedBoostFloating;
+        public ForgeConfigSpec.IntValue repairAirUsage;
+        public ForgeConfigSpec.IntValue magnetAirUsage;
+        public ForgeConfigSpec.IntValue scubaMultiplier;
     }
     public static class Integration {
-        ForgeConfigSpec.DoubleValue mekThermalEfficiencyFactor;
-        ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerRF;
-        ForgeConfigSpec.IntValue ieExternalHeaterRFperTick;
-        ForgeConfigSpec.DoubleValue mekThermalResistanceFactor;
-        ForgeConfigSpec.DoubleValue cofhHoldingMultiplier;
+        public ForgeConfigSpec.DoubleValue mekThermalEfficiencyFactor;
+        public ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerRF;
+        public ForgeConfigSpec.IntValue ieExternalHeaterRFperTick;
+        public ForgeConfigSpec.DoubleValue mekThermalResistanceFactor;
+        public ForgeConfigSpec.DoubleValue cofhHoldingMultiplier;
     }
     public static class Advanced {
-        ForgeConfigSpec.IntValue stuckDroneTeleportTicks;
-        ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
-        ForgeConfigSpec.IntValue fluidTankUpdateRate;
-        ForgeConfigSpec.IntValue pressureSyncPrecision;
-        ForgeConfigSpec.BooleanValue stopDroneAI;
-        ForgeConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
-        ForgeConfigSpec.IntValue maxDroneChargingStationSearchRange;
-        ForgeConfigSpec.IntValue maxDroneTeleportRange;
+        public ForgeConfigSpec.IntValue stuckDroneTeleportTicks;
+        public ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
+        public ForgeConfigSpec.IntValue fluidTankUpdateRate;
+        public ForgeConfigSpec.IntValue pressureSyncPrecision;
+        public ForgeConfigSpec.BooleanValue stopDroneAI;
+        public ForgeConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
+        public ForgeConfigSpec.IntValue maxDroneChargingStationSearchRange;
+        public ForgeConfigSpec.IntValue maxDroneTeleportRange;
     }
     public static class Micromissiles {
-        ForgeConfigSpec.DoubleValue baseExplosionDamage;
-        ForgeConfigSpec.BooleanValue damageTerrain;
-        ForgeConfigSpec.IntValue launchCooldown;
-        ForgeConfigSpec.IntValue lifetime;
-        ForgeConfigSpec.IntValue missilePodSize;
+        public ForgeConfigSpec.DoubleValue baseExplosionDamage;
+        public ForgeConfigSpec.BooleanValue damageTerrain;
+        public ForgeConfigSpec.IntValue launchCooldown;
+        public ForgeConfigSpec.IntValue lifetime;
+        public ForgeConfigSpec.IntValue missilePodSize;
     }
     public static class Minigun {
-        ForgeConfigSpec.DoubleValue apAmmoDamageMultiplier;
-        ForgeConfigSpec.IntValue apAmmoIgnoreArmorChance;
-        ForgeConfigSpec.IntValue armorPiercingAmmoCartridgeSize;
-        ForgeConfigSpec.DoubleValue baseDamage;
-        ForgeConfigSpec.IntValue baseRange;
-        ForgeConfigSpec.IntValue explosiveAmmoCartridgeSize;
-        ForgeConfigSpec.DoubleValue explosiveAmmoDamageMultiplier;
-        ForgeConfigSpec.IntValue explosiveAmmoExplosionChance;
-        ForgeConfigSpec.DoubleValue explosiveAmmoExplosionPower;
-        ForgeConfigSpec.BooleanValue explosiveAmmoTerrainDamage;
-        ForgeConfigSpec.IntValue freezingAmmoBlockIceChance;
-        ForgeConfigSpec.IntValue freezingAmmoCartridgeSize;
-        ForgeConfigSpec.IntValue freezingAmmoEntityIceChance;
-        ForgeConfigSpec.DoubleValue freezingAmmoFakeIceDamage;
-        ForgeConfigSpec.IntValue incendiaryAmmoBlockIgniteChance;
-        ForgeConfigSpec.IntValue incendiaryAmmoCartridgeSize;
-        ForgeConfigSpec.IntValue incendiaryAmmoEntityIgniteChance;
-        ForgeConfigSpec.IntValue incendiaryAmmoFireDuration;
-        ForgeConfigSpec.IntValue potionProcChance;
-        ForgeConfigSpec.IntValue standardAmmoCartridgeSize;
-        ForgeConfigSpec.DoubleValue weightedAmmoAirUsageMultiplier;
-        ForgeConfigSpec.IntValue weightedAmmoCartridgeSize;
-        ForgeConfigSpec.DoubleValue weightedAmmoDamageMultiplier;
-        ForgeConfigSpec.DoubleValue weightedAmmoRangeMultiplier;
-        ForgeConfigSpec.BooleanValue blockHitParticles;
+        public ForgeConfigSpec.DoubleValue apAmmoDamageMultiplier;
+        public ForgeConfigSpec.IntValue apAmmoIgnoreArmorChance;
+        public ForgeConfigSpec.IntValue armorPiercingAmmoCartridgeSize;
+        public ForgeConfigSpec.DoubleValue baseDamage;
+        public ForgeConfigSpec.IntValue baseRange;
+        public ForgeConfigSpec.IntValue explosiveAmmoCartridgeSize;
+        public ForgeConfigSpec.DoubleValue explosiveAmmoDamageMultiplier;
+        public ForgeConfigSpec.IntValue explosiveAmmoExplosionChance;
+        public ForgeConfigSpec.DoubleValue explosiveAmmoExplosionPower;
+        public ForgeConfigSpec.BooleanValue explosiveAmmoTerrainDamage;
+        public ForgeConfigSpec.IntValue freezingAmmoBlockIceChance;
+        public ForgeConfigSpec.IntValue freezingAmmoCartridgeSize;
+        public ForgeConfigSpec.IntValue freezingAmmoEntityIceChance;
+        public ForgeConfigSpec.DoubleValue freezingAmmoFakeIceDamage;
+        public ForgeConfigSpec.IntValue incendiaryAmmoBlockIgniteChance;
+        public ForgeConfigSpec.IntValue incendiaryAmmoCartridgeSize;
+        public ForgeConfigSpec.IntValue incendiaryAmmoEntityIgniteChance;
+        public ForgeConfigSpec.IntValue incendiaryAmmoFireDuration;
+        public ForgeConfigSpec.IntValue potionProcChance;
+        public ForgeConfigSpec.IntValue standardAmmoCartridgeSize;
+        public ForgeConfigSpec.DoubleValue weightedAmmoAirUsageMultiplier;
+        public ForgeConfigSpec.IntValue weightedAmmoCartridgeSize;
+        public ForgeConfigSpec.DoubleValue weightedAmmoDamageMultiplier;
+        public ForgeConfigSpec.DoubleValue weightedAmmoRangeMultiplier;
+        public ForgeConfigSpec.BooleanValue blockHitParticles;
     }
     public static class Recipes {
-        ForgeConfigSpec.BooleanValue coalToDiamondsRecipe;
-        ForgeConfigSpec.BooleanValue explosionCrafting;
-        ForgeConfigSpec.BooleanValue inWorldPlasticSolidification;
-        ForgeConfigSpec.BooleanValue inWorldYeastCrafting;
+        public ForgeConfigSpec.BooleanValue coalToDiamondsRecipe;
+        public ForgeConfigSpec.BooleanValue explosionCrafting;
+        public ForgeConfigSpec.BooleanValue inWorldPlasticSolidification;
+        public ForgeConfigSpec.BooleanValue inWorldYeastCrafting;
     }
 
     public static class Amadron {
-        ForgeConfigSpec.IntValue numPeriodicOffers;
-        ForgeConfigSpec.IntValue numVillagerOffers;
-        ForgeConfigSpec.IntValue reshuffleInterval;
-        ForgeConfigSpec.IntValue maxTradesPerPlayer;
-        ForgeConfigSpec.BooleanValue notifyOfTradeAddition;
-        ForgeConfigSpec.BooleanValue notifyOfTradeRemoval;
-        ForgeConfigSpec.BooleanValue notifyOfDealMade;
+        public ForgeConfigSpec.IntValue numPeriodicOffers;
+        public ForgeConfigSpec.IntValue numVillagerOffers;
+        public ForgeConfigSpec.IntValue reshuffleInterval;
+        public ForgeConfigSpec.IntValue maxTradesPerPlayer;
+        public ForgeConfigSpec.BooleanValue notifyOfTradeAddition;
+        public ForgeConfigSpec.BooleanValue notifyOfTradeRemoval;
+        public ForgeConfigSpec.BooleanValue notifyOfDealMade;
     }
 
     public static class Heat {
-        ForgeConfigSpec.BooleanValue addDefaultFluidEntries;
-        ForgeConfigSpec.DoubleValue blockThermalResistance;
-        ForgeConfigSpec.DoubleValue fluidThermalResistance;
-        ForgeConfigSpec.IntValue defaultFluidHeatCapacity;
-        ForgeConfigSpec.DoubleValue ambientTemperatureBiomeModifier;
-        ForgeConfigSpec.DoubleValue ambientTemperatureHeightModifier;
-        ForgeConfigSpec.DoubleValue airThermalResistance;
+        public ForgeConfigSpec.BooleanValue addDefaultFluidEntries;
+        public ForgeConfigSpec.DoubleValue blockThermalResistance;
+        public ForgeConfigSpec.DoubleValue fluidThermalResistance;
+        public ForgeConfigSpec.IntValue defaultFluidHeatCapacity;
+        public ForgeConfigSpec.DoubleValue ambientTemperatureBiomeModifier;
+        public ForgeConfigSpec.DoubleValue ambientTemperatureHeightModifier;
+        public ForgeConfigSpec.DoubleValue airThermalResistance;
     }
 
     public static class Logistics {
-        ForgeConfigSpec.DoubleValue itemTransportCost;
-        ForgeConfigSpec.DoubleValue fluidTransportCost;
-        ForgeConfigSpec.DoubleValue minPressure;
+        public ForgeConfigSpec.DoubleValue itemTransportCost;
+        public ForgeConfigSpec.DoubleValue fluidTransportCost;
+        public ForgeConfigSpec.DoubleValue minPressure;
     }
 
     public static class Jackhammer {
-        ForgeConfigSpec.IntValue baseAirUsage;
-        ForgeConfigSpec.IntValue maxVeinMinerRange;
+        public ForgeConfigSpec.IntValue baseAirUsage;
+        public ForgeConfigSpec.IntValue maxVeinMinerRange;
     }
 
     public static class Villagers {
-        ForgeConfigSpec.BooleanValue addMechanicHouse;
-        ForgeConfigSpec.EnumValue<VillagerTradesRegistration.WhichTrades> whichTrades;
+        public ForgeConfigSpec.BooleanValue addMechanicHouse;
+        public ForgeConfigSpec.EnumValue<VillagerTradesRegistration.WhichTrades> whichTrades;
     }
 
     public final General general = new General();

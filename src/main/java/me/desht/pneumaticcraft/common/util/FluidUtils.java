@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IBucketPickupHandler;
@@ -202,7 +202,7 @@ public class FluidUtils {
         }
         // actually do the pickup & transfer now
         boolean removeBlock = true;
-        if (fluid == Fluids.WATER && PNCConfig.Common.Advanced.dontUpdateInfiniteWaterSources) {
+        if (fluid == Fluids.WATER && ConfigHelper.common().advanced.dontUpdateInfiniteWaterSources.get()) {
             int n = 0;
             for (Direction d : DirectionUtil.HORIZONTALS) {
                 if (world.getFluidState(pos.relative(d)).getType() == Fluids.WATER && ++n >= 2) {

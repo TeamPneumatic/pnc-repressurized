@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Blocks;
@@ -13,7 +13,7 @@ public class ItemGunAmmoIncendiary extends ItemGunAmmo {
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return PNCConfig.Common.Minigun.incendiaryAmmoCartridgeSize;
+        return ConfigHelper.common().minigun.incendiaryAmmoCartridgeSize.get();
     }
 
     @Override
@@ -37,15 +37,15 @@ public class ItemGunAmmoIncendiary extends ItemGunAmmo {
 
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
-        if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.incendiaryAmmoEntityIgniteChance)) {
-            target.setSecondsOnFire(PNCConfig.Common.Minigun.incendiaryAmmoFireDuration);
+        if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.incendiaryAmmoEntityIgniteChance.get())) {
+            target.setSecondsOnFire(ConfigHelper.common().minigun.incendiaryAmmoFireDuration.get());
         }
         return super.onTargetHit(minigun, ammo, target);
     }
 
     @Override
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
-        if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.incendiaryAmmoBlockIgniteChance)) {
+        if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.incendiaryAmmoBlockIgniteChance.get())) {
             PneumaticCraftUtils.tryPlaceBlock(minigun.getWorld(), brtr.getBlockPos().relative(brtr.getDirection()), minigun.getPlayer(), brtr.getDirection(), Blocks.FIRE.defaultBlockState());
         }
         return super.onBlockHit(minigun, ammo, brtr);

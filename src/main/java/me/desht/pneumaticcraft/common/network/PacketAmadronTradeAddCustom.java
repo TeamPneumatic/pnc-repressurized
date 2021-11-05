@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
@@ -50,7 +50,7 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
             if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
                 player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);
             } else if (AmadronOfferManager.getInstance().addPlayerOffer(offer)) {
-                if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
+                if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
                     NetworkHandler.sendToAll(this);
                 }
                 if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
@@ -65,7 +65,7 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
     }
 
     private void handleClientSide(AmadronPlayerOffer offer) {
-        if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
+        if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
             ClientUtils.getClientPlayer().displayClientMessage(
                     new TranslationTextComponent("pneumaticcraft.message.amadron.playerAddedTrade",
                             offer.getVendorName(),

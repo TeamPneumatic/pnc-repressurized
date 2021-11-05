@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.heat;
 import com.google.common.collect.ArrayListMultimap;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.HeatRegistrationEvent;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import net.minecraft.block.Block;
@@ -70,7 +70,7 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
         for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
             if (fluid == Fluids.EMPTY) {
                 continue;
-            } else if (!PNCConfig.Common.Heat.addDefaultFluidEntries && !fluid.getRegistryName().getNamespace().equals("minecraft")) {
+            } else if (!ConfigHelper.common().heat.addDefaultFluidEntries.get() && !fluid.getRegistryName().getNamespace().equals("minecraft")) {
                 continue;
             }
             Block block = fluid.defaultFluidState().createLegacyBlock().getBlock();
@@ -115,9 +115,9 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
                 block,
                 transformHot, transformHotFlowing,
                 transformCold, transformColdFlowing,
-                PNCConfig.Common.Heat.defaultFluidHeatCapacity,
+                ConfigHelper.common().heat.defaultFluidHeatCapacity.get(),
                 temperature,
-                PNCConfig.Common.Heat.defaultFluidThermalResistance,
+                ConfigHelper.common().heat.fluidThermalResistance.get(),
                 Collections.emptyMap(),
                 ""
         );

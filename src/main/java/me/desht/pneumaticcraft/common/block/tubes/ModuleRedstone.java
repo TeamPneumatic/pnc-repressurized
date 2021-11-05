@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
@@ -259,7 +259,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         if (dyeColor != null) {
             int colorId = dyeColor.getId();
             setColorChannel(colorId);
-            if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
+            if (ConfigHelper.common().general.useUpDyesWhenColoring.get() && !player.isCreative()) {
                 heldStack.shrink(1);
             }
             return true;

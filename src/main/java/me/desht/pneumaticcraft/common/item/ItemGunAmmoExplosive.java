@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -17,7 +17,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ItemGunAmmoExplosive extends ItemGunAmmo {
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return PNCConfig.Common.Minigun.explosiveAmmoCartridgeSize;
+        return ConfigHelper.common().minigun.explosiveAmmoCartridgeSize.get();
     }
 
     @Override
@@ -27,25 +27,25 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
 
     @Override
     public float getDamageMultiplier(Entity target, ItemStack ammoStack) {
-        return (float) PNCConfig.Common.Minigun.explosiveAmmoDamageMultiplier;
+        return ConfigHelper.common().minigun.explosiveAmmoDamageMultiplier.get().floatValue();
     }
 
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
-        if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.explosiveAmmoExplosionChance)) {
-            Explosion.Mode mode = PNCConfig.Common.Minigun.explosiveAmmoTerrainDamage ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
+        if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.explosiveAmmoExplosionChance.get())) {
+            Explosion.Mode mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
             minigun.getWorld().explode(null, target.getX(), target.getY(), target.getZ(),
-                    (float) PNCConfig.Common.Minigun.explosiveAmmoExplosionPower, mode);
+                    ConfigHelper.common().minigun.explosiveAmmoExplosionPower.get().floatValue(), mode);
         }
         return super.onTargetHit(minigun, ammo, target);
     }
 
     @Override
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
-        if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.explosiveAmmoExplosionChance)) {
-            Explosion.Mode mode = PNCConfig.Common.Minigun.explosiveAmmoTerrainDamage ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
+        if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.explosiveAmmoExplosionChance.get())) {
+            Explosion.Mode mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
             minigun.getWorld().explode(null, brtr.getLocation().x, brtr.getLocation().y, brtr.getLocation().z,
-                    (float) PNCConfig.Common.Minigun.explosiveAmmoExplosionPower, mode);
+                    ConfigHelper.common().minigun.explosiveAmmoExplosionPower.get().floatValue(), mode);
         }
         return super.onBlockHit(minigun, ammo, brtr);
     }
@@ -53,7 +53,7 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     @Override
     public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
         super.appendHoverText(stack, world, infoList, extraInfo);
-        if (PNCConfig.Common.Minigun.explosiveAmmoTerrainDamage) {
+        if (ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.terrainSafe"));

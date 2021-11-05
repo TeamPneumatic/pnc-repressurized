@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -60,7 +60,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
 
         if (!level.isClientSide) {
             if (level.getGameTime() % 20 == 0) {
-                int efficiency = Math.max(1, PNCConfig.Common.Machines.pneumaticDynamoEfficiency);
+                int efficiency = Math.max(1, ConfigHelper.common().machines.pneumaticDynamoEfficiency.get());
                 airPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * 100 / efficiency);
                 rfPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() / 100);
             }

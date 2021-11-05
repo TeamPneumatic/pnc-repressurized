@@ -478,7 +478,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
 
 //    @Override
 //    public void animateTick(BlockState state, World par1World, BlockPos pos, Random rand) {
-//        if (!PNCConfig.Client.tubeModuleRedstoneParticles) return;
+//        if (!PNCConfig.client().general.tubeModuleRedstoneParticles.get()) return;
 //
 //        TileEntityPressureTube tePt = TileEntityPressureTube.getTube(par1World.getTileEntity(pos));
 //        if (tePt != null) {

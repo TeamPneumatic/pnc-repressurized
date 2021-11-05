@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
@@ -73,7 +73,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
             notExported = tryEntityExport(maxItems, outputDir.getOpposite());
         }
-        if (notExported == maxItems && PNCConfig.Common.Machines.omniHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (notExported == maxItems && ConfigHelper.common().machines.omniHopperDispenser.get() && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             notExported = exportToInventory(new DropInWorldHandler(getLevel(), getBlockPos(), outputDir), maxItems);
         }
         return notExported < maxItems;

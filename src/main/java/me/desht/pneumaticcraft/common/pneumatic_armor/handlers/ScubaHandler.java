@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -55,10 +55,10 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
             int baseVol = ((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume();
             int vol = PressureHelper.getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.VOLUME));
             float airInHelmet = commonArmorHandler.getArmorPressure(EquipmentSlotType.HEAD) * vol;
-            int playerAir = (int) Math.min(300 - player.getAirSupply(), airInHelmet / PNCConfig.Common.Armor.scubaMultiplier);
+            int playerAir = (int) Math.min(300 - player.getAirSupply(), airInHelmet / ConfigHelper.common().armor.scubaMultiplier.get());
             player.setAirSupply(player.getAirSupply() + playerAir);
 
-            int airUsed = playerAir * PNCConfig.Common.Armor.scubaMultiplier;
+            int airUsed = playerAir * ConfigHelper.common().armor.scubaMultiplier.get();
             commonArmorHandler.addAir(EquipmentSlotType.HEAD, -airUsed);
 
             NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.blockPosition(), 1f, 1.0f, false), (ServerPlayerEntity) player);

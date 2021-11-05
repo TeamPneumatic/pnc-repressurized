@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 public class ItemGunAmmoWeighted extends ItemGunAmmo {
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return PNCConfig.Common.Minigun.weightedAmmoCartridgeSize;
+        return ConfigHelper.common().minigun.weightedAmmoCartridgeSize.get();
     }
 
     @Override
@@ -18,16 +18,16 @@ public class ItemGunAmmoWeighted extends ItemGunAmmo {
 
     @Override
     public float getRangeMultiplier(ItemStack ammoStack) {
-        return (float) PNCConfig.Common.Minigun.weightedAmmoRangeMultiplier;
+        return ConfigHelper.common().minigun.weightedAmmoRangeMultiplier.get().floatValue();
     }
 
     @Override
     public float getAirUsageMultiplier(Minigun minigun, ItemStack ammoStack) {
-        return (float) PNCConfig.Common.Minigun.weightedAmmoAirUsageMultiplier;
+        return ConfigHelper.common().minigun.weightedAmmoAirUsageMultiplier.get().floatValue();
     }
 
     @Override
     public float getDamageMultiplier(Entity target, ItemStack ammoStack) {
-        return (float) PNCConfig.Common.Minigun.weightedAmmoDamageMultiplier;
+        return ConfigHelper.common().minigun.weightedAmmoDamageMultiplier.get().floatValue();
     }
 }

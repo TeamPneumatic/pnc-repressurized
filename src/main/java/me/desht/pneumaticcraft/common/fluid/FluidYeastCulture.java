@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.fluid;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -44,7 +44,7 @@ public class FluidYeastCulture {
 
         @Override
         public void tick(World worldIn, BlockPos pos, FluidState state) {
-            if (PNCConfig.Common.Recipes.inWorldYeastCrafting) {
+            if (ConfigHelper.common().recipes.inWorldYeastCrafting.get()) {
                 List<ItemEntity> entities = worldIn.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
                 if (!entities.isEmpty()) {
                     for (Direction d : DirectionUtil.VALUES) {

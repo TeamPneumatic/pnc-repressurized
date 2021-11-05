@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
@@ -107,7 +107,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     @Override
     public void onTrade(int tradingAmount, String buyingPlayer) {
         PlayerEntity player = PneumaticCraftUtils.getPlayerFromId(offeringPlayerId);
-        if (player != null && PNCConfig.Common.Amadron.notifyOfDealMade) {
+        if (player != null && ConfigHelper.common().amadron.notifyOfDealMade.get()) {
             NetworkHandler.sendToPlayer(new PacketAmadronTradeNotifyDeal(this, tradingAmount, buyingPlayer), (ServerPlayerEntity) player);
         }
     }

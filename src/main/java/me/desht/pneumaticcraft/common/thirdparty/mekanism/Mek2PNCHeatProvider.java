@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerAdapter;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Integration;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import mekanism.api.heat.IHeatHandler;
 import mekanism.common.tile.TileEntityQuantumEntangloporter;
@@ -109,7 +109,7 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
         public void addHeat(double amount) {
             if (amount > 0) {
                 // thermal efficiency factor can't be 0 at this point, or adapter caps would not have been added
-                foreignHeatCap.ifPresent(h -> h.handleHeat(amount / Integration.mekThermalEfficiencyFactor));
+                foreignHeatCap.ifPresent(h -> h.handleHeat(amount / ConfigHelper.common().integration.mekThermalEfficiencyFactor.get()));
             }
         }
     }

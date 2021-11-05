@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
@@ -374,7 +374,7 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     public void onUpdateTasks() {
-        if (PNCConfig.Common.Advanced.stopDroneAI) return;
+        if (ConfigHelper.common().advanced.stopDroneAI.get()) return;
 
         pickupItemsIfMagnet();
 

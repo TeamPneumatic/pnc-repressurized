@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
@@ -91,6 +91,6 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
 
     @Override
     protected boolean isUpgradeAvailable(EnumUpgrade upgrade) {
-        return upgrade != EnumUpgrade.DISPENSER || PNCConfig.Common.Machines.omniHopperDispenser;
+        return upgrade != EnumUpgrade.DISPENSER || ConfigHelper.common().machines.omniHopperDispenser.get();
     }
 }

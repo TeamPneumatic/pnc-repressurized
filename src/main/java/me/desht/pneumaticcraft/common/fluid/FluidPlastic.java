@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.fluid;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -41,7 +41,7 @@ public abstract class FluidPlastic {
 
         @Override
         public void tick(World worldIn, BlockPos pos, FluidState state) {
-            if (PNCConfig.Common.Recipes.inWorldPlasticSolidification) {
+            if (ConfigHelper.common().recipes.inWorldPlasticSolidification.get()) {
                 ItemEntity item = new ItemEntity(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, new ItemStack(ModItems.PLASTIC.get()));
                 worldIn.addFreshEntity(item);
                 worldIn.setBlock(pos, Blocks.AIR.defaultBlockState(), Constants.BlockFlags.DEFAULT);
@@ -63,7 +63,7 @@ public abstract class FluidPlastic {
 
         @Override
         public String getCustomTooltipTranslationKey() {
-            return PNCConfig.Common.Recipes.inWorldPlasticSolidification ? getDescriptionId() : getDescriptionId() + ".not_in_world";
+            return ConfigHelper.common().recipes.inWorldPlasticSolidification.get() ? getDescriptionId() : getDescriptionId() + ".not_in_world";
         }
     }
 }
