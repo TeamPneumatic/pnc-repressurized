@@ -48,6 +48,10 @@ public class ContainerChargingStationUpgradeManager extends ContainerPneumaticBa
         return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_JACKHAMMER.get(), windowId, inv, data);
     }
 
+    public static ContainerChargingStationUpgradeManager createAmadronContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
+        return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_AMADRON.get(), windowId, inv, data);
+    }
+
     private class UpgradeSlot extends SlotItemHandler {
         UpgradeSlot(TileEntityChargingStation te, int slotIndex, int posX, int posY) {
             super(te.getChargeableInventory(), slotIndex, posX, posY);

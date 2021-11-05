@@ -78,6 +78,10 @@ public class UpgradesDBSetup {
                 .with(EnumUpgrade.MAGNET, 1)
         );
 
+        db.addApplicableUpgrades(ModItems.AMADRON_TABLET.get(), new Builder()
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+        );
+
         // Pneumatic Armor
         List<Builder> armor = Arrays.asList(new Builder(), new Builder(), new Builder(), new Builder());
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {

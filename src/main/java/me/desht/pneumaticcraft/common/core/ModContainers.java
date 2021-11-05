@@ -33,8 +33,10 @@ public class ModContainers {
             = register("charging_drone", ContainerChargingStationUpgradeManager::createDroneContainer);
     public static final RegistryObject<ContainerType<ContainerChargingStationUpgradeManager>> CHARGING_ARMOR
             = register("charging_armor", ContainerChargingStationUpgradeManager::createArmorContainer);
-    public static final RegistryObject<ContainerType<ContainerChargingStationUpgradeManager>> CHARGING_JACKHAMMER =
-            register("charging_jackhammer", ContainerChargingStationUpgradeManager::createJackhammerContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationUpgradeManager>> CHARGING_JACKHAMMER
+            = register("charging_jackhammer", ContainerChargingStationUpgradeManager::createJackhammerContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationUpgradeManager>> CHARGING_AMADRON
+            = register("charging_amadron", ContainerChargingStationUpgradeManager::createAmadronContainer);
     public static final RegistryObject<ContainerType<ContainerCreativeCompressor>> CREATIVE_COMPRESSOR
             = register("creative_compressor", ContainerCreativeCompressor::new);
     public static final RegistryObject<ContainerType<ContainerElectrostaticCompressor>> ELECTROSTATIC_COMPRESSOR

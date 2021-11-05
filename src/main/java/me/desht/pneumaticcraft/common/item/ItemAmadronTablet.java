@@ -1,14 +1,19 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
+import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,10 +43,12 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemAmadronTablet extends ItemPressurizable implements IPositionProvider {
+public class ItemAmadronTablet extends ItemPressurizable
+        implements IPositionProvider, IChargeableContainerProvider, IUpgradeAcceptor {
     public ItemAmadronTablet() {
         super(ModItems.toolProps(), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
@@ -184,5 +191,20 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
                 return new ContainerAmadron(windowId, playerInventory, handIn);
             }
         }, buf -> buf.writeBoolean(handIn == Hand.MAIN_HAND));
+    }
+
+    @Override
+    public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
+        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
+    }
+
+    @Override
+    public String getUpgradeAcceptorTranslationKey() {
+        return getDescriptionId();
+    }
+
+    @Override
+    public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
+        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_AMADRON.get());
     }
 }

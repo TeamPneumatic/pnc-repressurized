@@ -233,6 +233,7 @@ public class ClientSetup {
         ScreenManager.register(ModContainers.AMADRON_ADD_TRADE.get(), GuiAmadronAddTrade::new);
         ScreenManager.register(ModContainers.ASSEMBLY_CONTROLLER.get(), GuiAssemblyController::new);
         ScreenManager.register(ModContainers.CHARGING_STATION.get(), GuiChargingStation::new);
+        ScreenManager.register(ModContainers.CHARGING_AMADRON.get(), GuiAmadronCharging::new);
         ScreenManager.register(ModContainers.CHARGING_ARMOR.get(), GuiPneumaticArmor::new);
         ScreenManager.register(ModContainers.CHARGING_DRONE.get(), GuiDrone::new);
         ScreenManager.register(ModContainers.CHARGING_MINIGUN.get(), GuiMinigun::new);
