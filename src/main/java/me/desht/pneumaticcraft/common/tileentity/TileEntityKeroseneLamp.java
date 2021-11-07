@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -161,7 +161,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
     private void recalculateFuelQuality() {
         if (!tank.isEmpty()) {
-            if (ConfigHelper.common().machines.keroseneLampCanUseAnyFuel.get()) {
+            if (PNCConfig.Common.Machines.keroseneLampCanUseAnyFuel) {
                 // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
                 fuelQuality = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(level, tank.getFluid().getFluid()) / 110f;
             } else {
@@ -170,7 +170,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
             if (tank.getFluid().getFluid().is(PneumaticCraftTags.Fluids.KEROSENE)) {
                 fuelQuality *= 2.5f;  // kerosene is better than everything for lighting purposes
             }
-            fuelQuality *= ConfigHelper.common().machines.keroseneLampFuelEfficiency.get();
+            fuelQuality *= PNCConfig.Common.Machines.keroseneLampFuelEfficiency;
         }
     }
 
@@ -282,7 +282,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     }
 
     private void tryAddLight(BlockPos pos, BlockPos lampPos) {
-        if (!ConfigHelper.common().advanced.disableKeroseneLampFakeAirBlock.get() && PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
+        if (!PNCConfig.Common.Advanced.disableKeroseneLampFakeAirBlock && PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
             if (getLevel().isEmptyBlock(pos) && !isLampLight(pos)) {
                 if (passesRaytraceTest(pos, lampPos)) {
                     getLevel().setBlockAndUpdate(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().defaultBlockState());

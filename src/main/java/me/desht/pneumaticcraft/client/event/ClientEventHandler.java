@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.client.gui.widget.IDrawAfterRender;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
@@ -100,7 +100,7 @@ public class ClientEventHandler {
 
     private static void setRenderHead(LivingEntity entity, boolean setRender) {
         if (entity.getItemBySlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get()
-                && (ConfigHelper.client().armor.fancyArmorModels.get() || DateEventHandler.isIronManEvent())) {
+                && (PNCConfig.Client.Armor.fancyArmorModels || DateEventHandler.isIronManEvent())) {
             EntityRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
             if (renderer instanceof BipedRenderer) {
                 BipedModel<?> modelBiped = ((BipedRenderer<?,?>) renderer).getModel();

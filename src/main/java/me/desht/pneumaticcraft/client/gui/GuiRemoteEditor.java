@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
@@ -116,7 +117,7 @@ public class GuiRemoteEditor extends GuiRemote {
 
         WidgetCheckBox snapCheck = new WidgetCheckBox(leftPos + 194, topPos + 105, 0xFF404040, xlate("pneumaticcraft.gui.misc.snapToGrid"),
                 b -> ConfigHelper.setGuiRemoteGridSnap(b.checked));
-        snapCheck.checked = ConfigHelper.client().general.guiRemoteGridSnap.get();
+        snapCheck.checked = PNCConfig.Client.guiRemoteGridSnap;
         addButton(snapCheck);
 
         addButton(new WidgetLabel(leftPos + 234, topPos + 7, xlate("pneumaticcraft.gui.remote.widgetTray").withStyle(TextFormatting.BOLD)).setAlignment(WidgetLabel.Alignment.CENTRE));
@@ -241,7 +242,7 @@ public class GuiRemoteEditor extends GuiRemote {
             int y = (int) mouseY;
             int x1 = x - dragMouseStartX + dragWidgetStartX;
             int y1 = y - dragMouseStartY + dragWidgetStartY;
-            if (ConfigHelper.client().general.guiRemoteGridSnap.get()) {
+            if (PNCConfig.Client.guiRemoteGridSnap) {
                 x1 = (x1 / 4) * 4;
                 y1 = (y1 / 4) * 4;
             }

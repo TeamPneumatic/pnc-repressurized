@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.General;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -41,7 +41,7 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
     protected boolean isEntityValid(Entity entity) {
         if (entity instanceof LivingEntity || entity instanceof AbstractMinecartEntity || entity instanceof BoatEntity) {
             return drone.getCarryingEntities().isEmpty();
-        } else if (ConfigHelper.common().general.dronesCanImportXPOrbs.get() && entity instanceof ExperienceOrbEntity) {
+        } else if (General.dronesCanImportXPOrbs && entity instanceof ExperienceOrbEntity) {
             return drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
                     .map(handler -> PneumaticCraftUtils.fillTankWithOrb(handler, (ExperienceOrbEntity) entity, FluidAction.SIMULATE))
                     .orElse(false);
@@ -51,7 +51,7 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
 
     @Override
     protected boolean doAction() {
-        if (ConfigHelper.common().general.dronesCanImportXPOrbs.get() && targetedEntity instanceof ExperienceOrbEntity) {
+        if (General.dronesCanImportXPOrbs && targetedEntity instanceof ExperienceOrbEntity) {
             drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(handler -> {
                 ExperienceOrbEntity orb = (ExperienceOrbEntity) targetedEntity;
                 ItemStack heldStack = drone.getInv().getStackInSlot(0);

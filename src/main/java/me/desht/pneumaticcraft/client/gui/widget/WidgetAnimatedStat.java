@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -251,7 +251,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     private void calculateColorHighlights(int color) {
-        if (ConfigHelper.client().general.guiBevel.get()) {
+        if (PNCConfig.Client.guiBevel) {
             float fgR = (float) (color >> 16 & 255) / 255.0F;
             float fgG = (float) (color >> 8 & 255) / 255.0F;
             float fgB = (float) (color & 255) / 255.0F;

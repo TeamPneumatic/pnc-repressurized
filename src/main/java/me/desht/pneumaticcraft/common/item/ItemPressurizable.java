@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.enchantment.IVanishable;
@@ -154,7 +154,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
             CompoundNBT tag2 = tag.copy();
             int volume = ((IPressurizableItem) stack.getItem()).getEffectiveVolume(stack);
             int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
-            tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / ConfigHelper.common().advanced.pressureSyncPrecision.get()));
+            tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / PNCConfig.Common.Advanced.pressureSyncPrecision));
             return tag2;
         } else {
             return tag;

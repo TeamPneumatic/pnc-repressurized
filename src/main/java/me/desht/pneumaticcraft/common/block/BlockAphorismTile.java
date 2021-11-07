@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
@@ -174,12 +174,12 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
             if (clickedBorder(state, brtr.getLocation())) {
                 if (teAT.getBorderColor() != color.getId()) {
                     teAT.setBorderColor(color.getId());
-                    if (ConfigHelper.common().general.useUpDyesWhenColoring.get()) player.getItemInHand(hand).shrink(1);
+                    if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getItemInHand(hand).shrink(1);
                 }
             } else {
                 if (teAT.getBackgroundColor() != color.getId()) {
                     teAT.setBackgroundColor(color.getId());
-                    if (ConfigHelper.common().general.useUpDyesWhenColoring.get()) player.getItemInHand(hand).shrink(1);
+                    if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getItemInHand(hand).shrink(1);
                 }
             }
             return ActionResultType.CONSUME;

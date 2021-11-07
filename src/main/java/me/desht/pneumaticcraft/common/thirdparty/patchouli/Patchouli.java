@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.IDocsProvider;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
@@ -107,12 +107,12 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     }
 
     private void setConfigFlags(PatchouliAPI.IPatchouliAPI papi) {
-        papi.setConfigFlag(Names.MOD_ID + ":" + "inWorldPlasticSolidification", ConfigHelper.common().recipes.inWorldPlasticSolidification.get());
-        papi.setConfigFlag(Names.MOD_ID + ":" + "inWorldYeastCrafting", ConfigHelper.common().recipes.inWorldYeastCrafting.get());
-        papi.setConfigFlag(Names.MOD_ID + ":" + "liquidHopperDispenser", ConfigHelper.common().machines.liquidHopperDispenser.get());
-        papi.setConfigFlag(Names.MOD_ID + ":" + "omniHopperDispenser", ConfigHelper.common().machines.omniHopperDispenser.get());
-        papi.setConfigFlag(Names.MOD_ID + ":" + "electricCompressorEnabled",  false); // PNCConfig.common().recipes.enableElectricCompressorRecipe.get() && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
-        papi.setConfigFlag(Names.MOD_ID + ":" + "pneumaticGeneratorEnabled", false); // PNCConfig.common().recipes.enablePneumaticGeneratorRecipe.get() && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
+        papi.setConfigFlag(Names.MOD_ID + ":" + "inWorldPlasticSolidification", PNCConfig.Common.Recipes.inWorldPlasticSolidification);
+        papi.setConfigFlag(Names.MOD_ID + ":" + "inWorldYeastCrafting", PNCConfig.Common.Recipes.inWorldYeastCrafting);
+        papi.setConfigFlag(Names.MOD_ID + ":" + "liquidHopperDispenser", PNCConfig.Common.Machines.liquidHopperDispenser);
+        papi.setConfigFlag(Names.MOD_ID + ":" + "omniHopperDispenser", PNCConfig.Common.Machines.omniHopperDispenser);
+        papi.setConfigFlag(Names.MOD_ID + ":" + "electricCompressorEnabled",  false); // PNCConfig.Common.Recipes.enableElectricCompressorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
+        papi.setConfigFlag(Names.MOD_ID + ":" + "pneumaticGeneratorEnabled", false); // PNCConfig.Common.Recipes.enablePneumaticGeneratorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
     }
 
     @SubscribeEvent

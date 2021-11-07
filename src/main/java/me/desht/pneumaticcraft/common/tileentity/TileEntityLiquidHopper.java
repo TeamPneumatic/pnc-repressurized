@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockLiquidHopper;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -136,7 +136,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         }
 
         // try to pour fluid into the world
-        if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(EnumUpgrade.DISPENSER) > 0
+        if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0
                 && tank.getFluidAmount() >= leaveMaterialCount + FluidAttributes.BUCKET_VOLUME) {
             return FluidUtils.tryPourOutFluid(outputCap, level, getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
         }
@@ -186,7 +186,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
             }
         }
 
-        if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             BlockPos neighborPos = getBlockPos().relative(inputDir);
             return !FluidUtils.tryPickupFluid(inputCap, level, neighborPos, false, FluidAction.EXECUTE).isEmpty();
         }

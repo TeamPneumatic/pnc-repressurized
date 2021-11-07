@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
@@ -62,7 +62,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     public void init() {
         super.init();
 
-        boolean advancedMode = ConfigHelper.client().general.programmerDifficulty.get() == WidgetDifficulty.ADVANCED;
+        boolean advancedMode = PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED;
 
         // radio buttons to select between filtering by item or variable
         boolean useItemFilter = progWidget.getVariable().isEmpty() || !advancedMode;
@@ -144,9 +144,9 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         itemSearchButton.visible = itemRad.isChecked();
         invSearchButton.visible = itemRad.isChecked();
-        variableLabel.visible = varRad.isChecked() && ConfigHelper.client().general.programmerDifficulty.get() == WidgetDifficulty.ADVANCED;
+        variableLabel.visible = varRad.isChecked() && PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED;
         itemLabel.visible = !variableLabel.visible;
-        variableField.visible = varRad.isChecked() && ConfigHelper.client().general.programmerDifficulty.get() == WidgetDifficulty.ADVANCED;
+        variableField.visible = varRad.isChecked() && PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED;
 
         if (itemRad.isChecked()) {
             itemX = itemLabel.getWidth() + 9;

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
@@ -206,7 +206,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
                 TileEntity te = world.getBlockEntity(isTopDoor(state) ? pos.below() : pos);
                 if (te instanceof TileEntityPneumaticDoor) {
                     TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
-                    if (teDoor.setColor(dyeColor) && ConfigHelper.common().general.useUpDyesWhenColoring.get()) {
+                    if (teDoor.setColor(dyeColor) && PNCConfig.Common.General.useUpDyesWhenColoring) {
                         player.getItemInHand(hand).shrink(1);
                     }
                 }

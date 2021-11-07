@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.worldgen;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.General;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModDecorators;
 import me.desht.pneumaticcraft.common.core.ModFeatures;
@@ -50,7 +51,7 @@ public class ModWorldGen {
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {
-        if (!isBiomeBlacklisted(event.getName()) && !ConfigHelper.common().general.oilWorldGenCategoryBlacklist.get().contains(event.getCategory().getName())) {
+        if (!isBiomeBlacklisted(event.getName()) && !General.oilWorldGenCategoryBlacklist.contains(event.getCategory().getName())) {
             event.getGeneration().addFeature(GenerationStage.Decoration.LAKES, OIL_LAKES);
         }
     }
@@ -62,14 +63,14 @@ public class ModWorldGen {
 
     static boolean isBiomeBlacklisted(ResourceLocation biomeName) {
         if (biomeMatcher == null) {
-            biomeMatcher = new WildcardedRLMatcher(ConfigHelper.common().general.oilWorldGenBlacklist.get());
+            biomeMatcher = new WildcardedRLMatcher(General.oilWorldGenBlacklist);
         }
         return biomeMatcher.test(biomeName);
     }
 
     static boolean isDimensionBlacklisted(ISeedReader level) {
         if (dimensionMatcher == null) {
-            dimensionMatcher = new WildcardedRLMatcher(ConfigHelper.common().general.oilWorldGenDimensionBlacklist.get());
+            dimensionMatcher = new WildcardedRLMatcher(General.oilWorldGenDimensionBlacklist);
         }
         return dimensionMatcher.test(level.getLevel().dimension().getRegistryName());
     }

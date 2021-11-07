@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
@@ -48,7 +48,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return ConfigHelper.common().minigun.freezingAmmoCartridgeSize.get();
+        return PNCConfig.Common.Minigun.freezingAmmoCartridgeSize;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
         if (target instanceof LivingEntity) {
             LivingEntity living = (LivingEntity) target;
             living.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, living.getRandom().nextInt(40) + 40, 3));
-            if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoEntityIceChance.get())) {
+            if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoEntityIceChance)) {
                 createFreezeCloud(minigun, target);
             }
         }
@@ -97,7 +97,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         World world = minigun.getWorld();
         BlockPos pos = brtr.getBlockPos();
-        if (!world.dimensionType().ultraWarm() && minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoBlockIceChance.get())) {
+        if (!world.dimensionType().ultraWarm() && minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoBlockIceChance)) {
             BlockPos pos1;
             if (world.getBlockState(pos).getShape(world, pos) == VoxelShapes.block() || brtr.getDirection() != Direction.UP) {
                 pos1 = pos.relative(brtr.getDirection());

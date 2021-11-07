@@ -71,11 +71,9 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
                                 .append(xlate(type.getDescriptionId()).withStyle(TextFormatting.YELLOW))
                                 .append(": " + stats.getPercentage(type) + "%").withStyle(TextFormatting.WHITE))
                         );
-                if (stats.getUnusedPercentage() > 0) {
-                    tooltip.add(Symbols.bullet()
-                            .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.YELLOW, TextFormatting.ITALIC))
-                            .append(": " + stats.getUnusedPercentage() + "%").withStyle(TextFormatting.WHITE));
-                }
+                tooltip.add(Symbols.bullet()
+                        .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.YELLOW, TextFormatting.ITALIC))
+                        .append(": " + stats.getUnusedPercentage() + "%").withStyle(TextFormatting.WHITE));
             } else {
                 tooltip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.YELLOW));
             }

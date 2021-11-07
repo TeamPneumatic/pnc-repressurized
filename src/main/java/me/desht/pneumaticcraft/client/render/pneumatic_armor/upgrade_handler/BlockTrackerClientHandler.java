@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -95,7 +95,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         BlockPos.Mutable pos = new BlockPos.Mutable();
         for (int i = 0; i < HARD_MAX_BLOCKS_PER_TICK; i++) {
             // 1% of a tick = 500,000ns
-            if ((i & 0xff) == 0 && System.nanoTime() - now > ConfigHelper.client().armor.blockTrackerMaxTimePerTick.get() * 500_000L) {
+            if ((i & 0xff) == 0 && System.nanoTime() - now > PNCConfig.Client.Armor.blockTrackerMaxTimePerTick * 500_000L) {
                 break;
             }
 
