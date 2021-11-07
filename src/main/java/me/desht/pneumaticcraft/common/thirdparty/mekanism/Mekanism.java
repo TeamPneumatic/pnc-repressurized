@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -39,7 +39,7 @@ public class Mekanism implements IThirdParty {
 
     @SubscribeEvent
     public static void attachHeatAdapters(AttachCapabilitiesEvent<TileEntity> event) {
-        if (ConfigHelper.common().integration.mekThermalEfficiencyFactor.get() != 0 && MekanismIntegration.CAPABILITY_HEAT_HANDLER != null) {
+        if (PNCConfig.Common.Integration.mekThermalEfficiencyFactor != 0 && MekanismIntegration.CAPABILITY_HEAT_HANDLER != null) {
             if (event.getObject().getType().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
                 event.addCapability(RL("pnc2mek_heat_adapter"), new PNC2MekHeatProvider(event.getObject()));
             }

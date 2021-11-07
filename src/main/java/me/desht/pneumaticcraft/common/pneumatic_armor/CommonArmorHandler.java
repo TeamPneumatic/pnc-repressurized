@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Armor;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -243,10 +243,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         if (slot == EquipmentSlotType.FEET && player.level.isClientSide && player.isInWater() && player.zza > 0) {
             // doing this client-side only appears to be effective
             if (isArmorReady(EquipmentSlotType.FEET) && getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.FLIPPERS) > 0) {
-                player.moveRelative(player.isOnGround() ?
-                        ConfigHelper.common().armor.flippersSpeedBoostGround.get().floatValue() :
-                        ConfigHelper.common().armor.flippersSpeedBoostFloating.get().floatValue(),
-                        FORWARD);
+                player.moveRelative((float) (player.isOnGround() ? Armor.flippersSpeedBoostGround : Armor.flippersSpeedBoostFloating), FORWARD);
             }
         }
 
@@ -258,7 +255,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private void tryRepairArmor(EquipmentSlotType slot) {
         int upgrades = getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE, PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
         int interval = 120 - (20 * upgrades);
-        int airUsage = ConfigHelper.common().armor.repairAirUsage.get() * upgrades;
+        int airUsage = Armor.repairAirUsage * upgrades;
 
         ItemStack armorStack = player.getItemBySlot(slot);
         if (armorStack.getDamageValue() > 0
@@ -296,7 +293,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 upgradeMatrix.get(slot.getIndex()).put(upgrade.getUpgradeType(), stack.getCount() * upgrade.getTier());
             }
         }
-        startupTimes[slot.getIndex()] = (int) (ConfigHelper.common().armor.armorStartupTime.get() * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
+        startupTimes[slot.getIndex()] = (int) (Armor.armorStartupTime * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
 
         ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).forEach(handler -> {
             if (isUpgradeInserted(slot, handler.getIndex())) {

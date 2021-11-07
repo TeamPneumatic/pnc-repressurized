@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Heat;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
@@ -29,10 +29,7 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
     private static final Int2ObjectOpenHashMap<HeatExchangerLogicAmbient> exchangers = new Int2ObjectOpenHashMap<>();
 
     public static HeatExchangerLogicAmbient atPosition(IWorld world, BlockPos pos) {
-        double biomeMod = ConfigHelper.common().heat.ambientTemperatureBiomeModifier.get();
-        double heightMod = ConfigHelper.common().heat.ambientTemperatureHeightModifier.get();
-
-        if (biomeMod == 0 && heightMod == 0) {
+        if (Heat.ambientTempBiomeModifier == 0 && Heat.ambientTempHeightModifier == 0) {
             return DEFAULT_AIR_EXCHANGER;
         }
 
@@ -44,7 +41,7 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
         int y1 = (int)(world.getSeaLevel() * 0.75f);
         int h = pos.getY() < y1 ? y1 - pos.getY() : 0;
 
-        int temp = (int) (BASE_AMBIENT_TEMP + biomeMod * t + heightMod * h);
+        int temp = (int) (BASE_AMBIENT_TEMP + Heat.ambientTempBiomeModifier * t + Heat.ambientTempHeightModifier * h);
         return exchangers.computeIfAbsent(temp, HeatExchangerLogicAmbient::new);
     }
 
@@ -53,6 +50,6 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
     }
 
     private HeatExchangerLogicAmbient(double temperature) {
-        super(temperature, ConfigHelper.common().heat.airThermalResistance.get());
+        super(temperature, Heat.airThermalResistance);
     }
 }

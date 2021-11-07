@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -146,7 +146,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     }
 
     private boolean teleportationAllowed(BlockPos pos) {
-        int max = ConfigHelper.common().advanced.maxDroneTeleportRange.get();
+        int max = PNCConfig.Common.Advanced.maxDroneTeleportRange;
         return !droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerThan(droneEntity.getDronePos(), max);
     }
 
@@ -189,8 +189,8 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
             if (!isDone()) {
                 followThePath();
                 if (path != null && !path.isDone()) {
-                    if (ConfigHelper.common().advanced.stuckDroneTeleportTicks.get() > 0 && mob.getDeltaMovement().lengthSqr() < 0.0001) {
-                        if (stuckTicks++ > ConfigHelper.common().advanced.stuckDroneTeleportTicks.get()) {
+                    if (PNCConfig.Common.Advanced.stuckDroneTeleportTicks > 0 && mob.getDeltaMovement().lengthSqr() < 0.0001) {
+                        if (stuckTicks++ > PNCConfig.Common.Advanced.stuckDroneTeleportTicks) {
                             Vector3d v = droneEntity.getDronePos();
                             droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.stuckBlock",
                                     new BlockPos(Math.round(v.x), Math.round(v.y), Math.round(v.z)));

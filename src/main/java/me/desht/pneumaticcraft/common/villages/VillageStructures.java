@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.villages;
 
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -66,7 +66,7 @@ public class VillageStructures {
     }
 
     public static void addMechanicHouse(final FMLServerAboutToStartEvent event) {
-        if (ConfigHelper.common().villagers.addMechanicHouse.get()) {
+        if (PNCConfig.Common.Villagers.addMechanicHouse) {
             MutableRegistry<JigsawPattern> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY);
 
             for (String biome : new String[]{"plains", "desert", "savanna", "taiga", "snowy"}) {

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.GuiMicromissile;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
@@ -83,7 +83,7 @@ public class ItemMicromissiles extends Item {
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return ConfigHelper.common().micromissiles.missilePodSize.get();
+        return PNCConfig.Common.Micromissiles.missilePodSize;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ItemMicromissiles extends Item {
         missile.setPos(newPos.x, newPos.y, newPos.z);
         missile.shootFromRotation(playerIn, playerIn.xRot, playerIn.yRot, 0.0F, getInitialVelocity(stack), 0.0F);
 
-        playerIn.getCooldowns().addCooldown(this, ConfigHelper.common().micromissiles.launchCooldown.get());
+        playerIn.getCooldowns().addCooldown(this, PNCConfig.Common.Micromissiles.launchCooldown);
 
         if (!worldIn.isClientSide) {
             RayTraceResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);
@@ -164,7 +164,7 @@ public class ItemMicromissiles extends Item {
             curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
                     .append(": ")
                     .append(xlate(mode.getTranslationKey()).withStyle(TextFormatting.AQUA)));
-            if (ConfigHelper.common().micromissiles.damageTerrain.get()) {
+            if (PNCConfig.Common.Micromissiles.damageTerrain) {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
             } else {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainSafe"));

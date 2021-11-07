@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
@@ -91,7 +91,7 @@ public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
                 if (!commonArmorHandler.hasMinPressure(EquipmentSlotType.CHEST)) break;
                 item.setPos(player.getX(), player.getY(), player.getZ());
                 if (item instanceof ItemEntity) ((ItemEntity) item).setPickUpDelay(0);
-                commonArmorHandler.addAir(EquipmentSlotType.CHEST, -ConfigHelper.common().armor.magnetAirUsage.get());
+                commonArmorHandler.addAir(EquipmentSlotType.CHEST, -PNCConfig.Common.Armor.magnetAirUsage);
             }
         }
     }

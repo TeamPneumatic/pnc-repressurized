@@ -17,46 +17,49 @@
 
 package me.desht.pneumaticcraft.common.config;
 
-import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.Locale;
 
 public class ClientConfig {
     public static class General {
-        public ForgeConfigSpec.BooleanValue aphorismDrama;
-        public ForgeConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
-        public ForgeConfigSpec.BooleanValue topShowsFluids;
-        public ForgeConfigSpec.BooleanValue logisticsGuiTint;
-        public ForgeConfigSpec.BooleanValue guiBevel;
-        public ForgeConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
-        public ForgeConfigSpec.BooleanValue tubeModuleRedstoneParticles;
-        public ForgeConfigSpec.BooleanValue guiRemoteGridSnap;
-        public ForgeConfigSpec.BooleanValue programmerGuiPauses;
-        public ForgeConfigSpec.BooleanValue notifyAmadronOfferUpdates;
+        ForgeConfigSpec.BooleanValue aphorismDrama;
+        ForgeConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
+        ForgeConfigSpec.BooleanValue topShowsFluids;
+        ForgeConfigSpec.BooleanValue logisticsGuiTint;
+        ForgeConfigSpec.BooleanValue semiBlockLighting;
+        ForgeConfigSpec.BooleanValue guiBevel;
+        ForgeConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
+        ForgeConfigSpec.BooleanValue tubeModuleRedstoneParticles;
+        ForgeConfigSpec.BooleanValue guiRemoteGridSnap;
+        ForgeConfigSpec.BooleanValue programmerGuiPauses;
+        ForgeConfigSpec.BooleanValue notifyAmadronOfferUpdates;
     }
 
     public static class Armor {
-        public ForgeConfigSpec.IntValue blockTrackerMaxTimePerTick;
-        public ForgeConfigSpec.DoubleValue leggingsFOVFactor;
-        public ForgeConfigSpec.BooleanValue fancyArmorModels;
-        public ForgeConfigSpec.BooleanValue pathEnabled;
-        public ForgeConfigSpec.BooleanValue wirePath;
-        public ForgeConfigSpec.BooleanValue xRayEnabled;
-        public ForgeConfigSpec.EnumValue<CoordTrackerHandler.PathUpdateSetting> pathUpdateSetting;
-        public ForgeConfigSpec.BooleanValue showPressureNumerically;
-        public ForgeConfigSpec.BooleanValue showEnchantGlint;
+        ForgeConfigSpec.IntValue blockTrackerMaxTimePerTick;
+        ForgeConfigSpec.DoubleValue leggingsFOVFactor;
+        ForgeConfigSpec.BooleanValue fancyArmorModels;
+        ForgeConfigSpec.BooleanValue pathEnabled;
+        ForgeConfigSpec.BooleanValue wirePath;
+        ForgeConfigSpec.BooleanValue xRayEnabled;
+        ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
+        ForgeConfigSpec.BooleanValue showPressureNumerically;
+        ForgeConfigSpec.BooleanValue showEnchantGlint;
     }
 
     public static class Sound {
-        public ForgeConfigSpec.DoubleValue elevatorVolumeRunning;
-        public ForgeConfigSpec.DoubleValue elevatorVolumeStartStop;
-        public ForgeConfigSpec.DoubleValue airLeakVolume;
-        public ForgeConfigSpec.DoubleValue minigunVolumeHeld;
-        public ForgeConfigSpec.DoubleValue minigunVolumeDrone;
-        public ForgeConfigSpec.DoubleValue minigunVolumeSentryTurret;
-        public ForgeConfigSpec.DoubleValue jetbootsVolume;
-        public ForgeConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
-        public ForgeConfigSpec.DoubleValue jackhammerVolume;
+        ForgeConfigSpec.DoubleValue elevatorVolumeRunning;
+        ForgeConfigSpec.DoubleValue elevatorVolumeStartStop;
+        ForgeConfigSpec.DoubleValue airLeakVolume;
+        ForgeConfigSpec.DoubleValue minigunVolumeHeld;
+        ForgeConfigSpec.DoubleValue minigunVolumeDrone;
+        ForgeConfigSpec.DoubleValue minigunVolumeSentryTurret;
+        ForgeConfigSpec.DoubleValue jetbootsVolume;
+        ForgeConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
+        ForgeConfigSpec.DoubleValue jackhammerVolume;
     }
 
     public final ClientConfig.General general = new General();
@@ -135,7 +138,7 @@ public class ClientConfig {
         armor.pathUpdateSetting = builder
                 .comment("How frequently should the Pneumatic Helmet Coordinate Tracker pathfinder path be recalculated?")
                 .translation("pneumaticcraft.config.client.armor.xray_enabled")
-                .defineEnum("path_update_setting", CoordTrackerHandler.PathUpdateSetting.NORMAL);
+                .defineEnum("path_update_setting", PathUpdateSetting.NORMAL);
         armor.showPressureNumerically = builder
                 .comment("True: show pressure as numbers.  False: show pressure as horizontal bar.")
                 .translation("pneumaticcraft.config.client.armor.show_pressure_numerically")
@@ -185,4 +188,31 @@ public class ClientConfig {
                 .defineInRange("jackhammer_volume", 1.0d, 0d, 2d);
     }
 
+    /**
+     * Used by the Pneumatic Helmet coordinate tracker to control path update frequency.
+     */
+    public enum PathUpdateSetting implements ITranslatableEnum {
+        SLOW(100),
+        NORMAL(20),
+        FAST(1);
+
+        private final int ticks;
+
+        PathUpdateSetting(int ticks) {
+            this.ticks = ticks;
+        }
+
+        public int getTicks() {
+            return ticks;
+        }
+
+        public PathUpdateSetting cycle() {
+            return PathUpdateSetting.values()[(ordinal() + 1) % values().length];
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.armor.gui.coordinateTracker.pathUpdate." + toString().toLowerCase(Locale.ROOT);
+        }
+    }
 }

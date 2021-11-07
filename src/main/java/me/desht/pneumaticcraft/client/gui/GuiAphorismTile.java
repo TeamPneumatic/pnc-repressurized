@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -62,7 +62,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
         this.tile = tile;
         textLines = tile.getTextLines();
         tile.needMaxLineWidthRecalc();
-        if (ConfigHelper.client().general.aphorismDrama.get() && placing && textLines.length == 1 && textLines[0].equals("")) {
+        if (PNCConfig.Client.aphorismDrama && placing && textLines.length == 1 && textLines[0].equals("")) {
             List<String> l = PneumaticCraftUtils.splitString(DramaGenerator.generateDrama(), 20);
             tile.setTextLines(l.toArray(new String[0]));
             textLines = tile.getTextLines();

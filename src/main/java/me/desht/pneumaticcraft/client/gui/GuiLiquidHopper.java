@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
@@ -74,7 +74,7 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
 
     @Override
     protected boolean isUpgradeAvailable(EnumUpgrade upgrade) {
-        return upgrade != EnumUpgrade.DISPENSER || ConfigHelper.common().machines.liquidHopperDispenser.get();
+        return upgrade != EnumUpgrade.DISPENSER || PNCConfig.Common.Machines.liquidHopperDispenser;
     }
 
     @Override

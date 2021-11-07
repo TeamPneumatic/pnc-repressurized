@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -142,7 +142,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             }
             basketEmpty = shoppingBasket.isEmpty();
             currentPlayerOffers = AmadronOfferManager.getInstance().countPlayerOffers(player.getGameProfile().getId());
-            maxPlayerOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : ConfigHelper.common().amadron.maxTradesPerPlayer.get();
+            maxPlayerOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : PNCConfig.Common.Amadron.maxTradesPerPlayer;
             problemState = EnumProblemState.NO_PROBLEMS;
         }
     }
@@ -310,7 +310,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
     private void tryRemoveCustomOffer(ServerPlayerEntity player, AmadronPlayerOffer offer) {
         if (offer.isRemovableBy(player) && AmadronOfferManager.getInstance().removePlayerOffer(offer)) {
-            if (ConfigHelper.common().amadron.notifyOfTradeRemoval.get()) {
+            if (PNCConfig.Common.Amadron.notifyOfTradeRemoval) {
                 NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
             }
             offer.returnStock();

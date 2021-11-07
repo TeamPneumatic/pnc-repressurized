@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.villages;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModVillagers;
@@ -48,13 +48,13 @@ public class VillagerTradesRegistration {
     public static void registerTrades(VillagerTradesEvent event) {
         Int2ObjectMap<List<VillagerTrades.ITrade>> trades = event.getTrades();
         if (event.getType() == ModVillagers.MECHANIC.get()) {
-            if (ConfigHelper.common().villagers.whichTrades.get().shouldAddBlueprint()) {
+            if (PNCConfig.Common.Villagers.whichTrades.shouldAddBlueprint()) {
                 trades.get(1).add(new RandomTradeBuilder(4, 10, 0.05F)
                         .setEmeraldPriceFor(10, 19, ModItems.PCB_BLUEPRINT.get(), 1)
                         .build()
                 );
             }
-            if (ConfigHelper.common().villagers.whichTrades.get() == WhichTrades.ALL) {
+            if (PNCConfig.Common.Villagers.whichTrades == WhichTrades.ALL) {
                 trades.get(1).add(new RandomTradeBuilder(16, 4, 0.05F)
                         .setEmeraldPrice(7, 11)
                         .setForSale((rand) -> new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get()))

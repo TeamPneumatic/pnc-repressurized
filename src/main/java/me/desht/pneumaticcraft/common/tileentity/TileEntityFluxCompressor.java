@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Machines;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -82,7 +82,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
             if (level.getGameTime() % 5 == 0) {
                 airPerTick = (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades()
                         * (getHeatEfficiency() / 100f)
-                        * (ConfigHelper.common().machines.fluxCompressorEfficiency.get() / 100f));
+                        * (Machines.fluxCompressorEfficiency / 100f));
                 rfPerTick = (int) (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades());
             }
             boolean newEnabled = false;

@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
 import me.desht.pneumaticcraft.common.DroneRegistry;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
@@ -150,7 +150,7 @@ public class EventHandlerAmadron {
         if (event.phase == TickEvent.Phase.END) {
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 
-            if (reshuffleCounter++ >= ConfigHelper.common().amadron.reshuffleInterval.get() && !anyPlayerUsingAmadron(server)) {
+            if (reshuffleCounter++ >= PNCConfig.Common.Amadron.reshuffleInterval && !anyPlayerUsingAmadron(server)) {
                 // don't reshuffle if any player has a tablet open, to avoid confusion
                 AmadronOfferManager.getInstance().compileActiveOffersList();
                 reshuffleCounter = 0;
