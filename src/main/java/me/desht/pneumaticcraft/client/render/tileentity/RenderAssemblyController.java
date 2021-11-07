@@ -55,7 +55,7 @@ public class RenderAssemblyController extends AbstractTileModelRenderer<TileEnti
         matrixStackIn.translate(-0.23D, 0.50D, -0.04D);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-34));
         matrixStackIn.scale(TEXT_SIZE, TEXT_SIZE, TEXT_SIZE);
-        Minecraft.getInstance().font.drawInBatch(te.displayedText, 1, 4, 0xFF4ce568, false,  matrixStackIn.last().pose(), bufferIn, false, 0, combinedLightIn);
+        Minecraft.getInstance().font.drawInBatch("> " + te.displayedText, 1, 4, 0xFF4ce568, false,  matrixStackIn.last().pose(), bufferIn, false, 0, combinedLightIn);
 
         // possible problem icon
         if (te.hasProblem) {

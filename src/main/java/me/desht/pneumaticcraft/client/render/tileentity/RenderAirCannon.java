@@ -32,68 +32,36 @@ public class RenderAirCannon extends AbstractTileModelRenderer<TileEntityAirCann
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseFrame1;
     private final ModelRenderer baseFrame2;
-    private final ModelRenderer baseFrame3;
-    private final ModelRenderer baseFrame4;
-    private final ModelRenderer baseFrame5;
-    private final ModelRenderer baseFrame6;
-    private final ModelRenderer cannon1;
-    private final ModelRenderer cannon2;
-    private final ModelRenderer cannon3;
-    private final ModelRenderer cannon4;
-    private final ModelRenderer cannon5;
+    private final ModelRenderer axis;
+    private final ModelRenderer cannon;
 
     public RenderAirCannon(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        baseTurn = new ModelRenderer(64, 32, 36, 7);
-        baseTurn.addBox(0F, 0F, 0F, 7, 1, 7);
-        baseTurn.setPos(-3.5F, 20F, -5F);
+        baseTurn = new ModelRenderer(64, 64, 0, 0);
+        baseTurn.setPos(-3.5F, 20.0F, -5.0F);
+        baseTurn.texOffs(0, 0).addBox(0.0F, 0.0F, 0.0F, 7.0F, 1.0F, 7.0F, 0.0F, false);
 
-        baseFrame1 = new ModelRenderer(64, 32, 10, 7);
-        baseFrame1.addBox(0F, 0F, 0F, 1, 5, 3);
-        baseFrame1.setPos(-3.5F, 15F, -3F);
-        baseFrame1.mirror = true;
-        baseFrame2 = new ModelRenderer(64, 32, 10, 7);
-        baseFrame2.addBox(0F, 0F, 0F, 1, 5, 3);
-        baseFrame2.setPos(2.5F, 15F, -3F);
-        baseFrame2.mirror = true;
-        baseFrame3 = new ModelRenderer(64, 32, 18, 13);
-        baseFrame3.addBox(0F, 0F, 0F, 1, 1, 1);
-        baseFrame3.setPos(-3.5F, 14F, -2F);
-        baseFrame3.mirror = true;
-        baseFrame4 = new ModelRenderer(64, 32, 18, 13);
-        baseFrame4.addBox(0F, 0F, 0F, 1, 1, 1);
-        baseFrame4.setPos(2.5F, 14F, -2F);
-        baseFrame4.mirror = true;
-        baseFrame5 = new ModelRenderer(64, 32, 19, 10);
-        baseFrame5.addBox(0F, 0F, 0F, 1, 1, 1);
-        baseFrame5.setPos(2F, 15.5F, -2F);
-        baseFrame5.mirror = true;
-        baseFrame6 = new ModelRenderer(64, 32, 19, 10);
-        baseFrame6.addBox(0F, 0F, 0F, 1, 1, 1);
-        baseFrame6.setPos(-3F, 15.5F, -2F);
-        baseFrame6.mirror = true;
+        baseFrame1 = new ModelRenderer(64, 64, 0, 0);
+        baseFrame1.setPos(-3.5F, 15.0F, -3.0F);
+        baseFrame1.texOffs(28, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 5.0F, 3.0F, 0.0F, true);
 
-        cannon1 = new ModelRenderer(64, 32, 24, 0);
-        cannon1.addBox(0F, 3F, 0F, 2, 1, 2);
-        cannon1.setPos(-1F, 15F, -2.5F);
-        cannon1.mirror = true;
-        cannon2 = new ModelRenderer(64, 32, 27, 3);
-        cannon2.addBox(0F, 0F, 0F, 2, 8, 1);
-        cannon2.setPos(-1F, 10F, -0.5F);
-        cannon2.mirror = true;
-        cannon3 = new ModelRenderer(64, 32, 27, 3);
-        cannon3.addBox(0F, 0F, 0F, 2, 8, 1);
-        cannon3.setPos(-1F, 10F, -3.5F);
-        cannon3.mirror = true;
-        cannon4 = new ModelRenderer(64, 32, 18, 0);
-        cannon4.addBox(0F, 0F, 0F, 1, 8, 2);
-        cannon4.setPos(-2F, 10F, -2.5F);
-        cannon4.mirror = true;
-        cannon5 = new ModelRenderer(64, 32, 18, 0);
-        cannon5.addBox(0F, 0F, 0F, 1, 8, 2);
-        cannon5.setPos(1F, 10F, -2.5F);
-        cannon5.mirror = true;
+        baseFrame2 = new ModelRenderer(64, 64, 0, 0);
+        baseFrame2.setPos(2.5F, 15.0F, -3.0F);
+        baseFrame2.texOffs(36, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 5.0F, 3.0F, 0.0F, true);
+
+        axis = new ModelRenderer(64, 64, 0, 0);
+        axis.setPos(-3.0F, 15.5F, -2.0F);
+        axis.texOffs(44, 4).addBox(-1.0F, 0.0F, -0.5F, 8.0F, 2.0F, 2.0F, -0.2F, true);
+
+        cannon = new ModelRenderer(64, 64, 0, 0);
+        cannon.setPos(-1.0F, 15.0F, -2.5F);
+        cannon.texOffs(0, 8).addBox(-1.0F, 0.0F, -1.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
+        cannon.texOffs(24, 8).addBox(-0.5F, -2.0F, -0.5F, 3.0F, 2.0F, 3.0F, 0.0F, true);
+        cannon.texOffs(36, 8).addBox(-1.0F, -3.75F, -0.5F, 1.0F, 2.0F, 3.0F, -0.2F, true);
+        cannon.texOffs(44, 8).addBox(2.0F, -3.75F, -0.5F, 1.0F, 2.0F, 3.0F, -0.2F, true);
+        cannon.texOffs(44, 13).addBox(-1.0F, -3.75F, -1.0F, 4.0F, 2.0F, 1.0F, -0.2F, true);
+        cannon.texOffs(34, 13).addBox(-1.0F, -3.75F, 2.0F, 4.0F, 2.0F, 1.0F, -0.2F, true);
     }
 
     @Override
@@ -109,18 +77,11 @@ public class RenderAirCannon extends AbstractTileModelRenderer<TileEntityAirCann
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseFrame1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseFrame2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseFrame3.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseFrame4.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseFrame5.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseFrame6.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        axis.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.translate(0.0D, 1.0D, -0.09375D);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(te.heightAngle));
         matrixStackIn.translate(0.0D, -1.0D, 0.09375D);
-        cannon1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        cannon2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        cannon3.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        cannon4.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        cannon5.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        cannon.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
     }
 }
