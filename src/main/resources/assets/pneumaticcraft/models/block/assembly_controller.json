@@ -1,58 +1,59 @@
 {
-  "textures": {
-    "pipe": "pneumaticcraft:block/pressure_tube",
-    "base": "pneumaticcraft:block/assembly_base",
-    "leg": "pneumaticcraft:block/compressed_iron_block",
-    "particle": "pneumaticcraft:block/assembly_base"
-  },
-  "elements": [
-    {
-      "from": [ 0, 0, 0],
-      "to": [16, 1, 16],
-      "faces": {
-        "down": { "texture": "#base", "cullface": "down" },
-        "up": { "texture": "#base" },
-        "north": { "texture": "#base" },
-        "south": { "texture": "#base" },
-        "west": { "texture": "#base" },
-        "east": { "texture": "#base" }
-      }
-    },
-    {
-      "from": [ 7, 1, 7 ],
-      "to": [ 9, 12, 9 ],
-      "faces": {
-        "down": { "texture": "#leg", "cullface": "down" },
-        "up": { "texture": "#leg" },
-        "north": { "texture": "#leg" },
-        "south": { "texture": "#leg" },
-        "west": { "texture": "#leg" },
-        "east": { "texture": "#leg" }
-      }
-    },
-    {
-      "from": [ 6, 1, 7 ],
-      "to": [ 10, 4, 9 ],
-      "faces": {
-        "down": { "texture": "#base", "cullface": "down" },
-        "up": { "texture": "#base" },
-        "north": { "texture": "#base" },
-        "south": { "texture": "#base" },
-        "west": { "texture": "#base" },
-        "east": { "texture": "#base" }
-      }
-    },
-    {
-      "from": [ 7, 1, 6 ],
-      "to": [ 9, 4, 10 ],
-      "faces": {
-        "down": { "texture": "#base", "cullface": "down" },
-        "up": { "texture": "#base" },
-        "north": { "texture": "#base" },
-        "south": { "texture": "#base" },
-        "west": { "texture": "#base" },
-        "east": { "texture": "#base" }
-      }
-    }
-  ]
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"particle": "pneumaticcraft:model/assembly_controller",
+		"controller": "pneumaticcraft:model/assembly_controller",
+		"base": "pneumaticcraft:model/assembly_base"
+	},
+	"elements": [
+		{
+			"from": [6, 4, 6],
+			"to": [10, 10, 10],
+			"faces": {
+				"north": {"uv": [1.5, 0, 2.5, 1.5], "texture": "#controller"},
+				"east": {"uv": [1.5, 1.5, 2.5, 3], "texture": "#controller"},
+				"south": {"uv": [2.5, 0, 3.5, 1.5], "texture": "#controller"},
+				"west": {"uv": [2.5, 1.5, 3.5, 3], "texture": "#controller"},
+				"up": {"uv": [1.5, 3, 2.5, 4], "texture": "#controller"},
+				"down": {"uv": [14.5, 14.25, 15.5, 15.25], "texture": "#missing", "cullface": "down"}
+			}
+		},
+		{
+			"from": [7, 10, 7],
+			"to": [9, 12, 9],
+			"faces": {
+				"north": {"uv": [3.5, 0.5, 4, 1], "texture": "#controller"},
+				"east": {"uv": [3.5, 1, 4, 1.5], "texture": "#controller"},
+				"south": {"uv": [3.5, 1.5, 4, 2], "texture": "#controller"},
+				"west": {"uv": [3.5, 2, 4, 2.5], "texture": "#controller"},
+				"up": {"uv": [3.5, 0, 4, 0.5], "texture": "#controller"},
+				"down": {"uv": [14.5, 14.25, 15, 14.75], "texture": "#missing", "cullface": "down"}
+			}
+		},
+		{
+			"from": [5, 1, 5],
+			"to": [11, 4, 11],
+			"faces": {
+				"north": {"uv": [0, 1.5, 1.5, 2.25], "texture": "#controller"},
+				"east": {"uv": [0, 2.25, 1.5, 3], "texture": "#controller"},
+				"south": {"uv": [0, 3, 1.5, 3.75], "texture": "#controller"},
+				"west": {"uv": [0, 3.75, 1.5, 4.5], "texture": "#controller"},
+				"up": {"uv": [0, 0, 1.5, 1.5], "texture": "#controller"},
+				"down": {"uv": [14.5, 14.25, 16, 15.75], "texture": "#missing", "cullface": "down"}
+			}
+		},
+		{
+			"from": [0, 0, 0],
+			"to": [16, 1, 16],
+			"faces": {
+				"north": {"uv": [0, 15, 16, 16], "texture": "#base"},
+				"east": {"uv": [0, 15, 16, 16], "texture": "#base"},
+				"south": {"uv": [0, 15, 16, 16], "texture": "#base"},
+				"west": {"uv": [0, 15, 16, 16], "texture": "#base"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#base"},
+				"down": {"uv": [0, 16, 16, 0], "texture": "#base", "cullface": "down"}
+			}
+		}
+	]
 }

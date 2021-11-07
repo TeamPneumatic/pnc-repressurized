@@ -46,14 +46,15 @@ public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntity
     public RenderAssemblyPlatform(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        claw1 = new ModelRenderer(64, 64, 0, 32);
-        claw1.addBox(0F, 0F, 0F, 2, 1, 1);
-        claw1.setPos(-1F, 17F, 0F);
-        claw1.mirror = true;
-        claw2 = new ModelRenderer(64, 64, 0, 32);
-        claw2.addBox(0F, 0F, 0F, 2, 1, 1);
-        claw2.setPos(-1F, 17F, -1F);
-        claw2.mirror = true;
+        claw1 = new ModelRenderer(64, 64, 0, 0);
+        claw1.setPos(-1.0F, 17.0F, 0.0F);
+        claw1.texOffs(0, 12).addBox(-0.5F, 0.0F, 0.1F, 3.0F, 1.0F, 1.0F, -0.1F, true);
+        claw1.texOffs(8, 14).addBox(-0.5F, 0.0F, 0.6F, 3.0F, 1.0F, 1.0F, 0.0F, true);
+
+        claw2 = new ModelRenderer(64, 64, 0, 0);
+        claw2.setPos(-1.0F, 17.0F, -1.0F);
+        claw2.texOffs(0, 14).addBox(-0.5F, 0.0F, -0.1F, 3.0F, 1.0F, 1.0F, -0.1F, true);
+        claw2.texOffs(8, 12).addBox(-0.5F, 0.0F, -0.6F, 3.0F, 1.0F, 1.0F, 0.0F, true);
     }
 
     @Override
