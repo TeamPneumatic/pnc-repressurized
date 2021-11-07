@@ -23,14 +23,21 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import java.util.stream.Stream;
+
 public class BlockAssemblyPlatform extends BlockPneumaticCraft {
-    private static final VoxelShape BASE_SHAPE = Block.box(0, 0, 0, 16, 1, 16);
-    private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, Block.box(4, 1, 4, 12, 6, 12));
+    private static final VoxelShape SHAPE = Stream.of(
+            Block.box(2, 1, 2, 14, 4, 14),
+            Block.box(2, 5, 2, 14, 6, 14),
+            Block.box(3, 4, 3, 13, 5, 13),
+            Block.box(0, 0, 0, 16, 1, 16)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
 
     public BlockAssemblyPlatform() {
         super(ModBlocks.defaultProps());
