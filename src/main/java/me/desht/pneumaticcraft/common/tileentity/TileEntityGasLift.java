@@ -8,10 +8,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.common.util.FluidUtils;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,10 +29,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -329,7 +326,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
         }
     }
 
-    public FluidTank getTank() {
+    public IFluidTank getTank() {
         return tank;
     }
 
@@ -341,7 +338,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", tank);
     }
 

@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -28,7 +29,6 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -119,7 +119,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of(ItemBlockFluidTank.TANK_NAME, tank);
     }
 

@@ -24,14 +24,13 @@ public class ComponentFluid implements ICustomComponent {
 
     @Override
     public void build(int componentX, int componentY, int pageNum) {
-        tankWidget = new WidgetTank(componentX, componentY, 16, 64, fluidStacks.isEmpty() ? FluidStack.EMPTY : fluidStacks.get(0));
-        tankWidget.getTank().setCapacity(scaleParsed);
+        tankWidget = new WidgetTank(componentX, componentY, 16, 64, fluidStacks.isEmpty() ? FluidStack.EMPTY : fluidStacks.get(0), scaleParsed);
     }
 
     @Override
     public void render(MatrixStack matrixStack, IComponentRenderContext ctx, float pticks, int mouseX, int mouseY) {
         if (!fluidStacks.isEmpty()) {
-            tankWidget.getTank().setFluid(fluidStacks.get(ctx.getTicksInBook() / 20 % fluidStacks.size()));
+            tankWidget.setFluid(fluidStacks.get(ctx.getTicksInBook() / 20 % fluidStacks.size()));
         }
         if (tankWidget.getTank().getCapacity() > 0 && !tankWidget.getTank().getFluid().isEmpty()) {
             tankWidget.renderButton(matrixStack, mouseX, mouseY, pticks);

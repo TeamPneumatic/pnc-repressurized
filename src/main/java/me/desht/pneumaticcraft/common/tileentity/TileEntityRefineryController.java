@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -27,6 +28,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
@@ -295,7 +297,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         return null;
     }
 
-    public FluidTank getInputTank() {
+    public IFluidTank getInputTank() {
         return inputTank;
     }
 
@@ -350,7 +352,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of("OilTank", inputTank);
     }
 
@@ -371,9 +373,6 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     }
 
     private class RefineryInputTank extends SmartSyncTank {
-        private Fluid prevFluid;
-        private int prevAmount;
-
         RefineryInputTank(int capacity) {
             super(TileEntityRefineryController.this, capacity);
         }
@@ -384,15 +383,15 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         }
 
         @Override
-        protected void onContentsChanged() {
-            super.onContentsChanged();
+        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+            super.onContentsChanged(prevFluid, prevAmount);
 
             Fluid newFluid = getFluid().getFluid();
-            if (prevFluid != newFluid || currentRecipe == null && getFluidAmount() > prevAmount) {
+            if (prevFluid != newFluid
+                    || currentRecipe == null && getFluidAmount() > prevAmount
+                    || currentRecipe != null && getFluidAmount() < prevAmount) {
                 searchForRecipe = true;
             }
-            prevFluid = newFluid;
-            prevAmount = getFluidAmount();
         }
     }
 }

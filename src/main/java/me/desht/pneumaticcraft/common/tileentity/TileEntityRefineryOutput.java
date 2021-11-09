@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,7 +22,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -75,7 +75,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase implements
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", outputTank);
     }
 

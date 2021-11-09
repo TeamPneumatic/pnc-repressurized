@@ -4,19 +4,18 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 
 /**
  * A fluid tank which smartly syncs its fluid and amount to clients to avoid performance problems due to excessive
  * packet sending.  Also marks its owning TE as dirty when changed.
  */
-public class SmartSyncTank extends FluidTank {
+public class SmartSyncTank extends PNCFluidTank {
     @DescSynced
     private FluidStack syncedFluidStackDesc = FluidStack.EMPTY;
     @GuiSynced
@@ -99,7 +98,6 @@ public class SmartSyncTank extends FluidTank {
         return filled;
     }
 
-    @Nonnull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction action) {
         FluidStack drained = super.drain(resource, action);
@@ -109,7 +107,6 @@ public class SmartSyncTank extends FluidTank {
         return drained;
     }
 
-    @Nonnull
     @Override
     public FluidStack drain(int maxDrain, FluidAction action) {
         FluidStack drained = super.drain(maxDrain, action);
@@ -120,12 +117,7 @@ public class SmartSyncTank extends FluidTank {
     }
 
     @Override
-    protected void onContentsChanged() {
-        super.onContentsChanged();
-
-        // We don't use onContentsChanged() for sync purposes, because its gets called even for simulated changes,
-        // and we have no way of knowing whether or not this is a simulation.
-
+    protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
         if (owner.get() != null) {
             owner.get().setChanged();
         }

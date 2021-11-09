@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -18,7 +18,7 @@ public interface ISerializableTanks {
      * @return a map of tag names to tanks
      */
     @Nonnull
-    Map<String, FluidTank> getSerializableTanks();
+    Map<String, PNCFluidTank> getSerializableTanks();
 
     default void deserializeTanks(CompoundNBT tag) {
         getSerializableTanks().forEach((key, tank) -> tank.readFromNBT(tag.getCompound(key)));

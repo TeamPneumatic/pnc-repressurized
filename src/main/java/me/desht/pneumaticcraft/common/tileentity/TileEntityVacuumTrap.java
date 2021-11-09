@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreItemHandle
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -42,9 +43,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -162,13 +163,13 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
         }
     }
 
-    public FluidTank getFluidTank() {
+    public IFluidTank getFluidTank() {
         return xpTank;
     }
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", xpTank);
     }
 

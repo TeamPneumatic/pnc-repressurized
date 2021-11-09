@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,7 +34,6 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -289,7 +289,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of("Input1", inputTank1, "Input2", inputTank2, "Output", outputTank);
     }
 
@@ -379,8 +379,8 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
         }
 
         @Override
-        protected void onContentsChanged() {
-            super.onContentsChanged();
+        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+            super.onContentsChanged(prevFluid, prevAmount);
             searchRecipes = true;
         }
     }

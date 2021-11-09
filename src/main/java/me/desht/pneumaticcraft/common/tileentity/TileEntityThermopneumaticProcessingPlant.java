@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,10 +36,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -219,11 +220,11 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         }
     }
 
-    public FluidTank getInputTank() {
+    public IFluidTank getInputTank() {
         return inputTank;
     }
 
-    public FluidTank getOutputTank() {
+    public IFluidTank getOutputTank() {
         return outputTank;
     }
 
@@ -289,7 +290,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of("InputTank", inputTank, "OutputTank", outputTank);
     }
 
@@ -324,8 +325,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     private class ThermopneumaticFluidTankInput extends SmartSyncTank {
-        private FluidStack prevFluid = FluidStack.EMPTY;
-
         ThermopneumaticFluidTankInput(int capacity){
             super(TileEntityThermopneumaticProcessingPlant.this, capacity);
         }
@@ -339,12 +338,13 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         }
 
         @Override
-        protected void onContentsChanged() {
-            super.onContentsChanged();
+        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+            super.onContentsChanged(prevFluid, prevAmount);
             FluidStack newFluid = getFluid();
-            if (prevFluid.getFluid() != newFluid.getFluid() || prevFluid.isEmpty() && !newFluid.isEmpty() || newFluid.isEmpty() && !prevFluid.isEmpty()) {
+            if (prevFluid != newFluid.getFluid()
+                    || currentRecipe == null && getFluidAmount() > prevAmount
+                    || currentRecipe != null && getFluidAmount() < prevAmount) {
                 searchForRecipe = true;
-                prevFluid = getFluid().copy();
             }
         }
     }
@@ -374,10 +374,10 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     private class ThermopneumaticFluidHandler implements IFluidHandler {
-        final FluidTank[] tanks;
+        final IFluidTank[] tanks;
 
         ThermopneumaticFluidHandler() {
-            tanks = new FluidTank[]{ inputTank, outputTank };
+            tanks = new IFluidTank[]{ inputTank, outputTank };
         }
 
         @Override

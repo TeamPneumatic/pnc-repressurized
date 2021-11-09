@@ -28,7 +28,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * https://github.com/Qmunity/BluePower/blob/FluidCrafting/src/main/java/com/bluepowermod/client/gui/widget/WidgetTank.java
  */
 public class WidgetTank extends Widget implements ITooltipProvider {
-
     private final IFluidTank tank;
 
     public WidgetTank(int x, int y, IFluidTank tank) {
@@ -43,6 +42,11 @@ public class WidgetTank extends Widget implements ITooltipProvider {
     public WidgetTank(int x, int y, int width, int height, FluidStack stack) {
         super(x, y, width, height, StringTextComponent.EMPTY);
         this.tank = makeTank(stack, stack.getAmount());
+    }
+
+    public WidgetTank(int x, int y, int width, int height, FluidStack stack, int capacity) {
+        super(x, y, width, height, StringTextComponent.EMPTY);
+        this.tank = makeTank(stack, capacity);
     }
 
     private static FluidTank makeTank(FluidStack stack, int capacity) {
@@ -90,7 +94,18 @@ public class WidgetTank extends Widget implements ITooltipProvider {
         return tank.getFluid();
     }
 
-    public FluidTank getTank() {
-        return (FluidTank) tank;
+    public IFluidTank getTank() {
+        return tank;
+    }
+
+    public void setFluid(FluidStack fluidStack) {
+        if (fluidStack.getFluid() != tank.getFluid().getFluid()) {
+            tank.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE);
+            tank.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+        } else if (fluidStack.getAmount() > tank.getFluidAmount()) {
+            tank.fill(new FluidStack(fluidStack.getFluid(), fluidStack.getAmount() - tank.getFluidAmount()), IFluidHandler.FluidAction.EXECUTE);
+        } else if (fluidStack.getAmount() < tank.getFluidAmount()) {
+            tank.drain(tank.getFluidAmount() - fluidStack.getAmount(), IFluidHandler.FluidAction.EXECUTE);
+        }
     }
 }

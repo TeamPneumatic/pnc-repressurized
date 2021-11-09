@@ -14,11 +14,13 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -34,11 +36,9 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -86,14 +86,12 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     @DescSynced
     @GuiSynced
     private final SmartSyncTank tank = new SmartSyncTank(this, 2000) {
-        private FluidStack prevFluid = FluidStack.EMPTY;
         @Override
-        protected void onContentsChanged() {
-            super.onContentsChanged();
+        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+            super.onContentsChanged(prevFluid, prevAmount);
             if (prevFluid.getFluid() != fluid.getFluid()) {
                 recalculateFuelQuality();
             }
-            prevFluid = fluid;
         }
     };
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
@@ -366,7 +364,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of("Tank", tank);
     }
 

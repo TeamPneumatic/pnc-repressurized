@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -17,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.BucketItem;
 import net.minecraft.nbt.CompoundNBT;
@@ -30,7 +32,6 @@ import net.minecraftforge.fluids.*;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -231,7 +232,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
     @Nonnull
     @Override
-    public Map<String, FluidTank> getSerializableTanks() {
+    public Map<String, PNCFluidTank> getSerializableTanks() {
         return ImmutableMap.of(BlockLiquidHopper.ItemBlockLiquidHopper.TANK_NAME, tank);
     }
 
@@ -252,8 +253,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         }
 
         @Override
-        protected void onContentsChanged() {
-            super.onContentsChanged();
+        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+            super.onContentsChanged(prevFluid, prevAmount);
             comparatorValue = -1;
         }
 
@@ -279,10 +280,10 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     }
 
     class WrappedFluidTank implements IFluidTank, IFluidHandler {
-        private final FluidTank wrappedTank;
+        private final IFluidTank wrappedTank;
         private final boolean inbound;
 
-        WrappedFluidTank(FluidTank wrappedTank, boolean inbound) {
+        WrappedFluidTank(IFluidTank wrappedTank, boolean inbound) {
             // inbound == true: fill *only*, inbound == false: drain *only*
             this.wrappedTank = wrappedTank;
             this.inbound = inbound;
