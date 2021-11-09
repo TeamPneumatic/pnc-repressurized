@@ -8,6 +8,24 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.14.5-??? (unreleased)
+
+### Updates
+* The Amadron Tablet can now accept Volume Upgrades (place it in a Charging Station to upgrade)
+* Amadron Tablet filtering for custom recipes now also supports Gamestages (if the Gamestages mod is installed)
+  * See https://github.com/TeamPneumatic/pnc-repressurized/wiki/Amadron-and-Datapacks (Player Filtering section) for more info
+* The Vacuum Trap can now blacklist entities by entity type tags
+  * Tags are specified in `vacuum_trap_blacklist` same as entity types, but start with a "#"
+* Oil worldgen can now be blacklisted by dimension ID as well as biome type
+  * See the `oil_world_gen_dimension_blacklist` config setting
+  * Also supported is wildcarded dimension ID's, e.g. adding "somemodname:*" will prevent oil generation in *all* dimensions added by the mod "somemodname"
+
+### Fixes
+* Fixed several client-side config settings (e.g. Programmer widget difficulty) not properly "taking" when modified from client GUI's
+* Fixed problem where inserting fluids very slowly into Refinery or TPP would not always trigger a new recipe search
+* Fixed NPE related to flowing fluids coming into contact with Heat Sinks or other heat-handling blocks
+* Fixed Charging Station continuing to emit redstone in "Item Inserted and Idle" mode, if an item is later removed from the station
+
 ## 2.14.4-258 (24th Sep 2021)
 
 ### Fixes
