@@ -372,6 +372,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
     private class RefineryInputTank extends SmartSyncTank {
         private Fluid prevFluid;
+        private int prevAmount;
 
         RefineryInputTank(int capacity) {
             super(TileEntityRefineryController.this, capacity);
@@ -387,10 +388,11 @@ public class TileEntityRefineryController extends TileEntityTickableBase
             super.onContentsChanged();
 
             Fluid newFluid = getFluid().getFluid();
-            if (prevFluid != newFluid) {
+            if (prevFluid != newFluid || currentRecipe == null && getFluidAmount() > prevAmount) {
                 searchForRecipe = true;
-                prevFluid = newFluid;
             }
+            prevFluid = newFluid;
+            prevAmount = getFluidAmount();
         }
     }
 }
