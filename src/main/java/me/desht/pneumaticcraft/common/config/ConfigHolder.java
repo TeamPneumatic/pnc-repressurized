@@ -1,5 +1,9 @@
 package me.desht.pneumaticcraft.common.config;
 
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.common.item.ItemSeismicSensor;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
+import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -7,8 +11,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ConfigHolder {
-    public static ClientConfig client;
-    public static CommonConfig common;
+    static ClientConfig client;
+    static CommonConfig common;
     private static ForgeConfigSpec configCommonSpec;
     private static ForgeConfigSpec configClientSpec;
 
@@ -24,15 +28,37 @@ public class ConfigHolder {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.configCommonSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.configClientSpec);
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ConfigHolder::modConfig);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ConfigHolder::onConfigChanged);
     }
 
-    private static void modConfig(final ModConfig.ModConfigEvent event) {
+    static void saveClient() {
+        if (configClientSpec.isLoaded()) {
+            configClientSpec.save();
+        }
+    }
+
+    static void saveCommon() {
+        if (configCommonSpec.isLoaded()) {
+            configCommonSpec.save();
+        }
+    }
+
+    private static void onConfigChanged(final ModConfig.ModConfigEvent event) {
         ModConfig config = event.getConfig();
         if (config.getSpec() == ConfigHolder.configClientSpec) {
-            ConfigHelper.refreshClient(config);
+            refreshClient();
         } else if (config.getSpec() == ConfigHolder.configCommonSpec) {
-            ConfigHelper.refreshCommon(config);
+            refreshCommon();
         }
+    }
+
+    static void refreshClient() {
+        ArmorUpgradeClientRegistry.getInstance().refreshConfig();
+    }
+
+    static void refreshCommon() {
+        TileEntityVacuumTrap.clearBlacklistCache();
+        ModWorldGen.clearBlacklistCache();
+        ItemSeismicSensor.clearCachedFluids();
     }
 }
