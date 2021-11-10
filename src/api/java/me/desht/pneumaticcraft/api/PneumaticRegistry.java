@@ -15,9 +15,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.items.IItemHandler;
 
 /**
  * This class can be used to register and access various things to and from the mod.  All access is via
@@ -159,6 +161,14 @@ public final class PneumaticRegistry {
          * @param factory a factory object used to create instances of this matcher from JSON or a packet buffer
          */
         void registerPlayerMatcher(ResourceLocation id, IPlayerMatcher.MatcherFactory<?> factory);
+
+        /**
+         * Return a Smart Chest item handler properly deserialized from the supplied NBT. Not for general use; here
+         * to help with Create compatibility, using Smart Chests as part of Create contraptions.
+         * @param tag NBT to be deserialized, previously serialized from a Smart Chest
+         * @return an item handler deserialized by the Smart Chest
+         */
+        IItemHandler deserializeSmartChest(CompoundNBT tag);
     }
 
 }

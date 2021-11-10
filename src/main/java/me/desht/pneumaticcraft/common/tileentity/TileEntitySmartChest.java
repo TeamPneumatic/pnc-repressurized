@@ -421,6 +421,12 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
     }
 
+    public static IItemHandler deserializeSmartChest(CompoundNBT tag) {
+        SmartChestItemHandler res = new SmartChestItemHandler(null, CHEST_SIZE);
+        res.deserializeNBT(tag);
+        return res;
+    }
+
     public static class SmartChestItemHandler extends ComparatorItemStackHandler {
         private final ItemStack[] filter = new ItemStack[CHEST_SIZE];
         private int lastSlot = CHEST_SIZE;
