@@ -308,6 +308,10 @@ task reobf {
 	dependsOn reobfApiJar
 }
 
+tasks.withType(GenerateModuleMetadata) {
+	enabled = false
+}
+
 // with thanks to AE2
 publishing {
 	if (System.getenv("artifactory_user") != null) {
