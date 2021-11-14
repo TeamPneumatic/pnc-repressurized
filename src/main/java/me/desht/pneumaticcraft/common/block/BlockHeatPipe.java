@@ -42,14 +42,14 @@ import javax.annotation.Nullable;
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLoggable {
-    private static final VoxelShape CORE = Block.box(3, 3, 3, 13, 13, 13);
+    private static final VoxelShape CORE = Block.box(4, 4, 4, 12, 12, 12);
     private static final VoxelShape[] SIDES = {
-            Block.box(3, 0, 3, 13, 3, 13),
-            Block.box(3, 13, 3, 13, 16, 13),
-            Block.box(3, 3, 0, 13, 13, 3),
-            Block.box(3, 3, 13, 13, 13, 16),
-            Block.box(0, 3, 3, 3, 13, 13),
-            Block.box(13, 3, 3, 16, 13, 13)
+            Block.box(4, 0, 4, 12, 4, 12),
+            Block.box(4, 12, 4, 12, 16, 12),
+            Block.box(4, 4, 0, 12, 12, 4),
+            Block.box(4, 4, 12, 12, 12, 16),
+            Block.box(0, 4, 4, 4, 12, 12),
+            Block.box(12, 4, 4, 16, 12, 12)
     };
 
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[64];  // 2^6 shapes
