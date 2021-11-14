@@ -134,7 +134,7 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.EMPTY_SPAWNER.get(), RenderType.cutout());
-        RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), layer -> layer == RenderType.solid() || layer == RenderType.translucent());
         RenderTypeLookup.setRenderLayer(ModBlocks.FLUID_MIXER.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.GAS_LIFT.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.cutoutMipped());
