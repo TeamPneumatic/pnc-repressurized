@@ -1,9 +1,112 @@
 {
-  "parent": "forge:block/default",
-  "loader": "forge:obj",
-  "model": "pneumaticcraft:models/block/electrostatic_compressor.obj",
-  "flip-v": true,
-  "textures": {
-    "particle": "pneumaticcraft:block/compressed_iron_block"
-  }
+	"credit": "Made with Blockbench",
+	"parent": "forge:block/default",
+	"texture_size": [64, 64],
+	"textures": {
+		"0": "pneumaticcraft:model/electrostatic_compressor",
+		"particle": "pneumaticcraft:model/electrostatic_compressor"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 11, 16],
+			"faces": {
+				"north": {"uv": [0, 4, 4, 6.75], "texture": "#0", "cullface": "north"},
+				"east": {"uv": [4, 6.75, 8, 9.5], "texture": "#0", "cullface": "east"},
+				"south": {"uv": [4, 4, 8, 6.75], "texture": "#0", "cullface": "south"},
+				"west": {"uv": [0, 6.75, 4, 9.5], "texture": "#0", "cullface": "west"},
+				"up": {"uv": [0, 0, 4, 4], "texture": "#0"},
+				"down": {"uv": [4, 0, 8, 4], "texture": "#0", "cullface": "down"}
+			}
+		},
+		{
+			"from": [3, 11, 3],
+			"to": [13, 16, 13],
+			"faces": {
+				"north": {"uv": [0, 12, 2.5, 13.25], "texture": "#0"},
+				"east": {"uv": [2.5, 10.75, 5, 12], "texture": "#0"},
+				"south": {"uv": [2.5, 9.5, 5, 10.75], "texture": "#0"},
+				"west": {"uv": [0, 13.25, 2.5, 14.5], "texture": "#0"},
+				"up": {"uv": [0, 9.5, 2.5, 12], "texture": "#0", "cullface": "up"}
+			}
+		},
+		{
+			"from": [4, 18, 4],
+			"to": [12, 21, 12],
+			"faces": {
+				"north": {"uv": [10, 2, 12, 2.75], "texture": "#0", "cullface": "up"},
+				"east": {"uv": [10, 4.25, 12, 5], "texture": "#0", "cullface": "up"},
+				"south": {"uv": [10, 3.5, 12, 4.25], "texture": "#0", "cullface": "up"},
+				"west": {"uv": [10, 2.75, 12, 3.5], "texture": "#0", "cullface": "up"},
+				"up": {"uv": [10, 0, 12, 2], "texture": "#0", "cullface": "up"},
+				"down": {"uv": [10, 5, 12, 7], "texture": "#0", "cullface": "up"}
+			}
+		},
+		{
+			"from": [6, 16, 6],
+			"to": [10, 23, 10],
+			"faces": {
+				"north": {"uv": [8, 0, 9, 1.75], "texture": "#0", "cullface": "up"},
+				"east": {"uv": [9, 1.75, 10, 3.5], "texture": "#0", "cullface": "up"},
+				"south": {"uv": [9, 0, 10, 1.75], "texture": "#0", "cullface": "up"},
+				"west": {"uv": [8, 1.75, 9, 3.5], "texture": "#0", "cullface": "up"},
+				"up": {"uv": [8, 3.5, 9, 4.5], "texture": "#0", "cullface": "up"}
+			}
+		},
+		{
+			"from": [2, 14, 2],
+			"to": [14, 15, 14],
+			"faces": {
+				"north": {"uv": [5, 9.5, 8, 9.75], "rotation": 180, "texture": "#0"},
+				"east": {"uv": [7.75, 9.5, 8, 12.5], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [5, 12.25, 8, 12.5], "texture": "#0"},
+				"west": {"uv": [5, 9.5, 5.25, 12.5], "rotation": 270, "texture": "#0"},
+				"up": {"uv": [5, 9.5, 8, 12.5], "texture": "#0"},
+				"down": {"uv": [5, 12.5, 8, 9.5], "texture": "#0"}
+			}
+		},
+		{
+			"from": [2, 12, 2],
+			"to": [14, 13, 14],
+			"faces": {
+				"north": {"uv": [5, 12.5, 8, 12.75], "rotation": 180, "texture": "#0"},
+				"east": {"uv": [7.75, 12.5, 8, 15.5], "rotation": 90, "texture": "#0"},
+				"south": {"uv": [5, 15.25, 8, 15.5], "texture": "#0"},
+				"west": {"uv": [5, 12.5, 5.25, 15.5], "rotation": 270, "texture": "#0"},
+				"up": {"uv": [5, 12.5, 8, 15.5], "texture": "#0"},
+				"down": {"uv": [5, 15.5, 8, 12.5], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 225, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, 225, 0],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"fixed": {
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
 }
