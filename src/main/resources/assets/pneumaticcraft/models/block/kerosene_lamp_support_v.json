@@ -1,19 +1,32 @@
 {
-  "textures": {
-    "face": "pneumaticcraft:model/kerosene_lamp"
-  },
-  "elements": [
-    {
-      "from": [ 7.5, 10, 7.5 ],
-      "to": [ 8.5, 16, 8.5 ],
-      "faces": {
-        "up": { "texture": "#face", "uv": [ 6, 0, 7, 1 ]},
-        "down": { "texture": "#face", "uv": [ 6, 0, 7, 1 ], "cullface": "down" },
-        "north": { "texture": "#face", "uv": [ 6, 0, 7, 5 ]},
-        "south": { "texture": "#face", "uv": [ 6, 0, 7, 5 ]},
-        "east": { "texture": "#face", "uv": [ 6, 0, 7, 5 ]},
-        "west": { "texture": "#face", "uv": [ 6, 0, 7, 5 ]}
-      }
-    }
-  ]
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"face": "pneumaticcraft:model/kerosene_lamp"
+	},
+	"elements": [
+		{
+			"from": [7.5, 10, 7.5],
+			"to": [8.5, 15, 8.5],
+			"faces": {
+				"north": {"uv": [7.5, 8.5, 8, 11], "texture": "#face"},
+				"east": {"uv": [7.5, 8.5, 8, 11], "texture": "#face"},
+				"south": {"uv": [7.5, 8.5, 8, 11], "texture": "#face"},
+				"west": {"uv": [7.5, 8.5, 8, 11], "texture": "#face"},
+				"down": {"uv": [7.5, 10.5, 8, 11], "texture": "#face"}
+			}
+		},
+		{
+			"from": [7, 15, 7],
+			"to": [9, 16, 9],
+			"faces": {
+				"north": {"uv": [5, 10, 6, 10.5], "rotation": 180, "texture": "#face"},
+				"east": {"uv": [5.5, 10, 6, 11], "rotation": 90, "texture": "#face"},
+				"south": {"uv": [5, 10.5, 6, 11], "texture": "#face"},
+				"west": {"uv": [5, 10, 5.5, 11], "rotation": 270, "texture": "#face"},
+				"up": {"uv": [5, 10, 6, 11], "texture": "#face", "cullface": "up"},
+				"down": {"uv": [5, 11, 6, 10], "texture": "#face"}
+			}
+		}
+	]
 }
