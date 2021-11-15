@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -33,16 +34,30 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 
 import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 public class BlockKeroseneLamp extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE_NS = Block.box(3, 0, 5, 13, 10, 11);
-    private static final VoxelShape SHAPE_EW = Block.box(5, 0, 3, 11, 10, 13);
+    private static final VoxelShape SHAPE_NS = Stream.of(
+            Block.box(5, 0, 5, 11, 1, 11),
+            Block.box(5, 9, 5, 11, 10, 11),
+            Block.box(11.5, 0, 7, 12.5, 10, 9),
+            Block.box(11, 0, 7, 12, 1, 9),
+            Block.box(11, 9, 7, 12, 10, 9),
+            Block.box(4, 0, 7, 5, 1, 9),
+            Block.box(4, 9, 7, 5, 10, 9),
+            Block.box(3.5, 0, 7, 4.5, 10, 9),
+            Block.box(6, 10, 6, 10, 11, 10),
+            Block.box(5, 1, 5, 11, 9, 11)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    private static final VoxelShape SHAPE_EW = VoxelShapeUtils.rotateY(SHAPE_NS, 90);
 
     public static final EnumProperty<Direction> CONNECTED = EnumProperty.create("connected", Direction.class);
     public static final BooleanProperty LIT = BooleanProperty.create("lit");

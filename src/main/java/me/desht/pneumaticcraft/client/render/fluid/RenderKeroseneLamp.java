@@ -26,7 +26,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import java.util.Collection;
 
 public class RenderKeroseneLamp extends AbstractFluidTER<TileEntityKeroseneLamp> {
-    private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(6/16f, 1/16f, 6/16f, 10/16f, 9/16f, 10/16f);
+    private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(5.1/16f, 1/16f, 5.1/16f, 10.9/16f, 9/16f, 10.9/16f);
 
     public RenderKeroseneLamp(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
