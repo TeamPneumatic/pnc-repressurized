@@ -37,7 +37,7 @@ group = 'me.desht.pneumaticcraft' // http://maven.apache.org/guides/mini/guide-n
 archivesBaseName = "pneumaticcraft-repressurized"
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
-def extraModsDir = "extra-mods-${project.mc_version}"
+String extraModsDir = "extra-mods-${project.mc_version}"
 
 sourceSets {
 	api

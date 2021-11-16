@@ -170,7 +170,7 @@ public class FluidIngredient extends Ingredient {
 
     @Override
     public boolean isEmpty() {
-        return getFluidList().isEmpty();
+        return getFluidList().isEmpty() || getFluidList().stream().allMatch(f -> f == Fluids.EMPTY);
     }
 
     /**
