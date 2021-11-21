@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketBlockDestroyed;
+import me.desht.pneumaticcraft.common.network.PacketNotifyBlockUpdate;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -170,7 +170,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 world.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.Mode.BREAK);
                 world.destroyBlock(pos, false);
                 // notify client too so block shapes can be properly updated
-                NetworkHandler.sendToAllTracking(new PacketBlockDestroyed(pos), world, pos);
+                NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(pos), world, pos);
             } else if (rnd < delta / 25f) {
                 world.playSound(null, ownerTE.getBlockPos(), ModSounds.CREAK.get(), SoundCategory.BLOCKS, 0.7f, 0.6f + world.random.nextFloat() * 0.8f);
             }

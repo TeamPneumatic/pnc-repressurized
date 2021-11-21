@@ -12,7 +12,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.heat.TemperatureCategory;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketBlockDestroyed;
+import me.desht.pneumaticcraft.common.network.PacketNotifyBlockUpdate;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
@@ -443,7 +443,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (!world.isClientSide()) {
             world.removeBlock(pos, false);
             // this only gets called server-side, but the client needs to be informed too, to update neighbour states
-            NetworkHandler.sendToAllTracking(new PacketBlockDestroyed(pos), world, pos);
+            NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(pos), world, pos);
         }
     }
 

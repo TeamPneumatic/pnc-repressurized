@@ -12,15 +12,17 @@ import java.util.function.Supplier;
 /**
  * Received on: CLIENT
  *
- * Sent by server when a block is dropped by shift-wrenching it, or if a pneumatic TE explodes due to overpressure.
- * This happens server-side but the client needs to know too so neighbouring cached block shapes can be recalculated.
+ * Sent by server when a block is dropped by shift-wrenching it, rotated by wrenching it, or if a pneumatic TE explodes
+ * due to overpressure.
+ * This happens server-side (block updates are triggered on the server), but the client needs to know too so that
+ * neighbouring cached block shapes (pressure tubes especially, but potentially anything) can be recalculated.
  */
-public class PacketBlockDestroyed extends LocationIntPacket {
-    public PacketBlockDestroyed(BlockPos pos) {
+public class PacketNotifyBlockUpdate extends LocationIntPacket {
+    public PacketNotifyBlockUpdate(BlockPos pos) {
         super(pos);
     }
 
-    public PacketBlockDestroyed(PacketBuffer buffer) {
+    public PacketNotifyBlockUpdate(PacketBuffer buffer) {
         super(buffer);
     }
 

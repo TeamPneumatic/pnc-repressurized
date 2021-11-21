@@ -191,8 +191,8 @@ public class NetworkHandler {
 				PacketLeftClickEmpty::toBytes, PacketLeftClickEmpty::new, PacketLeftClickEmpty::handle, PLAY_TO_SERVER);
 		registerMessage(PacketShiftScrollWheel.class,
 				PacketShiftScrollWheel::toBytes, PacketShiftScrollWheel::new, PacketShiftScrollWheel::handle, PLAY_TO_SERVER);
-		registerMessage(PacketBlockDestroyed.class,
-				PacketBlockDestroyed::toBytes, PacketBlockDestroyed::new, PacketBlockDestroyed::handle, PLAY_TO_CLIENT);
+		registerMessage(PacketNotifyBlockUpdate.class,
+				PacketNotifyBlockUpdate::toBytes, PacketNotifyBlockUpdate::new, PacketNotifyBlockUpdate::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketSyncHackSimulationUpdate.class,
 				PacketSyncHackSimulationUpdate::toBytes, PacketSyncHackSimulationUpdate::new, PacketSyncHackSimulationUpdate::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketUpdateArmorColors.class,

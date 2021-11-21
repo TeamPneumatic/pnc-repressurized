@@ -242,6 +242,9 @@ public abstract class TileEntityBase extends TileEntity
                 sc.setupFacingMatrix();
             }
         }
+        if (!level.isClientSide) {
+            NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(worldPosition), level, worldPosition);
+        }
     }
 
     void rerenderTileEntity() {
