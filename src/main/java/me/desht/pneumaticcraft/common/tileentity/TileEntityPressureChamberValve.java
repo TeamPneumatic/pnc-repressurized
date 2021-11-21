@@ -91,10 +91,12 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     private int nParticles;  // client-side: the number of particles to create each tick (dependent on chamber size & pressure)
     private boolean triedRebuild;
 
-    // Used to short-term track the base volume after multiblock is broken
-    // Does not get persisted in any way: only intended to allow a pressure chamber to be broken and quickly
-    // reformed without losing all the air that was in it
-    private int savedVolume = 0;
+    // Used to short-term track the multiblock size after it is broken
+    // Does not get persisted in any way: only intended to prevent exploits around breaking a small multiblock and
+    //   reforming the valve into a large multiblock to get free air
+    // Since the pressure is preserved (other than any normal leakage) when the multiblock is broken/reformed and
+    //   the base volume of the air handler changes
+    private int savedMultiblockSize = 0;
 
     public TileEntityPressureChamberValve() {
         super(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
@@ -301,7 +303,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
             if (pressureOK) {
                 // let's craft! (although if the output handler is full, we won't...)
                 isSufficientPressureInChamber = true;
-                if (giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots, true), true) && giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots, false), false)) {
+                if (giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots, true), true)
+                        && giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots, false), false)) {
                     if (getLevel().getGameTime() - lastSoundTick > 5) {
                         getLevel().playSound(null, getBlockPos(), SoundEvents.CHICKEN_EGG, SoundCategory.BLOCKS, 0.7f, 0.8f);
                         lastSoundTick = getLevel().getGameTime();
@@ -446,12 +449,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         }
         if (accessoryValves != null) {
             for (TileEntityPressureChamberValve valve : accessoryValves) {
-                // remember the pre-break volume so we can restore pressure properly when re-forming
-                savedVolume = valve.airHandler.getVolume();
-                float p = valve.getPressure();
+                valve.savedMultiblockSize = valve.multiBlockSize;
+                // keep the valve pressure constant after multi-block break (4x4x4 or 5x5x5 will cause base volume to drop)
+                float pressure = valve.getPressure();
                 valve.setupMultiBlock(0, 0, 0, 0);
-                // the base volume has suddenly dropped; remove excess air to keep pressure constant and avoid big bang
-                valve.airHandler.addAir((int)(p * valve.airHandler.getBaseVolume()) - valve.airHandler.getAir());
+                valve.airHandler.setPressure(pressure);
                 if (valve != this) {
                     valve.accessoryValves.clear();
                     if (!getLevel().isClientSide) valve.sendDescriptionPacket();
@@ -575,9 +577,15 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         valveList.forEach(valve -> valve.accessoryValves = new ArrayList<>(valveList));
 
         // set the multi-block coords in the primary valve only
+        //  also preserve the pressure after multiblock formation, since base volume can change here
+        float pressure = primaryValve.getPressure();
         primaryValve.setupMultiBlock(size, baseX, baseY, baseZ);
+        if (primaryValve.savedMultiblockSize == primaryValve.multiBlockSize) {
+            primaryValve.airHandler.setPressure(pressure);
+        }
+        primaryValve.savedMultiblockSize = 0;
 
-        // note the core valve in every wall & interface so right clicking & block break work as expected
+        // note the core valve in every wall & interface, so that right-clicking & block break work as expected
         primaryValve.hasGlass = false;
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
@@ -604,14 +612,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     }
                 }
             }
-        }
-
-        if (primaryValve.savedVolume != 0) {
-            // restore pressure based on previous saved volume
-            int mul = primaryValve.savedVolume / primaryValve.airHandler.getBaseVolume();
-            int newAir = primaryValve.airHandler.getAir() * mul;
-            primaryValve.addAir(newAir - primaryValve.airHandler.getAir());
-            primaryValve.savedVolume = 0;
         }
 
         // pick up any loose items into the chamber inventory
