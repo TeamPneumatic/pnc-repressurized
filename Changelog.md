@@ -8,6 +8,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.14.6-??? (unreleases)
+
+### Fixes
+* Fixed Aerial Interface allowing Charging Module to charge items through it when its pressure is under 10bar
+* Some fixes around inline (Regulator & Flow Detector) tube module behaviour:
+  * Fixed inline tube modules being placeable on the side of a tube which is already connected to something
+  * Fixed Flow Detector preview not rendering transparent
+  * Stopped rendering previews for modules not placeable in the focused position
+  * Made clearer in the manual (Tube Modules page) that inline modules may only be placed on the open end of a tube
+* Fixed problems with Pressure Chamber valves exploding on multiblock break/reform when there are Volume Modules installed
+* Fixed clientside block shapes (Pressure Tubes in particular) not properly updating on block rotation and pressure tube side toggling
+* Fixed manual page for Pneumatic Armor stating that Item Life Upgrade max was 6 (it is in fact 5)
+* Fixed empty fluid ingredients (`<fluid:minecraft:empty>`) not working properly in CraftTweaker recipes
+  * While such recipes were being added OK, they did not show up in JEI
+* Right-clicking a formed pressure chamber with a placeable block in hand no longer briefly shows the block being placed before opening the GUI
+  * Cosmetic problem only, but irritating nonetheless...
+
 ## 2.14.5-272 (10th Nov 2021)
 
 ### Updates
