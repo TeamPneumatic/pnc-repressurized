@@ -1,14 +1,13 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.block.tubes.INetworkedModule;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketNotifyBlockUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedPressureTube;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -450,7 +449,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                     tube.setSideClosed(sideHit, !tube.isSideClosed(sideHit));
                     tube.onNeighborBlockUpdate(pos.relative(sideHit));
                     world.setBlockAndUpdate(pos, recalculateState(world, pos, world.getBlockState(pos)));
-                    NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(pos), world, pos);
+                    PneumaticRegistry.getInstance().forceClientShapeRecalculation(world, pos);
                 }
             }
         }

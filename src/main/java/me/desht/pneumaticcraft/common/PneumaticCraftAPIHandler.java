@@ -18,6 +18,7 @@ import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketNotifyBlockUpdate;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
@@ -32,6 +33,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
@@ -131,5 +133,12 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     @Override
     public IItemHandler deserializeSmartChest(CompoundNBT tag) {
         return TileEntitySmartChest.deserializeSmartChest(tag);
+    }
+
+    @Override
+    public void forceClientShapeRecalculation(World world, BlockPos pos) {
+        if (!world.isClientSide) {
+            NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(pos), world, pos);
+        }
     }
 }

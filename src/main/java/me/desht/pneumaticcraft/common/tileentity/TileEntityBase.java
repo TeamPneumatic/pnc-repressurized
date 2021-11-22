@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
@@ -243,7 +244,7 @@ public abstract class TileEntityBase extends TileEntity
             }
         }
         if (!level.isClientSide) {
-            NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(worldPosition), level, worldPosition);
+            PneumaticRegistry.getInstance().forceClientShapeRecalculation(level, worldPosition);
         }
     }
 

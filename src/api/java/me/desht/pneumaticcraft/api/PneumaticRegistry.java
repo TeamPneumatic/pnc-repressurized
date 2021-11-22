@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.items.IItemHandler;
 
@@ -169,6 +170,19 @@ public final class PneumaticRegistry {
          * @return an item handler deserialized by the Smart Chest
          */
         IItemHandler deserializeSmartChest(CompoundNBT tag);
-    }
 
+        /**
+         * Notify tracking clients to recalculate the block shapes of all neighbours of the block at the given world
+         * and position. You should call this for any blocks which can connect pneumatically to neighbours when those
+         * blocks are changed server-side only (e.g. rotated, sneak-wrenched). This should only be called server-side
+         * (it is no-op if called on the client).
+         * <p>
+         * This is a bit of a kludge, but necessary since blocks do not normally get signalled about neighbour changes
+         * on the client, which is needed for blocks such as Pressure Tubes to recalculate their cached block shapes.
+         *
+         * @param world the world
+         * @param pos the position of the block that has been changed or removed
+         */
+        void forceClientShapeRecalculation(World world, BlockPos pos);
+    }
 }
