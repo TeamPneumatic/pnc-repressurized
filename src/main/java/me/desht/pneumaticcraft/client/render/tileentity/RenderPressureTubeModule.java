@@ -53,10 +53,12 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
             Direction face = mc.player.isCrouching() ? brtr.getDirection().getOpposite() : brtr.getDirection();
             if (brtr.getBlockPos().equals(tile.getBlockPos()) && mc.level.getBlockEntity(brtr.getBlockPos()) == tile && tile.getModule(face) == null) {
                 TubeModule fakeModule = ((ItemTubeModule) mc.player.getItemInHand(holdingModule).getItem()).createModule();
-                fakeModule.markFake();
-                fakeModule.setDirection(face);
-                fakeModule.setTube(tile);
-                getModuleRenderer(fakeModule).renderModule(fakeModule, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
+                if (tile.mayPlaceModule(fakeModule, face)) {
+                    fakeModule.markFake();
+                    fakeModule.setDirection(face);
+                    fakeModule.setTube(tile);
+                    getModuleRenderer(fakeModule).renderModule(fakeModule, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
+                }
             }
         }
 

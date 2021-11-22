@@ -228,8 +228,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         return modules.values().stream().filter(Objects::nonNull);
     }
 
-    public boolean mayPlaceModule(Direction side) {
-        return inLineModuleDir == null && getModule(side) == null && !isSideClosed(side);
+    public boolean mayPlaceModule(TubeModule module, Direction side) {
+        return inLineModuleDir == null
+                && getModule(side) == null
+                && !isSideClosed(side)
+                && (!module.isInline() || getConnectedNeighbor(side) == null);
     }
 
     public void setModule(Direction side, TubeModule module) {

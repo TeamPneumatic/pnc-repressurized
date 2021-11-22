@@ -260,7 +260,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         ItemStack heldStack = player.getItemInHand(hand);
         if (heldStack.getItem() instanceof ItemTubeModule) {
             TubeModule module = ((ItemTubeModule) heldStack.getItem()).createModule();
-            if (tePT.mayPlaceModule(side)) {
+            if (tePT.mayPlaceModule(module, side)) {
                 if (simulate) module.markFake();
                 tePT.setModule(side, module);
                 if (!simulate && !world.isClientSide) {

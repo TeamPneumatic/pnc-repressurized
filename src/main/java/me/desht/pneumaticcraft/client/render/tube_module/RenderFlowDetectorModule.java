@@ -25,7 +25,7 @@ public class RenderFlowDetectorModule extends TubeModuleRendererBase<ModuleFlowD
         float rot = module != null ? MathHelper.lerp(partialTicks, module.oldRotation, module.rotation) : 0f;
         for (int i = 0; i < TUBE_PARTS; i++) {
             shape1.zRot = (float)i / TUBE_PARTS * 2 * (float)Math.PI + rot;
-            shape1.render(matrixStack, builder, combinedLight, combinedOverlay);
+            shape1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
         }
     }
 
