@@ -307,6 +307,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerWorld) level, Names.MOD_ID, worldPosition, cp.x, cp.z, false, false));
         }
         MinecraftForge.EVENT_BUS.unregister(this);
+        itemHandlerSideConfigurator.invalidateCaps();
     }
 
     @Override

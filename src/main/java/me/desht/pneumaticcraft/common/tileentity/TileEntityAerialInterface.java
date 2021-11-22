@@ -232,7 +232,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                 setPlayer(((ServerWorld) getLevel()).getServer().getPlayerList().getPlayer(playerUUID));
             }
             getPlayer().ifPresent(player -> {
-                if (getPressure() >= getMinWorkingPressure()) {
+                if (hasEnoughPressure()) {
                     addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
                     if ((getLevel().getGameTime() & 0x3f) == 0) {
                         scanForChargeableItems(player);
@@ -260,11 +260,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             if (curXPFluidIndex >= available.size()) {
                 curXPFluidIndex = -1;
             }
-            if (curXPFluidIndex >= 0 && curXPFluidIndex < available.size()) {
-                curXpFluid = available.get(curXPFluidIndex);
-            } else {
-                curXpFluid = Fluids.EMPTY;
-            }
+            curXpFluid = curXPFluidIndex >= 0 ? available.get(curXPFluidIndex) : Fluids.EMPTY;
             curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         } else if (tag.startsWith("SideConf") && itemHandlerSideConfigurator.handleButtonPress(tag)) {
             needUpdateNeighbours = true;
@@ -406,6 +402,10 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         return rsController;
     }
 
+    private boolean hasEnoughPressure() {
+        return getPressure() >= getMinWorkingPressure();
+    }
+
     private abstract class PlayerInvHandler implements IItemHandler {
         IItemHandler cached = null;
 
@@ -431,20 +431,26 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         @Override
         public int getSlots() {
-            return getPlayer().map(p -> getInvWrapper(p).getSlots()).orElse(0);
+            return getPlayer()
+                    .filter(p -> hasEnoughPressure())
+                    .map(p -> getInvWrapper(p).getSlots())
+                    .orElse(0);
         }
 
         @Nonnull
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return getPlayer().map(p -> getInvWrapper(p).getStackInSlot(slot)).orElse(ItemStack.EMPTY);
+            return getPlayer()
+                    .filter(p -> hasEnoughPressure())
+                    .map(p -> getInvWrapper(p).getStackInSlot(slot))
+                    .orElse(ItemStack.EMPTY);
         }
 
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
             return getPlayer()
-                    .filter(p -> getPressure() >= getMinWorkingPressure())
+                    .filter(p -> hasEnoughPressure())
                     .map(p -> getInvWrapper(p).insertItem(slot, stack, simulate))
                     .orElse(stack);
         }
@@ -452,19 +458,23 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         @Nonnull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return getPlayer().filter(p -> getPressure() >= getMinWorkingPressure())
+            return getPlayer()
+                    .filter(p -> hasEnoughPressure())
                     .map(p -> getInvWrapper(p).extractItem(slot, amount, simulate))
                     .orElse(ItemStack.EMPTY);
         }
 
         @Override
         public int getSlotLimit(int slot) {
-            return getPlayer().map(p -> getInvWrapper(p).getSlotLimit(slot)).orElse(1);
+            return getPlayer()
+                    .filter(p -> hasEnoughPressure())
+                    .map(p -> getInvWrapper(p).getSlotLimit(slot))
+                    .orElse(1);
         }
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return true;
+            return hasEnoughPressure();
         }
     }
 
@@ -529,7 +539,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (getPressure() < getMinWorkingPressure()) return stack;
+            if (!hasEnoughPressure()) return stack;
 
             return getPlayer().map(player -> {
                 if (getFoodValue(stack) <= 0 || !okToFeed(stack, player)) {
@@ -637,13 +647,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         private boolean canFill(Fluid fluid) {
             return dispenserUpgradeInserted && fluid != Fluids.EMPTY && fluid == curXpFluid
                     && curXpRatio != 0
-                    && getPressure() >= getMinWorkingPressure();
+                    && hasEnoughPressure();
         }
 
         @Override
         public FluidStack drain(FluidStack resource, FluidAction doDrain) {
             return getPlayer().map(player -> {
-                if (curXpRatio != 0 && dispenserUpgradeInserted && getPressure() >= getMinWorkingPressure()) {
+                if (curXpRatio != 0 && dispenserUpgradeInserted && hasEnoughPressure()) {
                     int pointsDrained = Math.min(EnchantmentUtils.getPlayerXP(player), resource.getAmount() / curXpRatio);
                     if (doDrain.execute()) EnchantmentUtils.addPlayerXP(player, -pointsDrained);
                     return new FluidStack(resource.getFluid(), pointsDrained * curXpRatio);
