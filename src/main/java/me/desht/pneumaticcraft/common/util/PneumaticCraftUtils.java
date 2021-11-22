@@ -213,18 +213,21 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
+     * Rounds numbers (round-nearest) to the given number of decimal places.
+     * E.g. 1.234 with decimal 1 will result in a string holding "1.2"
+     * but 1.26 with decimal 1 will result in "1.3"
      *
      * @param value a double-precision quantity
      * @param decimals number of digits to the right of the decimal point
      * @return a formatted string representation
      */
     public static String roundNumberTo(double value, int decimals) {
-        return new BigDecimal(value).setScale(decimals, RoundingMode.HALF_DOWN).toPlainString();
+        return String.format("%." + decimals + "f", roundNumberToDouble(value, decimals));
     }
 
     /**
-     * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
+     * Rounds numbers to the given number of decimal places.
+     * E.g. 1.234 with decimal 1 will result in a string holding "1.2"
      *
      * @param value a double-precision quantity
      * @param decimals number of digits to the right of the decimal point
@@ -232,17 +235,6 @@ public class PneumaticCraftUtils {
      */
     public static double roundNumberToDouble(double value, int decimals) {
         return new BigDecimal(value).setScale(decimals, RoundingMode.HALF_DOWN).doubleValue();
-    }
-
-    /**
-     * Rounds numbers down at the given decimal. 1.234 with decimal 1 will result in a string holding "1.2"
-     *
-     * @param value a floating point quantity
-     * @param decimals number of digits to the right of the decimal point
-     * @return a formatted string representation
-     */
-    public static String roundNumberTo(float value, int decimals) {
-        return "" + Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
     }
 
     /**
