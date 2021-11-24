@@ -8,11 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.14.6-??? (unreleases)
+## 2.14.6-277 (24th Nov 2021)
 
 ### Fixes
 * Fixed Aerial Interface allowing Charging Module to charge items through it when its pressure is under 10bar
-* Some fixes around inline (Regulator & Flow Detector) tube module behaviour:
+* Some fixes around inline tube module (Regulator & Flow Detector) behaviour:
   * Fixed inline tube modules being placeable on the side of a tube which is already connected to something
   * Fixed Flow Detector preview not rendering transparent
   * Stopped rendering previews for modules not placeable in the focused position
@@ -24,6 +24,13 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * While such recipes were being added OK, they did not show up in JEI
 * Right-clicking a formed pressure chamber with a placeable block in hand no longer briefly shows the block being placed before opening the GUI
   * Cosmetic problem only, but irritating nonetheless...
+
+### API and Development
+* Added a couple of API methods (both for fairly specific usages):
+  * Added `IPneumaticCraftInterface#deserializeSmartChest()`, intended to make it easier to include Smart Chests in Create contraptions
+  * Added `forceClientShapeRecalculation()` which can be called by addon mods if they rotate/break a block (on the server) which can connect to Pressure Tubes - this notifies clients to update neighbouring Pressure Tube block shapes (the client doesn't normally get notified about block updates like this)
+* All Java source files now include license headers (GPLv3 for the main mod, LGPLv3 for the API)
+* Included a copy of COPYING.LESSER (LGPLv3 licence) in the source distribution
 
 ## 2.14.5-272 (10th Nov 2021)
 
