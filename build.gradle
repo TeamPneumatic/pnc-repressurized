@@ -222,6 +222,8 @@ javadoc {
 	source = [sourceSets.main.allJava, sourceSets.api.allJava]
 	// prevent java 8's strict doclint for javadocs from failing builds
 	options.addStringOption('Xdoclint:none', '-quiet')
+	(options as StandardJavadocDocletOptions)
+			.tags("apiNote:a:API Note:", "implSpec:a:Implementation Requirements:", "implNote:a:Implementation Note:")
 }
 
 //task makeChangelog(type: GitChangelogTask) {

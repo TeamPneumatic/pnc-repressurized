@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.api.item;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
@@ -13,7 +12,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Get an instance of this with {@link PneumaticRegistry.IPneumaticCraftInterface#getItemRegistry()}
+ * Get an instance of this with {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getItemRegistry()}
  */
 public interface IItemRegistry {
     /**

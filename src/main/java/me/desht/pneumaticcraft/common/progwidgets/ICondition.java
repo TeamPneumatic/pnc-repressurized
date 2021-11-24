@@ -29,8 +29,8 @@ public interface ICondition {
     /**
      * Used in the CC compatibility.
      *
-     * @param drone
-     * @return
+     * @param drone the drone
+     * @return evaluation result
      */
     boolean evaluate(IDroneBase drone, IProgWidget widget);
 

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.api.drone;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.item.ItemStack;
@@ -9,7 +8,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
- * Retrieve an instance of this via {@link PneumaticRegistry.IPneumaticCraftInterface#getDroneRegistry()}.
+ * Retrieve an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getDroneRegistry()}.
  */
 public interface IDroneRegistry {
     /**
@@ -28,7 +27,7 @@ public interface IDroneRegistry {
      * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for a
      * custom energy type (i.e. other than Forge Energy).
      * <p>This <strong>must</strong> be called
-     * from a registry event handler for {@link RegistryEvent.Register} to ensure registration
+     * from a registry event handler for {@link net.minecraftforge.event.RegistryEvent.Register} to ensure registration
      * is done at the right time - do not call it directly from elsewhere.
      *
      * @param event the Forge registry event

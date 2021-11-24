@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.block.Block;
 import net.minecraft.client.settings.KeyBinding;
@@ -15,7 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * Retrieve an instance of this via {@link PneumaticRegistry.IPneumaticCraftInterface#getHelmetRegistry()}
+ * Retrieve an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getHelmetRegistry()}
  */
 public interface IPneumaticHelmetRegistry {
     /**

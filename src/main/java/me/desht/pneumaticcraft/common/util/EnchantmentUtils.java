@@ -24,8 +24,8 @@ public class EnchantmentUtils {
      * Be warned, minecraft doesn't update experienceTotal properly, so we have
      * to do this.
      *
-     * @param player
-     * @return
+     * @param player the player
+     * @return player's current XP amount
      */
     public static int getPlayerXP(PlayerEntity player) {
         return (int)(EnchantmentUtils.getExperienceForLevel(player.experienceLevel) + (player.experienceProgress * player.getXpNeededForNextLevel()));

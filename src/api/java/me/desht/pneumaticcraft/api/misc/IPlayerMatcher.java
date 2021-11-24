@@ -67,10 +67,11 @@ public interface IPlayerMatcher extends Predicate<PlayerEntity> {
 
     /**
      * Implement this and register it via
-     * {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#registerPlayerMatcher(ResourceLocation, MatcherFactory)}.
+     * {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#registerPlayerMatcher(ResourceLocation, me.desht.pneumaticcraft.api.misc.IPlayerMatcher.MatcherFactory)}.
      * <p>
      * This factory creates instances of a player matcher from JSON and packet buffer data, matching data written by
-     * {@link IPlayerMatcher#toJson()} and {@link IPlayerMatcher#toBytes(PacketBuffer)}.
+     * {@link me.desht.pneumaticcraft.api.misc.IPlayerMatcher#toJson()} and
+     * {@link me.desht.pneumaticcraft.api.misc.IPlayerMatcher#toBytes(PacketBuffer)}.
      * @param <T> the matcher type
      */
     interface MatcherFactory<T extends IPlayerMatcher> {

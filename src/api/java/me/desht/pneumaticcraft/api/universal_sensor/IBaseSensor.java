@@ -49,9 +49,9 @@ public interface IBaseSensor {
     }
 
     /**
-     * See {@link ISensorSetting#getDescription()}
+     * Get some description text for this sensor
      *
-     * @return
+     * @return a list of translation keys
      */
     default List<String> getDescription() {
         return ISensorSetting._getDescription(getSensorPath());
