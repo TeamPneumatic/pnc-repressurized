@@ -31,18 +31,6 @@ public class ConfigHolder {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ConfigHolder::onConfigChanged);
     }
 
-    static void saveClient() {
-        if (configClientSpec.isLoaded()) {
-            configClientSpec.save();
-        }
-    }
-
-    static void saveCommon() {
-        if (configCommonSpec.isLoaded()) {
-            configCommonSpec.save();
-        }
-    }
-
     private static void onConfigChanged(final ModConfig.ModConfigEvent event) {
         ModConfig config = event.getConfig();
         if (config.getSpec() == ConfigHolder.configClientSpec) {
