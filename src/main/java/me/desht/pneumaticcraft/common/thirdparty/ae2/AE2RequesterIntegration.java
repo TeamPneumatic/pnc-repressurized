@@ -42,7 +42,6 @@ import appeng.api.util.AECableType;
 import appeng.api.util.AEColor;
 import appeng.api.util.AEPartLocation;
 import appeng.api.util.DimensionalCoord;
-import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsRequester;
@@ -112,13 +111,15 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
     }
 
     private boolean checkForInterface() {
+        // note: returns false on success (= no more checking needed), trye
         if (isPlacedOnInterface()) {
             TileEntity te = logisticsRequester.getCachedTileEntity();
             if (te instanceof IGridHost) {
-                if (((IGridHost) te).getGridNode(null) == null) return true;
-                if (getGridNode(null) == null) return true;
+                IGridNode nodeA = ((IGridHost) te).getGridNode(AEPartLocation.INTERNAL);
+                IGridNode nodeB = getGridNode(AEPartLocation.INTERNAL);
+                if (nodeA == null || nodeB == null) return true;
                 try {
-                    AE2PNCAddon.api.grid().createGridConnection(((IGridHost) te).getGridNode(null), getGridNode(null));
+                    AE2PNCAddon.api.grid().createGridConnection(nodeA, nodeB);
                 } catch (FailedConnectionException e) {
                     Log.error("Couldn't connect to an ME Interface!");
                     e.printStackTrace();
@@ -137,6 +138,7 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
         logisticsRequester.remove();
     }
 
+    @Override
     public IGridNode getGridNode(AEPartLocation d) {
         if (gridNode == null) {
             gridNode = AE2PNCAddon.api.grid().createGridNode(this);
@@ -411,9 +413,9 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
     }
 
     private boolean isLogisticsTEvalid(TileEntity te) {
-        if (te.isRemoved()) return true;
-        ISemiBlock frame = SemiblockTracker.getInstance().getSemiblock(logisticsRequester.getWorld(), logisticsRequester.getBlockPos());
-        return frame instanceof EntityLogisticsFrame && ((EntityLogisticsFrame) frame).shouldProvideTo(logisticsRequester.getPriority());
+        return !te.isRemoved() && SemiblockTracker.getInstance().getAllSemiblocks(te.getLevel(), te.getBlockPos())
+                .filter(semiblock -> semiblock instanceof EntityLogisticsFrame)
+                .anyMatch(semiblock -> ((EntityLogisticsFrame) semiblock).shouldProvideTo(logisticsRequester.getPriority()));
     }
 
     private void notifyNetworkOfCraftingChange() {
