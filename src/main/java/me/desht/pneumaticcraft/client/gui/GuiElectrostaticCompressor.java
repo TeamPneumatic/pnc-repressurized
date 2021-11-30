@@ -73,8 +73,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
 
     @Override
     public void tick() {
-        super.tick();
-        if (ClientUtils.getClientWorld().getGameTime() % 20 == 0) {
+        if (firstUpdate || ClientUtils.getClientWorld().getGameTime() % 20 == 0) {
             Set<BlockPos> positions = new HashSet<>();
             Set<TileEntityElectrostaticCompressor> compressors = new HashSet<>();
             positions.add(te.getBlockPos());
@@ -82,9 +81,14 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
             connectedCompressors = compressors.size();
         }
 
+        super.tick();
+
         List<ITextComponent> info = new ArrayList<>();
-        info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.generating",
-                PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1)));
+        if (connectedCompressors > 0) {
+            // should always be the case...
+            info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.generating",
+                    PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1)));
+        }
         info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.connected", connectedCompressors));
         info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.maxRedirection",
                 PneumaticCraftUtils.roundNumberTo(PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath, 1)));
