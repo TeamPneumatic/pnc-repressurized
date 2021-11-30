@@ -162,7 +162,8 @@ public class ModuleAirGrate extends TubeModule {
             }
         }
         if (!world.isClientSide) {
-            pressureTube.addAir(-entitiesMoved * PneumaticValues.USAGE_AIR_GRATE);
+            int usage = pressureTube.getPressure() > 0 ? -PneumaticValues.USAGE_AIR_GRATE : PneumaticValues.USAGE_AIR_GRATE;
+            pressureTube.addAir(entitiesMoved * usage);
         }
     }
 
