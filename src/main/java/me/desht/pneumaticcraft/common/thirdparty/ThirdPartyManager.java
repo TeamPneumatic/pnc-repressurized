@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
 import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
+import me.desht.pneumaticcraft.common.thirdparty.create.Create;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.gamestages.Gamestages;
 import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
@@ -73,6 +74,7 @@ public enum ThirdPartyManager {
             thirdPartyClasses.put(ModIds.COFH_CORE, () -> new CoFHCore());
             thirdPartyClasses.put(ModIds.CRAFTTWEAKER, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.GAMESTAGES, () -> new Gamestages());
+            thirdPartyClasses.put(ModIds.CREATE, () -> new Create());
 
             // these were supported in 1.12.2 and may or may not come back...
 

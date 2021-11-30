@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
+import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -99,6 +100,8 @@ public final class PneumaticRegistry {
         IItemRegistry getItemRegistry();
 
         IFuelRegistry getFuelRegistry();
+
+        IWrenchRegistry getWrenchRegistry();
 
         /**
          * Returns the number of Security Stations that disallow interaction with the given coordinate for the given

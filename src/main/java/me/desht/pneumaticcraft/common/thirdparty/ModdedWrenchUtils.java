@@ -17,25 +17,40 @@
 
 package me.desht.pneumaticcraft.common.thirdparty;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
-public enum ModdedWrenchUtils {
+public enum ModdedWrenchUtils implements IWrenchRegistry {
     INSTANCE;
 
     private final Set<ResourceLocation> wrenches = new HashSet<>();
+
+    private static final BiFunction<ItemUseContext,BlockState,ActionResultType> NO_OP_PRE = (ctx, state) -> ActionResultType.PASS;
+    private static final BiConsumer<ItemUseContext,BlockState> NO_OP_POST = (ctx, state) -> {};
+
+    private final Map<String, BiFunction<ItemUseContext,BlockState,ActionResultType>> modBehavioursPre = new Object2ObjectOpenHashMap<>();
+    private final Map<String, BiConsumer<ItemUseContext,BlockState>> modBehavioursPost = new Object2ObjectOpenHashMap<>();
 
     public static ModdedWrenchUtils getInstance() {
         return INSTANCE;
     }
 
-    public void registerThirdPartyWrenches() {
+    void registerThirdPartyWrenches() {
         // some well-known wrenches. item tag "forge:tools/wrench" can also be used to detect a wrench item
         registerWrench("thermalfoundation:wrench");
         registerWrench("rftools:smartwrench");
@@ -53,25 +68,48 @@ public enum ModdedWrenchUtils {
     private void registerWrench(String wrenchId) {
         wrenches.add(new ResourceLocation(wrenchId));
     }
-    
-    /**
-     * Check if the given item is a known 3rd party modded wrench (does not include our own Pneumatic Wrench)
-     *
-     * @param stack the item to check
-     * @return true if it's a modded wrench, false otherwise
-     */
+
+    @Override
     public boolean isModdedWrench(@Nonnull ItemStack stack) {
         return !(stack.getItem() instanceof ItemPneumaticWrench) &&
                 (stack.getItem().is(PneumaticCraftTags.Items.WRENCHES) || wrenches.contains(stack.getItem().getRegistryName()));
     }
 
-    /**
-     * Check if the given item is *any* known wrench item, including our own Pneumatic Wrench
-     *
-     * @param stack the item to check
-     * @return true if it's a wrench, false otherwise
-     */
+    @Override
     public boolean isWrench(@Nonnull ItemStack stack) {
         return stack.getItem() instanceof ItemPneumaticWrench || isModdedWrench(stack);
+    }
+
+    @Override
+    public void registerWrench(Item wrench) {
+        wrenches.add(wrench.getRegistryName());
+    }
+
+    @Override
+    public void addModdedWrenchBehaviour(String modid, BiFunction<ItemUseContext,BlockState,ActionResultType> behaviourPre, BiConsumer<ItemUseContext,BlockState> behaviourPost) {
+        modBehavioursPre.put(modid, behaviourPre);
+        modBehavioursPost.put(modid, behaviourPost);
+    }
+
+    /**
+     * Called server-side when a non-PneumaticCraft block is about to be wrenched by the Pneumatic Wrench. Possibly run
+     * any mod-specific behaviour on it.
+     * @param ctx the item usage context
+     * @param state the block being wrenched
+     * @return the action result; if SUCCESS or CONSUME, then Pneumatic Wrenching behaviour will not be carried out; if
+     *         CONSUME then the Pneumatic Wrench sound effect will also not be played
+     */
+    public ActionResultType onWrenchedPre(ItemUseContext ctx, BlockState state) {
+        return modBehavioursPre.getOrDefault(state.getBlock().getRegistryName().getNamespace(), NO_OP_PRE).apply(ctx, state);
+    }
+
+    /**
+     * Called server-side when a non-PneumaticCraft block has just been wrenched by the Pneumatic Wrench. Will not be
+     * called if {@link #onWrenchedPre(ItemUseContext, BlockState)} returned SUCCESS or CONSUME.
+     * @param ctx the item usage context
+     * @param state the block being wrenched
+     */
+    public void onWrenchedPost(ItemUseContext ctx, BlockState state) {
+        modBehavioursPost.getOrDefault(state.getBlock().getRegistryName().getNamespace(), NO_OP_POST).accept(ctx, state);
     }
 }

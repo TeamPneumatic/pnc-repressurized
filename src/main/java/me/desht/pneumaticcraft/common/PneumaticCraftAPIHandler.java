@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
+import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
@@ -40,6 +41,7 @@ import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
+import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
@@ -140,6 +142,11 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     @Override
     public IFuelRegistry getFuelRegistry() {
         return FuelRegistry.getInstance();
+    }
+
+    @Override
+    public IWrenchRegistry getWrenchRegistry() {
+        return ModdedWrenchUtils.getInstance();
     }
 
     @Override

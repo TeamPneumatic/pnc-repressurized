@@ -32,6 +32,7 @@ public class ModIds {
     public static final String WAILA = "waila";
     public static final String CRAFTTWEAKER = "crafttweaker";
     public static final String GAMESTAGES = "gamestages";
+    public static final String CREATE = "create";
 
     // the mods we have integrated with in the past but not in 1.16
 //    public static final String BUILDCRAFT = "buildcraftcore";

@@ -20,11 +20,13 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -53,31 +55,37 @@ public class ItemPneumaticWrench extends ItemPressurizable {
         BlockPos pos = ctx.getClickedPos();
         if (!world.isClientSide) {
             BlockState state = world.getBlockState(pos);
-            boolean didWork = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
-                float pressure = h.getPressure();
-                IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(state.getBlock());
-                if (wrenchable != null && pressure > 0.1f) {
-                    if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getClickedFace(), hand)) {
-                        if (ctx.getPlayer() != null && !ctx.getPlayer().isCreative()) {
-                            h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
-                        }
-                        return true;
-                    } else {
-                        return false;
+            ActionResultType res = ModdedWrenchUtils.getInstance().onWrenchedPre(ctx, state);
+            if (res != ActionResultType.PASS) {
+                if (res == ActionResultType.SUCCESS) playWrenchSound(world, pos);
+                return res;
+            }
+            IAirHandler airHandler = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new);
+            boolean didWork = false;
+            float pressure = airHandler.getPressure();
+            IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(state.getBlock());
+            if (wrenchable != null && pressure > 0.1f) {
+                if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getClickedFace(), hand)) {
+                    if (ctx.getPlayer() != null && !ctx.getPlayer().isCreative()) {
+                        airHandler.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     }
-                } else {
-                    // rotating normal blocks doesn't use pressure
-                    BlockState rotated = state.rotate(Rotation.CLOCKWISE_90);
-                    if (rotated != state) {
-                        world.setBlockAndUpdate(pos, rotated);
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    didWork = true;
                 }
-            }).orElse(false);
-            if (didWork) playWrenchSound(world, pos);
-            return didWork ? ActionResultType.SUCCESS : ActionResultType.PASS;
+            } else {
+                // rotating normal blocks doesn't use pressure
+                BlockState rotated = state.rotate(world, pos, Rotation.CLOCKWISE_90);
+                if (rotated != state) {
+                    world.setBlockAndUpdate(pos, rotated);
+                    didWork = true;
+                    state = rotated;
+                }
+            }
+            if (didWork) {
+                playWrenchSound(world, pos);
+                ModdedWrenchUtils.getInstance().onWrenchedPost(ctx, state);
+                return ActionResultType.SUCCESS;
+            }
+            return ActionResultType.PASS;
         } else {
             // client-side: prevent GUI's opening etc.
             return ActionResultType.SUCCESS;
