@@ -22,6 +22,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -632,8 +633,11 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     private static boolean isPlayerExempt(PlayerEntity player) {
         // can player ignore security stations entirely? server ops and creative mode players
-        // note : player.getCommandSource() will throw NPE if player is a fakeplayer with a null id
-        return player.isCreative() || (player.getGameProfile().getId() != null && player.createCommandSourceStack().hasPermission(2));
+        // note : player.createCommandSourceStack() will throw NPE if player is a fakeplayer with a null id
+        //  and will also throw NPE on integrated server if the fakeplayer has a null name -
+        //  https://github.com/TeamPneumatic/pnc-repressurized/issues/922
+        return player.isCreative() && ConfigHelper.common().machines.securityStationCreativePlayersExempt.get()
+                || player.getGameProfile().isComplete() && player.createCommandSourceStack().hasPermission(2);
     }
 
     private class SecurityStationHandler extends BaseItemStackHandler {
