@@ -8,6 +8,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.14.7-??? (unreleased)
+
+### Updates
+* Security Station no longer exempts creative-mode players from block protection by default
+  * Only server ops (command permission level >= 2) are now fully exempt
+  * Old behaviour can be restored by setting `security_station_creative_players_exempt` to true in config
+
+### Fixes
+* Fixed NPE with Security Station and fakeplayers with incomplete game profiles on integrated servers
+* Wrenching blocks (belts, shafts) from the Create mod with the Pneumatic wrench now works properly, disconnecting belts/shafts as expected
+* Fixed Air Grate in vacuum mode (negative pressure) lowering the pressure when it used air instead of raising it (i.e. moving toward 0)
+
 ## 2.14.6-277 (24th Nov 2021)
 
 ### Fixes
