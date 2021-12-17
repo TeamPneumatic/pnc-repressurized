@@ -19,6 +19,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed NPE with Security Station and fakeplayers with incomplete game profiles on integrated servers
 * Wrenching blocks (belts, shafts) from the Create mod with the Pneumatic wrench now works properly, disconnecting belts/shafts as expected
 * Fixed Air Grate in vacuum mode (negative pressure) lowering the pressure when it used air instead of raising it (i.e. moving toward 0)
+* Fixed client crash when clearing Pneumatic Armor keybindings via armor GUI, under some circumstances
+* Fixed Logistics Requester Frame integration with AE2 not functioning correctly
 
 ## 2.14.6-277 (24th Nov 2021)
 
