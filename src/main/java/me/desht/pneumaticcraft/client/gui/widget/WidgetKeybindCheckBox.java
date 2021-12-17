@@ -73,6 +73,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
                 xlate("pneumaticcraft.gui.enableModule", xlate(ArmorUpgradeRegistry.getStringKey(upgradeID))),
                 pressable);
 
+        this.oldCheckboxText = getMessage();
         this.upgradeID = upgradeID;
     }
 
