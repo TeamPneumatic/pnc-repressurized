@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,8 +31,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.IPlantable;
-
-import static me.desht.pneumaticcraft.common.config.PNCConfig.Common.Machines.cropSticksGrowthBoostChance;
 
 public class EntityCropSupport extends EntitySemiblockBase {
     private static final AxisAlignedBB BOUNDS = new AxisAlignedBB(3 / 16D, 0D, 3 / 16D, 13 / 16D, 9 / 16D, 13 / 16D);
@@ -49,7 +48,7 @@ public class EntityCropSupport extends EntitySemiblockBase {
     public void tick() {
         super.tick();
 
-        if (level.random.nextDouble() < cropSticksGrowthBoostChance && !getBlockState().isAir(level, getBlockPos())) {
+        if (level.random.nextDouble() < ConfigHelper.common().machines.cropSticksGrowthBoostChance.get() && !getBlockState().isAir(level, getBlockPos())) {
             if (!level.isClientSide) {
                 getBlockState().tick((ServerWorld) level, getBlockPos(), level.random);
             } else {

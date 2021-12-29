@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.Sets;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,6 +37,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ItemSeismicSensor extends Item {
     private static final int MAX_SEARCH = 500;
@@ -78,10 +79,16 @@ public class ItemSeismicSensor extends Item {
     private Fluid findFluid(World world, BlockPos pos) {
         if (needRecache) {
             fluidsOfInterest.clear();
+            Set<ResourceLocation> tagsFromConfig = ConfigHelper.common().machines.seismicSensorFluidTags.get().stream()
+                    .map(ResourceLocation::new)
+                    .collect(Collectors.toSet());
+            Set<ResourceLocation> fluidsFromConfig = ConfigHelper.common().machines.seismicSensorFluids.get().stream()
+                    .map(ResourceLocation::new)
+                    .collect(Collectors.toSet());
             for (Fluid f : ForgeRegistries.FLUIDS.getValues()) {
-                if (!Sets.intersection(f.getTags(), PNCConfig.Common.Machines.seismicSensorFluidTags).isEmpty()) {
+                if (!Sets.intersection(f.getTags(), tagsFromConfig).isEmpty()) {
                     fluidsOfInterest.add(f.getRegistryName());
-                } else if (PNCConfig.Common.Machines.seismicSensorFluids.contains(f.getRegistryName())) {
+                } else if (fluidsFromConfig.contains(f.getRegistryName())) {
                     fluidsOfInterest.add(f.getRegistryName());
                 }
             }

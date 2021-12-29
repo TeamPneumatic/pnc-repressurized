@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -120,6 +120,6 @@ public class MovingSoundJetBoots extends TickableSound {
     }
 
     private float volumeFromConfig(boolean builderMode) {
-        return (float) (builderMode ? PNCConfig.Client.Sound.jetbootsVolumeBuilderMode : PNCConfig.Client.Sound.jetbootsVolume);
+        return builderMode ? ConfigHelper.client().sound.jetbootsVolumeBuilderMode.get().floatValue() : ConfigHelper.client().sound.jetbootsVolume.get().floatValue();
     }
 }

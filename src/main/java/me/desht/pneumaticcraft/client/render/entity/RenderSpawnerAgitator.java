@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelHeatFrame;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelSpawnerAgitator;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySpawnerAgitator;
 import me.desht.pneumaticcraft.lib.Textures;

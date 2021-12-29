@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
@@ -212,7 +212,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return PNCConfig.Client.Armor.showEnchantGlint && super.isFoil(stack);
+        return ConfigHelper.client().armor.showEnchantGlint.get() && super.isFoil(stack);
     }
 
     @Override
@@ -348,10 +348,10 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     @Override
     public float getFOVModifier(ItemStack stack, PlayerEntity player, EquipmentSlotType slot) {
-        if (slot == EquipmentSlotType.LEGS && PNCConfig.Client.Armor.leggingsFOVFactor > 0) {
+        if (slot == EquipmentSlotType.LEGS && ConfigHelper.client().armor.leggingsFOVFactor.get() > 0) {
             double boost = ArmorUpgradeRegistry.getInstance().runSpeedHandler.getSpeedBoostFromLegs(CommonArmorHandler.getHandlerForPlayer());
             if (boost > 0) {
-                return 1.0f + (float) (boost * 2.0 * PNCConfig.Client.Armor.leggingsFOVFactor);
+                return 1.0f + (float) (boost * 2.0 * ConfigHelper.client().armor.leggingsFOVFactor.get());
             }
         }
         return 1.0f;

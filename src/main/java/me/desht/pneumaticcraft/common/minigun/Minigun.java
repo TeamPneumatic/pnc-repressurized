@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.minigun;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
@@ -325,7 +325,7 @@ public abstract class Minigun {
 
     public double getRange() {
         double mul = getAmmoStack().getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack) : 1;
-        return (PNCConfig.Common.Minigun.baseRange + 5 * getUpgrades(EnumUpgrade.RANGE)) * mul;
+        return (ConfigHelper.common().minigun.baseRange.get() + 5 * getUpgrades(EnumUpgrade.RANGE)) * mul;
     }
 
     public boolean dispenserWeightedPercentage(int basePct) {

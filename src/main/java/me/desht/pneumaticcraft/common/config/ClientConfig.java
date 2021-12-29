@@ -25,41 +25,41 @@ import java.util.Locale;
 
 public class ClientConfig {
     public static class General {
-        ForgeConfigSpec.BooleanValue aphorismDrama;
-        ForgeConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
-        ForgeConfigSpec.BooleanValue topShowsFluids;
-        ForgeConfigSpec.BooleanValue logisticsGuiTint;
-        ForgeConfigSpec.BooleanValue semiBlockLighting;
-        ForgeConfigSpec.BooleanValue guiBevel;
-        ForgeConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
-        ForgeConfigSpec.BooleanValue tubeModuleRedstoneParticles;
-        ForgeConfigSpec.BooleanValue guiRemoteGridSnap;
-        ForgeConfigSpec.BooleanValue programmerGuiPauses;
-        ForgeConfigSpec.BooleanValue notifyAmadronOfferUpdates;
+        public ForgeConfigSpec.BooleanValue aphorismDrama;
+        public ForgeConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
+        public ForgeConfigSpec.BooleanValue topShowsFluids;
+        public ForgeConfigSpec.BooleanValue logisticsGuiTint;
+        public ForgeConfigSpec.BooleanValue semiBlockLighting;
+        public ForgeConfigSpec.BooleanValue guiBevel;
+        public ForgeConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
+        public ForgeConfigSpec.BooleanValue tubeModuleRedstoneParticles;
+        public ForgeConfigSpec.BooleanValue guiRemoteGridSnap;
+        public ForgeConfigSpec.BooleanValue programmerGuiPauses;
+        public ForgeConfigSpec.BooleanValue notifyAmadronOfferUpdates;
     }
 
     public static class Armor {
-        ForgeConfigSpec.IntValue blockTrackerMaxTimePerTick;
-        ForgeConfigSpec.DoubleValue leggingsFOVFactor;
-        ForgeConfigSpec.BooleanValue fancyArmorModels;
-        ForgeConfigSpec.BooleanValue pathEnabled;
-        ForgeConfigSpec.BooleanValue wirePath;
-        ForgeConfigSpec.BooleanValue xRayEnabled;
-        ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
-        ForgeConfigSpec.BooleanValue showPressureNumerically;
-        ForgeConfigSpec.BooleanValue showEnchantGlint;
+        public ForgeConfigSpec.IntValue blockTrackerMaxTimePerTick;
+        public ForgeConfigSpec.DoubleValue leggingsFOVFactor;
+        public ForgeConfigSpec.BooleanValue fancyArmorModels;
+        public ForgeConfigSpec.BooleanValue pathEnabled;
+        public ForgeConfigSpec.BooleanValue wirePath;
+        public ForgeConfigSpec.BooleanValue xRayEnabled;
+        public ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
+        public ForgeConfigSpec.BooleanValue showPressureNumerically;
+        public ForgeConfigSpec.BooleanValue showEnchantGlint;
     }
 
     public static class Sound {
-        ForgeConfigSpec.DoubleValue elevatorVolumeRunning;
-        ForgeConfigSpec.DoubleValue elevatorVolumeStartStop;
-        ForgeConfigSpec.DoubleValue airLeakVolume;
-        ForgeConfigSpec.DoubleValue minigunVolumeHeld;
-        ForgeConfigSpec.DoubleValue minigunVolumeDrone;
-        ForgeConfigSpec.DoubleValue minigunVolumeSentryTurret;
-        ForgeConfigSpec.DoubleValue jetbootsVolume;
-        ForgeConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
-        ForgeConfigSpec.DoubleValue jackhammerVolume;
+        public ForgeConfigSpec.DoubleValue elevatorVolumeRunning;
+        public ForgeConfigSpec.DoubleValue elevatorVolumeStartStop;
+        public ForgeConfigSpec.DoubleValue airLeakVolume;
+        public ForgeConfigSpec.DoubleValue minigunVolumeHeld;
+        public ForgeConfigSpec.DoubleValue minigunVolumeDrone;
+        public ForgeConfigSpec.DoubleValue minigunVolumeSentryTurret;
+        public ForgeConfigSpec.DoubleValue jetbootsVolume;
+        public ForgeConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
+        public ForgeConfigSpec.DoubleValue jackhammerVolume;
     }
 
     public final ClientConfig.General general = new General();

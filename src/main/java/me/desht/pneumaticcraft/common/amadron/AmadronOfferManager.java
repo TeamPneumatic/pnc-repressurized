@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
@@ -142,7 +142,7 @@ public enum AmadronOfferManager {
         newOffers.forEach(offer -> addOffer(activeOffers, offer));
 
         Log.debug("Received " + activeOffers.size() + " active Amadron offers from server");
-        if (notifyPlayer && PNCConfig.Client.notifyAmadronOfferUpdates) {
+        if (notifyPlayer && ConfigHelper.client().general.notifyAmadronOfferUpdates.get()) {
             maybeNotifyPlayerOfUpdates(ClientUtils.getClientPlayer());
         }
     }
@@ -246,7 +246,7 @@ public enum AmadronOfferManager {
         int s1 = allOffers.size();
         periodicOffers.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
         int nPeriodics = allOffers.size() - s1;
-        for (int i = 0; i < Math.min(nPeriodics, PNCConfig.Common.Amadron.numPeriodicOffers); i++) {
+        for (int i = 0; i < Math.min(nPeriodics, ConfigHelper.common().amadron.numPeriodicOffers.get()); i++) {
             AmadronRecipe offer = pickRandomPeriodicTrade(rand);
             if (offer != null) addOffer(activeOffers, offer);
         }
@@ -256,7 +256,7 @@ public enum AmadronOfferManager {
         villagerTrades.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
         int nVillager = allOffers.size() - s2;
         if (!validProfessions.isEmpty()) {
-            for (int i = 0; i < Math.min(nVillager, PNCConfig.Common.Amadron.numVillagerOffers); i++) {
+            for (int i = 0; i < Math.min(nVillager, ConfigHelper.common().amadron.numVillagerOffers.get()); i++) {
                 int profIdx = rand.nextInt(validProfessions.size());
                 AmadronRecipe offer = pickRandomVillagerTrade(validProfessions.get(profIdx), rand);
                 if (offer != null) addOffer(activeOffers, offer);

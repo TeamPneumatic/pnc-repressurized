@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -137,7 +137,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
             if (!player.level.isClientSide) {
                 setColorChannel(colorId);
                 NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
-                if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
+                if (ConfigHelper.common().general.useUpDyesWhenColoring.get() && !player.isCreative()) {
                     heldStack.shrink(1);
                 }
             }
@@ -151,7 +151,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         super.update();
         if (cachedFrame != null && !cachedFrame.isValid()) cachedFrame = null;
         if (!getTube().getLevel().isClientSide) {
-            if (powered != getTube().getPressure() >= PNCConfig.Common.Logistics.minPressure) {
+            if (powered != getTube().getPressure() >= ConfigHelper.common().logistics.minPressure.get()) {
                 powered = !powered;
                 NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
             }
@@ -217,7 +217,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         IAirHandlerMachine receiverAirHandler = requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
                 .orElseThrow(RuntimeException::new);
 
-        int airUsed = (int) (PNCConfig.Common.Logistics.itemTransportCost * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getBlockPos(), requestingModule.getTube().getBlockPos()));
+        int airUsed = (int) (ConfigHelper.common().logistics.itemTransportCost.get() * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getBlockPos(), requestingModule.getTube().getBlockPos()));
 
         if (airUsed > receiverAirHandler.getAir()) {
             // not enough air to move all the items - scale back the number to be moved
@@ -259,7 +259,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         IAirHandlerMachine receiverAirHandler = requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
                 .orElseThrow(RuntimeException::new);
 
-        double airUsed = (PNCConfig.Common.Logistics.fluidTransportCost * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getBlockPos(), requestingModule.getTube().getBlockPos()));
+        double airUsed = (ConfigHelper.common().logistics.fluidTransportCost.get() * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getBlockPos(), requestingModule.getTube().getBlockPos()));
         if (airUsed > receiverAirHandler.getAir()) {
             // not enough air to move it all - scale back the amount of fluid to be moved
             double scaleBack = receiverAirHandler.getAir() / airUsed;

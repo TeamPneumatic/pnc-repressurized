@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -106,14 +106,14 @@ public class MiscEventHandler {
             ResourceLocation name = fluidStack.getFluid().getRegistryName();
             if (Names.MOD_ID.equals(name.getNamespace())) {
                 int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(null, fluidStack.getFluid());
-                event.setBurnTime(value > 0 ? (int)(value * PNCConfig.Common.General.fuelBucketEfficiency) : -1);
+                event.setBurnTime(value > 0 ? (int)(value * ConfigHelper.common().general.fuelBucketEfficiency.get()) : -1);
             }
         });
     }
 
     @SubscribeEvent
     public void explosionCraftingEvent(ExplosionEvent.Detonate event) {
-        if (!PNCConfig.Common.Recipes.explosionCrafting || event.getWorld().isClientSide) {
+        if (!ConfigHelper.common().recipes.explosionCrafting.get() || event.getWorld().isClientSide) {
             return;
         }
 
@@ -238,7 +238,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void onLootTableLoad(LootTableLoadEvent event) {
-        if (PNCConfig.Common.General.enableDungeonLoot) {
+        if (ConfigHelper.common().general.enableDungeonLoot.get()) {
             String prefix = "minecraft:chests/";
             String name = event.getName().toString();
             if (name.startsWith(prefix)) {

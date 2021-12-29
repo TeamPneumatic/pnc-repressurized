@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -121,7 +120,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
 
         ITextComponent txt = xlate("pneumaticcraft.armor.gui.misc.colors.showEnchantGlint");
         addButton(new WidgetCheckBox(width - font.width(txt) - 40, height - font.lineHeight - 10, 0xFFFFFFFF, txt,
-                b -> ConfigHelper.setShowEnchantGlint(b.checked)).setChecked(PNCConfig.Client.Armor.showEnchantGlint));
+                b -> ConfigHelper.setShowEnchantGlint(b.checked)).setChecked(ConfigHelper.client().armor.showEnchantGlint.get()));
     }
 
     private void setCurrentColor(int newCol) {

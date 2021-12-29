@@ -33,7 +33,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
@@ -117,7 +116,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         imageWidth = hiRes ? 700 : 350;
         imageHeight = hiRes ? 512 : 256;
 
-        programmerDifficulty = PNCConfig.Client.programmerDifficulty;
+        programmerDifficulty = ConfigHelper.client().general.programmerDifficulty.get();
     }
 
     @Override
@@ -241,7 +240,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     @Override
     public boolean isPauseScreen() {
-        return PNCConfig.Client.programmerGuiPauses;
+        return ConfigHelper.client().general.programmerGuiPauses.get();
     }
 
     public static void onCloseFromContainer() {
