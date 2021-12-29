@@ -340,7 +340,7 @@ public enum AmadronOfferManager {
             VillagerTrades.TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
                 IntStream.range(0, trades.length).forEach(i -> {
                     MerchantOffer offer = getOfferForNullVillager(trades[i], rand);
-                    if (offer != null) {
+                    if (offer != null && !offer.getBaseCostA().isEmpty() && !offer.getResult().isEmpty()) {
                         ResourceLocation offerId = new ResourceLocation(profession + "_" + level + "_" + i);
                         String key = profession.toString() + "_" + level;
                         villagerTrades.computeIfAbsent(key, k -> new ArrayList<>()).add(new AmadronOffer(offerId,
