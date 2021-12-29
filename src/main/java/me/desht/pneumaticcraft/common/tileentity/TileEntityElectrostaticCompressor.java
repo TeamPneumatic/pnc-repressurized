@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.BlockElectrostaticCompressor;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
@@ -113,7 +113,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     }
 
     public int getStrikeChance() {
-        int strikeChance = PNCConfig.Common.Machines.electrostaticLightningChance;
+        int strikeChance = ConfigHelper.common().machines.electrostaticLightningChance.get();
         if (getLevel().isRaining()) strikeChance *= 0.5;  // slightly more likely if raining
         if (getLevel().isThundering()) strikeChance *= 0.2; // much more likely if thundering
         strikeChance *= (1f - (0.02f * ironBarsAbove));

@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
@@ -269,7 +269,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/95
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/104
         int size = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
-        final int maxSize = PNCConfig.Common.General.maxProgrammingArea;
+        final int maxSize = ConfigHelper.common().general.maxProgrammingArea.get();
         if (size > maxSize) { // Prevent memory problems when getting to ridiculous areas.
             if (aiManager != null) {
                 // We still need to do run-time checks:

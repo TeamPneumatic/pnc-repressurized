@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.sound;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,7 +39,7 @@ public class MovingSoundJackhammer extends TickableSound {
         z = player.getZ();
         looping = true;
         delay = 0;
-        volume = (float) PNCConfig.Client.Sound.jackhammerVolume;
+        volume = ConfigHelper.client().sound.jackhammerVolume.get().floatValue();
     }
 
     static MovingSoundJackhammer startOrContinue(PlayerEntity player) {
@@ -61,7 +61,7 @@ public class MovingSoundJackhammer extends TickableSound {
         if (lastJackHammerTime(player) == 15) {
             player.level.playSound(player, player.getX(), player.getY(), player.getZ(),
                     ModSounds.JACKHAMMER_STOP.get(), SoundCategory.PLAYERS,
-                    (float) PNCConfig.Client.Sound.jackhammerVolume, 1f);
+                    ConfigHelper.client().sound.jackhammerVolume.get().floatValue(), 1f);
         }
     }
 

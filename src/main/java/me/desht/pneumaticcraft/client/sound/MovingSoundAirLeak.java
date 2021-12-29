@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.tileentity.TileEntity;
@@ -41,7 +41,7 @@ public class MovingSoundAirLeak extends TickableSound {
         this.looping = true;
         this.delay = 0;
         this.targetPitch = 1F;
-        this.volume = (float) PNCConfig.Client.Sound.airLeakVolume;
+        this.volume = ConfigHelper.client().sound.airLeakVolume.get().floatValue();
     }
 
     @Override

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetItemFilter;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsBase;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
@@ -89,13 +89,13 @@ public class JEIPlugin implements IModPlugin {
                 new JEIBlockHeatPropertiesCategory(),
                 new JEIMemoryEssenceCategory()
         );
-        if (PNCConfig.Common.Recipes.explosionCrafting) {
+        if (ConfigHelper.common().recipes.explosionCrafting.get()) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory());
         }
-        if (PNCConfig.Common.Recipes.inWorldPlasticSolidification) {
+        if (ConfigHelper.common().recipes.inWorldPlasticSolidification.get()) {
             registry.addRecipeCategories(new JEIPlasticSolidifyingCategory());
         }
-        if (PNCConfig.Common.Recipes.inWorldYeastCrafting) {
+        if (ConfigHelper.common().recipes.inWorldYeastCrafting.get()) {
             registry.addRecipeCategories(new JEIYeastCraftingCategory());
         }
     }
@@ -112,7 +112,7 @@ public class JEIPlugin implements IModPlugin {
         addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER, ModCategoryUid.ASSEMBLY_CONTROLLER);
         addRecipeType(registration, PneumaticCraftRecipeType.AMADRON_OFFERS, ModCategoryUid.AMADRON_TRADE);
         addRecipeType(registration, PneumaticCraftRecipeType.FLUID_MIXER, ModCategoryUid.FLUID_MIXER);
-        if (PNCConfig.Common.Recipes.explosionCrafting) {
+        if (ConfigHelper.common().recipes.explosionCrafting.get()) {
             addRecipeType(registration, PneumaticCraftRecipeType.EXPLOSION_CRAFTING, ModCategoryUid.EXPLOSION_CRAFTING);
         }
 
@@ -121,10 +121,10 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
         registration.addRecipes(JEISpawnerExtractionCategory.getAllRecipes(), ModCategoryUid.SPAWNER_EXTRACTION);
         registration.addRecipes(JEIMemoryEssenceCategory.getAllRecipes(), ModCategoryUid.MEMORY_ESSENCE);
-        if (PNCConfig.Common.Recipes.inWorldPlasticSolidification) {
+        if (ConfigHelper.common().recipes.inWorldPlasticSolidification.get()) {
             registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
         }
-        if (PNCConfig.Common.Recipes.inWorldYeastCrafting) {
+        if (ConfigHelper.common().recipes.inWorldYeastCrafting.get()) {
             registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
         }
 

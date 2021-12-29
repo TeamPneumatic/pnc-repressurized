@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -104,7 +103,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
 
     @Override
     public void initConfig() {
-        showPressureNumerically = PNCConfig.Client.Armor.showPressureNumerically;
+        showPressureNumerically = ConfigHelper.client().armor.showPressureNumerically.get();
     }
 
     @Override

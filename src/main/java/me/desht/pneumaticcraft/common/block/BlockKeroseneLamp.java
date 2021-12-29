@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
@@ -124,7 +124,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
 
         @Override
         public String getCustomTooltipTranslationKey() {
-            return PNCConfig.Common.Machines.keroseneLampCanUseAnyFuel ? getDescriptionId() : getDescriptionId() + ".kerosene_only";
+            return ConfigHelper.common().machines.keroseneLampCanUseAnyFuel.get() ? getDescriptionId() : getDescriptionId() + ".kerosene_only";
         }
     }
 }

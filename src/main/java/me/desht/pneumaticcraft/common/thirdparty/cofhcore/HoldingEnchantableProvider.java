@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import cofh.lib.capability.IEnchantableItem;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -46,7 +46,7 @@ public class HoldingEnchantableProvider implements ICapabilityProvider {
     public static class AllowHoldingEnchant implements IEnchantableItem {
         @Override
         public boolean supportsEnchantment(Enchantment enchantment) {
-            return PNCConfig.Common.Integration.cofhHoldingMultiplier > 0 && enchantment == CoFHCore.holdingEnchantment;
+            return ConfigHelper.common().integration.cofhHoldingMultiplier.get() > 0 && enchantment == CoFHCore.holdingEnchantment;
         }
     }
 }

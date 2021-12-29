@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -266,7 +266,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
 
     private static boolean isEntityBlacklisted(EntityType<?> type) {
         if (needBlacklistRebuild) {
-            for (String id : PNCConfig.Common.General.vacuumTrapBlacklist) {
+            for (String id : ConfigHelper.common().general.vacuumTrapBlacklist.get()) {
                 try {
                     if (id.startsWith("#")) {
                         ITag<EntityType<?>> tag = EntityTypeTags.getAllTags().getTag(new ResourceLocation(id.substring(1)));

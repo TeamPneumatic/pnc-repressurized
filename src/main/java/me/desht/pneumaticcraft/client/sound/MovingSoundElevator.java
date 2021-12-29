@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.sound;
 
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import net.minecraft.client.audio.TickableSound;
@@ -34,7 +34,7 @@ public class MovingSoundElevator extends TickableSound {
         z = te.getBlockPos().getZ();
         looping = true;
         delay = 0;
-        volume = (float) PNCConfig.Client.Sound.elevatorVolumeRunning;
+        volume = ConfigHelper.client().sound.elevatorVolumeRunning.get().floatValue();
     }
 
     @Override

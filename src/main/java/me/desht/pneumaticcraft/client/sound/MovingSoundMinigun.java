@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -40,7 +40,9 @@ public class MovingSoundMinigun extends TickableSound {
         super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
         this.entity = entity;
         this.tileEntity = null;
-        init(entity instanceof EntityDrone ? (float) PNCConfig.Client.Sound.minigunVolumeDrone : (float) PNCConfig.Client.Sound.minigunVolumeHeld);
+        init(entity instanceof EntityDrone ?
+                ConfigHelper.client().sound.minigunVolumeDrone.get().floatValue() :
+                ConfigHelper.client().sound.minigunVolumeHeld.get().floatValue());
     }
 
     MovingSoundMinigun(TileEntity te) {
@@ -50,7 +52,7 @@ public class MovingSoundMinigun extends TickableSound {
         x = tileEntity.getBlockPos().getX();
         y = tileEntity.getBlockPos().getY();
         z = tileEntity.getBlockPos().getZ();
-        init((float) PNCConfig.Client.Sound.minigunVolumeSentryTurret);
+        init(ConfigHelper.client().sound.minigunVolumeSentryTurret.get().floatValue());
     }
 
     private void init(float volume) {
