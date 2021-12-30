@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
 
 public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
 
-    private static final VoxelShape MIDDLE_SHAPE = Block.box(4, 6, 4, 12, 10, 12);
+    private static final VoxelShape MIDDLE_SHAPE = Block.box(4, 4, 4, 12, 10, 12);
     private static final VoxelShape INPUT_SHAPE = Block.box(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     private static final VoxelShape INPUT_MIDDLE_SHAPE = VoxelShapes.or(MIDDLE_SHAPE, INPUT_SHAPE);
     private static final VoxelShape BOWL_SHAPE = Block.box(2.0D, 11.0D, 2.0D, 14.0D, 16.0D, 14.0D);
@@ -66,8 +66,8 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
     };
 
-    private static final VoxelShape OUTPUT_DOWN = Block.box(6.5, 0, 6.5, 9.5, 6, 9.5);
-    private static final VoxelShape OUTPUT_UP = Block.box(6.5, 10, 6.5, 9.5, 16, 9.5);
+    private static final VoxelShape OUTPUT_DOWN = VoxelShapes.join(Block.box(6, 3, 6, 10, 4, 10), Block.box(6.5, 0, 6.5, 9.5, 4, 9.5), IBooleanFunction.OR);
+    private static final VoxelShape OUTPUT_UP = VoxelShapes.join(Block.box(6, 12, 6, 10, 13, 10), Block.box(6.5, 12, 6.5, 9.5, 16, 9.5), IBooleanFunction.OR);
     private static final VoxelShape OUTPUT_NORTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 90);
     private static final VoxelShape OUTPUT_SOUTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 270);
     private static final VoxelShape OUTPUT_WEST = VoxelShapeUtils.rotateY(OUTPUT_NORTH, 270);

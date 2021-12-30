@@ -57,11 +57,33 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
-    private static final VoxelShape S1 = box(0, 0, 1, 16, 16, 15);
-    private static final VoxelShape S2 = box(1, 0, 0, 15, 16, 16);
-    private static final VoxelShape SHAPE = VoxelShapes.join(S1, S2, IBooleanFunction.OR);
+    // TODO: Fix VoxelShapes to show the top/bottom when available is possible. Otherwise update this to be a full block
+    private static final VoxelShape SHAPE = Stream.of(
+            Block.box(2, 0, 2, 14, 16, 14),
+            Block.box(2, 1, 0, 14, 2, 1),
+            Block.box(2, 14, 0, 14, 15, 1),
+            Block.box(2, 1, 15, 14, 2, 16),
+            Block.box(2, 14, 15, 14, 15, 16),
+            Block.box(0, 1, 2, 1, 2, 14),
+            Block.box(0, 14, 2, 1, 15, 14),
+            Block.box(15, 1, 2, 16, 2, 14),
+            Block.box(15, 14, 2, 16, 15, 14),
+            Block.box(2, 0, 1, 3, 16, 2),
+            Block.box(14, 0, 13, 15, 16, 14),
+            Block.box(14, 0, 2, 15, 16, 3),
+            Block.box(1, 0, 13, 2, 16, 14),
+            Block.box(1, 0, 2, 2, 16, 3),
+            Block.box(0, 0, 14, 2, 16, 16),
+            Block.box(0, 0, 0, 2, 16, 2),
+            Block.box(14, 0, 14, 16, 16, 16),
+            Block.box(14, 0, 0, 16, 16, 2),
+            Block.box(13, 0, 1, 14, 16, 2),
+            Block.box(13, 0, 14, 14, 16, 15),
+            Block.box(2, 0, 14, 3, 16, 15)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
 
     private final Size size;
 
@@ -195,6 +217,7 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
             }).orElseThrow(RuntimeException::new);
         }
 
+        // TODO: Remove tint as it is now Texture Based
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
             if (tintIndex == 1 && stack.getItem() instanceof ItemBlockFluidTank) {

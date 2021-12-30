@@ -1,7 +1,7 @@
 {
   "multipart": [
-    { "apply": { "model": "pneumaticcraft:block/fluid_tank_body" } },
-    { "when": { "up": false }, "apply": { "model": "pneumaticcraft:block/fluid_tank_top" } },
-    { "when": { "down": false }, "apply": { "model": "pneumaticcraft:block/fluid_tank_bottom" } }
+    { "apply": { "model": "pneumaticcraft:block/fluid_tank_body_netherite" } },
+    { "when": { "up": false }, "apply": { "model": "pneumaticcraft:block/fluid_tank_top_netherite" } },
+    { "when": { "down": false }, "apply": { "model": "pneumaticcraft:block/fluid_tank_bottom_netherite" } }
   ]
 }
