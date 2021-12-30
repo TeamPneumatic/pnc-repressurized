@@ -1,7 +1,7 @@
 {
   "multipart": [
-    { "apply": { "model": "pneumaticcraft:block/fluid_tank_body" } },
-    { "when": { "up": false }, "apply": { "model": "pneumaticcraft:block/fluid_tank_top" } },
-    { "when": { "down": false }, "apply": { "model": "pneumaticcraft:block/fluid_tank_bottom" } }
+    { "apply": { "model": "pneumaticcraft:block/fluid_tank_body_diamond" } },
+    { "when": { "up": false }, "apply": { "model": "pneumaticcraft:block/fluid_tank_top_diamond" } },
+    { "when": { "down": false }, "apply": { "model": "pneumaticcraft:block/fluid_tank_bottom_diamond" } }
   ]
 }

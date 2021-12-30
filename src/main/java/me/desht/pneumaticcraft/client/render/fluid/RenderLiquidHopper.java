@@ -32,12 +32,12 @@ import java.util.List;
 public class RenderLiquidHopper extends AbstractFluidTER<TileEntityLiquidHopper> {
     private static final AxisAlignedBB[] BOUNDS = new AxisAlignedBB[6];
     static {
-        BOUNDS[Direction.DOWN.get3DDataValue()] = new AxisAlignedBB(1 / 16f, 1.01 / 16f, 1 / 16f, 15 / 16f, 5 / 16f, 15 / 16f);
-        BOUNDS[Direction.UP.get3DDataValue()] = new AxisAlignedBB(1 / 16f, 11.01 / 16f, 1 / 16f, 15 / 16f, 15 / 16f, 15 / 16f);
-        BOUNDS[Direction.NORTH.get3DDataValue()] = new AxisAlignedBB(1 / 16f, 1.01 / 16f, 1 / 16f, 15 / 16f, 15 / 16f, 5 / 16f);
-        BOUNDS[Direction.SOUTH.get3DDataValue()] = new AxisAlignedBB(1 / 16f, 1.01 / 16f, 11 / 16f, 15 / 16f, 15 / 16f, 15 / 16f);
-        BOUNDS[Direction.WEST.get3DDataValue()] = new AxisAlignedBB(1 / 16f, 1.01 / 16f, 1 / 16f, 5 / 16f, 15 / 16f, 15 / 16f);
-        BOUNDS[Direction.EAST.get3DDataValue()] = new AxisAlignedBB(11 / 16f, 1.01 / 16f, 1 / 16f, 15 / 16f, 15 / 16f, 15 / 16f);
+        BOUNDS[Direction.DOWN.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 4.99 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.UP.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 11.01 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.NORTH.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 4.99 / 16f);
+        BOUNDS[Direction.SOUTH.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 0.51 / 16f, 11.49 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.WEST.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 4.99 / 16f, 15.49 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.EAST.get3DDataValue()] = new AxisAlignedBB(11.01 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
     }
 
     public RenderLiquidHopper(TileEntityRendererDispatcher dispatcher) {
