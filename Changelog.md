@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.14.7-??? (unreleased)
+## 2.14.7-283 (1st Jan 2022)
 
 ### Updates
 * Security Station no longer exempts creative-mode players from block protection by default
@@ -22,7 +22,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed client crash when clearing Pneumatic Armor keybindings via armor GUI, under some circumstances
 * Fixed Logistics Requester Frame integration with AE2 not functioning correctly
 * Fixed a server-side crash related to invalid villager trades
-  * Seems like some mod is possibly adding trades with empty cost or result?  in any case, PNC:R now ignores theses for Amadron purposes
+  * Seems like some mod is possibly adding trades with empty cost or result?  in any case, PNC:R now ignores these for Amadron purposes
 
 ## 2.14.6-277 (24th Nov 2021)
 
