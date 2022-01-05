@@ -43,27 +43,25 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
     public RenderElevatorBase(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        pole1 = new ModelRenderer(64, 64, 0, 17);
-        pole1.addBox(0F, 0F, 0F, 2, 14, 2);
-        pole1.setPos(-1F, 9F, -1F);
-        pole1.mirror = true;
-        pole2 = new ModelRenderer(64, 64, 0, 17);
-        pole2.addBox(0F, 0F, 0F, 4, 14, 4);
-        pole2.setPos(-2F, 9F, -2F);
-        pole2.mirror = true;
-        pole3 = new ModelRenderer(64, 64, 0, 17);
-        pole3.addBox(0F, 0F, 0F, 6, 14, 6);
-        pole3.setPos(-3F, 9F, -3F);
-        pole3.mirror = true;
+        pole1 = new ModelRenderer(64, 64, 28, 41);
+        pole1.setPos(17.0F, 9.0F, -1.0F);
+        pole1.addBox(-19.5F, 0.0F, -1.5F, 5.0F, 14.0F, 5.0F, 0.0F, true);
+
+        pole2 = new ModelRenderer(64, 64, 32, 19);
+        pole2.setPos(12.0F, 9.0F, -2.0F);
+        pole2.addBox(-15.0F, 0.0F, -1.0F, 6.0F, 14.0F, 6.0F, 0.0F, true);
+
+        pole3 = new ModelRenderer(64, 64, 0, 39);
+        pole3.setPos(5.0F, 9.0F, -12.0F);
+        pole3.addBox(-8.5F, 0.0F, 8.5F, 7.0F, 14.0F, 7.0F, 0.0F, true);
+
         pole4 = new ModelRenderer(64, 64, 0, 17);
-        pole4.addBox(0F, 0F, 0F, 8, 14, 8);
-        pole4.setPos(-4F, 9F, -4F);
-        pole4.mirror = true;
+        pole4.setPos(-4.0F, 9.0F, -4.0F);
+        pole4.addBox(0.0F, 0.0F, 0.0F, 8.0F, 14.0F, 8.0F, 0.0F, true);
 
         floor = new ModelRenderer(64, 64, 0, 0);
-        floor.addBox(0F, 0F, 0F, 16, 1, 16);
-        floor.setPos(-8F, 8F, -8F);
-        floor.mirror = true;
+        floor.setPos(-8.0F, 8.0F, -8.0F);
+        floor.addBox(0.0F, 0.0F, 0.0F, 16.0F, 1.0F, 16.0F, 0.0F, false);
     }
 
     @Override

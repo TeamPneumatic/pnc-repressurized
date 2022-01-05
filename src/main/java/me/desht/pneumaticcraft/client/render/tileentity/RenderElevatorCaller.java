@@ -52,19 +52,20 @@ public class RenderElevatorCaller extends TileEntityRenderer<TileEntityElevatorC
             // button background
             IVertexBuilder builder = bufferIn.getBuffer(ModRenderTypes.getUntexturedQuad(false));
             builder.vertex(posMat, button.posX + 0.5F, button.posY + 0.5F, Z_OFFSET)
-                    .color(button.red, button.green, button.blue, 1F)
+                    .color(button.red, button.green, button.blue, 0.1F)
                     .uv2(0x00F000A0)
                     .endVertex();
             builder.vertex(posMat, button.posX + 0.5F, button.posY + button.height + 0.5F, Z_OFFSET)
-                    .color(button.red, button.green, button.blue, 1F)
+                    .color(button.red, button.green, button.blue, 0.1F)
                     .uv2(0x00F000A0)
                     .endVertex();
             builder.vertex(posMat, button.posX + button.width + 0.5F, button.posY + button.height + 0.5F, Z_OFFSET)
-                    .color(button.red, button.green, button.blue, 1F)
+                    .color(button.red, button.green, button.blue, 0.1F)
                     .uv2(0x00F000A0)
                     .endVertex();
             builder.vertex(posMat, button.posX + button.width + 0.5F, button.posY + 0.5F, Z_OFFSET)
-                    .color(button.red, button.green, button.blue, 1F)
+                    .color(button.red, button.green, button.blue, 0.1F)
+//                    .color(255, 255, 255, 1F)
                     .uv2(0x00F000A0)
                     .endVertex();
 
@@ -74,7 +75,7 @@ public class RenderElevatorCaller extends TileEntityRenderer<TileEntityElevatorC
             matrixStackIn.translate(button.width / 2, button.height / 2, 0);
             float textScale = Math.min(button.width / 10F, button.height / 10F);
             matrixStackIn.scale(textScale, textScale, textScale);
-            fontRenderer.drawInBatch(button.buttonText, -fontRenderer.width(button.buttonText) / 2f, -fontRenderer.lineHeight / 2f, 0xFF000000, false, matrixStackIn.last().pose(), bufferIn, false, 0, combinedLightIn);
+            fontRenderer.drawInBatch(button.buttonText, -fontRenderer.width(button.buttonText) / 2f, -fontRenderer.lineHeight / 2f, 0xFFFFFFFF, false, matrixStackIn.last().pose(), bufferIn, false, 50, combinedLightIn);
             matrixStackIn.popPose();
         }
 

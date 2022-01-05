@@ -1,7 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"base": "pneumaticcraft:item/camo_applicator"
+		"base": "pneumaticcraft:item/model/camo_applicator"
 	},
 	"elements": [
 		{

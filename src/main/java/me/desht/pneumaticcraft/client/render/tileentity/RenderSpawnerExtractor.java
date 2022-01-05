@@ -34,28 +34,22 @@ public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntity
     public RenderSpawnerExtractor(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        model = new ModelRenderer(64, 32, 0, 0);
+        model = new ModelRenderer(64, 64, 0, 0);
         model.setPos(0.0F, 24.0F, 0.0F);
-        model.texOffs(0, 15).addBox(-1.0F, -15.0F, -1.0F, 2.0F, 15.0F, 2.0F, 0.0F, false);
-        model.texOffs(0, 0).addBox(-2.0F, -19.0F, -2.0F, 4.0F, 4.0F, 4.0F, 0.0F, false);
-        model.texOffs(0, 11).addBox(-7.0F, -18.0F, -1.0F, 14.0F, 2.0F, 2.0F, 0.0F, false);
-        model.texOffs(16, 0).addBox(-2.0F, -19.0F, -6.0F, 4.0F, 4.0F, 2.0F, 0.0F, false);
-        model.texOffs(16, 0).addBox(-2.0F, -19.0F, 4.0F, 4.0F, 4.0F, 2.0F, 0.0F, false);
-        model.texOffs(28, 0).addBox(4.0F, -19.0F, -2.0F, 2.0F, 4.0F, 4.0F, 0.0F, false);
-        model.texOffs(28, 0).addBox(-6.0F, -19.0F, -2.0F, 2.0F, 4.0F, 4.0F, 0.0F, false);
-        model.texOffs(8, 16).addBox(-1.0F, -18.0F, -7.0F, 2.0F, 2.0F, 14.0F, 0.0F, false);
-        model.texOffs(40, 0).addBox(-1.0F, -20.0F, -1.0F, 2.0F, 1.0F, 2.0F, 0.0F, false);
+        model.texOffs(23, 57).addBox(-3.0F, -16.25F, -3.0F, 6.0F, 1.0F, 6.0F, -0.01F, false);
+        model.texOffs(23, 57).addBox(-3.0F, -14.75F, -3.0F, 6.0F, 1.0F, 6.0F, -0.01F, true);
+        model.texOffs(44, 57).addBox(-2.5F, -15.5F, -2.5F, 5.0F, 1.0F, 5.0F, -0.01F, false);
+        model.texOffs(15, 46).addBox(-1.0F, -16.0F, -1.0F, 2.0F, 16.0F, 2.0F, 0.0F, false);
     }
 
+    // TODO: Add Memory Essence Liquid Render, if you still want to do so
     @Override
     void renderModel(TileEntitySpawnerExtractor te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_SPAWNER_EXTRACTOR));
 
         float extension = te.getProgress() * -0.75f;
-        float rot = MathHelper.lerp(te.getMode() == TileEntitySpawnerExtractor.Mode.FINISHED ? 0f : partialTicks, te.getPrevRotationDegrees(), te.getRotationDegrees());
 
         matrixStackIn.translate(0, extension, 0);
-        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rot));
         model.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
     }
 }
