@@ -67,10 +67,10 @@ public class ItemDrillBit extends Item implements ColorHandlers.ITintableItem {
 
     public enum DrillBitType {
         NONE("none", 0, 0x00000000, 1, -1),
-        IRON("iron", 1, 0xFFD8D8D8, 6, 2),
-        COMPRESSED_IRON("compressed_iron", 2, 0xFF888888, 7, 2),
-        DIAMOND("diamond", 3, 0xFF2BC7AC, 8, 3),
-        NETHERITE("netherite", 4, 0xFF4A2940, 9, 4);
+        IRON("iron", 1, 0xFFd8d8d8, 6, 2),
+        COMPRESSED_IRON("compressed_iron", 2, 0xFF4d4846, 7, 2),
+        DIAMOND("diamond", 3, 0xFF4aedd9, 8, 3),
+        NETHERITE("netherite", 4, 0xFF31292a, 9, 4);
 
         private final String name;
         private final int tier;

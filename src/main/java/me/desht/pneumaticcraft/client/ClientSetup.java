@@ -153,6 +153,7 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), layer -> layer == RenderType.cutoutMipped() || layer == RenderType.translucent());
         RenderTypeLookup.setRenderLayer(ModBlocks.THERMAL_LAGGING.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(ModBlocks.SPAWNER_EXTRACTOR.get(), RenderType.cutoutMipped());
 
         // camouflageable blocks need to render in all layers, since their camo could render in any layer
         for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {

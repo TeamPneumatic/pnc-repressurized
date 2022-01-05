@@ -34,18 +34,53 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
+import java.util.stream.Stream;
+
 public class BlockSpawnerExtractor extends BlockPneumaticCraft {
-    private static final VoxelShape BASE0 = box(-1, -1, -1, 17, 0, 17);
-    private static final VoxelShape BASE1 = box(0, 0, 0, 16, 2, 16);
-    private static final VoxelShape BASE2 = box(2, 2, 2, 14, 4, 14);
-    private static final VoxelShape BASE3 = box(6, 4, 7, 10, 12, 9);
-    private static final VoxelShape BASE4 = box(7, 4, 6, 9, 12, 10);
-    private static final VoxelShape SHAPE = VoxelShapeUtils.combine(IBooleanFunction.OR, BASE0, BASE1, BASE2, BASE3, BASE4);
+    private static final VoxelShape SHAPE = Stream.of(
+            Block.box(10, 12, 2, 11, 31, 3),
+            Block.box(-0.5, -2.5, 13.5, 16.5, 0.5, 16.5),
+            Block.box(-0.5, -2.5, -0.5, 16.5, 0.5, 2.5),
+            Block.box(-0.5, -2.5, 2.5, 2.5, 0.5, 13.5),
+            Block.box(13.5, -2.5, 2.5, 16.5, 0.5, 13.5),
+            Block.box(-0.5, -13.5, 15.5, 0.5, -2.5, 16.5),
+            Block.box(-0.5, -16, 13.5, 16.5, -13, 16.5),
+            Block.box(13.5, -16, 2.5, 16.5, -13, 13.5),
+            Block.box(-0.5, -16, 2.5, 2.5, -13, 13.5),
+            Block.box(-0.5, -16, -0.5, 16.5, -13, 2.5),
+            Block.box(-0.5, -13.5, 13.5, 0.5, -2.5, 14.5),
+            Block.box(1.5, -13.5, 15.5, 2.5, -2.5, 16.5),
+            Block.box(15.5, -13.5, 13.5, 16.5, -2.5, 14.5),
+            Block.box(13.5, -13.5, 15.5, 14.5, -2.5, 16.5),
+            Block.box(15.5, -13.5, 15.5, 16.5, -2.5, 16.5),
+            Block.box(-0.5, -13.5, 1.5, 0.5, -2.5, 2.5),
+            Block.box(-0.5, -13.5, -0.5, 0.5, -2.5, 0.5),
+            Block.box(1.5, -13.5, -0.5, 2.5, -2.5, 0.5),
+            Block.box(15.5, -13.5, 1.5, 16.5, -2.5, 2.5),
+            Block.box(13.5, -13.5, -0.5, 14.5, -2.5, 0.5),
+            Block.box(15.5, -13.5, -0.5, 16.5, -2.5, 0.5),
+            Block.box(0, 0, 0, 1, 13, 1),
+            Block.box(0, 12, 1, 1, 13, 15),
+            Block.box(0, 0, 15, 1, 13, 16),
+            Block.box(1, 12, 0, 15, 13, 1),
+            Block.box(15, 0, 0, 16, 13, 1),
+            Block.box(15, 12, 1, 16, 13, 15),
+            Block.box(15, 0, 15, 16, 13, 16),
+            Block.box(1, 12, 15, 15, 13, 16),
+            Block.box(4, 12, 4, 12, 13, 12),
+            Block.box(5, 13, 5, 11, 29, 11),
+            Block.box(4, 29, 4, 12, 32, 12),
+            Block.box(10, 30, 3, 11, 31, 4),
+            Block.box(9.5, 29.5, 3.75, 11.5, 31.5, 4.75),
+            Block.box(9.5, 11.25, 1.5, 11.5, 12.25, 3.5),
+            Block.box(0.5, 0, 0.5, 15.5, 12, 15.5)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
 
     public BlockSpawnerExtractor() {
         super(ModBlocks.defaultProps());
