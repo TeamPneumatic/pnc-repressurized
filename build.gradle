@@ -144,6 +144,8 @@ dependencies {
 	runtimeOnly fg.deobf("net.darkhax.gamestages:GameStages-${project.mc_version}:${gamestages_version}")
 	compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-${project.mc_version}:10.3.29")
 	runtimeOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-${project.mc_version}:10.3.29")
+	compileOnly fg.deobf("team.chisel.ctm:CTM:MC1.16.1-${ctm_version}")
+	runtimeOnly fg.deobf("team.chisel.ctm:CTM:MC1.16.1-${ctm_version}")
 
 	// Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
 	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
