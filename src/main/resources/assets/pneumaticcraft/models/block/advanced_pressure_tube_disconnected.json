@@ -1,7 +1,7 @@
 {
   "parent": "pneumaticcraft:block/pressure_tube_disconnected",
   "textures": {
-    "pipe": "pneumaticcraft:block/advanced_pressure_tube",
-    "particle": "pneumaticcraft:block/advanced_pressure_tube"
+    "pipe": "pneumaticcraft:model/advanced_pressure_tube",
+    "particle": "pneumaticcraft:model/advanced_pressure_tube"
   }
 }

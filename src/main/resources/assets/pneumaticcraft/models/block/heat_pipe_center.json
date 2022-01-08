@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"parent": "forge:block/default",
 	"textures": {
-		"particle": "pneumaticcraft:block/heat_pipe",
-		"all": "pneumaticcraft:block/heat_pipe"
+		"particle": "pneumaticcraft:model/heat_pipe",
+		"all": "pneumaticcraft:model/heat_pipe"
 	},
 	"elements": [
 		{

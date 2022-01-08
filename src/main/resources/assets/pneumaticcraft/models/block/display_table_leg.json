@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"parent": "forge:block/default",
 	"textures": {
-		"particle": "pneumaticcraft:block/display_table_side",
-		"leg": "pneumaticcraft:block/display_table_leg"
+		"particle": "pneumaticcraft:model/display_table_side",
+		"leg": "pneumaticcraft:model/display_table_leg"
 	},
 	"elements": [
 		{

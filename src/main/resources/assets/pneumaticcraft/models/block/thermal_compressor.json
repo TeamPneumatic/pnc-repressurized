@@ -4,7 +4,7 @@
 	"textures": {
 		"particle": "pneumaticcraft:block/generic/frame",
 		"frame": "pneumaticcraft:block/generic/frame",
-		"compressor": "pneumaticcraft:block/thermal_compressor"
+		"compressor": "pneumaticcraft:model/thermal_compressor"
 	},
 	"elements": [
 		{
