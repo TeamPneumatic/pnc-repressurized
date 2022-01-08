@@ -101,6 +101,12 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     }
 
     @Override
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+        // avoids confusing entities, since the selection shape can extend into the block above, preventing pathfinding above the block
+        return state.getValue(CHARGE_PAD) ? VoxelShapes.block() : getUncamouflagedShape(state, reader, pos, ctx);
+    }
+    
+    @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityChargingStation.class;
     }
