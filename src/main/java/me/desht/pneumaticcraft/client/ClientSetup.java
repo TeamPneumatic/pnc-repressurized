@@ -217,6 +217,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), RenderPressureChamberInterface::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PROGRAMMER.get(), RenderProgrammer::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY.get(), RenderRefineryController::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY_OUTPUT.get(), RenderRefineryOutput::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.SENTRY_TURRET.get(), RenderSentryTurret::new);

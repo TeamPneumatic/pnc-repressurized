@@ -27,10 +27,7 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -88,6 +85,8 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public boolean programOnInsert; // false = program drone on button click, true = program when inserted
     @GuiSynced
     public int availablePuzzlePieces;  // puzzle pieces in adjacent inventories (pieces in player inv are counted in programmer gui)
+    @DescSynced
+    public ItemStack displayedStack = ItemStack.EMPTY;
 
     private ListNBT history = new ListNBT(); //Used to undo/redo.
     private int historyIndex;
@@ -103,6 +102,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
+        displayedStack = inventory.getStackInSlot(0);
         if (tag.contains(NBTKeys.NBT_REDSTONE_MODE)) {
             // TODO remove in 1.17 - legacy compat
             programOnInsert = tag.getInt(NBTKeys.NBT_REDSTONE_MODE) == 1;
@@ -607,6 +607,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             if (programOnInsert && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getLevel().isClientSide) {
                 tryProgramDrone(null);
             }
+            displayedStack = getStackInSlot(slot);
         }
 
         @Override
