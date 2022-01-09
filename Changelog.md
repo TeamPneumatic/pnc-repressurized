@@ -8,6 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.15.0-??? (unreleased)
+
+### New
+* A complete retexture of the entire mod, courtesy of Ridanisaurus
+  * No functional (gameplay) changes in this release, just a whole lot prettier!
+  * The CTM mod is now an optional dependency, and needed if you want texture-connected Pressure Chamber Glass
+
 ## 2.14.7-283 (1st Jan 2022)
 
 ### Updates
