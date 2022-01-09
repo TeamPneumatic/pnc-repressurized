@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
-import me.desht.pneumaticcraft.client.model.custom.PressureGlassModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -61,7 +60,6 @@ public class ModClientEventHandler {
     @SubscribeEvent
     public static void onModelRegistry(ModelRegistryEvent event) {
         ModelLoaderRegistry.registerLoader(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
-        ModelLoaderRegistry.registerLoader(RL("pressure_glass"), PressureGlassModel.Loader.INSTANCE);
         ModelLoaderRegistry.registerLoader(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
         ModelLoaderRegistry.registerLoader(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
     }
