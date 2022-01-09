@@ -50,12 +50,12 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
 
             Matrix4f posMat = matrixStack.last().pose();
             for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
-                doRender(builder, tankRenderInfo, posMat, combinedLightIn, combinedOverlayIn);
+                renderFluid(builder, tankRenderInfo, posMat, combinedLightIn, combinedOverlayIn);
             }
         }
     }
 
-    private void doRender(IVertexBuilder builder, TankRenderInfo tankRenderInfo, Matrix4f posMat, int combinedLight, int combinedOverlay) {
+    public static void renderFluid(IVertexBuilder builder, TankRenderInfo tankRenderInfo, Matrix4f posMat, int combinedLight, int combinedOverlay) {
         IFluidTank tank = tankRenderInfo.getTank();
         if (tank.getFluidAmount() == 0) return;
 
@@ -146,7 +146,7 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
         }
     }
 
-    private AxisAlignedBB getRenderBounds(IFluidTank tank, AxisAlignedBB tankBounds) {
+     private static AxisAlignedBB getRenderBounds(IFluidTank tank, AxisAlignedBB tankBounds) {
         float percent = (float) tank.getFluidAmount() / (float) tank.getCapacity();
 
         double tankHeight = tankBounds.maxY - tankBounds.minY;

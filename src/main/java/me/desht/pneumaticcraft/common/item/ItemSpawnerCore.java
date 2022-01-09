@@ -130,7 +130,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
                 if (stats.getUnusedPercentage() == 100) return 0xFFFFFFFF;
                 int t = (int) (ClientUtils.getClientWorld().getGameTime() % 40);
                 float b = t < 20 ? MathHelper.sin(3.1415927f * t / 20f) / 6f : 0;
-                return TintColor.HSBtoRGB(0f, 1f - stats.getUnusedPercentage() / 100f, 0.83333f + b);
+                return TintColor.HSBtoRGB(71/360f, 1f - stats.getUnusedPercentage() / 100f, 0.83333f + b);
             }
         }
         return 0xFFFFFFFF;

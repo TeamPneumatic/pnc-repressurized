@@ -19,16 +19,22 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.desht.pneumaticcraft.client.render.fluid.AbstractFluidTER;
+import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fluids.FluidStack;
 
 public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntitySpawnerExtractor> {
+    private static final AxisAlignedBB FLUID_BB = new AxisAlignedBB(6/16D, 0, 6/16D, 10/16D, 1, 10/16D);
+
     private final ModelRenderer model;
 
     public RenderSpawnerExtractor(TileEntityRendererDispatcher dispatcher) {
@@ -51,5 +57,17 @@ public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntity
 
         matrixStackIn.translate(0, extension, 0);
         model.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    }
+
+    @Override
+    protected void renderExtras(TileEntitySpawnerExtractor te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+        if (te.getProgress() > 0f && te.getProgress() < 1f) {
+            matrixStack.pushPose();
+            matrixStack.translate(0, 13/16D, 0);
+            IVertexBuilder builder = iRenderTypeBuffer.getBuffer(RenderType.entityTranslucentCull(AtlasTexture.LOCATION_BLOCKS));
+            TankRenderInfo info = new TankRenderInfo(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), (int) (1000 * te.getProgress())), 1000, FLUID_BB);
+            AbstractFluidTER.renderFluid(builder, info, matrixStack.last().pose(), combinedLightIn, combinedOverlayIn);
+            matrixStack.popPose();
+        }
     }
 }
