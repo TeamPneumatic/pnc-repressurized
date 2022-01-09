@@ -41,7 +41,6 @@ public class MovingSoundAirLeak extends TickableSound {
         this.looping = true;
         this.delay = 0;
         this.targetPitch = 1F;
-//        this.volume = (float) PNCConfig.client().sound.airLeakVolume.get();
         this.volume = ConfigHelper.client().sound.airLeakVolume.get().floatValue();
     }
 

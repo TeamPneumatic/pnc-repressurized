@@ -29,10 +29,7 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
     private static final Int2ObjectOpenHashMap<HeatExchangerLogicAmbient> exchangers = new Int2ObjectOpenHashMap<>();
 
     public static HeatExchangerLogicAmbient atPosition(IWorld world, BlockPos pos) {
-        double biomeMod = ConfigHelper.common().heat.ambientTemperatureBiomeModifier.get();
-        double heightMod = ConfigHelper.common().heat.ambientTemperatureHeightModifier.get();
-
-        if (biomeMod == 0 && heightMod == 0) {
+        if (ConfigHelper.common().heat.ambientTemperatureBiomeModifier.get() == 0 && ConfigHelper.common().heat.ambientTemperatureHeightModifier.get() == 0) {
             return DEFAULT_AIR_EXCHANGER;
         }
 
@@ -44,7 +41,7 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
         int y1 = (int)(world.getSeaLevel() * 0.75f);
         int h = pos.getY() < y1 ? y1 - pos.getY() : 0;
 
-        int temp = (int) (BASE_AMBIENT_TEMP + biomeMod * t + heightMod * h);
+        int temp = (int) (BASE_AMBIENT_TEMP + ConfigHelper.common().heat.ambientTemperatureBiomeModifier.get() * t + ConfigHelper.common().heat.ambientTemperatureHeightModifier.get() * h);
         return exchangers.computeIfAbsent(temp, HeatExchangerLogicAmbient::new);
     }
 

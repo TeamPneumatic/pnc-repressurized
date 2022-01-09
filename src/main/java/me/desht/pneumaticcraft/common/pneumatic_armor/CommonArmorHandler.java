@@ -243,10 +243,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         if (slot == EquipmentSlotType.FEET && player.level.isClientSide && player.isInWater() && player.zza > 0) {
             // doing this client-side only appears to be effective
             if (isArmorReady(EquipmentSlotType.FEET) && getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.FLIPPERS) > 0) {
-                player.moveRelative(player.isOnGround() ?
-                        ConfigHelper.common().armor.flippersSpeedBoostGround.get().floatValue() :
-                        ConfigHelper.common().armor.flippersSpeedBoostFloating.get().floatValue(),
-                        FORWARD);
+                player.moveRelative(player.isOnGround() ? ConfigHelper.common().armor.flippersSpeedBoostGround.get().floatValue() : ConfigHelper.common().armor.flippersSpeedBoostFloating.get().floatValue(), FORWARD);
             }
         }
 

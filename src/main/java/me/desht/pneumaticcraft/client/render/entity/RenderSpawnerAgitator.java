@@ -1,25 +1,8 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelHeatFrame;
+import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelSpawnerAgitator;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySpawnerAgitator;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -28,6 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderSpawnerAgitator extends RenderSemiblockBase<EntitySpawnerAgitator> {
@@ -35,7 +19,7 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<EntitySpawnerAgit
 
     private static final float BRIGHTNESS = 0.2F;
 
-    private final ModelHeatFrame model = new ModelHeatFrame();
+    private final ModelSpawnerAgitator model = new ModelSpawnerAgitator();
 
     private RenderSpawnerAgitator(EntityRendererManager rendererManager) {
         super(rendererManager);
@@ -46,7 +30,8 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<EntitySpawnerAgit
         float g = 0.1f * MathHelper.sin((entity.level.getGameTime() + partialTicks) / 12f);
 
         matrixStackIn.pushPose();
-        matrixStackIn.translate(0, -0.5, 0);
+        matrixStackIn.translate(0, 1.5, 0);
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180F));
         if (entity.getTimeSinceHit() > 0) {
             wobble(entity, partialTicks, matrixStackIn);
         }
@@ -58,6 +43,6 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<EntitySpawnerAgit
 
     @Override
     public ResourceLocation getTextureLocation(EntitySpawnerAgitator entity) {
-        return Textures.MODEL_HEAT_FRAME;
+        return Textures.MODEL_SPAWNER_AGITATOR;
     }
 }

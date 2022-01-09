@@ -1,3 +1,6 @@
 {
-    "loader": "pneumaticcraft:pressure_glass"
+    "parent": "minecraft:block/cube_all",
+    "textures": {
+        "all": "pneumaticcraft:block/pressure_chamber/window"
+    }
 }

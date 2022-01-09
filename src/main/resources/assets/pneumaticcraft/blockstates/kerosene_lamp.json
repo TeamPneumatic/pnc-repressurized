@@ -4,7 +4,7 @@
     { "when": { "facing":  "south"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp" } },
     { "when": { "facing":  "west"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp", "y": 90 } },
     { "when": { "facing":  "east"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp", "y": 270 } },
-    { "when": { "connected":  "up|west|east|south|north"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_v" } },
+    { "when": { "connected":  "up"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_v" } },
     { "when": { "connected":  "north"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_h", "y": 180 } },
     { "when": { "connected":  "south"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_h" } },
     { "when": { "connected":  "west"}, "apply": { "model": "pneumaticcraft:block/kerosene_lamp_support_h", "y": 90 } },

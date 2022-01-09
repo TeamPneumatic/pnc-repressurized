@@ -1,7 +1,0 @@
-{
-   "textures" : {
-      "layer0" : "pneumaticcraft:item/upgrades/upgrade_layer0",
-      "layer1" : "pneumaticcraft:item/upgrades/thaumcraft"
-   },
-   "parent" : "item/generated"
-}

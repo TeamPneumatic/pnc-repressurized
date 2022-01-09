@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.entity.drone;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -28,24 +11,24 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
-    public static final IRenderFactory<EntityDroneBase> REGULAR_FACTORY = manager -> new RenderDrone(manager, 0);
-    public static final IRenderFactory<EntityDroneBase> PROGRAMMABLE_CONTROLLER_FACTORY = manager -> new RenderDrone(manager, 0, 0.25f);
-    public static final IRenderFactory<EntityDroneBase> LOGISTICS_FACTORY = manager -> new RenderDrone(manager, 0xFFFF0000);
-    public static final IRenderFactory<EntityDroneBase> HARVESTING_FACTORY = manager -> new RenderDrone(manager, 0xFF006102);
-    public static final IRenderFactory<EntityDroneBase> GUARD_FACTORY = manager -> new RenderDrone(manager, 0xFF4B7FDE);
-    public static final IRenderFactory<EntityDroneBase> COLLECTOR_FACTORY = manager -> new RenderDrone(manager, 0xFFCACA27);
-    public static final IRenderFactory<EntityDroneBase> AMADRONE_FACTORY = manager -> new RenderDrone(manager, 0xFFFF8000);
+    public static final IRenderFactory<EntityDroneBase> REGULAR_FACTORY = manager -> new RenderDrone(manager, Textures.DRONE_ENTITY);
+    public static final IRenderFactory<EntityDroneBase> PROGRAMMABLE_CONTROLLER_FACTORY = manager -> new RenderDrone(manager, Textures.DRONE_ENTITY, 0.25f);
+    public static final IRenderFactory<EntityDroneBase> LOGISTICS_FACTORY = manager -> new RenderDrone(manager, Textures.LOGISTICS_DRONE_ENTITY);
+    public static final IRenderFactory<EntityDroneBase> HARVESTING_FACTORY = manager -> new RenderDrone(manager, Textures.HARVESTING_DRONE_ENTITY);
+    public static final IRenderFactory<EntityDroneBase> GUARD_FACTORY = manager -> new RenderDrone(manager, Textures.GUARD_DRONE_ENTITY);
+    public static final IRenderFactory<EntityDroneBase> COLLECTOR_FACTORY = manager -> new RenderDrone(manager, Textures.COLLECTOR_DRONE_ENTITY);
+    public static final IRenderFactory<EntityDroneBase> AMADRONE_FACTORY = manager -> new RenderDrone(manager, Textures.AMADRONE_ENTITY);
+
+    private final ResourceLocation texture;
 
     private final float scale;
 
-    private RenderDrone(EntityRendererManager entityRendererManager, int frameColor, float scale) {
+    private RenderDrone(EntityRendererManager entityRendererManager, ResourceLocation texture, float scale) {
         super(entityRendererManager, new ModelDrone(), 0f);
 
         this.scale = scale;
+        this.texture = texture;
 
-        if ((frameColor & 0xFF000000) != 0) {
-            addLayer(new DroneFrameLayer(this, frameColor));
-        }
         addLayer(new DroneColourLayer(this));
         addLayer(new DroneHeldItemLayer(this));
         addLayer(new DroneDigLaserLayer(this));
@@ -53,8 +36,8 @@ public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
         addLayer(new DroneTargetLaserLayer(this));
     }
 
-    private RenderDrone(EntityRendererManager manager, int frameColor) {
-        this(manager,  frameColor, 0.5f);
+    private RenderDrone(EntityRendererManager manager, ResourceLocation texture) {
+        this(manager,  texture, 0.35f);
     }
 
     @Override
@@ -69,6 +52,6 @@ public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityDroneBase entity) {
-        return Textures.DRONE_ENTITY;
+        return texture;
     }
 }

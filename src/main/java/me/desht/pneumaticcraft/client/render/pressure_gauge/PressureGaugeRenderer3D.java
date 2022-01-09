@@ -32,7 +32,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D.*;
 
 public class PressureGaugeRenderer3D {
-    private static final float RADIUS = 20F;
+    private static final float RADIUS = 19F;
     private static final float PI_F = (float) Math.PI;
     private static final float START_ANGLE = 240F / 180F * PI_F;
     private static final float STOP_ANGLE = -60F / 180F * PI_F;

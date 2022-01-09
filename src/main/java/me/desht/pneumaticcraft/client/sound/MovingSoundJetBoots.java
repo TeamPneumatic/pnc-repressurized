@@ -120,8 +120,6 @@ public class MovingSoundJetBoots extends TickableSound {
     }
 
     private float volumeFromConfig(boolean builderMode) {
-        return builderMode ?
-                ConfigHelper.client().sound.jetbootsVolumeBuilderMode.get().floatValue() :
-                ConfigHelper.client().sound.jetbootsVolume.get().floatValue();
+        return builderMode ? ConfigHelper.client().sound.jetbootsVolumeBuilderMode.get().floatValue() : ConfigHelper.client().sound.jetbootsVolume.get().floatValue();
     }
 }

@@ -1,6 +1,6 @@
 {
   "parent" : "item/generated",
   "textures" : {
-    "layer0" : "pneumaticcraft:item/drill_bit"
+    "layer0" : "pneumaticcraft:item/drill_bit_netherite"
   }
 }

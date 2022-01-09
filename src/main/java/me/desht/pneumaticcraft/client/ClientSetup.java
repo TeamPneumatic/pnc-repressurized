@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -147,13 +130,16 @@ public class ClientSetup {
     }
 
     private static void setBlockRenderLayers() {
+        RenderTypeLookup.setRenderLayer(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.EMPTY_SPAWNER.get(), RenderType.cutout());
-        RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), layer -> layer == RenderType.solid() || layer == RenderType.translucent());
         RenderTypeLookup.setRenderLayer(ModBlocks.FLUID_MIXER.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.GAS_LIFT.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_COMPRESSOR.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_TUBE.get(), RenderType.cutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURIZED_SPAWNER.get(), RenderType.cutout());
@@ -163,9 +149,11 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_MEDIUM.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_LARGE.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_HUGE.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.VACUUM_PUMP.get(), RenderType.translucent());
         RenderTypeLookup.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.cutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), layer -> layer == RenderType.cutoutMipped() || layer == RenderType.translucent());
         RenderTypeLookup.setRenderLayer(ModBlocks.THERMAL_LAGGING.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(ModBlocks.SPAWNER_EXTRACTOR.get(), RenderType.cutoutMipped());
 
         // camouflageable blocks need to render in all layers, since their camo could render in any layer
         for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
@@ -205,6 +193,7 @@ public class ClientSetup {
 
     private static void registerTileEntityRenderers() {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ADVANCED_PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR.get(), RenderAdvancedLiquidCompressor::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.AIR_CANNON.get(), RenderAirCannon::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.AERIAL_INTERFACE.get(), RenderAerialInterface::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.APHORISM_TILE.get(), RenderAphorismTile::new);
@@ -222,7 +211,9 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ETCHING_TANK.get(), RenderEtchingTank::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.FLUID_MIXER.get(), RenderFluidMixer::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.KEROSENE_LAMP.get(), RenderKeroseneLamp::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.GAS_LIFT.get(), RenderGasLift::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.LIQUID_HOPPER.get(), RenderLiquidHopper::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.LIQUID_COMPRESSOR.get(), RenderLiquidCompressor::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), RenderPressureChamberInterface::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
@@ -250,7 +241,6 @@ public class ClientSetup {
         ScreenManager.register(ModContainers.AMADRON_ADD_TRADE.get(), GuiAmadronAddTrade::new);
         ScreenManager.register(ModContainers.ASSEMBLY_CONTROLLER.get(), GuiAssemblyController::new);
         ScreenManager.register(ModContainers.CHARGING_STATION.get(), GuiChargingStation::new);
-        ScreenManager.register(ModContainers.CHARGING_AMADRON.get(), GuiAmadronCharging::new);
         ScreenManager.register(ModContainers.CHARGING_ARMOR.get(), GuiPneumaticArmor::new);
         ScreenManager.register(ModContainers.CHARGING_DRONE.get(), GuiDrone::new);
         ScreenManager.register(ModContainers.CHARGING_MINIGUN.get(), GuiMinigun::new);

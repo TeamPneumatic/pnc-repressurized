@@ -1,23 +1,24 @@
 {
-  "parent": "forge:block/default",
-  "credit": "Made with Blockbench",
-  "textures": {
-    "all": "pneumaticcraft:block/display_table",
-    "particle": "pneumaticcraft:block/display_table"
-  },
-  "elements": [
-    {
-      "name": "top",
-      "from": [0, 14, 0],
-      "to": [16, 16, 16],
-      "faces": {
-        "north": {"uv": [0, 0, 16, 2], "rotation": 180, "texture": "#all"},
-        "east": {"uv": [0, 0, 2, 16], "rotation": 90, "texture": "#all"},
-        "south": {"uv": [0, 0, 16, 2], "texture": "#all"},
-        "west": {"uv": [0, 0, 2, 16], "rotation": 90, "texture": "#all"},
-        "up": {"uv": [0, 0, 16, 16], "texture": "#all"},
-        "down": {"uv": [0, 0, 16, 16], "texture": "#all"}
-      }
-    }
-  ]
+	"credit": "Made with Blockbench",
+	"parent": "forge:block/default",
+	"textures": {
+		"bottom": "pneumaticcraft:model/display_table_bottom",
+		"particle": "pneumaticcraft:model/display_table_side",
+		"side": "pneumaticcraft:model/display_table_side",
+		"top": "pneumaticcraft:model/display_table_top"
+	},
+	"elements": [
+		{
+			"from": [0, 13, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 3, 16, 6], "texture": "#side", "cullface": "north"},
+				"east": {"uv": [0, 6, 16, 9], "texture": "#side", "cullface": "east"},
+				"south": {"uv": [0, 9, 16, 12], "texture": "#side", "cullface": "south"},
+				"west": {"uv": [0, 0, 16, 3], "texture": "#side", "cullface": "west"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#top", "cullface": "up"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#bottom"}
+			}
+		}
+	]
 }

@@ -1,20 +1,23 @@
 {
-  "textures": {
-    "all": "pneumaticcraft:block/compressed_iron_block",
-    "particle": "pneumaticcraft:block/compressed_iron_block"
-  },
-  "elements": [
-    {
-      "from": [ 0.5, 0, 0.5 ],
-      "to": [ 1.5, 15.999, 1.5 ],
-      "faces": {
-        "down":  { "texture": "#all", "cullface": "down" },
-        "up":    { "texture": "#all", "cullface": "up" },
-        "north": { "texture": "#all" },
-        "south": { "texture": "#all" },
-        "west":  { "texture": "#all" },
-        "east":  { "texture": "#all" }
-      }
-    }
-  ]
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"1": "pneumaticcraft:model/elevator_base",
+		"particle": "pneumaticcraft:model/elevator_base"
+	},
+	"elements": [
+		{
+			"from": [1, 0, 1],
+			"to": [3, 15.999, 3],
+			"faces": {
+				"north": {"uv": [0, 11, 7.9995, 12], "rotation": 90, "texture": "#1"},
+				"east": {"uv": [0, 11, 7.9995, 12], "rotation": 90, "texture": "#1"},
+				"south": {"uv": [0, 11, 7.9995, 12], "rotation": 90, "texture": "#1"},
+				"west": {"uv": [0, 11, 7.9995, 12], "rotation": 90, "texture": "#1"},
+				"up": {"uv": [0, 11, 1, 12], "texture": "#1", "cullface": "up"},
+				"down": {"uv": [7, 11, 8, 12], "texture": "#1", "cullface": "down"}
+			}
+		}
+	],
+	"display": {}
 }

@@ -27,10 +27,37 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Rarity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import java.util.stream.Stream;
+
 public class BlockCreativeCompressor extends BlockPneumaticCraft {
+
+    private static final VoxelShape SHAPE = Stream.of(
+            Block.box(15, 0, 0, 16, 1, 16),
+            Block.box(0, 0, 0, 1, 1, 16),
+            Block.box(1, 0, 0, 15, 1, 1),
+            Block.box(1, 0, 15, 15, 1, 16),
+            Block.box(0, 15, 0, 1, 16, 16),
+            Block.box(15, 15, 0, 16, 16, 16),
+            Block.box(1, 15, 0, 15, 16, 1),
+            Block.box(1, 15, 15, 15, 16, 16),
+            Block.box(0, 1, 0, 1, 15, 1),
+            Block.box(0, 1, 15, 1, 15, 16),
+            Block.box(15, 1, 15, 16, 15, 16),
+            Block.box(15, 1, 0, 16, 15, 1),
+            Block.box(4, 14, 4, 12, 16, 12),
+            Block.box(4, 0, 4, 12, 2, 12),
+            Block.box(2, 2, 2, 14, 14, 14),
+            Block.box(0, 4, 4, 2, 12, 12),
+            Block.box(14, 4, 4, 16, 12, 12),
+            Block.box(4, 4, 14, 12, 12, 16),
+            Block.box(4, 4, 0, 12, 12, 2)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
 
     public BlockCreativeCompressor() {
         super(ModBlocks.defaultProps());
@@ -44,6 +71,11 @@ public class BlockCreativeCompressor extends BlockPneumaticCraft {
     @Override
     public VoxelShape getOcclusionShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         return ALMOST_FULL_SHAPE;
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return SHAPE;
     }
 
     public static class ItemBlockCreativeCompressor extends BlockItem {

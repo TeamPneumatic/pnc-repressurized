@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -255,6 +238,24 @@ public class ModBlocks {
     public static final RegistryObject<Block> REINFORCED_BRICK_PILLAR = register("reinforced_brick_pillar",
             () -> new RotatedPillarBlock(reinforcedStoneProps()));
     public static final RegistryObject<Block> REINFORCED_BRICK_WALL = register("reinforced_brick_wall",
+            () -> new WallBlock(reinforcedStoneProps()));
+
+    public static final RegistryObject<Block> COMPRESSED_STONE = register("compressed_stone",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICKS = register("compressed_bricks",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_TILE = register("compressed_brick_tile",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_STAIRS = register("compressed_brick_stairs",
+            () -> new StairsBlock(() -> COMPRESSED_BRICKS.get().defaultBlockState(),
+                    reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_SLAB = register("compressed_brick_slab",
+            () -> new SlabBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_STONE_SLAB = register("compressed_stone_slab",
+            () -> new SlabBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_PILLAR = register("compressed_brick_pillar",
+            () -> new RotatedPillarBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_WALL = register("compressed_brick_wall",
             () -> new WallBlock(reinforcedStoneProps()));
 
     public static final RegistryObject<BlockFluidEtchingAcid> ETCHING_ACID = registerNoItem("etching_acid",

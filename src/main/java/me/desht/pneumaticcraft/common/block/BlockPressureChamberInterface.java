@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -47,14 +30,18 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft implement
     private static final EnumMap<Direction,VoxelShape> DOORS = new EnumMap<>(Direction.class);
     static {
         SHAPES.put(Axis.Z, VoxelShapes.or(
-                Block.box(0, 0, 0, 16, 3, 16),
-                Block.box(0, 13, 0, 16, 16, 16),
-                Block.box(0, 0, 0, 3, 16, 16),
-                Block.box(13, 0, 0, 16, 16, 16),
-                Block.box(3, 3, 0, 5, 5, 16),
-                Block.box(11, 3, 0, 13, 5, 16),
-                Block.box(3, 11, 0, 5, 13, 16),
-                Block.box(11, 11, 0, 13, 13, 16)
+                Block.box(0, 12, 0, 16, 16, 16),
+                Block.box(0, 0, 0, 16, 4, 16),
+                Block.box(0, 4, 0, 4, 12, 16),
+                Block.box(12, 4, 0, 16, 12, 16),
+                Block.box(4, 4, 1, 12, 5, 2),
+                Block.box(11, 5, 1, 12, 11, 2),
+                Block.box(4, 11, 1, 12, 12, 2),
+                Block.box(4, 5, 1, 5, 11, 2),
+                Block.box(11, 5, 14, 12, 11, 15),
+                Block.box(4, 4, 14, 12, 5, 15),
+                Block.box(4, 5, 14, 5, 11, 15),
+                Block.box(4, 11, 14, 12, 12, 15)
         ));
         SHAPES.put(Axis.Y, VoxelShapeUtils.rotateX(SHAPES.get(Axis.Z), 90));
         SHAPES.put(Axis.X, VoxelShapeUtils.rotateY(SHAPES.get(Axis.Z), 90));

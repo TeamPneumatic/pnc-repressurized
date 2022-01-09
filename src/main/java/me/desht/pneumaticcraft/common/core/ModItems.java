@@ -140,6 +140,7 @@ public class ModItems {
     public static final RegistryObject<ItemNetworkComponent> NETWORK_REGISTRY = register(NetworkComponentType.NETWORK_REGISTRY);
     public static final RegistryObject<ItemNetworkComponent> NETWORK_NODE = register(NetworkComponentType.NETWORK_NODE);
 
+    // TODO: Remove the Tint from the Drill Bits as they are now unique textures
     public static final RegistryObject<ItemDrillBit> IRON_DRILL_BIT = register(DrillBitType.IRON);
     public static final RegistryObject<ItemDrillBit> COMPRESSED_IRON_DRILL_BIT = register(DrillBitType.COMPRESSED_IRON);
     public static final RegistryObject<ItemDrillBit> DIAMOND_DRILL_BIT = register(DrillBitType.DIAMOND);

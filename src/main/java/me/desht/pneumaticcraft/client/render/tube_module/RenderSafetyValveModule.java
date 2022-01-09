@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -25,35 +8,49 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderSafetyValveModule extends TubeModuleRendererBase<ModuleSafetyValve> {
-    private final ModelRenderer shape1;
-    private final ModelRenderer shape2;
-    private final ModelRenderer shape3;
+    private final ModelRenderer tubeConnector;
+    private final ModelRenderer valve;
+    private final ModelRenderer valveHandle;
+    private final ModelRenderer valveLid;
 
     public RenderSafetyValveModule(){
-        shape1 = new ModelRenderer(64, 32, 32, 0);
-        shape1.addBox(0F, 0F, 0F, 3, 3, 2);
-        shape1.setPos(-1.5F, 14.5F, 2F);
-        shape1.mirror = true;
-        shape2 = new ModelRenderer(64, 32, 0, 0);
-        shape2.addBox(0F, 0F, 0F, 2, 2, 3);
-        shape2.setPos(-1F, 15F, 4F);
-        shape2.mirror = true;
-        shape3 = new ModelRenderer(64, 32, 32, 0);
-        shape3.addBox(0F, 0F, 0F, 1, 1, 3);
-        shape3.setPos(2F, 15.5F, 4F);
-        shape3.mirror = true;
-        setRotation(shape3, 0F, -0.5934119F, 0F);
+        tubeConnector = new ModelRenderer(32, 32, 0, 0);
+        tubeConnector.setPos(-1.5F, 14.5F, 2.0F);
+        tubeConnector.addBox(-0.5F, -0.5F, 0.0F, 4.0F, 4.0F, 2.0F);
+        tubeConnector.mirror = true;
+
+        valve = new ModelRenderer(32, 32, 0, 6);
+        valve.setPos(-1.0F, 15.0F, 4.0F);
+        valve.addBox(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 4.0F);
+        valve.mirror = true;
+
+        valveHandle = new ModelRenderer(32, 32, 0, 16);
+        valveHandle.setPos(2.0F, 15.5F, 4.0F);
+        setRotation(valveHandle, 0.0F, -0.5934F, 0.0F);
+        valveHandle.addBox(0.5592F, 0.0F, 0.829F, 1.0F, 1.0F, 3.0F);
+        valveHandle.mirror = true;
+
+        valveLid = new ModelRenderer(32, 32, 0, 12);
+        valveLid.setPos(1.5F, 15.5F, 7.25F);
+        valveLid.texOffs(0, 12).addBox(-3.0F, -1.0F, 0.0F, 3.0F, 3.0F, 1.0F);
     }
 
     @Override
     protected void renderDynamic(ModuleSafetyValve module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
-        shape1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        shape2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        shape3.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        valve.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        valveHandle.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        valveLid.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
     }
 
     @Override
     protected ResourceLocation getTexture() {
-        return Textures.MODEL_SAFETY_VALVE;
+        ResourceLocation texture;
+        if (isUpgraded()) {
+            texture = Textures.MODEL_SAFETY_VALVE_UPGRADED;
+        } else {
+            texture = Textures.MODEL_SAFETY_VALVE;
+        }
+        return texture;
     }
 }

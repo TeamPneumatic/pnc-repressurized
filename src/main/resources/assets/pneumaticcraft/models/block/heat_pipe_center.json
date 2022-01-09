@@ -1,21 +1,22 @@
 {
-  "parent": "forge:block/default",
-  "textures": {
-    "all": "pneumaticcraft:block/heat_pipe",
-    "particle": "pneumaticcraft:block/heat_pipe"
-  },
-  "elements": [
-    {
-      "from": [ 3, 3, 3 ],
-      "to": [ 13, 13, 13 ],
-      "faces": {
-        "down": { "texture": "#all", "uv": [ 3, 3, 13, 13 ], "uvlock": true },
-        "up": { "texture": "#all", "uv": [ 3, 3, 13, 13 ], "uvlock": true },
-        "north": { "texture": "#all", "uv": [ 3, 3, 13, 13 ], "uvlock": true },
-        "south": { "texture": "#all", "uv": [ 3, 3, 13, 13 ], "uvlock": true },
-        "west": { "texture": "#all", "uv": [ 3, 3, 13, 13 ], "uvlock": true },
-        "east": { "texture": "#all", "uv": [ 3, 3, 13, 13 ], "uvlock": true }
-      }
-    }
-  ]
+	"credit": "Made with Blockbench",
+	"parent": "forge:block/default",
+	"textures": {
+		"particle": "pneumaticcraft:model/heat_pipe",
+		"all": "pneumaticcraft:model/heat_pipe"
+	},
+	"elements": [
+		{
+			"from": [4, 4, 4],
+			"to": [12, 12, 12],
+			"faces": {
+				"north": {"uv": [4, 4, 12, 12], "texture": "#all"},
+				"east": {"uv": [4, 4, 12, 12], "texture": "#all"},
+				"south": {"uv": [4, 4, 12, 12], "texture": "#all"},
+				"west": {"uv": [4, 4, 12, 12], "texture": "#all"},
+				"up": {"uv": [4, 4, 12, 12], "texture": "#all"},
+				"down": {"uv": [4, 4, 12, 12], "texture": "#all"}
+			}
+		}
+	]
 }

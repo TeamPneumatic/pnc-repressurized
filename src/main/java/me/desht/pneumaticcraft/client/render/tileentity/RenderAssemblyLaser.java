@@ -19,8 +19,6 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -33,59 +31,52 @@ import net.minecraft.util.math.vector.Vector3f;
 public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAssemblyLaser> {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseTurn2;
-    private final ModelRenderer armBase1;
-    private final ModelRenderer armBase2;
-    private final ModelRenderer supportMiddle;
-    private final ModelRenderer armMiddle1;
-    private final ModelRenderer armMiddle2;
+    private final ModelRenderer armBase;
+    private final ModelRenderer armMiddle;
     private final ModelRenderer laserBase;
     private final ModelRenderer laser;
 
-    private static final float TEXTURE_SIZE = 1 / 150f;
+//    private static final float TEXTURE_SIZE = 1 / 150f;
 
     public RenderAssemblyLaser(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        baseTurn = new ModelRenderer(64, 64, 0, 17);
-        baseTurn.addBox(0F, 0F, 0F, 7, 1, 7);
-        baseTurn.setPos(-3.5F, 22F, -3.5F);
-        baseTurn.mirror = true;
-        baseTurn2 = new ModelRenderer(64, 64, 28, 17);
-        baseTurn2.addBox(0F, 0F, 0F, 4, 5, 4);
-        baseTurn2.setPos(-2F, 17F, -2F);
-        baseTurn2.mirror = true;
+        baseTurn = new ModelRenderer(64, 64, 0, 0);
+        baseTurn.setPos(-3.5F, 22.0F, -3.5F);
+        baseTurn.texOffs(0, 0).addBox(-1.0F, 0.0F, -1.0F, 9.0F, 1.0F, 9.0F, 0.0F, true);
 
-        armBase1 = new ModelRenderer(64, 64, 0, 25);
-        armBase1.addBox(0F, 0F, 0F, 1, 2, 8);
-        armBase1.setPos(2F, 17F, -1F);
-        armBase1.mirror = true;
-        armBase2 = new ModelRenderer(64, 64, 0, 25);
-        armBase2.addBox(0F, 0F, 0F, 1, 2, 8);
-        armBase2.setPos(-3F, 17F, -1F);
-        armBase2.mirror = true;
+        baseTurn2 = new ModelRenderer(64, 64, 0, 0);
+        baseTurn2.setPos(-2.0F, 17.0F, -2.0F);
+        baseTurn2.texOffs(0, 30).addBox(-2.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, false);
+        baseTurn2.texOffs(0, 10).addBox(-2.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
+        baseTurn2.texOffs(10, 30).addBox(4.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, true);
+        baseTurn2.texOffs(0, 20).addBox(4.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
 
-        supportMiddle = new ModelRenderer(64, 64, 0, 57);
-        supportMiddle.addBox(0F, 0F, 0F, 2, 1, 1);
-        supportMiddle.setPos(-1F, 17.5F, 5.5F);
-        supportMiddle.mirror = true;
+        armBase = new ModelRenderer(64, 64, 0, 0);
+        armBase.setPos(-3.0F, 17.0F, -1.0F);
+        armBase.texOffs(0, 49).addBox(2.0F, 0.0F, 1.0F, 2.0F, 2.0F, 5.0F, 0.3F, true);
+        armBase.texOffs(0, 43).addBox(1.5F, -0.5F, -0.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
+        armBase.texOffs(12, 43).addBox(1.5F, -0.5F, 5.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
+        armBase.texOffs(0, 39).addBox(-1.5F, 0.0F, 0.0F, 9.0F, 2.0F, 2.0F, 0.0F, true);
 
-        armMiddle1 = new ModelRenderer(64, 64, 0, 35);
-        armMiddle1.addBox(0F, 0F, 0F, 1, 17, 2);
-        armMiddle1.setPos(-2F, 2F, 5F);
-        armMiddle1.mirror = true;
-        armMiddle2 = new ModelRenderer(64, 64, 0, 35);
-        armMiddle2.addBox(0F, 0F, 0F, 1, 17, 2);
-        armMiddle2.setPos(1F, 2F, 5F);
-        armMiddle2.mirror = true;
+        armMiddle = new ModelRenderer(64, 64, 0, 0);
+        armMiddle.setPos(-4.0F, 2.0F, 5.0F);
+        armMiddle.texOffs(28, 10).addBox(0.0F, 2.0F, 0.0F, 2.0F, 13.0F, 2.0F, 0.0F, true);
+        armMiddle.texOffs(12, 24).addBox(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
+        armMiddle.texOffs(0, 24).addBox(0.0F, 15.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
+        armMiddle.texOffs(14, 52).addBox(-0.5F, 15.0F, 0.0F, 3.0F, 2.0F, 2.0F, 0.0F, true);
+        armMiddle.texOffs(60, 38).addBox(4.0F, 0.5F, 0.5F, 1.0F, 7.0F, 1.0F, 0.0F, true);
+        armMiddle.texOffs(54, 38).addBox(2.0F, 6.5F, 0.5F, 2.0F, 1.0F, 1.0F, 0.0F, true);
 
-        laserBase = new ModelRenderer(64, 64, 8, 38);
-        laserBase.addBox(0F, 0F, 0F, 2, 2, 3);
-        laserBase.setPos(-1F, 2F, 4.5F);
-        laserBase.mirror = true;
-        laser = new ModelRenderer(64, 64, 54, 59);
-        laser.addBox(0F, 0F, 0F, 1, 1, 32);
-        laser.setPos(-0.5F, 2.5F, 1F);
-        laser.mirror = true;
+        laserBase = new ModelRenderer(64, 64, 0, 0);
+        laserBase.setPos(-4.0F, 2.0F, 5.0F);
+        laserBase.texOffs(46, 15).addBox(2.5F, -1.5F, -1.0F, 3.0F, 6.0F, 6.0F, 0.0F, false);
+        laserBase.texOffs(48, 27).addBox(3.5F, -0.5F, -0.5F, 3.0F, 6.0F, 5.0F, 0.0F, false);
+        laserBase.texOffs(48, 38).addBox(2.0F, 0.5F, 0.5F, 2.0F, 1.0F, 1.0F, 0.3F, false);
+
+        laser = new ModelRenderer(64, 64, 0, 0);
+        laser.setPos(0.0F, 24.0F, 0.0F);
+        laser.texOffs(8, 36).addBox(-0.5F, -21.5F, 1.0F, 1.0F, 1.0F, 27.0F, 0.0F, true);
     }
 
     @Override
@@ -98,19 +89,22 @@ public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAss
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
 
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(angles[0]));
+
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.translate(0, 18 / 16F, 0);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[1]));
         matrixStackIn.translate(0, -18 / 16F, 0);
-        armBase1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        armBase2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        supportMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
+        armBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[2]));
         matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
-        armMiddle1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        armMiddle2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
+        armMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[3]));
         matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
@@ -118,15 +112,10 @@ public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAss
         laserBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         if (te.isLaserOn) {
             matrixStackIn.pushPose();
-            matrixStackIn.translate(0, 2.75 / 16D, 1 / 16D);
-            matrixStackIn.scale(1/8f, 1/8f, 1/8f);
-            laser.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 1f, 0.1f, 0f, 1f);
+            matrixStackIn.translate(0, 2.25 / 16D, 1 / 16D);
+            matrixStackIn.scale(2/8f, 2/8f, 2/8f);
+            laser.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
             matrixStackIn.popPose();
         }
-
-        matrixStackIn.scale(TEXTURE_SIZE, TEXTURE_SIZE, TEXTURE_SIZE);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90));
-        matrixStackIn.translate(0, 0, 18);
-        RenderUtils.drawTexture(matrixStackIn, bufferIn.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.GUI_LASER_DANGER)), -8, -65, combinedLightIn);
     }
 }

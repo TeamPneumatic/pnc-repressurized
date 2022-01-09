@@ -50,6 +50,16 @@ public class BlockDroneInterface extends BlockPneumaticCraft {
     }
 
     @Override
+    public boolean isRotatable() {
+        return true;
+    }
+
+    @Override
+    protected boolean reversePlacementRotation() {
+        return true;
+    }
+
+    @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityDroneInterface.class;
     }

@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -26,19 +9,52 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+import java.util.stream.Stream;
+
 public class BlockRefineryController extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE_N = VoxelShapes.or(
-        box(0, 0, 0, 16, 1, 16),
-        box(0, 15, 0, 16, 16, 16),
-        box(0, 1, 0, 16, 15, 8),
-        box(1, 1, 8, 15, 15, 16)
-    );
+    private static final VoxelShape SHAPE_N = Stream.of(
+            Block.box(6, 11, 12.5, 7, 12, 14.5),
+            Block.box(14, 10, 0, 16, 13, 2),
+            Block.box(14, 10, 14, 16, 13, 16),
+            Block.box(0, 10, 0, 2, 13, 2),
+            Block.box(0, 10, 14, 2, 13, 16),
+            Block.box(0, 0, 0, 16, 1, 16),
+            Block.box(7.5, 11, 12.5, 8.5, 12, 14.5),
+            Block.box(4.5, 11, 12.5, 5.5, 12, 14.5),
+            Block.box(3, 11, 12.5, 4, 12, 14.5),
+            Block.box(7.5, 12, 13.5, 8.5, 14, 14.5),
+            Block.box(6, 12, 13.5, 7, 14, 14.5),
+            Block.box(4.5, 12, 13.5, 5.5, 14, 14.5),
+            Block.box(3, 12, 13.5, 4, 14, 14.5),
+            Block.box(2, 14, 13, 9, 16, 16),
+            Block.box(3, 1, 0, 10, 7, 1),
+            Block.box(2, 1, 13, 9, 9, 15),
+            Block.box(2, 1, 1, 14, 16, 13),
+            Block.box(9, 15, 15, 16, 16, 16),
+            Block.box(0, 15, 15, 2, 16, 16),
+            Block.box(0.5, 1, 0.5, 1.5, 15, 1.5),
+            Block.box(14.5, 1, 0.5, 15.5, 15, 1.5),
+            Block.box(0.5, 1, 14.5, 1.5, 15, 15.5),
+            Block.box(0, 15, 6, 1, 16, 15),
+            Block.box(0, 14, 3, 2, 16, 6),
+            Block.box(0, 15, 1, 1, 16, 3),
+            Block.box(0, 15, 0, 16, 16, 1),
+            Block.box(15, 15, 1, 16, 16, 7),
+            Block.box(14, 14, 7, 16, 16, 11),
+            Block.box(15, 15, 11, 16, 16, 15),
+            Block.box(14.5, 1, 14.5, 15.5, 15, 15.5),
+            Block.box(1.5, 11, 0.5, 14.5, 12, 1.5),
+            Block.box(2.5, 10.5, 10.5, 9, 12.5, 12.5),
+            Block.box(2.75, 1, 10.75, 8.75, 11, 12.25)
+    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);

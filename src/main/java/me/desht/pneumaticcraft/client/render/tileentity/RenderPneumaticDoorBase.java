@@ -37,15 +37,15 @@ public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntit
     public RenderPneumaticDoorBase(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        cylinder1 = new ModelRenderer(64, 64, 0, 28);
+        cylinder1 = new ModelRenderer(64, 64, 0, 0);
         cylinder1.addBox(0F, 0F, 0F, 3, 3, 10);
         cylinder1.setPos(2.5F, 8.5F, -6F);
         cylinder1.mirror = true;
-        cylinder2 = new ModelRenderer(64, 64, 0, 28);
+        cylinder2 = new ModelRenderer(64, 64, 0, 13);
         cylinder2.addBox(0F, 0F, 0F, 2, 2, 10);
         cylinder2.setPos(3F, 9F, -6F);
         cylinder2.mirror = true;
-        cylinder3 = new ModelRenderer(64, 64, 0, 28);
+        cylinder3 = new ModelRenderer(64, 64, 0, 25);
         cylinder3.addBox(0F, 0F, 0F, 1, 1, 10);
         cylinder3.setPos(3.5F, 9.5F, -6F);
         cylinder3.mirror = true;

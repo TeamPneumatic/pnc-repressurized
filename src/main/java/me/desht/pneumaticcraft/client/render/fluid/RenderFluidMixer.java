@@ -27,9 +27,9 @@ import java.util.Collection;
 
 public class RenderFluidMixer extends AbstractFluidTER<TileEntityFluidMixer> {
     private static final AxisAlignedBB[] TANK_BOUNDS_BASE = new AxisAlignedBB[]{
-            new AxisAlignedBB(1 / 16f,  1 / 16f, 10 / 16f, 5 / 16f,  7 / 16f,  14 / 16f),  // in1
-            new AxisAlignedBB(11 / 16f, 1 / 16f, 10 / 16f, 15 / 16f, 7 / 16f,  14 / 16f),  // in2
-            new AxisAlignedBB(6 / 16f,  9 / 16f, 3 / 16f,  10 / 16f, 15 / 16f, 7 / 16f)    // out
+            new AxisAlignedBB(0.1 / 16f, 1 / 16f, 11.1 / 16f, 6.9 / 16f, 8.9/ 16f, 15.9 / 16f),  // in1
+            new AxisAlignedBB(9.1 / 16f, 1 / 16f, 11.1 / 16f, 15.9 / 16f, 8.9 / 16f, 15.9 / 16f),  // in2
+            new AxisAlignedBB(2.1 / 16f,  10.1 / 16f, 11.1 / 16f,  13.9 / 16f, 15.9 / 16f, 15.9 / 16f)    // out
     };
     private static final AxisAlignedBB[][] BOUNDS = new AxisAlignedBB[3][4];
     static {

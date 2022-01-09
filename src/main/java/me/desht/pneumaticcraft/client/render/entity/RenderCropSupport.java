@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -28,6 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
@@ -46,11 +30,12 @@ public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
 
         matrixStackIn.pushPose();
 
-        matrixStackIn.translate(0, -12/16F, 0);
+        matrixStackIn.translate(0, 0.8f, 0);
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180F));
         if (entityIn.getTimeSinceHit() > 0) {
             wobble(entityIn, partialTicks, matrixStackIn);
         }
-        matrixStackIn.scale((float)(aabb.maxX - aabb.minX), 1f, (float)(aabb.maxZ - aabb.minZ));
+        matrixStackIn.scale((float)(aabb.maxX - aabb.minX), (float)(aabb.maxY - aabb.minY), (float)(aabb.maxZ - aabb.minZ));
         model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), 0.33f, 0.25f, 0.12f, 1F);
 
         matrixStackIn.popPose();
@@ -58,6 +43,6 @@ public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityCropSupport entity) {
-        return Textures.MODEL_HEAT_FRAME;
+        return Textures.MODEL_CROP_SUPPORT;
     }
 }

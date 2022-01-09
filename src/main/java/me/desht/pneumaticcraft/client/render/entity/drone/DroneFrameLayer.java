@@ -29,8 +29,8 @@ import net.minecraft.util.math.vector.Vector3f;
 public class DroneFrameLayer extends LayerRenderer<EntityDroneBase, ModelDrone> {
     private final float[] frameColors;
 
-    private static final double FRAME_SIZE = 3 / 16D;
-    private static final double FRAME_Y_OFFSET = 17 / 16D;
+    private static final double FRAME_SIZE = 6 / 16D;
+    private static final double FRAME_Y_OFFSET = 34 / 16D;
     private static final AxisAlignedBB FRAME_AABB = new AxisAlignedBB(
             -FRAME_SIZE, FRAME_Y_OFFSET - FRAME_SIZE, -FRAME_SIZE,
             FRAME_SIZE, FRAME_Y_OFFSET + FRAME_SIZE, FRAME_SIZE
@@ -51,4 +51,9 @@ public class DroneFrameLayer extends LayerRenderer<EntityDroneBase, ModelDrone> 
         RenderUtils.renderFrame(matrixStackIn, bufferIn, FRAME_AABB, 1 / 32F, frameColors[1], frameColors[2], frameColors[3], 1f, packedLightIn, false);
         matrixStackIn.popPose();
     }
+
+//    @Override
+//    public ResourceLocation getEntityTexture(EntityDroneBase entity) {
+//        return Textures.TEST_DRONE_ENTITY;
+//    }
 }

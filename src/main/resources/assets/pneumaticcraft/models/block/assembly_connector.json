@@ -1,6 +1,6 @@
 {
   "textures": {
-    "pipe": "pneumaticcraft:block/pressure_tube"
+    "pipe": "pneumaticcraft:model/pressure_tube"
   },
   "elements": [
     {

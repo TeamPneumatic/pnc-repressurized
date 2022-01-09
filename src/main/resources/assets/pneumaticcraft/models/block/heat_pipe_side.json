@@ -1,20 +1,21 @@
 {
-  "textures": {
-    "all": "pneumaticcraft:block/heat_pipe",
-    "end": "pneumaticcraft:block/heat_pipe_end"
-  },
-  "elements": [
-    {
-      "from": [ 3, 13, 3 ],
-      "to": [ 13, 16, 13 ],
-      "faces": {
-        "down": { "texture": "#end", "uv": [ 3, 3, 13, 13 ], "cullface": "down" },
-        "up": { "texture": "#end", "uv": [ 3, 3, 13, 13 ], "cullface": "up" },
-        "north": { "texture": "#all", "uv": [ 3, 0, 13, 3 ], "uvlock": true },
-        "south": { "texture": "#all", "uv": [  3, 13, 13, 16 ], "uvlock": true },
-        "west": { "texture": "#all", "uv": [ 3, 0, 13, 3 ], "uvlock": true },
-        "east": { "texture": "#all", "uv": [ 3, 13, 13, 16 ], "uvlock": true }
-      }
-    }
-  ]
+	"credit": "Made with Blockbench",
+	"textures": {
+		"particle": "pneumaticcraft:model/heat_pipe",
+		"all": "pneumaticcraft:model/heat_pipe"
+	},
+	"elements": [
+		{
+			"from": [4, 12, 4],
+			"to": [12, 16, 12],
+			"faces": {
+				"north": {"uv": [4, 0, 12, 4], "texture": "#all"},
+				"east": {"uv": [4, 12, 12, 16], "texture": "#all"},
+				"south": {"uv": [4, 12, 12, 16], "texture": "#all"},
+				"west": {"uv": [4, 0, 12, 4], "texture": "#all"},
+				"up": {"uv": [4, 4, 12, 12], "texture": "#all", "cullface": "up"},
+				"down": {"uv": [4, 4, 12, 12], "texture": "#all", "cullface": "down"}
+			}
+		}
+	]
 }

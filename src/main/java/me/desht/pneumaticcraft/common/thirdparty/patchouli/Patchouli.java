@@ -111,8 +111,8 @@ public class Patchouli implements IThirdParty, IDocsProvider {
         papi.setConfigFlag(Names.MOD_ID + ":" + "inWorldYeastCrafting", ConfigHelper.common().recipes.inWorldYeastCrafting.get());
         papi.setConfigFlag(Names.MOD_ID + ":" + "liquidHopperDispenser", ConfigHelper.common().machines.liquidHopperDispenser.get());
         papi.setConfigFlag(Names.MOD_ID + ":" + "omniHopperDispenser", ConfigHelper.common().machines.omniHopperDispenser.get());
-        papi.setConfigFlag(Names.MOD_ID + ":" + "electricCompressorEnabled",  false); // PNCConfig.common().recipes.enableElectricCompressorRecipe.get() && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
-        papi.setConfigFlag(Names.MOD_ID + ":" + "pneumaticGeneratorEnabled", false); // PNCConfig.common().recipes.enablePneumaticGeneratorRecipe.get() && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
+        papi.setConfigFlag(Names.MOD_ID + ":" + "electricCompressorEnabled",  false); // ConfigHelper.common().recipes.enableElectricCompressorRecipe.get() && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
+        papi.setConfigFlag(Names.MOD_ID + ":" + "pneumaticGeneratorEnabled", false); // ConfigHelper.common().recipes.enablePneumaticGeneratorRecipe.get() && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
     }
 
     @SubscribeEvent

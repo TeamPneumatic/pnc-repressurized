@@ -29,11 +29,9 @@ class IEHeatHandler {
             @Override
             public int doHeatTick(TileEntity tileEntity, int energyAvailable, boolean canHeat) {
                 return tileEntity.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).map(handler -> {
-                    int rfPerTick = ConfigHelper.common().integration.ieExternalHeaterRFperTick.get();
-                    double heatPerRF = ConfigHelper.common().integration.ieExternalHeaterHeatPerRF.get();
-                    if (energyAvailable >= rfPerTick) {
-                        handler.addHeat(rfPerTick * heatPerRF);
-                        return rfPerTick;
+                    if (energyAvailable >= ConfigHelper.common().integration.ieExternalHeaterRFperTick.get()) {
+                        handler.addHeat(ConfigHelper.common().integration.ieExternalHeaterRFperTick.get() * ConfigHelper.common().integration.ieExternalHeaterHeatPerRF.get());
+                        return ConfigHelper.common().integration.ieExternalHeaterRFperTick.get();
                     }
                     return 0;
                 }).orElse(0);

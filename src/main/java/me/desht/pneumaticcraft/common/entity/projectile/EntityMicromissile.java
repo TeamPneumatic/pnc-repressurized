@@ -233,8 +233,7 @@ public class EntityMicromissile extends ThrowableEntity {
             y = MathHelper.lerp(0.25f, e.getY(), getY());
             z = MathHelper.lerp(0.25f, e.getZ(), getZ());
         }
-        float radius = ConfigHelper.common().micromissiles.baseExplosionDamage.get().floatValue() * explosionPower;
-        getCommandSenderWorld().explode(this, x, y, z, radius, false, mode);
+        getCommandSenderWorld().explode(this, x, y, z, ConfigHelper.common().micromissiles.baseExplosionDamage.get().floatValue() * explosionPower, false, mode);
     }
 
     // shoot()

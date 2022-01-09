@@ -53,6 +53,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         copy(PneumaticCraftTags.Blocks.CHESTS, PneumaticCraftTags.Items.CHESTS);
         copy(PneumaticCraftTags.Blocks.REINFORCED_STONE, PneumaticCraftTags.Items.REINFORCED_STONE);
         copy(PneumaticCraftTags.Blocks.REINFORCED_STONE_BRICKS, PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS);
+        copy(PneumaticCraftTags.Blocks.COMPRESSED_STONE, PneumaticCraftTags.Items.COMPRESSED_STONE);
+        copy(PneumaticCraftTags.Blocks.COMPRESSED_STONE_BRICKS, PneumaticCraftTags.Items.COMPRESSED_STONE_BRICKS);
 
         appendToTag(ItemTags.SLABS, PneumaticCraftTags.Items.SLABS);
         appendToTag(ItemTags.STAIRS, PneumaticCraftTags.Items.STAIRS);
@@ -61,7 +63,9 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         appendToTag(Tags.Items.STORAGE_BLOCKS, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
         appendToTag(Tags.Items.CHESTS, PneumaticCraftTags.Items.CHESTS);
         appendToTag(Tags.Items.STONE, PneumaticCraftTags.Items.REINFORCED_STONE);
+        appendToTag(Tags.Items.STONE, PneumaticCraftTags.Items.COMPRESSED_STONE);
         appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS);
+        appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.COMPRESSED_STONE_BRICKS);
 
         addItemsToTag(PneumaticCraftTags.Items.PLASTIC_SHEETS, ModItems.PLASTIC);
         addItemsToTag(PneumaticCraftTags.Items.FLOUR, ModItems.WHEAT_FLOUR);

@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -30,6 +13,7 @@ import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.HandSide;
 import net.minecraft.util.math.vector.Vector3f;
 
 public class RenderItemMinigun extends ItemStackTileEntityRenderer {
@@ -48,22 +32,26 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
                 if (thirdPerson) {
                     if (mc.screen instanceof InventoryScreen) {
                         // our own gun in the rendered player model in inventory screen
-                        matrixStack.mulPose(Vector3f.XP.rotationDegrees(90f));
+                        matrixStack.mulPose(Vector3f.XP.rotationDegrees(-180f));
                         matrixStack.translate(0.5, -1, -0.5);
                     } else {
                         // rendering our own gun in 3rd person, or rendering someone else's gun
                         matrixStack.scale(1f, -1f, -1f);
-                        matrixStack.mulPose(Vector3f.XP.rotationDegrees(-90f));
-                        matrixStack.translate(0.5, -1, -0.3);
+                        matrixStack.mulPose(Vector3f.XP.rotationDegrees(75f));
+                        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
+                        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(0f));
+                        matrixStack.translate(-0.5, -2, -0.3);
                     }
                 } else {
                     // our own gun in 1st person
                     matrixStack.scale(1.5f, 1.5f, 1.5f);
-                    matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-90f));
-                    if (transformType == TransformType.FIRST_PERSON_RIGHT_HAND) {
-                        matrixStack.translate(0, -0.6, -0.1);
-                    } else if (transformType == TransformType.FIRST_PERSON_LEFT_HAND) {
-                        matrixStack.translate(0, -1.9, -0.05);
+                    matrixStack.mulPose(Vector3f.XP.rotationDegrees(0));
+                    matrixStack.mulPose(Vector3f.YP.rotationDegrees(0));
+                    matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
+                    if (mc.options.mainHand == HandSide.RIGHT) {
+                        matrixStack.translate(-1, -1.7, 0.1);
+                    } else {
+                        matrixStack.translate(0, 0, 0);
                     }
                 }
                 model.renderMinigun(matrixStack, buffer, combinedLightIn, combinedOverlayIn, minigun, mc.getFrameTime(), false);

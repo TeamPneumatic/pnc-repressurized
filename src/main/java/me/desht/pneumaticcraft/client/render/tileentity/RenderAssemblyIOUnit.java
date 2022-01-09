@@ -41,11 +41,8 @@ import org.apache.commons.lang3.tuple.Pair;
 public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAssemblyIOUnit> {
     private final ModelRenderer baseTurn;
     private final ModelRenderer baseTurn2;
-    private final ModelRenderer armBase1;
-    private final ModelRenderer armBase2;
-    private final ModelRenderer supportMiddle;
-    private final ModelRenderer armMiddle1;
-    private final ModelRenderer armMiddle2;
+    private final ModelRenderer armBase;
+    private final ModelRenderer armMiddle;
     private final ModelRenderer clawBase;
     private final ModelRenderer clawAxle;
     private final ModelRenderer clawTurn;
@@ -57,54 +54,53 @@ public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAs
     public RenderAssemblyIOUnit(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        baseTurn = new ModelRenderer(64, 64, 0, 17);
-        baseTurn.addBox(0F, 0F, 0F, 7, 1, 7);
-        baseTurn.setPos(-3.5F, 22F, -3.5F);
-        baseTurn.mirror = true;
-        baseTurn2 = new ModelRenderer(64, 64, 28, 17);
-        baseTurn2.addBox(0F, 0F, 0F, 4, 5, 4);
-        baseTurn2.setPos(-2F, 17F, -2F);
-        baseTurn2.mirror = true;
-        armBase1 = new ModelRenderer(64, 64, 0, 25);
-        armBase1.addBox(0F, 0F, 0F, 1, 2, 8);
-        armBase1.setPos(2F, 17F, -1F);
-        armBase1.mirror = true;
-        armBase2 = new ModelRenderer(64, 64, 0, 25);
-        armBase2.addBox(0F, 0F, 0F, 1, 2, 8);
-        armBase2.setPos(-3F, 17F, -1F);
-        armBase2.mirror = true;
-        supportMiddle = new ModelRenderer(64, 64, 0, 57);
-        supportMiddle.addBox(0F, 0F, 0F, 2, 1, 1);
-        supportMiddle.setPos(-1F, 17.5F, 5.5F);
-        supportMiddle.mirror = true;
-        armMiddle1 = new ModelRenderer(64, 64, 0, 35);
-        armMiddle1.addBox(0F, 0F, 0F, 1, 17, 2);
-        armMiddle1.setPos(-2F, 2F, 5F);
-        armMiddle1.mirror = true;
-        armMiddle2 = new ModelRenderer(64, 64, 0, 35);
-        armMiddle2.addBox(0F, 0F, 0F, 1, 17, 2);
-        armMiddle2.setPos(1F, 2F, 5F);
-        armMiddle2.mirror = true;
-        clawBase = new ModelRenderer(64, 64, 8, 38);
-        clawBase.addBox(0F, 0F, 0F, 2, 2, 3);
-        clawBase.setPos(-1F, 2F, 4.5F);
-        clawBase.mirror = true;
-        clawAxle = new ModelRenderer(64, 64, 8, 45);
-        clawAxle.addBox(0F, 0F, 0F, 1, 1, 1);
-        clawAxle.setPos(-0.5F, 2.5F, 4F);
-        clawAxle.mirror = true;
-        clawTurn = new ModelRenderer(64, 64, 8, 49);
-        clawTurn.addBox(0F, 0F, 0F, 4, 2, 1);
-        clawTurn.setPos(-2F, 2F, 3F);
-        clawTurn.mirror = true;
-        claw1 = new ModelRenderer(64, 64, 8, 54);
-        claw1.addBox(0F, 0F, 0F, 1, 2, 1);
-        claw1.setPos(0F, 2F, 2F);
-        claw1.mirror = true;
-        claw2 = new ModelRenderer(64, 64, 8, 59);
-        claw2.addBox(0F, 0F, 0F, 1, 2, 1);
-        claw2.setPos(-1F, 2F, 2F);
-        claw2.mirror = true;
+        baseTurn = new ModelRenderer(64, 64, 0, 0);
+        baseTurn.setPos(-3.5F, 22.0F, -3.5F);
+        baseTurn.texOffs(0, 0).addBox(-1.0F, 0.0F, -1.0F, 9.0F, 1.0F, 9.0F, 0.0F, true);
+
+        baseTurn2 = new ModelRenderer(64, 64, 0, 0);
+        baseTurn2.setPos(-2.0F, 17.0F, -2.0F);
+        baseTurn2.texOffs(0, 30).addBox(-2.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, false);
+        baseTurn2.texOffs(0, 10).addBox(-2.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
+        baseTurn2.texOffs(10, 30).addBox(4.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, true);
+        baseTurn2.texOffs(0, 20).addBox(4.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
+
+        armBase = new ModelRenderer(64, 64, 0, 0);
+        armBase.setPos(-3.0F, 17.0F, -1.0F);
+        armBase.texOffs(0, 49).addBox(2.0F, 0.0F, 1.0F, 2.0F, 2.0F, 5.0F, 0.3F, true);
+        armBase.texOffs(0, 43).addBox(1.5F, -0.5F, -0.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
+        armBase.texOffs(12, 43).addBox(1.5F, -0.5F, 5.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
+        armBase.texOffs(0, 39).addBox(-1.5F, 0.0F, 0.0F, 9.0F, 2.0F, 2.0F, 0.0F, true);
+
+        armMiddle = new ModelRenderer(64, 64, 0, 0);
+        armMiddle.setPos(-4.0F, 2.0F, 5.0F);
+        armMiddle.texOffs(20, 10).addBox(0.0F, 2.0F, 0.0F, 2.0F, 13.0F, 2.0F, 0.0F, true);
+        armMiddle.texOffs(12, 24).addBox(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
+        armMiddle.texOffs(0, 24).addBox(0.0F, 15.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
+        armMiddle.texOffs(14, 52).addBox(-0.5F, 15.0F, 0.0F, 3.0F, 2.0F, 2.0F, 0.0F, true);
+
+
+        clawBase = new ModelRenderer(64, 64, 0, 0);
+        clawBase.setPos(-1.0F, 2.0F, 4.5F);
+        clawBase.texOffs(46, 0).addBox(-1.0F, -1.0F, 0.0F, 4.0F, 4.0F, 5.0F, 0.0F, true);
+
+        clawAxle = new ModelRenderer(64, 64, 0, 0);
+        clawAxle.setPos(-0.5F, 2.5F, 4.0F);
+        clawAxle.texOffs(58, 9).addBox(-0.5F, -0.5F, 0.0F, 2.0F, 2.0F, 1.0F, 0.0F, true);
+
+        clawTurn = new ModelRenderer(64, 64, 0, 0);
+        clawTurn.setPos(-2.0F, 2.0F, 3.0F);
+        clawTurn.texOffs(54, 12).addBox(0.0F, -0.5F, 0.0F, 4.0F, 3.0F, 1.0F, 0.1F, true);
+
+        claw1 = new ModelRenderer(64, 64, 0, 0);
+        claw1.setPos(0.0F, 2.0F, 2.25F);
+        claw1.texOffs(52, 21).addBox(-0.1F, -0.5F, -1.35F, 1.0F, 3.0F, 2.0F, -0.1F, true);
+        claw1.texOffs(58, 21).addBox(0.25F, 0.0F, -1.35F, 1.0F, 2.0F, 2.0F, 0.0F, true);
+
+        claw2 = new ModelRenderer(64, 64, 0, 0);
+        claw2.setPos(-1.0F, 2.0F, 2.25F);
+        claw2.texOffs(52, 16).addBox(0.1F, -0.5F, -1.35F, 1.0F, 3.0F, 2.0F, -0.1F, true);
+        claw2.texOffs(58, 16).addBox(-0.25F, 0.0F, -1.35F, 1.0F, 2.0F, 2.0F, 0.0F, true);
     }
 
     @Override
@@ -119,34 +115,44 @@ public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAs
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(MathHelper.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
 
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(angles[0]));
+
         baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.translate(0, 18 / 16F, 0);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[1]));
         matrixStackIn.translate(0, -18 / 16F, 0);
-        armBase1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        armBase2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        supportMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
+        armBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[2]));
         matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
-        armMiddle1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        armMiddle2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
+        armMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
         matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(angles[3]));
         matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
+
         clawBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.translate(0, 3 / 16F, 0);
         matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(angles[4]));
         matrixStackIn.translate(0, -3 / 16F, 0);
+
         clawAxle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         clawTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(clawTranslation.getRight(), 0, 0);
+
         claw1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.translate(-2 * clawTranslation.getRight(), 0, 0);
+
         claw2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+
         matrixStackIn.popPose();
 
         if (!heldStack.isEmpty()) {

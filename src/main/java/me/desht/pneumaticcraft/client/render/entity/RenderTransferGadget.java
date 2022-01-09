@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -55,15 +38,15 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
         }
 
         Direction side = entity.getSide();
-        matrixStackIn.translate(0, side.getAxis() == Axis.Y ? 1.5 : -1.5, 0);
+        matrixStackIn.translate(0, side.getAxis() == Axis.Y ? 1.2 : -1.1, 0);
         switch (side) {
             case UP:
                 matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(90));
-                matrixStackIn.translate(-1.5, -1.5, 0);
+                matrixStackIn.translate(-1.1, -1.1, 0);
                 break;
             case DOWN:
                 matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-90));
-                matrixStackIn.translate(1.5, -1.5, 0);
+                matrixStackIn.translate(1.3, -1.1, 0);
                 break;
             case NORTH:
                 matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
@@ -76,7 +59,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
                 break;
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entitySolid(getTextureLocation(entity)));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
         model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 1f, 1f, 1f, 1f);
 
         matrixStackIn.popPose();
@@ -89,10 +72,10 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
         switch (entityIn.getSide()) {
             case DOWN: return new Vector3d(0, shape.min(Axis.Y), 0);
             case UP: return new Vector3d(0, shape.max(Axis.Y), 0);
-            case NORTH: return new Vector3d(0, yOff, shape.min(Axis.Z) - 0.5);
-            case SOUTH: return new Vector3d(0, yOff, shape.max(Axis.Z) - 0.5);
-            case WEST: return new Vector3d(shape.min(Axis.X) - 0.5, yOff, 0);
-            case EAST: return new Vector3d(shape.max(Axis.X) - 0.5, yOff, 0);
+            case NORTH: return new Vector3d(0, yOff, shape.min(Axis.Z) - 0.6);
+            case SOUTH: return new Vector3d(0, yOff, shape.max(Axis.Z) - 0.4);
+            case WEST: return new Vector3d(shape.min(Axis.X) - 0.6, yOff, 0);
+            case EAST: return new Vector3d(shape.max(Axis.X) - 0.4, yOff, 0);
             default: return Vector3d.ZERO;
         }
     }

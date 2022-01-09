@@ -17,9 +17,11 @@
 
 package me.desht.pneumaticcraft.common.config;
 
-import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.Locale;
 
 public class ClientConfig {
     public static class General {
@@ -27,6 +29,7 @@ public class ClientConfig {
         public ForgeConfigSpec.EnumValue<WidgetDifficulty> programmerDifficulty;
         public ForgeConfigSpec.BooleanValue topShowsFluids;
         public ForgeConfigSpec.BooleanValue logisticsGuiTint;
+        public ForgeConfigSpec.BooleanValue semiBlockLighting;
         public ForgeConfigSpec.BooleanValue guiBevel;
         public ForgeConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
         public ForgeConfigSpec.BooleanValue tubeModuleRedstoneParticles;
@@ -42,7 +45,7 @@ public class ClientConfig {
         public ForgeConfigSpec.BooleanValue pathEnabled;
         public ForgeConfigSpec.BooleanValue wirePath;
         public ForgeConfigSpec.BooleanValue xRayEnabled;
-        public ForgeConfigSpec.EnumValue<CoordTrackerHandler.PathUpdateSetting> pathUpdateSetting;
+        public ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
         public ForgeConfigSpec.BooleanValue showPressureNumerically;
         public ForgeConfigSpec.BooleanValue showEnchantGlint;
     }
@@ -135,7 +138,7 @@ public class ClientConfig {
         armor.pathUpdateSetting = builder
                 .comment("How frequently should the Pneumatic Helmet Coordinate Tracker pathfinder path be recalculated?")
                 .translation("pneumaticcraft.config.client.armor.xray_enabled")
-                .defineEnum("path_update_setting", CoordTrackerHandler.PathUpdateSetting.NORMAL);
+                .defineEnum("path_update_setting", PathUpdateSetting.NORMAL);
         armor.showPressureNumerically = builder
                 .comment("True: show pressure as numbers.  False: show pressure as horizontal bar.")
                 .translation("pneumaticcraft.config.client.armor.show_pressure_numerically")
@@ -185,4 +188,31 @@ public class ClientConfig {
                 .defineInRange("jackhammer_volume", 1.0d, 0d, 2d);
     }
 
+    /**
+     * Used by the Pneumatic Helmet coordinate tracker to control path update frequency.
+     */
+    public enum PathUpdateSetting implements ITranslatableEnum {
+        SLOW(100),
+        NORMAL(20),
+        FAST(1);
+
+        private final int ticks;
+
+        PathUpdateSetting(int ticks) {
+            this.ticks = ticks;
+        }
+
+        public int getTicks() {
+            return ticks;
+        }
+
+        public PathUpdateSetting cycle() {
+            return PathUpdateSetting.values()[(ordinal() + 1) % values().length];
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.armor.gui.coordinateTracker.pathUpdate." + toString().toLowerCase(Locale.ROOT);
+        }
+    }
 }

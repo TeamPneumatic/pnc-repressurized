@@ -40,7 +40,9 @@ public class MovingSoundMinigun extends TickableSound {
         super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
         this.entity = entity;
         this.tileEntity = null;
-        init(entity instanceof EntityDrone ? ConfigHelper.client().sound.minigunVolumeDrone.get().floatValue() : ConfigHelper.client().sound.minigunVolumeHeld.get().floatValue());
+        init(entity instanceof EntityDrone ?
+                ConfigHelper.client().sound.minigunVolumeDrone.get().floatValue() :
+                ConfigHelper.client().sound.minigunVolumeHeld.get().floatValue());
     }
 
     MovingSoundMinigun(TileEntity te) {
