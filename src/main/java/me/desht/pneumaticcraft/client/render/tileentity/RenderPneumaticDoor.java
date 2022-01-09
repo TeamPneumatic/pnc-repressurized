@@ -33,7 +33,6 @@ import net.minecraft.util.math.vector.Vector3f;
 
 public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPneumaticDoor> {
     private final ModelRenderer door;
-    // TODO: Allow the door to be placed left or right, like Vanilla doors
     public RenderPneumaticDoor(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
@@ -78,6 +77,11 @@ public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPne
         matrixStackIn.mulPose(rightGoing ? Vector3f.YN.rotationDegrees(rotation) : Vector3f.YP.rotationDegrees(rotation));
         matrixStackIn.translate((rightGoing ? -1 : 1) * -6.5F / 16F, 0, 6.5F / 16F);
 
+        if (rightGoing) {
+            matrixStackIn.translate(0, 0, -6.5/16F);
+            matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
+            matrixStackIn.translate(0, 0, 6.5/16F);
+        }
         door.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, rgb[0], rgb[1], rgb[2], 1f);
     }
 }

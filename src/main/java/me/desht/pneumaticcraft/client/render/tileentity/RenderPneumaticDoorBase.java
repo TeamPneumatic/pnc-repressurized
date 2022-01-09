@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -68,10 +69,11 @@ public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntit
         matrixStackIn.mulPose(te.rightGoing ? Vector3f.YP.rotationDegrees(cylinderAngle) : Vector3f.YN.rotationDegrees(cylinderAngle));
         matrixStackIn.translate(((te.rightGoing ? -3 : 0) - 2.5) / 16F, 0, 6 / 16F);
         double extensionPart = extension * 0.5D;
-        cylinder1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        int l = ClientUtils.getLightAt(te.getBlockPos().relative(te.getRotation()));  // avoid cylinders rendering unlit
+        cylinder1.render(matrixStackIn, builder, l, combinedOverlayIn);
         matrixStackIn.translate(0, 0, extensionPart);
-        cylinder2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 0.8f, 0.8f, 0.8f, 1.0f);
+        cylinder2.render(matrixStackIn, builder, l, combinedOverlayIn, 0.8f, 0.8f, 0.8f, 1.0f);
         matrixStackIn.translate(0, 0, extensionPart);
-        cylinder3.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 0.6f, 0.6f, 0.6f, 1.0f);
+        cylinder3.render(matrixStackIn, builder, l, combinedOverlayIn, 0.6f, 0.6f, 0.6f, 1.0f);
     }
 }
