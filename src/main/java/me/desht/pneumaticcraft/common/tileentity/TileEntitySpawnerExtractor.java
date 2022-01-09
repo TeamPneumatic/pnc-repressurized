@@ -124,11 +124,11 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
                     extractSpawnerCore();
                 } else if (currentSpeed > 0.1f && level.random.nextInt(defenderChance) == 0) {
                     // spawn defending entities; each entity nearby will slow down the extraction process
-//                    PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), MobSpawnerTileEntity.class).ifPresent(te -> {
-//                        if (!trySpawnDefender(te)) {
-//                            spawnFailures++;
-//                        }
-//                    });
+                    PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), MobSpawnerTileEntity.class).ifPresent(te -> {
+                        if (!trySpawnDefender(te)) {
+                            spawnFailures++;
+                        }
+                    });
                 }
             }
             if ((level.getGameTime() & 0xf) == 3) {

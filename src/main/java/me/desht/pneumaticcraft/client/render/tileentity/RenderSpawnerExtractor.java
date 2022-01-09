@@ -48,7 +48,6 @@ public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntity
         model.texOffs(15, 46).addBox(-1.0F, -16.0F, -1.0F, 2.0F, 16.0F, 2.0F, 0.0F, false);
     }
 
-    // TODO: Add Memory Essence Liquid Render, if you still want to do so
     @Override
     void renderModel(TileEntitySpawnerExtractor te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_SPAWNER_EXTRACTOR));
