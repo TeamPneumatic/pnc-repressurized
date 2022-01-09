@@ -19,11 +19,35 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+
+import java.util.stream.Stream;
 
 public class BlockElectrostaticCompressor extends BlockPneumaticCraft {
+    private static final VoxelShape SHAPE = Stream.of(
+            Block.box(0, 0, 0, 16, 11, 16),
+            Block.box(3, 11, 3, 13, 16, 13),
+            Block.box(4, 18, 4, 12, 21, 12),
+            Block.box(6, 16, 6, 10, 23, 10),
+            Block.box(2, 14, 2, 14, 15, 14),
+            Block.box(2, 12, 2, 14, 13, 14)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+
     public BlockElectrostaticCompressor() {
         super(ModBlocks.defaultProps());
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+        return SHAPE;
     }
 
     @Override

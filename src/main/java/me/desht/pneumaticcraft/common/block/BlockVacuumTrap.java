@@ -42,29 +42,59 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.state.properties.BlockStateProperties.*;
 
 public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggable {
-    private static final VoxelShape FLAP1 = Block.box(2, 11, 11, 14, 12, 16);
-    private static final VoxelShape FLAP2 = Block.box(2, 11, 0, 14, 12, 5);
-    private static final VoxelShape SHAPE_EW_CLOSED = Stream.of(
-            Block.box(0, 1, 3, 16, 11, 13),
-            Block.box(1, 0, 4, 15, 1, 12),
-            Block.box(0, 12, 7, 2, 14, 9),
-            Block.box(0, 11, 6, 2, 12, 10),
-            Block.box(14, 11, 6, 16, 12, 10),
-            Block.box(0, 14, 7, 8, 16, 9),
-            Block.box(2, 11, 8, 14, 12, 13),
-            Block.box(2, 11, 3, 14, 12, 8)
-    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
-    private static final VoxelShape SHAPE_EW_OPEN_BASE = Stream.of(
-            Block.box(0, 1, 3, 16, 11, 13),
-            Block.box(1, 0, 4, 15, 1, 12),
-            Block.box(0, 12, 7, 2, 14, 9),
-            Block.box(0, 11, 6, 2, 12, 10),
-            Block.box(14, 11, 6, 16, 12, 10),
-            Block.box(0, 14, 7, 8, 16, 9)
-    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
-    private static final VoxelShape SHAPE_EW_OPEN = VoxelShapeUtils.combine(IBooleanFunction.OR, SHAPE_EW_OPEN_BASE, FLAP1, FLAP2);
-    private static final VoxelShape SHAPE_NS_CLOSED = VoxelShapeUtils.rotateY(SHAPE_EW_CLOSED, 90);
-    private static final VoxelShape SHAPE_NS_OPEN = VoxelShapeUtils.rotateY(SHAPE_EW_OPEN, 90);
+//    private static final VoxelShape FLAP1 = Block.box(2, 11, 11, 14, 12, 16);
+//    private static final VoxelShape FLAP2 = Block.box(2, 11, 0, 14, 12, 5);
+//    private static final VoxelShape SHAPE_EW_CLOSED = Stream.of(
+//            Block.box(0, 1, 3, 16, 11, 13),
+//            Block.box(1, 0, 4, 15, 1, 12),
+//            Block.box(0, 12, 7, 2, 14, 9),
+//            Block.box(0, 11, 6, 2, 12, 10),
+//            Block.box(14, 11, 6, 16, 12, 10),
+//            Block.box(0, 14, 7, 8, 16, 9),
+//            Block.box(2, 11, 8, 14, 12, 13),
+//            Block.box(2, 11, 3, 14, 12, 8)
+//    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+//    private static final VoxelShape SHAPE_EW_OPEN_BASE = Stream.of(
+//            Block.box(0, 1, 3, 16, 11, 13),
+//            Block.box(1, 0, 4, 15, 1, 12),
+//            Block.box(0, 12, 7, 2, 14, 9),
+//            Block.box(0, 11, 6, 2, 12, 10),
+//            Block.box(14, 11, 6, 16, 12, 10),
+//            Block.box(0, 14, 7, 8, 16, 9)
+//    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+//    private static final VoxelShape SHAPE_EW_OPEN = VoxelShapeUtils.combine(IBooleanFunction.OR, SHAPE_EW_OPEN_BASE, FLAP1, FLAP2);
+//    private static final VoxelShape SHAPE_NS_CLOSED = VoxelShapeUtils.rotateY(SHAPE_EW_CLOSED, 90);
+//    private static final VoxelShape SHAPE_NS_OPEN = VoxelShapeUtils.rotateY(SHAPE_EW_OPEN, 90);
+
+    private static final VoxelShape SHAPE_N_OPEN = Stream.of(
+            Block.box(3, 1, 0, 13, 11, 16),
+            Block.box(4, 0, 1, 12, 1, 15),
+            Block.box(7, 12, 14, 9, 14, 16),
+            Block.box(6, 11, 14, 10, 12, 16),
+            Block.box(6, 11, 0, 10, 12, 2),
+            Block.box(7, 14, 8, 9, 16, 16),
+            Block.box(11, 11, 2, 16, 12, 14),
+            Block.box(0, 11, 2, 5, 12, 14)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    private static final VoxelShape SHAPE_E_OPEN = VoxelShapeUtils.rotateY(SHAPE_N_OPEN, 90);
+    private static final VoxelShape SHAPE_S_OPEN = VoxelShapeUtils.rotateY(SHAPE_E_OPEN, 90);
+    private static final VoxelShape SHAPE_W_OPEN = VoxelShapeUtils.rotateY(SHAPE_S_OPEN, 90);
+    private static final VoxelShape[] SHAPES_OPEN = new VoxelShape[] {SHAPE_S_OPEN, SHAPE_W_OPEN, SHAPE_N_OPEN, SHAPE_E_OPEN};
+
+    private static final VoxelShape SHAPE_N_CLOSED = Stream.of(
+            Block.box(3, 1, 0, 13, 11, 16),
+            Block.box(4, 0, 1, 12, 1, 15),
+            Block.box(7, 12, 14, 9, 14, 16),
+            Block.box(6, 11, 14, 10, 12, 16),
+            Block.box(6, 11, 0, 10, 12, 2),
+            Block.box(7, 14, 8, 9, 16, 16),
+            Block.box(8, 11, 2, 13, 12, 14),
+            Block.box(3, 11, 2, 8, 12, 14)
+    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    private static final VoxelShape SHAPE_E_CLOSED = VoxelShapeUtils.rotateY(SHAPE_N_CLOSED, 90);
+    private static final VoxelShape SHAPE_S_CLOSED = VoxelShapeUtils.rotateY(SHAPE_E_CLOSED, 90);
+    private static final VoxelShape SHAPE_W_CLOSED = VoxelShapeUtils.rotateY(SHAPE_S_CLOSED, 90);
+    private static final VoxelShape[] SHAPES_CLOSED = new VoxelShape[] {SHAPE_S_CLOSED, SHAPE_W_CLOSED, SHAPE_N_CLOSED, SHAPE_E_CLOSED};
 
     public BlockVacuumTrap() {
         super(ModBlocks.defaultProps());
@@ -116,14 +146,23 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        Direction.Axis axis = getRotation(state).getAxis();
-        if (axis == Direction.Axis.Z) {
-            return state.getValue(OPEN) ? SHAPE_NS_OPEN : SHAPE_NS_CLOSED;
-        } else if (axis == Direction.Axis.X) {
-            return state.getValue(OPEN) ? SHAPE_EW_OPEN : SHAPE_EW_CLOSED;
+
+        if (state.getValue(OPEN)) {
+            return SHAPES_OPEN[state.getValue(directionProperty()).get2DDataValue()];
+        } else if (!state.getValue(OPEN)) {
+            return SHAPES_CLOSED[state.getValue(directionProperty()).get2DDataValue()];
         } else {
             return super.getShape(state, worldIn, pos, context);
         }
+
+//        Direction.Axis axis = getRotation(state).getAxis();
+//        if (axis == Direction.Axis.Z) {
+//            return state.getValue(OPEN) ? SHAPE_NS_OPEN : SHAPE_NS_CLOSED;
+//        } else if (axis == Direction.Axis.X) {
+//            return state.getValue(OPEN) ? SHAPE_EW_OPEN : SHAPE_EW_CLOSED;
+//        } else {
+//            return super.getShape(state, worldIn, pos, context);
+//        }
     }
 
     @Override

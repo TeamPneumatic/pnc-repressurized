@@ -4,7 +4,7 @@
 	"texture_size": [64, 64],
 	"textures": {
 		"0": "pneumaticcraft:model/etching_tank",
-		"particle": "pneumaticcraft:model/etching_tank"
+		"particle": "pneumaticcraft:block/generic/plain_base"
 	},
 	"display": {
 		"thirdperson_righthand": {

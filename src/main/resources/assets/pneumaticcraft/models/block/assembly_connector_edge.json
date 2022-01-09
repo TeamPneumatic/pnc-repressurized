@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"particle": "pneumaticcraft:block/pressure_tube_connection",
-		"connection": "pneumaticcraft:block/pressure_tube_connection"
+		"particle": "pneumaticcraft:model/pressure_tube_connection",
+		"connection": "pneumaticcraft:model/pressure_tube_connection"
 	},
 	"elements": [
 		{
