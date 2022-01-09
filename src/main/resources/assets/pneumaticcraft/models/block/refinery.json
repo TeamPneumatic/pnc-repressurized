@@ -204,7 +204,7 @@
 			"to": [14, 16, 15],
 			"faces": {
 				"up": {"uv": [10, 13.25, 7, 10.25], "texture": "#base", "cullface": "up"},
-				"down": {"uv": [3, 3.75, 0, 6.75], "texture": "#base", "cullface": "up"}
+				"down": {"uv": [3, 3.75, 0, 6.75], "texture": "#base", "cullface": "down"}
 			}
 		},
 		{
