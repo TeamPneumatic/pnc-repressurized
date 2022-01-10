@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer.DigMode;
 import net.minecraft.client.util.ITooltipFlag;
@@ -35,7 +34,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemDrillBit extends Item implements ColorHandlers.ITintableItem {
+public class ItemDrillBit extends Item {
     private final DrillBitType type;
 
     public ItemDrillBit(DrillBitType type) {
@@ -46,11 +45,6 @@ public class ItemDrillBit extends Item implements ColorHandlers.ITintableItem {
 
     public DrillBitType getType() {
         return type;
-    }
-
-    @Override
-    public int getTintColor(ItemStack stack, int tintIndex) {
-        return type.getTint();
     }
 
     @Override

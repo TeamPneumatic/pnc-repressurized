@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -48,7 +47,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.misc.Symbols.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorHandlers.ITintableItem {
+public abstract class ItemLogisticsFrame extends ItemSemiBlock {
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
