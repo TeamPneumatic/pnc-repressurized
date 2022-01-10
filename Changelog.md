@@ -8,12 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.15.0-??? (unreleased)
+## 2.15.0-287 (10th Jan 2022)
 
 ### New
 * A complete retexture of the entire mod, courtesy of Ridanisaurus
-  * No functional (gameplay) changes in this release, just a whole lot prettier!
+  * No functional (gameplay) changes in this release, just a whole lot prettier all round!
   * The CTM mod is now an optional dependency, and needed if you want texture-connected Pressure Chamber Glass
+  * The texture of the various Reinforced Stone blocks has changed; if you want to use the old textures, look at the new Compressed Stone blocks
 
 ## 2.14.7-283 (1st Jan 2022)
 
