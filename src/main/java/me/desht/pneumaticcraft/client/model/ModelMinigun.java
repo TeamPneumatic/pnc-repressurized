@@ -38,47 +38,6 @@ public class ModelMinigun {
     private final ModelRenderer magazineColor;
 
     public ModelMinigun() {
-//        barrel = new ModelRenderer(64, 32, 30, 15);
-//        barrel.addBox(-0.5F, 1.5F, 0F, 1, 1, 16);
-//        barrel.setPos(0F, 20.96667F, -8F);
-//        barrel.mirror = true;
-//        support1 = new ModelRenderer(64, 32, 0, 0);
-//        support1.addBox(-1.5F, -1.5F, 0F, 3, 3, 1);
-//        support1.setPos(0F, 21F, -6F);
-//        support1.mirror = true;
-//        support2 = new ModelRenderer(64, 32, 0, 4);
-//        support2.addBox(-1F, 1.5F, 0F, 2, 1, 1);
-//        support2.setPos(0F, 21F, -6F);
-//        support2.mirror = true;
-//        support3 = new ModelRenderer(64, 32, 0, 6);
-//        support3.addBox(-1F, -2.5F, 0F, 2, 1, 1);
-//        support3.setPos(0F, 21F, -6F);
-//        support3.mirror = true;
-//        support4 = new ModelRenderer(64, 32, 0, 8);
-//        support4.addBox(1.5F, -1F, 0F, 1, 2, 1);
-//        support4.setPos(0F, 21F, -6F);
-//        support4.mirror = true;
-//        support5 = new ModelRenderer(64, 32, 0, 11);
-//        support5.addBox(-2.5F, -1F, 0F, 1, 2, 1);
-//        support5.setPos(0F, 21F, -6F);
-//        support5.mirror = true;
-//        main = new ModelRenderer(64, 32, 36, 0);
-//        main.addBox(0F, 0F, 0F, 6, 6, 8);
-//        main.setPos(-3F, 18F, 8F);
-//        main.mirror = true;
-//        magazine = new ModelRenderer(64, 32, 0, 14);
-//        magazine.addBox(0F, 0F, 0F, 2, 3, 6);
-//        magazine.setPos(3F, 22F, 9F);
-//        magazine.mirror = true;
-//        mount = new ModelRenderer(64, 32, 0, 23);
-//        mount.addBox(0F, 0F, 0F, 2, 4, 2);
-//        mount.setPos(-1F, 15F, 11F);
-//        mount.mirror = true;
-//        magazineColor = new ModelRenderer(64, 32, 8, 0);
-//        magazineColor.addBox(0F, 0F, 0F, 1, 2, 4);
-//        magazineColor.setPos(4.3F, 22.5F, 10F);
-//        magazineColor.mirror = true;
-
         barrel = new ModelRenderer(64, 32, 30, 15);
         barrel.setPos(0.0F, 20.9667F, -8.0F);
         barrel.texOffs(0, 3).addBox(-0.5F, 1.4333F, -4.0F, 1.0F, 1.0F, 20.0F, 0.0F, false);
