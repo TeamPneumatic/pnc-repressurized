@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.15.0-287 (10th Jan 2022)
+## 2.15.0-289 (10th Jan 2022)
 
 ### New
 * A complete retexture of the entire mod, courtesy of Ridanisaurus
