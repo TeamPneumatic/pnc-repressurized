@@ -3,7 +3,7 @@ modLoader="javafml"
 loaderVersion="[34,)"
 issueTrackerURL="https://github.com/TeamPneumatic/pnc-repressurized/issues"
 displayURL="https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized"
-#logoFile=""
+logoFile="pncr_logo.png"
 credits=""
 authors="desht, MineMaarten"
 
