@@ -305,7 +305,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         });
         expandedWidth += SCROLLBAR_MARGIN_WIDTH;
         int topMargin = reorderingProcessors.isEmpty() ? font.lineHeight : TOP_MARGIN_HEIGHT;
-        expandedHeight = Math.max(minExpandedHeight, topMargin + Math.min(MAX_VISIBLE_LINES, reorderingProcessors.size()) * font.lineHeight) + 3;
+        expandedHeight = Math.max(minExpandedHeight, topMargin + Math.min(MAX_VISIBLE_LINES, reorderingProcessors.size() + reservedLines) * font.lineHeight) + 3;
 
         addOrRemoveScrollbar();
 
