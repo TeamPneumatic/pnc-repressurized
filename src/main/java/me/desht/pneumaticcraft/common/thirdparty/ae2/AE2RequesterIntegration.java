@@ -115,9 +115,12 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
         if (isPlacedOnInterface()) {
             TileEntity te = logisticsRequester.getCachedTileEntity();
             if (te instanceof IGridHost) {
+                // grid node for the ME Interface
                 IGridNode nodeA = ((IGridHost) te).getGridNode(AEPartLocation.INTERNAL);
+                if (nodeA == null) return true;
+                // grid node for own Requester Frame
                 IGridNode nodeB = getGridNode(AEPartLocation.INTERNAL);
-                if (nodeA == null || nodeB == null) return true;
+                if (nodeB == null) return true;
                 try {
                     AE2PNCAddon.api.grid().createGridConnection(nodeA, nodeB);
                 } catch (FailedConnectionException e) {
