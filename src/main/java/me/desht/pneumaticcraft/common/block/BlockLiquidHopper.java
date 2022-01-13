@@ -81,7 +81,7 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper {
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
             int n = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.CREATIVE);
-            return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
+            return n > 0 ? 0xFFDB46CF : 0xFF2b2727;
         }
 
         @Override

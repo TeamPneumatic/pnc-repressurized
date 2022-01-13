@@ -153,7 +153,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
                 case 0:
                     return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAbstractHopper.class)
                             .filter(te -> te.isCreative)
-                            .map(te -> 0xFFFF80FF).orElse(0xFFFFFFFF);
+                            .map(te -> 0xFFDB46CF).orElse(0xFF2b2727);
                 case 1:
                     return 0xFFA0A0A0;
             }
@@ -169,7 +169,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
             int n = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.CREATIVE);
-            return n > 0 ? 0xFFFF60FF : 0xFFFFFFFF;
+            return n > 0 ? 0xFFDB46CF : 0xFF2b2727;
         }
     }
 }
