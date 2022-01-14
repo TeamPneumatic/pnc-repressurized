@@ -78,7 +78,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
 
     @Override
     protected PointXY getInvNameOffset() {
-        return new PointXY(0, -2);
+        return new PointXY(0, -1);
     }
 
     @Override
