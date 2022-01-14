@@ -299,15 +299,19 @@ public class ClientEventHandler {
             JetBootsHandler jbHandler = ArmorUpgradeRegistry.getInstance().jetBootsHandler;
             JetBootsState jbState = jbHandler.getJetBootsSyncedState(handler);
             if (handler.upgradeUsable(jbHandler, false)) {
-                if (jbState.isActive() && (!jbState.isEnabled() || !KeyHandler.getInstance().keybindJetBoots.isDown())) {
+                if (jbState.isActive() && (!jbState.isEnabled() || !thrustKeyPressed(jbState.isBuilderMode()))) {
                     NetworkHandler.sendToServer(new PacketJetBootsActivate(false));
                     jbHandler.setJetBootsActive(handler, false);
-                } else if (!jbState.isActive() && jbState.isEnabled() && KeyHandler.getInstance().keybindJetBoots.isDown()) {
+                } else if (!jbState.isActive() && jbState.isEnabled() && thrustKeyPressed(jbState.isBuilderMode())) {
                     NetworkHandler.sendToServer(new PacketJetBootsActivate(true));
                     jbHandler.setJetBootsActive(handler, true);
                 }
             }
         }
+    }
+
+    private static boolean thrustKeyPressed(boolean builderMode) {
+        return KeyHandler.getInstance().keybindJetBoots.isDown() || builderMode && Minecraft.getInstance().options.keyJump.isDown();
     }
 
     @SubscribeEvent
