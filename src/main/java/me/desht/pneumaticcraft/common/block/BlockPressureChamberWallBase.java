@@ -54,7 +54,7 @@ public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft i
 
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (world.isClientSide) return ActionResultType.SUCCESS;
+        if (world.isClientSide) return ActionResultType.PASS;
         // forward activation to the pressure chamber valve, which will open the GUI
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(te -> {
             TileEntityPressureChamberValve valve = te.getCore();
