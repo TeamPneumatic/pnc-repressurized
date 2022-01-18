@@ -60,6 +60,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -537,12 +538,25 @@ public class PneumaticCraftUtils {
         int toConsume = stack.getCount();
         for (int i = 0; i < inv.items.size(); ++i) {
             ItemStack invStack = inv.items.get(i);
+            int consumed;
             if (ItemStack.isSame(invStack, stack)) {
-                int consumed = Math.min(invStack.getCount(), stack.getCount());
+                consumed = Math.min(invStack.getCount(), stack.getCount());
                 invStack.shrink(consumed);
-                toConsume -= consumed;
-                if (toConsume <= 0) return true;
+            } else {
+                consumed = invStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(h -> {
+                    for (int j = 0; j < h.getSlots(); j++) {
+                        ItemStack invStack2 = h.getStackInSlot(j);
+                        if (ItemStack.isSame(invStack2, stack)) {
+                            int extracted = Math.min(invStack2.getCount(), stack.getCount());
+                            ItemStack s = h.extractItem(j, extracted, false);
+                            return s.getCount();
+                        }
+                    }
+                    return 0;
+                }).orElse(0);
             }
+            toConsume -= consumed;
+            if (toConsume <= 0) return true;
         }
         return toConsume <= 0;
     }
