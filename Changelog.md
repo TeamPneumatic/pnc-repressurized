@@ -8,19 +8,24 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.15.1-??? (unreleased)
+## 2.15.1-295 (14th Jan 2022)
 
 ### Updates
+* Patchouli is now a mandatory dependency!
+* CoFH Core Holding enchantment is now supported even when Thermal Expansion isn't installed
 * A bit more retexturing work, thanks Rid:
-  * Pressure Mechanic Villagers have acquired stylish new costumes
-  * Some GUI icons have had a facelift
+  * Pressure Mechanic Villagers (and zombies!) have acquired stylish new costumes
+  * GUI's and GUI icons have had a facelift
+* QoL: when in Jet Boots builder mode, the Jump key now also fires the jet boots, causing vertical upward movement
+  * Useful if the Thrust key has been rebound (from the default - Space Bar), allowing more creative-like height control when in builder mode
 
 ### Fixes
 * Fixed upgrade management button not working for Amadron Tablet in the Charging Station
-* Fixed AE2 Requester integration not working across world restarts
-  * Also fixed overflowing text in the GUI sidetab for AE2 Requester integration
+* Fixed AE2 Requester integration not persisting properly across world restarts
+  * Also fixed overflowing text in the GUI side tab for AE2 Requester integration
 * Fixed Omnidirectional Hopper & Liquid Hopper visual appearance when Creative Supply Upgrade installed
   * Creative-upgraded hoppers also got a visual makeover, thanks Rid
+* Fixed missing place-sound effect when any blocks are placed against Pressure Chamber walls
 
 ## 2.15.0-289 (10th Jan 2022)
 
