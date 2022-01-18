@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
+import cofh.core.init.CoreEnchantments;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
@@ -42,8 +43,15 @@ public class CoFHCore implements IThirdParty {
     @Override
     public void preInit() {
         // FIXME bit of a hack here, but we need to be sure we have a compatible version of CoFH Core
-        // should be able to get rid of this once CoFH Core has a public API
+        // TODO 1.18 should be able to get rid of this once CoFH Core has a public API
         versionOK = versionOK();
+
+        if (versionOK) {
+            // CoFH Core doesn't actually register the Holding enchantment itself; it's done by Thermal Expansion
+            // we'll call it too, in the case that CoFH Core is present without TE
+            // should be safe to call this multiple times (subsequent calls are effectively a no-op)
+            CoreEnchantments.registerHoldingEnchantment();
+        }
     }
 
     @Override
