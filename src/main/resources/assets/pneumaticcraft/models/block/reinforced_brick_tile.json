@@ -1,6 +1,7 @@
 {
-  "parent": "block/cube_all",
+  "parent": "block/cube_column",
   "textures": {
-    "all": "pneumaticcraft:block/reinforced_brick_tile"
+    "end": "pneumaticcraft:block/reinforced_brick_tile_top",
+    "side": "pneumaticcraft:block/reinforced_brick_tile"
   }
 }
