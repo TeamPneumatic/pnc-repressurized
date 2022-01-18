@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:compressed_brick_tile_from_bricks_stonecutting"
+    ]
+  },
+  "criteria": {
+    "has_compressed_stone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:compressed_stone"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:compressed_brick_tile_from_bricks_stonecutting"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_compressed_stone",
+      "has_the_recipe"
+    ]
+  ]
+}
