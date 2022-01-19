@@ -11,7 +11,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 
-## 2.15.1-296 (18th Jan 2022)
+## 2.15.1-297 (19th Jan 2022)
 
 ### Updates
 * Patchouli is now a mandatory dependency!
