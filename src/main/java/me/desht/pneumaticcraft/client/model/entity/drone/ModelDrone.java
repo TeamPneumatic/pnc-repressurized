@@ -45,10 +45,10 @@ public class ModelDrone extends EntityModel<EntityDroneBase> {
 
     public ModelDrone(ModelPart root) {
         drone = root.getChild(DRONE);
-        prop_1 = root.getChild(PROP_1);
-        prop_2 = root.getChild(PROP_2);
-        prop_3 = root.getChild(PROP_3);
-        prop_4 = root.getChild(PROP_4);
+        prop_1 = drone.getChild(NORTH_WEST_WING).getChild(PROP_1);
+        prop_2 = drone.getChild(SOUTH_WEST_WING).getChild(PROP_2);
+        prop_3 = drone.getChild(SOUTH_EAST_WING).getChild(PROP_3);
+        prop_4 = drone.getChild(NORTH_EAST_WING).getChild(PROP_4);
     }
 
     public static LayerDefinition createBodyLayer() {
