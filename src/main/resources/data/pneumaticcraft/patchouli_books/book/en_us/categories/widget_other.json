@@ -2,6 +2,6 @@
   "name": "Other Widgets",
   "description": "Any widgets which don't fit into any of the other categories.",
   "icon": "pneumaticcraft:textures/progwidgets/comment_piece.png",
-  "parent": "programming",
+  "parent": "pneumaticcraft:programming",
   "sortnum": 4
 }

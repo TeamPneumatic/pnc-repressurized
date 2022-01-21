@@ -2,6 +2,6 @@
   "name": "Flow Control Widgets",
   "description": "Widgets that affect the program flow.",
   "icon": "pneumaticcraft:textures/progwidgets/start_piece.png",
-  "parent": "programming",
+  "parent": "pneumaticcraft:programming",
   "sortnum": 1
 }
