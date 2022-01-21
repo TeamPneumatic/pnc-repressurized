@@ -1,7 +1,7 @@
 {
   "name": "Pressurized Spawner",
   "icon": "pneumaticcraft:pressurized_spawner",
-  "category": "spawning",
+  "category": "pneumaticcraft:spawning",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

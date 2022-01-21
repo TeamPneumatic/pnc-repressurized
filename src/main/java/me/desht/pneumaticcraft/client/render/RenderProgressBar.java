@@ -22,6 +22,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.Pair;
@@ -62,7 +63,8 @@ public class RenderProgressBar {
 
         Matrix4f posMat = matrixStack.last().pose();
 
-//        RenderSystem.shadeModel(GL11.GL_SMOOTH);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         builder.vertex(posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
@@ -78,7 +80,6 @@ public class RenderProgressBar {
         builder.vertex(posMat, maxX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
         builder.vertex(posMat, maxX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
         Tesselator.getInstance().end();
-//        RenderSystem.shadeModel(GL11.GL_FLAT);
     }
 
     private static Pair<float[], float[]> calcColors(int color1, int color2, float progress) {

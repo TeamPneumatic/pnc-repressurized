@@ -1,7 +1,7 @@
 {
   "name": "Memory Essence",
   "icon": "pneumaticcraft:memory_essence_bucket",
-  "category": "base_concepts",
+  "category": "pneumaticcraft:base_concepts",
   "pages": [
     {
       "type": "text",

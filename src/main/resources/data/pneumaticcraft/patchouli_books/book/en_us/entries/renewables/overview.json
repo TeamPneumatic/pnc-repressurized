@@ -1,7 +1,7 @@
 {
   "name": "Biodiesel Overview",
   "icon": "minecraft:book",
-  "category": "renewables",
+  "category": "pneumaticcraft:renewables",
   "priority": "true",
   "advancement": "pneumaticcraft:tp_plant",
   "pages": [

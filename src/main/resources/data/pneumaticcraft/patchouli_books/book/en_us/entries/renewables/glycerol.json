@@ -1,7 +1,7 @@
 {
   "name": "Glycerol",
   "icon": "pneumaticcraft:glycerol",
-  "category": "renewables",
+  "category": "pneumaticcraft:renewables",
   "advancement": "pneumaticcraft:ethanol",
   "pages": [
     {

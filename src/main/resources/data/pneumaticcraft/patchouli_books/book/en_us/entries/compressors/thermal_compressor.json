@@ -1,7 +1,7 @@
 {
   "name": "Thermal Compressor",
   "icon": "pneumaticcraft:thermal_compressor",
-  "category": "compressors",
+  "category": "pneumaticcraft:compressors",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

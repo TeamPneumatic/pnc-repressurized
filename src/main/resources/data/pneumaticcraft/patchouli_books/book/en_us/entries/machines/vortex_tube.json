@@ -1,7 +1,7 @@
 {
   "name": "Vortex Tube",
   "icon": "pneumaticcraft:vortex_tube",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

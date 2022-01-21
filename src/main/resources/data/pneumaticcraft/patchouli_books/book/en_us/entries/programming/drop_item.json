@@ -1,7 +1,7 @@
 {
   "name": "Drop Item Widget",
   "icon": "pneumaticcraft:textures/progwidgets/item_drop_piece.png",
-  "category": "widget_interact",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

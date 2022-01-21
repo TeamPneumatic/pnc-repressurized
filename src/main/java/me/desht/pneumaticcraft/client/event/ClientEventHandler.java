@@ -53,6 +53,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
@@ -246,6 +247,7 @@ public class ClientEventHandler {
 
         // custom durability bars
         RenderSystem.disableTexture();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder bb = Tesselator.getInstance().getBuilder();
         AbstractContainerScreen<?> container = event.getContainerScreen();
         PoseStack matrixStack = event.getPoseStack();

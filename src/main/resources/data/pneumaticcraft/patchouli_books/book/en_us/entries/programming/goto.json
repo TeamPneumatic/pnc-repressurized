@@ -1,7 +1,7 @@
 {
   "name": "Go To Location Widget",
   "icon": "pneumaticcraft:textures/progwidgets/goto_piece.png",
-  "category": "widget_interact",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

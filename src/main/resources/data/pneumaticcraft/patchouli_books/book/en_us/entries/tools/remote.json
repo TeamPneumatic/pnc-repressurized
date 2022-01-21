@@ -1,7 +1,7 @@
 {
   "name": "Remote",
   "icon": "pneumaticcraft:remote",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

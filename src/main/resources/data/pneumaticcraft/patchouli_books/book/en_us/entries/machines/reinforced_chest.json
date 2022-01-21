@@ -1,7 +1,7 @@
 {
   "name": "Reinforced Chest",
   "icon": "pneumaticcraft:reinforced_chest",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

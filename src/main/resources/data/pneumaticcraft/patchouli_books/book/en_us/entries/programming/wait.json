@@ -1,7 +1,7 @@
 {
   "name": "Wait Widget",
   "icon": "pneumaticcraft:textures/progwidgets/wait_piece.png",
-  "category": "widget_flow",
+  "category": "pneumaticcraft:widget_flow",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

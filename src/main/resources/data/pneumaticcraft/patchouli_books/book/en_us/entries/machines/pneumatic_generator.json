@@ -1,7 +1,7 @@
 {
   "name": "Pneumatic Generator",
   "icon": "pneumaticcraft:pneumatic_generator",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "flag": "pneumaticcraft:pneumaticGeneratorEnabled",
   "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [

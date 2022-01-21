@@ -1,7 +1,7 @@
 {
   "name": "Block of Compressed Iron",
   "icon": "pneumaticcraft:compressed_iron_block",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "pages": [
     {
       "type": "text",

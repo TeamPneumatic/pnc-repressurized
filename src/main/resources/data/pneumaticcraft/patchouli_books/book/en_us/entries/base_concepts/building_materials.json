@@ -1,7 +1,7 @@
 {
     "name": "Building Materials",
     "icon": "pneumaticcraft:reinforced_bricks",
-    "category": "base_concepts",
+    "category": "pneumaticcraft:base_concepts",
     "pages": [
         {
             "type": "text",

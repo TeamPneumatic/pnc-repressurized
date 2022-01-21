@@ -2,7 +2,7 @@
 {
   "name": "Pressure Chamber",
   "icon": "pneumaticcraft:pressure_chamber_wall",
-  "category": "manufacturing",
+  "category": "pneumaticcraft:manufacturing",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

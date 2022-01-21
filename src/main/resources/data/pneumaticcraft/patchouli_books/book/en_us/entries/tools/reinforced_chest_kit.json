@@ -1,7 +1,7 @@
 {
   "name": "Reinforced Chest Upgrade Kit",
   "icon": "pneumaticcraft:reinforced_chest_kit",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

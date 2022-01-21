@@ -1,7 +1,7 @@
 {
   "name": "Capacitor",
   "icon": "pneumaticcraft:capacitor",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

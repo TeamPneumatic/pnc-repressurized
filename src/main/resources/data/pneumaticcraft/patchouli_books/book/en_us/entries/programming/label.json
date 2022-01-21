@@ -1,7 +1,7 @@
 {
   "name": "Label Widget",
   "icon": "pneumaticcraft:textures/progwidgets/label_piece.png",
-  "category": "widget_flow",
+  "category": "pneumaticcraft:widget_flow",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

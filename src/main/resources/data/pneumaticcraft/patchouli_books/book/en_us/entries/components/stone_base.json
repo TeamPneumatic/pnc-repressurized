@@ -1,7 +1,7 @@
 {
   "name": "Stone Base",
   "icon": "pneumaticcraft:stone_base",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

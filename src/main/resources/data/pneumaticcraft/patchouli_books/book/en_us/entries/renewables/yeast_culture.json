@@ -1,7 +1,7 @@
 {
   "name": "Yeast Culture",
   "icon": "pneumaticcraft:yeast_culture_bucket",
-  "category": "renewables",
+  "category": "pneumaticcraft:renewables",
   "advancement": "pneumaticcraft:tp_plant",
   "pages": [
     {

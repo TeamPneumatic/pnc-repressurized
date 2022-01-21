@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
@@ -107,7 +107,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
 
     @Override
     public void saveAdditional(CompoundTag tag) {
-        super.save(tag);
+        super.saveAdditional(tag);
         tag.putBoolean("drill", isDrillOn);
         tag.putFloat("drillSpeed", drillSpeed);
         tag.putInt("drillStep", drillStep);

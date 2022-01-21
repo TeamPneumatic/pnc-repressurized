@@ -1,7 +1,7 @@
 {
   "name": "Micromissiles",
   "icon": "pneumaticcraft:micromissiles",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {

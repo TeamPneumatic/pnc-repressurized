@@ -1,7 +1,7 @@
 {
   "name": "Etching Tank",
   "icon": "pneumaticcraft:etching_tank",
-  "category": "manufacturing",
+  "category": "pneumaticcraft:manufacturing",
   "advancement": "pneumaticcraft:etchacid_bucket",
   "pages": [
     {

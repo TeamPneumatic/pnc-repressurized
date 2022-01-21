@@ -1,7 +1,7 @@
 {
   "name": "Vacuum Trap",
   "icon": "pneumaticcraft:vacuum_trap",
-  "category": "spawning",
+  "category": "pneumaticcraft:spawning",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

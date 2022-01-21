@@ -1,7 +1,7 @@
 {
   "name": "Entity Filters",
   "icon": "minecraft:player_head",
-  "category": "base_concepts",
+  "category": "pneumaticcraft:base_concepts",
   "pages": [
     {
       "type": "text",

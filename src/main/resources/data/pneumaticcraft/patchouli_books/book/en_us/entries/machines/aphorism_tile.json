@@ -1,7 +1,7 @@
 {
   "name": "Aphorism Tile",
   "icon": "pneumaticcraft:aphorism_tile",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:assembly_controller",
   "pages": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "Pneumatic Dynamo",
   "icon": "pneumaticcraft:pneumatic_dynamo",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [
     {

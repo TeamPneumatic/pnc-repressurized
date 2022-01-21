@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.Direction;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityPneumaticDoor extends TileEntityTickableBase {
@@ -90,7 +90,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
 
     @Override
     public void saveAdditional(CompoundTag tag) {
-        super.save(tag);
+        super.saveAdditional(tag);
 
         tag.putBoolean("rightGoing", rightGoing);
         tag.putInt("color", color);

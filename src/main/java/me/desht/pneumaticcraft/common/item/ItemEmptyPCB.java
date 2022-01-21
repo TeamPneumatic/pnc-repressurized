@@ -78,7 +78,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     @Override
     public int getBarWidth(ItemStack pStack) {
         int progress = TileEntityUVLightBox.getExposureProgress(pStack);
-        return 13 - Math.round(progress / 100F * 13F);
+        return Math.round(progress / 100F * 13F);
     }
 
     @Override

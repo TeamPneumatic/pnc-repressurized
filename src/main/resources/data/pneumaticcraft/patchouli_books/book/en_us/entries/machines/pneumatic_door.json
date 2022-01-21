@@ -1,7 +1,7 @@
 {
   "name": "Pneumatic Door",
   "icon": "pneumaticcraft:pneumatic_door",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "Display Shelf",
   "icon": "pneumaticcraft:display_shelf",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

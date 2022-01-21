@@ -144,7 +144,7 @@ public abstract class TileEntityBase extends BlockEntity
     // client side, chunk sending
     @Override
     public void handleUpdateTag(CompoundTag tag) {
-        new PacketDescription(tag).process();
+        new PacketDescription(tag).processPacket(this);
     }
 
     /***********
@@ -178,7 +178,7 @@ public abstract class TileEntityBase extends BlockEntity
      * Force a sync of this TE to the client right now.
      */
     public final void sendDescriptionPacket() {
-        if (level == null || !level.isClientSide) return;
+        if (level == null || level.isClientSide) return;
 
         PacketDescription descPacket = new PacketDescription(this, forceFullSync);
         if (descPacket.hasData()) {

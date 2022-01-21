@@ -65,15 +65,15 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends EntityModel<E
 
     private void renderSlot(PoseStack matrixStack, MultiBufferSource buffer, E entity, EquipmentSlot slot, int light, HumanoidModel<E> model) {
         ItemStack stack = entity.getItemBySlot(slot);
-        if (stack.getItem() instanceof ItemPneumaticArmor) {
-            if (((ItemPneumaticArmor) stack.getItem()).getSlot() == slot) {
+        if (stack.getItem() instanceof ItemPneumaticArmor armor) {
+            if (armor.getSlot() == slot) {
                 model = ForgeHooksClient.getArmorModel(entity, stack, slot, model);
                 this.getParentModel().copyPropertiesTo(model);
                 this.setModelSlotVisible(model, slot);
                 boolean glint = stack.hasFoil();
 
                 // secondary texture layer in all slots
-                float[] secondary = RenderUtils.decomposeColorF(((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack));
+                float[] secondary = RenderUtils.decomposeColorF(armor.getSecondaryColor(stack));
                 this.doRender(matrixStack, buffer, light, glint, model, secondary[1], secondary[2], secondary[3], slot, ExtraLayer.SECONDARY_COLOR);
 
                 if (slot == EquipmentSlot.CHEST) {
@@ -83,7 +83,7 @@ public class PneumaticArmorLayer<E extends LivingEntity, M extends EntityModel<E
 
                 if (slot == EquipmentSlot.HEAD) {
                     // eyepiece in head slot only
-                    float[] eyepiece = RenderUtils.decomposeColorF(((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack));
+                    float[] eyepiece = RenderUtils.decomposeColorF(armor.getEyepieceColor(stack));
                     this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, false, model, eyepiece[1], eyepiece[2], eyepiece[3], slot, ExtraLayer.EYEPIECE);
                 }
             }

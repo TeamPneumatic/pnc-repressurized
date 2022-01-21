@@ -1,7 +1,7 @@
 {
   "name": "Programmer",
   "icon": "pneumaticcraft:programmer",
-  "category": "programming",
+  "category": "pneumaticcraft:programming",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {

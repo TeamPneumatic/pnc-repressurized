@@ -1,7 +1,7 @@
 {
   "name": "Creative Compressor",
   "icon": "pneumaticcraft:creative_compressor",
-  "category": "compressors",
+  "category": "pneumaticcraft:compressors",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

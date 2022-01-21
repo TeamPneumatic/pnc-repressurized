@@ -29,12 +29,12 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -477,7 +477,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
 
     @Override
     public void saveAdditional(CompoundTag tag) {
-        super.save(tag);
+        super.saveAdditional(tag);
         tag.putFloat("clawProgress", clawProgress);
         tag.putBoolean("clawClosing", shouldClawClose);
         tag.putByte("state", state);

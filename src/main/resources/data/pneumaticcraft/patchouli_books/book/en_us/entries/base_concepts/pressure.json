@@ -1,7 +1,7 @@
 {
   "name": "Pressure",
   "icon": "pneumaticcraft:pressure_tube",
-  "category": "base_concepts",
+  "category": "pneumaticcraft:base_concepts",
   "pages": [
     {
       "type": "text",

@@ -80,9 +80,11 @@ public class RenderTargetCircle {
                 for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
                     RenderUtils.posF(builder, posMat,PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0)
                             .color(cols[0], cols[1], cols[2], alpha)
+                            .uv2(RenderUtils.FULL_BRIGHT)
                             .endVertex();
                     RenderUtils.posF(builder, posMat,PneumaticCraftUtils.cos[i] * (size + 0.1F), PneumaticCraftUtils.sin[i] * (size + 0.1F), 0)
                             .color(cols[0], cols[1], cols[2], alpha)
+                            .uv2(RenderUtils.FULL_BRIGHT)
                             .endVertex();
                 }
             });

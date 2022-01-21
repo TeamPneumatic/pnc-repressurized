@@ -1,7 +1,7 @@
 {
   "name": "Pneumatic Leggings",
   "icon": "pneumaticcraft:pneumatic_leggings",
-  "category": "armor",
+  "category": "pneumaticcraft:armor",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
 

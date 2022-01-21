@@ -1,7 +1,7 @@
 {
   "name": "Pressure Gauge",
   "icon": "pneumaticcraft:pressure_gauge",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

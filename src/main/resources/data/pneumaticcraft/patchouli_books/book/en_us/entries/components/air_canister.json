@@ -1,7 +1,7 @@
 {
   "name": "Air Canister",
   "icon": "pneumaticcraft:air_canister",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

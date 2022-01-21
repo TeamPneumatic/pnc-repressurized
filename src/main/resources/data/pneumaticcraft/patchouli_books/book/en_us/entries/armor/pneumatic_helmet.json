@@ -1,7 +1,7 @@
 {
   "name": "Pneumatic Helmet",
   "icon": "pneumaticcraft:pneumatic_helmet",
-  "category": "armor",
+  "category": "pneumaticcraft:armor",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
 

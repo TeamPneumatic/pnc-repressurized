@@ -1,7 +1,7 @@
 {
   "name": "Logistics Drone",
   "icon": "pneumaticcraft:logistics_drone",
-  "category": "logistics",
+  "category": "pneumaticcraft:logistics",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

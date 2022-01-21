@@ -1,7 +1,7 @@
 {
     "name": "Upgrades",
     "icon": "pneumaticcraft:volume_upgrade",
-    "category": "base_concepts",
+    "category": "pneumaticcraft:base_concepts",
     "pages": [
         {
             "type": "text",

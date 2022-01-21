@@ -1,7 +1,7 @@
 {
   "name": "Edit Sign Widget",
   "icon": "pneumaticcraft:textures/progwidgets/edit_sign_piece.png",
-  "category": "widget_interact",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

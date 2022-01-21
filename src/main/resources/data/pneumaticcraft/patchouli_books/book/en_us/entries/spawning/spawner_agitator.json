@@ -1,7 +1,7 @@
 {
   "name": "Spawner Agitator",
   "icon": "pneumaticcraft:spawner_agitator",
-  "category": "spawning",
+  "category": "pneumaticcraft:spawning",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

@@ -27,6 +27,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.OptionalDouble;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class ModRenderTypes extends RenderType {
@@ -34,37 +35,41 @@ public class ModRenderTypes extends RenderType {
         super(p_173178_, p_173179_, p_173180_, p_173181_, p_173182_, p_173183_, p_173184_, p_173185_);
     }
 
-//    public ModRenderTypes(String name, VertexFormat format, int p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable pre, Runnable post) {
-//        super(name, format, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, pre, post);
-//    }
+    private static final Function<ResourceLocation,RenderType> TEXTURE_RENDER = Util.memoize((rl) -> {
+        RenderStateShard.TextureStateShard textureState = new TextureStateShard(rl, false, false);
+        RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
+                .setTextureState(textureState)
+                .setLightmapState(RenderStateShard.LIGHTMAP)
+                .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
+                .createCompositeState(false);
+        return create("texture", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+                false, false, rendertype$compositestate);
+    });
 
     public static RenderType getTextureRender(ResourceLocation texture) {
-        RenderStateShard.TextureStateShard textureState = new TextureStateShard(texture, false, false);
-        return create("texture", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
-                false, false,
-                RenderType.CompositeState.builder()
-                        .setTextureState(textureState)
-                        .setLightmapState(RenderStateShard.LIGHTMAP)
-                        .createCompositeState(false)
-        );
+        return TEXTURE_RENDER.apply(texture);
     }
+
+    private static final BiFunction<ResourceLocation, Boolean, RenderType> TEXTURE_RENDER_COLORED = Util.memoize((rl, disableDepthTest) -> {
+        RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
+                .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
+                .setLightmapState(RenderStateShard.LIGHTMAP)
+                .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
+                .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
+                .createCompositeState(false);
+        return create("texture_color", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS,
+                256, false, false,
+                rendertype$compositestate);
+    });
 
     public static RenderType getTextureRenderColored(ResourceLocation texture) {
         return getTextureRenderColored(texture, false);
     }
 
     public static RenderType getTextureRenderColored(ResourceLocation texture, boolean disableDepthTest) {
-        RenderStateShard.TextureStateShard textureState = new TextureStateShard(texture, false, false);
-        return create("texture_color", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
-                false, false,
-                RenderType.CompositeState.builder()
-                        .setTextureState(textureState)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setLightmapState(RenderStateShard.LIGHTMAP)
-                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
-                        .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                        .createCompositeState(false)
-        );
+        return TEXTURE_RENDER_COLORED.apply(texture, disableDepthTest);
     }
 
     public static RenderType getUntexturedQuad(boolean disableDepthTest) {
@@ -72,6 +77,7 @@ public class ModRenderTypes extends RenderType {
                 false, false,
                 RenderType.CompositeState.builder()
                         .setTextureState(RenderStateShard.NO_TEXTURE)
+                        .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setCullState(NO_CULL)
                         .setLightmapState(RenderStateShard.LIGHTMAP)
@@ -114,6 +120,7 @@ public class ModRenderTypes extends RenderType {
                     // TODO 1.16 can we use VIEW_OFFSET_Z_LAYERING ?
 //                    .layer(RenderState.PROJECTION_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
                     .setTextureState(NO_TEXTURE)
                     .setCullState(NO_CULL)
                     .setLightmapState(NO_LIGHTMAP)
@@ -123,16 +130,16 @@ public class ModRenderTypes extends RenderType {
     );
 
     public static final RenderType TARGET_CIRCLE = create("target_circle",
-            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP, 65536,
+            DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.TRIANGLE_STRIP, 65536,
             false, false,
             RenderType.CompositeState.builder()
 //                    .layer(PROJECTION_LAYERING)
 //                    .setShadeModelState(SMOOTH_SHADE)
-                    .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
+                    .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(NO_TEXTURE)
                     .setCullState(NO_CULL)
-                    .setLightmapState(NO_LIGHTMAP)
+                    .setLightmapState(LIGHTMAP)
                     .setDepthTestState(NO_DEPTH_TEST)
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false)
@@ -191,6 +198,7 @@ public class ModRenderTypes extends RenderType {
                             .setTextureState(RenderStateShard.NO_TEXTURE)
                             .setCullState(RenderStateShard.NO_CULL)
                             .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                            .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
                             .createCompositeState(false)
             );
         } else {
@@ -203,6 +211,7 @@ public class ModRenderTypes extends RenderType {
                             .setTextureState(RenderStateShard.NO_TEXTURE)
                             .setCullState(RenderStateShard.NO_CULL)
                             .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                            .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
                             .createCompositeState(false)
             );
         }
@@ -218,6 +227,7 @@ public class ModRenderTypes extends RenderType {
                         .setLightmapState(NO_LIGHTMAP)
                         .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
                         .setWriteMaskState(disableWriteMask ? COLOR_WRITE : COLOR_DEPTH_WRITE)
+                        .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
                         .createCompositeState(false));
     }
 
@@ -233,6 +243,7 @@ public class ModRenderTypes extends RenderType {
                         .setCullState(NO_CULL)
                         .setLightmapState(NO_LIGHTMAP)
                         .setWriteMaskState(disableWriteMask ? COLOR_WRITE : RenderStateShard.COLOR_DEPTH_WRITE)
+                        .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
                         .createCompositeState(false));
     }
 
@@ -244,6 +255,7 @@ public class ModRenderTypes extends RenderType {
             RenderType.CompositeState.builder()
                     .setLineState(LINE_2)
                     .setTextureState(NO_TEXTURE)
+                    .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
                     .createCompositeState(false)
     );
 

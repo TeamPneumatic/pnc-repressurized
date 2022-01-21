@@ -21,21 +21,26 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgrammer> {
 
@@ -78,11 +83,17 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
 
         // update the client about contents of adjacent inventories so the programmer GUI knows what
         // puzzle pieces are available
-        if (te.getLevel().getGameTime() % 20 == 0) {
+        if (te.nonNullLevel().getGameTime() % 20 == 0) {
             for (Direction d : DirectionUtil.VALUES) {
                 BlockEntity neighbor = te.getCachedNeighbor(d);
                 if (neighbor != null && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).isPresent()) {
-                    sendToContainerListeners(new PacketSendNBTPacket(neighbor));
+                    final ContainerPneumaticBase<?> self = this;
+                    List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
+                            .filter(p -> p.containerMenu == self)
+                            .collect(Collectors.toList());
+                    if (!players.isEmpty()) {
+                        players.forEach(p -> NetworkHandler.sendToPlayer(new PacketSendNBTPacket(neighbor), p));
+                    }
                 }
             }
         }

@@ -1,7 +1,7 @@
 {
   "name": "Computer Control Widget",
   "icon": "pneumaticcraft:textures/progwidgets/computer_control_piece.png",
-  "category": "widget_other",
+  "category": "pneumaticcraft:widget_other",
   "flag": "|mod:computercraft,mod:opencomputers",
   "advancement": "pneumaticcraft:programmer",
   "pages": [

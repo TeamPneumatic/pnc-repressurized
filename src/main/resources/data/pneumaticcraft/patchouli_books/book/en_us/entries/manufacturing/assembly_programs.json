@@ -1,7 +1,7 @@
 {
   "name": "Assembly Programs",
   "icon": "pneumaticcraft:assembly_program_laser",
-  "category": "manufacturing",
+  "category": "pneumaticcraft:manufacturing",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {

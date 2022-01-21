@@ -1,7 +1,7 @@
 {
   "name": "Sentry Turret",
   "icon": "pneumaticcraft:sentry_turret",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

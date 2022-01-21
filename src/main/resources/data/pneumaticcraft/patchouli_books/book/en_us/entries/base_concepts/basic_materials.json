@@ -1,7 +1,7 @@
 {
     "name": "Basic Materials",
     "icon": "pneumaticcraft:ingot_iron_compressed",
-    "category": "base_concepts",
+    "category": "pneumaticcraft:base_concepts",
     "pages": [
         {
             "type": "text",

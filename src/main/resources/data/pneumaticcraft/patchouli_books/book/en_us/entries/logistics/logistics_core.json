@@ -1,7 +1,7 @@
 {
   "name": "Logistics Core",
   "icon": "pneumaticcraft:logistics_core",
-  "category": "logistics",
+  "category": "pneumaticcraft:logistics",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

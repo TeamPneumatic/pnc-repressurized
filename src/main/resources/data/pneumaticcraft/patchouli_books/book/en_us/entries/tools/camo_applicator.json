@@ -1,7 +1,7 @@
 {
   "name": "Camouflage Applicator",
   "icon": "pneumaticcraft:camo_applicator",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

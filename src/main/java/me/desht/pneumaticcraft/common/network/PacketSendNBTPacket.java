@@ -36,7 +36,7 @@ public class PacketSendNBTPacket extends LocationIntPacket {
     public PacketSendNBTPacket(BlockEntity te) {
         super(te.getBlockPos());
 
-        tag = te.save(new CompoundTag());
+        tag = te.saveWithFullMetadata();
     }
 
     public PacketSendNBTPacket(FriendlyByteBuf buffer) {

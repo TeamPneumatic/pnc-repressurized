@@ -1,7 +1,7 @@
 {
   "name": "Pneumatic Cylinder",
   "icon": "pneumaticcraft:pneumatic_cylinder",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

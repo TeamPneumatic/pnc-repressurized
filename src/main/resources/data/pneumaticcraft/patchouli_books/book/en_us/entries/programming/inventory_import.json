@@ -1,7 +1,7 @@
 {
   "name": "Inventory Import Widget",
   "icon": "pneumaticcraft:textures/progwidgets/inventory_import_piece.png",
-  "category": "widget_interact",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

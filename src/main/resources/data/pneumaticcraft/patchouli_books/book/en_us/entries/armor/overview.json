@@ -1,7 +1,7 @@
 {
   "name": "Pneumatic Armor Overview",
   "icon": "minecraft:written_book",
-  "category": "armor",
+  "category": "pneumaticcraft:armor",
   "priority": "true",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [

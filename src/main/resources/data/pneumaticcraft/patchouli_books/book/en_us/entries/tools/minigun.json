@@ -1,7 +1,7 @@
 {
   "name": "Minigun",
   "icon": "pneumaticcraft:minigun",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

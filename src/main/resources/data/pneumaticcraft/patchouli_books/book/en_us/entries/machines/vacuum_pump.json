@@ -1,7 +1,7 @@
 {
   "name": "Vacuum Pump",
   "icon": "pneumaticcraft:vacuum_pump",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:pressure_chamber",
   "pages": [
     {

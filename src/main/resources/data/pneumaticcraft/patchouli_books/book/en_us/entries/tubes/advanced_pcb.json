@@ -1,7 +1,7 @@
 {
   "name": "Advanced PCB",
   "icon": "pneumaticcraft:advanced_pcb",
-  "category": "tubes",
+  "category": "pneumaticcraft:tubes",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {

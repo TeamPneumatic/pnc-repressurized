@@ -1,7 +1,7 @@
 {
   "name": "Smart Chest",
   "icon": "pneumaticcraft:smart_chest",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {

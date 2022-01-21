@@ -1,7 +1,7 @@
 {
   "name": "Display Table",
   "icon": "pneumaticcraft:display_table",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

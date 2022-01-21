@@ -1,7 +1,7 @@
 {
   "name": "Transistor",
   "icon": "pneumaticcraft:transistor",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

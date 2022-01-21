@@ -1,7 +1,7 @@
 {
   "name": "Fluid Mixer",
   "icon": "pneumaticcraft:fluid_mixer",
-  "category": "manufacturing",
+  "category": "pneumaticcraft:manufacturing",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "Spawner Core",
   "icon": "pneumaticcraft:spawner_core",
-  "category": "spawning",
+  "category": "pneumaticcraft:spawning",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

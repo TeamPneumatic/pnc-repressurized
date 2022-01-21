@@ -1,7 +1,7 @@
 {
   "name": "Redstone Module",
   "icon": "pneumaticcraft:redstone_module",
-  "category": "tubes",
+  "category": "pneumaticcraft:tubes",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

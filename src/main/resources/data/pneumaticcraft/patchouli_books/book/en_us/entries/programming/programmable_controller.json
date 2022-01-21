@@ -1,7 +1,7 @@
 {
   "name": "Programmable Controller",
   "icon": "pneumaticcraft:programmable_controller",
-  "category": "programming",
+  "category": "pneumaticcraft:programming",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

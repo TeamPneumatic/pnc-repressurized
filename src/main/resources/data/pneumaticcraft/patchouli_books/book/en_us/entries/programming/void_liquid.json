@@ -1,7 +1,7 @@
 {
   "name": "Void Fluid Widget",
   "icon": "pneumaticcraft:textures/progwidgets/void_fluid_piece.png",
-  "category": "widget_interact",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

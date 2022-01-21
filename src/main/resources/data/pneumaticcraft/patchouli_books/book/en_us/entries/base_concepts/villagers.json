@@ -1,7 +1,7 @@
 {
   "name": "Mechanic Villagers",
   "icon": "minecraft:emerald",
-  "category": "base_concepts",
+  "category": "pneumaticcraft:base_concepts",
   "pages": [
     {
       "type": "text",

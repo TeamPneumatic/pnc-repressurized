@@ -28,13 +28,18 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ContainerPneumaticBase<T extends TileEntityBase> extends AbstractContainerMenu implements IGUIButtonSensitive {
     public final T te;
@@ -98,20 +103,25 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends AbstractCo
     @Override
     public void broadcastChanges() {
         super.broadcastChanges();
+        List<Integer> toUpdate = new ArrayList<>();
         for (int i = 0; i < syncedFields.size(); i++) {
             if (syncedFields.get(i).update() || firstTick) {
-                sendToContainerListeners(new PacketUpdateGui(i, syncedFields.get(i)));
+                toUpdate.add(i);
+            }
+        }
+        if (!toUpdate.isEmpty()) {
+            final ContainerPneumaticBase<?> self = this;
+            List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
+                    .filter(p -> p.containerMenu == self)
+                    .collect(Collectors.toList());
+            if (!players.isEmpty()) {
+                toUpdate.forEach(idx ->
+                        players.forEach(player ->
+                                NetworkHandler.sendToPlayer(new PacketUpdateGui(idx, syncedFields.get(idx)), player))
+                );
             }
         }
         firstTick = false;
-    }
-
-    void sendToContainerListeners(Object message) {
-        for (ContainerListener listener : containerListeners) {
-            if (listener instanceof ServerPlayer) {
-                NetworkHandler.sendToPlayer(message, (ServerPlayer) listener);
-            }
-        }
     }
 
     protected void addPlayerSlots(Inventory inventoryPlayer, int yOffset) {

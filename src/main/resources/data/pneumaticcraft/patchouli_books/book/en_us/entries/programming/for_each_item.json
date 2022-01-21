@@ -1,7 +1,7 @@
 {
   "name": "For Each Item Widget",
   "icon": "pneumaticcraft:textures/progwidgets/for_each_item.png",
-  "category": "widget_flow",
+  "category": "pneumaticcraft:widget_flow",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

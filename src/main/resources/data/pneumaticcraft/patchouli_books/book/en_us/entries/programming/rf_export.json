@@ -1,7 +1,7 @@
 {
   "name": "Export RF Widget",
   "icon": "pneumaticcraft:textures/progwidgets/rf_export_piece.png",
-  "category": "widget_interact",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

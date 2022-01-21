@@ -120,6 +120,7 @@ public class PressureGaugeRenderer3D {
             float angle = (float) i / (float) CIRCLE_POINTS * 2F * PI_F;
             RenderUtils.posF(builder, posMat, Mth.cos(angle) * RADIUS + xPos, Mth.sin(angle) * RADIUS + yPos, 0.0)
                     .color(cols[1], cols[2], cols[3], cols[0])
+                    .normal(0, 1, 0)
                     .endVertex();
         }
     }
@@ -137,9 +138,11 @@ public class PressureGaugeRenderer3D {
                 float r2 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 1.15F : 1.08F;
                 builder.vertex(posMat, x * RADIUS * r1 + xPos, y * RADIUS * r1 + yPos, 0f)
                         .color(0, 0, 0, 255)
+                        .normal(0, 1, 0)
                         .endVertex();
                 builder.vertex(posMat, x * RADIUS * r2 + xPos, y * RADIUS * r2 + yPos, 0f)
                         .color(0, 0, 0, 255)
+                        .normal(0, 1, 0)
                         .endVertex();
             }
         }
@@ -150,12 +153,19 @@ public class PressureGaugeRenderer3D {
         float[] cols = RenderUtils.decomposeColorF(fgColor);
         builder.vertex(posMat, Mth.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos, Mth.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos, 0f)
                 .color(cols[1], cols[2], cols[3], cols[0])
+                .normal(0, 1, 0)
                 .endVertex();
         builder.vertex(posMat, Mth.cos(angle + 1.11F * PI_F) * RADIUS * 0.3F + xPos, Mth.sin(angle + 1.11F * PI_F) * RADIUS * 0.3F + yPos, 0f)
                 .color(cols[1], cols[2], cols[3], cols[0])
+                .normal(0, 1, 0)
                 .endVertex();
         builder.vertex(posMat, Mth.cos(angle) * RADIUS * 0.8F + xPos, Mth.sin(angle) * RADIUS * 0.8F + yPos, 0f)
                 .color(cols[1], cols[2], cols[3], cols[0])
+                .normal(0, 1, 0)
+                .endVertex();
+        builder.vertex(posMat, Mth.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos, Mth.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos, 0f)
+                .color(cols[1], cols[2], cols[3], cols[0])
+                .normal(0, 1, 0)
                 .endVertex();
     }
 

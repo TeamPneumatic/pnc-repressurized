@@ -119,7 +119,7 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
 
     @Override
     public void saveAdditional(CompoundTag tag) {
-        super.save(tag);
+        super.saveAdditional(tag);
         tag.putBoolean("laser", isLaserOn);
         tag.putInt("laserStep", laserStep);
     }

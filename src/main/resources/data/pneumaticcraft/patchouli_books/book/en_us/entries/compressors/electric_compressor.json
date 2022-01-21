@@ -1,7 +1,7 @@
 {
   "name": "Electric Compressor",
   "icon": "pneumaticcraft:electric_compressor",
-  "category": "compressors",
+  "category": "pneumaticcraft:compressors",
   "advancement": "pneumaticcraft:advanced_pressure_tube",
   "flag": "pneumaticcraft:electricCompressorEnabled",
   "pages": [

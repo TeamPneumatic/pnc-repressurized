@@ -20,12 +20,14 @@ package me.desht.pneumaticcraft.datagen;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -89,6 +91,14 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.ORES);
         tag(BlockTags.LOGS);
         tag(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
+
+        ModBlocks.BLOCKS.getEntries().forEach(ro -> {
+            Block block = ro.get();
+            if (!(block instanceof LiquidBlock) && !(block instanceof AirBlock)) {
+                tag(BlockTags.MINEABLE_WITH_PICKAXE).add(block);
+                tag(BlockTags.NEEDS_IRON_TOOL).add(block);
+            }
+        });
     }
 
 // with thanks to Tropicraft for these helper methods

@@ -1,7 +1,7 @@
 {
   "name": "Tag Workbench",
   "icon": "pneumaticcraft:tag_workbench",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:logistics_frame",
   "pages": [
     {

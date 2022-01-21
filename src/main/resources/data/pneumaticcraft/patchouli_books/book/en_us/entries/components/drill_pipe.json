@@ -1,7 +1,7 @@
 {
   "name": "Drill Pipe",
   "icon": "pneumaticcraft:drill_pipe",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

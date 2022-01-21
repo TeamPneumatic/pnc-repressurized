@@ -1,7 +1,7 @@
 {
   "name": "Heat Sink",
   "icon": "pneumaticcraft:heat_sink",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

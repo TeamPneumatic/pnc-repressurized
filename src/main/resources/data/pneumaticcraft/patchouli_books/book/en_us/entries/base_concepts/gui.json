@@ -1,7 +1,7 @@
 {
   "name": "GUI Concepts",
   "icon": "pneumaticcraft:textures/gui/icon/gui_mouse.png",
-  "category": "base_concepts",
+  "category": "pneumaticcraft:base_concepts",
   "pages": [
     {
       "type": "text",

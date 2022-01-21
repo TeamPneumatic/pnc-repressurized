@@ -1,7 +1,7 @@
 {
   "name": "Plastic",
   "icon": "pneumaticcraft:plastic_bucket",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:tp_plant",
   "pages": [
     {

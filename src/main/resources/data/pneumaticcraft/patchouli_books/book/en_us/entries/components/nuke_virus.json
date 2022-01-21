@@ -1,7 +1,7 @@
 {
   "name": "Nuke Virus",
   "icon": "pneumaticcraft:nuke_virus",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

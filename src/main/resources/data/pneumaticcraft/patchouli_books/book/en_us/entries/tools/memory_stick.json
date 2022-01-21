@@ -1,7 +1,7 @@
 {
   "name": "Memory Stick",
   "icon": "pneumaticcraft:memory_stick",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

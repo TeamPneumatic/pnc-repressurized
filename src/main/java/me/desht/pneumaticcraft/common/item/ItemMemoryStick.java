@@ -148,7 +148,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
     public int getBarWidth(ItemStack pStack) {
         return pStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
             FluidStack fluidStack = handler.getFluidInTank(0);
-            return Math.round(13F - ((float)fluidStack.getAmount() / (float) handler.getTankCapacity(0) * 13F));
+            return Math.round((float)fluidStack.getAmount() / (float) handler.getTankCapacity(0) * 13F);
         }).orElse(0);
     }
 

@@ -1,7 +1,7 @@
 {
   "name": "Elevators",
   "icon": "pneumaticcraft:elevator_base",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

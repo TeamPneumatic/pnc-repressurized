@@ -2,7 +2,7 @@
 {
   "name": "Assembly System",
   "icon": "pneumaticcraft:assembly_controller",
-  "category": "manufacturing",
+  "category": "pneumaticcraft:manufacturing",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {

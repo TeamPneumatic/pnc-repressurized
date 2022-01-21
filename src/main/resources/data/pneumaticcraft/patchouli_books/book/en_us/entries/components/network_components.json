@@ -1,7 +1,7 @@
 {
   "name": "Network Components",
   "icon": "pneumaticcraft:network_api",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

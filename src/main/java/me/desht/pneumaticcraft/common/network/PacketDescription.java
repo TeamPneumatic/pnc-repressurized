@@ -85,26 +85,31 @@ public class PacketDescription extends LocationIntPacket {
     }
 
     public void process(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(this::process);
+        ctx.get().enqueueWork(() -> processPacket(null));
         ctx.get().setPacketHandled(true);
     }
 
-    public void process() {
-        if (ClientUtils.getClientLevel().isAreaLoaded(pos, 0)) {
-            BlockEntity syncable = ClientUtils.getClientTE(pos);
-            if (syncable instanceof IDescSynced) {
-                IDescSynced descSynced = (IDescSynced) syncable;
-                List<SyncedField<?>> descFields = descSynced.getDescriptionFields();
-                if (descFields != null) {
-                    for (IndexedField indexedField : fields) {
-                        if (indexedField.idx < descFields.size()) {
-                            descFields.get(indexedField.idx).setValue(indexedField.value);
-                        }
+    public void processPacket(BlockEntity blockEntity) {
+        if (blockEntity == null) {
+            // - null blockentity: coming from processing our PacketDescription packet, expect pos to be in the packet
+            // - non-null blockentity: coming from TileEntityBase#handleUpdateTag(), which has already received the BE from the vanilla packet
+            if (!ClientUtils.getClientLevel().isLoaded(pos)) {
+                return;
+            }
+            blockEntity = ClientUtils.getClientTE(pos);
+        }
+
+        if (blockEntity instanceof IDescSynced descSynced) {
+            List<SyncedField<?>> descFields = descSynced.getDescriptionFields();
+            if (descFields != null) {
+                for (IndexedField indexedField : fields) {
+                    if (indexedField.idx < descFields.size()) {
+                        descFields.get(indexedField.idx).setValue(indexedField.value);
                     }
                 }
-                descSynced.readFromPacket(extraData);
-                descSynced.onDescUpdate();
             }
+            descSynced.readFromPacket(extraData);
+            descSynced.onDescUpdate();
         }
     }
 

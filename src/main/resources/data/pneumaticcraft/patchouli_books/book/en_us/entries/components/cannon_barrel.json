@@ -1,7 +1,7 @@
 {
   "name": "Cannon Barrel",
   "icon": "pneumaticcraft:cannon_barrel",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

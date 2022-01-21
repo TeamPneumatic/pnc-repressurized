@@ -1,7 +1,7 @@
 {
   "name": "Compressed Iron Ingot",
   "icon": "pneumaticcraft:ingot_iron_compressed",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "pages": [
     {
       "type": "text",

@@ -1,7 +1,7 @@
 {
   "name": "Lubricant",
   "icon": "pneumaticcraft:lubricant_bucket",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:tp_plant",
   "pages": [
     {

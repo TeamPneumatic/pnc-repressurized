@@ -1,7 +1,7 @@
 {
   "name": "Security Station",
   "icon": "pneumaticcraft:security_station",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

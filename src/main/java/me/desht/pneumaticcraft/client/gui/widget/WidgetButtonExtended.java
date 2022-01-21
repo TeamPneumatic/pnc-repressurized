@@ -205,10 +205,10 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     }
 
     private int getIconX() {
-        switch (iconPosition) {
-            case LEFT: return x - 1 - 18 * renderedStacks.length;
-            case RIGHT: return x + width + 1;
-            case MIDDLE: default: return x + width / 2 - renderedStacks.length * 9 + 1;
-        }
+        return switch (iconPosition) {
+            case LEFT -> x - 1 - 18 * renderedStacks.length;
+            case RIGHT -> x + width + 1;
+            case MIDDLE -> x + width / 2 - renderedStacks.length * 9 + 1;
+        };
     }
 }

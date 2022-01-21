@@ -1,7 +1,7 @@
 {
   "name": "Compressed Iron Armor",
   "icon": "pneumaticcraft:compressed_iron_helmet",
-  "category": "armor",
+  "category": "pneumaticcraft:armor",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

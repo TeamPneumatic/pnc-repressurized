@@ -1,7 +1,7 @@
 {
   "name": "Tanks",
   "icon": "pneumaticcraft:small_tank",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

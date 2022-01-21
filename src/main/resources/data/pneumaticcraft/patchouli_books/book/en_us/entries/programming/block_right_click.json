@@ -1,7 +1,7 @@
 {
   "name": "Right Click Widget",
   "icon": "pneumaticcraft:textures/progwidgets/block_right_click_piece.png",
-  "category": "widget_interact",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

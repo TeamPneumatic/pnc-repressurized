@@ -1,7 +1,7 @@
 {
   "name": "Computer Integration",
   "icon": "pneumaticcraft:textures/patchouli/computer.png",
-  "category": "base_concepts",
+  "category": "pneumaticcraft:base_concepts",
   "flag": "|mod:computercraft,mod:opencomputers",
   "pages": [
     {

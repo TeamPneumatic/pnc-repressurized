@@ -1,7 +1,7 @@
 {
   "name": "Condition: Coordinate Widget",
   "icon": "pneumaticcraft:textures/progwidgets/condition_coordinate_piece.png",
-  "category": "widget_cond",
+  "category": "pneumaticcraft:widget_cond",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "Printed Circuit Boards",
   "icon": "pneumaticcraft:printed_circuit_board",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

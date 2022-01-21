@@ -1,7 +1,7 @@
 {
   "name": "Thermopneumatic Plant",
   "icon": "pneumaticcraft:thermopneumatic_processing_plant",
-  "category": "manufacturing",
+  "category": "pneumaticcraft:manufacturing",
   "advancement": "pneumaticcraft:refinery",
   "pages": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "Suicide Widget",
   "icon": "pneumaticcraft:textures/progwidgets/suicide_piece.png",
-  "category": "widget_flow",
+  "category": "pneumaticcraft:widget_flow",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

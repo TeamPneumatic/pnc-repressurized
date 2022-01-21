@@ -1,7 +1,7 @@
 {
   "name": "Basic Drone Tutorial #1",
   "icon": "minecraft:knowledge_book",
-  "category": "programming",
+  "category": "pneumaticcraft:programming",
   "priority": "true",
   "advancement": "pneumaticcraft:programmer",
   "pages": [

@@ -1,7 +1,7 @@
 {
   "name": "Thermal Lagging",
   "icon": "pneumaticcraft:thermal_lagging",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

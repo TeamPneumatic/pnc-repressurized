@@ -1,7 +1,7 @@
 {
   "name": "Pneumatic Chestplate",
   "icon": "pneumaticcraft:pneumatic_chestplate",
-  "category": "armor",
+  "category": "pneumaticcraft:armor",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
 

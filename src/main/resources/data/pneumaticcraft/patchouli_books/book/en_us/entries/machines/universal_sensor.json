@@ -1,7 +1,7 @@
 {
   "name": "Universal Sensor",
   "icon": "pneumaticcraft:universal_sensor",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

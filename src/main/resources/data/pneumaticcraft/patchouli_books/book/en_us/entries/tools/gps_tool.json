@@ -1,7 +1,7 @@
 {
   "name": "GPS Tool",
   "icon": "pneumaticcraft:gps_tool",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:plastic",
   "pages": [
     {

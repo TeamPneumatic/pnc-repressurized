@@ -2,7 +2,7 @@
 {
   "name": "Refinery",
   "icon": "pneumaticcraft:refinery",
-  "category": "manufacturing",
+  "category": "pneumaticcraft:manufacturing",
   "advancement": "pneumaticcraft:oil_bucket",
   "pages": [
     {

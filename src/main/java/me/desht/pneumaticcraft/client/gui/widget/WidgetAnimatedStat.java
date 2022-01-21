@@ -322,12 +322,10 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
      */
     private int calculateAvailableWidth() {
         int availableWidth;
-        if (gui instanceof AbstractContainerScreen) {
-            AbstractContainerScreen<?> gc = (AbstractContainerScreen<?>) gui;
-            availableWidth = Math.min(Math.max(minExpandedWidth, gc.getXSize()), leftSided ? gc.getGuiLeft() : gc.width - (gc.getGuiLeft() + gc.getXSize()));
-        } else if (gui instanceof GuiPneumaticScreenBase) {
-            GuiPneumaticScreenBase g = (GuiPneumaticScreenBase) gui;
-            availableWidth = Math.min(Math.max(minExpandedWidth, g.xSize), leftSided ? g.guiLeft : g.xSize - (g.guiLeft + g.xSize));
+        if (gui instanceof AbstractContainerScreen<?> screen) {
+            availableWidth = Math.min(Math.max(minExpandedWidth, screen.getXSize()), leftSided ? screen.getGuiLeft() : screen.width - (screen.getGuiLeft() + screen.getXSize()));
+        } else if (gui instanceof GuiPneumaticScreenBase screen) {
+            availableWidth = Math.min(Math.max(minExpandedWidth, screen.xSize), leftSided ? screen.guiLeft : screen.xSize - (screen.guiLeft + screen.xSize));
         } else {
             availableWidth = leftSided ? x : Minecraft.getInstance().getWindow().getGuiScaledWidth() - x;
         }

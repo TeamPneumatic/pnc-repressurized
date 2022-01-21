@@ -1,7 +1,7 @@
 {
   "name": "Etching Acid",
   "icon": "pneumaticcraft:etching_acid_bucket",
-  "category": "manufacturing",
+  "category": "pneumaticcraft:manufacturing",
   "advancement": "pneumaticcraft:pressure_chamber",
   "pages": [
     {

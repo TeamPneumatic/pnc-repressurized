@@ -1,7 +1,7 @@
 {
   "name": "Smart Chest Upgrade Kit",
   "icon": "pneumaticcraft:smart_chest_kit",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
     {

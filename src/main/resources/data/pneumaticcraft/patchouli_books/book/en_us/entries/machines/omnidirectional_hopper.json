@@ -1,7 +1,7 @@
 {
   "name": "Omnidirectional Hopper",
   "icon": "pneumaticcraft:omnidirectional_hopper",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

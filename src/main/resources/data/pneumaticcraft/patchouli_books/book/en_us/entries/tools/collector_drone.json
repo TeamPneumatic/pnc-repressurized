@@ -1,7 +1,7 @@
 {
   "name": "Collector Drone",
   "icon": "pneumaticcraft:collector_drone",
-  "category": "tools",
+  "category": "pneumaticcraft:tools",
   "advancement": "pneumaticcraft:pressure_chamber",
   "pages": [
     {

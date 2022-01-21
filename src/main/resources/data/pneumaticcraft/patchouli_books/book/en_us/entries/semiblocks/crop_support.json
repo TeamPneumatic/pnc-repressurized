@@ -1,7 +1,7 @@
 {
   "name": "Crop Support",
   "icon": "pneumaticcraft:crop_support",
-  "category": "semiblocks",
+  "category": "pneumaticcraft:semiblocks",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

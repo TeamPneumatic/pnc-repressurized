@@ -294,11 +294,11 @@ public class GuiUtils {
         RenderSystem.enableTexture();
         Matrix4f posMat = matrixStack.last().pose();
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
-        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
-        builder.vertex(posMat, x, y + 16, 0).color(255, 255, 255, 255).uv(0.0f, 1.0f).endVertex();
-        builder.vertex(posMat, x + 16, y + 16, 0).color(255, 255, 255, 255).uv(1.0f, 1.0f).endVertex();
-        builder.vertex(posMat, x + 16, y, 0).color(255, 255, 255, 255).uv(1.0f, 0.0f).endVertex();
-        builder.vertex(posMat, x, y, 0).color(255, 255, 255, 255).uv(0.0f, 0.0f).endVertex();
+        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        builder.vertex(posMat, x, y + 16, 0).uv(0.0f, 1.0f).endVertex();
+        builder.vertex(posMat, x + 16, y + 16, 0).uv(1.0f, 1.0f).endVertex();
+        builder.vertex(posMat, x + 16, y, 0).uv(1.0f, 0.0f).endVertex();
+        builder.vertex(posMat, x, y, 0).uv(0.0f, 0.0f).endVertex();
         Tesselator.getInstance().end();
     }
 

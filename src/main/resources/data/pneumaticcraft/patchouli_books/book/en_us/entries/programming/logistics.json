@@ -1,7 +1,7 @@
 {
   "name": "Logistics Widget",
   "icon": "pneumaticcraft:textures/progwidgets/logistics_piece.png",
-  "category": "widget_interact",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

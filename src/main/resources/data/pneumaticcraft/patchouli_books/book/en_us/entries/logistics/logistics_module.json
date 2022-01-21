@@ -1,7 +1,7 @@
 {
   "name": "Logistics Module",
   "icon": "pneumaticcraft:logistics_module",
-  "category": "logistics",
+  "category": "pneumaticcraft:logistics",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

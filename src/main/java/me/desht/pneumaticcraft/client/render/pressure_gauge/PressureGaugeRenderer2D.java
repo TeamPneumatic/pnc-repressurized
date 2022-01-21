@@ -22,8 +22,8 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +63,8 @@ public class PressureGaugeRenderer2D {
 
         BufferBuilder wr = Tesselator.getInstance().getBuilder();
 
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
         // Draw the green and red surface in the gauge.
         wr.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         drawGaugeBackground(matrixStack, wr, minPressure, maxPressure, dangerPressure, minWorkingPressure, xPos, yPos);
@@ -94,7 +96,7 @@ public class PressureGaugeRenderer2D {
     }
 
     private static void drawNeedle(PoseStack matrixStack, VertexConsumer builder, int xPos, int yPos, float angle, int fgColor) {
-        // vertex builder is set up for GL_LINE_LOOP
+        // VertexMode.DEBUG_LINE_STRIP
         float[] cols = RenderUtils.decomposeColorF(fgColor);
         Matrix4f posMat = matrixStack.last().pose();
         builder.vertex(posMat, Mth.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos, Mth.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos, 0F)
@@ -106,10 +108,13 @@ public class PressureGaugeRenderer2D {
         builder.vertex(posMat, Mth.cos(angle) * RADIUS * 0.8F + xPos, Mth.sin(angle) * RADIUS * 0.8F + yPos, 0.0F)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
+        builder.vertex(posMat, Mth.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos, Mth.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos, 0F)
+                .color(cols[1], cols[2], cols[3], cols[0])
+                .endVertex();
     }
 
     private static void drawScale(PoseStack matrixStack, VertexConsumer builder, float minPressure, float maxPressure, int xPos, int yPos, int currentScale, List<TextScaler> textScalers) {
-        // vertex builder is set up for GL_LINES
+        // VertexMode.DEBUG_LINES
         Matrix4f posMat = matrixStack.last().pose();
         for (int i = 0; i <= GAUGE_POINTS; i++) {
             float angle = (float) -i / (float) CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
@@ -144,14 +149,13 @@ public class PressureGaugeRenderer2D {
         float[] color = RED;
 
         Matrix4f posMat = matrixStack.last().pose();
-        builder.vertex(posMat, xPos, yPos, 0f).color(color[0], color[1], color[2], color[3]).endVertex();
+        builder.vertex(posMat, xPos, yPos, 0f).color(0.5f, 0.5f, 0.2f, color[3]).endVertex();
 
         int explodeBoundary = GAUGE_POINTS - (int) ((dangerPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         int workingBoundary = GAUGE_POINTS - (int) ((minWorkingPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
 
         boolean changedColorGreen = false;
         boolean changedColorYellow = false;
-
 
         for (int i = 0; i < GAUGE_POINTS; i++) {
             if (i == explodeBoundary && !changedColorGreen) {

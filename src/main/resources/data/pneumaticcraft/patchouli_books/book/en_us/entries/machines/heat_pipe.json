@@ -1,7 +1,7 @@
 {
   "name": "Heat Pipe",
   "icon": "pneumaticcraft:heat_pipe",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:root",
   "pages": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "Spawner Extractor",
   "icon": "pneumaticcraft:spawner_extractor",
-  "category": "spawning",
+  "category": "pneumaticcraft:spawning",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "Advanced Liquid Compressor",
   "icon": "pneumaticcraft:advanced_liquid_compressor",
-  "category": "compressors",
+  "category": "pneumaticcraft:compressors",
   "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [
     {

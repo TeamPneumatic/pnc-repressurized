@@ -62,8 +62,8 @@ public class ItemPressurizable extends Item implements IPressurizableItem, Vanis
     @Override
     public int getBarWidth(ItemStack pStack) {
         return pStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .map(h -> Math.round(13F - (h.getPressure() / h.maxPressure() * 13F)))
-                .orElse(13);
+                .map(h -> Math.round(h.getPressure() / h.maxPressure() * 13F))
+                .orElse(0);
     }
 
     @Override

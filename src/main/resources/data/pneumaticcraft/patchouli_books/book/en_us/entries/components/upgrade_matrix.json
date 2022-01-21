@@ -1,7 +1,7 @@
 {
   "name": "Upgrade Matrix",
   "icon": "pneumaticcraft:upgrade_matrix",
-  "category": "components",
+  "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:tp_plant",
   "pages": [
     {

@@ -1,7 +1,7 @@
 {
   "name": "Drone Interface",
   "icon": "pneumaticcraft:drone_interface",
-  "category": "machines",
+  "category": "pneumaticcraft:machines",
   "flag": "|mod:computercraft,mod:opencomputers",
   "advancement": "pneumaticcraft:printed_circuit_board",
   "pages": [
