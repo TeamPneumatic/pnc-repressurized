@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import mekanism.common.lib.radiation.capability.IRadiationShielding;
+import mekanism.api.radiation.capability.IRadiationShielding;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
