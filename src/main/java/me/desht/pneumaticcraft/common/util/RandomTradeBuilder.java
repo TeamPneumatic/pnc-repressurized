@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.entity.merchant.villager.VillagerTrades;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.MerchantOffer;
+import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.MerchantOffer;
 
 import java.util.Random;
 import java.util.function.Function;
@@ -116,7 +116,7 @@ public class RandomTradeBuilder
         return this.price != null && this.forSale != null;
     }
 
-    public VillagerTrades.ITrade build()
+    public VillagerTrades.ItemListing build()
     {
         return (entity, random) -> !this.canBuild() ? null : new MerchantOffer(this.price.apply(random), this.price2.apply(random), this.forSale.apply(random), this.maxTrades, this.xp, this.priceMult);
     }

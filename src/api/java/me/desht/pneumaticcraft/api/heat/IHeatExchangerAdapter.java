@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.api.heat;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.function.BiPredicate;
@@ -36,11 +36,11 @@ public interface IHeatExchangerAdapter extends IHeatExchangerLogic {
     }
 
     @Override
-    default void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld, BlockPos> blockFilter, Direction... validSides) {
+    default void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor, BlockPos> blockFilter, Direction... validSides) {
     }
 
     @Override
-    default void initializeAmbientTemperature(World world, BlockPos pos) {
+    default void initializeAmbientTemperature(Level world, BlockPos pos) {
     }
 
     @Override

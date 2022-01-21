@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Implement on items which can show a custom durability bar *in addition to* any regular bar.

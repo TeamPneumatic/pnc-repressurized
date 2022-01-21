@@ -18,24 +18,25 @@
 package me.desht.pneumaticcraft.client.particle;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
-public class AirParticle extends SpriteTexturedParticle {
-    private final IAnimatedSprite sprite;
+public class AirParticle extends TextureSheetParticle {
+    private final SpriteSet sprite;
 
-    private AirParticle(ClientWorld worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, float scale, IAnimatedSprite sprite) {
+    private AirParticle(ClientLevel worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, float scale, SpriteSet sprite) {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
 
         this.sprite = sprite;
@@ -84,46 +85,47 @@ public class AirParticle extends SpriteTexturedParticle {
     }
 
     @Override
-    public IParticleRenderType getRenderType() {
+    public ParticleRenderType getRenderType() {
         return AIR_PARTICLE_RENDER;
     }
 
-    public static class Factory implements IParticleFactory<AirParticleData> {
-        private final IAnimatedSprite spriteSet;
+    public static class Factory implements ParticleProvider<AirParticleData> {
+        private final SpriteSet spriteSet;
 
-        public Factory(IAnimatedSprite spriteSet) {
+        public Factory(SpriteSet spriteSet) {
             this.spriteSet = spriteSet;
         }
 
         @Nullable
         @Override
-        public Particle createParticle(AirParticleData airParticleData, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle createParticle(AirParticleData airParticleData, ClientLevel world, double x, double y, double z, double dx, double dy, double dz) {
             AirParticle p = new AirParticle(world, x, y, z, dx, dy, dz, 0.2f, spriteSet);
             p.setAlpha(airParticleData.getAlpha());
             return p;
         }
     }
 
-    private static final IParticleRenderType AIR_PARTICLE_RENDER = new IParticleRenderType() {
+    private static final ParticleRenderType AIR_PARTICLE_RENDER = new ParticleRenderType() {
         @Override
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F);
-            RenderSystem.disableLighting();
+            // TODO 1.17 how do we do this now?
+//            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F);
+//            RenderSystem.disableLighting();
 
-            textureManager.bind(AtlasTexture.LOCATION_PARTICLES);
-            textureManager.getTexture(AtlasTexture.LOCATION_PARTICLES).setBlurMipmap(true, false);
-            bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.PARTICLE);
+            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
+            textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true, false);
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 
         @Override
-        public void end(Tessellator tessellator) {
+        public void end(Tesselator tessellator) {
             tessellator.end();
 
-            Minecraft.getInstance().textureManager.getTexture(AtlasTexture.LOCATION_PARTICLES).restoreLastBlurMipmap();
-            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
+            Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).restoreLastBlurMipmap();
+//            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.1F);
             RenderSystem.disableBlend();
             RenderSystem.depthMask(true);
         }

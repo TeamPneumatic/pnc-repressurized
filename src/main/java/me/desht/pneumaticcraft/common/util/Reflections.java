@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.util;
 
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.monster.BlazeEntity;
-import net.minecraft.entity.monster.GhastEntity;
-import net.minecraft.entity.monster.GuardianEntity;
-import net.minecraft.entity.monster.ShulkerEntity;
-import net.minecraft.world.spawner.AbstractSpawner;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.entity.monster.Ghast;
+import net.minecraft.world.entity.monster.Guardian;
+import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,18 +43,18 @@ public class Reflections {
     public static Class<?> guardian_aiGuardianAttack;
 
     public static void init() {
-        msbl_isActivated = ObfuscationReflectionHelper.findMethod(AbstractSpawner.class, "func_98279_f");
+//        msbl_isActivated = ObfuscationReflectionHelper.findMethod(BaseSpawner.class, "func_98279_f");
 
         // access to non-public entity AI's for hacking purposes
         // TODO 1.14 verify notch names
-        blaze_aiFireballAttack = findEnclosedClass(BlazeEntity.class, "FireballAttackGoal", "a");
-        ghast_aiFireballAttack = findEnclosedClass(GhastEntity.class, "FireballAttackGoal", "c");
-        shulker_aiAttack = findEnclosedClass(ShulkerEntity.class, "AttackGoal", "a");
-        guardian_aiGuardianAttack = findEnclosedClass(GuardianEntity.class, "AttackGoal", "a");
+        blaze_aiFireballAttack = findEnclosedClass(Blaze.class, "BlazeAttackGoal", "a");
+        ghast_aiFireballAttack = findEnclosedClass(Ghast.class, "GhastShootFireballGoal", "c");
+        shulker_aiAttack = findEnclosedClass(Shulker.class, "ShulkerAttackGoal", "a");
+        guardian_aiGuardianAttack = findEnclosedClass(Guardian.class, "GuardianAttackGoal", "a");
     }
 
     private static Class<?> findEnclosedClass(Class<?> cls, String... enclosedClassNames) {
-        for (Class c : cls.getDeclaredClasses()) {
+        for (Class<?> c : cls.getDeclaredClasses()) {
             for (String name : enclosedClassNames) {
                 if (c.getSimpleName().equals(name)) {
                     return c;
@@ -65,12 +65,12 @@ public class Reflections {
         return null;
     }
 
-    public static boolean isActivated(AbstractSpawner msbl) {
-        try {
-            return (boolean) msbl_isActivated.invoke(msbl);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+//    public static boolean isActivated(BaseSpawner msbl) {
+//        try {
+//            return (boolean) msbl_isActivated.invoke(msbl);
+//        } catch (IllegalAccessException | InvocationTargetException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
 }

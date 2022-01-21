@@ -23,30 +23,31 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class BlockSecurityStation extends BlockPneumaticCraft {
+public class BlockSecurityStation extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(0, 8, 0, 16, 10, 16),
             Block.box(13, 0, 13, 15, 8, 15),
@@ -60,7 +61,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
             Block.box(1, 0, 1, 3, 8, 3),
             Block.box(13, 0, 1, 15, 8, 3),
             Block.box(13.25, 10, 7, 13.75, 10.5, 11)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
@@ -71,24 +72,19 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         Direction d = state.getValue(directionProperty());
         return SHAPES[d.get2DDataValue()];
-    }
-
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntitySecurityStation.class;
     }
 
     /**
      * Called when the block is placed in the world.
      */
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
-        if (entityLiving instanceof PlayerEntity) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
+        if (entityLiving instanceof Player) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySecurityStation.class)
-                    .ifPresent(te -> te.sharedUsers.add(((PlayerEntity) entityLiving).getGameProfile()));
+                    .ifPresent(te -> te.sharedUsers.add(((Player) entityLiving).getGameProfile()));
         }
 
         super.setPlacedBy(world, pos, state, entityLiving, iStack);
@@ -100,36 +96,36 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (player.isShiftKeyDown()) {
-            return ActionResultType.PASS;
+            return InteractionResult.PASS;
         } else {
             if (!world.isClientSide) {
-                TileEntity te = world.getBlockEntity(pos);
+                BlockEntity te = world.getBlockEntity(pos);
                 if (te instanceof TileEntitySecurityStation) {
                     TileEntitySecurityStation teSS = (TileEntitySecurityStation) te;
                     if (teSS.isPlayerOnWhiteList(player)) {
                         return super.use(state, world, pos, player, hand, brtr);
                     } else if (!teSS.hasValidNetwork()) {
-                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").withStyle(TextFormatting.RED), false);
+                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").withStyle(ChatFormatting.RED), false);
                     } else if (teSS.hasPlayerHacked(player)) {
-                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(TextFormatting.GOLD), false);
+                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(ChatFormatting.GOLD), false);
                     } else if (getPlayerHackLevel(player) < teSS.getSecurityLevel()) {
-                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(TextFormatting.GOLD), false);
+                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(ChatFormatting.GOLD), false);
                         player.hurt(DamageSource.OUT_OF_WORLD, 1f);
                     } else {
                         teSS.initiateHacking(player);
                     }
                 }
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
     }
 
-    private int getPlayerHackLevel(PlayerEntity player) {
+    private int getPlayerHackLevel(Player player) {
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-        return handler.isArmorReady(EquipmentSlotType.HEAD) && handler.getArmorPressure(EquipmentSlotType.HEAD) > 0f ?
-                handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SECURITY) : 0;
+        return handler.isArmorReady(EquipmentSlot.HEAD) && handler.getArmorPressure(EquipmentSlot.HEAD) > 0f ?
+                handler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.SECURITY) : 0;
     }
 
     @Override
@@ -138,8 +134,14 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
     }
 
     @Override
-    public int getSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+    public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntitySecurityStation.class)
                 .map(teSS -> teSS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntitySecurityStation(pPos, pState);
     }
 }

@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -30,18 +31,19 @@ import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRed
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -57,7 +59,7 @@ import java.util.List;
 
 //@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
 public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
-        IMinWorkingPressure, IRedstoneControl<TileEntityUVLightBox>, INamedContainerProvider /*,ILightProvider */ {
+        IMinWorkingPressure, IRedstoneControl<TileEntityUVLightBox>, MenuProvider /*,ILightProvider */ {
     private static final String NBT_EXPOSURE = "pneumaticcraft:uv_exposure";
 
     public static final int INVENTORY_SIZE = 1;
@@ -94,43 +96,41 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
 
     public int ticksExisted;
 
-    public TileEntityUVLightBox() {
-        super(ModTileEntities.UV_LIGHT_BOX.get(), PneumaticValues.DANGER_PRESSURE_UV_LIGHTBOX, PneumaticValues.MAX_PRESSURE_UV_LIGHTBOX, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
+    public TileEntityUVLightBox(BlockPos pos, BlockState state) {
+        super(ModTileEntities.UV_LIGHT_BOX.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!getLevel().isClientSide) {
-            ticksExisted++;
-            ItemStack stack = getLoadedPCB();
-            boolean didWork = false;
-            if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
-                threshold = Math.min(100, 25 + rsController.getCurrentRedstonePower() * 5);
-            }
-            if (!stack.isEmpty() && rsController.shouldRun()) {
-                int progress = getExposureProgress(stack);
-                if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && progress < 100) {
-                    addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
-                    if (ticksExisted % ticksPerProgress(progress) == 0) {
-                        progress++;
-                        setExposureProgress(stack, progress);
-                    }
-                    if (progress >= threshold) {
-                        if (outputHandler.insertItem(0, inputHandler.getStackInSlot(0), true).isEmpty()) {
-                            ItemStack toMove = inputHandler.extractItem(0, 1, false);
-                            outputHandler.insertItem(0, toMove, false);
-                        }
-                    }
-                    didWork = true;
-                }
-            }
-            if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-                tryEject();
-            }
-            checkStateUpdates(stack, didWork);
+        ticksExisted++;
+        ItemStack stack = getLoadedPCB();
+        boolean didWork = false;
+        if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
+            threshold = Math.min(100, 25 + rsController.getCurrentRedstonePower() * 5);
         }
+        if (!stack.isEmpty() && rsController.shouldRun()) {
+            int progress = getExposureProgress(stack);
+            if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && progress < 100) {
+                addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
+                if (ticksExisted % ticksPerProgress(progress) == 0) {
+                    progress++;
+                    setExposureProgress(stack, progress);
+                }
+                if (progress >= threshold) {
+                    if (outputHandler.insertItem(0, inputHandler.getStackInSlot(0), true).isEmpty()) {
+                        ItemStack toMove = inputHandler.extractItem(0, 1, false);
+                        outputHandler.insertItem(0, toMove, false);
+                    }
+                }
+                didWork = true;
+            }
+        }
+        if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+            tryEject();
+        }
+        checkStateUpdates(stack, didWork);
     }
 
     private void checkStateUpdates(ItemStack loadedStack, boolean didWork) {
@@ -146,17 +146,17 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
                 state = state.setValue(BlockUVLightBox.LIT, didWork);
                 update = true;
             }
-            long now = level.getGameTime();
+            long now = nonNullLevel().getGameTime();
             if (update) {
                 if (now - lastStateUpdate > 10) {
-                    level.setBlockAndUpdate(worldPosition, state);
+                    nonNullLevel().setBlockAndUpdate(worldPosition, state);
                     pendingState = null;
                     lastStateUpdate = now;
                 } else {
                     pendingState = state;
                 }
             } else if (pendingState != null && now - lastStateUpdate > 10) {
-                level.setBlockAndUpdate(worldPosition, pendingState);
+                nonNullLevel().setBlockAndUpdate(worldPosition, pendingState);
                 pendingState = null;
                 lastStateUpdate = now;
             }
@@ -178,7 +178,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     private LazyOptional<IItemHandler> getEjectionHandler() {
         if (!cachedEjectHandler.isPresent()) {
             Direction dir = getUpgradeCache().getEjectDirection();
-            TileEntity te = level.getBlockEntity(worldPosition.relative(dir));
+            BlockEntity te = nonNullLevel().getBlockEntity(worldPosition.relative(dir));
             cachedEjectHandler = IOHelper.getInventoryForTE(te, dir.getOpposite());
             if (cachedEjectHandler.isPresent()) {
                 cachedEjectHandler.addListener(l -> cachedEjectHandler = LazyOptional.empty());
@@ -188,19 +188,18 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         threshold = tag.getInt("threshold");
         inputHandler.deserializeNBT(tag.getCompound("Items"));
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
-        super.save(nbt);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
         nbt.putInt("threshold", threshold);
         nbt.put("Items", inputHandler.serializeNBT());
-        return nbt;
     }
 
     public static int getExposureProgress(ItemStack stack) {
@@ -235,7 +234,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
 
     @Override
     public void onDescUpdate() {
-        getLevel().getChunkSource().getLightEngine().checkBlock(getBlockPos());
+        nonNullLevel().getChunkSource().getLightEngine().checkBlock(getBlockPos());
 
         super.onDescUpdate();
     }
@@ -246,11 +245,11 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag))
             return;
         try {
-            threshold = MathHelper.clamp(Integer.parseInt(tag), 1, 100);
+            threshold = Mth.clamp(Integer.parseInt(tag), 1, 100);
             setChanged();
         } catch (IllegalArgumentException ignored) {
         }
@@ -286,7 +285,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerUVLightBox(i, playerInventory, getBlockPos());
     }
 

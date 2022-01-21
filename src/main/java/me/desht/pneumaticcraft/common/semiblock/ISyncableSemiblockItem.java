@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.semiblock;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * Implement this interface on containers for semiblocks which need to be synced from the client in item form,
@@ -26,5 +26,5 @@ import net.minecraft.network.PacketBuffer;
  * E.g. see Logistics Frames
  */
 public interface ISyncableSemiblockItem {
-    void syncSemiblockItemFromClient(PlayerEntity player, PacketBuffer payload);
+    void syncSemiblockItemFromClient(Player player, FriendlyByteBuf payload);
 }

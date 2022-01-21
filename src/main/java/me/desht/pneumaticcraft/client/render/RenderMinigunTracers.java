@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
 
@@ -38,12 +38,12 @@ public class RenderMinigunTracers {
                 && minigun.getAttackTarget() != null;
     }
 
-    public static void render(Minigun minigun, MatrixStack matrixStack, IRenderTypeBuffer buffer, double x, double y, double z, double gunRadius) {
+    public static void render(Minigun minigun, PoseStack matrixStack, MultiBufferSource buffer, double x, double y, double z, double gunRadius) {
         LivingEntity target = minigun.getAttackTarget();
 
         matrixStack.pushPose();
         matrixStack.translate(-x, -y, -z);
-        Vector3d vec = new Vector3d(target.getX() - x, target.getY() + target.getBbHeight() / 2 - y, target.getZ() - z)
+        Vec3 vec = new Vec3(target.getX() - x, target.getY() + target.getBbHeight() / 2 - y, target.getZ() - z)
                 .normalize().scale(gunRadius);
         // TODO don't really need ProgressingLine here
         ProgressingLine minigunFire = new ProgressingLine().setProgress(1);
@@ -51,7 +51,7 @@ public class RenderMinigunTracers {
         minigunFire.startY = (float) (y + vec.y);
         minigunFire.startZ = (float) (z + vec.z);
         Random rand = target.getCommandSenderWorld().random;
-        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getBlockHilightLine(false, false));
+        VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getBlockHilightLine(false, false));
         for (int i = 0; i < 5; i++) {
             minigunFire.endX = (float) (target.getX() + rand.nextDouble() * 0.8 - 0.4);
             minigunFire.endY = (float) (target.getY() + target.getBbHeight() / 2 + rand.nextDouble() * 0.8 - 0.4);

@@ -21,11 +21,11 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeMod;
 
 import java.util.UUID;
@@ -54,18 +54,18 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     }
 
     @Override
-    public EquipmentSlotType getEquipmentSlot() {
-        return EquipmentSlotType.CHEST;
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.CHEST;
     }
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        PlayerEntity player = commonArmorHandler.getPlayer();
+        Player player = commonArmorHandler.getPlayer();
         if ((player.level.getGameTime() & 0xf) == 0) {
-            ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+            AttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
             if (attr != null) {
                 attr.removeModifier(REACH_DIST_BOOST);
-                if (enabled && commonArmorHandler.hasMinPressure(EquipmentSlotType.CHEST) && commonArmorHandler.isArmorEnabled()) {
+                if (enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST) && commonArmorHandler.isArmorEnabled()) {
                     attr.addTransientModifier(REACH_DIST_BOOST);
                 }
             }
@@ -75,7 +75,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     @Override
     public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
         if (!newState) {
-            ModifiableAttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(ForgeMod.REACH_DISTANCE.get());
+            AttributeInstance attr = commonArmorHandler.getPlayer().getAttribute(ForgeMod.REACH_DISTANCE.get());
             if (attr != null) {
                 attr.removeModifier(ReachDistanceHandler.REACH_DIST_BOOST);
             }

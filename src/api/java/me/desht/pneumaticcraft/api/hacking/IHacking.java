@@ -18,19 +18,19 @@
 package me.desht.pneumaticcraft.api.hacking;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.List;
 
 /**
  * Manages the list of "hacks" on an entity. Hacks are added via the Pneumatic Helmet
- * hacking feature.  This interface is exposed via an entity capability; retrieve a
- * <code>Capability&lt;IHacking&gt;</code> via
- * {@link net.minecraftforge.common.capabilities.CapabilityInject capability injection}.
+ * hacking feature.   This interface is exposed via an entity capability; you can retrieve this via
+ * {@link net.minecraftforge.common.capabilities.CapabilityManager#get(CapabilityToken)}
  */
-public interface IHacking extends INBTSerializable<CompoundNBT> {
+public interface IHacking {
     /**
      * Called every tick on every entity which has been hacked (i.e. which has a non-empty list of hacks)
      *

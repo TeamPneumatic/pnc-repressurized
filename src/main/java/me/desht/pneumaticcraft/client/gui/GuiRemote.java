@@ -24,18 +24,18 @@ import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEntityBase> {
 
     RemoteLayout remoteLayout;
     protected final ItemStack remote;
 
-    public GuiRemote(ContainerRemote container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiRemote(ContainerRemote container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageWidth = 183;
@@ -49,8 +49,8 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
      */
     public static void maybeHandleVariableChange(String varName) {
         Screen screen = Minecraft.getInstance().screen;
-        if (screen instanceof GuiRemote) {
-            ((GuiRemote) screen).onGlobalVariableChange(varName);
+        if (screen instanceof GuiRemote r) {
+            r.onGlobalVariableChange(varName);
         }
     }
 
@@ -63,7 +63,7 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
         if (remoteLayout == null) {
             remoteLayout = new RemoteLayout(remote, leftPos, topPos);
         }
-        remoteLayout.getWidgets(!(this instanceof GuiRemoteEditor)).forEach(this::addButton);
+        remoteLayout.getWidgets(!(this instanceof GuiRemoteEditor)).forEach(this::addRenderableWidget);
     }
 
     @Override
@@ -82,8 +82,7 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
     }
 
     public void onGlobalVariableChange(String variable) {
-        buttons.clear();
-        children.clear();
+        clearWidgets();
         init();
 
         remoteLayout.getActionWidgets().stream()

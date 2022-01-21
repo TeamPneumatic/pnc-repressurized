@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.api.heat;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Optional;
@@ -43,7 +43,7 @@ import java.util.function.BiPredicate;
  *
  * @author MineMaarten, desht
  */
-public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
+public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
     /**
      * Call this to tick this logic, and make the heat disperse itself. In general this should be called each tick
      * by the owning tile entity's {@code tick()} method, on the server side only.
@@ -64,7 +64,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      * @param blockFilter a whitelist check; can be used to exclude certain blocks, e.g. air or fluids
      * @param validSides an array of sides to check for heat exchanging neighbours
      */
-    void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> blockFilter, Direction... validSides);
+    void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides);
 
     /**
      * Initialize this heat exchanger's ambient temperature based on the given world & position.  You don't need to call
@@ -75,7 +75,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      * @param world the world
      * @param pos the position
      */
-    void initializeAmbientTemperature(World world, BlockPos pos);
+    void initializeAmbientTemperature(Level world, BlockPos pos);
 
     /**
      * When called, this will create a thermal connection between this heat exchanger and the given one. This should
@@ -208,10 +208,10 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
     boolean isSideConnected(Direction side);
 
     @Override
-    default CompoundNBT serializeNBT() { return new CompoundNBT(); }
+    default CompoundTag serializeNBT() { return new CompoundTag(); }
 
     @Override
-    default void deserializeNBT(CompoundNBT nbt) {
+    default void deserializeNBT(CompoundTag nbt) {
     }
 
     /**
@@ -227,5 +227,5 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
         return Optional.empty();
     }
 
-    BiPredicate<IWorld,BlockPos> ALL_BLOCKS = (world, pos) -> true;
+    BiPredicate<LevelAccessor,BlockPos> ALL_BLOCKS = (world, pos) -> true;
 }

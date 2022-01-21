@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.common.core.ModHarvestHandlers;
 import me.desht.pneumaticcraft.common.core.ModHoeHandlers;
 import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +82,7 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
         getApplicableHandler(pos).ifPresent(applicableHandler -> {
             BlockState state = worldCache.getBlockState(pos);
             if (applicableHandler.canHarvest(drone.world(), worldCache, pos, state, drone)) {
-                Consumer<PlayerEntity> damageableHoe = getDamageableHoe();
+                Consumer<Player> damageableHoe = getDamageableHoe();
                 if (damageableHoe != null) {
                     if (applicableHandler.harvestAndReplant(drone.world(), worldCache, pos, state, drone)) {
                         damageableHoe.accept(drone.getFakePlayer());
@@ -96,7 +96,7 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
         return false;
     }
 
-    private Consumer<PlayerEntity> getDamageableHoe() {
+    private Consumer<Player> getDamageableHoe() {
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack stack = drone.getInv().getStackInSlot(i);
             HoeHandler handler = ModHoeHandlers.HOE_HANDLERS.get().getValues().stream()

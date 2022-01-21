@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 
@@ -30,7 +30,7 @@ public class DistanceEntitySorter implements Comparator<Entity> {
     }
 
     private int compare_internal(Entity entity1, Entity entity2) {
-        Vector3d vec = drone.getDronePos();
+        Vec3 vec = drone.getDronePos();
         double d0 = vec.distanceToSqr(entity1.position());
         double d1 = vec.distanceToSqr(entity2.position());
         return Double.compare(d0, d1);

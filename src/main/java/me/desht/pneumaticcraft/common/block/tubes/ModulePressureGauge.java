@@ -30,21 +30,19 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!pressureTube.getLevel().isClientSide) {
-            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
-                if (pressureTube.getLevel().getGameTime() % 20 == 0)
-                    NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube());
-                if (setRedstone(getRedstone(h.getPressure()))) {
-                    // force a recalc on next tick
-                    pressureTube.tubeModules()
-                            .filter(tm -> tm instanceof ModuleRedstone)
-                            .forEach(tm -> ((ModuleRedstone) tm).setInputLevel(-1));
-                }
-            });
-        }
+        pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+            if (pressureTube.nonNullLevel().getGameTime() % 20 == 0)
+                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube());
+            if (setRedstone(getRedstone(h.getPressure()))) {
+                // force a recalc on next tick
+                pressureTube.tubeModules()
+                        .filter(tm -> tm instanceof ModuleRedstone)
+                        .forEach(tm -> ((ModuleRedstone) tm).setInputLevel(-1));
+            }
+        });
     }
 
     private int getRedstone(float pressure) {

@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class EntityInRangeSensor extends EntityPollSensor {
     }
 
     @Override
-    public int getRedstoneValue(List<Entity> entities, String textboxText) {
+    public int getRedstoneValue(List<? extends Entity> entities, String textboxText) {
         if (filter == null) {
             filter = new EntityFilter(textboxText);
         }
@@ -62,7 +62,7 @@ public class EntityInRangeSensor extends EntityPollSensor {
     }
 
     @Override
-    public void getAdditionalInfo(List<ITextComponent> info) {
+    public void getAdditionalInfo(List<Component> info) {
         info.add(xlate("pneumaticcraft.gui.entityFilter"));
     }
 

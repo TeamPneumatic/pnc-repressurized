@@ -17,18 +17,18 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.HangingEntity;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -64,12 +64,12 @@ public class RenderTargetCircle {
         if (rand.nextInt(15) == 0) {
             rotationAcceleration = (rand.nextDouble() - 0.5D) / 2.5D;
         }
-        rotationSpeed = MathHelper.clamp(rotationSpeed + rotationAcceleration, -MAX_ROTATION, MAX_ROTATION);
+        rotationSpeed = Mth.clamp(rotationSpeed + rotationAcceleration, -MAX_ROTATION, MAX_ROTATION);
         rotationAngle += rotationSpeed;
     }
 
-    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float size, float partialTicks, float alpha) {
-        double renderRotationAngle = MathHelper.lerp(partialTicks, oldRotationAngle, rotationAngle);
+    public void render(PoseStack matrixStack, MultiBufferSource buffer, float size, float partialTicks, float alpha) {
+        double renderRotationAngle = Mth.lerp(partialTicks, oldRotationAngle, rotationAngle);
 
         matrixStack.pushPose();
 
@@ -110,9 +110,9 @@ public class RenderTargetCircle {
     private float[] getCircleColour(Entity entity) {
         if (entity instanceof EntityDroneBase) {
             return DRONE;
-        } else if (entity instanceof IMob) {
+        } else if (entity instanceof Enemy) {
             return HOSTILE;
-        } else if (entity instanceof HangingEntity || entity instanceof AbstractMinecartEntity) {
+        } else if (entity instanceof HangingEntity || entity instanceof AbstractMinecart) {
             return HANGING;
         } else {
             return DEFAULT;

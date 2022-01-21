@@ -21,22 +21,24 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
+
+import net.minecraft.world.item.crafting.Ingredient.Value;
 
 /**
  * Like a vanilla Ingredient, but also compares the size of the input ingredient.  Useful for machine recipes which
@@ -45,11 +47,11 @@ import java.util.stream.Stream;
 public class StackedIngredient extends Ingredient {
     public static final StackedIngredient EMPTY = new StackedIngredient(Stream.empty());
 
-    private StackedIngredient(Stream<? extends IItemList> itemLists) {
+    private StackedIngredient(Stream<? extends Value> itemLists) {
         super(itemLists);
     }
 
-    public static Ingredient fromTag(ITag.INamedTag<Item> tag, int count) {
+    public static Ingredient fromTag(Tag.Named<Item> tag, int count) {
         return StackedIngredient.fromItemListStream(Stream.of(new StackedTagList(tag, count, tag.getName())));
     }
 
@@ -57,7 +59,7 @@ public class StackedIngredient extends Ingredient {
         return fromItemListStream(Arrays.stream(stacks).map(StackedItemList::new));
     }
 
-    public static Ingredient fromItems(int count, IItemProvider... itemsIn) {
+    public static Ingredient fromItems(int count, ItemLike... itemsIn) {
         return fromItemListStream(Arrays.stream(itemsIn).map((itemProvider) -> new StackedItemList(new ItemStack(itemProvider, count))));
     }
 
@@ -69,7 +71,7 @@ public class StackedIngredient extends Ingredient {
         return fromStacks(l.toArray(new ItemStack[0]));
     }
 
-    public static StackedIngredient fromItemListStream(Stream<? extends Ingredient.IItemList> stream) {
+    public static StackedIngredient fromItemListStream(Stream<? extends Ingredient.Value> stream) {
         StackedIngredient ingredient = new StackedIngredient(stream);
         return ingredient.isEmpty() ? StackedIngredient.EMPTY : ingredient;
     }
@@ -89,25 +91,22 @@ public class StackedIngredient extends Ingredient {
         }
     }
 
-    private static Ingredient.IItemList deserializeItemListWithCount(JsonObject json) {
+    private static Ingredient.Value deserializeItemListWithCount(JsonObject json) {
         if (json.has("item") && json.has("tag")) {
             throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
         } else if (json.has("item")) {
-            ResourceLocation resourcelocation1 = new ResourceLocation(JSONUtils.getAsString(json, "item"));
+            ResourceLocation resourcelocation1 = new ResourceLocation(GsonHelper.getAsString(json, "item"));
             Item item = Registry.ITEM.getOptional(resourcelocation1)
                     .orElseThrow(() -> new JsonSyntaxException("Unknown item '" + resourcelocation1 + "'"));
-            int count = json.has("count") ? JSONUtils.getAsInt(json, "count") : 1;
-            return new Ingredient.SingleItemList(new ItemStack(item, count));
+            int count = json.has("count") ? GsonHelper.getAsInt(json, "count") : 1;
+            return new Ingredient.ItemValue(new ItemStack(item, count));
         } else if (json.has("tag")) {
-            ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getAsString(json, "tag"));
-//            ITag<Item> tag = ItemTags.getCollection().get(resourcelocation);
-            ITag<Item> tag = TagCollectionManager.getInstance().getItems().getTag(resourcelocation);
-            if (tag == null) {
-                throw new JsonSyntaxException("Unknown item tag '" + resourcelocation + "'");
-            } else {
-                int count = json.has("count") ? JSONUtils.getAsInt(json, "count") : 1;
-                return new StackedTagList(tag, count, resourcelocation);
-            }
+            ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
+            Tag<Item> tag = SerializationTags.getInstance().getTagOrThrow(Registry.ITEM_REGISTRY, resourcelocation, (r) -> {
+                throw new JsonSyntaxException("Unknown item tag '" + r + "'");
+            });
+            int count = json.has("count") ? GsonHelper.getAsInt(json, "count") : 1;
+            return new StackedTagList(tag, count, resourcelocation);
         } else {
             throw new JsonParseException("An ingredient entry needs either a tag or an item");
         }
@@ -118,8 +117,8 @@ public class StackedIngredient extends Ingredient {
         public static final ResourceLocation ID = new ResourceLocation("pneumaticcraft:stacked_item");
 
         @Override
-        public StackedIngredient parse(PacketBuffer buffer) {
-            return fromItemListStream(Stream.generate(() -> new Ingredient.SingleItemList(buffer.readItem())).limit(buffer.readVarInt()));
+        public StackedIngredient parse(FriendlyByteBuf buffer) {
+            return fromItemListStream(Stream.generate(() -> new Ingredient.ItemValue(buffer.readItem())).limit(buffer.readVarInt()));
         }
 
         @Override
@@ -128,7 +127,7 @@ public class StackedIngredient extends Ingredient {
         }
 
         @Override
-        public void write(PacketBuffer buffer, StackedIngredient ingredient) {
+        public void write(FriendlyByteBuf buffer, StackedIngredient ingredient) {
             ItemStack[] items = ingredient.getItems();
             buffer.writeVarInt(items.length);
 
@@ -137,7 +136,7 @@ public class StackedIngredient extends Ingredient {
         }
     }
 
-    public static class StackedItemList implements IItemList {
+    public static class StackedItemList implements Value {
         private final ItemStack itemStack;
 
         public StackedItemList(ItemStack itemStack) {
@@ -159,12 +158,12 @@ public class StackedIngredient extends Ingredient {
         }
     }
 
-    public static class StackedTagList implements IItemList {
-        private final ITag<Item> tag;
+    public static class StackedTagList implements Value {
+        private final Tag<Item> tag;
         private final int count;
         private final ResourceLocation id;
 
-        public StackedTagList(ITag<Item> tagIn, int count, ResourceLocation id) {
+        public StackedTagList(Tag<Item> tagIn, int count, ResourceLocation id) {
             this.tag = tagIn;
             this.count = count;
             this.id = id;
@@ -179,7 +178,7 @@ public class StackedIngredient extends Ingredient {
             }
 
             if (list.size() == 0 && !net.minecraftforge.common.ForgeConfig.SERVER.treatEmptyTagsAsAir.get()) {
-                list.add(new ItemStack(net.minecraft.block.Blocks.BARRIER).setHoverName(new net.minecraft.util.text.StringTextComponent("Empty Tag: " + id.toString())));
+                list.add(new ItemStack(net.minecraft.world.level.block.Blocks.BARRIER).setHoverName(new net.minecraft.network.chat.TextComponent("Empty Tag: " + id.toString())));
             }
             return list;
         }

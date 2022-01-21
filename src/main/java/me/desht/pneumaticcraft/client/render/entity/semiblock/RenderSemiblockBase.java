@@ -15,23 +15,23 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.entity;
+package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.world.LightType;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
 
-import static net.minecraft.util.Direction.*;
+import static net.minecraft.core.Direction.*;
 
 abstract class RenderSemiblockBase<T extends EntitySemiblockBase> extends EntityRenderer<T> {
     // not the usual enum order: down last because it's the least likely candidate
@@ -39,11 +39,11 @@ abstract class RenderSemiblockBase<T extends EntitySemiblockBase> extends Entity
             UP, NORTH, SOUTH, WEST, EAST, DOWN
     };
 
-    RenderSemiblockBase(EntityRendererManager rendererManager) {
-        super(rendererManager);
+    RenderSemiblockBase(EntityRendererProvider.Context ctx) {
+        super(ctx);
     }
 
-    void wobble(T entityIn, float partialTicks, MatrixStack matrixStack) {
+    void wobble(T entityIn, float partialTicks, PoseStack matrixStack) {
         float f = (float) entityIn.getTimeSinceHit() - partialTicks;
         float f1 = entityIn.getDamageTaken() - partialTicks;
         if (f1 < 0.0F) {
@@ -51,9 +51,9 @@ abstract class RenderSemiblockBase<T extends EntitySemiblockBase> extends Entity
         }
 
         if (f > 0.0F) {
-            Vector3d look = Minecraft.getInstance().player.getViewVector(partialTicks);
+            Vec3 look = Minecraft.getInstance().player.getViewVector(partialTicks);
             Vector3f wobble = new Vector3f((float)look.z(), 0.0F, -(float)look.x());
-            matrixStack.mulPose(wobble.rotationDegrees(MathHelper.sin(f) * f * f1 / 10.0F * 1));
+            matrixStack.mulPose(wobble.rotationDegrees(Mth.sin(f) * f * f1 / 10.0F * 1));
         }
     }
 
@@ -71,8 +71,8 @@ abstract class RenderSemiblockBase<T extends EntitySemiblockBase> extends Entity
             for (Direction d : LIGHTING_DIRS) {
                 BlockPos pos2 = pos.relative(d);
                 if (!Block.canSupportCenter(entityIn.level, pos2, d.getOpposite())) {
-                    int block = entityIn.level.getBrightness(LightType.BLOCK, pos2);
-                    int sky = entityIn.level.getBrightness(LightType.SKY, pos2);
+                    int block = entityIn.level.getBrightness(LightLayer.BLOCK, pos2);
+                    int sky = entityIn.level.getBrightness(LightLayer.SKY, pos2);
                     return LightTexture.pack(block, sky);
                 }
             }

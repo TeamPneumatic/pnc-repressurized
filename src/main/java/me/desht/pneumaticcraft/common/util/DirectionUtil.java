@@ -17,9 +17,11 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
-import static net.minecraft.util.Direction.*;
+import static net.minecraft.core.Direction.*;
+
+import net.minecraft.core.Direction.Axis;
 
 /**
  * rotateAround() disappeared from Direction in 1.15
@@ -36,49 +38,30 @@ public class DirectionUtil {
     };
 
     public static Direction rotateAround(Direction dir, Direction.Axis axis) {
-        switch (axis) {
-            case X:
-                return dir.getAxis() == Axis.X ? dir : rotateX(dir);
-            case Y:
-                return dir.getAxis() == Axis.Y ? dir : dir.getClockWise();
-            case Z:
-                return dir.getAxis() == Axis.Z ? dir : rotateZ(dir);
-            default:
-                throw new IllegalStateException("Unable to get CW facing for axis " + axis);
-        }
+        return switch (axis) {
+            case X -> dir.getAxis() == Axis.X ? dir : rotateX(dir);
+            case Y -> dir.getAxis() == Axis.Y ? dir : dir.getClockWise();
+            case Z -> dir.getAxis() == Axis.Z ? dir : rotateZ(dir);
+        };
     }
 
     private static Direction rotateX(Direction dir) {
-        switch (dir) {
-            case NORTH:
-                return DOWN;
-            case SOUTH:
-                return UP;
-            case UP:
-                return NORTH;
-            case DOWN:
-                return SOUTH;
-            case EAST:
-            case WEST:
-            default:
-                throw new IllegalStateException("Unable to get X-rotated facing of " + dir);
-        }
+        return switch (dir) {
+            case NORTH -> DOWN;
+            case SOUTH -> UP;
+            case UP -> NORTH;
+            case DOWN -> SOUTH;
+            case EAST, WEST -> throw new IllegalStateException("Unable to get X-rotated facing of " + dir);
+        };
     }
 
     private static Direction rotateZ(Direction dir) {
-        switch (dir) {
-            case EAST:
-                return DOWN;
-            case WEST:
-                return UP;
-            case UP:
-                return EAST;
-            case DOWN:
-                return WEST;
-            case NORTH:
-            case SOUTH:
-            default:
-                throw new IllegalStateException("Unable to get Z-rotated facing of " + dir);
-        }
+        return switch (dir) {
+            case EAST -> DOWN;
+            case WEST -> UP;
+            case UP -> EAST;
+            case DOWN -> WEST;
+            case NORTH, SOUTH -> throw new IllegalStateException("Unable to get Z-rotated facing of " + dir);
+        };
     }
 }

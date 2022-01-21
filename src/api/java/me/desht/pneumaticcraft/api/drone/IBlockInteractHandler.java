@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 
 /**
  * This represents the drone's AI interaction handler. DON'T IMPLEMENT THIS, just use it when passed to

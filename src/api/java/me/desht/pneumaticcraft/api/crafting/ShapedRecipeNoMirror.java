@@ -18,15 +18,15 @@
 package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -44,7 +44,7 @@ public class ShapedRecipeNoMirror extends ShapedRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingContainer inv, Level worldIn) {
         for (int i = 0; i <= inv.getWidth() - this.getRecipeWidth(); ++i) {
             for (int j = 0; j <= inv.getHeight() - this.getRecipeHeight(); ++j) {
                 if (this.checkMatch(inv, i, j)) {
@@ -56,7 +56,7 @@ public class ShapedRecipeNoMirror extends ShapedRecipe {
         return false;
     }
 
-    private boolean checkMatch(CraftingInventory craftingInventory, int width, int height) {
+    private boolean checkMatch(CraftingContainer craftingInventory, int width, int height) {
         for (int i = 0; i < craftingInventory.getWidth(); ++i) {
             for (int j = 0; j < craftingInventory.getHeight(); ++j) {
                 int k = i - width;
@@ -76,7 +76,7 @@ public class ShapedRecipeNoMirror extends ShapedRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return SERIALIZER;
     }
 
@@ -89,13 +89,13 @@ public class ShapedRecipeNoMirror extends ShapedRecipe {
 
         @Nullable
         @Override
-        public ShapedRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public ShapedRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             ShapedRecipe r = super.fromNetwork(recipeId, buffer);
             return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, ShapedRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, ShapedRecipe recipe) {
             super.toNetwork(buffer, recipe);
         }
     }

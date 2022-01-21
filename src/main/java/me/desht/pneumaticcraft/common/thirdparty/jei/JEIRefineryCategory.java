@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -29,9 +29,9 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collections;
@@ -49,7 +49,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
         super(ModCategoryUid.REFINERY, RefineryRecipe.class,
                 xlate(ModBlocks.REFINERY.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_REFINERY, 6, 15, 166, 79),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.REFINERY.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.REFINERY.get()))
         );
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
@@ -78,7 +78,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     }
 
     @Override
-    public void draw(RefineryRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(RefineryRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                 id -> WidgetTemperature.fromOperatingRange(26, 18, recipe.getOperatingTemp()));
         w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
@@ -86,7 +86,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(RefineryRecipe recipe, double mouseX, double mouseY) {
+    public List<Component> getTooltipStrings(RefineryRecipe recipe, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
             return ImmutableList.of(HeatUtil.formatHeatString(recipe.getOperatingTemp().asString(TemperatureScale.CELSIUS)));

@@ -26,12 +26,12 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.client.gui.widget.Slider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.gui.widget.Slider;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox,TileEntityUVLightBox> implements Slider.ISlider {
     private Slider slider;
 
-    public GuiUVLightBox(ContainerUVLightBox container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiUVLightBox(ContainerUVLightBox container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 196;
@@ -50,13 +50,13 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     public void init() {
         super.init();
 
-        addButton(slider = new Slider(leftPos + 10, topPos + 45, 95, 16,
-                xlate("pneumaticcraft.gui.uv_light_box.threshold").append(" "), new StringTextComponent("%"),
+        addRenderableWidget(slider = new Slider(leftPos + 10, topPos + 45, 95, 16,
+                xlate("pneumaticcraft.gui.uv_light_box.threshold").append(" "), new TextComponent("%"),
                 1, 100, te.getThreshold(), false, true, b -> { }, this));
     }
 
     @Override
-    public void tick() {
+    public void containerTick() {
         boolean interpolate = te.rsController.getCurrentMode() == TileEntityUVLightBox.RS_MODE_INTERPOLATE;
         if (firstUpdate || interpolate) {
             // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
@@ -66,7 +66,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
         slider.active = !interpolate;
         slider.visible = !interpolate || te.getRedstoneController().getCurrentRedstonePower() > 0;
 
-        super.tick();
+        super.containerTick();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> textList) {
+    protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
 
         if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_SLOT).isEmpty()) {
@@ -93,7 +93,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     }
 
     @Override
-    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+    protected void addPressureStatInfo(List<Component> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         BlockState state = te.getBlockState();
         if (state.getBlock() instanceof BlockUVLightBox && state.getValue(BlockUVLightBox.LIT)) {

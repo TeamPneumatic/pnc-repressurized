@@ -24,39 +24,40 @@ import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.passive.horse.HorseEntity;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
-public class EntityMicromissile extends ThrowableEntity {
+public class EntityMicromissile extends ThrowableProjectile {
     private static final double SEEK_RANGE = 24;
 
-    private static final DataParameter<Integer> TARGET_ID = EntityDataManager.defineId(EntityMicromissile.class, DataSerializers.INT);
-    private static final DataParameter<Float> MAX_VEL_SQ = EntityDataManager.defineId(EntityMicromissile.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> ACCEL = EntityDataManager.defineId(EntityMicromissile.class, DataSerializers.FLOAT);
-    private static final DataParameter<Float> TURN_SPEED = EntityDataManager.defineId(EntityMicromissile.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(EntityMicromissile.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> MAX_VEL_SQ = SynchedEntityData.defineId(EntityMicromissile.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> ACCEL = SynchedEntityData.defineId(EntityMicromissile.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> TURN_SPEED = SynchedEntityData.defineId(EntityMicromissile.class, EntityDataSerializers.FLOAT);
 
     private Entity targetEntity = null;
 
@@ -68,36 +69,36 @@ public class EntityMicromissile extends ThrowableEntity {
     private boolean outOfFuel = false;
     private FireMode fireMode = FireMode.SMART;
 
-    public EntityMicromissile(EntityType<EntityMicromissile> type, World worldIn) {
+    public EntityMicromissile(EntityType<EntityMicromissile> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    public EntityMicromissile(World worldIn, LivingEntity thrower, ItemStack iStack) {
+    public EntityMicromissile(Level worldIn, LivingEntity thrower, ItemStack iStack) {
         super(ModEntities.MICROMISSILE.get(), thrower, worldIn);
 
         if (iStack.hasTag()) {
-            CompoundNBT tag = iStack.getTag();
+            CompoundTag tag = Objects.requireNonNull(iStack.getTag());
             entityFilter = EntityFilter.fromString(tag.getString(ItemMicromissiles.NBT_FILTER));
             fireMode = FireMode.fromString(tag.getString(ItemMicromissiles.NBT_FIRE_MODE));
             switch (fireMode) {
-                case SMART:
+                case SMART -> {
                     accel = Math.max(1.02f, 1.0f + tag.getFloat(ItemMicromissiles.NBT_TOP_SPEED) / 10f);
                     maxVelocitySq = (float) Math.pow(0.25 + tag.getFloat(ItemMicromissiles.NBT_TOP_SPEED) * 3.75f, 2);
                     turnSpeed = 0.4f * tag.getFloat(ItemMicromissiles.NBT_TURN_SPEED);
                     explosionPower = Math.max(1f, 5 * tag.getFloat(ItemMicromissiles.NBT_DAMAGE));
-                    break;
-                case DUMB:
+                }
+                case DUMB -> {
                     accel = 1.5f;
                     maxVelocitySq = 6.25f;
                     turnSpeed = 0f;
                     explosionPower = 3f;
-                    break;
+                }
             }
         }
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -110,7 +111,7 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     @Override
-    public void onSyncedDataUpdated(DataParameter<?> key) {
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (getCommandSenderWorld().isClientSide) {
             if (key.equals(MAX_VEL_SQ)) {
                 maxVelocitySq = entityData.get(MAX_VEL_SQ);
@@ -131,7 +132,7 @@ public class EntityMicromissile extends ThrowableEntity {
 
         if (tickCount == 1) {
             if (getCommandSenderWorld().isClientSide) {
-                getCommandSenderWorld().playLocalSound(getX(), getY(), getZ(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundCategory.PLAYERS, 1.0f, 0.8f, true);
+                getCommandSenderWorld().playLocalSound(getX(), getY(), getZ(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.PLAYERS, 1.0f, 0.8f, true);
             } else {
                 entityData.set(MAX_VEL_SQ, maxVelocitySq);
                 entityData.set(ACCEL, accel);
@@ -157,7 +158,7 @@ public class EntityMicromissile extends ThrowableEntity {
 
             if (targetEntity != null) {
                 // turn toward the target
-                Vector3d diff = targetEntity.position().add(0, targetEntity.getEyeHeight(), 0).subtract(position()).normalize().scale(turnSpeed);
+                Vec3 diff = targetEntity.position().add(0, targetEntity.getEyeHeight(), 0).subtract(position()).normalize().scale(turnSpeed);
                 setDeltaMovement(getDeltaMovement().add(diff));
             }
 
@@ -167,23 +168,23 @@ public class EntityMicromissile extends ThrowableEntity {
             setDeltaMovement(getDeltaMovement().scale(mul));
 
             if (getCommandSenderWorld().isClientSide && getCommandSenderWorld().random.nextBoolean()) {
-                Vector3d m = getDeltaMovement();
+                Vec3 m = getDeltaMovement();
                 level.addParticle(AirParticleData.DENSE, getX(), getY(), getZ(), -m.x/2, -m.y/2, -m.z/2);
             }
         }
     }
 
     private Entity tryFindNewTarget() {
-        AxisAlignedBB aabb = new AxisAlignedBB(getX(), getY(), getZ(), getX(), getY(), getZ()).inflate(SEEK_RANGE);
-        List<Entity> l = getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, aabb, EntityPredicates.ENTITY_STILL_ALIVE);
+        AABB aabb = new AABB(getX(), getY(), getZ(), getX(), getY(), getZ()).inflate(SEEK_RANGE);
+        List<LivingEntity> l = getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
         l.sort(new TargetSorter());
         Entity tgt = null;
         // find the closest entity which matches this missile's entity filter
         for (Entity e : l) {
             if (isValidTarget(e) && e.distanceToSqr(this) < SEEK_RANGE * SEEK_RANGE) {
-                RayTraceContext ctx = new RayTraceContext(position(), e.position().add(0, e.getEyeHeight(), 0), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, e);
-                RayTraceResult res = getCommandSenderWorld().clip(ctx);
-                if (res.getType() == RayTraceResult.Type.MISS || res.getType() == RayTraceResult.Type.ENTITY) {
+                ClipContext ctx = new ClipContext(position(), e.position().add(0, e.getEyeHeight(), 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e);
+                HitResult res = getCommandSenderWorld().clip(ctx);
+                if (res.getType() == HitResult.Type.MISS || res.getType() == HitResult.Type.ENTITY) {
                     tgt = e;
                     break;
                 }
@@ -198,9 +199,9 @@ public class EntityMicromissile extends ThrowableEntity {
         Entity thrower = getOwner();  // getThrower()
         if (thrower != null) {
             if (e.equals(thrower)
-                    || e instanceof TameableEntity && thrower.equals(((TameableEntity) e).getOwner())
+                    || e instanceof TamableAnimal && thrower.equals(((TamableAnimal) e).getOwner())
                     || e instanceof EntityDrone && thrower.getUUID().equals(((EntityDrone) e).getOwnerUUID())
-                    || e instanceof HorseEntity && thrower.getUUID().equals(((HorseEntity) e).getOwnerUUID())) {
+                    || e instanceof Horse && thrower.getUUID().equals(((Horse) e).getOwnerUUID())) {
                 return false;
             }
         }
@@ -209,19 +210,19 @@ public class EntityMicromissile extends ThrowableEntity {
             return false;
         }
 
-        return e instanceof LivingEntity || e instanceof BoatEntity || e instanceof AbstractMinecartEntity;
+        return e instanceof LivingEntity || e instanceof Boat || e instanceof AbstractMinecart;
     }
 
     @Override
-    protected void onHit(RayTraceResult result) {
+    protected void onHit(HitResult result) {
         if (tickCount > 5 && !getCommandSenderWorld().isClientSide && isAlive()) {
-            explode(result instanceof EntityRayTraceResult ? ((EntityRayTraceResult) result).getEntity() : null);
+            explode(result instanceof EntityHitResult ? ((EntityHitResult) result).getEntity() : null);
         }
     }
 
     private void explode(Entity e) {
-        remove();
-        Explosion.Mode mode = ConfigHelper.common().micromissiles.damageTerrain.get() ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
+        discard();
+        Explosion.BlockInteraction mode = ConfigHelper.common().micromissiles.damageTerrain.get() ? Explosion.BlockInteraction.BREAK : Explosion.BlockInteraction.NONE;
         double x, y, z;
         if (e == null) {
             x = getX();
@@ -229,9 +230,9 @@ public class EntityMicromissile extends ThrowableEntity {
             z = getZ();
         } else {
             // make the explosion closer to the target entity (a fast projectile's position could be a little distance away)
-            x = MathHelper.lerp(0.25f, e.getX(), getX());
-            y = MathHelper.lerp(0.25f, e.getY(), getY());
-            z = MathHelper.lerp(0.25f, e.getZ(), getZ());
+            x = Mth.lerp(0.25f, e.getX(), getX());
+            y = Mth.lerp(0.25f, e.getY(), getY());
+            z = Mth.lerp(0.25f, e.getZ(), getZ());
         }
         getCommandSenderWorld().explode(this, x, y, z, ConfigHelper.common().micromissiles.baseExplosionDamage.get().floatValue() * explosionPower, false, mode);
     }
@@ -239,9 +240,9 @@ public class EntityMicromissile extends ThrowableEntity {
     // shoot()
     @Override
     public void shootFromRotation(Entity entityThrower, float pitch, float yaw, float pitchOffset, float velocity, float inaccuracy) {
-        float x = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-        float y = -MathHelper.sin(pitch * 0.017453292F);
-        float z = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+        float x = -Mth.sin(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
+        float y = -Mth.sin(pitch * 0.017453292F);
+        float z = Mth.cos(yaw * 0.017453292F) * Mth.cos(pitch * 0.017453292F);
         this.shoot(x, y, z, velocity, 0f);
         setDeltaMovement(getDeltaMovement().add(entityThrower.getDeltaMovement().x, 0, entityThrower.getDeltaMovement().z));
     }
@@ -254,11 +255,11 @@ public class EntityMicromissile extends ThrowableEntity {
         z = z / f * velocity;
         setDeltaMovement(x, y, z);
 
-        float f1 = MathHelper.sqrt(x * x + z * z);
-        this.yRot = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
-        this.xRot = (float)(MathHelper.atan2(y, f1) * (180D / Math.PI));
-        this.yRotO = this.yRot;
-        this.xRotO = this.xRot;
+        float f1 = Mth.sqrt((float) (x * x + z * z));
+        this.setYRot((float)(Mth.atan2(x, z) * (180D / Math.PI)));
+        this.setXRot((float)(Mth.atan2(y, f1) * (180D / Math.PI)));
+        this.yRotO = this.getYRot();
+        this.xRotO = this.getXRot();
     }
 
     @Override
@@ -272,7 +273,7 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound) {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("turnSpeed", turnSpeed);
         compound.putFloat("explosionScaling", explosionPower);
@@ -281,7 +282,7 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound) {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         turnSpeed = compound.getFloat("turnSpeed");
         explosionPower = compound.getFloat("explosionScaling");
@@ -294,7 +295,7 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     private class TargetSorter implements Comparator<Entity> {
-        private final Vector3d vec;
+        private final Vec3 vec;
 
         TargetSorter() {
             vec = position();

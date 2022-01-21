@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEmitRedstone;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 
 public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidgetEmitRedstone> {
 
@@ -38,16 +38,16 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
         super.init();
 
         for (Direction dir : DirectionUtil.VALUES) {
-            ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
+            Component sideName = ClientUtils.translateDirectionComponent(dir);
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
                     b -> progWidget.getSides()[dir.get3DDataValue()] = b.checked);
             checkBox.checked = progWidget.getSides()[dir.get3DDataValue()];
-            addButton(checkBox);
+            addRenderableWidget(checkBox);
         }
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         font.draw(matrixStack, I18n.get("pneumaticcraft.gui.progWidget.general.affectingSides"), guiLeft + 8, guiTop + 20, 0xFF604040);

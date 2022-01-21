@@ -17,31 +17,30 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressureChamberValve> {
+public class RenderPressureChamber implements BlockEntityRenderer<TileEntityPressureChamberValve> {
 
-    public RenderPressureChamber(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public RenderPressureChamber(@SuppressWarnings("unused") BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityPressureChamberValve te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(TileEntityPressureChamberValve te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
        if (te.multiBlockSize == 0 || !te.hasGlass) return;
 
         List<ItemStack> stacks = te.renderedItems;
@@ -60,8 +59,8 @@ public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressure
             float degreesPerStack = 360f / stacks.size();
 
             // some gentle rotation and bobbing looks good here
-            double ticks = Minecraft.getInstance().level.getGameTime() + partialTicks;
-            float yBob = MathHelper.sin(((float) ticks  / 10) % 360) * 0.01f;
+            double ticks = te.nonNullLevel().getGameTime() + partialTicks;
+            float yBob = Mth.sin(((float) ticks  / 10) % 360) * 0.01f;
             float yRot = (float) (ticks / 2) % 360;
 
             for (int i = 0; i < stacks.size(); i++) {
@@ -72,8 +71,8 @@ public class RenderPressureChamber extends TileEntityRenderer<TileEntityPressure
                 matrixStackIn.scale(0.5f, 0.5f, 0.5f);
 
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                IBakedModel ibakedmodel = itemRenderer.getModel(stacks.get(i), te.getLevel(), null);
-                itemRenderer.render(stacks.get(i), ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, light, combinedOverlayIn, ibakedmodel);
+                BakedModel bakedModel = itemRenderer.getModel(stacks.get(i), te.getLevel(), null, 0);
+                itemRenderer.render(stacks.get(i), ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, light, combinedOverlayIn, bakedModel);
 
                 matrixStackIn.popPose();
             }

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import com.google.common.base.Predicate;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;

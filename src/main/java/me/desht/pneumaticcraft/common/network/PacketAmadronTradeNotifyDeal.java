@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -43,14 +43,14 @@ public class PacketAmadronTradeNotifyDeal extends PacketAbstractAmadronTrade {
         this.buyingPlayer = buyingPlayer;
     }
 
-    public PacketAmadronTradeNotifyDeal(PacketBuffer buffer) {
+    public PacketAmadronTradeNotifyDeal(FriendlyByteBuf buffer) {
         super(buffer);
         offerAmount = buffer.readInt();
         buyingPlayer = buffer.readUtf();
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeInt(offerAmount);
         buf.writeUtf(buyingPlayer);

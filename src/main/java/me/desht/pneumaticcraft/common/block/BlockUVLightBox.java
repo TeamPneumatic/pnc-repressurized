@@ -4,28 +4,28 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.RedstoneTorchBlock;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockDisplayReader;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.RedstoneTorchBlock;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
 
 import javax.annotation.Nullable;
 
-public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
+public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock, EntityBlockPneumaticCraft {
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
-    private static final VoxelShape SHAPE_N = VoxelShapes.join(Block.box(1, 0, 2, 15, 14, 14), Block.box(15, 5, 5, 16, 11, 11), IBooleanFunction.OR);
+    private static final VoxelShape SHAPE_N = Shapes.join(Block.box(1, 0, 2, 15, 14, 14), Block.box(15, 5, 5, 16, 11, 11), BooleanOp.OR);
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
@@ -38,31 +38,16 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(LOADED, LIT);
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         Direction d = state.getValue(directionProperty());
         return SHAPES[d.get2DDataValue()];
     }
-
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityUVLightBox.class;
-    }
-
-    @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return state.getValue(LIT) ? 15 : 0;
-    }
-
-//    @Override
-//    public int getLightValue(BlockState state) {
-//        return state.get(LIT) ? 15 : 0;
-//    }
 
     @Override
     public boolean isRotatable() {
@@ -70,10 +55,16 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
             return state.hasProperty(BlockUVLightBox.LIT) && state.getValue(BlockUVLightBox.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
         }
         return 0xFFAFAFE4;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityUVLightBox(pPos, pState);
     }
 }

@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.KeyMapping;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -41,14 +41,14 @@ public class KeyHandler {
 
     private static final KeyHandler INSTANCE = new KeyHandler();
 
-    public final KeyBinding keybindOpenOptions;
-    public final KeyBinding keybindHack;
-    public final KeyBinding keybindDebuggingDrone;
-    public final KeyBinding keybindKick;
-    public final KeyBinding keybindLauncher;
-    public final KeyBinding keybindJetBoots;
+    public final KeyMapping keybindOpenOptions;
+    public final KeyMapping keybindHack;
+    public final KeyMapping keybindDebuggingDrone;
+    public final KeyMapping keybindKick;
+    public final KeyMapping keybindLauncher;
+    public final KeyMapping keybindJetBoots;
     private final List<IKeyListener> keyListeners = new ArrayList<>();
-    private final List<KeyBinding> keys = new ArrayList<>();
+    private final List<KeyMapping> keys = new ArrayList<>();
 
     public static KeyHandler getInstance() {
         return INSTANCE;
@@ -57,21 +57,21 @@ public class KeyHandler {
     private KeyHandler() {
         registerKeyListener(HUDHandler.getInstance());
 
-        keybindOpenOptions = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_ARMOR_OPTIONS, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
-        keybindHack = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_HACK, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
-        keybindDebuggingDrone = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_DEBUGGING_DRONE, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
-        keybindKick = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_BOOTS_KICK, KeyConflictContext.IN_GAME,
-                KeyModifier.CONTROL, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_X, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
-        keybindLauncher = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_LAUNCHER, KeyConflictContext.IN_GAME,
-                KeyModifier.CONTROL, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_C, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
-        keybindJetBoots = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_JET_BOOTS, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_SPACE, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+        keybindOpenOptions = registerKeyBinding(new KeyMapping(KeyHandler.DESCRIPTION_ARMOR_OPTIONS, KeyConflictContext.IN_GAME,
+                KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+        keybindHack = registerKeyBinding(new KeyMapping(KeyHandler.DESCRIPTION_HELMET_HACK, KeyConflictContext.IN_GAME,
+                KeyModifier.NONE, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+        keybindDebuggingDrone = registerKeyBinding(new KeyMapping(KeyHandler.DESCRIPTION_HELMET_DEBUGGING_DRONE, KeyConflictContext.IN_GAME,
+                KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+        keybindKick = registerKeyBinding(new KeyMapping(KeyHandler.DESCRIPTION_BOOTS_KICK, KeyConflictContext.IN_GAME,
+                KeyModifier.CONTROL, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_X, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+        keybindLauncher = registerKeyBinding(new KeyMapping(KeyHandler.DESCRIPTION_LAUNCHER, KeyConflictContext.IN_GAME,
+                KeyModifier.CONTROL, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_C, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+        keybindJetBoots = registerKeyBinding(new KeyMapping(KeyHandler.DESCRIPTION_JET_BOOTS, KeyConflictContext.IN_GAME,
+                KeyModifier.NONE, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_SPACE, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
     }
 
-    private KeyBinding registerKeyBinding(KeyBinding keyBinding) {
+    private KeyMapping registerKeyBinding(KeyMapping keyBinding) {
         ClientRegistry.registerKeyBinding(keyBinding);
         keys.add(keyBinding);
         return keyBinding;
@@ -83,7 +83,7 @@ public class KeyHandler {
 
     @SubscribeEvent
     public void onKey(InputEvent.KeyInputEvent event) {
-        for (KeyBinding key : keys) {
+        for (KeyMapping key : keys) {
             if (key.consumeClick()) {
                 dispatchInput(key);
             }
@@ -92,14 +92,14 @@ public class KeyHandler {
 
     @SubscribeEvent
     public void onMouse(InputEvent.MouseInputEvent event) {
-        for (KeyBinding key : keys) {
+        for (KeyMapping key : keys) {
             if (key.consumeClick()) {
                 dispatchInput(key);
             }
         }
     }
 
-    private void dispatchInput(KeyBinding keybinding) {
+    private void dispatchInput(KeyMapping keybinding) {
         for (IKeyListener listener : keyListeners) {
             listener.handleInput(keybinding);
         }

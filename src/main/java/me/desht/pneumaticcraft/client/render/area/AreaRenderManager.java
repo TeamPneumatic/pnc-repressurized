@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.area;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
@@ -31,22 +31,23 @@ import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -61,7 +62,7 @@ public enum AreaRenderManager {
     private static final int MAX_DISPLAYED_POS = 15000;
 
     private final Map<BlockPos, AreaRenderer> showHandlers = new HashMap<>();
-    private World world;
+    private Level world;
     private DroneDebugClientHandler droneDebugger;
 
     private List<AreaRenderer> cachedPositionProviderShowers;
@@ -76,16 +77,16 @@ public enum AreaRenderManager {
     }
 
     @SubscribeEvent
-    public void renderWorldLastEvent(RenderWorldLastEvent event) {
+    public void renderWorldLastEvent(RenderLevelLastEvent event) {
         Minecraft mc = Minecraft.getInstance();
-        PlayerEntity player = mc.player;
+        Player player = mc.player;
 
-        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        MatrixStack matrixStack = event.getMatrixStack();
+        MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        PoseStack matrixStack = event.getPoseStack();
 
         matrixStack.pushPose();
 
-        Vector3d projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
         // tile entity controlled renderers
@@ -105,7 +106,7 @@ public enum AreaRenderManager {
 
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
-        PlayerEntity player = ClientUtils.getClientPlayer();
+        Player player = ClientUtils.getClientPlayer();
         if (player != null) {
             if (player.level != world) {
                 world = player.level;
@@ -118,7 +119,7 @@ public enum AreaRenderManager {
         }
     }
 
-    private void maybeRenderAreaTool(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
+    private void maybeRenderAreaTool(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
         ItemStack curItem = getHeldPositionProvider(player);
         if (curItem.getItem() instanceof ItemGPSAreaTool) {
             // show the raw P1/P2 positions; the area is shown by getHeldPositionProvider()
@@ -129,8 +130,8 @@ public enum AreaRenderManager {
         }
     }
 
-    private void maybeRenderDroneDebug(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
-        ItemStack helmet = player.getItemBySlot(EquipmentSlotType.HEAD);
+    private void maybeRenderDroneDebug(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
+        ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
             if (droneDebugger == null) {
                 droneDebugger = ArmorUpgradeClientRegistry.getInstance()
@@ -143,7 +144,7 @@ public enum AreaRenderManager {
         }
     }
 
-    private ItemStack getHeldPositionProvider(PlayerEntity player) {
+    private ItemStack getHeldPositionProvider(Player player) {
         if (player.getMainHandItem().getItem() instanceof IPositionProvider) {
             return player.getMainHandItem();
         } else if (player.getOffhandItem().getItem() instanceof IPositionProvider) {
@@ -153,7 +154,7 @@ public enum AreaRenderManager {
         }
     }
 
-    private void maybeRenderPositionProvider(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
+    private void maybeRenderPositionProvider(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
         ItemStack curItem = getHeldPositionProvider(player);
         if (curItem.getItem() instanceof IPositionProvider && curItem.hasTag()) {
             int thisHash = curItem.getTag().hashCode();
@@ -164,7 +165,7 @@ public enum AreaRenderManager {
                 List<BlockPos> posList = positionProvider.getStoredPositions(player.getCommandSenderWorld(), curItem);
                 if (posList.size() > MAX_DISPLAYED_POS) {
                     posList.sort(Comparator.comparingDouble(blockPos -> blockPos.distSqr(player.blockPosition())));
-                    player.displayClientMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).withStyle(TextFormatting.GOLD), false);
+                    player.displayClientMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).withStyle(ChatFormatting.GOLD), false);
                 }
                 Int2ObjectMap<Set<BlockPos>> colorsToPositions = new Int2ObjectOpenHashMap<>();
                 int n = Math.min(posList.size(), MAX_DISPLAYED_POS);
@@ -192,15 +193,15 @@ public enum AreaRenderManager {
         }
     }
 
-    private void maybeRenderCamo(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
+    private void maybeRenderCamo(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
         if (!(player.getMainHandItem().getItem() instanceof ItemCamoApplicator)) {
             return;
         }
         if (lastPlayerPos == null || camoPositionShower == null || player.distanceToSqr(lastPlayerPos.getX(), lastPlayerPos.getY(), lastPlayerPos.getZ()) > 9) {
             lastPlayerPos = player.blockPosition();
-            Set<BlockPos> s = Minecraft.getInstance().level.blockEntityList.stream()
+            Set<BlockPos> s = getNearbyBlockEntities().stream()
                     .filter(te -> te instanceof ICamouflageableTE && te.getBlockPos().distSqr(lastPlayerPos) < 144)
-                    .map(TileEntity::getBlockPos)
+                    .map(BlockEntity::getBlockPos)
                     .collect(Collectors.toSet());
             camoPositionShower = AreaRenderer.builder().withColor(0x408080FF).withSize(0.75f).xray().drawShapes().build(s);
         }
@@ -209,26 +210,38 @@ public enum AreaRenderManager {
         }
     }
 
-    private void maybeRenderJackhammer(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
+    private Collection<BlockEntity> getNearbyBlockEntities() {
+        List<BlockEntity> res = new ArrayList<>();
+        BlockPos pos = ClientUtils.getClientPlayer().blockPosition();
+        for (int x = pos.getX() - 16; x <= pos.getX() + 16; x += 16) {
+            for (int z = pos.getZ() - 16; z <= pos.getZ() + 16; z += 16) {
+                ChunkPos cp = new ChunkPos(pos);
+                res.addAll(ClientUtils.getClientLevel().getChunk(cp.x, cp.z).getBlockEntities().values());
+            }
+        }
+        return res;
+    }
+
+    private void maybeRenderJackhammer(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
         if (world == null
                 || !(player.getMainHandItem().getItem() instanceof ItemJackHammer)
-                || !((Minecraft.getInstance().hitResult) instanceof BlockRayTraceResult)) {
+                || !((Minecraft.getInstance().hitResult) instanceof BlockHitResult)) {
             return;
         }
         ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(player.getMainHandItem());
         if (digMode == ItemJackHammer.DigMode.MODE_1X1) return;
 
-        BlockRayTraceResult brtr = (BlockRayTraceResult) Minecraft.getInstance().hitResult;
-        if (!world.isAreaLoaded(brtr.getBlockPos(), 1) || world.getBlockState(brtr.getBlockPos()).isAir(world, brtr.getBlockPos())) return;
+        BlockHitResult brtr = (BlockHitResult) Minecraft.getInstance().hitResult;
+        if (!world.isAreaLoaded(brtr.getBlockPos(), 1) || world.getBlockState(brtr.getBlockPos()).isAir()) return;
 
         if (!lastJackhammerDetails.matches(brtr.getBlockPos(), brtr.getDirection(), digMode)) {
             BlockState state = world.getBlockState(brtr.getBlockPos());
-            Set<BlockPos> posSet = world.getBlockEntity(brtr.getBlockPos()) == null && !(state.getBlock() instanceof FlowingFluidBlock) ?
+            Set<BlockPos> posSet = world.getBlockEntity(brtr.getBlockPos()) == null && !(state.getBlock() instanceof LiquidBlock) ?
                     ItemJackHammer.getBreakPositions(world, brtr.getBlockPos(), brtr.getDirection(), player.getDirection(), digMode) :
                     Collections.emptySet();
             if (!posSet.isEmpty()) posSet.add(brtr.getBlockPos());
             AreaRenderer.Builder b = AreaRenderer.builder().withColor(0x20FFFFFF).withSize(1.01f).disableWriteMask();
-            if (state.getShape(world, brtr.getBlockPos()) != (VoxelShapes.block())) b = b.drawShapes();
+            if (state.getShape(world, brtr.getBlockPos()) != (Shapes.block())) b = b.drawShapes();
             jackhammerPositionShower = b.build(posSet);
             lastJackhammerDetails = new LastJackhammerDetails(brtr.getBlockPos(), brtr.getDirection(), digMode);
         }
@@ -236,11 +249,11 @@ public enum AreaRenderManager {
     }
 
 
-    public AreaRenderer showArea(BlockPos[] area, int color, TileEntity areaShower) {
+    public AreaRenderer showArea(BlockPos[] area, int color, BlockEntity areaShower) {
         return showArea(new HashSet<>(Arrays.asList(area)), color, areaShower);
     }
 
-    public AreaRenderer showArea(Set<BlockPos> area, int color, TileEntity areaShower, boolean depth) {
+    public AreaRenderer showArea(Set<BlockPos> area, int color, BlockEntity areaShower, boolean depth) {
         if (areaShower == null) return null;
         removeHandlers(areaShower);
         AreaRenderer.Builder builder = AreaRenderer.builder().withColor(color);
@@ -250,15 +263,15 @@ public enum AreaRenderManager {
         return handler;
     }
 
-    public AreaRenderer showArea(Set<BlockPos> area, int color, TileEntity areaShower) {
+    public AreaRenderer showArea(Set<BlockPos> area, int color, BlockEntity areaShower) {
         return showArea(area, color, areaShower, true);
     }
 
-    public boolean isShowing(TileEntity te) {
+    public boolean isShowing(BlockEntity te) {
         return showHandlers.containsKey(new BlockPos(te.getBlockPos().getX(), te.getBlockPos().getY(), te.getBlockPos().getZ()));
     }
 
-    public void removeHandlers(TileEntity te) {
+    public void removeHandlers(BlockEntity te) {
         showHandlers.remove(new BlockPos(te.getBlockPos().getX(), te.getBlockPos().getY(), te.getBlockPos().getZ()));
     }
 

@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.api.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Should be implemented by any block or entity that can be clicked by a Pneumatic Wrench. It uses almost the same
@@ -30,7 +30,7 @@ import net.minecraft.world.World;
  * Also, this method gets passed the player who did the rotation.
  */
 public interface IPneumaticWrenchable {
-    boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand);
+    boolean onWrenched(Level world, Player player, BlockPos pos, Direction side, InteractionHand hand);
 
     static IPneumaticWrenchable forBlock(Block b) {
         return b instanceof IPneumaticWrenchable ? (IPneumaticWrenchable) b : null;

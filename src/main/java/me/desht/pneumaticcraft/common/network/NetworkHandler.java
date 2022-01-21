@@ -34,20 +34,20 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,8 +59,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_CLIENT;
-import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_SERVER;
+import static net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT;
+import static net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER;
 
 public class NetworkHandler {
     private static final String PROTOCOL_VERSION = "8";
@@ -218,11 +218,11 @@ public class NetworkHandler {
 				PacketMinigunStop::toBytes, PacketMinigunStop::new, PacketMinigunStop::handle, PLAY_TO_CLIENT);
     }
 
-	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
+	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
 		NETWORK.registerMessage(nextId(), messageType, encoder, decoder, messageConsumer);
 	}
 
-	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer, NetworkDirection direction) {
+	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer, NetworkDirection direction) {
 		NETWORK.registerMessage(nextId(), messageType, encoder, decoder, messageConsumer, Optional.of(direction));
 	}
 
@@ -230,7 +230,7 @@ public class NetworkHandler {
 		sendMessage(message, msg -> NETWORK.send(PacketDistributor.ALL.noArg(), msg));
     }
 
-    public static void sendToPlayer(Object message, ServerPlayerEntity player) {
+    public static void sendToPlayer(Object message, ServerPlayer player) {
 		sendMessage(message, msg -> NETWORK.send(PacketDistributor.PLAYER.with(() -> player), msg));
     }
 
@@ -238,17 +238,17 @@ public class NetworkHandler {
     	sendMessage(message, msg -> NETWORK.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), msg));
 	}
 
-	public static void sendToAllTracking(Object message, World world, BlockPos pos) {
+	public static void sendToAllTracking(Object message, Level world, BlockPos pos) {
 		sendMessage(message, msg -> NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), msg));
 	}
 
-	public static void sendToAllTracking(Object message, TileEntity te) {
+	public static void sendToAllTracking(Object message, BlockEntity te) {
     	if (te.getLevel() != null) {
     		sendToAllTracking(message, te.getLevel(), te.getBlockPos());
 		}
     }
 
-	public static void sendToDimension(Object message, RegistryKey<World> world) {
+	public static void sendToDimension(Object message, ResourceKey<Level> world) {
 		sendMessage(message, msg -> NETWORK.send(PacketDistributor.DIMENSION.with(() -> world), msg));
     }
 
@@ -267,7 +267,7 @@ public class NetworkHandler {
 			if (server.isDedicatedServer()) {
 				sendToAll(packet);
 			} else {
-				for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
+				for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 					if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
 						sendToPlayer(packet, player);
 					}
@@ -281,7 +281,7 @@ public class NetworkHandler {
 	 * @param player the player
 	 * @param packet the packet to send
 	 */
-	public static void sendNonLocal(ServerPlayerEntity player, Object packet) {
+	public static void sendNonLocal(ServerPlayer player, Object packet) {
 		if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
 			sendToPlayer(packet, player);
 		}
@@ -290,7 +290,7 @@ public class NetworkHandler {
 	private static void sendMessage(Object message, Consumer<Object> consumer) {
 		if (message instanceof ILargePayload) {
 			// see PacketMultiHeader#receivePayload for message reassembly
-			PacketBuffer buf = ((ILargePayload) message).dumpToBuffer();
+			FriendlyByteBuf buf = ((ILargePayload) message).dumpToBuffer();
 			if (buf.writerIndex() < ILargePayload.MAX_PAYLOAD_SIZE) {
 				consumer.accept(message);
 			} else {

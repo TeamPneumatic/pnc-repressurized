@@ -21,19 +21,19 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.properties.ChestType;
-import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -46,8 +46,8 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     private static final ResourceLocation ID = RL("block_tracker.module.inventories");
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
-        if (te instanceof ChestTileEntity && state.hasProperty(ChestBlock.TYPE) && state.getValue(ChestBlock.TYPE) == ChestType.RIGHT) {
+    public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
+        if (te instanceof ChestBlockEntity && state.hasProperty(ChestBlock.TYPE) && state.getValue(ChestBlock.TYPE) == ChestType.RIGHT) {
             // we'll only track the left side of double chest directly
             return false;
         }
@@ -59,9 +59,9 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     }
 
     @Override
-    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+    public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
         List<BlockPos> res = new ArrayList<>();
-        if (te instanceof ChestTileEntity && te.getBlockState().getValue(ChestBlock.TYPE) == ChestType.LEFT) {
+        if (te instanceof ChestBlockEntity && te.getBlockState().getValue(ChestBlock.TYPE) == ChestType.LEFT) {
             Direction dir = ChestBlock.getConnectedDirection(te.getBlockState());
             res.add(te.getBlockPos().relative(dir));
         }
@@ -75,7 +75,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
+    public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
         try {
             IOHelper.getInventoryForTE(te, face).ifPresent(inventory -> {
                 boolean empty = true;
@@ -88,10 +88,10 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
                     inventoryStacks[i] = iStack;
                 }
                 if (empty) {
-                    infoList.add(new StringTextComponent("Contents: Empty"));
+                    infoList.add(new TextComponent("Contents: Empty"));
                 } else {
-                    infoList.add(new StringTextComponent("Contents:"));
-                    List<ITextComponent> l = new ArrayList<>();
+                    infoList.add(new TextComponent("Contents:"));
+                    List<Component> l = new ArrayList<>();
                     PneumaticCraftUtils.summariseItemStacks(l, inventoryStacks);
                     infoList.addAll(l);
                 }

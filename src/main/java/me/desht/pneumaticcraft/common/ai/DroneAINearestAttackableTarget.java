@@ -21,10 +21,10 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IMaxActions;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.TargetGoal;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -62,8 +62,7 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
         if (drone.hasMinigun() && drone.getSlotForAmmo() < 0) {
             return false;
         }
-        if (widget instanceof IMaxActions) {
-            IMaxActions m = (IMaxActions) widget;
+        if (widget instanceof IMaxActions m) {
             if (m.useMaxActions() && drone.getAttackCount() >= m.getMaxActions()) {
                 return false;
             }
@@ -81,7 +80,7 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
     }
 
     private boolean shouldIgnore(Entity entity) {
-        return entity.isSpectator() || entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative();
+        return entity.isSpectator() || entity instanceof Player && ((Player) entity).isCreative();
     }
 
     /**

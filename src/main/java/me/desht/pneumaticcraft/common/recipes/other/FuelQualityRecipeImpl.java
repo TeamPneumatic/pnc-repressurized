@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.Validate;
 
@@ -70,23 +70,23 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
     }
 
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
         fuel.toNetwork(buffer);
         buffer.writeInt(airPerBucket);
         buffer.writeFloat(burnRate);
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipes.FUEL_QUALITY.get();
     }
 
     @Override
-    public IRecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return PneumaticCraftRecipeType.FUEL_QUALITY;
     }
 
-    public static class Serializer<T extends FuelQualityRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {
+    public static class Serializer<T extends FuelQualityRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {
@@ -96,15 +96,15 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
         @Override
         public T fromJson(ResourceLocation recipeId, JsonObject json) {
             Ingredient fluidInput = FluidIngredient.fromJson(json.get("fluid"));
-            int airPerBucket = JSONUtils.getAsInt(json, "air_per_bucket");
-            float burnRate = JSONUtils.getAsFloat(json, "burn_rate", 1f);
+            int airPerBucket = GsonHelper.getAsInt(json, "air_per_bucket");
+            float burnRate = GsonHelper.getAsFloat(json, "burn_rate", 1f);
 
             return factory.create(recipeId, (FluidIngredient) fluidInput, airPerBucket, burnRate);
         }
 
         @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             FluidIngredient fluidIn = (FluidIngredient) Ingredient.fromNetwork(buffer);
             int airPerBucket = buffer.readInt();
             float burnRate = buffer.readFloat();
@@ -113,7 +113,7 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, T recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
             recipe.write(buffer);
         }
 

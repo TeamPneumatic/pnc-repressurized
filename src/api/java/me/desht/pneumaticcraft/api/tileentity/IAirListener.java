@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.tileentity;
 
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 import javax.annotation.Nullable;
 import java.util.List;

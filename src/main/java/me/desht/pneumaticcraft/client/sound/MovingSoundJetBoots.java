@@ -23,22 +23,22 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
-import net.minecraft.client.audio.TickableSound;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
 
-public class MovingSoundJetBoots extends TickableSound {
+public class MovingSoundJetBoots extends AbstractTickableSoundInstance {
     private static final int END_TICKS = 20;
-    private static final Vector3d IDLE_VEC = new Vector3d(0, -0.5, 0);
+    private static final Vec3 IDLE_VEC = new Vec3(0, -0.5, 0);
 
-    private final PlayerEntity player;
+    private final Player player;
     private final CommonArmorHandler handler;
     private float targetPitch;
     private int endTimer = Integer.MAX_VALUE;
 
-    public MovingSoundJetBoots(PlayerEntity player) {
-        super(ModSounds.LEAKING_GAS_LOW.get(), SoundCategory.NEUTRAL);
+    public MovingSoundJetBoots(Player player) {
+        super(ModSounds.LEAKING_GAS_LOW.get(), SoundSource.NEUTRAL);
 
         this.player = player;
         this.looping = true;
@@ -109,8 +109,8 @@ public class MovingSoundJetBoots extends TickableSound {
         int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
         if ((jetBootsActive || (player.level.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) && player.distanceToSqr(ClientUtils.getClientPlayer()) < distThresholdSq) {
             int nParticles = jetBootsActive ? 3 : 1;
-            Vector3d jetVec = jetBootsActive && !builderMode ? player.getLookAngle().scale(-0.5) : IDLE_VEC;
-            Vector3d feet = jetBootsActive && !builderMode ?
+            Vec3 jetVec = jetBootsActive && !builderMode ? player.getLookAngle().scale(-0.5) : IDLE_VEC;
+            Vec3 feet = jetBootsActive && !builderMode ?
                     player.position().add(player.getLookAngle().scale(player == ClientUtils.getClientPlayer() ? -4 : -2)) :
                     player.position().add(0, -0.25, 0);
             for (int i = 0; i < nParticles; i++) {

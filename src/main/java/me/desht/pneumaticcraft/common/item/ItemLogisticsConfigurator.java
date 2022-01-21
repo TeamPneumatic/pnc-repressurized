@@ -23,13 +23,13 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 
 import java.util.stream.Stream;
 
@@ -40,9 +40,9 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
     }
 
     @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext ctx) {
-        PlayerEntity player = ctx.getPlayer();
-        World world = ctx.getLevel();
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext ctx) {
+        Player player = ctx.getPlayer();
+        Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
         Direction side = ctx.getClickedFace();
 
@@ -53,17 +53,17 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
             if (player.isShiftKeyDown()) {
                 semiBlocks.filter(s -> !(s instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) s).getSide() == side)
                         .forEach(s -> s.removeSemiblock(player));
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             } else {
                 if (semiBlocks.anyMatch(s -> s.onRightClickWithConfigurator(player, side))) {
                     stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                             .ifPresent(h -> h.addAir(-PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR));
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             }
         } else if (world.isClientSide) {
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 }

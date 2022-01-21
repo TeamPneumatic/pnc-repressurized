@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.energy.EnergyStorage;
 
 public class PneumaticEnergyStorage extends EnergyStorage {
@@ -25,11 +25,11 @@ public class PneumaticEnergyStorage extends EnergyStorage {
         super(capacity);
     }
 
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         tag.putInt("Energy", energy);
     }
 
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         energy = tag.getInt("Energy");
     }
 

@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegi
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Optional;
 
@@ -53,7 +53,7 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
 
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveMessageScreen"), b -> {
-            getClientUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
+            getClientUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, new TextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);
             getClientUpgradeHandler().testMessageStat.openStat();
             Minecraft.getInstance().setScreen(

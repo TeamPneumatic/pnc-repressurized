@@ -33,23 +33,23 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.entity.merchant.villager.VillagerTrades;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.MerchantOffer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -147,8 +147,8 @@ public enum AmadronOfferManager {
         }
     }
 
-    private void maybeNotifyPlayerOfUpdates(PlayerEntity player) {
-        CombinedInvWrapper inv = new CombinedInvWrapper(new PlayerMainInvWrapper(player.inventory), new PlayerOffhandInvWrapper(player.inventory));
+    private void maybeNotifyPlayerOfUpdates(Player player) {
+        CombinedInvWrapper inv = new CombinedInvWrapper(new PlayerMainInvWrapper(player.getInventory()), new PlayerOffhandInvWrapper(player.getInventory()));
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).getItem() instanceof ItemAmadronTablet) {
                 player.displayClientMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"), false);
@@ -160,7 +160,7 @@ public enum AmadronOfferManager {
     void maybeNotifyLocalPlayerOfUpdates() {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null && !server.isDedicatedServer()) {
-            for (PlayerEntity player : server.getPlayerList().getPlayers()) {
+            for (Player player : server.getPlayerList().getPlayers()) {
                 if (server.isSingleplayerOwner(player.getGameProfile())) {
                     maybeNotifyPlayerOfUpdates(player);
                     break;
@@ -198,7 +198,7 @@ public enum AmadronOfferManager {
         boolean needSave = false;
         for (AmadronPlayerOffer offer : getPlayerOffers().values()) {
             AmadronPlayerOffer reversed = offer.getReversedOffer();
-            TileEntity provider = offer.getProvidingTileEntity();
+            BlockEntity provider = offer.getProvidingTileEntity();
             int possiblePickups = offer.getOutput().apply(
                     itemStack -> offer.getOutput().countTradesInInventory(IOHelper.getInventoryForTE(provider)),
                     fluidStack -> offer.getOutput().countTradesInTank(IOHelper.getFluidHandlerForTE(provider))
@@ -358,7 +358,7 @@ public enum AmadronOfferManager {
         }
     }
 
-    private MerchantOffer getOfferForNullVillager(VillagerTrades.ITrade trade, Random rand) {
+    private MerchantOffer getOfferForNullVillager(VillagerTrades.ItemListing trade, Random rand) {
         try {
             // shouldn't really pass null here, but creating a fake villager can cause worldgen-related server lockups
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/899
@@ -373,7 +373,7 @@ public enum AmadronOfferManager {
         rebuildRequired = true;
     }
 
-    public void checkForFullRebuild(World world) {
+    public void checkForFullRebuild(Level world) {
         if (rebuildRequired) {
             Log.debug("Rebuilding Amadron offer list");
 
@@ -404,7 +404,7 @@ public enum AmadronOfferManager {
     public static class EventListener {
         @SubscribeEvent
         public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
-            NetworkHandler.sendNonLocal((ServerPlayerEntity) evt.getPlayer(), new PacketSyncAmadronOffers(false));
+            NetworkHandler.sendNonLocal((ServerPlayer) evt.getPlayer(), new PacketSyncAmadronOffers(false));
         }
     }
 }

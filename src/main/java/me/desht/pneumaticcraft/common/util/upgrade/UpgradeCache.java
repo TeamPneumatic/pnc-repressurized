@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.ByteArrayNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.ByteArrayTag;
+import net.minecraft.core.Direction;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.Arrays;
@@ -87,8 +87,8 @@ public class UpgradeCache {
         }
     }
 
-    public ByteArrayNBT toNBT() {
+    public ByteArrayTag toNBT() {
         validate();
-        return new ByteArrayNBT(upgradeCount);
+        return new ByteArrayTag(upgradeCount);
     }
 }

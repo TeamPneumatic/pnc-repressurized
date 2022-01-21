@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 
 import java.util.Collection;
 
@@ -39,7 +39,7 @@ public class ProgramDrill extends AssemblyProgram {
     public boolean executeStep(TileEntityAssemblyController.AssemblySystem system) {
         boolean useAir = true;
 
-        World world = system.getPlatform().getLevel();
+        Level world = system.getPlatform().getLevel();
 
         if (!system.getPlatform().getHeldStack().isEmpty()) {
             if (canItemBeDrilled(world, system.getPlatform().getHeldStack())) {
@@ -56,22 +56,22 @@ public class ProgramDrill extends AssemblyProgram {
         return useAir;
     }
 
-    private boolean canItemBeDrilled(World world, ItemStack item) {
+    private boolean canItemBeDrilled(Level world, ItemStack item) {
         return PneumaticCraftRecipeType.ASSEMBLY_DRILL.findFirst(world, r -> r.matches(item)) != null;
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
 
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
 
     }
 
     @Override
-    public Collection<AssemblyRecipe> getRecipeList(World world) {
+    public Collection<AssemblyRecipe> getRecipeList(Level world) {
         return PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipes(world).values();
     }
 

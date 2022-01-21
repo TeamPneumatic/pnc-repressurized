@@ -41,11 +41,11 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
         super.init();
 
         WidgetLabel orderLabel = new WidgetLabel(guiLeft + 8, guiTop + 25, xlate("pneumaticcraft.gui.progWidget.digAndPlace.order"));
-        addButton(orderLabel);
+        addRenderableWidget(orderLabel);
 
         orderSelector = new WidgetComboBox(font,guiLeft + 8 + orderLabel.getWidth() + 5, guiTop + 23, 80, 12)
                 .initFromEnum(progWidget.getOrder());
-        addButton(orderSelector);
+        addRenderableWidget(orderSelector);
 
         if (progWidget.supportsMaxActions()) {
             WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + 8, guiTop + 115, 0xFF404040,
@@ -55,14 +55,14 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
             })
                     .setTooltipKey("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip")
                     .setChecked(progWidget.useMaxActions());
-            addButton(useMaxActions);
+            addRenderableWidget(useMaxActions);
 
             textField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 128, 30, 11)
                     .setRange(1, Integer.MAX_VALUE)
                     .setAdjustments(1, 10);
             textField.setValue(progWidget.getMaxActions());
             textField.setVisible(useMaxActions.checked);
-            addButton(textField);
+            addRenderableWidget(textField);
         }
     }
 

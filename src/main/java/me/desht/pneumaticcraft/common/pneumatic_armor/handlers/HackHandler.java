@@ -30,12 +30,12 @@ import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockFinish;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityFinish;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.BlockGetter;
 
 import java.util.function.Supplier;
 
@@ -58,8 +58,8 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
     }
 
     @Override
-    public EquipmentSlotType getEquipmentSlot() {
-        return EquipmentSlotType.HEAD;
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.HEAD;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        PlayerEntity player = commonArmorHandler.getPlayer();
+        Player player = commonArmorHandler.getPlayer();
         if (!player.level.isClientSide) {
             commonArmorHandler.getExtensionData(this).tickServerSide(player);
         }
@@ -80,7 +80,7 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
         private WorldAndCoord hackedBlockPos;
         private Entity hackedEntity;
 
-        private void tickServerSide(PlayerEntity player) {
+        private void tickServerSide(Player player) {
             if (hackedBlockPos != null) {
                 tickBlockHack(player);
             } else if (hackedEntity != null) {
@@ -88,23 +88,23 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
             }
         }
 
-        private void tickBlockHack(PlayerEntity player) {
+        private void tickBlockHack(Player player) {
             IHackableBlock hackableBlock = HackManager.getHackableForBlock(hackedBlockPos.world, hackedBlockPos.pos, player);
             if (hackableBlock != null) {
-                IBlockReader world = hackedBlockPos.world;
+                BlockGetter world = hackedBlockPos.world;
                 if (++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.pos, player)) {
                     hackableBlock.onHackComplete(player.level, hackedBlockPos.pos, player);
                     HackTickHandler.instance().trackBlock(player.level, hackedBlockPos.pos, hackableBlock);
                     NetworkHandler.sendToAllTracking(new PacketHackingBlockFinish(hackedBlockPos), player.level, player.blockPosition());
                     setHackedBlockPos(null);
-                    AdvancementTriggers.BLOCK_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
+                    AdvancementTriggers.BLOCK_HACK.trigger((ServerPlayer) player);  // safe to cast, this is server-side
                 }
             } else {
                 setHackedBlockPos(null);
             }
         }
 
-        private void tickEntityHack(PlayerEntity player) {
+        private void tickEntityHack(Player player) {
             IHackableEntity hackableEntity = HackManager.getHackableForEntity(hackedEntity, player);
             if (hackableEntity != null) {
                 if (++hackTime >= hackableEntity.getHackTime(hackedEntity, player)) {
@@ -112,7 +112,7 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
                         hackableEntity.onHackFinished(hackedEntity, player);
                         HackTickHandler.instance().trackEntity(hackedEntity, hackableEntity);
                         NetworkHandler.sendToAllTracking(new PacketHackingEntityFinish(hackedEntity), hackedEntity);
-                        AdvancementTriggers.ENTITY_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
+                        AdvancementTriggers.ENTITY_HACK.trigger((ServerPlayer) player);  // safe to cast, this is server-side
                     }
                     setHackedEntity(null);
                 }

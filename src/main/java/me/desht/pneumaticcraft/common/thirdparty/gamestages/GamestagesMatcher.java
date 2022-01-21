@@ -24,13 +24,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import net.darkhax.gamestages.GameStageHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import org.apache.commons.lang3.Validate;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,13 +43,13 @@ public class GamestagesMatcher implements IPlayerMatcher {
     private final boolean matchAll;
 
     public GamestagesMatcher(Collection<String> stages, boolean matchAll) {
-        stages.forEach(s -> Validate.isTrue(GameStageHelper.isStageKnown(s), "unknown gamestage '" + s + "'!"));
+//        stages.forEach(s -> Validate.isTrue(GameStageHelper.isStageKnown(s), "unknown gamestage '" + s + "'!"));
         this.stages = ImmutableSet.copyOf(stages);
         this.matchAll = matchAll;
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeBoolean(matchAll);
         buffer.writeVarInt(stages.size());
         stages.forEach(buffer::writeUtf);
@@ -67,20 +65,21 @@ public class GamestagesMatcher implements IPlayerMatcher {
     }
 
     @Override
-    public void addDescription(PlayerEntity player, List<ITextComponent> tooltip) {
+    public void addDescription(Player player, List<Component> tooltip) {
         if (!stages.isEmpty()) {
-            ITextComponent header = xlate("pneumaticcraft.playerFilter.gamestages")
+            Component header = xlate("pneumaticcraft.playerFilter.gamestages")
                     .append(" (")
                     .append(xlate("pneumaticcraft.gui.misc." + (matchAll ? "all" : "any")))
                     .append(")");
-            List<ITextComponent> items = stages.stream().map(StringTextComponent::new).collect(Collectors.toList());
+            List<Component> items = stages.stream().map(TextComponent::new).collect(Collectors.toList());
             standardTooltip(player, tooltip, header, items);
         }
     }
 
     @Override
-    public boolean test(PlayerEntity playerEntity) {
-        return matchAll ? GameStageHelper.hasAllOf(playerEntity, stages) : GameStageHelper.hasAnyOf(playerEntity, stages);
+    public boolean test(Player playerEntity) {
+//        return matchAll ? GameStageHelper.hasAllOf(playerEntity, stages) : GameStageHelper.hasAnyOf(playerEntity, stages);
+        return false;
     }
 
     public static class Factory implements IPlayerMatcher.MatcherFactory<GamestagesMatcher> {
@@ -99,13 +98,13 @@ public class GamestagesMatcher implements IPlayerMatcher {
 
         private Collection<String> getStrings(JsonObject o, String fieldName) {
             //noinspection UnstableApiUsage
-            return Streams.stream(JSONUtils.getAsJsonArray(o, fieldName).iterator())
+            return Streams.stream(GsonHelper.getAsJsonArray(o, fieldName).iterator())
                     .map(JsonElement::getAsString)
                     .collect(Collectors.toList());
         }
 
         @Override
-        public GamestagesMatcher fromBytes(PacketBuffer buffer) {
+        public GamestagesMatcher fromBytes(FriendlyByteBuf buffer) {
             boolean matchAll = buffer.readBoolean();
             int n = buffer.readVarInt();
             List<String> l = new ArrayList<>();

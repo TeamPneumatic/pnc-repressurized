@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -46,7 +46,7 @@ public class PacketUpdateLogisticsModule extends LocationIntPacket {
         }
     }
 
-    public PacketUpdateLogisticsModule(PacketBuffer buffer) {
+    public PacketUpdateLogisticsModule(FriendlyByteBuf buffer) {
         super(buffer);
         side = buffer.readByte();
         colorIndex = buffer.readByte();
@@ -54,7 +54,7 @@ public class PacketUpdateLogisticsModule extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeByte(side);
         buf.writeByte(colorIndex);

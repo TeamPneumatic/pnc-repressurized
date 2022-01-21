@@ -25,22 +25,23 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -92,27 +93,27 @@ public class ItemMicromissiles extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
 
         if (playerIn.isShiftKeyDown()) {
             if (worldIn.isClientSide) {
                 GuiMicromissile.openGui(stack.getHoverName(), handIn);
             }
-            return ActionResult.success(stack);
+            return InteractionResultHolder.success(stack);
         }
 
         EntityMicromissile missile = new EntityMicromissile(worldIn, playerIn, stack);
-        Vector3d newPos = missile.position().add(playerIn.getLookAngle().normalize());
+        Vec3 newPos = missile.position().add(playerIn.getLookAngle().normalize());
         missile.setPos(newPos.x, newPos.y, newPos.z);
-        missile.shootFromRotation(playerIn, playerIn.xRot, playerIn.yRot, 0.0F, getInitialVelocity(stack), 0.0F);
+        missile.shootFromRotation(playerIn, playerIn.getXRot(), playerIn.getYRot(), 0.0F, getInitialVelocity(stack), 0.0F);
 
         playerIn.getCooldowns().addCooldown(this, ConfigHelper.common().micromissiles.launchCooldown.get());
 
         if (!worldIn.isClientSide) {
-            RayTraceResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);
-            if (res instanceof EntityRayTraceResult) {
-                EntityRayTraceResult ertr = (EntityRayTraceResult) res;
+            HitResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);
+            if (res instanceof EntityHitResult) {
+                EntityHitResult ertr = (EntityHitResult) res;
                 if (missile.isValidTarget(ertr.getEntity())) {
                     missile.setTarget(ertr.getEntity());
                 }
@@ -123,12 +124,12 @@ public class ItemMicromissiles extends Item {
         if (!playerIn.isCreative()) {
             stack.hurtAndBreak(1, playerIn, playerEntity -> { });
         }
-        return ActionResult.success(stack);
+        return InteractionResultHolder.success(stack);
     }
 
     private float getInitialVelocity(ItemStack stack) {
         if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
+            CompoundTag tag = stack.getTag();
             FireMode fireMode = FireMode.fromString(tag.getString(NBT_FIRE_MODE));
             if (fireMode == FireMode.SMART) {
                 return Math.max(0.2f, tag.getFloat(NBT_TOP_SPEED) / 2f);
@@ -141,16 +142,16 @@ public class ItemMicromissiles extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> curInfo, TooltipFlag extraInfo) {
         super.appendHoverText(stack, worldIn, curInfo, extraInfo);
 
         curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining")
-                .append(new StringTextComponent(Integer.toString(stack.getMaxDamage() - stack.getDamageValue())).withStyle(TextFormatting.AQUA))
+                .append(new TextComponent(Integer.toString(stack.getMaxDamage() - stack.getDamageValue())).withStyle(ChatFormatting.AQUA))
         );
         if (stack.hasTag()) {
             FireMode mode = getFireMode(stack);
             if (mode == FireMode.SMART) {
-                CompoundNBT tag = stack.getTag();
+                CompoundTag tag = stack.getTag();
                 curInfo.add(xlate("pneumaticcraft.gui.micromissile.topSpeed"));
                 curInfo.add(xlate("pneumaticcraft.gui.micromissile.turnSpeed"));
                 curInfo.add(xlate("pneumaticcraft.gui.micromissile.damage"));
@@ -158,12 +159,12 @@ public class ItemMicromissiles extends Item {
                 if (!filter.isEmpty()) {
                     curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter")
                             .append(": ")
-                            .append(TextFormatting.AQUA + filter));
+                            .append(ChatFormatting.AQUA + filter));
                 }
             }
             curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
                     .append(": ")
-                    .append(xlate(mode.getTranslationKey()).withStyle(TextFormatting.AQUA)));
+                    .append(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.AQUA)));
             if (ConfigHelper.common().micromissiles.damageTerrain.get()) {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
             } else {
@@ -173,9 +174,9 @@ public class ItemMicromissiles extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (!stack.hasTag() && entityIn instanceof PlayerEntity) {
-            MicromissileDefaults.Entry def = MicromissileDefaults.INSTANCE.getDefaults((PlayerEntity) entityIn);
+    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (!stack.hasTag() && entityIn instanceof Player) {
+            MicromissileDefaults.Entry def = MicromissileDefaults.INSTANCE.getDefaults((Player) entityIn);
             if (def != null) {
                 stack.setTag(def.toNBT());
             }
@@ -197,5 +198,8 @@ public class ItemMicromissiles extends Item {
                 event.getItemResult().setRepairCost(0);
             }
         }
+    }
+
+    public record Tooltip(ItemStack stack) implements TooltipComponent {
     }
 }

@@ -19,18 +19,18 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 public class ContainerKeroseneLamp extends ContainerPneumaticBase<TileEntityKeroseneLamp> {
 
-    public ContainerKeroseneLamp(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerKeroseneLamp(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerKeroseneLamp(int i, PlayerInventory playerInventory, BlockPos pos) {
+    public ContainerKeroseneLamp(int i, Inventory playerInventory, BlockPos pos) {
         super(ModContainers.KEROSENE_LAMP.get(), i, playerInventory, pos);
 
         addSlot(new SlotFluidContainer(te.getPrimaryInventory(), 0, 132, 22));
@@ -40,7 +40,7 @@ public class ContainerKeroseneLamp extends ContainerPneumaticBase<TileEntityKero
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return te.isGuiUseableByPlayer(player);
     }
 }

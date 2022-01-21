@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.machine.UVLightBoxRecipe;
@@ -29,10 +29,10 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,14 +78,14 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
     }
 
     @Override
-    public void draw(UVLightBoxRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(UVLightBoxRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 22, 0);
         getIcon().draw(matrixStack, 30, -2);
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getTooltipStrings(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
+        List<Component> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
             res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.nei.recipe.uvLightBox")));
         }

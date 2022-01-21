@@ -19,17 +19,17 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Collection;
 
 public class RenderEtchingTank extends AbstractFluidTER<TileEntityEtchingTank> {
-    private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(2.1/16f, 1.1/16f, 2.1/16f, 13.9/16f, 13.9/16f, 13.9/16f);
+    private static final AABB TANK_BOUNDS = new AABB(2.1/16f, 1.1/16f, 2.1/16f, 13.9/16f, 13.9/16f, 13.9/16f);
 
-    public RenderEtchingTank(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public RenderEtchingTank(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
     }
 
     @Override

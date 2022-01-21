@@ -19,14 +19,14 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.FluidTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -41,7 +41,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     private static final ResourceLocation ID = RL("block_tracker.module.fluids");
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
+    public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
         return te != null
                 && !TrackerBlacklistManager.isFluidBlacklisted(te)
                 && IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
@@ -49,7 +49,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     }
 
     @Override
-    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+    public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
         return te == null ? Collections.emptyList() : Collections.singletonList(te.getBlockPos());
     }
 
@@ -59,7 +59,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
+    public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
         try {
             te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).ifPresent(handler -> {
                 for (int i = 0; i < handler.getTanks(); i++) {

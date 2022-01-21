@@ -24,23 +24,23 @@ import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
 
@@ -49,53 +49,53 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ItemLogisticsFrame extends ItemSemiBlock {
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
         if (!world.isClientSide) {
-            NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
+            NetworkHooks.openGui((ServerPlayer) player, new MenuProvider() {
                 @Override
-                public ITextComponent getDisplayName() {
+                public Component getDisplayName() {
                     return stack.getHoverName();
                 }
 
                 @Override
-                public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
                     return new ContainerLogistics(getContainerType(), i, playerInventory, -1);
                 }
             }, (buffer) -> buffer.writeVarInt(-1));
         }
-        return ActionResult.success(stack);
+        return InteractionResultHolder.success(stack);
     }
 
-    protected abstract ContainerType<?> getContainerType();
+    protected abstract MenuType<?> getContainerType();
 
     @Override
-    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> curInfo, TooltipFlag extraInfo) {
         super.appendHoverText(stack, worldIn, curInfo, extraInfo);
 
         addLogisticsTooltip(stack, worldIn, curInfo, ClientUtils.hasShiftDown());
     }
 
-    public static void addLogisticsTooltip(ItemStack stack, World world, List<ITextComponent> curInfo, boolean sneaking) {
+    public static List<Component> addLogisticsTooltip(ItemStack stack, Level world, List<Component> curInfo, boolean sneaking) {
         if (stack.getTag() != null && stack.getTag().contains(NBTKeys.ENTITY_TAG) && stack.getItem() instanceof ItemSemiBlock) {
             if (sneaking) {
-                CompoundNBT tag = stack.getTag().getCompound(NBTKeys.ENTITY_TAG);
+                CompoundTag tag = stack.getTag().getCompound(NBTKeys.ENTITY_TAG);
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_INVISIBLE)) {
-                    curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.invisible")).withStyle(TextFormatting.YELLOW));
+                    curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.invisible")).withStyle(ChatFormatting.YELLOW));
                 }
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_DURABILITY)) {
-                    curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchDurability")).withStyle(TextFormatting.YELLOW));
+                    curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchDurability")).withStyle(ChatFormatting.YELLOW));
                 }
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_NBT)) {
-                    curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchNBT")).withStyle(TextFormatting.YELLOW));
+                    curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchNBT")).withStyle(ChatFormatting.YELLOW));
                 }
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_MODID)) {
-                    curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchModId")).withStyle(TextFormatting.YELLOW));
+                    curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchModId")).withStyle(ChatFormatting.YELLOW));
                 }
 
                 boolean whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_ITEM_WHITELIST);
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "itemWhitelist" : "itemBlacklist"))
-                        .append(":").withStyle(TextFormatting.YELLOW));
+                        .append(":").withStyle(ChatFormatting.YELLOW));
 
                 ItemStackHandler handler = new ItemStackHandler();
                 handler.deserializeNBT(tag.getCompound(EntityLogisticsFrame.NBT_ITEM_FILTERS));
@@ -104,28 +104,29 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock {
                     stacks[i] = handler.getStackInSlot(i);
                 }
                 int l = curInfo.size();
-                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, TextFormatting.GOLD + Symbols.BULLET + " ");
-                if (curInfo.size() == l) curInfo.add(bullet().withStyle(TextFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_items").withStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
+                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, ChatFormatting.GOLD + Symbols.BULLET + " ");
+                if (curInfo.size() == l) curInfo.add(bullet().withStyle(ChatFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_items").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC)));
                 l = curInfo.size();
 
 
                 whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_FLUID_WHITELIST);
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
-                        .append(":").withStyle(TextFormatting.YELLOW));
+                        .append(":").withStyle(ChatFormatting.YELLOW));
 
                 EntityLogisticsFrame.FluidFilter fluidFilter = new EntityLogisticsFrame.FluidFilter();
                 fluidFilter.deserializeNBT(tag.getCompound(EntityLogisticsFrame.NBT_FLUID_FILTERS));
                 for (int i = 0; i < fluidFilter.size(); i++) {
                     FluidStack fluid = fluidFilter.get(i);
                     if (!fluid.isEmpty()) {
-                        curInfo.add(bullet().append(fluid.getAmount() + "mB ").append(fluid.getDisplayName()).withStyle(TextFormatting.GOLD));
+                        curInfo.add(bullet().append(fluid.getAmount() + "mB ").append(fluid.getDisplayName()).withStyle(ChatFormatting.GOLD));
                     }
                 }
-                if (curInfo.size() == l) curInfo.add(bullet().withStyle(TextFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_fluids").withStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
+                if (curInfo.size() == l) curInfo.add(bullet().withStyle(ChatFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_fluids").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC)));
             } else {
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame.hasFilters"));
             }
         }
+        return curInfo;
     }
 
 }

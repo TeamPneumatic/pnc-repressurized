@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.api.client;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * To be implemented on equippable items.  When equipped, the item can modify the player's
@@ -34,5 +34,5 @@ public interface IFOVModifierItem {
      * @param slot the equipment slot
      * @return the FOV modifier
      */
-    float getFOVModifier(ItemStack stack, PlayerEntity player, EquipmentSlotType slot);
+    float getFOVModifier(ItemStack stack, Player player, EquipmentSlot slot);
 }

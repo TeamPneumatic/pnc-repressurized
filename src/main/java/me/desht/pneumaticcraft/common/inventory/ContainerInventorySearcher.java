@@ -18,19 +18,19 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerInventorySearcher extends Container {
-    public ContainerInventorySearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
+public class ContainerInventorySearcher extends AbstractContainerMenu {
+    public ContainerInventorySearcher(int windowId, Inventory inv, FriendlyByteBuf data) {
         super(ModContainers.INVENTORY_SEARCHER.get(), windowId);
 
         // Add the player's inventory slots to the container
@@ -55,17 +55,17 @@ public class ContainerInventorySearcher extends Container {
      */
     @Nonnull
     @Override
-    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int par2) {
+    public ItemStack quickMoveStack(Player par1EntityPlayer, int par2) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void setItem(int par1, @Nonnull ItemStack par2ItemStack) {
+    public void setItem(int par1, int state, @Nonnull ItemStack par2ItemStack) {
         //override this to do nothing, as NEI tries to place items in this container which makes it crash.
     }
 
     @Override
-    public boolean stillValid(@Nonnull PlayerEntity entityplayer) {
+    public boolean stillValid(@Nonnull Player entityplayer) {
         return true;
     }
 

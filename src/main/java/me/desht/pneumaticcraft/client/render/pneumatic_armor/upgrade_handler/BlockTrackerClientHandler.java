@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -41,20 +41,20 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -84,15 +84,15 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
-        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.RANGE), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.RANGE), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
         long now = System.nanoTime();
 
-        PlayerEntity player = armorHandler.getPlayer();
-        World world = armorHandler.getPlayer().level;
+        Player player = armorHandler.getPlayer();
+        Level world = armorHandler.getPlayer().level;
 
-        BlockPos.Mutable pos = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int i = 0; i < HARD_MAX_BLOCKS_PER_TICK; i++) {
             // 1% of a tick = 500,000ns
             if ((i & 0xff) == 0 && System.nanoTime() - now > ConfigHelper.client().armor.blockTrackerMaxTimePerTick.get() * 500_000L) {
@@ -101,11 +101,11 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
             nextScanPos(pos, player, blockTrackRange);
 
-            if (!world.isAreaLoaded(pos, 0)) break;
+            if (!world.isLoaded(pos)) break;
 
             if (world.isEmptyBlock(pos)) continue;
 
-            TileEntity te = world.getBlockEntity(pos);
+            BlockEntity te = world.getBlockEntity(pos);
 
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(world, pos, te))) {
                 if (te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
@@ -138,20 +138,20 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         updateTrackerText();
     }
 
-    private void checkBlockFocus(PlayerEntity player, int blockTrackRange) {
+    private void checkBlockFocus(Player player, int blockTrackRange) {
         focusedTarget = null;
         focusedFace = null;
-        Vector3d eyes = player.getEyePosition(1.0f);
-        Vector3d v = eyes;
-        Vector3d lookVec = player.getLookAngle().scale(0.25);  // scale down to minimise clipping across a corner and missing the block
-        BlockPos.Mutable checkPos = new BlockPos.Mutable();
+        Vec3 eyes = player.getEyePosition(1.0f);
+        Vec3 v = eyes;
+        Vec3 lookVec = player.getLookAngle().scale(0.25);  // scale down to minimise clipping across a corner and missing the block
+        BlockPos.MutableBlockPos checkPos = new BlockPos.MutableBlockPos();
         for (int i = 0; i < blockTrackRange * 4; i++) {
             v = v.add(lookVec);
             checkPos.set(v.x, v.y, v.z);
             if (blockTargets.containsKey(checkPos)) {
                 BlockState state = player.level.getBlockState(checkPos);
-                BlockRayTraceResult brtr = state.getShape(player.level, checkPos).clip(eyes, v, checkPos);
-                if (brtr != null && brtr.getType() == RayTraceResult.Type.BLOCK) {
+                BlockHitResult brtr = state.getShape(player.level, checkPos).clip(eyes, v, checkPos);
+                if (brtr != null && brtr.getType() == HitResult.Type.BLOCK) {
                     focusedTarget = blockTargets.get(checkPos);
                     focusedFace = brtr.getDirection();
                     break;
@@ -171,7 +171,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     /**
      * Advance the scan position but be clever about it; we never need to scan blocks behind the player
      */
-    private void nextScanPos(BlockPos.Mutable pos, PlayerEntity player, int range) {
+    private void nextScanPos(BlockPos.MutableBlockPos pos, Player player, int range) {
         Direction dir = PneumaticCraftUtils.getDirectionFacing(player, true);
         switch (dir) {
             case UP:
@@ -247,7 +247,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 break;
         }
-        pos.set(player.getX() + xOff, MathHelper.clamp(player.getY() + yOff, 0, 255), player.getZ() + zOff);
+        pos.set(player.getX() + xOff, Mth.clamp(player.getY() + yOff, 0, 255), player.getZ() + zOff);
     }
 
     private void updateBlockTypeCounts() {
@@ -261,10 +261,10 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
      * @param player the player
      * @param blockTrackRange the track range
      */
-    private void processTrackerEntries(PlayerEntity player, int blockTrackRange) {
+    private void processTrackerEntries(Player player, int blockTrackRange) {
         List<RenderBlockTarget> toRemove = new ArrayList<>();
         int rangeSq = (blockTrackRange + 5) * (blockTrackRange + 5);
-        int incr = CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlotType.HEAD);
+        int incr = CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlot.HEAD);
         for (RenderBlockTarget blockTarget : blockTargets.values()) {
             boolean wasNegative = blockTarget.ticksExisted < 0;
             blockTarget.ticksExisted += incr;
@@ -293,7 +293,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         } else {
             blockTrackInfo.setTitle(xlate("pneumaticcraft.blockTracker.info.trackedBlocks"));
 
-            List<ITextComponent> textList = new ArrayList<>();
+            List<Component> textList = new ArrayList<>();
             blockTypeCount.forEach((k, v) -> {
                 if (v > 0 && WidgetKeybindCheckBox.get(k).checked) {
                     textList.add(xlate("pneumaticcraft.message.misc.countedItem", v, xlate(ArmorUpgradeRegistry.getStringKey(k))));
@@ -318,12 +318,12 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     @Override
-    public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+    public void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
         blockTargets.values().forEach(t -> t.render(matrixStack, buffer, partialTicks));
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override

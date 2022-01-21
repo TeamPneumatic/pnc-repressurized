@@ -30,45 +30,45 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class EntityLogisticsFrame extends EntitySemiblockBase implements IDirectionalSemiblock {
     public static final String NBT_INVISIBLE = "invisible";
@@ -84,8 +84,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     private static final int ITEM_FILTER_SLOTS = 27;
     public static final int FLUID_FILTER_SLOTS = 9;
 
-    private static final DataParameter<Boolean> INVISIBLE = EntityDataManager.defineId(EntityLogisticsFrame.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Direction> SIDE = EntityDataManager.defineId(EntityLogisticsFrame.class, DataSerializers.DIRECTION);
+    private static final EntityDataAccessor<Boolean> INVISIBLE = SynchedEntityData.defineId(EntityLogisticsFrame.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Direction> SIDE = SynchedEntityData.defineId(EntityLogisticsFrame.class, EntityDataSerializers.DIRECTION);
     private static final float FRAME_WIDTH = 1 / 32f;
 
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
@@ -100,7 +100,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     private int alpha = 255;
     public final double antiZfight;  // prevents frames on adjacent full-blocks from z-fighting
 
-    EntityLogisticsFrame(EntityType<?> entityTypeIn, World worldIn) {
+    EntityLogisticsFrame(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
 
         this.antiZfight = worldIn.random.nextDouble() * 0.005;
@@ -114,14 +114,14 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
      * @param stack the item stack
      * @return a logistics entity
      */
-    public static EntityLogisticsFrame fromItemStack(World world, @Nullable PlayerEntity player, @Nonnull ItemStack stack) {
+    public static EntityLogisticsFrame fromItemStack(Level world, @Nullable Player player, @Nonnull ItemStack stack) {
         if (stack.getItem() instanceof ItemSemiBlock) {
             EntitySemiblockBase logistics = ((ItemSemiBlock) stack.getItem()).createEntity(world, stack, player, BlockPos.ZERO);
             if (logistics instanceof EntityLogisticsFrame) {
                 if (world.isClientSide && stack.hasTag()) {
                     // client-side entity creation doesn't load in NBT from the itemstack; we need to do it ourselves in this case
                     // see EntityType#applyItemNBT()
-                    CompoundNBT compoundnbt = logistics.saveWithoutId(new CompoundNBT());
+                    CompoundTag compoundnbt = logistics.saveWithoutId(new CompoundTag());
                     UUID uuid = logistics.getUUID();
                     //noinspection ConstantConditions
                     compoundnbt.merge(stack.getTag().getCompound(NBTKeys.ENTITY_TAG));
@@ -144,7 +144,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
 
     @Override
     public boolean canPlace(Direction facing) {
-        TileEntity te = getCachedTileEntity();
+        BlockEntity te = getCachedTileEntity();
         return te != null &&
                 (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()
                         || te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent());
@@ -156,15 +156,15 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    protected AxisAlignedBB calculateBlockBounds() {
-        AxisAlignedBB bounds = super.calculateBlockBounds();
+    protected AABB calculateBlockBounds() {
+        AABB bounds = super.calculateBlockBounds();
         switch (getSide()) {
-            case DOWN:  bounds = new AxisAlignedBB(bounds.minX, bounds.minY - FRAME_WIDTH, bounds.minZ, bounds.maxX, bounds.minY, bounds.maxZ); break;
-            case UP:    bounds = new AxisAlignedBB(bounds.minX, bounds.maxY, bounds.minZ, bounds.maxX, bounds.maxY + FRAME_WIDTH, bounds.maxZ); break;
-            case NORTH: bounds = new AxisAlignedBB(bounds.minX, bounds.minY, bounds.minZ - FRAME_WIDTH, bounds.maxX, bounds.maxY, bounds.minZ); break;
-            case SOUTH: bounds = new AxisAlignedBB(bounds.minX, bounds.minY, bounds.maxZ, bounds.maxX, bounds.maxY, bounds.maxZ + FRAME_WIDTH); break;
-            case WEST:  bounds = new AxisAlignedBB(bounds.minX - FRAME_WIDTH, bounds.minY, bounds.minZ, bounds.minX, bounds.maxY, bounds.maxZ); break;
-            case EAST:  bounds = new AxisAlignedBB(bounds.maxX, bounds.minY, bounds.minZ, bounds.maxX + FRAME_WIDTH, bounds.maxY, bounds.maxZ); break;
+            case DOWN:  bounds = new AABB(bounds.minX, bounds.minY - FRAME_WIDTH, bounds.minZ, bounds.maxX, bounds.minY, bounds.maxZ); break;
+            case UP:    bounds = new AABB(bounds.minX, bounds.maxY, bounds.minZ, bounds.maxX, bounds.maxY + FRAME_WIDTH, bounds.maxZ); break;
+            case NORTH: bounds = new AABB(bounds.minX, bounds.minY, bounds.minZ - FRAME_WIDTH, bounds.maxX, bounds.maxY, bounds.minZ); break;
+            case SOUTH: bounds = new AABB(bounds.minX, bounds.minY, bounds.maxZ, bounds.maxX, bounds.maxY, bounds.maxZ + FRAME_WIDTH); break;
+            case WEST:  bounds = new AABB(bounds.minX - FRAME_WIDTH, bounds.minY, bounds.minZ, bounds.minX, bounds.maxY, bounds.maxZ); break;
+            case EAST:  bounds = new AABB(bounds.maxX, bounds.minY, bounds.minZ, bounds.maxX + FRAME_WIDTH, bounds.maxY, bounds.maxZ); break;
         }
         return bounds;
     }
@@ -176,14 +176,14 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
 
     public abstract int getPriority();
 
-    protected abstract ContainerType<?> getContainerType();
+    protected abstract MenuType<?> getContainerType();
 
     public boolean shouldProvideTo(int level) {
         return true;
     }
 
     /**
-     * Not to be confused with {@link Entity#isInvisible()}
+     * Not to be confused with {@link net.minecraft.world.entity.Entity#isInvisible()}
      * @return true if the semiblock should fade out when not holding a logistics item
      */
     public boolean isSemiblockInvisible() {
@@ -336,7 +336,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT tag) {
+    protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
         itemFilterHandler.deserializeNBT(tag.getCompound(NBT_ITEM_FILTERS));
@@ -346,7 +346,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
         setMatchModId(tag.getBoolean(NBT_MATCH_MODID));
         setItemWhiteList(tag.getBoolean(NBT_ITEM_WHITELIST));
-        if (!tag.contains(NBT_FLUID_WHITELIST, Constants.NBT.TAG_BYTE)) {
+        if (!tag.contains(NBT_FLUID_WHITELIST, Tag.TAG_BYTE)) {
             setFluidWhiteList(true);
         } else {
             setFluidWhiteList(tag.getBoolean(NBT_FLUID_WHITELIST));
@@ -360,7 +360,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    public CompoundNBT serializeNBT(CompoundNBT tag) {
+    public CompoundTag serializeNBT(CompoundTag tag) {
         tag = super.serializeNBT(tag);
 
         tag.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT());
@@ -381,7 +381,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    public void onPlaced(PlayerEntity player, ItemStack stack, Direction facing) {
+    public void onPlaced(Player player, ItemStack stack, Direction facing) {
         super.onPlaced(player, stack, facing);
 
         setSide(facing);
@@ -412,43 +412,43 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
+    public void addTooltip(Consumer<Component> curInfo, Player player, CompoundTag tag, boolean extended) {
+        curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
         if (player.isShiftKeyDown()) {
             NonNullList<ItemStack> drops = getDrops();
             if (!drops.isEmpty()) {
-                ItemLogisticsFrame.addLogisticsTooltip(drops.get(0), player.level, curInfo, true);
+                ItemLogisticsFrame.addLogisticsTooltip(drops.get(0), player.level, new ArrayList<>(), true).forEach(curInfo);
             }
         }
     }
 
     @Override
-    public boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
+    public boolean onRightClickWithConfigurator(Player player, Direction side) {
         if (!player.level.isClientSide) {
             if (side != getSide()) {
                 return false;
             }
-            INamedContainerProvider provider = new INamedContainerProvider() {
+            MenuProvider provider = new MenuProvider() {
                 @Override
-                public ITextComponent getDisplayName() {
+                public Component getDisplayName() {
                     return new ItemStack(getDroppedItem()).getHoverName();
                 }
 
                 @Override
-                public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
                     return new ContainerLogistics(getContainerType(), i, playerInventory, getId());
                 }
             };
 
-            NetworkHandler.sendToPlayer(new PacketSyncSemiblock(this), (ServerPlayerEntity) player);
-            NetworkHooks.openGui((ServerPlayerEntity) player, provider, buffer -> buffer.writeVarInt(getId()));
+            NetworkHandler.sendToPlayer(new PacketSyncSemiblock(this), (ServerPlayer) player);
+            NetworkHooks.openGui((ServerPlayer) player, provider, buffer -> buffer.writeVarInt(getId()));
         }
         return true;
     }
 
     private boolean playerIsHoldingLogisticItems() {
         // only call this client-side!
-        PlayerEntity player = ClientUtils.getClientPlayer();
+        Player player = ClientUtils.getClientPlayer();
         ItemStack stack = player.getMainHandItem();
         return (stack.getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()
                 || stack.getItem() == ModItems.LOGISTICS_DRONE.get()
@@ -460,7 +460,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    public void writeToBuf(PacketBuffer payload) {
+    public void writeToBuf(FriendlyByteBuf payload) {
         super.writeToBuf(payload);
 
         payload.writeByte(getSide().get3DDataValue());
@@ -482,7 +482,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     @Override
-    public void readFromBuf(PacketBuffer payload) {
+    public void readFromBuf(FriendlyByteBuf payload) {
         super.readFromBuf(payload);
 
         setSide(Direction.from3DDataValue(payload.readByte()));
@@ -503,7 +503,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         }
     }
 
-    public boolean isObstructed(PathType pathType) {
+    public boolean isObstructed(PathComputationType pathType) {
         BlockPos pos = getBlockPos().relative(getSide());
         return !level.getBlockState(pos).isPathfindable(level, pos, pathType);
     }
@@ -575,7 +575,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundTag nbt) {
             super.deserializeNBT(nbt);
 
             buildFilterList();
@@ -593,7 +593,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         }
     }
 
-    public static class FluidFilter implements INBTSerializable<CompoundNBT> {
+    public static class FluidFilter implements INBTSerializable<CompoundTag> {
         private final List<FluidStack> fluidStacks;
 
         public FluidFilter() {
@@ -607,7 +607,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
             }
         }
 
-        FluidFilter(PacketBuffer packetBuffer) {
+        FluidFilter(FriendlyByteBuf packetBuffer) {
             fluidStacks = new ArrayList<>();
             int size = packetBuffer.readVarInt();
             for (int i = 0; i < size; i++) {
@@ -623,28 +623,28 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
             return fluidStacks.size();
         }
 
-        public void write(PacketBuffer packetBuffer) {
+        public void write(FriendlyByteBuf packetBuffer) {
             packetBuffer.writeVarInt(fluidStacks.size());
             fluidStacks.forEach(packetBuffer::writeFluidStack);
         }
 
         @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT tag = new CompoundNBT();
+        public CompoundTag serializeNBT() {
+            CompoundTag tag = new CompoundTag();
             tag.putInt("size", fluidStacks.size());
-            ListNBT list = new ListNBT();
+            ListTag list = new ListTag();
             for (FluidStack f : fluidStacks) {
-                list.add(f.writeToNBT(new CompoundNBT()));
+                list.add(f.writeToNBT(new CompoundTag()));
             }
             tag.put("filters", list);
             return tag;
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundTag nbt) {
             fluidStacks.clear();
             int n = nbt.getInt("size");
-            ListNBT l = nbt.getList("filters", Constants.NBT.TAG_COMPOUND);
+            ListTag l = nbt.getList("filters", Tag.TAG_COMPOUND);
             for (int i = 0; i < n; i++) {
                 fluidStacks.add(FluidStack.loadFluidStackFromNBT(l.getCompound(i)));
             }

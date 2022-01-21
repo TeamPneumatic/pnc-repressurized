@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.actuator;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 
@@ -51,5 +51,5 @@ public interface IActuator {
     /**
      * @param universalActuator an actuator tile entity
      */
-    void actuate(TileEntity universalActuator);
+    void actuate(BlockEntity universalActuator);
 }

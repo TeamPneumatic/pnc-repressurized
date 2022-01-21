@@ -22,10 +22,11 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -36,57 +37,51 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     private int laserStep; //used to progressively draw a circle.
     private static final float ITEM_SIZE = 10F;
 
-    public TileEntityAssemblyLaser() {
-        super(ModTileEntities.ASSEMBLY_LASER.get());
+    public TileEntityAssemblyLaser(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ASSEMBLY_LASER.get(), pos, state);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
+
         if (laserStep > 0) {
             TargetDirections platformDirection = getPlatformDirection();
             if (platformDirection == null) {
                 laserStep = 105;
             }
             switch (laserStep) {
-                case 1:
-                    //                    isLaserOn = false;
-                    slowMode = false;
-                    //                    gotoHomePosition();
-                    break;
-                case 2:
-                    hoverOverNeighbour(platformDirection);
-                    break;
-                case 3:
+                case 1 -> slowMode = false;
+                case 2 -> hoverOverNeighbour(platformDirection);
+                case 3 -> {
                     slowMode = true;
                     gotoNeighbour(platformDirection);
-                    break;
-                case 104:
+                }
+                case 104 -> {
                     hoverOverNeighbour(platformDirection);
                     isLaserOn = false;
                     slowMode = true;
-                    TileEntity te = getTileEntityForCurrentDirection();
-                    if (te instanceof TileEntityAssemblyPlatform) {
-                        TileEntityAssemblyPlatform platform = (TileEntityAssemblyPlatform) te;
+                    BlockEntity te = getTileEntityForCurrentDirection();
+                    if (te instanceof TileEntityAssemblyPlatform platform) {
                         ItemStack output = getLaseredOutputForItem(platform.getHeldStack());
                         if (!output.isEmpty()) {
                             platform.setHeldStack(output);
                         }
                     }
-                    break;
-                case 105:
+                }
+                case 105 -> {
                     slowMode = false;
                     isLaserOn = false;
                     gotoHomePosition();
-                    break;
-                default: //4-103
+                }
+                default -> { //4-103
                     isLaserOn = true;
                     slowMode = false;
                     targetAngles[EnumAngles.BASE.getIndex()] = 100F - (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE;
                     targetAngles[EnumAngles.MIDDLE.getIndex()] = -10F + (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE;
                     targetAngles[EnumAngles.TAIL.getIndex()] = 0F;
                     targetAngles[EnumAngles.TURN.getIndex()] += (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE * 0.03D;
-                    break;
+                }
             }
             if (isDoneInternal() || laserStep >= 4 && laserStep <= 103) {
                 laserStep++;
@@ -123,16 +118,15 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
         super.save(tag);
         tag.putBoolean("laser", isLaserOn);
         tag.putInt("laserStep", laserStep);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         isLaserOn = tag.getBoolean("laser");
         laserStep = tag.getInt("laserStep");
     }

@@ -26,11 +26,11 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDynamo;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDynamo;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.energy.CapabilityEnergy;
 
 import java.util.ArrayList;
@@ -42,17 +42,17 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<ContainerPneum
     private WidgetAnimatedStat inputStat;
     private WidgetTemperature tempWidget;
 
-    public GuiPneumaticDynamo(ContainerPneumaticDynamo container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiPneumaticDynamo(ContainerPneumaticDynamo container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
     @Override
     public void init() {
         super.init();
-        inputStat = addAnimatedStat(new StringTextComponent("Output"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
+        inputStat = addAnimatedStat(new TextComponent("Output"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
 
-        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
-        addButton(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(273, 673), 273, 50)
+        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
+        addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(273, 673), 273, 50)
                 .setOperatingRange(TemperatureRange.of(323, 625)).setShowOperatingRange(false));
     }
 
@@ -62,33 +62,33 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<ContainerPneum
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         inputStat.setText(getOutputStat());
         tempWidget.setTemperature(te.getHeatExchanger().getTemperatureAsInt());
         tempWidget.autoScaleForTemperature();
     }
 
-    private List<ITextComponent> getOutputStat() {
-        List<ITextComponent> textList = new ArrayList<>();
-        textList.add(xlate("pneumaticcraft.gui.tab.status.pneumaticDynamo.maxEnergyProduction").withStyle(TextFormatting.GRAY));
-        textList.add(new StringTextComponent(te.getRFRate() + " FE/t").withStyle(TextFormatting.BLACK));
-        textList.add(xlate("pneumaticcraft.gui.tab.status.pneumaticDynamo.maxOutputRate").withStyle(TextFormatting.GRAY));
-        textList.add(new StringTextComponent(te.getRFRate() * 2 + " FE/t").withStyle(TextFormatting.BLACK));
-        textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.storedEnergy").withStyle(TextFormatting.GRAY));
-        textList.add(new StringTextComponent(te.getInfoEnergyStored() + " FE").withStyle(TextFormatting.BLACK));
+    private List<Component> getOutputStat() {
+        List<Component> textList = new ArrayList<>();
+        textList.add(xlate("pneumaticcraft.gui.tab.status.pneumaticDynamo.maxEnergyProduction").withStyle(ChatFormatting.GRAY));
+        textList.add(new TextComponent(te.getRFRate() + " FE/t").withStyle(ChatFormatting.BLACK));
+        textList.add(xlate("pneumaticcraft.gui.tab.status.pneumaticDynamo.maxOutputRate").withStyle(ChatFormatting.GRAY));
+        textList.add(new TextComponent(te.getRFRate() * 2 + " FE/t").withStyle(ChatFormatting.BLACK));
+        textList.add(xlate("pneumaticcraft.gui.tab.status.fluxCompressor.storedEnergy").withStyle(ChatFormatting.GRAY));
+        textList.add(new TextComponent(te.getInfoEnergyStored() + " FE").withStyle(ChatFormatting.BLACK));
         return textList;
     }
 
     @Override
-    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+    protected void addPressureStatInfo(List<Component> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.maxUsage", te.getAirRate()).withStyle(TextFormatting.BLACK));
+        pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.maxUsage", te.getAirRate()).withStyle(ChatFormatting.BLACK));
     }
 
     @Override
-    public void addProblems(List<ITextComponent> curInfo) {
+    public void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
         if (te.getEfficiency() < 100) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%"));

@@ -30,16 +30,18 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.util.Mth;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -54,7 +56,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityEtchingTank extends TileEntityTickableBase
-        implements INamedContainerProvider, ISerializableTanks, IHeatExchangingTE {
+        implements MenuProvider, ISerializableTanks, IHeatExchangingTE {
     public static final int ETCHING_SLOTS = 25;
 
     private final EtchingTankHandler itemHandler = new EtchingTankHandler();
@@ -77,22 +79,28 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
-    public TileEntityEtchingTank() {
-        super(ModTileEntities.ETCHING_TANK.get());
+    public TileEntityEtchingTank(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ETCHING_TANK.get(), pos, state);
 
         heatExchanger.setThermalResistance(10);
         heatExchanger.setThermalCapacity(5);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         acidTank.tick();
+    }
 
-        if (!level.isClientSide && !acidTank.getFluid().isEmpty()) {
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (!acidTank.getFluid().isEmpty()) {
             int tickInterval = getTickInterval();
 
+            final Level level = nonNullLevel();
             if (level.getGameTime() % tickInterval == 0) {
                 boolean didWork = false;
                 for (int i = 0; i < ETCHING_SLOTS; i++) {
@@ -122,7 +130,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     }
 
     public int getTickInterval() {
-        int delta = MathHelper.clamp(heatExchanger.getTemperatureAsInt() - 323, 0, 480);
+        int delta = Mth.clamp(heatExchanger.getTemperatureAsInt() - 323, 0, 480);
         return 30 - (delta + 1) / 20;
     }
 
@@ -208,7 +216,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInv, Player player) {
         return new ContainerEtchingTank(windowId, playerInv, getBlockPos());
     }
 
@@ -219,19 +227,17 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.put("Inventory", itemHandler.serializeNBT());
         tag.put("Output", outputHandler.serializeNBT());
         tag.put("Failed", failedHandler.serializeNBT());
-
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Inventory"));
         outputHandler.deserializeNBT(tag.getCompound("Output"));

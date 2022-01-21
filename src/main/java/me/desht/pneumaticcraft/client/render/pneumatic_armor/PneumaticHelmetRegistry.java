@@ -25,13 +25,13 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
-import net.minecraft.block.Block;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ITagCollection;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollection;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
@@ -85,7 +85,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     }
 
     @Override
-    public void addHackable(ITag.INamedTag<Block> blockTag, Supplier<? extends IHackableBlock> iHackable) {
+    public void addHackable(Tag.Named<Block> blockTag, Supplier<? extends IHackableBlock> iHackable) {
         Validate.isTrue(!(iHackable instanceof Block), "Blocks that already implement IHackableBlock do not need to be registered as hackable!");
 
         // can't add these yet because tags aren't populated at this point
@@ -99,7 +99,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
      *
      * @param tags the newly updated block tags
      */
-    public void resolveBlockTags(ITagCollection<Block> tags) {
+    public void resolveBlockTags(TagCollection<Block> tags) {
         hackableTaggedBlocks.clear();
         pendingBlockTags.forEach((id, hackable) -> tags.getTag(id).getValues().forEach(block -> hackableTaggedBlocks.put(block, hackable)));
     }
@@ -121,7 +121,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     }
 
     @Override
-    public IKeybindingButton makeKeybindingButton(int yPos, KeyBinding keyBinding) {
+    public IKeybindingButton makeKeybindingButton(int yPos, KeyMapping keyBinding) {
         return new KeybindingButton(30, yPos, 150, 20, xlate("pneumaticcraft.armor.gui.misc.setKey"), keyBinding);
     }
 
@@ -137,7 +137,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
         return sup == null ? null : sup.get();
     }
 
-    public IHackableEntity getHackable(Entity entity, PlayerEntity player) {
+    public IHackableEntity getHackable(Entity entity, Player player) {
         for (Map.Entry<Class<? extends Entity>, Supplier<? extends IHackableEntity>> entry : hackableEntities.entrySet()) {
             if (entry.getKey().isAssignableFrom(entity.getClass())) {
                 IHackableEntity hackable = entry.getValue().get();

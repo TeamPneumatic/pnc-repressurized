@@ -22,14 +22,14 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -45,17 +45,17 @@ public class EntityAmadrone extends EntityDrone {
     private String buyingPlayer;
     private AmadronAction amadronAction;
 
-    public EntityAmadrone(EntityType<? extends EntityDrone> type, World world) {
+    public EntityAmadrone(EntityType<? extends EntityDrone> type, Level world) {
         super(type, world, null);
 
-        setCustomName(new TranslationTextComponent("pneumaticcraft.drone.amadronDeliveryDrone"));
+        setCustomName(new TranslatableComponent("pneumaticcraft.drone.amadronDeliveryDrone"));
     }
 
-    public static EntityAmadrone makeAmadrone(World world, BlockPos pos) {
+    public static EntityAmadrone makeAmadrone(Level world, BlockPos pos) {
         EntityAmadrone drone = new EntityAmadrone(ModEntities.AMADRONE.get(), world);
         drone.readFromItemStack(getAmadroneStack());
 
-        int startY = world.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, pos.offset(30, 0, 0)).getY() + 27 + world.random.nextInt(6);
+        int startY = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, pos.offset(30, 0, 0)).getY() + 27 + world.random.nextInt(6);
         drone.setPos(pos.getX() + 27 + world.random.nextInt(6), startY, pos.getZ() + world.random.nextInt(6) - 3);
 
         return drone;
@@ -123,40 +123,35 @@ public class EntityAmadrone extends EntityDrone {
 
     @Override
     public int getUpgrades(EnumUpgrade upgrade) {
-        switch (upgrade) {
-            case SECURITY:
-                return 1;
-            case ITEM_LIFE:
-            case SPEED:
-                return 10;
-            case INVENTORY:
-                return 35;
-            default:
-                return 0;
-        }
+        return switch (upgrade) {
+            case SECURITY -> 1;
+            case ITEM_LIFE, SPEED -> 10;
+            case INVENTORY -> 35;
+            default -> 0;
+        };
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
 
         if (handlingOffer != null) {
-            CompoundNBT subTag = new CompoundNBT();
+            CompoundTag subTag = new CompoundTag();
             subTag.putString("offerId", handlingOffer.toString());
             subTag.putInt("offerTimes", offerTimes);
             subTag.putString("buyingPlayer", buyingPlayer);
-            if (!usedTablet.isEmpty()) subTag.put("usedTablet", usedTablet.save(new CompoundNBT()));
+            if (!usedTablet.isEmpty()) subTag.put("usedTablet", usedTablet.save(new CompoundTag()));
             subTag.putString("amadronAction", amadronAction.toString());
             tag.put("amadron", subTag);
         }
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
         if (tag.contains("amadron")) {
-            CompoundNBT subTag = tag.getCompound("amadron");
+            CompoundTag subTag = tag.getCompound("amadron");
             handlingOffer = new ResourceLocation(subTag.getString("offerId"));
             usedTablet = ItemStack.of(subTag.getCompound("usedTablet"));
             offerTimes = subTag.getInt("offerTimes");

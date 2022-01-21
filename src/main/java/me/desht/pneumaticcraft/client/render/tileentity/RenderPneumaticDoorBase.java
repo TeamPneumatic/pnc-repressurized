@@ -17,46 +17,66 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.util.Mth;
 
 public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntityPneumaticDoorBase> {
-    private final ModelRenderer cylinder1;
-    private final ModelRenderer cylinder2;
-    private final ModelRenderer cylinder3;
+    private final ModelPart cylinder1;
+    private final ModelPart cylinder2;
+    private final ModelPart cylinder3;
 
-    public RenderPneumaticDoorBase(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private static final String CYLINDER1 = "cylinder1";
+    private static final String CYLINDER2 = "cylinder2";
+    private static final String CYLINDER3 = "cylinder3";
 
-        cylinder1 = new ModelRenderer(64, 64, 0, 0);
-        cylinder1.addBox(0F, 0F, 0F, 3, 3, 10);
-        cylinder1.setPos(2.5F, 8.5F, -6F);
-        cylinder1.mirror = true;
-        cylinder2 = new ModelRenderer(64, 64, 0, 13);
-        cylinder2.addBox(0F, 0F, 0F, 2, 2, 10);
-        cylinder2.setPos(3F, 9F, -6F);
-        cylinder2.mirror = true;
-        cylinder3 = new ModelRenderer(64, 64, 0, 25);
-        cylinder3.addBox(0F, 0F, 0F, 1, 1, 10);
-        cylinder3.setPos(3.5F, 9.5F, -6F);
-        cylinder3.mirror = true;
+    public RenderPneumaticDoorBase(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
+
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.PNEUMATIC_DOOR_BASE);
+        cylinder1 = root.getChild(CYLINDER1);
+        cylinder2 = root.getChild(CYLINDER2);
+        cylinder3 = root.getChild(CYLINDER3);
     }
 
-    @Override
-    public void renderModel(TileEntityPneumaticDoorBase te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE));
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
 
-        float progress = MathHelper.lerp(partialTicks, te.oldProgress, te.progress);
+        partdefinition.addOrReplaceChild(CYLINDER1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("cylinder1_0", 0F, 0F, 0F, 3, 3, 10),
+                PartPose.offset(2.5F, 8.5F, -6F));
+        partdefinition.addOrReplaceChild(CYLINDER2, CubeListBuilder.create().texOffs(0, 13)
+                        .addBox("cylinder2_0", 0F, 0F, 0F, 2, 2, 10),
+                PartPose.offset(3F, 9F, -6F));
+        partdefinition.addOrReplaceChild(CYLINDER3, CubeListBuilder.create().texOffs(0, 25)
+                        .addBox("cylinder3_0", 0F, 0F, 0F, 1, 1, 10),
+                PartPose.offset(3.5F, 9.5F, -6F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+
+    @Override
+    public void renderModel(TileEntityPneumaticDoorBase te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE));
+
+        float progress = Mth.lerp(partialTicks, te.oldProgress, te.progress);
 
         float cosinus = (float) Math.sin(Math.toRadians((1 - progress) * 90)) * 12 / 16F;
         float sinus = 9 / 16F - (float) Math.cos(Math.toRadians((1 - progress) * 90)) * 9 / 16F;

@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.sensor;
 
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerAttackSensor;
@@ -26,12 +27,11 @@ import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor
 import me.desht.pneumaticcraft.common.sensor.pollSensors.*;
 import me.desht.pneumaticcraft.common.sensor.pollSensors.entity.EntityInRangeSensor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RangedInteger;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.*;
@@ -190,7 +190,7 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public RangedInteger getTextboxIntRange() {
+        public RangedInt getTextboxIntRange() {
             return coordinateSensor.getTextboxIntRange();
         }
 
@@ -205,7 +205,7 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public int emitRedstoneOnEvent(Event event, TileEntity tile, int sensorRange, String textboxText) {
+        public int emitRedstoneOnEvent(Event event, BlockEntity tile, int sensorRange, String textboxText) {
             TileEntityUniversalSensor teUs = (TileEntityUniversalSensor) tile;
             Set<BlockPos> positions = teUs.getGPSPositions();
             return positions.isEmpty() ? 0 : coordinateSensor.emitRedstoneOnEvent(event, teUs, sensorRange, positions);
@@ -217,7 +217,7 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public void getAdditionalInfo(List<ITextComponent> info) {
+        public void getAdditionalInfo(List<Component> info) {
             coordinateSensor.getAdditionalInfo(info);
         }
 
@@ -250,7 +250,7 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public RangedInteger getTextboxIntRange() {
+        public RangedInt getTextboxIntRange() {
             return coordinateSensor.getTextboxIntRange();
         }
 
@@ -265,7 +265,7 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public int getPollFrequency(TileEntity te) {
+        public int getPollFrequency(BlockEntity te) {
             TileEntityUniversalSensor us = (TileEntityUniversalSensor) te;
             Set<BlockPos> positions = us.getGPSPositions();
             int mult = positions.isEmpty() ? 1 : positions.size();
@@ -273,18 +273,18 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-            TileEntity te = world.getBlockEntity(pos);
+        public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
+            BlockEntity te = level.getBlockEntity(pos);
             if (te instanceof TileEntityUniversalSensor) {
                 TileEntityUniversalSensor teUs = (TileEntityUniversalSensor) te;
                 Set<BlockPos> positions = teUs.getGPSPositions();
-                return positions.isEmpty() ? 0 : coordinateSensor.getRedstoneValue(world, pos, sensorRange, textBoxText, positions);
+                return positions.isEmpty() ? 0 : coordinateSensor.getRedstoneValue(level, pos, sensorRange, textBoxText, positions);
             }
             return 0;
         }
 
         @Override
-        public void getAdditionalInfo(List<ITextComponent> info) {
+        public void getAdditionalInfo(List<Component> info) {
             coordinateSensor.getAdditionalInfo(info);
         }
 

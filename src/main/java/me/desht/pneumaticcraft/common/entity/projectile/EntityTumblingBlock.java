@@ -18,40 +18,38 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModEntities;
-import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.network.NetworkHooks;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -60,21 +58,21 @@ import javax.annotation.Nonnull;
  * A bit like an EntityFallingBlock but tumbles as it flies, and tries to form a block on impact with any other
  * block, not just when it lands on top of another block.
  */
-public class EntityTumblingBlock extends ThrowableEntity {
-    private static final DataParameter<BlockPos> ORIGIN = EntityDataManager.defineId(EntityTumblingBlock.class, DataSerializers.BLOCK_POS);
-    private static final DataParameter<ItemStack> STATE_STACK = EntityDataManager.defineId(EntityTumblingBlock.class, DataSerializers.ITEM_STACK);
+public class EntityTumblingBlock extends ThrowableProjectile {
+    private static final EntityDataAccessor<BlockPos> ORIGIN = SynchedEntityData.defineId(EntityTumblingBlock.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<ItemStack> STATE_STACK = SynchedEntityData.defineId(EntityTumblingBlock.class, EntityDataSerializers.ITEM_STACK);
     private static FakePlayer fakePlayer;
 
-    private static final Vector3d Y_POS = new Vector3d(0, 1, 0);
+    private static final Vec3 Y_POS = new Vec3(0, 1, 0);
 
     public final Vector3f tumbleVec;  // used for rendering
 
-    public EntityTumblingBlock(EntityType<EntityTumblingBlock> type, World worldIn) {
+    public EntityTumblingBlock(EntityType<EntityTumblingBlock> type, Level worldIn) {
         super(type, worldIn);
         this.tumbleVec = makeTumbleVec(worldIn, null);
     }
 
-    public EntityTumblingBlock(World worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
+    public EntityTumblingBlock(Level worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
         super(ModEntities.TUMBLING_BLOCK.get(), worldIn);
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 
@@ -90,11 +88,11 @@ public class EntityTumblingBlock extends ThrowableEntity {
         entityData.set(STATE_STACK, stack);
     }
 
-    private Vector3f makeTumbleVec(World world, LivingEntity thrower) {
+    private Vector3f makeTumbleVec(Level world, LivingEntity thrower) {
         if (thrower != null) {
             return new Vector3f(thrower.getLookAngle().cross(Y_POS));
         } else if (world != null && world.isClientSide) {
-            PlayerEntity player = ClientUtils.getClientPlayer();
+            Player player = ClientUtils.getClientPlayer();
             return player == null ? null : new Vector3f(player.getLookAngle().cross(Y_POS));
         } else {
             return null;
@@ -102,7 +100,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -147,17 +145,17 @@ public class EntityTumblingBlock extends ThrowableEntity {
             BlockPos blockpos1 = blockPosition(); //new BlockPos(this);
             if (!onGround && (tickCount > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || tickCount > 600)) {
                 dropAsItem();
-                remove();
+                discard();
             }
         }
     }
 
     @Override
-    protected void onHit(RayTraceResult result) {
+    protected void onHit(HitResult result) {
         if (!level.isClientSide) {
-            remove();
-            if (result.getType() == RayTraceResult.Type.BLOCK) {
-                if (!tryPlaceAsBlock((BlockRayTraceResult) result)) {
+            discard();
+            if (result.getType() == HitResult.Type.BLOCK) {
+                if (!tryPlaceAsBlock((BlockHitResult) result)) {
                     dropAsItem();
                 }
             } else {
@@ -166,7 +164,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
         }
     }
 
-    private boolean tryPlaceAsBlock(BlockRayTraceResult brtr) {
+    private boolean tryPlaceAsBlock(BlockHitResult brtr) {
         ItemStack stack = getStack();
         if (!(stack.getItem() instanceof BlockItem)) {
             return false;
@@ -174,16 +172,16 @@ public class EntityTumblingBlock extends ThrowableEntity {
         BlockPos pos0 = brtr.getBlockPos();
         Direction face = brtr.getDirection();
         // getOwner = getThrower
-        PlayerEntity placer = getOwner() instanceof PlayerEntity ? (PlayerEntity) getOwner() : getFakePlayer();
+        Player placer = getOwner() instanceof Player ? (Player) getOwner() : getFakePlayer();
         BlockState state = level.getBlockState(pos0);
-        BlockItemUseContext ctx = new LocalBlockItemUseContext(new ItemUseContext(placer, Hand.MAIN_HAND, brtr));
+        BlockPlaceContext ctx = new LocalBlockPlaceContext(new UseOnContext(placer, InteractionHand.MAIN_HAND, brtr));
         BlockPos pos = state.canBeReplaced(ctx) ? pos0 : pos0.relative(face);
 
         if (level.getBlockState(pos).canBeReplaced(ctx)) {
             BlockSnapshot snapshot = BlockSnapshot.create(level.dimension(), level, pos);
             if (!ForgeEventFactory.onBlockPlace(placer, snapshot, face)) {
-                ActionResultType res = ((BlockItem) stack.getItem()).place(ctx);
-                return res == ActionResultType.SUCCESS || res == ActionResultType.CONSUME;
+                InteractionResult res = ((BlockItem) stack.getItem()).place(ctx);
+                return res == InteractionResult.SUCCESS || res == InteractionResult.CONSUME;
             }
         }
         return false;
@@ -195,25 +193,24 @@ public class EntityTumblingBlock extends ThrowableEntity {
         }
     }
 
-    private PlayerEntity getFakePlayer() {
+    private Player getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((ServerWorld) level, new GameProfile(null, "[Tumbling Block]"));
-            fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
+            fakePlayer = FakePlayerFactory.get((ServerLevel) level, new GameProfile(null, "[Tumbling Block]"));
         }
         fakePlayer.setPos(getX(), getY(), getZ());
-        fakePlayer.setItemInHand(Hand.MAIN_HAND, getStack());
+        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, getStack());
         return fakePlayer;
     }
 
     /**
      * Stores a copy of the item being used, so the player's held version doesn't get modified when
-     * {@link BlockItem#place(BlockItemUseContext)} is called by {@link #tryPlaceAsBlock(BlockRayTraceResult)}
+     * {@link BlockItem#place(BlockPlaceContext)} is called by {@link #tryPlaceAsBlock(BlockHitResult)}
      * (the item has already been taken from the player, when the entity was created)
      */
-    private static class LocalBlockItemUseContext extends BlockItemUseContext {
+    private static class LocalBlockPlaceContext extends BlockPlaceContext {
         private final ItemStack stack;
 
-        public LocalBlockItemUseContext(ItemUseContext context) {
+        public LocalBlockPlaceContext(UseOnContext context) {
             super(context);
             stack = context.getItemInHand().copy();
         }

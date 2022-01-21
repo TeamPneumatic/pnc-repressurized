@@ -37,6 +37,6 @@ public class GuiProgWidgetHarvest extends GuiProgWidgetDigAndPlace<ProgWidgetHar
                 xlate("pneumaticcraft.gui.progWidget.harvest.requiresHoe"), b -> progWidget.setRequiresTool(b.checked))
                 .setTooltipKey("pneumaticcraft.gui.progWidget.harvest.requiresHoe.tooltip")
                 .setChecked(progWidget.requiresTool());
-        addButton(requiresHoe);
+        addRenderableWidget(requiresHoe);
     }
 }

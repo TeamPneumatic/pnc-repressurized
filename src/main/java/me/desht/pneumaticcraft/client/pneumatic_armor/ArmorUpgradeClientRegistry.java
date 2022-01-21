@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.client.pneumatic_armor;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
 
@@ -37,7 +37,7 @@ public enum ArmorUpgradeClientRegistry {
 
     private final List<List<IArmorUpgradeClientHandler<?>>> clientUpgradeHandlers = new ArrayList<>();
     private final Map<ResourceLocation, IArmorUpgradeClientHandler<?>> id2HandlerMap = new HashMap<>();
-    private final Map<ResourceLocation, KeyBinding> id2KeyBindMap = new HashMap<>();
+    private final Map<ResourceLocation, KeyMapping> id2KeyBindMap = new HashMap<>();
     private final Map<String, IArmorUpgradeClientHandler<?>> triggerKeyBindMap = new HashMap<>();
 
     public static ArmorUpgradeClientRegistry getInstance() {
@@ -49,24 +49,24 @@ public enum ArmorUpgradeClientRegistry {
 
         clientHandler.getInitialKeyBinding().ifPresent(k -> registerKeyBinding(handler.getID(), k));
         clientHandler.getSubKeybinds().forEach(rl -> registerKeyBinding(rl,
-                new KeyBinding(IArmorUpgradeHandler.getStringKey(rl),
-                        KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+                new KeyMapping(IArmorUpgradeHandler.getStringKey(rl),
+                        KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
                         clientHandler.getSubKeybindCategory())
         ));
 
         clientHandler.getTriggerKeyBinding().ifPresent(k -> registerTriggerKeybinding(k, clientHandler));
     }
 
-    private void registerKeyBinding(ResourceLocation upgradeID, KeyBinding keyBinding) {
+    private void registerKeyBinding(ResourceLocation upgradeID, KeyMapping keyBinding) {
         id2KeyBindMap.put(upgradeID, keyBinding);
         ClientRegistry.registerKeyBinding(keyBinding);
     }
 
-    private void registerTriggerKeybinding(KeyBinding keyBinding, IArmorUpgradeClientHandler<?> clientHandler) {
+    private void registerTriggerKeybinding(KeyMapping keyBinding, IArmorUpgradeClientHandler<?> clientHandler) {
         triggerKeyBindMap.put(keyBinding.getName(), clientHandler);
     }
 
-    public KeyBinding getKeybindingForUpgrade(ResourceLocation upgradeID) {
+    public KeyMapping getKeybindingForUpgrade(ResourceLocation upgradeID) {
         return id2KeyBindMap.get(upgradeID);
     }
 
@@ -83,18 +83,18 @@ public enum ArmorUpgradeClientRegistry {
         return id2HandlerMap.get(id);
     }
 
-    public Optional<IArmorUpgradeClientHandler<?>> getTriggeredHandler(KeyBinding keyBinding) {
+    public Optional<IArmorUpgradeClientHandler<?>> getTriggeredHandler(KeyMapping keyBinding) {
         return Optional.ofNullable(triggerKeyBindMap.get(keyBinding.getName()));
     }
 
     /**
      * Get all the client handlers for the given armor slot. This is guaranteed to be in exactly the same order as
-     * the common handlers for the same slot (as returned by {@link ArmorUpgradeRegistry#getHandlersForSlot(EquipmentSlotType)}
+     * the common handlers for the same slot (as returned by {@link ArmorUpgradeRegistry#getHandlersForSlot(EquipmentSlot)}
      *
      * @param slot the slot to query
      * @return a list of all the client upgrade handlers registered for that slot
      */
-    public List<IArmorUpgradeClientHandler<?>> getHandlersForSlot(EquipmentSlotType slot) {
+    public List<IArmorUpgradeClientHandler<?>> getHandlersForSlot(EquipmentSlot slot) {
         if (clientUpgradeHandlers.isEmpty()) {
             initHandlerLists();
         }
@@ -105,11 +105,11 @@ public enum ArmorUpgradeClientRegistry {
         // lazy init the by-slot lists; this adds client handlers in *exactly* the same order as common handlers
         if (!clientUpgradeHandlers.isEmpty()) throw new IllegalStateException("handler lists already inited!?");
 
-        for (EquipmentSlotType ignored : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot ignored : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             clientUpgradeHandlers.add(new ArrayList<>());
         }
 
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             for (IArmorUpgradeHandler<?> handler : ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot)) {
                 IArmorUpgradeClientHandler<?> clientHandler = id2HandlerMap.get(handler.getID());
                 // sanity check - catch missed registrations early
@@ -128,7 +128,7 @@ public enum ArmorUpgradeClientRegistry {
         // at that point, no upgrade handlers (client or common) are yet registered
         if (clientUpgradeHandlers.isEmpty()) return;
 
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             for (IArmorUpgradeClientHandler<?> renderHandler : getHandlersForSlot(slot)) {
                 renderHandler.initConfig();
             }

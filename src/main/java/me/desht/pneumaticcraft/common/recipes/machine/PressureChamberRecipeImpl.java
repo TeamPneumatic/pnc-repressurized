@@ -26,15 +26,15 @@ import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -104,12 +104,12 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public IRecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return PneumaticCraftRecipeType.PRESSURE_CHAMBER;
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipes.PRESSURE_CHAMBER.get();
     }
 
@@ -149,7 +149,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeFloat(getCraftingPressureForDisplay());
         buffer.writeVarInt(inputs.size());
         inputs.forEach(i -> i.toNetwork(buffer));
@@ -158,8 +158,8 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     public static class Serializer<T extends PressureChamberRecipe>
-            extends ForgeRegistryEntry<IRecipeSerializer<?>>
-            implements IRecipeSerializer<T> {
+            extends ForgeRegistryEntry<RecipeSerializer<?>>
+            implements RecipeSerializer<T> {
 
         private final IFactory<T> factory;
 
@@ -174,18 +174,18 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
             for (JsonElement e : inputs) {
                 inputIngredients.add(Ingredient.fromJson(e.getAsJsonObject()));
             }
-            float pressure = JSONUtils.getAsFloat(json, "pressure");
+            float pressure = GsonHelper.getAsFloat(json, "pressure");
             JsonArray outputs = json.get("results").getAsJsonArray();
             NonNullList<ItemStack> results = NonNullList.create();
             for (JsonElement e : outputs) {
-                results.add(ShapedRecipe.itemFromJson(e.getAsJsonObject()));
+                results.add(ShapedRecipe.itemStackFromJson(e.getAsJsonObject()));
             }
             return factory.create(recipeId, inputIngredients, pressure, results.toArray(new ItemStack[0]));
         }
 
         @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             float pressure = buffer.readFloat();
             int nInputs = buffer.readVarInt();
             List<Ingredient> in = new ArrayList<>();
@@ -201,7 +201,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, T recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
             recipe.write(buffer);
         }
 

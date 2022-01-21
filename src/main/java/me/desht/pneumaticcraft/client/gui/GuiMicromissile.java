@@ -17,8 +17,9 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
@@ -34,26 +35,21 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateMicromissileSettings;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiMicromissile extends GuiPneumaticScreenBase {
-    private static final Rectangle2d SELECTOR_BOUNDS = new Rectangle2d(12, 21, 92, 81);
+    private static final Rect2i SELECTOR_BOUNDS = new Rect2i(12, 21, 92, 81);
     private static final int MAX_DIST = SELECTOR_BOUNDS.getWidth();
 
     // these points are relative to the SELECTOR_BOUNDS box defined above (note positive Y is downwards)
@@ -69,19 +65,19 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     private boolean dragging = false;
     private String entityFilter;
     private int sendTimer = 0;
-    private final Hand hand;
+    private final InteractionHand hand;
 
     private WidgetTextField textField;
     private WidgetLabel filterLabel;
     private WidgetButtonExtended modeButton;
     private WidgetButtonExtended warningButton;
 
-    private GuiMicromissile(ITextComponent title, Hand hand) {
+    private GuiMicromissile(Component title, InteractionHand hand) {
         super(title);
         xSize = 183;
         ySize = 191;
 
-        ItemStack stack = Minecraft.getInstance().player.getItemInHand(hand);
+        ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
         if (stack.getItem() == ModItems.MICROMISSILES.get() && stack.hasTag()) {
             topSpeed = NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED);
             turnSpeed = NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED);
@@ -95,11 +91,11 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             point = new PointXY(MAX_DIST / 2, MAX_DIST / 4);
             entityFilter = "";
             fireMode = FireMode.SMART;
-            this.hand = Hand.MAIN_HAND;
+            this.hand = InteractionHand.MAIN_HAND;
         }
     }
 
-    public static void openGui(ITextComponent title, Hand handIn) {
+    public static void openGui(Component title, InteractionHand handIn) {
         Minecraft.getInstance().setScreen(new GuiMicromissile(title, handIn));
     }
 
@@ -107,9 +103,9 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     public void init() {
         super.init();
 
-        ITextComponent labelStr = xlate("pneumaticcraft.gui.sentryTurret.targetFilter");
+        Component labelStr = xlate("pneumaticcraft.gui.sentryTurret.targetFilter");
         filterLabel = new WidgetLabel(guiLeft + 12, guiTop + 130, labelStr);
-        addButton(filterLabel);
+        addRenderableWidget(filterLabel);
         int textBoxX = guiLeft + 12 + font.width(labelStr) + 5;
         int textBoxWidth = xSize - (textBoxX - guiLeft) - 20;
         textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, 10);
@@ -122,25 +118,25 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
                 sendTimer = 5;  // delayed send to reduce packet spam while typing
             }
         });
-        addButton(textField);
+        addRenderableWidget(textField);
 
-        addButton(new WidgetTooltipArea(guiLeft + 42, guiTop + 9, 35, 9, xlate("pneumaticcraft.gui.micromissile.topSpeed")));
-        addButton(new WidgetTooltipArea(guiLeft + 6, guiTop + 103, 25, 12, xlate("pneumaticcraft.gui.micromissile.turnSpeed")));
-        addButton(new WidgetTooltipArea(guiLeft + 96, guiTop + 103, 15, 15, xlate("pneumaticcraft.gui.micromissile.damage")));
+        addRenderableWidget(new WidgetTooltipArea(guiLeft + 42, guiTop + 9, 35, 9, xlate("pneumaticcraft.gui.micromissile.topSpeed")));
+        addRenderableWidget(new WidgetTooltipArea(guiLeft + 6, guiTop + 103, 25, 12, xlate("pneumaticcraft.gui.micromissile.turnSpeed")));
+        addRenderableWidget(new WidgetTooltipArea(guiLeft + 96, guiTop + 103, 15, 15, xlate("pneumaticcraft.gui.micromissile.damage")));
 
-        ITextComponent saveLabel = xlate("pneumaticcraft.gui.micromissile.saveDefault");
+        Component saveLabel = xlate("pneumaticcraft.gui.micromissile.saveDefault");
         int buttonWidth = font.width(saveLabel) + 10;
         int buttonX = guiLeft + (xSize - buttonWidth) / 2;
-        addButton(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
+        addRenderableWidget(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
 
-        modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, StringTextComponent.EMPTY, b -> modeSwitch())
+        modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, TextComponent.EMPTY, b -> modeSwitch())
                 .setTooltipKey("pneumaticcraft.gui.micromissile.modeTooltip");
-        addButton(modeButton);
+        addRenderableWidget(modeButton);
 
         warningButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 123, 20, 20);
         warningButton.setVisible(false);
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
-        addButton(warningButton);
+        addRenderableWidget(warningButton);
 
         validateEntityFilter(entityFilter);
 
@@ -162,7 +158,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
 
         super.render(matrixStack, x, y, partialTicks);
@@ -170,21 +166,21 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
-        } else if (textField.isHovered()) {
+        } else if (textField.isHoveredOrFocused()) {
             String str = I18n.get("pneumaticcraft.gui.entityFilter.holdF1");
             font.draw(matrixStack, str, guiLeft + (xSize - font.width(str)) / 2f, guiTop + ySize + 5, 0x808080);
         }
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    protected void drawForeground(PoseStack matrixStack, int x, int y, float partialTicks) {
         if (fireMode == FireMode.DUMB) {
             return;
         }
 
         if (point != null) {
-            float px = point.x;
-            float py = point.y;
+            float px = point.x();
+            float py = point.y();
             matrixStack.pushPose();
             matrixStack.translate(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
 
@@ -192,19 +188,19 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             int size = dragging ? 5 : 3;
             RenderSystem.lineWidth(2);
 
-            BufferBuilder wr = Tessellator.getInstance().getBuilder();
+            BufferBuilder wr = Tesselator.getInstance().getBuilder();
             Matrix4f posMat = matrixStack.last().pose();
-            wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+            wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
             wr.vertex(posMat, px - size, py, 0).color(32, 32, 32, 255).endVertex();
             wr.vertex(posMat, px + size, py, 0).color(32, 32, 32, 255).endVertex();
             wr.vertex(posMat, px, py - size, 0).color(32, 32, 32, 255).endVertex();
             wr.vertex(posMat, px, py + size, 0).color(32, 32, 32, 255).endVertex();
-            Tessellator.getInstance().end();
+            Tesselator.getInstance().end();
 
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.lineWidth(1);
-            wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+            wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
             // speed line
             wr.vertex(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
             wr.vertex(posMat, SELECTOR_BOUNDS.getWidth() / 2f, 0, 0).color(32, 32, 32, 128).endVertex();
@@ -214,7 +210,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             // damage line
             wr.vertex(posMat, px, py, 0).color(32, 32, 32, 128).endVertex();
             wr.vertex(posMat, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
-            Tessellator.getInstance().end();
+            Tesselator.getInstance().end();
             RenderSystem.disableBlend();
 
             matrixStack.popPose();
@@ -282,12 +278,12 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     private boolean validateEntityFilter(String filter) {
         try {
             warningButton.visible = false;
-            warningButton.setTooltipText(StringTextComponent.EMPTY);
+            warningButton.setTooltipText(TextComponent.EMPTY);
             new EntityFilter(filter);  // syntax check
             return true;
         } catch (Exception e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).withStyle(TextFormatting.GOLD));
+            warningButton.setTooltipText(new TextComponent(e.getMessage()).withStyle(ChatFormatting.GOLD));
             return false;
         }
     }
@@ -313,7 +309,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     }
 
     private PointXY getPoint(int mouseX, int mouseY) {
-        Rectangle2d r = new Rectangle2d(SELECTOR_BOUNDS.getX() + guiLeft, SELECTOR_BOUNDS.getY() + guiTop, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight());
+        Rect2i r = new Rect2i(SELECTOR_BOUNDS.getX() + guiLeft, SELECTOR_BOUNDS.getY() + guiTop, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight());
 
         if (!r.contains(mouseX, mouseY)) {
             return null;
@@ -325,13 +321,13 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
 
     @SuppressWarnings("SameParameterValue")
     private boolean isPointInTriangle(PointXY s, PointXY a, PointXY b, PointXY c) {
-        int as_x = s.x - a.x;
-        int as_y = s.y - a.y;
+        int as_x = s.x() - a.x();
+        int as_y = s.y() - a.y();
 
-        boolean s_ab = (b.x - a.x) * as_y - (b.y - a.y) * as_x > 0;
+        boolean s_ab = (b.x() - a.x()) * as_y - (b.y() - a.y()) * as_x > 0;
 
-        if ((c.x - a.x) * as_y - (c.y - a.y) * as_x > 0 == s_ab) return false;
+        if ((c.x() - a.x()) * as_y - (c.y() - a.y()) * as_x > 0 == s_ab) return false;
 
-        return (c.x - b.x) * (s.y - b.y) - (c.y - b.y) * (s.x - b.x) > 0 == s_ab;
+        return (c.x() - b.x()) * (s.y() - b.y()) - (c.y() - b.y()) * (s.x() - b.x()) > 0 == s_ab;
     }
 }

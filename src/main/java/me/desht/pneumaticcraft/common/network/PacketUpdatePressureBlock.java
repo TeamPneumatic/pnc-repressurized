@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -41,7 +41,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
     private final Direction handlerDir;
     private final int currentAir;
 
-    public PacketUpdatePressureBlock(TileEntity te, Direction handlerDir, Direction leakDir, int currentAir) {
+    public PacketUpdatePressureBlock(BlockEntity te, Direction handlerDir, Direction leakDir, int currentAir) {
         super(te.getBlockPos());
 
         this.handlerDir = handlerDir;
@@ -49,7 +49,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
         this.currentAir = currentAir;
     }
 
-    public PacketUpdatePressureBlock(PacketBuffer buffer) {
+    public PacketUpdatePressureBlock(FriendlyByteBuf buffer) {
         super(buffer);
         this.currentAir = buffer.readInt();
         byte idx = buffer.readByte();
@@ -59,7 +59,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeInt(currentAir);
         buf.writeByte(handlerDir == null ? NO_DIRECTION : handlerDir.get3DDataValue());
@@ -68,7 +68,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = ClientUtils.getClientTE(pos);
+            BlockEntity te = ClientUtils.getClientTE(pos);
             if (te != null) {
                 te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, handlerDir).ifPresent(handler -> {
                     handler.setSideLeaking(leakDir);

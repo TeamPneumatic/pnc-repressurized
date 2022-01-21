@@ -22,14 +22,14 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import net.minecraft.block.Block;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Collection;
 import java.util.List;
@@ -86,11 +86,11 @@ public abstract class AssemblyProgram {
      */
     public abstract boolean executeStep(TileEntityAssemblyController.AssemblySystem system);
 
-    public abstract void writeToNBT(CompoundNBT tag);
+    public abstract void writeToNBT(CompoundTag tag);
 
-    public abstract void readFromNBT(CompoundNBT tag);
+    public abstract void readFromNBT(CompoundTag tag);
 
-    public abstract Collection<AssemblyRecipe> getRecipeList(World world);
+    public abstract Collection<AssemblyRecipe> getRecipeList(Level world);
 
     /**
      * You can add problem messages here if an assembly program has a problem with a certain step.
@@ -98,15 +98,15 @@ public abstract class AssemblyProgram {
      * @param problemList list to add to
      */
     @SuppressWarnings("incomplete-switch")
-    public void addProgramProblem(List<ITextComponent> problemList) {
+    public void addProgramProblem(List<Component> problemList) {
         switch (curProblem) {
             case NO_INPUT:
-                problemList.add(new StringTextComponent(TextFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron."));
-                problemList.add(new StringTextComponent(TextFormatting.BLACK + "Place an inventory with a Block of Compressed Iron surrounding the IO Unit."));
+                problemList.add(new TextComponent(ChatFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron."));
+                problemList.add(new TextComponent(ChatFormatting.BLACK + "Place an inventory with a Block of Compressed Iron surrounding the IO Unit."));
                 break;
             case NO_OUTPUT:
-                problemList.add(new StringTextComponent(TextFormatting.GRAY + "The output IO Unit can't find an inventory to place the output in."));
-                problemList.add(new StringTextComponent(TextFormatting.BLACK + "Place an inventory / make space in a connected inventory."));
+                problemList.add(new TextComponent(ChatFormatting.GRAY + "The output IO Unit can't find an inventory to place the output in."));
+                problemList.add(new TextComponent(ChatFormatting.BLACK + "Place an inventory / make space in a connected inventory."));
                 break;
         }
     }

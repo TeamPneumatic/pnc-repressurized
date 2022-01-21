@@ -17,47 +17,47 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.ICollisionReader;
-import net.minecraft.world.World;
-import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.EmptyChunk;
-import net.minecraft.world.chunk.IChunk;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.CollisionGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.border.WorldBorder;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.EmptyLevelChunk;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Like a Region, but should be OK to use get a cache from a different thread (since we go through
  * ServerChunkProvider#getChunk(), which returns async chunk supplier when called off the main thread.
  * This should only be used server-side.
  */
-public class ChunkCache implements ICollisionReader {
+public class ChunkCache implements CollisionGetter {
     protected final int chunkX;
     protected final int chunkZ;
-    protected final IChunk[][] chunks;
+    protected final ChunkAccess[][] chunks;
     protected boolean empty;
-    protected final World world;
+    protected final Level world;
 
-    public ChunkCache(World worldIn, BlockPos pos1, BlockPos pos2) {
+    public ChunkCache(Level worldIn, BlockPos pos1, BlockPos pos2) {
         this.world = worldIn;
         this.chunkX = pos1.getX() >> 4;
         this.chunkZ = pos1.getZ() >> 4;
         int endX = pos2.getX() >> 4;
         int endZ = pos2.getZ() >> 4;
-        this.chunks = new IChunk[endX - this.chunkX + 1][endZ - this.chunkZ + 1];
+        this.chunks = new ChunkAccess[endX - this.chunkX + 1][endZ - this.chunkZ + 1];
         this.empty = true;
 
         for (int x = this.chunkX; x <= endX; ++x) {
@@ -68,7 +68,7 @@ public class ChunkCache implements ICollisionReader {
 
         for (int x = pos1.getX() >> 4; x <= pos2.getX() >> 4; ++x) {
             for (int z = pos1.getZ() >> 4; z <= pos2.getZ() >> 4; ++z) {
-                IChunk ichunk = this.chunks[x - this.chunkX][z - this.chunkZ];
+                ChunkAccess ichunk = this.chunks[x - this.chunkX][z - this.chunkZ];
                 if (ichunk != null && !ichunk.isYSpaceEmpty(pos1.getY(), pos2.getY())) {
                     this.empty = false;
                     return;
@@ -77,18 +77,18 @@ public class ChunkCache implements ICollisionReader {
         }
     }
 
-    private IChunk getChunk(BlockPos pos) {
+    private ChunkAccess getChunk(BlockPos pos) {
         return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
 
-    private IChunk getChunk(int chunkX, int chunkZ) {
+    private ChunkAccess getChunk(int chunkX, int chunkZ) {
         int x = chunkX - this.chunkX;
         int z = chunkZ - this.chunkZ;
         if (x >= 0 && x < this.chunks.length && z >= 0 && z < this.chunks[x].length) {
-            IChunk ichunk = this.chunks[x][z];
-            return (ichunk != null ? ichunk : new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ)));
+            ChunkAccess ichunk = this.chunks[x][z];
+            return (ichunk != null ? ichunk : new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ)));
         } else {
-            return new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ));
+            return new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ));
         }
     }
 
@@ -98,39 +98,49 @@ public class ChunkCache implements ICollisionReader {
     }
 
     @Override
-    public IBlockReader getChunkForCollisions(int chunkX, int chunkZ) {
+    public BlockGetter getChunkForCollisions(int chunkX, int chunkZ) {
         return this.getChunk(chunkX, chunkZ);
     }
 
     @Override
-    public Stream<VoxelShape> getEntityCollisions(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
-        return Stream.empty();
+    public List<VoxelShape> getEntityCollisions(@Nullable Entity pEntity, AABB pCollisionBox) {
+        return Collections.emptyList();
     }
 
     @Nullable
     @Override
-    public TileEntity getBlockEntity(BlockPos pos) {
-        IChunk ichunk = this.getChunk(pos);
+    public BlockEntity getBlockEntity(BlockPos pos) {
+        ChunkAccess ichunk = this.getChunk(pos);
         return ichunk.getBlockEntity(pos);
     }
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        if (World.isOutsideBuildHeight(pos)) {
+        if (world.isOutsideBuildHeight(pos)) {
             return Blocks.AIR.defaultBlockState();
         } else {
-            IChunk ichunk = this.getChunk(pos);
+            ChunkAccess ichunk = this.getChunk(pos);
             return ichunk.getBlockState(pos);
         }
     }
 
     @Override
     public FluidState getFluidState(BlockPos pos) {
-        if (World.isOutsideBuildHeight(pos)) {
+        if (world.isOutsideBuildHeight(pos)) {
             return Fluids.EMPTY.defaultFluidState();
         } else {
-            IChunk ichunk = this.getChunk(pos);
+            ChunkAccess ichunk = this.getChunk(pos);
             return ichunk.getFluidState(pos);
         }
+    }
+
+    @Override
+    public int getHeight() {
+        return world.getHeight();
+    }
+
+    @Override
+    public int getMinBuildHeight() {
+        return world.getMinBuildHeight();
     }
 }

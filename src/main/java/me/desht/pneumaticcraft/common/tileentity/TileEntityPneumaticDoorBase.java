@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
@@ -29,20 +30,21 @@ import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
@@ -54,7 +56,7 @@ import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_EXT
 import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_SPEED_FAST;
 
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements
-        IRedstoneControl<TileEntityPneumaticDoorBase>, IMinWorkingPressure, ICamouflageableTE, INamedContainerProvider {
+        IRedstoneControl<TileEntityPneumaticDoorBase>, IMinWorkingPressure, ICamouflageableTE, MenuProvider {
     private static final List<RedstoneMode<TileEntityPneumaticDoorBase>> REDSTONE_MODES = ImmutableList.of(
             new ReceivingRedstoneMode<>("pneumaticDoor.playerNearby", new ItemStack(Items.OBSERVER),
                     te -> true),
@@ -94,31 +96,15 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     private int rangeSq;
 
-    public TileEntityPneumaticDoorBase() {
-        super(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
+    public TileEntityPneumaticDoorBase(BlockPos pos, BlockState state) {
+        super(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
+
         oldProgress = progress;
-        if (!getLevel().isClientSide) {
-            if (getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
-                if ((getLevel().getGameTime() & 0x3f) == 0) {
-                    TileEntity te = getLevel().getBlockEntity(getBlockPos().relative(getRotation(), 3));
-                    if (te instanceof TileEntityPneumaticDoorBase) {
-                        doubleDoor = (TileEntityPneumaticDoorBase) te;
-                    } else {
-                        doubleDoor = null;
-                    }
-                }
-                setOpening(shouldOpen() || isNeighborOpening());
-                setNeighborOpening(isOpening());
-            } else {
-                setOpening(true);
-            }
-            speedMultiplier = getSpeedMultiplierFromUpgrades();
-        }
         float targetProgress = opening ? 1F : 0F;
         if (progress < targetProgress) {
             if (progress > 0.05 && progress < targetProgress - PNEUMATIC_DOOR_EXTENSION) {
@@ -136,13 +122,39 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
             }
             if (progress < targetProgress) progress = targetProgress;
         }
-        if (!getLevel().isClientSide && !PneumaticCraftUtils.epsilonEquals(oldProgress, progress)) {
-            addAir((int) (-Math.abs(oldProgress - progress) * PneumaticValues.USAGE_PNEUMATIC_DOOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
-        }
+
         door = getDoor();
         if (door != null) {
             door.setRotationAngle(progress * 90);
-            if (!getLevel().isClientSide) rightGoing = door.rightGoing;
+        }
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
+            if ((nonNullLevel().getGameTime() & 0x3f) == 0) {
+                BlockEntity te = nonNullLevel().getBlockEntity(getBlockPos().relative(getRotation(), 3));
+                if (te instanceof TileEntityPneumaticDoorBase) {
+                    doubleDoor = (TileEntityPneumaticDoorBase) te;
+                } else {
+                    doubleDoor = null;
+                }
+            }
+            setOpening(shouldOpen() || isNeighborOpening());
+            setNeighborOpening(isOpening());
+        } else {
+            setOpening(true);
+        }
+        speedMultiplier = getSpeedMultiplierFromUpgrades();
+
+        if (!PneumaticCraftUtils.epsilonEquals(oldProgress, progress)) {
+            addAir((int) (-Math.abs(oldProgress - progress) * PneumaticValues.USAGE_PNEUMATIC_DOOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
+        }
+
+        if (door != null) {
+            rightGoing = door.rightGoing;
         }
     }
 
@@ -155,21 +167,17 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     private boolean shouldOpen() {
         if (door == null) return false;
-        switch (rsController.getCurrentMode()) {
-            case RS_MODE_NEAR:
-                return hasAnyValidPlayer(player -> true);
-            case RS_MODE_NEAR_LOOKING:
-                return hasAnyValidPlayer(this::isPlayerLookingAtDoor);
-            case RS_MODE_WOODEN_DOOR:
-            case RS_MODE_IRON_DOOR:
-                return rsController.getCurrentRedstonePower() > 0 || opening;
-        }
-        return false;
+        return switch (rsController.getCurrentMode()) {
+            case RS_MODE_NEAR -> hasAnyValidPlayer(player -> true);
+            case RS_MODE_NEAR_LOOKING -> hasAnyValidPlayer(this::isPlayerLookingAtDoor);
+            case RS_MODE_WOODEN_DOOR, RS_MODE_IRON_DOOR -> rsController.getCurrentRedstonePower() > 0 || opening;
+            default -> false;
+        };
     }
 
-    private boolean hasAnyValidPlayer(Predicate<ServerPlayerEntity> pred) {
+    private boolean hasAnyValidPlayer(Predicate<ServerPlayer> pred) {
         if (level != null && level.getServer() != null) {
-            Vector3d vec = Vector3d.atCenterOf(getBlockPos().relative(getRotation()));
+            Vec3 vec = Vec3.atCenterOf(getBlockPos().relative(getRotation()));
             return level.getServer().getPlayerList().getPlayers().stream()
                     .filter(player -> player.distanceToSqr(vec) <= rangeSq)
                     .filter(player -> !TileEntitySecurityStation.isProtectedFromPlayer(player, getBlockPos(), false))
@@ -178,10 +186,10 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         return false;
     }
 
-    private boolean isPlayerLookingAtDoor(ServerPlayerEntity player) {
-        Vector3d eyePos = player.getEyePosition(0f);
+    private boolean isPlayerLookingAtDoor(ServerPlayer player) {
+        Vec3 eyePos = player.getEyePosition(0f);
         // rangeSq is longer than we need, but we've already done a proximity check, so...
-        Vector3d endPos = eyePos.add(player.getLookAngle().scale(rangeSq));
+        Vec3 endPos = eyePos.add(player.getLookAngle().scale(rangeSq));
         return door.getRenderBoundingBox().clip(eyePos, endPos).isPresent();
     }
 
@@ -189,7 +197,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         boolean wasOpening = this.opening;
         this.opening = opening;
         if (this.opening != wasOpening) {
-            NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR.get(), SoundCategory.BLOCKS, getBlockPos(), 1.0F, 1.0F, false),this);
+            NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR.get(), SoundSource.BLOCKS, getBlockPos(), 1.0F, 1.0F, false),this);
             sendDescriptionPacket();
         }
     }
@@ -226,8 +234,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         progress = tag.getFloat("extension");
         opening = tag.getBoolean("opening");
@@ -236,31 +244,30 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putFloat("extension", progress);
         tag.putBoolean("opening", opening);
         tag.putBoolean("rightGoing", rightGoing);
         tag.putBoolean("passSignal", passSignal);
-        return tag;
     }
 
     @Override
-    public void writeToPacket(CompoundNBT tag) {
+    public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
         ICamouflageableTE.writeCamo(tag, camoState);
     }
 
     @Override
-    public void readFromPacket(CompoundNBT tag) {
+    public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
         camoState = ICamouflageableTE.readCamo(tag);
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag)) return;
 
         if (tag.equals("pass_signal")) {
@@ -297,13 +304,13 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     @Override
-    public IFormattableTextComponent getRedstoneTabTitle() {
+    public MutableComponent getRedstoneTabTitle() {
         return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.openWhen");
     }
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerPneumaticDoorBase(i, playerInventory, getBlockPos());
     }
 

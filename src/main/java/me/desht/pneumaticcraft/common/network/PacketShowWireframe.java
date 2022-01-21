@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -34,13 +34,13 @@ public class PacketShowWireframe extends LocationIntPacket {
         entityId = entity.getId();
     }
 
-    public PacketShowWireframe(PacketBuffer buffer) {
+    public PacketShowWireframe(FriendlyByteBuf buffer) {
         super(buffer);
         entityId = buffer.readInt();
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
         buffer.writeInt(entityId);
     }

@@ -1,26 +1,39 @@
 package me.desht.pneumaticcraft.client.model.entity.drone;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
 public class ModelDroneCore extends EntityModel<EntityDroneBase> {
-    private final ModelRenderer done;
-    private final ModelRenderer body;
+    private final ModelPart drone;
 
-    public ModelDroneCore() {
-        texWidth = 128;
-        texHeight = 128;
+    private static final String DRONE = "drone";
+    private static final String BODY = "body";
 
-        done = new ModelRenderer(this);
-        done.setPos(0.0F, 22.5F, 0.0F);
+    public ModelDroneCore(ModelPart root) {
+        drone = root.getChild(DRONE);
+    }
 
-        body = new ModelRenderer(this);
-        body.setPos(0.0F, -3.0F, 0.0F);
-        done.addChild(body);
-        body.texOffs(48, 106).addBox(-3.5F, -5.0F, -4.5F, 7.0F, 6.0F, 16.0F, 0.0F, false);
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        PartDefinition done = partdefinition.addOrReplaceChild(DRONE, CubeListBuilder.create().texOffs(0, 0),
+                PartPose.offset(0.0F, 22.5F, 0.0F));
+        done.addOrReplaceChild(BODY, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("body_0", -3.5F, -5.0F, -4.5F, 7, 6, 16, 48, 106),
+                PartPose.offset(0.0F, -3.0F, 0.0F));
+
+        return LayerDefinition.create(meshdefinition, 128, 128);
     }
 
     @Override
@@ -28,7 +41,7 @@ public class ModelDroneCore extends EntityModel<EntityDroneBase> {
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
-        done.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+        drone.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 }

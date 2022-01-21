@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteraction;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +44,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(xlate("pneumaticcraft.message.misc.order", xlate(order.getTranslationKey())));
     }
@@ -55,7 +55,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         tag.putInt("order", order.ordinal());
         if (useMaxActions) tag.putBoolean("useMaxActions", true);
@@ -63,7 +63,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         order = Ordering.values()[tag.getInt("order")];
         useMaxActions = tag.getBoolean("useMaxActions");
@@ -71,7 +71,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeByte(order.ordinal());
         buf.writeBoolean(useMaxActions);
@@ -79,7 +79,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         order = Ordering.values()[buf.readByte()];
         useMaxActions = buf.readBoolean();
@@ -87,7 +87,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         return Collections.singletonList(xlate(order.getTranslationKey()));
     }
 

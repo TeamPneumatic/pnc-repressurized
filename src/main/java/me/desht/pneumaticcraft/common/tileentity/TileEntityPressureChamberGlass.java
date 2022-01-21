@@ -20,9 +20,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -59,8 +60,8 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
             7, 7, 24, 24, 7, 7, 10, 10, 8, 8, 36, 35, 8, 8, 34, 11
     };
 
-    public TileEntityPressureChamberGlass() {
-        super(ModTileEntities.PRESSURE_CHAMBER_GLASS.get(), 0);
+    public TileEntityPressureChamberGlass(BlockPos pos, BlockState state) {
+        super(ModTileEntities.PRESSURE_CHAMBER_GLASS.get(), pos, state,0);
     }
 
     @Nonnull
@@ -76,20 +77,20 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
                 .build();
     }
 
-    private int getTextureIndex(IBlockReader world, BlockPos pos, Direction face) {
+    private int getTextureIndex(BlockGetter world, BlockPos pos, Direction face) {
         boolean[] bitMatrix = new boolean[8];
         switch (face) {
-            case DOWN:case UP:
+            case DOWN, UP -> {
                 bitMatrix[0] = isGlass(world, pos.offset(face == Direction.DOWN ? 1 : -1, 0, -1));
                 bitMatrix[1] = isGlass(world, pos.offset(0, 0, -1));
-                bitMatrix[2] = isGlass(world, pos.offset(face == Direction.UP ? 1 : -1,  0, -1));
+                bitMatrix[2] = isGlass(world, pos.offset(face == Direction.UP ? 1 : -1, 0, -1));
                 bitMatrix[3] = isGlass(world, pos.offset(face == Direction.DOWN ? 1 : -1, 0, 0));
-                bitMatrix[4] = isGlass(world, pos.offset(face == Direction.UP ? 1 : - 1, 0, 0));
+                bitMatrix[4] = isGlass(world, pos.offset(face == Direction.UP ? 1 : -1, 0, 0));
                 bitMatrix[5] = isGlass(world, pos.offset(face == Direction.DOWN ? 1 : -1, 0, 1));
                 bitMatrix[6] = isGlass(world, pos.offset(0, 0, 1));
-                bitMatrix[7] = isGlass(world, pos.offset(face == Direction.UP ? 1 : - 1, 0, 1));
-                break;
-            case NORTH:case SOUTH:
+                bitMatrix[7] = isGlass(world, pos.offset(face == Direction.UP ? 1 : -1, 0, 1));
+            }
+            case NORTH, SOUTH -> {
                 bitMatrix[0] = isGlass(world, pos.offset(face == Direction.NORTH ? 1 : -1, 1, 0));
                 bitMatrix[1] = isGlass(world, pos.offset(0, 1, 0));
                 bitMatrix[2] = isGlass(world, pos.offset(face == Direction.SOUTH ? 1 : -1, 1, 0));
@@ -98,8 +99,8 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
                 bitMatrix[5] = isGlass(world, pos.offset(face == Direction.NORTH ? 1 : -1, -1, 0));
                 bitMatrix[6] = isGlass(world, pos.offset(0, -1, 0));
                 bitMatrix[7] = isGlass(world, pos.offset(face == Direction.SOUTH ? 1 : -1, -1, 0));
-                break;
-            case WEST:case EAST:
+            }
+            case WEST, EAST -> {
                 bitMatrix[0] = isGlass(world, pos.offset(0, 1, face == Direction.EAST ? 1 : -1));
                 bitMatrix[1] = isGlass(world, pos.offset(0, 1, 0));
                 bitMatrix[2] = isGlass(world, pos.offset(0, 1, face == Direction.WEST ? 1 : -1));
@@ -108,7 +109,7 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
                 bitMatrix[5] = isGlass(world, pos.offset(0, -1, face == Direction.EAST ? 1 : -1));
                 bitMatrix[6] = isGlass(world, pos.offset(0, -1, 0));
                 bitMatrix[7] = isGlass(world, pos.offset(0, -1, face == Direction.WEST ? 1 : -1));
-                break;
+            }
         }
 
         int idBuilder = 0;
@@ -116,7 +117,7 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
         return idBuilder > 255 || idBuilder < 0 ? 0 : TEXTURE_LOOKUP_TABLE[idBuilder];
     }
 
-    private boolean isGlass(IBlockReader world, BlockPos pos) {
+    private boolean isGlass(BlockGetter world, BlockPos pos) {
         return world.getBlockState(pos).getBlock() == ModBlocks.PRESSURE_CHAMBER_GLASS.get();
     }
 }

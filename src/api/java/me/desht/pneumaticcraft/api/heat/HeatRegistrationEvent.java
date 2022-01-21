@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.heat;
 
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.Event;
 
 /**

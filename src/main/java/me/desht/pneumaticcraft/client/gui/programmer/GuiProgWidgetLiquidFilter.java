@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidFilter;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -65,7 +65,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
             b.setFluid(Fluids.EMPTY);
             progWidget.setFluid(Fluids.EMPTY);
         });
-        addButton(mainFilter);
+        addRenderableWidget(mainFilter);
 
         for (int y = 0; y < GRID_HEIGHT; y++) {
             for (int x = 0; x < GRID_WIDTH; x++) {
@@ -73,20 +73,20 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
                     mainFilter.setFluid(b.getFluid());
                     progWidget.setFluid(b.getFluid());
                 });
-                addButton(f);
+                addRenderableWidget(f);
                 visibleFluidWidgets.add(f);
             }
         }
 
         searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 35, 90, 10);
-        addButton(searchField);
+        addRenderableWidget(searchField);
         setFocused(searchField);
         searchField.setFocus(true);
         searchField.setResponder(s -> textTimer = 5);
 
         scrollbar = new WidgetVerticalScrollbar(guiLeft + 155, guiTop + 47, 112);
         scrollbar.setListening(true);
-        addButton(scrollbar);
+        addRenderableWidget(scrollbar);
 
         addValidFluids();
     }

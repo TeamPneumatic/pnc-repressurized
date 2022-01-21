@@ -39,13 +39,13 @@ public class GuiProgWidgetLiquidImport extends GuiProgWidgetImportExport<ProgWid
         super.init();
 
         WidgetLabel orderLabel = new WidgetLabel(guiLeft + 8, guiTop + 150, xlate("pneumaticcraft.gui.progWidget.digAndPlace.order"));
-        addButton(orderLabel);
+        addRenderableWidget(orderLabel);
 
         orderSelector = new WidgetComboBox(font,guiLeft + 8 + orderLabel.getWidth() + 5, guiTop + 148, 80, 12)
                 .initFromEnum(progWidget.getOrder());
-        addButton(orderSelector);
+        addRenderableWidget(orderSelector);
 
-        addButton(voidExcess = new WidgetCheckBox(guiLeft + 8, guiTop + 165, 0x404040, xlate("pneumaticcraft.gui.progWidget.liquidImport.voidExcess"))
+        addRenderableWidget(voidExcess = new WidgetCheckBox(guiLeft + 8, guiTop + 165, 0x404040, xlate("pneumaticcraft.gui.progWidget.liquidImport.voidExcess"))
                 .setTooltipKey("pneumaticcraft.gui.progWidget.liquidImport.voidExcess.tooltip")
                 .setChecked(progWidget.shouldVoidExcess()));
     }

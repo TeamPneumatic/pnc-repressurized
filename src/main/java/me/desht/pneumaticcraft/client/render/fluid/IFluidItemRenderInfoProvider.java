@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.fluid;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.List;

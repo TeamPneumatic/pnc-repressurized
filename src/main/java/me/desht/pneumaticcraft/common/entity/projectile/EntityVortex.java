@@ -17,38 +17,38 @@
 
 package me.desht.pneumaticcraft.common.entity.projectile;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.WebBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ThrowableEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.IPacket;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.WebBlock;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
-public class EntityVortex extends ThrowableEntity {
+public class EntityVortex extends ThrowableProjectile {
     private int hitCounter = 0;
 
     // clientside: rendering X offset of vortex, depends on which hand the vortex was fired from
     private float renderOffsetX = -Float.MAX_VALUE;
 
-    public EntityVortex(EntityType<? extends EntityVortex> type, World world) {
+    public EntityVortex(EntityType<? extends EntityVortex> type, Level world) {
         super(type, world);
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -67,7 +67,7 @@ public class EntityVortex extends ThrowableEntity {
 
         setDeltaMovement(getDeltaMovement().scale(0.95));
         if (getDeltaMovement().lengthSqr() < 0.1D) {
-            remove();
+            discard();
         }
     }
 
@@ -98,33 +98,33 @@ public class EntityVortex extends ThrowableEntity {
     }
 
     @Override
-    protected void onHit(RayTraceResult rtr) {
-        if (rtr.getType() == RayTraceResult.Type.ENTITY) {
-            Entity entity = ((EntityRayTraceResult) rtr).getEntity();
+    protected void onHit(HitResult rtr) {
+        if (rtr.getType() == HitResult.Type.ENTITY) {
+            Entity entity = ((EntityHitResult) rtr).getEntity();
             entity.setDeltaMovement(entity.getDeltaMovement().add(this.getDeltaMovement().add(0, 0.4, 0)));
             ItemStack shears = new ItemStack(Items.SHEARS);
             // getOwner = getShooter
             if (entity instanceof LivingEntity) {
-                PlayerEntity shooter = getOwner() instanceof PlayerEntity ? (PlayerEntity) getOwner() : null;
-                if (shooter != null) shears.getItem().interactLivingEntity(shears, shooter, (LivingEntity) entity, Hand.MAIN_HAND);
+                Player shooter = getOwner() instanceof Player ? (Player) getOwner() : null;
+                if (shooter != null) shears.getItem().interactLivingEntity(shears, shooter, (LivingEntity) entity, InteractionHand.MAIN_HAND);
             }
-        } else if (rtr.getType() == RayTraceResult.Type.BLOCK) {
-            BlockPos pos = ((BlockRayTraceResult) rtr).getBlockPos();
+        } else if (rtr.getType() == HitResult.Type.BLOCK) {
+            BlockPos pos = ((BlockHitResult) rtr).getBlockPos();
             Block block = level.getBlockState(pos).getBlock();
             if (vortexBreakable(block)) {
                 if (!level.isClientSide) {
                     handleVortexCollision(pos);
                 }
             } else {
-                remove();
+                discard();
             }
         }
         hitCounter++;
-        if (hitCounter > 20) remove();
+        if (hitCounter > 20) discard();
     }
 
     private void handleVortexCollision(BlockPos pos) {
-        BlockPos.Mutable mPos = new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ());
+        BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());
         if (tryCutPlants(pos)) {
             int plantsCut = 1;
             for (int x = -2; x <= 2; x++) {

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.debug;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 public class DroneDebugEntry {
     private final int progWidgetId;
@@ -44,14 +44,14 @@ public class DroneDebugEntry {
      *
      * @param buf message buffer
      */
-    public DroneDebugEntry(PacketBuffer buf) {
+    public DroneDebugEntry(FriendlyByteBuf buf) {
         message = buf.readUtf();
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         progWidgetId = buf.readInt();
         receivedTime = System.currentTimeMillis();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeUtf(message);
         buf.writeInt(pos.getX());
         buf.writeInt(pos.getY());

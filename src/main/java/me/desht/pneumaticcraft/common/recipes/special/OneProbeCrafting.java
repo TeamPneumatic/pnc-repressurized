@@ -19,16 +19,16 @@ package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class OneProbeCrafting extends ShapelessRecipe {
@@ -43,7 +43,7 @@ public class OneProbeCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingContainer inv, Level worldIn) {
         if (ONE_PROBE == null) return false;
 
         boolean probeFound = false, helmetFound = false;
@@ -63,7 +63,7 @@ public class OneProbeCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack helmet = findHelmet(inv);
         if (helmet.isEmpty()) return ItemStack.EMPTY;
         ItemStack output = helmet.copy();
@@ -72,11 +72,11 @@ public class OneProbeCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipes.ONE_PROBE_HELMET_CRAFTING.get();
     }
 
-    private ItemStack findHelmet(CraftingInventory inv) {
+    private ItemStack findHelmet(CraftingContainer inv) {
         for (int i = 0; i < inv.getContainerSize(); i++) {
             if (inv.getItem(i).getItem() == ModItems.PNEUMATIC_HELMET.get()) {
                 return inv.getItem(i).copy();

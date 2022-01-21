@@ -20,27 +20,27 @@ package me.desht.pneumaticcraft.common.core;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.villages.ModVillagerProfession;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.village.PointOfInterestType;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Set;
 import java.util.function.Supplier;
 
 public class ModVillagers {
-    public static final DeferredRegister<PointOfInterestType> POI = DeferredRegister.create(ForgeRegistries.POI_TYPES, Names.MOD_ID);
+    public static final DeferredRegister<PoiType> POI = DeferredRegister.create(ForgeRegistries.POI_TYPES, Names.MOD_ID);
     public static final DeferredRegister<VillagerProfession> PROFESSIONS = DeferredRegister.create(ForgeRegistries.PROFESSIONS, Names.MOD_ID);
 
-    public static final RegistryObject<PointOfInterestType> MECHANIC_POI = POI.register("mechanic",
-            () -> new PointOfInterestType("mechanic", getAllStates(ModBlocks.CHARGING_STATION.get()), 1, 1));
+    public static final RegistryObject<PoiType> MECHANIC_POI = POI.register("mechanic",
+            () -> new PoiType("mechanic", getAllStates(ModBlocks.CHARGING_STATION.get()), 1, 1));
     public static final RegistryObject<VillagerProfession> MECHANIC = registerProfession("mechanic", ModVillagers.MECHANIC_POI);
 
     @SuppressWarnings("SameParameterValue")
-    private static RegistryObject<VillagerProfession> registerProfession(String name, Supplier<PointOfInterestType> poiType) {
+    private static RegistryObject<VillagerProfession> registerProfession(String name, Supplier<PoiType> poiType) {
         return PROFESSIONS.register(name, () -> new ModVillagerProfession(Names.MOD_ID + ":" + name, poiType.get(), ImmutableSet.of(), ImmutableSet.of(), ModSounds.SHORT_HISS, ModSounds.PNEUMATIC_WRENCH));
     }
 

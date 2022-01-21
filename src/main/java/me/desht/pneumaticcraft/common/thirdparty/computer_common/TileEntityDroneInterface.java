@@ -34,19 +34,18 @@ import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.common.util.Constants;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
@@ -55,7 +54,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class TileEntityDroneInterface extends TileEntity implements ITickableTileEntity, ILuaMethodProvider {
+public class TileEntityDroneInterface extends TileEntityTickableBase
+        implements ILuaMethodProvider {
 
     private final LuaMethodRegistry luaMethodRegistry = new LuaMethodRegistry(this);
 
@@ -67,71 +67,69 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
     private IProgWidget curAction;
     private int droneId; // track drone ID client-side
 
-    public TileEntityDroneInterface() {
-        super(ModTileEntities.DRONE_INTERFACE.get());
+    public TileEntityDroneInterface(BlockPos pos, BlockState state) {
+        super(ModTileEntities.DRONE_INTERFACE.get(), pos, state);
     }
 
     @Override
-    public void tick() {
-        if (drone != null && !drone.isAlive()) {
-            setDrone(null);
-        }
+    public void tickClient() {
+        super.tickClient();
+
+        drone = nonNullLevel().getEntity(droneId) instanceof EntityDrone eDrone ? eDrone : null;
+
         if (drone != null) {
-            if (!getLevel().isClientSide) {
-                if (ringSendCooldown > 0) ringSendCooldown--;
-                if (!ringSendQueue.isEmpty() && ringSendCooldown <= 0) {
-                    ringSendCooldown = ringSendQueue.size() > 10 ? 1 : 5;
-                    NetworkHandler.sendToAllTracking(new PacketSpawnRing(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, drone, ringSendQueue.poll()), this);
-                }
-                if (!getBlockState().getValue(BlockDroneInterface.CONNECTED)) {
-                    level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockDroneInterface.CONNECTED, true));
-                }
-            } else {
-                // client
-                double dx = drone.getX() - (getBlockPos().getX() + 0.5);
-                double dy = drone.getY() - (getBlockPos().getY() + 0.5);
-                double dz = drone.getZ() - (getBlockPos().getZ() + 0.5);
-                float f3 = MathHelper.sqrt(dx * dx + dz * dz);
-                rotationYaw = (float) -Math.atan2(dx, dz);
-                rotationPitch = (float) -Math.atan2(dy, f3);
+            double dx = drone.getX() - (getBlockPos().getX() + 0.5);
+            double dy = drone.getY() - (getBlockPos().getY() + 0.5);
+            double dz = drone.getZ() - (getBlockPos().getZ() + 0.5);
+            double f3 = Math.sqrt(dx * dx + dz * dz);
+            rotationYaw = (float) -Math.atan2(dx, dz);
+            rotationPitch = (float) -Math.atan2(dy, f3);
+        }
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (drone != null) {
+            if (ringSendCooldown > 0) ringSendCooldown--;
+            if (!ringSendQueue.isEmpty() && ringSendCooldown <= 0) {
+                ringSendCooldown = ringSendQueue.size() > 10 ? 1 : 5;
+                NetworkHandler.sendToAllTracking(new PacketSpawnRing(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, drone, ringSendQueue.poll()), this);
+            }
+            if (!getBlockState().getValue(BlockDroneInterface.CONNECTED)) {
+                nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockDroneInterface.CONNECTED, true));
             }
         } else {
-            if (!getLevel().isClientSide && getBlockState().getValue(BlockDroneInterface.CONNECTED)) {
+            if (getBlockState().getValue(BlockDroneInterface.CONNECTED)) {
                 NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), TileEntityDroneInterface.this);
-                level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockDroneInterface.CONNECTED, false));
-            }
-        }
-        if (getLevel().isClientSide) {
-            Entity e = getLevel().getEntity(droneId);
-            if (e instanceof EntityDrone) {
-                drone = (EntityDrone) e;
-            } else {
-                drone = null;
+                nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockDroneInterface.CONNECTED, false));
             }
         }
     }
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(getBlockPos(), 0, getUpdateTag());
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+//        return new ClientboundBlockEntityDataPacket(getBlockPos(), ModTileEntities.DRONE_INTERFACE.get(), getUpdateTag());
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT tag = super.getUpdateTag();
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
         tag.putInt("drone",  drone != null ? drone.getId() : -1);
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        super.handleUpdateTag(state, tag);
+    public void handleUpdateTag(CompoundTag tag) {
+        super.handleUpdateTag(tag);
         droneId = tag.getInt("drone");
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
 //        handleUpdateTag(pkt.getNbtCompound());
         droneId = pkt.getTag().getInt("drone");
     }
@@ -178,7 +176,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
-                EntityDrone drone = ModEntities.DRONE.get().create(getLevel());
+                EntityDrone drone = ModEntities.DRONE.get().create(nonNullLevel());
                 for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
                     IProgWidget widget = IProgWidget.create(type);
                     if (widget.canBeRunByComputers(drone, getWidget())) {
@@ -594,7 +592,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
 
                 getAI().setAction(widget, ai);
                 getTargetAI().setAction(widget, widget.getWidgetTargetAI(drone, getWidget()));
-                messageToDrone(widget.getColor().getColorValue());
+                messageToDrone(widget.getColor());
                 curAction = widget;
 
                 return null;
@@ -747,11 +745,16 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
         return "droneInterface";
     }
 
+    @Override
+    public IItemHandler getPrimaryInventory() {
+        return null;
+    }
+
     public void setDrone(EntityDrone drone) {
         this.drone = drone;
         ComputerEventManager.getInstance().sendEvents(this, drone != null ? "droneConnected" : "droneDisconnected");
-        BlockState state = getLevel().getBlockState(getBlockPos());
-        getLevel().sendBlockUpdated(getBlockPos(), state, state, Constants.BlockFlags.DEFAULT);
+        BlockState state = nonNullLevel().getBlockState(getBlockPos());
+        nonNullLevel().sendBlockUpdated(getBlockPos(), state, state, Block.UPDATE_ALL);
     }
 
     public EntityDrone getDrone() {
@@ -786,11 +789,15 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
     }
 
     private <P extends ProgWidget> void messageToDrone(ProgWidgetType<P> type) {
-        messageToDrone(type.create().getColor().getColorValue());
+        messageToDrone(type.create().getColor());
+    }
+
+    private void messageToDrone(DyeColor color) {
+        float[] c = color.getTextureDiffuseColors();
+        messageToDrone(((int)(c[0] * 256) << 24) | ((int)(c[1] * 256) << 16) | (int)(c[2] * 256) | 0xFF000000);
     }
 
     private void messageToDrone(int color) {
         ringSendQueue.offer(color);
     }
-
 }

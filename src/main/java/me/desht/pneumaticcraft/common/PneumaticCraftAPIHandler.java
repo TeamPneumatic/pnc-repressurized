@@ -46,13 +46,13 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
@@ -92,13 +92,13 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
-    public int getProtectingSecurityStations(PlayerEntity player, BlockPos pos, boolean showRangeLines) {
+    public int getProtectingSecurityStations(Player player, BlockPos pos, boolean showRangeLines) {
         Validate.isTrue(!player.getCommandSenderWorld().isClientSide, "This method can only be called from the server side!");
         return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
     }
 
     @Override
-    public int getProtectingSecurityStations(PlayerEntity player, BlockPos pos) {
+    public int getProtectingSecurityStations(Player player, BlockPos pos) {
         Validate.isTrue(!player.getCommandSenderWorld().isClientSide, "This method can only be called from the server side!");
         return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
     }
@@ -115,7 +115,7 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
-    public void syncGlobalVariable(ServerPlayerEntity player, String varName) {
+    public void syncGlobalVariable(ServerPlayer player, String varName) {
         NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, GlobalVariableManager.getInstance().getCoordinate(varName)), player);
     }
 
@@ -155,12 +155,12 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
-    public IItemHandler deserializeSmartChest(CompoundNBT tag) {
+    public IItemHandler deserializeSmartChest(CompoundTag tag) {
         return TileEntitySmartChest.deserializeSmartChest(tag);
     }
 
     @Override
-    public void forceClientShapeRecalculation(World world, BlockPos pos) {
+    public void forceClientShapeRecalculation(Level world, BlockPos pos) {
         if (!world.isClientSide) {
             NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(pos), world, pos);
         }

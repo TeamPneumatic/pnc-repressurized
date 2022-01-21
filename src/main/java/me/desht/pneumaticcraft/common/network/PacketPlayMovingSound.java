@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.network;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -35,19 +35,19 @@ import java.util.function.Supplier;
  */
 public class PacketPlayMovingSound {
     private final MovingSounds.Sound sound;
-    private final SoundSource source;
+    private final MovingSoundFocus source;
 
-    public PacketPlayMovingSound(MovingSounds.Sound sound, SoundSource source) {
+    public PacketPlayMovingSound(MovingSounds.Sound sound, MovingSoundFocus source) {
         this.sound = sound;
         this.source = source;
     }
 
-    public PacketPlayMovingSound(PacketBuffer buffer) {
+    public PacketPlayMovingSound(FriendlyByteBuf buffer) {
         sound = buffer.readEnum(MovingSounds.Sound.class);
-        source = SoundSource.fromBytes(buffer);
+        source = MovingSoundFocus.fromBytes(buffer);
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeEnum(sound);
         source.toBytes(buffer);
     }
@@ -60,50 +60,50 @@ public class PacketPlayMovingSound {
     }
 
     private enum SourceType {
-        ENTITY(buf -> SoundSource.of(buf.readInt())),
-        STATIC_POS(buf -> SoundSource.of(buf.readBlockPos()));
+        ENTITY(buf -> MovingSoundFocus.of(buf.readInt())),
+        STATIC_POS(buf -> MovingSoundFocus.of(buf.readBlockPos()));
 
-        private final Function<PacketBuffer, SoundSource> creator;
+        private final Function<FriendlyByteBuf, MovingSoundFocus> creator;
 
-        SourceType(Function<PacketBuffer,SoundSource> creator) {
+        SourceType(Function<FriendlyByteBuf, MovingSoundFocus> creator) {
             this.creator = creator;
         }
 
-        public SoundSource getSource(PacketBuffer buf) {
+        public MovingSoundFocus getSource(FriendlyByteBuf buf) {
             return creator.apply(buf);
         }
     }
 
-    public static class SoundSource {
+    public static class MovingSoundFocus {
         private final Either<Entity,BlockPos> entityOrPos;
 
-        private SoundSource(Either<Entity, BlockPos> entityOrPos) {
+        private MovingSoundFocus(Either<Entity, BlockPos> entityOrPos) {
             this.entityOrPos = entityOrPos;
         }
 
-        public static SoundSource of(Entity e) {
-            return new SoundSource(Either.left(e));
+        public static MovingSoundFocus of(Entity e) {
+            return new MovingSoundFocus(Either.left(e));
         }
 
-        public static SoundSource of(int id) {
-            Entity e = ClientUtils.getClientWorld().getEntity(id);
+        public static MovingSoundFocus of(int id) {
+            Entity e = ClientUtils.getClientLevel().getEntity(id);
             return e == null ? null : of(e);
         }
 
-        public static SoundSource of(BlockPos pos) {
-            return new SoundSource(Either.right(pos));
+        public static MovingSoundFocus of(BlockPos pos) {
+            return new MovingSoundFocus(Either.right(pos));
         }
 
-        public static SoundSource of(TileEntity te) {
-            return new SoundSource(Either.right(te.getBlockPos()));
+        public static MovingSoundFocus of(BlockEntity te) {
+            return new MovingSoundFocus(Either.right(te.getBlockPos()));
         }
 
-        public static SoundSource fromBytes(PacketBuffer buf) {
+        public static MovingSoundFocus fromBytes(FriendlyByteBuf buf) {
             SourceType type = buf.readEnum(SourceType.class);
             return type.getSource(buf);
         }
 
-        void toBytes(PacketBuffer buf) {
+        void toBytes(FriendlyByteBuf buf) {
             entityOrPos.ifLeft(id -> {
                 buf.writeEnum(SourceType.ENTITY);
                 buf.writeInt(id.getId());

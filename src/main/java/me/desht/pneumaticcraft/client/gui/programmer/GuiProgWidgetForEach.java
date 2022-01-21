@@ -40,7 +40,7 @@ public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> ex
         variableField = new WidgetComboBox(font, guiLeft + 10, guiTop + 42, 160, font.lineHeight + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
         variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
-        addButton(variableField);
+        addRenderableWidget(variableField);
         variableField.setValue(progWidget.getVariable());
         variableField.setFocus(true);
 

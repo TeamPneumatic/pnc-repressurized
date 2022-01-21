@@ -20,19 +20,19 @@ package me.desht.pneumaticcraft.client.sound;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import net.minecraft.client.audio.TickableSound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 
-public class MovingSoundAirLeak extends TickableSound {
-    private final TileEntity te;
+public class MovingSoundAirLeak extends AbstractTickableSoundInstance {
+    private final BlockEntity te;
     private final Direction dir;
     private float targetPitch;
 
-    MovingSoundAirLeak(TileEntity te, Direction dir) {
-        super(ModSounds.LEAKING_GAS.get(), SoundCategory.BLOCKS);
+    MovingSoundAirLeak(BlockEntity te, Direction dir) {
+        super(ModSounds.LEAKING_GAS.get(), SoundSource.BLOCKS);
         this.te = te;
         this.dir = dir;
         this.x = te.getBlockPos().getX();
@@ -47,7 +47,7 @@ public class MovingSoundAirLeak extends TickableSound {
     @Override
     public void tick() {
         te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir).ifPresent(handler -> {
-            targetPitch = MathHelper.clamp(1.0f + ((handler.getPressure() - 3) / 20), 0.8f, 1.6f);
+            targetPitch = Mth.clamp(1.0f + ((handler.getPressure() - 3) / 20), 0.8f, 1.6f);
             if (pitch > targetPitch) pitch -= 0.005F;
             else if (pitch < targetPitch) pitch += 0.005F;
         });

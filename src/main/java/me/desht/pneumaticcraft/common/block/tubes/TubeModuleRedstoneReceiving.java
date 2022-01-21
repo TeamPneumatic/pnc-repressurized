@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -32,20 +32,20 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         redstoneLevel = tag.getInt("redstone");
     }
 
     @Override
-    public CompoundNBT writeToNBT(CompoundNBT tag) {
+    public CompoundTag writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         tag.putInt("redstone", redstoneLevel);
         return tag;
     }
 
     @Override
-    public void addInfo(List<ITextComponent> curInfo) {
+    public void addInfo(List<Component> curInfo) {
         super.addInfo(curInfo);
 
         curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.receiving", redstoneLevel));
@@ -71,10 +71,10 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     }
 
     @Override
-    public void update() {
+    public void tickCommon() {
         if (upgraded && !advancedConfig && higherBound != lowerBound) {
             higherBound = lowerBound;
-            if (!getTube().getLevel().isClientSide) sendDescriptionPacket();
+            sendDescriptionPacket();
         }
     }
 }

@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.api.item;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public interface IInventoryItem {
      * Get a header for the inventory list, for tooltip purposes.  Default return of null will not add any header.
      * @return a header string (can be a translation string), or null for no header
      */
-    default ITextComponent getInventoryHeader() { return null; }
+    default Component getInventoryHeader() { return null; }
 
     /**
      * A String to prepend to outputted tooltip lines. Can be used to apply colouring, for example.
@@ -61,8 +61,8 @@ public interface IInventoryItem {
      * @param curStacks a list of stacks to fill
      */
     static void getStacks(ItemStack stack, List<ItemStack> curStacks) {
-        CompoundNBT sub = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        if (sub != null && sub.contains(NBTKeys.NBT_ITEM_INV, Constants.NBT.TAG_COMPOUND)) {
+        CompoundTag sub = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+        if (sub != null && sub.contains(NBTKeys.NBT_ITEM_INV, Tag.TAG_COMPOUND)) {
             ItemStackHandler handler = new ItemStackHandler();
             handler.deserializeNBT(sub.getCompound(NBTKeys.NBT_ITEM_INV));
             for (int i = 0; i < handler.getSlots(); i++) {

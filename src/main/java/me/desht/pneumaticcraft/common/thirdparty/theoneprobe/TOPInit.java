@@ -28,45 +28,46 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TOPInit implements Function<ITheOneProbe, Void> {
-    private static final TextFormatting COLOR = TextFormatting.GRAY;
-    static int elementPressure;
+    static final ResourceLocation ELEMENT_PRESSURE = RL("pressure");
+    private static final ChatFormatting COLOR = ChatFormatting.GRAY;
+
 
     @Override
     public Void apply(ITheOneProbe theOneProbe) {
         Log.info("Enabled support for The One Probe");
 
-        elementPressure = theOneProbe.registerElementFactory(ElementPressure::new);
+        theOneProbe.registerElementFactory(new ElementPressure.Factory());
 
         theOneProbe.registerProvider(new IProbeInfoProvider() {
             @Override
-            public String getID() {
-                return Names.MOD_ID + ":default";
+            public ResourceLocation getID() {
+                return RL("default");
             }
 
             @Override
-            public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+            public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level world, BlockState blockState, IProbeHitData data) {
                 if (blockState.getBlock() instanceof IPneumaticCraftProbeable || blockState.is(PneumaticCraftTags.Blocks.PROBE_TARGET)) {
-                    TOPInfoProvider.handleBlock(mode, probeInfo, player, world, blockState, data);
+                    TOPInfoProvider.handleBlock(mode, probeInfo, player, world, data);
                 }
                 SemiblockTracker.getInstance().getAllSemiblocks(world, data.getPos(), data.getSideHit())
                         .filter(sb -> !(sb instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) sb).getSide() == data.getSideHit())
@@ -81,21 +82,19 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
             }
 
             @Override
-            public void addProbeEntityInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, Entity entity, IProbeHitEntityData data) {
-                if (entity instanceof ISemiBlock) {
-                    List<ITextComponent> tip = new ArrayList<>();
-                    CompoundNBT tag = ((ISemiBlock) entity).serializeNBT(new CompoundNBT());
-                    ((ISemiBlock) entity).addTooltip(tip, player, tag, player.isShiftKeyDown());
-                    tip.forEach(probeInfo::text);
-                    BlockPos pos = ((ISemiBlock) entity).getBlockPos();
+            public void addProbeEntityInfo(ProbeMode mode, IProbeInfo probeInfo, Player player, Level world, Entity entity, IProbeHitEntityData data) {
+                if (entity instanceof ISemiBlock semiblock) {
+                    CompoundTag tag = semiblock.serializeNBT(new CompoundTag());
+                    semiblock.addTooltip(probeInfo::text, player, tag, player.isShiftKeyDown());
+                    BlockPos pos = semiblock.getBlockPos();
                     BlockState state = world.getBlockState(pos);
-                    if (!state.isAir(world, pos)) {
+                    if (!state.isAir()) {
                         IProbeInfo h = probeInfo.horizontal();
                         h.item(new ItemStack(state.getBlock()));
                         IProbeInfo v = h.vertical();
-                        ITextComponent text = new TranslationTextComponent(state.getBlock().getDescriptionId());
-                        v.text(text.copy().withStyle(TextFormatting.YELLOW));
-                        v.text(new StringTextComponent(TextFormatting.BLUE.toString() + TextFormatting.ITALIC + ModNameCache.getModName(state.getBlock())));
+                        Component text = new TranslatableComponent(state.getBlock().getDescriptionId());
+                        v.text(text.copy().withStyle(ChatFormatting.YELLOW));
+                        v.text(new TextComponent(ChatFormatting.BLUE.toString() + ChatFormatting.ITALIC + ModNameCache.getModName(state.getBlock())));
                     }
                 }
                 entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {

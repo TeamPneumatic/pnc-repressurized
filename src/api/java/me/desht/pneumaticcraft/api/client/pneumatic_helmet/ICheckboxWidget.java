@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Consumer;
 
@@ -44,8 +44,8 @@ public interface ICheckboxWidget {
      *
      * @return this checkbox as a Widget
      */
-    default Widget asWidget() {
-        return (Widget) this;
+    default AbstractWidget asWidget() {
+        return (AbstractWidget) this;
     }
 
     /**

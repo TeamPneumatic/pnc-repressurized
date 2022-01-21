@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.inventory.handler;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -28,13 +28,13 @@ import javax.annotation.Nonnull;
  * Also filters item insertion using the isItemValid() method (which returns true by default).
  */
 public class BaseItemStackHandler extends ItemStackHandler {
-    protected final TileEntity te;
+    protected final BlockEntity te;
 
     public BaseItemStackHandler(int size) {
         this(null, size);
     }
 
-    public BaseItemStackHandler(TileEntity te, int size) {
+    public BaseItemStackHandler(BlockEntity te, int size) {
         super(size);
         this.te = te;
     }

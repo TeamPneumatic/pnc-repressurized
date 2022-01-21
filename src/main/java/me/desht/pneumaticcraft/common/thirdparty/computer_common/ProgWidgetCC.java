@@ -30,23 +30,27 @@ import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldAreaType;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 import java.util.function.Predicate;
+
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker.RightClickType;
+import me.desht.pneumaticcraft.common.progwidgets.ICondition.Operator;
 
 public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrdered, IGotoWidget, IItemPickupWidget,
         IEntityProvider, ITextWidget, ICondition, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
@@ -239,7 +243,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public synchronized List<Entity> getValidEntities(World world) {
+    public synchronized List<Entity> getValidEntities(Level world) {
         return ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, whitelistFilter, blacklistFilter);
     }
 
@@ -257,7 +261,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public synchronized List<Entity> getEntitiesInArea(World world, Predicate<? super Entity> filter) {
+    public synchronized List<Entity> getEntitiesInArea(Level world, Predicate<? super Entity> filter) {
         return ProgWidgetAreaItemBase.getEntitiesInArea(getEntityAreaWidget(), null, world, filter, null);
     }
 
@@ -460,8 +464,8 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public CraftingInventory getCraftingGrid() {
-        CraftingInventory invCrafting = new CraftingInventory(new DummyContainer(), 3, 3);
+    public CraftingContainer getCraftingGrid() {
+        CraftingContainer invCrafting = new CraftingContainer(new DummyContainer(), 3, 3);
         for (int i = 0; i < 9; i++) {
             invCrafting.setItem(i, craftingGrid[i]);
         }
@@ -469,7 +473,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public Optional<ICraftingRecipe> getRecipe(World world, CraftingInventory grid) {
+    public Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid) {
         return CraftingRecipeCache.INSTANCE.getCachedRecipe(world, grid);
     }
 

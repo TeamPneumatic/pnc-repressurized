@@ -23,15 +23,16 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundSource;
+import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -46,9 +47,9 @@ public class PacketUpdateMicromissileSettings {
     private final String entityFilter;
     private final FireMode fireMode;
     private final boolean saveDefault;
-    private final Hand hand;
+    private final InteractionHand hand;
 
-    public PacketUpdateMicromissileSettings(float topSpeed, float accel, float damage, PointXY point, String entityFilter, FireMode fireMode, boolean saveDefault, Hand hand) {
+    public PacketUpdateMicromissileSettings(float topSpeed, float accel, float damage, PointXY point, String entityFilter, FireMode fireMode, boolean saveDefault, InteractionHand hand) {
         this.topSpeed = topSpeed;
         this.accel = accel;
         this.damage = damage;
@@ -59,7 +60,7 @@ public class PacketUpdateMicromissileSettings {
         this.hand = hand;
     }
 
-    PacketUpdateMicromissileSettings(PacketBuffer buffer) {
+    PacketUpdateMicromissileSettings(FriendlyByteBuf buffer) {
         topSpeed = buffer.readFloat();
         accel = buffer.readFloat();
         damage = buffer.readFloat();
@@ -67,24 +68,24 @@ public class PacketUpdateMicromissileSettings {
         entityFilter = buffer.readUtf(32767);
         fireMode = FireMode.values()[buffer.readByte()];
         saveDefault = buffer.readBoolean();
-        hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+        hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeFloat(topSpeed);
         buf.writeFloat(accel);
         buf.writeFloat(damage);
-        buf.writeInt(point.x);
-        buf.writeInt(point.y);
+        buf.writeInt(point.x());
+        buf.writeInt(point.y());
         buf.writeUtf(entityFilter);
         buf.writeByte(fireMode.ordinal());
         buf.writeBoolean(saveDefault);
-        buf.writeBoolean(hand == Hand.MAIN_HAND);
+        buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = Objects.requireNonNull(ctx.get().getSender());
             ItemStack stack = player.getItemInHand(hand);
             if (!stack.isEmpty()) {
                 applySettings(player, stack);
@@ -95,15 +96,15 @@ public class PacketUpdateMicromissileSettings {
         ctx.get().setPacketHandled(true);
     }
 
-    private void applySettings(PlayerEntity player, ItemStack stack) {
-        if (!stack.hasTag()) stack.setTag(new CompoundNBT());
+    private void applySettings(Player player, ItemStack stack) {
+        if (!stack.hasTag()) stack.setTag(new CompoundTag());
 
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = Objects.requireNonNull(stack.getTag());
         tag.putFloat(ItemMicromissiles.NBT_TURN_SPEED, accel);
         tag.putFloat(ItemMicromissiles.NBT_TOP_SPEED, topSpeed);
         tag.putFloat(ItemMicromissiles.NBT_DAMAGE, damage);
-        tag.putInt(ItemMicromissiles.NBT_PX, point.x);
-        tag.putInt(ItemMicromissiles.NBT_PY, point.y);
+        tag.putInt(ItemMicromissiles.NBT_PX, point.x());
+        tag.putInt(ItemMicromissiles.NBT_PY, point.y());
         tag.putString(ItemMicromissiles.NBT_FILTER, entityFilter);
         tag.putString(ItemMicromissiles.NBT_FIRE_MODE, fireMode.toString());
 
@@ -113,7 +114,7 @@ public class PacketUpdateMicromissileSettings {
                     new MicromissileDefaults.Entry(topSpeed, accel, damage, point, entityFilter, fireMode)
             );
             MicromissileDefaults.INSTANCE.tryWriteToFile();
-            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getX(), player.getY(), player.getZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1.0f, 1.0f, false), (ServerPlayer) player);
         }
     }
 }

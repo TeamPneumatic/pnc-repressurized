@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent.CoordinateVariable.Drone;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
@@ -65,12 +65,12 @@ public class DroneSpecialVariableHandler {
         event.setCoordinate(DISPATCH_MAP.getOrDefault(s[0], MISSING).apply(event, extra));
     }
 
-    private static BlockPos getPosForPlayer(PlayerEntity player) {
+    private static BlockPos getPosForPlayer(Player player) {
         // offset UP because "$owner" and "$player" get the player's head position, not feet position
         return player == null ? BlockPos.ZERO : player.blockPosition().relative(Direction.UP);
     }
 
-    private static BlockPos getPlayerLookVec(PlayerEntity player) {
+    private static BlockPos getPlayerLookVec(Player player) {
         if (player == null) return BlockPos.ZERO;
 
         Direction d = player.getDirection();

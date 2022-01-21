@@ -15,19 +15,20 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.gui;
+package me.desht.pneumaticcraft.client.gui.charging;
 
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
+import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAmadronCharging extends GuiChargingUpgradeManager {
-    public GuiAmadronCharging(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
+public class GuiDroneCharging extends GuiChargingUpgradeManager {
+
+    public GuiDroneCharging(ContainerChargingStationUpgradeManager container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -35,13 +36,17 @@ public class GuiAmadronCharging extends GuiChargingUpgradeManager {
     public void init() {
         super.init();
 
+        if (!(itemStack.getItem() instanceof ItemDrone)) {
+            return; // should never happen...
+        }
+
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
-                .setText(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
-        addUpgradeTabs(itemStack.getItem(), "amadron_tablet");
+                .setText(xlate("pneumaticcraft.gui.tab.info.item.drone"));
+        addUpgradeTabs(itemStack.getItem(), itemStack.getItem().getRegistryName().getPath(), "drone");
     }
 
     @Override
     protected int getDefaultVolume() {
-        return PneumaticValues.AIR_CANISTER_VOLUME;
+        return PneumaticValues.DRONE_VOLUME;
     }
 }

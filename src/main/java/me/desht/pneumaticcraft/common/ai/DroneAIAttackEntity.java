@@ -20,14 +20,14 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 
 public class DroneAIAttackEntity extends MeleeAttackGoal {
     private final EntityDrone attacker;
@@ -76,8 +76,8 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             for (int i = 0; i < attacker.getInv().getSlots(); i++) {
                 ItemStack stack = attacker.getInv().getStackInSlot(i);
                 if (!stack.isEmpty()) {
-                    ModifiableAttributeInstance damage = new ModifiableAttributeInstance(Attributes.ATTACK_DAMAGE, c -> {});
-                    for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
+                    AttributeInstance damage = new AttributeInstance(Attributes.ATTACK_DAMAGE, c -> {});
+                    for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
                         damage.addTransientModifier(modifier);
                     }
                     float f1 = EnchantmentHelper.getDamageBonus(stack, attacker.getTarget().getMobType());
@@ -102,7 +102,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             if (target == null || !target.isAlive()) return false;
             if (attacker.getSlotForAmmo() < 0) return false;
             double dist = attacker.distanceToSqr(target.getX(), target.getBoundingBox().minY, target.getZ());
-            if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().canSee(target))
+            if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().hasLineOfSight(target))
                 return true;
         }
         return super.canContinueToUse();
@@ -114,7 +114,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             LivingEntity target = attacker.getTarget();
             if (target != null) {
                 double dist = attacker.distanceToSqr(target.getX(), target.getBoundingBox().minY, target.getZ());
-                if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().canSee(target)) {
+                if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().hasLineOfSight(target)) {
                     attacker.getFakePlayer().setPos(attacker.getX(), attacker.getY(), attacker.getZ());
                     attacker.tryFireMinigun(target);
                     if (dist < Math.pow(rangedAttackRange * 0.75, 2)) {

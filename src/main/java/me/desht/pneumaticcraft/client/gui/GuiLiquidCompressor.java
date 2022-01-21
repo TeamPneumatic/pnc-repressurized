@@ -28,15 +28,15 @@ import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import org.apache.commons.lang3.StringUtils;
@@ -50,26 +50,26 @@ import java.util.stream.Collectors;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiquidCompressor,TileEntityLiquidCompressor> {
-    public GuiLiquidCompressor(ContainerLiquidCompressor container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiLiquidCompressor(ContainerLiquidCompressor container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
     @Override
     public void init() {
         super.init();
-        addButton(new WidgetTank(leftPos + getFluidOffset(), topPos + 15, te.getTank()));
+        addRenderableWidget(new WidgetTank(leftPos + getFluidOffset(), topPos + 15, te.getTank()));
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFB04000, true);
-        Pair<Integer, List<ITextComponent>> p = getAllFuels();
+        Pair<Integer, List<Component>> p = getAllFuels();
         stat.setMinimumExpandedDimensions(p.getLeft() + 30, 17);
         stat.setText(p.getRight());
     }
 
     @Override
-    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+    protected void addPressureStatInfo(List<Component> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 
         pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.maxProduction",
-                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)).withStyle(TextFormatting.BLACK));
+                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)).withStyle(ChatFormatting.BLACK));
     }
 
     protected int getFluidOffset() {
@@ -93,10 +93,10 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         return "liquid_compressor";
     }
 
-    private Pair<Integer,List<ITextComponent>> getAllFuels() {
-        List<ITextComponent> text = new ArrayList<>();
-        TranslationTextComponent header = xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader");
-        text.add(header.withStyle(TextFormatting.UNDERLINE, TextFormatting.AQUA));
+    private Pair<Integer,List<Component>> getAllFuels() {
+        List<Component> text = new ArrayList<>();
+        TranslatableComponent header = xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader");
+        text.add(header.withStyle(ChatFormatting.UNDERLINE, ChatFormatting.AQUA));
         int maxWidth = font.width(header);
 
         FuelRegistry fuelRegistry = FuelRegistry.getInstance();
@@ -105,7 +105,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         // not a big deal to clear this cache client-side since the fuel manager is only really used here on the client
         fuelRegistry.clearCachedFuelFluids();
 
-        World world = te.getLevel();
+        Level world = te.getLevel();
         List<Fluid> fluids = new ArrayList<>(fuelRegistry.registeredFuels(world));
         fluids.sort((o1, o2) -> Integer.compare(fuelRegistry.getFuelValue(world, o2), fuelRegistry.getFuelValue(world, o1)));
 
@@ -113,16 +113,16 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
                 .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getDisplayName().getString(), fluid -> 1, Integer::sum));
 
         int dotWidth = font.width(".");
-        ITextComponent prevLine = StringTextComponent.EMPTY;
+        Component prevLine = TextComponent.EMPTY;
         for (Fluid fluid : fluids) {
             String value = String.format("%4d", fuelRegistry.getFuelValue(world, fluid) / 1000);
             int nSpc = (32 - font.width(value)) / dotWidth;
             value = value + StringUtils.repeat('.', nSpc);
             String fluidName = new FluidStack(fluid, 1).getDisplayName().getString();
             float mul = fuelRegistry.getBurnRateMultiplier(world, fluid);
-            StringTextComponent line = mul == 1 ?
-                    new StringTextComponent(value + "| " + StringUtils.abbreviate(fluidName, 25)) :
-                    new StringTextComponent(value + "| " + StringUtils.abbreviate(fluidName, 20)
+            TextComponent line = mul == 1 ?
+                    new TextComponent(value + "| " + StringUtils.abbreviate(fluidName, 25)) :
+                    new TextComponent(value + "| " + StringUtils.abbreviate(fluidName, 20)
                             + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
             if (!line.equals(prevLine)) {
                 maxWidth = Math.max(maxWidth, font.width(line));
@@ -130,7 +130,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
             }
             prevLine = line;
             if (counted.getOrDefault(fluidName, 0) > 1) {
-                ITextComponent line2 = new StringTextComponent("       " + ModNameCache.getModName(fluid)).withStyle(TextFormatting.GOLD);
+                Component line2 = new TextComponent("       " + ModNameCache.getModName(fluid)).withStyle(ChatFormatting.GOLD);
                 text.add(line2);
                 maxWidth = Math.max(maxWidth, font.width(line2));
             }
@@ -145,7 +145,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     }
 
     @Override
-    public void addProblems(List<ITextComponent> curInfo) {
+    public void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {

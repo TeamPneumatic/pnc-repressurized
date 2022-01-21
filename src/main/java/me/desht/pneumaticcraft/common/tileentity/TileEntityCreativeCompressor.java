@@ -17,52 +17,52 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
-public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implements INamedContainerProvider {
+public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implements MenuProvider {
     @GuiSynced
     private float pressureSetpoint;
 
-    public TileEntityCreativeCompressor() {
-        super(ModTileEntities.CREATIVE_COMPRESSOR.get(), 30, 30, 50000, 0);
+    public TileEntityCreativeCompressor(BlockPos pos, BlockState state) {
+        super(ModTileEntities.CREATIVE_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, 50000, 0);
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         pressureSetpoint = tag.getFloat("setpoint");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    public void saveAdditional(CompoundTag nbt) {
         super.save(nbt);
         nbt.putFloat("setpoint", pressureSetpoint);
-        return nbt;
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        if (!level.isClientSide) {
-            airHandler.setPressure(pressureSetpoint);
-        }
+    public void tickServer() {
+        super.tickServer();
+
+        airHandler.setPressure(pressureSetpoint);
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         try {
             pressureSetpoint += Float.parseFloat(tag);
             if (pressureSetpoint > 30) pressureSetpoint = 30;
@@ -78,7 +78,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerCreativeCompressor(i, playerInventory, getBlockPos());
     }
 

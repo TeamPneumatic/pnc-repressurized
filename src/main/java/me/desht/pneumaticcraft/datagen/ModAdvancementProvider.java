@@ -29,19 +29,20 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
-import net.minecraft.advancements.criterion.*;
-import net.minecraft.block.Blocks;
-import net.minecraft.data.AdvancementProvider;
+import net.minecraft.advancements.critereon.*;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DirectoryCache;
-import net.minecraft.data.IDataProvider;
-import net.minecraft.item.Items;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.HashCache;
+import net.minecraft.data.advancements.AdvancementProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -60,7 +61,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
     }
 
     @Override
-    public void run(DirectoryCache cache) {
+    public void run(HashCache cache) {
         Path path = this.generator.getOutputFolder();
         Set<ResourceLocation> set = Sets.newHashSet();
         Consumer<Advancement> consumer = (advancement) -> {
@@ -69,7 +70,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
             } else {
                 Path path1 = getPath(path, advancement);
                 try {
-                    IDataProvider.save(GSON, cache, advancement.deconstruct().serializeToJson(), path1);
+                    DataProvider.save(GSON, cache, advancement.deconstruct().serializeToJson(), path1);
                 } catch (IOException e) {
                     Log.error("Couldn't save advancement {}", path1, e);
                 }
@@ -284,7 +285,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
      * Helpers
      */
 
-    private Advancement.Builder customAdvancement(CustomTrigger trigger, String name, FrameType type, IItemProvider itemDisp) {
+    private Advancement.Builder customAdvancement(CustomTrigger trigger, String name, FrameType type, ItemLike itemDisp) {
         return Advancement.Builder.advancement()
                 .display(itemDisp,
                         xlate("pneumaticcraft.advancement." + name),
@@ -292,32 +293,32 @@ public class ModAdvancementProvider extends AdvancementProvider {
                         BACKGROUND_TEXTURE, type, true, true, false)
                 .addCriterion("0", trigger.getInstance());
     }
-    private Advancement.Builder itemAdvancement(String name, FrameType type, IItemProvider... items) {
+    private Advancement.Builder itemAdvancement(String name, FrameType type, ItemLike... items) {
         Validate.isTrue(items.length > 0);
         return Advancement.Builder.advancement()
                 .display(items[0],
                         xlate("pneumaticcraft.advancement." + name),
                         xlate("pneumaticcraft.advancement." + name + ".desc"),
                         BACKGROUND_TEXTURE, type, true, true, false)
-                .addCriterion("0", InventoryChangeTrigger.Instance.hasItems(items));
+                .addCriterion("0", InventoryChangeTrigger.TriggerInstance.hasItems(items));
     }
 
-    private Advancement.Builder itemAdvancement(String name, FrameType type, IItemProvider item, ItemPredicate[] predicates) {
+    private Advancement.Builder itemAdvancement(String name, FrameType type, ItemLike item, ItemPredicate[] predicates) {
         return Advancement.Builder.advancement()
                 .display(item,
                         xlate("pneumaticcraft.advancement." + name),
                         xlate("pneumaticcraft.advancement." + name + ".desc"),
                         BACKGROUND_TEXTURE, type, true, true, false)
-                .addCriterion("0", InventoryChangeTrigger.Instance.hasItems(predicates));
+                .addCriterion("0", InventoryChangeTrigger.TriggerInstance.hasItems(predicates));
     }
 
-    private ItemPredicate itemPredicate(IItemProvider item, int minCount) {
-        return new ItemPredicate(null, item.asItem(), MinMaxBounds.IntBound.atLeast(minCount), MinMaxBounds.IntBound.ANY,
-                new EnchantmentPredicate[0], new EnchantmentPredicate[0], null, NBTPredicate.ANY);
+    private ItemPredicate itemPredicate(ItemLike item, int minCount) {
+        return new ItemPredicate(null, Collections.singleton(item.asItem()), MinMaxBounds.Ints.atLeast(minCount), MinMaxBounds.Ints.ANY,
+                new EnchantmentPredicate[0], new EnchantmentPredicate[0], null, NbtPredicate.ANY);
     }
 
-    private ItemPredicate itemPredicateNoNBT(IItemProvider item, int minCount) {
-        return new ItemPredicate(null, item.asItem(), MinMaxBounds.IntBound.atLeast(minCount), MinMaxBounds.IntBound.ANY,
-                new EnchantmentPredicate[0], new EnchantmentPredicate[0], null, new NBTPredicate(null));
+    private ItemPredicate itemPredicateNoNBT(ItemLike item, int minCount) {
+        return new ItemPredicate(null, Collections.singleton(item.asItem()), MinMaxBounds.Ints.atLeast(minCount), MinMaxBounds.Ints.ANY,
+                new EnchantmentPredicate[0], new EnchantmentPredicate[0], null, new NbtPredicate(null));
     }
 }

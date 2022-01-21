@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
@@ -29,11 +29,11 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump,TileEntityVacuumPump> {
 
-    public GuiVacuumPump(ContainerVacuumPump container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiVacuumPump(ContainerVacuumPump container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -51,7 +51,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         super.renderLabels(matrixStack, x, y);
 
         font.draw(matrixStack, "+", 32, 47, 0xFF00AA00);
@@ -76,7 +76,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     }
 
     @Override
-    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+    protected void addPressureStatInfo(List<Component> pressureStatText) {
         IAirHandlerMachine inputAirHandler = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
                 .orElseThrow(RuntimeException::new);
         IAirHandlerMachine vacuumHandler = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
@@ -96,7 +96,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
         pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.baseVolume",
                 String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
         if (volume > inputAirHandler.getBaseVolume()) {
-            pressureStatText.add(new StringTextComponent(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
+            pressureStatText.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
                     .append(EnumUpgrade.VOLUME.getItemStack().getHoverName())
             );
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
@@ -109,13 +109,13 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> textList) {
+    protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
         float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
                 .map(IAirHandlerMachine::getPressure).orElseThrow(RuntimeException::new);
         if (pressure < PneumaticValues.MIN_PRESSURE_VACUUM_PUMP) {
             textList.add(xlate("pneumaticcraft.gui.tab.problems.notEnoughPressure"));
-            textList.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", PneumaticValues.MIN_PRESSURE_VACUUM_PUMP).withStyle(TextFormatting.BLACK));
+            textList.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", PneumaticValues.MIN_PRESSURE_VACUUM_PUMP).withStyle(ChatFormatting.BLACK));
         }
     }
 

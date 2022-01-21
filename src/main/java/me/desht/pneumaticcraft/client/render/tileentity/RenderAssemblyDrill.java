@@ -17,72 +17,102 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyDrill;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.util.Mth;
 
 public class RenderAssemblyDrill extends AbstractTileModelRenderer<TileEntityAssemblyDrill> {
-    private final ModelRenderer baseTurn;
-    private final ModelRenderer baseTurn2;
-    private final ModelRenderer armBase;
-    private final ModelRenderer armMiddle;
-    private final ModelRenderer drillBase;
-    private final ModelRenderer drill;
+    private static final String BASETURN = "baseTurn";
+    private static final String BASETURN2 = "baseTurn2";
+    private static final String ARMBASE = "armBase";
+    private static final String ARMMIDDLE = "armMiddle";
+    private static final String DRILLBASE = "drillBase";
+    private static final String DRILL = "drill";
 
-    public RenderAssemblyDrill(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private final ModelPart baseTurn;
+    private final ModelPart baseTurn2;
+    private final ModelPart armBase;
+    private final ModelPart armMiddle;
+    private final ModelPart drillBase;
+    private final ModelPart drill;
 
-        baseTurn = new ModelRenderer(64, 64, 0, 0);
-        baseTurn.setPos(-3.5F, 22.0F, -3.5F);
-        baseTurn.texOffs(0, 0).addBox(-1.0F, 0.0F, -1.0F, 9.0F, 1.0F, 9.0F, 0.0F, true);
+    public RenderAssemblyDrill(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
 
-        baseTurn2 = new ModelRenderer(64, 64, 0, 0);
-        baseTurn2.setPos(-2.0F, 17.0F, -2.0F);
-        baseTurn2.texOffs(0, 30).addBox(-2.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, false);
-        baseTurn2.texOffs(0, 10).addBox(-2.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
-        baseTurn2.texOffs(10, 30).addBox(4.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, true);
-        baseTurn2.texOffs(0, 20).addBox(4.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
-
-        armBase = new ModelRenderer(64, 64, 0, 0);
-        armBase.setPos(-3.0F, 17.0F, -1.0F);
-        armBase.texOffs(0, 49).addBox(2.0F, 0.0F, 1.0F, 2.0F, 2.0F, 5.0F, 0.3F, true);
-        armBase.texOffs(0, 43).addBox(1.5F, -0.5F, -0.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
-        armBase.texOffs(12, 43).addBox(1.5F, -0.5F, 5.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
-        armBase.texOffs(0, 39).addBox(-1.5F, 0.0F, 0.0F, 9.0F, 2.0F, 2.0F, 0.0F, true);
-
-        armMiddle = new ModelRenderer(64, 64, 0, 0);
-        armMiddle.setPos(-4.0F, 2.0F, 5.0F);
-        armMiddle.texOffs(20, 10).addBox(0.0F, 2.0F, 0.0F, 2.0F, 13.0F, 2.0F, 0.0F, true);
-        armMiddle.texOffs(12, 24).addBox(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
-        armMiddle.texOffs(0, 24).addBox(0.0F, 15.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
-        armMiddle.texOffs(14, 52).addBox(-0.5F, 15.0F, 0.0F, 3.0F, 2.0F, 2.0F, 0.0F, true);
-
-        drillBase = new ModelRenderer(64, 64, 0, 0);
-        drillBase.setPos(-3.0F, 2.0F, 4.5F);
-        drillBase.texOffs(46, 0).addBox(1.0F, -1.0F, -1.0F, 4.0F, 4.0F, 5.0F, 0.0F, true);
-        drillBase.texOffs(56, 9).addBox(1.5F, -0.5F, -2.0F, 3.0F, 3.0F, 1.0F, 0.0F, true);
-
-        drill = new ModelRenderer(64, 64, 0, 0);
-        drill.setPos(-2.5F, 2.5F, 1.0F);
-        drill.texOffs(50, 9).addBox(2.0F, 0.0F, -2.0F, 1.0F, 1.0F, 4.0F, 0.0F, true);
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_DRILL);
+        baseTurn = root.getChild(BASETURN);
+        baseTurn2 = root.getChild(BASETURN2);
+        armBase = root.getChild(ARMBASE);
+        armMiddle = root.getChild(ARMMIDDLE);
+        drillBase = root.getChild(DRILLBASE);
+        drill = root.getChild(DRILL);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(BASETURN, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("baseTurn_0", -1.0F, 0.0F, -1.0F, 9, 1, 9, 0, 0)
+                        .mirror(),
+                PartPose.offset(-3.5F, 22.0F, -3.5F));
+        partdefinition.addOrReplaceChild(BASETURN2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("baseTurn2_0", -2.0F, -0.5F, 0.5F, 2, 6, 3, 0, 30)
+                        .addBox("baseTurn2_1", -2.0F, 3.75F, -2.0F, 2, 2, 8, 0, 10)
+                        .addBox("baseTurn2_2", 4.0F, -0.5F, 0.5F, 2, 6, 3, 10, 30)
+                        .addBox("baseTurn2_3", 4.0F, 3.75F, -2.0F, 2, 2, 8, 0, 20)
+                        .mirror(),
+                PartPose.offset(-2.0F, 17.0F, -2.0F));
+        partdefinition.addOrReplaceChild(ARMBASE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("armBase_0", 2.0F, 0.0F, 1.0F, 2, 2, 5, 0, 49)
+                        .addBox("armBase_1", 1.5F, -0.5F, -0.5F, 3, 3, 3, 0, 43)
+                        .addBox("armBase_2", 1.5F, -0.5F, 5.5F, 3, 3, 3, 12, 43)
+                        .addBox("armBase_3", -1.5F, 0.0F, 0.0F, 9, 2, 2, 0, 39)
+                        .mirror(),
+                PartPose.offset(-3.0F, 17.0F, -1.0F));
+        partdefinition.addOrReplaceChild(ARMMIDDLE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("armMiddle_0", 0.0F, 2.0F, 0.0F, 2, 13, 2, 20, 10)
+                        .addBox("armMiddle_1", 0.0F, 0.0F, 0.0F, 2, 2, 2, 12, 24)
+                        .addBox("armMiddle_2", 0.0F, 15.0F, 0.0F, 2, 2, 2, 0, 24)
+                        .addBox("armMiddle_3", -0.5F, 15.0F, 0.0F, 3, 2, 2, 14, 52)
+                        .mirror(),
+                PartPose.offset(-4.0F, 2.0F, 5.0F));
+        partdefinition.addOrReplaceChild(DRILLBASE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("drillBase_0", 1.0F, -1.0F, -1.0F, 4, 4, 5, 46, 0)
+                        .addBox("drillBase_1", 1.5F, -0.5F, -2.0F, 3, 3, 1, 56, 9)
+                        .mirror(),
+                PartPose.offset(-3.0F, 2.0F, 4.5F));
+        partdefinition.addOrReplaceChild(DRILL, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("drill_0", 2.0F, 0.0F, -2.0F, 1, 1, 4, 50, 9)
+                        .mirror(),
+                PartPose.offset(-2.5F, 2.5F, 1.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+
     @Override
-    void renderModel(TileEntityAssemblyDrill te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(TileEntityAssemblyDrill te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 4; i++) {
-            angles[i] = MathHelper.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
+            angles[i] = Mth.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
         }
-        angles[4] = MathHelper.lerp(partialTicks, te.oldDrillRotation, te.drillRotation);
+        angles[4] = Mth.lerp(partialTicks, te.oldDrillRotation, te.drillRotation);
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
 
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(angles[0]));
 

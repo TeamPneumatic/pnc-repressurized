@@ -21,16 +21,16 @@ import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetArea;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateGPSAreaTool;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
 
 /**
  * Area widget as used by the GPS Area Tool.
  */
 public class GuiProgWidgetAreaTool extends GuiProgWidgetArea {
-    private final Hand hand;
+    private final InteractionHand hand;
     private final Runnable returnAction;
     
-    GuiProgWidgetAreaTool(ProgWidgetArea widget, Hand hand, Runnable returnAction) {
+    GuiProgWidgetAreaTool(ProgWidgetArea widget, InteractionHand hand, Runnable returnAction) {
         super(widget, null);
 
         this.hand = hand;

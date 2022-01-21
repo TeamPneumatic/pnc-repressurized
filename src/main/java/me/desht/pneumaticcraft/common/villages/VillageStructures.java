@@ -20,13 +20,12 @@ package me.desht.pneumaticcraft.common.villages;
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.MutableRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.jigsaw.JigsawPattern;
-import net.minecraft.world.gen.feature.jigsaw.JigsawPiece;
-import net.minecraft.world.gen.feature.jigsaw.SingleJigsawPiece;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.levelgen.feature.structures.SinglePoolElement;
+import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElement;
+import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +39,13 @@ public class VillageStructures {
      *
      * With thanks to TelepathicGrunt: https://gist.github.com/TelepathicGrunt/4fdbc445ebcbcbeb43ac748f4b18f342
      */
-    private static void addBuildingToPool(MutableRegistry<JigsawPattern> templatePoolRegistry, ResourceLocation poolRL, String nbtPieceRL, int weight) {
+    private static void addBuildingToPool(Registry<StructureTemplatePool> templatePoolRegistry, ResourceLocation poolRL, String nbtPieceRL, int weight) {
         // Grab the pool we want to add to
-        JigsawPattern pool = templatePoolRegistry.get(poolRL);
+        StructureTemplatePool pool = templatePoolRegistry.get(poolRL);
         if (pool == null) return;
 
         // Grabs the nbt piece and creates a SingleJigsawPiece of it that we can add to a structure's pool.
-        SingleJigsawPiece piece = SingleJigsawPiece.single(nbtPieceRL).apply(JigsawPattern.PlacementBehaviour.RIGID);
+        SinglePoolElement piece = SinglePoolElement.single(nbtPieceRL).apply(StructureTemplatePool.Projection.RIGID);
 
         // AccessTransformer to make JigsawPattern's templates field public for us to see.
         // public net.minecraft.world.gen.feature.jigsaw.JigsawPattern templates #templates
@@ -60,14 +59,14 @@ public class VillageStructures {
         // net.minecraft.world.gen.feature.jigsaw.JigsawPattern rawTemplates #rawTemplates
         // This list of pairs of pieces and weights is not used by vanilla by default but another mod may need it for efficiency.
         // So lets add to this list for completeness. We need to make a copy of the array as it can be an immutable list.
-        List<Pair<JigsawPiece, Integer>> listOfPieceEntries = new ArrayList<>(pool.rawTemplates);
+        List<Pair<StructurePoolElement, Integer>> listOfPieceEntries = new ArrayList<>(pool.rawTemplates);
         listOfPieceEntries.add(new Pair<>(piece, weight));
         pool.rawTemplates = listOfPieceEntries;
     }
 
-    public static void addMechanicHouse(final FMLServerAboutToStartEvent event) {
+    public static void addMechanicHouse(final ServerAboutToStartEvent event) {
         if (ConfigHelper.common().villagers.addMechanicHouse.get()) {
-            MutableRegistry<JigsawPattern> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY);
+            Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY);
 
             for (String biome : new String[]{"plains", "desert", "savanna", "taiga", "snowy"}) {
                 addBuildingToPool(templatePoolRegistry,

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
@@ -38,18 +38,18 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.HangingEntity;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -75,8 +75,8 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
-        int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.RANGE);
-        PlayerEntity player = armorHandler.getPlayer();
+        int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.RANGE);
+        Player player = armorHandler.getPlayer();
 
         if ((Minecraft.getInstance().level.getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler)) {
             ArmorUpgradeClientRegistry.getInstance()
@@ -84,7 +84,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
                     .trackItemEntities(player, rangeUpgrades);
         }
 
-        ItemStack helmetStack = player.getItemBySlot(EquipmentSlotType.HEAD);
+        ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
         String filterStr = helmetStack.isEmpty() ? "" : ItemPneumaticArmor.getEntityFilter(helmetStack);
         if (!entityFilter.toString().equals(filterStr)) {
             EntityFilter newFilter = EntityFilter.fromString(filterStr);
@@ -94,7 +94,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         }
 
         double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
-        AxisAlignedBB bbBox = getAABBFromRange(player, rangeUpgrades);
+        AABB bbBox = getAABBFromRange(player, rangeUpgrades);
         List<Entity> entities = armorHandler.getPlayer().level.getEntitiesOfClass(Entity.class, bbBox,
                 new EntityTrackerSelector(player, entityFilter, entityTrackRange));
         for (Entity entity : entities) {
@@ -118,18 +118,18 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         });
         toRemove.forEach(targets::remove);
 
-        List<ITextComponent> text = new ArrayList<>();
+        List<Component> text = new ArrayList<>();
         for (RenderEntityTarget target : targets.values()) {
             boolean wasNegative = target.ticksExisted < 0;
-            target.ticksExisted += armorHandler.getSpeedFromUpgrades(EquipmentSlotType.HEAD);
+            target.ticksExisted += armorHandler.getSpeedFromUpgrades(EquipmentSlot.HEAD);
             if (target.ticksExisted >= 0 && wasNegative) target.ticksExisted = -1;
             target.update();
             if (target.isLookingAtTarget) {
                 if (target.isInitialized()) {
-                    text.add(target.entity.getDisplayName().copy().withStyle(TextFormatting.GRAY));
+                    text.add(target.entity.getDisplayName().copy().withStyle(ChatFormatting.GRAY));
                     text.addAll(target.getEntityText());
                 } else {
-                    text.add(xlate("pneumaticcraft.entityTracker.info.acquiring").withStyle(TextFormatting.GRAY));
+                    text.add(xlate("pneumaticcraft.entityTracker.info.acquiring").withStyle(ChatFormatting.GRAY));
                 }
             }
         }
@@ -140,19 +140,19 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         entityTrackInfo.setText(text);
     }
 
-    static AxisAlignedBB getAABBFromRange(PlayerEntity player, int rangeUpgrades) {
+    static AABB getAABBFromRange(Player player, int rangeUpgrades) {
         double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
 
-        return new AxisAlignedBB(player.blockPosition()).inflate(entityTrackRange);
+        return new AABB(player.blockPosition()).inflate(entityTrackRange);
     }
 
     @Override
-    public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+    public void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
         targets.values().forEach(target -> target.render(matrixStack, buffer, partialTicks,  targets.size() > ENTITY_TRACK_THRESHOLD));
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -200,10 +200,10 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     }
 
     private static class EntityTrackerSelector extends StringFilterEntitySelector {
-        private final PlayerEntity player;
+        private final Player player;
         private final double threshold;
 
-        private EntityTrackerSelector(PlayerEntity player, EntityFilter filter, double threshold) {
+        private EntityTrackerSelector(Player player, EntityFilter filter, double threshold) {
             this.player = player;
             this.threshold = threshold;
             setFilter(Collections.singletonList(filter));
@@ -212,7 +212,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         @Override
         public boolean test(Entity entity) {
             return entity != player
-                    && (entity instanceof LivingEntity || entity instanceof HangingEntity || entity instanceof AbstractMinecartEntity)
+                    && (entity instanceof LivingEntity || entity instanceof HangingEntity || entity instanceof AbstractMinecart)
                     && entity.isAlive()
                     && player.distanceTo(entity) < threshold
                     && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))

@@ -17,31 +17,33 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.regex.Pattern;
 
-public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTile> {
+public class RenderAphorismTile implements BlockEntityRenderer<TileEntityAphorismTile> {
     private static final float ICON_SCALE = 9f;
 
-    public RenderAphorismTile(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private final Font font;
+
+    public RenderAphorismTile(BlockEntityRendererProvider.Context ctx) {
+        font = ctx.getFont();
     }
 
     @Override
-    public void render(TileEntityAphorismTile te, float v, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
+    public void render(TileEntityAphorismTile te, float v, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
 
         matrixStack.translate(0.5, 1.5, 0.5);
@@ -50,8 +52,7 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
         double zOff = te.isInvisible() ? 0.01 : BlockAphorismTile.APHORISM_TILE_THICKNESS;
         matrixStack.translate(0, 1, 0.5 - zOff - 0.01);
 
-        FontRenderer fr = Minecraft.getInstance().getEntityRenderDispatcher().getFont();
-        int fh = fr.lineHeight;
+        int fh = font.lineHeight;
 
         GuiAphorismTile editor = getEditor(te);
 
@@ -73,7 +74,7 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
                 matrixStack.translate(0, 8 * (mid - i), 0);
                 matrixStack.scale(ICON_SCALE, ICON_SCALE, ICON_SCALE);
                 Minecraft.getInstance().getItemRenderer()
-                        .renderStatic(te.getIconAt(i), TransformType.FIXED, combinedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer);
+                        .renderStatic(te.getIconAt(i), TransformType.FIXED, combinedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer, 0);
                 matrixStack.popPose();
             } else {
                 String textLine;
@@ -84,13 +85,13 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
                 } else {
                     textLine = textLines[i];
                 }
-                float x = -fr.width(textLine) / 2f;
+                float x = -font.width(textLine) / 2f;
                 float y = -(textLines.length * fh) / 2f + i * fh + 1;
                 if (editor == null && te.isRedstoneLine(i)) {
                     textLine = textLine.replaceAll(Pattern.quote("{redstone}"), Integer.toString(te.pollRedstone()));
-                    x = -fr.width(textLine) / 2f;
+                    x = -font.width(textLine) / 2f;
                 }
-                fr.drawInBatch(textLine, x, y, 0xFF000000, false, matrixStack.last().pose(), buffer, false, 0, combinedLight);
+                font.drawInBatch(textLine, x, y, 0xFF000000, false, matrixStack.last().pose(), buffer, false, 0, combinedLight);
             }
         }
 

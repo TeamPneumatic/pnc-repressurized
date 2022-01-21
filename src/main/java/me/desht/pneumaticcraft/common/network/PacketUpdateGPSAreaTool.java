@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -32,28 +32,28 @@ import java.util.function.Supplier;
  * Sent by client from area tool GUI to update stored settings
  */
 public class PacketUpdateGPSAreaTool {
-    private CompoundNBT areaWidgetData;
-    private Hand hand;
+    private CompoundTag areaWidgetData;
+    private InteractionHand hand;
 
-    public PacketUpdateGPSAreaTool(ProgWidgetArea area, Hand hand) {
+    public PacketUpdateGPSAreaTool(ProgWidgetArea area, InteractionHand hand) {
         this.hand = hand;
-        this.areaWidgetData = new CompoundNBT();
+        this.areaWidgetData = new CompoundTag();
         area.writeToNBT(areaWidgetData);
     }
 
-    public PacketUpdateGPSAreaTool(PacketBuffer buffer) {
+    public PacketUpdateGPSAreaTool(FriendlyByteBuf buffer) {
         try {
             areaWidgetData = buffer.readNbt();
-            hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+            hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         try {
             buffer.writeNbt(areaWidgetData);
-            buffer.writeBoolean(hand == Hand.MAIN_HAND);
+            buffer.writeBoolean(hand == InteractionHand.MAIN_HAND);
         } catch (Exception e) {
             e.printStackTrace();
         }

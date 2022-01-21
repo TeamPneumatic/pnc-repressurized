@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.Validate;
@@ -32,8 +32,8 @@ import org.apache.commons.lang3.Validate;
 import java.util.Arrays;
 
 public class ProgrammedDroneUtils {
-    public static CreatureEntity deliverItemsAmazonStyle(GlobalPos gPos, ItemStack... deliveredStacks) {
-        World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
+    public static PathfinderMob deliverItemsAmazonStyle(GlobalPos gPos, ItemStack... deliveredStacks) {
+        Level world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.pos();
 
         if (world == null || world.isClientSide) return null;
@@ -56,7 +56,7 @@ public class ProgrammedDroneUtils {
                 area.y1 = pos.getY() + i;
             }
         } else {
-            area.y1 = world.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, pos).getY() + 10;
+            area.y1 = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, pos).getY() + 10;
             if (!drone.isBlockValidPathfindBlock(new BlockPos(area.x1, area.y1, area.z1)))
                 area.y1 = 260; // Worst case scenario; there are definitely no blocks here.
         }
@@ -72,8 +72,8 @@ public class ProgrammedDroneUtils {
         return drone;
     }
 
-    public static CreatureEntity deliverFluidAmazonStyle(GlobalPos gPos, FluidStack deliveredFluid) {
-        World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
+    public static PathfinderMob deliverFluidAmazonStyle(GlobalPos gPos, FluidStack deliveredFluid) {
+        Level world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.pos();
 
         if (world == null || world.isClientSide) return null;
@@ -97,8 +97,8 @@ public class ProgrammedDroneUtils {
         return drone;
     }
 
-    public static CreatureEntity retrieveItemsAmazonStyle(GlobalPos gPos, ItemStack... queriedStacks) {
-        World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
+    public static PathfinderMob retrieveItemsAmazonStyle(GlobalPos gPos, ItemStack... queriedStacks) {
+        Level world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.pos();
 
         if (world == null || world.isClientSide) return null;
@@ -126,8 +126,8 @@ public class ProgrammedDroneUtils {
         return drone;
     }
 
-    public static CreatureEntity retrieveFluidAmazonStyle(GlobalPos gPos, FluidStack queriedFluid) {
-        World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
+    public static PathfinderMob retrieveFluidAmazonStyle(GlobalPos gPos, FluidStack queriedFluid) {
+        Level world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.pos();
 
         if (world == null || world.isClientSide) return null;

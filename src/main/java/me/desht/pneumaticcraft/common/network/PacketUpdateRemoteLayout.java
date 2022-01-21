@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.ItemRemote;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -32,34 +32,34 @@ import java.util.function.Supplier;
  * Sent by client to update the layout of a Remote item from the Remote GUI
  */
 public class PacketUpdateRemoteLayout {
-    private final CompoundNBT layout;
-    private final Hand hand;
+    private final CompoundTag layout;
+    private final InteractionHand hand;
 
-    public PacketUpdateRemoteLayout(CompoundNBT layout, Hand hand) {
+    public PacketUpdateRemoteLayout(CompoundTag layout, InteractionHand hand) {
         this.layout = layout;
         this.hand = hand;
     }
 
-    public PacketUpdateRemoteLayout(PacketBuffer buffer) {
+    public PacketUpdateRemoteLayout(FriendlyByteBuf buffer) {
         this.layout = buffer.readNbt();
-        this.hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+        this.hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeNbt(layout);
-        buf.writeBoolean(hand == Hand.MAIN_HAND);
+        buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ItemStack remote = ctx.get().getSender().getItemInHand(hand);
             if (remote.getItem() instanceof ItemRemote) {
-                CompoundNBT tag = remote.getTag();
+                CompoundTag tag = remote.getTag();
                 if (tag == null) {
-                    tag = new CompoundNBT();
+                    tag = new CompoundTag();
                     remote.setTag(tag);
                 }
-                tag.put("actionWidgets", layout.getList("actionWidgets", Constants.NBT.TAG_COMPOUND));
+                tag.put("actionWidgets", layout.getList("actionWidgets", Tag.TAG_COMPOUND));
             }
         });
         ctx.get().setPacketHandled(true);

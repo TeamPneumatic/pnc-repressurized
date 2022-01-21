@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 public class EntityLogisticsDefaultStorage extends EntityLogisticsStorage {
-    public EntityLogisticsDefaultStorage(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityLogisticsDefaultStorage(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 

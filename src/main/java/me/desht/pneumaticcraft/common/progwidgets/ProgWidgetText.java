@@ -21,11 +21,11 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +48,7 @@ public class ProgWidgetText extends ProgWidget {
     }
     
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         if (addToTooltip()) {
             curTooltip.addAll(getExtraStringInfo());
@@ -60,7 +60,7 @@ public class ProgWidgetText extends ProgWidget {
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         return Collections.singletonList(varAsTextComponent(string));
     }
 
@@ -85,25 +85,25 @@ public class ProgWidgetText extends ProgWidget {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         tag.putString("string", string);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         string = tag.getString("string");
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeUtf(string);
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         string = buf.readUtf(32768);
 

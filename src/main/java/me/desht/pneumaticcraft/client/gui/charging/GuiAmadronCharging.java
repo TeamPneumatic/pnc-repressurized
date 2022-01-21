@@ -15,19 +15,19 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.gui;
+package me.desht.pneumaticcraft.client.gui.charging;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiJackhammer extends GuiChargingUpgradeManager {
-    public GuiJackhammer(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
+public class GuiAmadronCharging extends GuiChargingUpgradeManager {
+    public GuiAmadronCharging(ContainerChargingStationUpgradeManager container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -36,13 +36,12 @@ public class GuiJackhammer extends GuiChargingUpgradeManager {
         super.init();
 
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
-                .setText(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft.jackhammer"));
-        addUpgradeTabs(itemStack.getItem(), "jackhammer");
+                .setText(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
+        addUpgradeTabs(itemStack.getItem(), "amadron_tablet");
     }
 
     @Override
     protected int getDefaultVolume() {
-        return PneumaticValues.VOLUME_JACKHAMMER;
+        return PneumaticValues.AIR_CANISTER_VOLUME;
     }
-
 }

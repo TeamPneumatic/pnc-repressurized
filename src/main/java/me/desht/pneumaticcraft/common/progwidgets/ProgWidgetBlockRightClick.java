@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.common.ai.DroneAIRightClickBlock;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 
@@ -83,21 +83,21 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
-        curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")
+        curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")
                 .append(": " + ClientUtils.translateDirection(clickSide)));
         if (sneaking) {
-            curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
+            curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
         }
-        curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.operation")
+        curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.blockRightClick.operation")
                 .append(": ")
-                .append(new TranslationTextComponent(clickType.getTranslationKey())));
+                .append(new TranslatableComponent(clickType.getTranslationKey())));
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (sneaking) tag.putBoolean("sneaking", true);
         tag.putInt("dir", clickSide.get3DDataValue());
@@ -105,7 +105,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         sneaking = tag.getBoolean("sneaking");
         clickSide = Direction.from3DDataValue(tag.getInt("dir"));
@@ -113,7 +113,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(sneaking);
         buf.writeByte(clickSide.get3DDataValue());
@@ -121,7 +121,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         sneaking = buf.readBoolean();
         clickSide = Direction.from3DDataValue(buf.readByte());

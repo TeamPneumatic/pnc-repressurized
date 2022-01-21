@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -48,7 +48,7 @@ public class KickHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     }
 
     @Override
-    public EquipmentSlotType getEquipmentSlot() {
-        return EquipmentSlotType.FEET;
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.FEET;
     }
 }

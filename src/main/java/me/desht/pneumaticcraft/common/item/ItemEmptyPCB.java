@@ -22,20 +22,21 @@ import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.MaterialColor;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -43,7 +44,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     private static final String NBT_ETCH_PROGRESS = "pneumaticcraft:etch_progress";
 
     @Override
-    public void appendHoverText(ItemStack stack, World player, List<ITextComponent> infoList, ITooltipFlag par4) {
+    public void appendHoverText(ItemStack stack, Level player, List<Component> infoList, TooltipFlag par4) {
         super.appendHoverText(stack, player, infoList, par4);
         int uvProgress = TileEntityUVLightBox.getExposureProgress(stack);
         int etchProgress = getEtchProgress(stack);
@@ -53,15 +54,15 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
         }
         infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.successChance", uvProgress));
         if (uvProgress < 100 && etchProgress == 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").withStyle(TextFormatting.GRAY));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").withStyle(ChatFormatting.GRAY));
         }
         if (uvProgress > 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").withStyle(TextFormatting.GRAY));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").withStyle(ChatFormatting.GRAY));
         }
     }
 
     public static int getEtchProgress(ItemStack stack) {
-        return stack.hasTag() ? stack.getTag().getInt(NBT_ETCH_PROGRESS) : 0;
+        return stack.hasTag() ? Objects.requireNonNull(stack.getTag()).getInt(NBT_ETCH_PROGRESS) : 0;
     }
 
     public static void setEtchProgress(ItemStack stack, int progress) {
@@ -70,19 +71,19 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     }
 
     @Override
-    public double getDurabilityForDisplay(ItemStack stack) {
-        int progress = TileEntityUVLightBox.getExposureProgress(stack);
-        return 1 - progress / 100D;
-    }
-
-    @Override
-    public boolean showDurabilityBar(ItemStack stack) {
+    public boolean isBarVisible(ItemStack pStack) {
         return true;
     }
 
     @Override
-    public int getRGBDurabilityForDisplay(ItemStack stack) {
-        int progress = TileEntityUVLightBox.getExposureProgress(stack);
+    public int getBarWidth(ItemStack pStack) {
+        int progress = TileEntityUVLightBox.getExposureProgress(pStack);
+        return 13 - Math.round(progress / 100F * 13F);
+    }
+
+    @Override
+    public int getBarColor(ItemStack pStack) {
+        int progress = TileEntityUVLightBox.getExposureProgress(pStack);
         return progress * 2 << 16 | 0xFF;
     }
 
@@ -92,14 +93,14 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
 
         if (entityItem.level.getFluidState(entityItem.blockPosition()).getType().is(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
             if (!stack.hasTag()) {
-                stack.setTag(new CompoundNBT());
+                stack.setTag(new CompoundTag());
             }
             int etchProgress = getEtchProgress(stack);
             if (etchProgress < 100) {
                 if (entityItem.tickCount % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0) {
                     setEtchProgress(stack, etchProgress + 1);
                 }
-                World world = entityItem.getCommandSenderWorld();
+                Level world = entityItem.getCommandSenderWorld();
                 if (world.random.nextInt(15) == 0) {
                     double x = entityItem.getX() + world.random.nextDouble() * 0.3 - 0.15;
                     double y = entityItem.getY() - 0.15;
@@ -133,7 +134,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (this.allowdedIn(group)) {
             items.add(new ItemStack(this));
 

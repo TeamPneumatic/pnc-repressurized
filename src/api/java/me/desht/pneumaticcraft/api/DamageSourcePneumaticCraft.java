@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.api;
 
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 public class DamageSourcePneumaticCraft extends DamageSource {
     public static final DamageSource PRESSURE = new DamageSourcePneumaticCraft("pressure", 2).bypassArmor();
@@ -46,15 +46,15 @@ public class DamageSourcePneumaticCraft extends DamageSource {
     }
 
     @Override
-    public ITextComponent getLocalizedDeathMessage(LivingEntity dyingEntity) {
+    public Component getLocalizedDeathMessage(LivingEntity dyingEntity) {
         int messageNumber = dyingEntity.getRandom().nextInt(deathMessageCount) + 1;
 
         LivingEntity killer = dyingEntity.getKillCredit();
         String s = PneumaticRegistry.MOD_ID + ".death.attack." + msgId + messageNumber;
         String s1 = s + ".player";
         return killer != null && I18n.exists(s1) ?
-                new TranslationTextComponent(s1, dyingEntity.getDisplayName(), killer.getDisplayName()) :
-                new TranslationTextComponent(s, dyingEntity.getDisplayName());
+                new TranslatableComponent(s1, dyingEntity.getDisplayName(), killer.getDisplayName()) :
+                new TranslatableComponent(s, dyingEntity.getDisplayName());
     }
 
     public static class DamageSourceDroneOverload extends DamageSourcePneumaticCraft {
@@ -71,8 +71,8 @@ public class DamageSourcePneumaticCraft extends DamageSource {
         }
 
         @Override
-        public ITextComponent getLocalizedDeathMessage(LivingEntity dyingEntity) {
-            return new TranslationTextComponent("pneumaticcraft.death.drone.overload." + msgKey, params);
+        public Component getLocalizedDeathMessage(LivingEntity dyingEntity) {
+            return new TranslatableComponent("pneumaticcraft.death.drone.overload." + msgKey, params);
         }
     }
 }

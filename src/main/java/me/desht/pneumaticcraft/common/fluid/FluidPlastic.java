@@ -24,14 +24,14 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemBucketPneumaticCraft;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
@@ -52,16 +52,16 @@ public abstract class FluidPlastic {
         }
 
         @Override
-        public int getTickDelay(IWorldReader world) {
+        public int getTickDelay(LevelReader world) {
             return 10;
         }
 
         @Override
-        public void tick(World worldIn, BlockPos pos, FluidState state) {
+        public void tick(Level worldIn, BlockPos pos, FluidState state) {
             if (ConfigHelper.common().recipes.inWorldPlasticSolidification.get()) {
                 ItemEntity item = new ItemEntity(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, new ItemStack(ModItems.PLASTIC.get()));
                 worldIn.addFreshEntity(item);
-                worldIn.setBlock(pos, Blocks.AIR.defaultBlockState(), Constants.BlockFlags.DEFAULT);
+                worldIn.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
             }
             super.tick(worldIn, pos, state);
         }

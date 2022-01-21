@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 
 import java.util.function.BiPredicate;
 
@@ -43,11 +43,11 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     }
 
     @Override
-    public void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> loseHeatToAir, Direction... validSides) {
+    public void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> loseHeatToAir, Direction... validSides) {
     }
 
     @Override
-    public void initializeAmbientTemperature(World world, BlockPos pos) {
+    public void initializeAmbientTemperature(Level world, BlockPos pos) {
     }
 
     @Override

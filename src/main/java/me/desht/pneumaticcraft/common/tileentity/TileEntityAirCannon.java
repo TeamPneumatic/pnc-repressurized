@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -34,38 +35,37 @@ import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
-import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.TNTEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -76,7 +76,7 @@ import java.util.Map.Entry;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityAirCannon extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControl<TileEntityAirCannon>, IGUIButtonSensitive, INamedContainerProvider {
+        implements IMinWorkingPressure, IRedstoneControl<TileEntityAirCannon>, IGUIButtonSensitive, MenuProvider {
 
     private static final String FP_NAME = "[Air Cannon]";
     private static final UUID FP_UUID = UUID.nameUUIDFromBytes(FP_NAME.getBytes());
@@ -123,7 +123,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private boolean entityUpgradeInserted, dispenserUpgradeInserted;
     private final List<ItemEntity> trackedItems = new ArrayList<>(); //Items that are being checked to be hoppering into inventories.
     private Set<UUID> trackedItemIds;
-    private final Set<TNTEntity> trackedTNT = new HashSet<>();
+    private final Set<PrimedTnt> trackedTNT = new HashSet<>();
     private BlockPos lastInsertingInventory; // Last coordinate where the item went into the inventory (as a result of the Block Tracker upgrade).
     private Direction lastInsertingInventorySide;
     @GuiSynced
@@ -135,14 +135,15 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private static final int CANNON_SLOT = 0;
     private static final int GPS_SLOT = 1;
 
-    public TileEntityAirCannon() {
-        super(ModTileEntities.AIR_CANNON.get(), PneumaticValues.DANGER_PRESSURE_AIR_CANNON, PneumaticValues.MAX_PRESSURE_AIR_CANNON, PneumaticValues.VOLUME_AIR_CANNON, 4);
+    public TileEntityAirCannon(BlockPos pos, BlockState state) {
+        super(ModTileEntities.AIR_CANNON.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_AIR_CANNON, 4);
     }
 
     @Override
-    public void tick() {
-        boolean destUpdateNeeded = false;
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
+        boolean destUpdateNeeded = false;
         if (gpsSlotChanged) {
             destUpdateNeeded = checkGPSSlot();
             gpsSlotChanged = false;
@@ -164,22 +165,22 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         if (destUpdateNeeded) updateDestination();
         updateRotationAngles();
-        if (!level.isClientSide) {
-            updateTrackedItems();
-            updateTrackedTNT();
-        }
+    }
 
-        super.tick();
+    @Override
+    public void tickServer() {
+        super.tickServer();
 
-        if (!getLevel().isClientSide) {
-            airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
-        }
+        updateTrackedItems();
+        updateTrackedTNT();
+
+        airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
     }
 
     private void updateTrackedTNT() {
-        Iterator<TNTEntity> iter = trackedTNT.iterator();
+        Iterator<PrimedTnt> iter = trackedTNT.iterator();
         while (iter.hasNext()) {
-            TNTEntity e = iter.next();
+            PrimedTnt e = iter.next();
             if (!e.isAlive()) {
                 iter.remove();
             } else {
@@ -251,12 +252,11 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     private void updateTrackedItems() {
-        if (trackedItemIds != null) {
+        if (trackedItemIds != null && level instanceof ServerLevel serverLevel) {
             trackedItems.clear();
-            ((ServerWorld) level).getEntities()
-                    .filter(entity -> trackedItemIds.contains(entity.getUUID()) && entity instanceof ItemEntity)
-                    .map(entity -> (ItemEntity) entity)
-                    .forEach(trackedItems::add);
+            serverLevel.getEntities().get(EntityTypeTest.forClass(ItemEntity.class), itemEntity -> {
+                if (trackedItemIds.contains(itemEntity.getUUID())) trackedItems.add(itemEntity);
+            });
             trackedItemIds = null;
         }
         Iterator<ItemEntity> iterator = trackedItems.iterator();
@@ -275,7 +275,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                 }
                 for (Entry<BlockPos, Direction> entry : positions.entrySet()) {
                     BlockPos pos = entry.getKey();
-                    TileEntity te = getLevel().getBlockEntity(pos);
+                    BlockEntity te = getLevel().getBlockEntity(pos);
                     if (te == null) continue;
                     boolean inserted = IOHelper.getInventoryForTE(te, entry.getValue()).map(inv -> {
                         ItemStack remainder = ItemHandlerHelper.insertItem(inv, item.getItem(), false);
@@ -284,11 +284,11 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                             insertingInventoryHasSpace = false;
                             return false;
                         } else {
-                            item.remove();
+                            item.discard();
                             iterator.remove();
                             lastInsertingInventory = te.getBlockPos();
                             lastInsertingInventorySide = entry.getValue();
-                            level.playSound(null, te.getBlockPos(), SoundEvents.ITEM_PICKUP, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                            nonNullLevel().playSound(null, te.getBlockPos(), SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0f, 1.0f);
                             return true;
                         }
                     }).orElse(false);
@@ -380,8 +380,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         // simulate the trajectory for angles from 45 to 90 degrees,
         // returning the angle which lands the projectile closest to the target distance
         for (double i = Math.PI * 0.01D; i < Math.PI * 0.5D; i += 0.01D) {
-            double motionX = MathHelper.cos((float) i) * force;// calculate the x component of the vector
-            double motionY = MathHelper.sin((float) i) * force;// calculate the y component of the vector
+            double motionX = Mth.cos((float) i) * force;// calculate the x component of the vector
+            double motionY = Mth.sin((float) i) * force;// calculate the y component of the vector
             double posX = 0;
             double posY = 0;
             while (posY > deltaY || motionY > 0) { // simulate movement, until we reach the y-level required
@@ -410,11 +410,11 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     // the needed, and outputs the X, Y and Z velocities.
     private double[] getVelocityVector(float angleX, float angleZ, float force) {
         double[] velocities = new double[3];
-        velocities[0] = MathHelper.sin(angleZ / 180f * (float) Math.PI);
-        velocities[1] = MathHelper.cos(angleX / 180f * (float) Math.PI);
-        velocities[2] = MathHelper.cos(angleZ / 180f * (float) Math.PI) * -1;
-        velocities[0] *= MathHelper.sin(angleX / 180f * (float) Math.PI);
-        velocities[2] *= MathHelper.sin(angleX / 180f * (float) Math.PI);
+        velocities[0] = Mth.sin(angleZ / 180f * (float) Math.PI);
+        velocities[1] = Mth.cos(angleX / 180f * (float) Math.PI);
+        velocities[2] = Mth.cos(angleZ / 180f * (float) Math.PI) * -1;
+        velocities[0] *= Mth.sin(angleX / 180f * (float) Math.PI);
+        velocities[2] *= Mth.sin(angleX / 180f * (float) Math.PI);
 
         // calculate the total velocity vector, in relation.
         double vectorTotal = velocities[0] * velocities[0] + velocities[1] * velocities[1] + velocities[2] * velocities[2];
@@ -443,8 +443,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         targetRotationAngle = tag.getFloat("targetRotationAngle");
         targetHeightAngle = tag.getFloat("targetHeightAngle");
         rotationAngle = tag.getFloat("rotationAngle");
@@ -457,9 +457,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         forceMult = tag.getInt("forceMult");
 
         trackedItemIds = new HashSet<>();
-        ListNBT tagList = tag.getList("trackedItems", Constants.NBT.TAG_COMPOUND);
+        ListTag tagList = tag.getList("trackedItems", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
-            CompoundNBT t = tagList.getCompound(i);
+            CompoundTag t = tagList.getCompound(i);
             trackedItemIds.add(new UUID(t.getLong("UUIDMost"), t.getLong("UUIDLeast")));
         }
 
@@ -473,8 +473,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putFloat("targetRotationAngle", targetRotationAngle);
         tag.putFloat("targetHeightAngle", targetHeightAngle);
         tag.putFloat("rotationAngle", rotationAngle);
@@ -486,10 +486,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         tag.put("Items", itemHandler.serializeNBT());
         tag.putInt("forceMult", forceMult);
 
-        ListNBT tagList = new ListNBT();
+        ListTag tagList = new ListTag();
         for (ItemEntity entity : trackedItems) {
             UUID uuid = entity.getUUID();
-            CompoundNBT t = new CompoundNBT();
+            CompoundTag t = new CompoundTag();
             t.putLong("UUIDMost", uuid.getMostSignificantBits());
             t.putLong("UUIDLeast", uuid.getLeastSignificantBits());
             tagList.add(t);
@@ -502,13 +502,11 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             tag.putInt("inventoryZ", lastInsertingInventory.getZ());
             tag.putByte("inventorySide", (byte) lastInsertingInventorySide.get3DDataValue());
         }
-
-        return tag;
     }
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerAirCannon(i, playerInventory, getBlockPos());
     }
 
@@ -518,7 +516,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     private class AirCannonStackHandler extends BaseItemStackHandler {
-        AirCannonStackHandler(TileEntity te) {
+        AirCannonStackHandler(BlockEntity te) {
             super(te, INVENTORY_SIZE);
         }
 
@@ -541,7 +539,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag)) {
             if (rsController.getCurrentMode() == 2 && getUpgrades(EnumUpgrade.BLOCK_TRACKER) == 0) {
                 rsController.setCurrentMode(0);
@@ -551,18 +549,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         int oldForceMult = forceMult;
         switch (tag) {
-            case "--":
-                forceMult = Math.max(forceMult - 10, 0);
-                break;
-            case "-":
-                forceMult = Math.max(forceMult - 1, 0);
-                break;
-            case "+":
-                forceMult = Math.min(forceMult + 1, 100);
-                break;
-            case "++":
-                forceMult = Math.min(forceMult + 10, 100);
-                break;
+            case "--" -> forceMult = Math.max(forceMult - 10, 0);
+            case "-" -> forceMult = Math.max(forceMult - 1, 0);
+            case "+" -> forceMult = Math.min(forceMult + 1, 100);
+            case "++" -> forceMult = Math.min(forceMult + 10, 100);
         }
         if (forceMult != oldForceMult) updateDestination();
     }
@@ -584,7 +574,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         if (itemHandler.getStackInSlot(CANNON_SLOT).isEmpty())
             return true;
 
-        TileEntity te = getLevel().getBlockEntity(lastInsertingInventory);
+        BlockEntity te = nonNullLevel().getBlockEntity(lastInsertingInventory);
         return IOHelper.getInventoryForTE(te, lastInsertingInventorySide).map(inv -> {
             ItemStack remainder = ItemHandlerHelper.insertItem(inv, itemHandler.getStackInSlot(CANNON_SLOT).copy(), true);
             insertingInventoryHasSpace = remainder.isEmpty();
@@ -607,9 +597,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             if (launchedEntity == null) {
                 shootingInventory = true;
                 launchedEntity = getPayloadEntity();
-                if (launchedEntity instanceof TNTEntity) {
-                    ((TNTEntity) launchedEntity).setFuse(400); // long fuse, but will explode on contact
-                    trackedTNT.add((TNTEntity) launchedEntity);
+                if (launchedEntity instanceof PrimedTnt) {
+                    ((PrimedTnt) launchedEntity).setFuse(400); // long fuse, but will explode on contact
+                    trackedTNT.add((PrimedTnt) launchedEntity);
                 }
                 if (launchedEntity instanceof ItemEntity) {
                     itemHandler.setStackInSlot(CANNON_SLOT, ItemStack.EMPTY);
@@ -620,8 +610,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                 } else {
                     itemHandler.extractItem(CANNON_SLOT, 1, false);
                 }
-            } else if (launchedEntity instanceof PlayerEntity) {
-                ServerPlayerEntity entityplayermp = (ServerPlayerEntity) launchedEntity;
+            } else if (launchedEntity instanceof Player) {
+                ServerPlayer entityplayermp = (ServerPlayer) launchedEntity;
                 if (entityplayermp.connection.getConnection().isConnected()) {
                     // This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
                     // triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
@@ -632,8 +622,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             }
 
             ItemLaunching.launchEntity(launchedEntity,
-                    new Vector3d(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 1.8D, getBlockPos().getZ() + 0.5D),
-                    new Vector3d(velocity[0], velocity[1], velocity[2]),
+                    new Vec3(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 1.8D, getBlockPos().getZ() + 0.5D),
+                    new Vec3(velocity[0], velocity[1], velocity[2]),
                     shootingInventory);
             return true;
         } else {
@@ -653,10 +643,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         return e;
     }
 
-    private PlayerEntity getFakePlayer() {
+    private Player getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((ServerWorld) getLevel(), new GameProfile(FP_UUID, FP_NAME));
-            fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
+            fakePlayer = FakePlayerFactory.get((ServerLevel) getLevel(), new GameProfile(FP_UUID, FP_NAME));
             fakePlayer.setPos(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
         }
         return fakePlayer;
@@ -667,7 +656,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private Entity getCloseEntityIfUpgraded() {
         int entityUpgrades = Math.min(5, getUpgrades(EnumUpgrade.ENTITY_TRACKER));
         if (entityUpgrades > 0) {
-            List<LivingEntity> entities = getLevel().getEntitiesOfClass(LivingEntity.class, new AxisAlignedBB(getBlockPos()).inflate(entityUpgrades));
+            List<LivingEntity> entities = nonNullLevel().getEntitiesOfClass(LivingEntity.class, new AABB(getBlockPos()).inflate(entityUpgrades));
             if (!entities.isEmpty()) {
                 entities.sort(new EntityDistanceComparator(getBlockPos()));
                 return entities.get(0);
@@ -753,7 +742,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public IFormattableTextComponent getRedstoneTabTitle() {
+    public MutableComponent getRedstoneTabTitle() {
         return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.fireUpon");
     }
 

@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.client.gui.semiblock;
 
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetLiquidFilter;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidFilter;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.level.material.Fluid;
 
 public class GuiLogisticsLiquidFilter extends GuiProgWidgetLiquidFilter {
     private final Screen parentScreen;

@@ -17,19 +17,19 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.Path;
 
 public class RenderNavigator {
     private final BlockPos targetPos;
@@ -43,8 +43,8 @@ public class RenderNavigator {
     }
 
     public void updatePath() {
-        PlayerEntity player = Minecraft.getInstance().player;
-        MobEntity e = PneumaticCraftUtils.createDummyEntity(player);
+        Player player = Minecraft.getInstance().player;
+        Mob e = PneumaticCraftUtils.createDummyEntity(player);
         e.setOnGround(player.isOnGround());
         path = e.getNavigation().createPath(targetPos, 1);
         // TODO: this just doesn't work anymore
@@ -53,7 +53,7 @@ public class RenderNavigator {
         }
     }
 
-    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, boolean wirePath, boolean xRayEnabled, float partialTicks) {
+    public void render(PoseStack matrixStack, MultiBufferSource buffer, boolean wirePath, boolean xRayEnabled, float partialTicks) {
         if (path == null) return;
 
         boolean hasDestinationPath = tracedToDestination();
@@ -69,20 +69,20 @@ public class RenderNavigator {
 //                GL11.glEnable(GL11.GL_LINE_STIPPLE);
 //                GL11.glLineStipple(2, (short) 0x00FF);
 //            }
-            IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, false));
+            VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, false));
             for (int i = 1; i < path.getNodeCount(); i++) {
                 float red = 1;
                 if (path.getNodeCount() - i < 200) {
                     red = (path.getNodeCount() - i) * 0.005F;
                 }
-                PathPoint lastPoint = path.getNode(i - 1);
-                PathPoint pathPoint = path.getNode(i);
+                Node lastPoint = path.getNode(i - 1);
+                Node pathPoint = path.getNode(i);
                 builder.vertex(posMat, lastPoint.x + 0.5F, lastPoint.y, lastPoint.z + 0.5F).color(red, 1 - red, 0, 0.5f).endVertex();
                 builder.vertex(posMat, (lastPoint.x + pathPoint.x) / 2F + 0.5F, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2F + 0.5F).color(red, 1 - red, 0, 0.5f).endVertex();
                 builder.vertex(posMat, pathPoint.x + 0.5F, pathPoint.y, pathPoint.z + 0.5F).color(red, 1 - red, 0, 0.5f).endVertex();
             }
         } else {
-            IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, true));
+            VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, true));
             if (hasDestinationPath) {
                 if (alphaValue > 0.2F) alphaValue -= 0.005F;
             } else {
@@ -99,7 +99,7 @@ public class RenderNavigator {
                 if (path.getNodeCount() - i < 200) {
                     red = (path.getNodeCount() - i) * 0.005F;
                 }
-                PathPoint pathPoint = path.getNode(i);
+                Node pathPoint = path.getNode(i);
                 builder.vertex(posMat, pathPoint.x, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
                 builder.vertex(posMat, pathPoint.x, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
                 builder.vertex(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
@@ -112,7 +112,7 @@ public class RenderNavigator {
 
     public boolean tracedToDestination() {
         if (path == null) return false;
-        PathPoint finalPoint = path.getEndNode();
+        Node finalPoint = path.getEndNode();
         return finalPoint != null && targetPos.equals(new BlockPos(finalPoint.x, finalPoint.y, finalPoint.z));
     }
 }

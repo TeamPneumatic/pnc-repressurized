@@ -18,13 +18,14 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WidgetList<T> extends Widget implements ITooltipProvider {
+public class WidgetList<T> extends AbstractWidget implements ITooltipProvider {
     @Nonnull
     private final Consumer<WidgetList<T>> pressable;
     private final List<T> items = new ArrayList<>();
@@ -50,7 +51,7 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
     }
 
     public WidgetList(int xIn, int yIn, int width, int height, @Nonnull Consumer<WidgetList<T>> pressable) {
-        super(xIn, yIn, width, height, StringTextComponent.EMPTY);
+        super(xIn, yIn, width, height, TextComponent.EMPTY);
 
         this.pressable = pressable;
     }
@@ -77,7 +78,7 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             drawList(matrixStack);
         }
@@ -135,7 +136,7 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
         return items.size();
     }
 
-    private void drawList(MatrixStack matrixStack) {
+    private void drawList(PoseStack matrixStack) {
         Minecraft mc = Minecraft.getInstance();
         int sf = mc.options.guiScale;
         int h = mc.font.lineHeight;
@@ -163,7 +164,7 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
         if (active) {
             long now = System.currentTimeMillis();
             int h = Minecraft.getInstance().font.lineHeight;
-            int newSel = MathHelper.clamp((int) (mouseY - this.y) / h, 0, items.size() - 1);
+            int newSel = Mth.clamp((int) (mouseY - this.y) / h, 0, items.size() - 1);
             doubleClicked = now - lastClick < 250 && newSel == selected;
             setSelected(newSel);
             lastClick = now;
@@ -172,7 +173,7 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
+    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
         if (toolTipType == ToolTipType.NONE) return;
 
         int h = Minecraft.getInstance().font.lineHeight;
@@ -180,9 +181,13 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
         if (idx >= 0 && idx < items.size()) {
             String s = items.get(idx).toString();
             if (toolTipType == ToolTipType.ALWAYS || Minecraft.getInstance().font.width(s) * 3 / 4 > width) {
-                curTip.add(new StringTextComponent(s));
+                curTip.add(new TextComponent(s));
             }
         }
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 
     public enum ToolTipType {

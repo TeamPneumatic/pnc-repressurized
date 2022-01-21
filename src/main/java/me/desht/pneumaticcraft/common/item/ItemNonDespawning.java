@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -47,7 +47,7 @@ public class ItemNonDespawning extends Item {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> curInfo, TooltipFlag moreInfo) {
         super.appendHoverText(stack, worldIn, curInfo, moreInfo);
         curInfo.add(xlate("pneumaticcraft.gui.tooltip.doesNotDespawn"));
     }

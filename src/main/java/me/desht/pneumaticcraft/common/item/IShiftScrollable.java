@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 
 public interface IShiftScrollable {
     /**
@@ -28,5 +28,5 @@ public interface IShiftScrollable {
      * @param forward true if the mouse wheel was rotated up, false if rotated down
      * @param hand
      */
-    void onShiftScrolled(PlayerEntity player, boolean forward, Hand hand);
+    void onShiftScrolled(Player player, boolean forward, InteractionHand hand);
 }

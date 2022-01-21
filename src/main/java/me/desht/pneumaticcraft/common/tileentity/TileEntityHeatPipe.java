@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -40,8 +40,8 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
 
     private BlockState camoState;
 
-    public TileEntityHeatPipe() {
-        super(ModTileEntities.HEAT_PIPE.get());
+    public TileEntityHeatPipe(BlockPos pos, BlockState state) {
+        super(ModTileEntities.HEAT_PIPE.get(), pos, state);
     }
 
     @Override
@@ -55,16 +55,18 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     }
 
     @Override
-    public BiPredicate<IWorld, BlockPos> heatExchangerBlockFilter() {
+    public BiPredicate<LevelAccessor, BlockPos> heatExchangerBlockFilter() {
         // heat pipes don't connect to air or fluids
-        return (world, pos) -> !world.isEmptyBlock(pos) && !(world.getBlockState(pos).getBlock() instanceof FlowingFluidBlock);
+        return (world, pos) -> !world.isEmptyBlock(pos) && !(world.getBlockState(pos).getBlock() instanceof LiquidBlock);
     }
 
     @Override
-    protected void onFirstServerTick() {
-        super.onFirstServerTick();
+    public void onLoad() {
+        super.onLoad();
 
-        updateConnections();
+        if (!nonNullLevel().isClientSide) {
+            updateConnections();
+        }
     }
 
     @Override
@@ -85,18 +87,18 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
                 changed = true;
             }
         }
-        if (changed) level.setBlockAndUpdate(worldPosition, state);
+        if (changed) nonNullLevel().setBlockAndUpdate(worldPosition, state);
     }
 
     @Override
-    public void writeToPacket(CompoundNBT tag) {
+    public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
         ICamouflageableTE.writeCamo(tag, camoState);
     }
 
     @Override
-    public void readFromPacket(CompoundNBT tag) {
+    public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
         camoState = ICamouflageableTE.readCamo(tag);

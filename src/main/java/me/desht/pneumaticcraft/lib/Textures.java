@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.lib;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class Textures {
     static final String ICON_LOCATION = Names.MOD_ID + ":";

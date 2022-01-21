@@ -28,21 +28,23 @@ import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.ThreadedSorter;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.ICollisionReader;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.CollisionGetter;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
+import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> extends Goal {
     private static final int MAX_LOOKUPS_PER_SEARCH = 30;
@@ -53,7 +55,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private final Ordering order;
     private BlockPos curPos;
     private final List<BlockPos> area;
-    final ICollisionReader worldCache;
+    final CollisionGetter worldCache;
     private final List<BlockPos> blacklist = new ArrayList<>(); //a list of position which weren't allowed to be dug in the past.
     private int curY;
     private int lastSuccessfulY;
@@ -77,7 +79,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         area = progWidget.getCachedAreaList();
         worldCache = progWidget.getChunkCache(drone.world());
 
-        AxisAlignedBB extents = progWidget.getAreaExtents();
+        AABB extents = progWidget.getAreaExtents();
         if (area.size() > 0) {
             minY = (int) extents.minY;
             maxY = (int) extents.maxY;
@@ -207,7 +209,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 if (respectClaims()) {
                     DroneClaimManager.getInstance(drone.world()).claim(curPos);
                 }
-                double distSq = drone.getDronePos().distanceToSqr(Vector3d.atCenterOf(curPos));
+                double distSq = drone.getDronePos().distanceToSqr(Vec3.atCenterOf(curPos));
                 if (!moveToPositions() || distSq < (moveIntoBlock() ? 1 : 4)) {  // 1 or 2 blocks
                     return doBlockInteraction(curPos, distSq);
                 }
@@ -241,10 +243,10 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         return false;
     }
 
-    private boolean blockAllowsMovement(ICollisionReader world, BlockPos pos, BlockState state) {
-        return state.getBlock() instanceof FlowingFluidBlock ?
-                drone.canMoveIntoFluid(((FlowingFluidBlock) state.getBlock()).getFluid()) :
-                world.getBlockState(pos).isPathfindable(world, pos, PathType.AIR);
+    private boolean blockAllowsMovement(CollisionGetter world, BlockPos pos, BlockState state) {
+        return state.getBlock() instanceof LiquidBlock ?
+                drone.canMoveIntoFluid(((LiquidBlock) state.getBlock()).getFluid()) :
+                world.getBlockState(pos).isPathfindable(world, pos, PathComputationType.AIR);
     }
 
     private boolean movedToBlockOK(BlockPos pos) {
@@ -288,11 +290,11 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
      */
     private void indicateToListeningPlayers(List<BlockPos> pos) {
         if (!pos.isEmpty()) {
-            for (ServerPlayerEntity player : drone.getDebugger().getDebuggingPlayers()) {
+            for (ServerPlayer player : drone.getDebugger().getDebuggingPlayers()) {
                 if (player.distanceToSqr(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < DRONE_DEBUG_PARTICLE_RANGE_SQ) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)
-                            && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0) {
+                            && handler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0) {
                         NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), player);
                     }
                 }

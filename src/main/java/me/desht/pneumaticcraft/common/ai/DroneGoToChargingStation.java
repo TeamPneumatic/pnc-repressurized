@@ -26,8 +26,8 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -56,7 +56,7 @@ public class DroneGoToChargingStation extends Goal {
                 int maxDistSq = ConfigHelper.common().advanced.maxDroneChargingStationSearchRange.get()
                         * ConfigHelper.common().advanced.maxDroneChargingStationSearchRange.get();
                 for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
-                    if (station.getLevel() == drone.level && drone.distanceToSqr(Vector3d.atCenterOf(station.getBlockPos())) <= maxDistSq) {
+                    if (station.getLevel() == drone.level && drone.distanceToSqr(Vec3.atCenterOf(station.getBlockPos())) <= maxDistSq) {
                         if (DroneClaimManager.getInstance(drone.level).isClaimed(station.getBlockPos())) {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", station.getBlockPos());
                         } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {

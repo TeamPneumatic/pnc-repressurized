@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -29,11 +29,11 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +43,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThermalCompressor, TileEntityThermalCompressor> {
     private final WidgetTemperatureSided[] tempWidgets = new WidgetTemperatureSided[4];
 
-    public GuiThermalCompressor(ContainerThermalCompressor container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiThermalCompressor(ContainerThermalCompressor container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -52,7 +52,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         super.init();
 
         for (Direction d : DirectionUtil.HORIZONTALS) {
-            addButton(tempWidgets[d.get2DDataValue()] = new WidgetTemperatureSided(d).setDrawText(false));
+            addRenderableWidget(tempWidgets[d.get2DDataValue()] = new WidgetTemperatureSided(d).setDrawText(false));
         }
     }
 
@@ -75,18 +75,18 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     }
 
     @Override
-    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+    protected void addPressureStatInfo(List<Component> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 
         double prod = te.airProduced(Direction.NORTH) + te.airProduced(Direction.EAST);
         if (prod > 0 && te.getRedstoneController().shouldRun()) {
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.producingAir",
-                    PneumaticCraftUtils.roundNumberTo(prod, 1)).withStyle(TextFormatting.BLACK));
+                    PneumaticCraftUtils.roundNumberTo(prod, 1)).withStyle(ChatFormatting.BLACK));
         }
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
         if (getTemperatureDifferential(Direction.NORTH) < 10 && getTemperatureDifferential(Direction.EAST) < 10) {
@@ -95,7 +95,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> curInfo) {
+    protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
 
         int dns = getTemperatureDifferential(Direction.NORTH);
@@ -106,8 +106,8 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
         for (Direction d : DirectionUtil.HORIZONTALS) {
@@ -159,12 +159,12 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         }
 
         @Override
-        public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
+        public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
             curTip.add(HeatUtil.formatHeatString(side, getTemperature()));
         }
 
         @Override
-        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 
             String s = side.toString().substring(0, 1).toUpperCase();

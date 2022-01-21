@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteOptionBase;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -37,9 +37,9 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     }
 
     @Override
-    public CompoundNBT toNBT(int guiLeft, int guiTop) {
-        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
-        tag.putString("text", ITextComponent.Serializer.toJson(widget.getMessage()));
+    public CompoundTag toNBT(int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(guiLeft, guiTop);
+        tag.putString("text", Component.Serializer.toJson(widget.getMessage()));
         tag.putInt("x", widget.x - guiLeft);
         tag.putInt("y", widget.y - guiTop);
         tag.put("tooltip", NBTUtils.serializeTextComponents(widget.getTooltip()));
@@ -47,10 +47,10 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         widget = new WidgetLabelVariable(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, deserializeTextComponent(tag.getString("text")));
-        widget.setTooltip(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Constants.NBT.TAG_STRING)));
+        widget.setTooltip(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Tag.TAG_STRING)));
     }
 
     @Override
@@ -59,12 +59,12 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     }
 
     @Override
-    public void setText(ITextComponent text) {
+    public void setText(Component text) {
         widget.setMessage(text);
     }
 
     @Override
-    public ITextComponent getText() {
+    public Component getText() {
         return widget.getMessage();
     }
 
@@ -80,12 +80,12 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     }
 
     @Override
-    public void setTooltip(List<ITextComponent> text) {
+    public void setTooltip(List<Component> text) {
         widget.setTooltip(text);
     }
 
     @Override
-    public List<ITextComponent> getTooltip() {
+    public List<Component> getTooltip() {
         return widget.getTooltip();
     }
 }

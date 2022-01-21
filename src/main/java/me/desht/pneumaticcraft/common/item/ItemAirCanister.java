@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public abstract class ItemAirCanister extends ItemPressurizable {
     private ItemAirCanister(int maxAir, int volume) {

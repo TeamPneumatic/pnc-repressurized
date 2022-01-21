@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -36,28 +36,28 @@ public class PacketShiftScrollWheel {
     private final boolean forward;
     private final boolean mainHand;
 
-    public PacketShiftScrollWheel(boolean forward, Hand mainHand) {
+    public PacketShiftScrollWheel(boolean forward, InteractionHand mainHand) {
         this.forward = forward;
-        this.mainHand = mainHand == Hand.MAIN_HAND;
+        this.mainHand = mainHand == InteractionHand.MAIN_HAND;
     }
 
-    public PacketShiftScrollWheel(PacketBuffer buf) {
+    public PacketShiftScrollWheel(FriendlyByteBuf buf) {
         this.forward = buf.readBoolean();
         this.mainHand = buf.readBoolean();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeBoolean(forward);
         buf.writeBoolean(mainHand);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             if (player != null) {
                 ItemStack stack = player.getMainHandItem();
                 if (stack.getItem() instanceof IShiftScrollable) {
-                    ((IShiftScrollable) stack.getItem()).onShiftScrolled(player, forward, mainHand ? Hand.MAIN_HAND : Hand.OFF_HAND);
+                    ((IShiftScrollable) stack.getItem()).onShiftScrolled(player, forward, mainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
                 }
             }
         });

@@ -19,15 +19,18 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerAdvancedLiquidCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
@@ -38,8 +41,8 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
-    public TileEntityAdvancedLiquidCompressor() {
-        super(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR.get(), 20, 25, 10000);
+    public TileEntityAdvancedLiquidCompressor(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, 10000);
         heatExchanger.setThermalCapacity(100);
     }
 
@@ -60,7 +63,7 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerAdvancedLiquidCompressor(i, playerInventory, getBlockPos());
     }
 

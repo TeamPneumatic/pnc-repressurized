@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Implement this for items that can get programmed in a Programmer.

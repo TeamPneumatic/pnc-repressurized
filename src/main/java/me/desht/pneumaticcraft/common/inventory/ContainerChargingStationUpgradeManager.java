@@ -22,22 +22,22 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class ContainerChargingStationUpgradeManager extends ContainerPneumaticBase<TileEntityChargingStation> {
 
-    private ContainerChargingStationUpgradeManager(ContainerType type, int windowId, PlayerInventory inv, PacketBuffer data) {
+    private ContainerChargingStationUpgradeManager(MenuType type, int windowId, Inventory inv, FriendlyByteBuf data) {
         this(type, windowId, inv, getTilePos(data));
     }
 
-    public ContainerChargingStationUpgradeManager(ContainerType type, int windowId, PlayerInventory inventoryPlayer, BlockPos pos) {
+    public ContainerChargingStationUpgradeManager(MenuType type, int windowId, Inventory inventoryPlayer, BlockPos pos) {
         super(type, windowId, inventoryPlayer, pos);
 
         for (int i = 0; i < 3; i++) {
@@ -49,23 +49,23 @@ public class ContainerChargingStationUpgradeManager extends ContainerPneumaticBa
         addPlayerSlots(inventoryPlayer, 100);
     }
 
-    public static ContainerChargingStationUpgradeManager createMinigunContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
+    public static ContainerChargingStationUpgradeManager createMinigunContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
         return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_MINIGUN.get(), windowId, inv, data);
     }
 
-    public static ContainerChargingStationUpgradeManager createDroneContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
+    public static ContainerChargingStationUpgradeManager createDroneContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
         return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_DRONE.get(), windowId, inv, data);
     }
 
-    public static ContainerChargingStationUpgradeManager createArmorContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
+    public static ContainerChargingStationUpgradeManager createArmorContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
         return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_ARMOR.get(), windowId, inv, data);
     }
 
-    public static ContainerChargingStationUpgradeManager createJackhammerContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
+    public static ContainerChargingStationUpgradeManager createJackhammerContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
         return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_JACKHAMMER.get(), windowId, inv, data);
     }
 
-    public static ContainerChargingStationUpgradeManager createAmadronContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
+    public static ContainerChargingStationUpgradeManager createAmadronContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
         return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_AMADRON.get(), windowId, inv, data);
     }
 

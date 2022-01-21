@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.entity.item.PaintingType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.Motive;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -39,35 +39,35 @@ public class HackablePainting implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
+    public boolean canHack(Entity entity, Player player) {
         return true;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("Hack to change artwork"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("Artwork changed!"));
     }
 
     @Override
-    public int getHackTime(Entity entity, PlayerEntity player) {
+    public int getHackTime(Entity entity, Player player) {
         return 40;
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
-        PaintingType art = ((PaintingEntity) entity).motive;
-        List<PaintingType> candidate = new ArrayList<>();
-        for (PaintingType a : ForgeRegistries.PAINTING_TYPES.getValues()) {
+    public void onHackFinished(Entity entity, Player player) {
+        Motive art = ((Painting) entity).motive;
+        List<Motive> candidate = new ArrayList<>();
+        for (Motive a : ForgeRegistries.PAINTING_TYPES.getValues()) {
             if (a.getHeight() == art.getHeight() && a.getWidth() == art.getWidth()) {
                 candidate.add(a);
             }
         }
-        ((PaintingEntity) entity).motive = candidate.get(entity.level.random.nextInt(candidate.size()));
+        ((Painting) entity).motive = candidate.get(entity.level.random.nextInt(candidate.size()));
     }
 
     @Override

@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Blo
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

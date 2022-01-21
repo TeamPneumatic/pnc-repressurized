@@ -19,16 +19,16 @@ package me.desht.pneumaticcraft.common.config.subconfig;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.storage.FolderName;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 
 public class AuxConfigHandler {
-    private static final FolderName FOLDER = new FolderName(Names.MOD_ID);
+    private static final LevelResource FOLDER = new LevelResource(Names.MOD_ID);
 
     private static final IAuxConfig[] EXTERNAL_CONFIGS = new IAuxConfig[] {
             AmadronPlayerOffers.INSTANCE,

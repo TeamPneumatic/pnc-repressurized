@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -53,7 +53,7 @@ public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
             @Override
             protected boolean evaluate(BlockPos pos) {
-                TileEntity te = drone.world().getBlockEntity(pos);
+                BlockEntity te = drone.world().getBlockEntity(pos);
                 if (te == null) return false;
                 int energy = 0;
                 for (Direction face : DirectionUtil.VALUES) {
@@ -65,7 +65,7 @@ public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
                 return ((ICondition) progWidget).getOperator().evaluate(energy,((ICondition) progWidget).getRequiredCount());
             }
 
-            private int getEnergy(TileEntity te, Direction side) {
+            private int getEnergy(BlockEntity te, Direction side) {
                 return te.getCapability(CapabilityEnergy.ENERGY, side).map(IEnergyStorage::getEnergyStored).orElse(0);
             }
         };

@@ -20,16 +20,21 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCompressedIronBlock;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
-public class BlockCompressedIron extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
-
+public class BlockCompressedIron extends BlockPneumaticCraft
+        implements ColorHandlers.IHeatTintable, EntityBlockPneumaticCraft, IBlockComparatorSupport
+{
     public BlockCompressedIron() {
         super(ModBlocks.defaultProps());
     }
 
+    @Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityCompressedIronBlock.class;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityCompressedIronBlock(pPos, pState);
     }
 }

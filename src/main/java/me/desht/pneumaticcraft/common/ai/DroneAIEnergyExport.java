@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -46,7 +46,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
         if (energy == 0) {
             abort();
         } else {
-            TileEntity te = drone.world().getBlockEntity(pos);
+            BlockEntity te = drone.world().getBlockEntity(pos);
             if (te != null) {
                 for (Direction face : DirectionUtil.VALUES) {
                     if (progWidget.isSideSelected(face)) {
@@ -59,7 +59,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
         return didWork;
     }
 
-    private boolean tryExportToSide(TileEntity te, Direction face, boolean simulate) {
+    private boolean tryExportToSide(BlockEntity te, Direction face, boolean simulate) {
         return te.getCapability(CapabilityEnergy.ENERGY, face).map(tileHandler -> {
             int receivable = tileHandler.receiveEnergy(progWidget.useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
             int toTransfer = extractFromDrone(receivable, true);

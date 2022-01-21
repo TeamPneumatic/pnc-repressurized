@@ -17,28 +17,33 @@
 
 package me.desht.pneumaticcraft.common.heat;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class HeatExtractionTracker extends WorldSavedData {
+public class HeatExtractionTracker extends SavedData {
     private static final String DATA_NAME = "PneumaticCraftHeatExtraction";
 
     private final Map<BlockPos, Double> extracted = new HashMap<>();
 
     private HeatExtractionTracker() {
-        super(DATA_NAME);
     }
 
-    public static HeatExtractionTracker getInstance(World world) {
-        return ((ServerWorld) world).getDataStorage().computeIfAbsent(HeatExtractionTracker::new, DATA_NAME);
+    public static HeatExtractionTracker getInstance(Level world) {
+        return ((ServerLevel) world).getDataStorage().computeIfAbsent(HeatExtractionTracker::load, HeatExtractionTracker::new, DATA_NAME);
+    }
+
+    private static HeatExtractionTracker load(CompoundTag tag) {
+        HeatExtractionTracker tracker = new HeatExtractionTracker();
+        tracker.readNBT(tag);
+        return tracker;
     }
 
     public double getHeatExtracted(BlockPos pos) {
@@ -55,23 +60,22 @@ public class HeatExtractionTracker extends WorldSavedData {
         setDirty();
     }
 
-    @Override
-    public void load(CompoundNBT nbt) {
+    private void readNBT(CompoundTag nbt) {
         extracted.clear();
 
-        ListNBT list = nbt.getList("extracted", Constants.NBT.TAG_COMPOUND);
+        ListTag list = nbt.getList("extracted", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
-            CompoundNBT sub = list.getCompound(i);
+            CompoundTag sub = list.getCompound(i);
             BlockPos pos = new BlockPos(sub.getInt("x"), sub.getInt("y"), sub.getInt("z"));
             extracted.put(pos, sub.getDouble("heat"));
         }
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound) {
-        ListNBT list = new ListNBT();
+    public CompoundTag save(CompoundTag compound) {
+        ListTag list = new ListTag();
         extracted.forEach((pos, heat) -> {
-            CompoundNBT sub = new CompoundNBT();
+            CompoundTag sub = new CompoundTag();
             sub.putInt("x", pos.getX());
             sub.putInt("y", pos.getY());
             sub.putInt("z", pos.getZ());

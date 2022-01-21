@@ -24,8 +24,11 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -37,12 +40,12 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     @DescSynced
     protected final SyncedTemperature syncedTemperature = new SyncedTemperature(heatExchanger);
 
-    public TileEntityCompressedIronBlock() {
-        this(ModTileEntities.COMPRESSED_IRON_BLOCK.get());
+    public TileEntityCompressedIronBlock(BlockPos pos, BlockState state) {
+        this(ModTileEntities.COMPRESSED_IRON_BLOCK.get(), pos, state);
     }
 
-    TileEntityCompressedIronBlock(TileEntityType type) {
-        super(type);
+    TileEntityCompressedIronBlock(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
 
         heatExchanger.setThermalCapacity(10);
     }
@@ -53,17 +56,15 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!getLevel().isClientSide) {
-            syncedTemperature.tick();
+        syncedTemperature.tick();
 
-            int newComparatorOutput = HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
-            if (comparatorOutput != newComparatorOutput) {
-                comparatorOutput = newComparatorOutput;
-                level.updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
-            }
+        int newComparatorOutput = HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
+        if (comparatorOutput != newComparatorOutput) {
+            comparatorOutput = newComparatorOutput;
+            nonNullLevel().updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
         }
     }
 

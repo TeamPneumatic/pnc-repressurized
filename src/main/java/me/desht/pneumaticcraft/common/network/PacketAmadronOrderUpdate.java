@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -40,13 +40,13 @@ public class PacketAmadronOrderUpdate {
         this.sneaking = sneaking;
     }
 
-    public PacketAmadronOrderUpdate(PacketBuffer buffer) {
+    public PacketAmadronOrderUpdate(FriendlyByteBuf buffer) {
         orderId = buffer.readResourceLocation();
         mouseButton = buffer.readByte();
         sneaking = buffer.readBoolean();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeResourceLocation(orderId);
         buf.writeByte(mouseButton);
         buf.writeBoolean(sneaking);
@@ -54,7 +54,7 @@ public class PacketAmadronOrderUpdate {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             if (player != null && player.containerMenu instanceof ContainerAmadron) {
                 ((ContainerAmadron) player.containerMenu).clickOffer(orderId, mouseButton, sneaking, player);
             }

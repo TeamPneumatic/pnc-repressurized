@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
@@ -30,10 +30,10 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
@@ -47,7 +47,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     private WidgetTemperature widgetTemperature;
     private int nExposedFaces;
 
-    public GuiRefineryController(ContainerRefinery container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiRefineryController(ContainerRefinery container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 189;
@@ -58,21 +58,21 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
         super.init();
 
         widgetTemperature = new WidgetTemperature(leftPos + 32, topPos + 32, TemperatureRange.of(273, 673), 273, 50);
-        addButton(widgetTemperature);
+        addRenderableWidget(widgetTemperature);
 
-        addButton(new WidgetTank(leftPos + 8, topPos + 25, te.getInputTank()));
+        addRenderableWidget(new WidgetTank(leftPos + 8, topPos + 25, te.getInputTank()));
 
         int x = leftPos + 95;
         int y = topPos + 29;
 
         // "te" always refers to the master refinery; the bottom block of the stack
         outputs = new ArrayList<>();
-        TileEntity te1 = te.findAdjacentOutput();
+        BlockEntity te1 = te.findAdjacentOutput();
         if (te1 != null) {
             int i = 0;
             do {
                 TileEntityRefineryOutput teRO = (TileEntityRefineryOutput) te1;
-                if (outputs.size() < 4) addButton(new WidgetTank(x, y, te.outputsSynced[i++]));
+                if (outputs.size() < 4) addRenderableWidget(new WidgetTank(x, y, te.outputsSynced[i++]));
                 x += 20;
                 y -= 4;
                 outputs.add(teRO);
@@ -88,8 +88,8 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         if (te.maxTemp > te.minTemp && !te.getCurrentRecipeIdSynced().isEmpty()) {
             widgetTemperature.setOperatingRange(TemperatureRange.of(te.minTemp, te.maxTemp));
@@ -101,7 +101,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float f, int x, int y) {
+    protected void renderBg(PoseStack matrixStack, float f, int x, int y) {
         super.renderBg(matrixStack, f, x, y);
         if (outputs.size() < 4) {
             RenderSystem.enableBlend();
@@ -126,7 +126,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     }
 
     @Override
-    public void addProblems(List<ITextComponent> curInfo) {
+    public void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
         if (te.getHeatExchanger().getTemperatureAsInt() < te.minTemp) {
@@ -143,7 +143,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> curInfo) {
+    protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
 
         if (te.isBlocked()) {

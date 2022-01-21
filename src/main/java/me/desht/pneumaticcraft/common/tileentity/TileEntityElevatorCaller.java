@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityElevatorCaller extends TileEntityTickableBase implements ICamouflageableTE, IRedstoneControl<TileEntityElevatorCaller> {
@@ -33,8 +33,8 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     private BlockState camoState;
     private final RedstoneController<TileEntityElevatorCaller> rsController = new RedstoneController<>(this);
 
-    public TileEntityElevatorCaller() {
-        super(ModTileEntities.ELEVATOR_CALLER.get());
+    public TileEntityElevatorCaller(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ELEVATOR_CALLER.get(), pos, state);
     }
 
     public void setEmittingRedstone(boolean emittingRedstone) {
@@ -45,8 +45,9 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
+
         if (shouldUpdateNeighbors) {
             updateNeighbours();
             shouldUpdateNeighbors = false;
@@ -58,24 +59,23 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         emittingRedstone = tag.getBoolean("emittingRedstone");
         thisFloor = tag.getInt("thisFloor");
         shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putBoolean("emittingRedstone", emittingRedstone);
         tag.putInt("thisFloor", thisFloor);
         tag.putBoolean("shouldUpdateNeighbors", shouldUpdateNeighbors);
-        return tag;
     }
 
     @Override
-    public void readFromPacket(CompoundNBT tag) {
+    public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
         int floorAmount = tag.getInt("floors");
         floors = new ElevatorButton[floorAmount];
@@ -86,11 +86,11 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public void writeToPacket(CompoundNBT tag) {
+    public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
         tag.putInt("floors", floors.length);
         for (ElevatorButton floor : floors) {
-            tag.put("floor" + floor.floorNumber, floor.writeToNBT(new CompoundNBT()));
+            tag.put("floor" + floor.floorNumber, floor.writeToNBT(new CompoundTag()));
         }
         ICamouflageableTE.writeCamo(tag, camoState);
     }
@@ -120,8 +120,8 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
+    public AABB getRenderBoundingBox() {
+        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
             this.buttonText = floorNumber + 1 + "";
         }
 
-        ElevatorButton(CompoundNBT tag) {
+        ElevatorButton(CompoundTag tag) {
             this.posX = tag.getFloat("posX");
             this.posY = tag.getFloat("posY");
             this.width = tag.getFloat("width");
@@ -176,7 +176,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
             this.blue = blue;
         }
 
-        public CompoundNBT writeToNBT(CompoundNBT tag) {
+        public CompoundTag writeToNBT(CompoundTag tag) {
             tag.putFloat("posX", posX);
             tag.putFloat("posY", posY);
             tag.putFloat("width", width);

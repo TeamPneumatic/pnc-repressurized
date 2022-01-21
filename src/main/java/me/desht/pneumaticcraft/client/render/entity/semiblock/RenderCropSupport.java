@@ -1,32 +1,32 @@
-package me.desht.pneumaticcraft.client.render.entity;
+package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelCropSupport;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityCropSupport;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
 
 public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
-    public static final IRenderFactory<EntityCropSupport> FACTORY = RenderCropSupport::new;
+    private final ModelCropSupport model;
 
-    private final ModelCropSupport model = new ModelCropSupport();
+    public RenderCropSupport(EntityRendererProvider.Context ctx) {
+        super(ctx);
 
-    private RenderCropSupport(EntityRendererManager renderManager) {
-        super(renderManager);
+        model = new ModelCropSupport(ctx.bakeLayer(PNCModelLayers.CROP_SUPPORT));
     }
 
     @Override
-    public void render(EntityCropSupport entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
-        AxisAlignedBB aabb = entityIn.getBoundingBox();
+    public void render(EntityCropSupport entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
+        AABB aabb = entityIn.getBoundingBox();
 
         matrixStackIn.pushPose();
 

@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -32,7 +32,7 @@ public class PacketAmadronTradeRemoved extends PacketAbstractAmadronTrade {
         super(offer);
     }
 
-    public PacketAmadronTradeRemoved(PacketBuffer buffer) {
+    public PacketAmadronTradeRemoved(FriendlyByteBuf buffer) {
         super(buffer);
     }
 

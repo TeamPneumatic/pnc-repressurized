@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -42,17 +42,17 @@ public class PacketHackingEntityFinish {
         entityId = entity.getId();
     }
 
-    public PacketHackingEntityFinish(PacketBuffer buffer) {
+    public PacketHackingEntityFinish(FriendlyByteBuf buffer) {
         this.entityId = buffer.readInt();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(entityId);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = ClientUtils.getClientPlayer();
+            Player player = ClientUtils.getClientPlayer();
             Entity entity = player.level.getEntity(entityId);
             if (entity != null) {
                 IHackableEntity hackableEntity = HackManager.getHackableForEntity(entity, player);

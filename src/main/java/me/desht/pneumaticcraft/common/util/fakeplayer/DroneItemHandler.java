@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -106,7 +106,7 @@ public class DroneItemHandler extends ItemStackHandler {
     public void copyFromFakePlayer() {
         if (!fakePlayerReady) return;
 
-        PlayerInventory fakeInv = holder.getFakePlayer().inventory;
+        Inventory fakeInv = holder.getFakePlayer().getInventory();
         for (int slot = 1; slot < fakeInv.getContainerSize(); slot++) {
             ItemStack stack = fakeInv.getItem(slot);
             if (!stack.isEmpty()) {
@@ -134,21 +134,21 @@ public class DroneItemHandler extends ItemStackHandler {
 
         // As it stands, drone inv can't go above 36 items (max 35 inv upgrades),
         // but let's be paranoid here
-        if (slot >= fakePlayer.inventory.items.size()) return;
+        if (slot >= fakePlayer.getInventory().items.size()) return;
 
         // not a copy: any changes to items in the fake player should also be reflected in the drone's item handler
         ItemStack newStack = getStackInSlot(slot);
 
-        fakePlayer.inventory.items.set(slot, newStack);
-        if (slot == fakePlayer.inventory.selected) {
+        fakePlayer.getInventory().items.set(slot, newStack);
+        if (slot == fakePlayer.getInventory().selected) {
             // currentItem is always 0 but we'll use that rather than a literal 0
             // maybe one day drones will be able to change their current held-item slot
-            fakePlayer.setItemInHand(Hand.MAIN_HAND, newStack);
+            fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, newStack);
             if (!prevHeldStack.isEmpty()) {
-                fakePlayer.getAttributes().removeAttributeModifiers(prevHeldStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
+                fakePlayer.getAttributes().removeAttributeModifiers(prevHeldStack.getAttributeModifiers(EquipmentSlot.MAINHAND));
             }
             if (!newStack.isEmpty()) {
-                fakePlayer.getAttributes().addTransientAttributeModifiers(newStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
+                fakePlayer.getAttributes().addTransientAttributeModifiers(newStack.getAttributeModifiers(EquipmentSlot.MAINHAND));
             }
             prevHeldStack = newStack.copy();
         }

@@ -31,12 +31,12 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticsModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -104,7 +104,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public CompoundNBT writeToNBT(CompoundNBT nbt) {
+    public CompoundTag writeToNBT(CompoundTag nbt) {
         super.writeToNBT(nbt);
         nbt.putBoolean("powered", powered);
         nbt.putByte("colorChannel", (byte) colorChannel);
@@ -112,7 +112,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void readFromNBT(CompoundNBT nbt) {
+    public void readFromNBT(CompoundTag nbt) {
         super.readFromNBT(nbt);
         powered = nbt.getBoolean("powered");
         colorChannel = nbt.getByte("colorChannel");
@@ -129,7 +129,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public boolean onActivated(PlayerEntity player, Hand hand) {
+    public boolean onActivated(Player player, InteractionHand hand) {
         ItemStack heldStack = player.getItemInHand(hand);
         DyeColor color = DyeColor.getColor(player.getItemInHand(hand));
         if (color != null) {
@@ -147,54 +147,63 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void update() {
-        super.update();
-        if (cachedFrame != null && !cachedFrame.isValid()) cachedFrame = null;
-        if (!getTube().getLevel().isClientSide) {
-            if (powered != getTube().getPressure() >= ConfigHelper.common().logistics.minPressure.get()) {
-                powered = !powered;
-                NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
-            }
-            if (--ticksUntilNextCycle <= 0) {
-                LogisticsManager manager = new LogisticsManager();
-                Map<Integer, ModuleLogistics> frame2module = new Int2ObjectOpenHashMap<>();
-                for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getLevel()).getConnectedModules(this)) {
-                    if (module instanceof ModuleLogistics) {
-                        ModuleLogistics logistics = (ModuleLogistics) module;
-                        if (logistics.getColorChannel() == getColorChannel()) {
-                            // Make sure any connected module doesn't tick; set it to a 5 second timer.
-                            // This is also a penalty value when no task is executed this tick.
-                            // The timer will be reduced to 20 ticks later if the module does some work.
-                            logistics.ticksUntilNextCycle = 100;
-                            if (logistics.hasPower() && logistics.getFrame() != null) {
-                                // record the frame->module mapping and add the frame to the logistics manager
-                                frame2module.put(logistics.getFrame().getId(), logistics);
-                                manager.addLogisticFrame(logistics.getFrame());
-                            }
-                        }
-                    }
-                }
+    protected void tickCommon() {
+        super.tickCommon();
 
-                PriorityQueue<LogisticsTask> tasks = manager.getTasks(null, false);
-                for (LogisticsTask task : tasks) {
-                    if (task.isStillValid(task.transportingItem.isEmpty() ? task.transportingFluid : task.transportingItem)) {
-                        if (!task.transportingItem.isEmpty()) {
-                            handleItems(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task);
-                        } else {
-                            handleFluids(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task);
+        if (cachedFrame != null && !cachedFrame.isValid()) cachedFrame = null;
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (powered != getTube().getPressure() >= ConfigHelper.common().logistics.minPressure.get()) {
+            powered = !powered;
+            NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
+        }
+        if (--ticksUntilNextCycle <= 0) {
+            LogisticsManager manager = new LogisticsManager();
+            Map<Integer, ModuleLogistics> frame2module = new Int2ObjectOpenHashMap<>();
+            for (TubeModule module : ModuleNetworkManager.getInstance(getTube().nonNullLevel()).getConnectedModules(this)) {
+                if (module instanceof ModuleLogistics logistics) {
+                    if (logistics.getColorChannel() == getColorChannel()) {
+                        // Make sure any connected module doesn't tick; set it to a 5 second timer.
+                        // This is also a penalty value when no task is executed this tick.
+                        // The timer will be reduced to 20 ticks later if the module does some work.
+                        logistics.ticksUntilNextCycle = 100;
+                        if (logistics.hasPower() && logistics.getFrame() != null) {
+                            // record the frame->module mapping and add the frame to the logistics manager
+                            frame2module.put(logistics.getFrame().getId(), logistics);
+                            manager.addLogisticFrame(logistics.getFrame());
                         }
                     }
                 }
             }
-        } else {
-            if (ticksSinceAction >= 0) {
-                ticksSinceAction++;
-                if (ticksSinceAction > 3) ticksSinceAction = -1;
+
+            PriorityQueue<LogisticsTask> tasks = manager.getTasks(null, false);
+            for (LogisticsTask task : tasks) {
+                if (task.isStillValid(task.transportingItem.isEmpty() ? task.transportingFluid : task.transportingItem)) {
+                    if (!task.transportingItem.isEmpty()) {
+                        handleItems(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task);
+                    } else {
+                        handleFluids(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task);
+                    }
+                }
             }
-            if (ticksSinceNotEnoughAir >= 0) {
-                ticksSinceNotEnoughAir++;
-                if (ticksSinceNotEnoughAir > 20) ticksSinceNotEnoughAir = -1;
-            }
+        }
+    }
+
+    @Override
+    public void tickClient() {
+        super.tickClient();
+
+        if (ticksSinceAction >= 0) {
+            ticksSinceAction++;
+            if (ticksSinceAction > 3) ticksSinceAction = -1;
+        }
+        if (ticksSinceNotEnoughAir >= 0) {
+            ticksSinceNotEnoughAir++;
+            if (ticksSinceNotEnoughAir > 20) ticksSinceNotEnoughAir = -1;
         }
     }
 
@@ -283,7 +292,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void addInfo(List<ITextComponent> curInfo) {
+    public void addInfo(List<Component> curInfo) {
         super.addInfo(curInfo);
         String status;
         if (ticksSinceAction >= 0) {

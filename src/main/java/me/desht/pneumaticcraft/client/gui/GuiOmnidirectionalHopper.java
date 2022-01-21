@@ -28,14 +28,14 @@ import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +43,14 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<ContainerOmnidirectionalHopper,TileEntityOmnidirectionalHopper> {
-    private static final ITextComponent ARROW_NO_RR = new StringTextComponent(Symbols.ARROW_RIGHT);
-    private static final ITextComponent ARROW_RR = new StringTextComponent(Symbols.CIRCULAR_ARROW).withStyle(TextFormatting.GREEN);
+    private static final Component ARROW_NO_RR = new TextComponent(Symbols.ARROW_RIGHT);
+    private static final Component ARROW_RR = new TextComponent(Symbols.CIRCULAR_ARROW).withStyle(ChatFormatting.GREEN);
 
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
     private WidgetButtonExtended rrButton;
 
-    public GuiOmnidirectionalHopper(ContainerOmnidirectionalHopper container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiOmnidirectionalHopper(ContainerOmnidirectionalHopper container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -62,19 +62,19 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.setMinimumExpandedDimensions(50, 43);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, StringTextComponent.EMPTY).withTag("empty");
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, TextComponent.EMPTY).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(30, 20, 20, 20, StringTextComponent.EMPTY).withTag("leave");
+        button = new WidgetButtonExtended(30, 20, 20, 20, TextComponent.EMPTY).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.leaveItem"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        addButton(rrButton = new WidgetButtonExtended(leftPos + 143, topPos + 55, 14, 14, StringTextComponent.EMPTY).withTag("rr"));
+        addRenderableWidget(rrButton = new WidgetButtonExtended(leftPos + 143, topPos + 55, 14, 14, TextComponent.EMPTY).withTag("rr"));
     }
 
     @Override
@@ -83,8 +83,8 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         statusStat.setText(getStatus());
         modeButtons[0].active = te.doesLeaveMaterial();
@@ -93,8 +93,8 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         rrButton.setTooltipKey("pneumaticcraft.gui.tooltip.omnidirectional_hopper.roundRobin." + (te.roundRobin ? "on" : "off"));
     }
 
-    private List<ITextComponent> getStatus() {
-        List<ITextComponent> textList = new ArrayList<>();
+    private List<Component> getStatus() {
+        List<Component> textList = new ArrayList<>();
         int itemsPer = te.getMaxItems();
         if (itemsPer > 1) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.hopperStatus.itemTransferPerTick", itemsPer));

@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.H
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -104,14 +104,14 @@ public class HackSimulation {
         return new HackSimulation(null, -1, TileEntityConstants.NETWORK_AI_BRIDGE_SPEED, HackingSide.AI);
     }
 
-    public static HackSimulation readFromNetwork(PacketBuffer buffer) {
+    public static HackSimulation readFromNetwork(FriendlyByteBuf buffer) {
         float speed = buffer.readFloat();
         HackingSide side = buffer.readBoolean() ? HackingSide.AI : HackingSide.PLAYER;
         int start = buffer.readVarInt();
         return new HackSimulation(null, start, speed, side);
     }
 
-    public void writeToNetwork(PacketBuffer buffer) {
+    public void writeToNetwork(FriendlyByteBuf buffer) {
         buffer.writeFloat(baseBridgeSpeed);
         buffer.writeBoolean(side == HackingSide.AI);
         buffer.writeVarInt(startPosition);
@@ -421,13 +421,13 @@ public class HackSimulation {
             this.progress = progress;
         }
 
-        public void write(PacketBuffer buffer) {
+        public void write(FriendlyByteBuf buffer) {
             buffer.writeVarInt(from);
             buffer.writeVarInt(to);
             buffer.writeFloat(progress);
         }
 
-        public static ConnectionEntry readFromNetwork(PacketBuffer buffer) {
+        public static ConnectionEntry readFromNetwork(FriendlyByteBuf buffer) {
             return new ConnectionEntry(buffer.readVarInt(), buffer.readVarInt(), buffer.readFloat());
         }
     }

@@ -19,14 +19,14 @@ package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 
 /**
  * Special client-only entity used for rendering the programmable controller's "minidrone".
@@ -35,7 +35,7 @@ public class EntityProgrammableController extends EntityDroneBase {
     private TileEntityProgrammableController controller;
     private float propSpeed = 0f;
 
-    public EntityProgrammableController(EntityType<EntityProgrammableController> type, World world) {
+    public EntityProgrammableController(EntityType<EntityProgrammableController> type, Level world) {
         super(type, world);
 
         this.blocksBuilding = false;
@@ -58,10 +58,10 @@ public class EntityProgrammableController extends EntityDroneBase {
     @Override
     public void tick() {
         if (level.isClientSide && controller != null) {
-            TileEntity te = level.getBlockEntity(controller.getBlockPos());
+            BlockEntity te = level.getBlockEntity(controller.getBlockPos());
             if (te != controller) {
                 // expire stale minidrones
-                remove();
+                discard();
             } else {
                 if (controller.isIdle) {
                     propSpeed = Math.max(0, propSpeed - 0.04F);
@@ -100,8 +100,8 @@ public class EntityProgrammableController extends EntityDroneBase {
     }
 
     @Override
-    public ITextComponent getOwnerName() {
-        return new StringTextComponent(controller.ownerNameClient);
+    public Component getOwnerName() {
+        return new TextComponent(controller.ownerNameClient);
     }
 
     @Override

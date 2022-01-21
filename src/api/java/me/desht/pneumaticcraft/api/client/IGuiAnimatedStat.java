@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.api.client;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ import java.util.List;
  * <p>
  * Implementing your own version of animated stats is also possible.
  */
-public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
+public interface IGuiAnimatedStat extends ITickableWidget, GuiEventListener {
     /**
      * Check which direction this expands to when opened.
      *
@@ -64,7 +64,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      * @param text a list of text components
      * @return this, so you can chain calls.
      */
-    IGuiAnimatedStat setText(List<ITextComponent> text);
+    IGuiAnimatedStat setText(List<Component> text);
 
     /**
      * Sets the main text of this stat. Every line should be stored in a separate list element, but lines do not need
@@ -74,7 +74,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      * @param text a text component
      * @return this, so you can chain calls.
      */
-    IGuiAnimatedStat setText(ITextComponent text);
+    IGuiAnimatedStat setText(Component text);
 
     /**
      * Appends some more text to the existing text in this stat.  This method will split overlong lines, same as
@@ -82,7 +82,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      *
      * @param text a list of text components
      */
-    void appendText(List<ITextComponent> text);
+    void appendText(List<Component> text);
 
     /**
      * Defines what dimensions the stat should have when it is not expanded (default 17x17, sufficient to display the
@@ -203,7 +203,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      *
      * @return a bounding box
      */
-    Rectangle2d getBounds();
+    Rect2i getBounds();
 
     /**
      * Render the stat in 2D (gui) context.
@@ -213,7 +213,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      * @param mouseY the mouse Y position
      * @param partialTicks partial ticks since last client tick
      */
-    void renderStat(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks);
+    void renderStat(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Render the stat in 3D (in-world) context.
@@ -222,7 +222,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      * @param buffer the render buffer
      * @param partialTicks partial ticks since last client tick
      */
-    void renderStat(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks);
+    void renderStat(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks);
 
     /**
      * Forces the stat to close.
@@ -255,14 +255,14 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      *
      * @return the title
      */
-    ITextComponent getTitle();
+    Component getTitle();
 
     /**
      * Set the title line for this stat; the text drawn on the top line. This text is never wrapped, so be mindful
      * of the length of this line.
      * @param title the title string
      */
-    void setTitle(ITextComponent title);
+    void setTitle(Component title);
 
     /**
      * This can be used to reserve one or more lines at the top of the stat; text will only drawn below the reserved

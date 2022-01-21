@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.ILeftClickableItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -33,11 +33,11 @@ public class PacketLeftClickEmpty {
     }
 
     @SuppressWarnings("EmptyMethod")
-    public PacketLeftClickEmpty(@SuppressWarnings("unused") PacketBuffer buf) {
+    public PacketLeftClickEmpty(@SuppressWarnings("unused") FriendlyByteBuf buf) {
     }
 
     @SuppressWarnings("EmptyMethod")
-    public void toBytes(@SuppressWarnings("unused") PacketBuffer buf) {
+    public void toBytes(@SuppressWarnings("unused") FriendlyByteBuf buf) {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

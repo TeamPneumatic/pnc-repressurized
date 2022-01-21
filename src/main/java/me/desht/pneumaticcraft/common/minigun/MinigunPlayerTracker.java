@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.minigun;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class MinigunPlayerTracker {
     private float rotationSpeed;
     private int ammoColor;
 
-    public static MinigunPlayerTracker getInstance(PlayerEntity player) {
+    public static MinigunPlayerTracker getInstance(Player player) {
         return player.level.isClientSide ? clientInstance : serverInstances.computeIfAbsent(player.getUUID(), k -> new MinigunPlayerTracker());
     }
 

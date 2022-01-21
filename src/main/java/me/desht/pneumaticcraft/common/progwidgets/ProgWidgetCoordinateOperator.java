@@ -25,14 +25,14 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -78,7 +78,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (variable.equals("")) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
@@ -163,7 +163,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (!variable.isEmpty()) tag.putString("variable", variable);
         tag.putByte("operator", (byte) operator.ordinal());
@@ -171,7 +171,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         variable = tag.getString("variable");
         operator = EnumOperator.values()[tag.getByte("operator")];
@@ -179,7 +179,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeUtf(variable);
         buf.writeByte(operator.ordinal());
@@ -187,7 +187,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
         operator = EnumOperator.values()[buf.readByte()];
@@ -222,7 +222,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
         curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable", variable));
@@ -231,19 +231,19 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
-        ImmutableList.Builder<ITextComponent> builder = ImmutableList.builder();
+    public List<Component> getExtraStringInfo() {
+        ImmutableList.Builder<Component> builder = ImmutableList.builder();
         builder.add(varAsTextComponent(variable), xlate(operator.getTranslationKey()));
         getAxesString().ifPresent(builder::add);
         return builder.build();
     }
 
-    private Optional<ITextComponent> getAxesString() {
+    private Optional<Component> getAxesString() {
         List<String> l = Arrays.stream(Axis.values())
                 .filter(axisOptions::shouldCheck)
                 .map(axis -> axis.getName().toUpperCase())
                 .collect(Collectors.toList());
-        return !l.isEmpty() && l.size() < 3 ? Optional.of(new StringTextComponent(String.join("/", l))) : Optional.empty();
+        return !l.isEmpty() && l.size() < 3 ? Optional.of(new TextComponent(String.join("/", l))) : Optional.empty();
     }
 
     @Override

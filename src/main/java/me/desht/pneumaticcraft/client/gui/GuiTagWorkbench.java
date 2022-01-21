@@ -28,13 +28,13 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityTagWorkbench;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 import java.util.Set;
@@ -58,7 +58,7 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
     private WidgetList<ResourceLocation> selectedList;
     private WidgetButtonExtended writeButton;
 
-    public GuiTagWorkbench(ContainerTagWorkbench container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiTagWorkbench(ContainerTagWorkbench container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageWidth = 234;
@@ -69,16 +69,16 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
     public void init() {
         super.init();
 
-        addButton(writeButton = new WidgetButtonExtended(leftPos + 162, topPos + 16, 20, 20, StringTextComponent.EMPTY, b -> writeTags())
+        addRenderableWidget(writeButton = new WidgetButtonExtended(leftPos + 162, topPos + 16, 20, 20, TextComponent.EMPTY, b -> writeTags())
                 .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK))
                 .setTooltipText(xlate("pneumaticcraft.gui.tooltip.tag_workbench.write_button")));
-        addButton(addButton = new WidgetButtonExtended(leftPos + 108, topPos + 90, 13, 13, Symbols.TRIANGLE_RIGHT,
+        addRenderableWidget(addButton = new WidgetButtonExtended(leftPos + 108, topPos + 90, 13, 13, Symbols.TRIANGLE_RIGHT,
                 b -> addAvailable()));
-        addButton(removeButton = new WidgetButtonExtended(leftPos + 108, topPos + 106, 13, 13, Symbols.TRIANGLE_LEFT,
+        addRenderableWidget(removeButton = new WidgetButtonExtended(leftPos + 108, topPos + 106, 13, 13, Symbols.TRIANGLE_LEFT,
                 b -> removeSelected()));
 
-        addButton(availableList = new WidgetList<>(leftPos + AVAILABLE_X, topPos + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));
-        addButton(selectedList = new WidgetList<>(leftPos + SELECTED_X, topPos + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));
+        addRenderableWidget(availableList = new WidgetList<>(leftPos + AVAILABLE_X, topPos + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));
+        addRenderableWidget(selectedList = new WidgetList<>(leftPos + SELECTED_X, topPos + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));
     }
 
     private void writeTags() {
@@ -112,8 +112,8 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         ItemStack stack = menu.getSlot(0).getItem();
         if (stack.getItem() != lastItem) {

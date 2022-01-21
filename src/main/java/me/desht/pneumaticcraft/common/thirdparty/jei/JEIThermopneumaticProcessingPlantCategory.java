@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -33,9 +33,9 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.*;
@@ -51,7 +51,7 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
         super(ModCategoryUid.THERMO_PLANT, ThermoPlantRecipe.class,
                 xlate(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT, 0, 0, 166, 70),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()))
         );
         tickTimer = guiHelper().createTickTimer(60, 60, false);
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT, 176, 0, 48, 30);
@@ -108,7 +108,7 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
     }
 
     @Override
-    public void draw(ThermoPlantRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(ThermoPlantRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() != 0) {
             float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
             PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 141, 42);
@@ -124,8 +124,8 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(ThermoPlantRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getTooltipStrings(ThermoPlantRecipe recipe, double mouseX, double mouseY) {
+        List<Component> res = new ArrayList<>();
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
             res.add(HeatUtil.formatHeatString(recipe.getOperatingTemperature().asString(TemperatureScale.CELSIUS)));

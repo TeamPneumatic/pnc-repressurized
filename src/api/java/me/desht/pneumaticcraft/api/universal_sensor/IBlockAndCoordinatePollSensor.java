@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.api.universal_sensor;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Set;
 
 public interface IBlockAndCoordinatePollSensor extends IBaseSensor {
     /**
-     * Similar to {@link IPollSensorSetting#getRedstoneValue(World, BlockPos, int, String)}, but this has the GPS tracked
+     * Similar to {@link IPollSensorSetting#getRedstoneValue(Level, BlockPos, int, String)}, but this has the GPS tracked
      * coordinates as extra parameters. This method will only invoke with a valid GPS tool, and when all the coordinates
      * are within range.
      *
@@ -36,10 +36,10 @@ public interface IBlockAndCoordinatePollSensor extends IBaseSensor {
      * @param positions   When only one GPS Tool is inserted this contains the position of just that tool. If two GPS Tools are inserted, These are both corners of a box, and every coordinate in this box is added to the positions argument.
      * @return the redstone signal level to be emitted
      */
-    int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions);
+    int getRedstoneValue(Level world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions);
 
     /**
-     * See {@link IPollSensorSetting#getPollFrequency(TileEntity)}
+     * See {@link IPollSensorSetting#getPollFrequency(BlockEntity)}
      *
      * @return a poll frequency, in ticks
      */

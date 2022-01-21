@@ -24,24 +24,26 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.WeightedRandom;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.util.random.Weight;
+import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.WeightedRandom;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
@@ -59,7 +61,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         ISpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
@@ -68,44 +70,44 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
                 stats.getEntities().stream()
                         .sorted(Comparator.comparing(t -> I18n.get(t.getDescriptionId())))
                         .forEach(type -> tooltip.add(Symbols.bullet()
-                                .append(xlate(type.getDescriptionId()).withStyle(TextFormatting.YELLOW))
-                                .append(": " + stats.getPercentage(type) + "%").withStyle(TextFormatting.WHITE))
+                                .append(xlate(type.getDescriptionId()).withStyle(ChatFormatting.YELLOW))
+                                .append(": " + stats.getPercentage(type) + "%").withStyle(ChatFormatting.WHITE))
                         );
                 if (stats.getUnusedPercentage() > 0) {
                     tooltip.add(Symbols.bullet()
-                            .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.YELLOW, TextFormatting.ITALIC))
-                            .append(": " + stats.getUnusedPercentage() + "%").withStyle(TextFormatting.WHITE));
+                            .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC))
+                            .append(": " + stats.getUnusedPercentage() + "%").withStyle(ChatFormatting.WHITE));
                 }
             } else {
-                tooltip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.YELLOW));
+                tooltip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW));
             }
         }
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         if (!context.getLevel().isClientSide) {
-            return trySpawnEntity(context) ? ActionResultType.CONSUME : ActionResultType.PASS;
+            return trySpawnEntity(context) ? InteractionResult.CONSUME : InteractionResult.PASS;
         } else {
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
     }
 
-    private boolean trySpawnEntity(ItemUseContext context) {
+    private boolean trySpawnEntity(UseOnContext context) {
         ItemStack stack = context.getItemInHand();
         if (stack.getCount() != 1) return false;
         ISpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
         if (stats != null) {
-            World world = context.getLevel();
+            Level world = context.getLevel();
             EntityType<?> type = stats.pickEntity(false);
             if (type != null && type.getRegistryName() != null) {
-                Vector3d vec = context.getClickLocation();
+                Vec3 vec = context.getClickLocation();
                 if (world.noCollision(type.getAABB(vec.x(), vec.y(), vec.z()))) {
-                    ServerWorld serverworld = (ServerWorld)world;
-                    CompoundNBT nbt = new CompoundNBT();
+                    ServerLevel serverworld = (ServerLevel)world;
+                    CompoundTag nbt = new CompoundTag();
                     nbt.putString("id", type.getRegistryName().toString());
                     Entity entity = EntityType.loadEntityRecursive(nbt, world, (e1) -> {
-                        e1.moveTo(vec.x(), vec.y(), vec.z(), e1.yRot, e1.xRot);
+                        e1.moveTo(vec.x(), vec.y(), vec.z(), e1.getYRot(), e1.getXRot());
                         return e1;
                     });
                     if (entity != null) {
@@ -128,8 +130,8 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
             ISpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
             if (stats != null) {
                 if (stats.getUnusedPercentage() == 100) return 0xFFFFFFFF;
-                int t = (int) (ClientUtils.getClientWorld().getGameTime() % 40);
-                float b = t < 20 ? MathHelper.sin(3.1415927f * t / 20f) / 6f : 0;
+                int t = (int) (ClientUtils.getClientLevel().getGameTime() % 40);
+                float b = t < 20 ? Mth.sin(3.1415927f * t / 20f) / 6f : 0;
                 return TintColor.HSBtoRGB(71/360f, 1f - stats.getUnusedPercentage() / 100f, 0.83333f + b);
             }
         }
@@ -141,10 +143,10 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
         private int unused;
 
         private SpawnerCoreStats(ItemStack stack) {
-            CompoundNBT nbt0 = stack.getTag();
+            CompoundTag nbt0 = stack.getTag();
             int total = 0;
             if (nbt0 != null && nbt0.contains(NBT_SPAWNER_CORE)) {
-                CompoundNBT nbt = nbt0.getCompound(NBT_SPAWNER_CORE);
+                CompoundTag nbt = nbt0.getCompound(NBT_SPAWNER_CORE);
                 for (String k : nbt.getAllKeys()) {
                     EntityType<?> type = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(k));
                     if (type != null) {
@@ -165,10 +167,10 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
         public void serialize(ItemStack stack) {
             if (stack.getItem() instanceof ItemSpawnerCore) {
                 if (unused == 100) {
-                    CompoundNBT tag = stack.getTag();
+                    CompoundTag tag = stack.getTag();
                     if (tag != null) tag.remove(NBT_SPAWNER_CORE);
                 } else {
-                    CompoundNBT subTag = stack.getOrCreateTagElement(NBT_SPAWNER_CORE);
+                    CompoundTag subTag = stack.getOrCreateTagElement(NBT_SPAWNER_CORE);
                     entityCounts.forEach((type, amount) -> {
                         if (type.getRegistryName() != null) {
                             if (amount > 0) {
@@ -202,9 +204,9 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
         @Override
         public boolean addAmount(EntityType<?> type, int toAdd) {
             int current = entityCounts.getOrDefault(type, 0);
-            toAdd = MathHelper.clamp(toAdd, -current, unused);
+            toAdd = Mth.clamp(toAdd, -current, unused);
             if (toAdd != 0) {
-                int newAmount = MathHelper.clamp(current + toAdd, 0, 100);
+                int newAmount = Mth.clamp(current + toAdd, 0, 100);
                 entityCounts.put(type, newAmount);
                 unused -= toAdd;
                 return true;
@@ -218,15 +220,15 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
             List<WeightedEntity> weightedEntities = new ArrayList<>();
             entityCounts.forEach((type, amount) -> weightedEntities.add(new WeightedEntity(type, amount)));
             if (includeUnused) weightedEntities.add(new WeightedEntity(null, unused));
-            return WeightedRandom.getRandomItem(ThreadLocalRandom.current(), weightedEntities).type;
+            return WeightedRandom.getRandomItem(ThreadLocalRandom.current(), weightedEntities)
+                    .map(WeightedEntity::type)
+                    .orElse(null);
         }
 
-        private static class WeightedEntity extends WeightedRandom.Item {
-            private final EntityType<?> type;
-
-            public WeightedEntity(EntityType<?> type, int itemWeightIn) {
-                super(itemWeightIn);
-                this.type = type;
+        private record WeightedEntity(EntityType<?> type, int weight) implements WeightedEntry {
+            @Override
+            public Weight getWeight() {
+                return Weight.of(weight);
             }
         }
     }
@@ -234,7 +236,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     public static class SpawnerCoreItemHandler extends BaseItemStackHandler {
         private ISpawnerCoreStats stats;
 
-        public SpawnerCoreItemHandler(TileEntity owner) {
+        public SpawnerCoreItemHandler(BlockEntity owner) {
             super(owner, 1);
         }
 
@@ -258,7 +260,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundTag nbt) {
             super.deserializeNBT(nbt);
 
             readSpawnerCoreStats();

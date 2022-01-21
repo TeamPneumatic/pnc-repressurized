@@ -27,17 +27,17 @@ import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -112,25 +112,25 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getExtraStringInfo() {
+        List<Component> res = new ArrayList<>();
         if (!coord1Variable.isEmpty()) {
-            res.add(new StringTextComponent("\"" + coord1Variable + "\""));
+            res.add(new TextComponent("\"" + coord1Variable + "\""));
         } else if (x1 != 0 && y1 != 0 && z1 != 0) {
-            res.add(new StringTextComponent(String.format("%d, %d, %d", x1, y1, z1)));
+            res.add(new TextComponent(String.format("%d, %d, %d", x1, y1, z1)));
         }
         if (!coord2Variable.isEmpty()) {
-            res.add(new StringTextComponent("\"" + coord2Variable + "\""));
-            res.add(new StringTextComponent(type.toString()));
+            res.add(new TextComponent("\"" + coord2Variable + "\""));
+            res.add(new TextComponent(type.toString()));
         } else if (x2 != 0 && y2 != 0 && z2 != 0) {
-            res.add(new StringTextComponent(String.format("%d, %d, %d", x2, y2, z2)));
-            res.add(new StringTextComponent(type.toString()));
+            res.add(new TextComponent(String.format("%d, %d, %d", x2, y2, z2)));
+            res.add(new TextComponent(type.toString()));
         }
         return res;
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
         String c1;
@@ -147,26 +147,26 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         }
 
         if (c1 != null) {
-            curTooltip.add(new StringTextComponent(c1));
+            curTooltip.add(new TextComponent(c1));
         }
         if (c2 != null) {
-            curTooltip.add(new StringTextComponent(c2));
+            curTooltip.add(new TextComponent(c2));
             addAreaTypeTooltip(curTooltip);
         }
     }
 
-    public void addAreaTypeTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(type.getTranslationKey()).withStyle(TextFormatting.YELLOW)));
+    public void addAreaTypeTooltip(List<Component> curTooltip) {
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(type.getTranslationKey()).withStyle(ChatFormatting.YELLOW)));
 
         List<AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
         for (AreaTypeWidget widget : widgets) {
-            curTooltip.add(xlate(widget.title).append(" ").append(new StringTextComponent(widget.getCurValue()).withStyle(TextFormatting.YELLOW)));
+            curTooltip.add(xlate(widget.title).append(" ").append(new TextComponent(widget.getCurValue()).withStyle(ChatFormatting.YELLOW)));
         }
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (coord1Variable.isEmpty() && coord2Variable.isEmpty() && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
@@ -299,7 +299,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         }
     }
 
-    private AxisAlignedBB getAABB() {
+    private AABB getAABB() {
         BlockPos[] areaPoints = getAreaPoints();
         if (areaPoints[0] == null) return null;
         int minX;
@@ -320,16 +320,16 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             minY = maxY = areaPoints[0].getY();
             minZ = maxZ = areaPoints[0].getZ();
         }
-        return new AxisAlignedBB(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
+        return new AABB(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
     }
 
-    List<Entity> getEntitiesWithinArea(World world, Predicate<? super Entity> predicate) {
-        AxisAlignedBB aabb = getAABB();
+    List<Entity> getEntitiesWithinArea(Level world, Predicate<? super Entity> predicate) {
+        AABB aabb = getAABB();
         return aabb != null ? world.getEntities((Entity) null, aabb, predicate) : new ArrayList<>();
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeInt(x1);
         buf.writeInt(y1);
@@ -346,7 +346,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         x1 = buf.readInt();
         y1 = buf.readInt();
@@ -361,7 +361,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         tag.putInt("x1", x1);
         tag.putInt("y1", y1);
@@ -376,7 +376,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         x1 = tag.getInt("x1");
         y1 = tag.getInt("y1");

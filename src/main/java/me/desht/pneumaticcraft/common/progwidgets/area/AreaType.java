@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -68,19 +68,19 @@ public abstract class AreaType {
         return true;
     }
 
-    public void writeToPacket(PacketBuffer buffer) {
+    public void writeToPacket(FriendlyByteBuf buffer) {
 
     }
 
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
 
     }
 
-    public void writeToNBT(CompoundNBT tag){
+    public void writeToNBT(CompoundTag tag){
 
     }
 
-    public void readFromNBT(CompoundNBT tag){
+    public void readFromNBT(CompoundTag tag){
         
     }
 

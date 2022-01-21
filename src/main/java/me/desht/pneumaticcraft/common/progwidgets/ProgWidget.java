@@ -23,14 +23,14 @@ import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -39,8 +39,8 @@ import java.util.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidget implements IProgWidget {
-    static final TranslationTextComponent ALL_TEXT = xlate("pneumaticcraft.gui.misc.all");
-    static final TranslationTextComponent NONE_TEXT = xlate("pneumaticcraft.gui.misc.none");
+    static final TranslatableComponent ALL_TEXT = xlate("pneumaticcraft.gui.misc.all");
+    static final TranslatableComponent NONE_TEXT = xlate("pneumaticcraft.gui.misc.none");
 
     private final ProgWidgetType<?> type;
     private int x, y;
@@ -65,20 +65,20 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate(getTranslationKey()).withStyle(TextFormatting.DARK_AQUA, TextFormatting.UNDERLINE));
+    public void getTooltip(List<Component> curTooltip) {
+        curTooltip.add(xlate(getTranslationKey()).withStyle(ChatFormatting.DARK_AQUA, ChatFormatting.UNDERLINE));
         if (freeToUse()) {
-            curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.comment.tooltip.freeToUse"));
+            curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.comment.tooltip.freeToUse"));
         }
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         return Collections.emptyList();
     }
 
     @Override
-    public void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addWarnings(List<Component> curInfo, List<IProgWidget> widgets) {
         if (this instanceof IVariableWidget) {
             Set<String> variables = new HashSet<>();
             ((IVariableWidget) this).addVariables(variables);
@@ -103,7 +103,7 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         if (!hasStepInput() && hasStepOutput() && outputStepConnection == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.noPieceConnected"));
         }
@@ -234,28 +234,28 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public IProgWidget copy() {
         IProgWidget copy = IProgWidget.create(getType());
-        CompoundNBT tag = new CompoundNBT();
+        CompoundTag tag = new CompoundTag();
         writeToNBT(tag);
         copy.readFromNBT(tag);
         return copy;
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         tag.putString("name", PneumaticCraftUtils.modDefaultedString(getTypeID()));
         tag.putInt("x", x);
         tag.putInt("y", y);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         // note: widget type ID is not read here (see ProgWidget.fromNBT() static method)
         x = tag.getInt("x");
         y = tag.getInt("y");
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         // since most or all widgets have a 'pneumaticcraft:' namespace, omitting that saves 15 bytes per widget
         buf.writeUtf(PneumaticCraftUtils.modDefaultedString(getTypeID()));
         buf.writeInt(x);
@@ -263,7 +263,7 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         // note: widget type ID is not read here (see ProgWidget.fromPacket() static method)
         x = buf.readInt();
         y = buf.readInt();
@@ -294,7 +294,7 @@ public abstract class ProgWidget implements IProgWidget {
         }
     }
 
-    public static IProgWidget fromPacket(PacketBuffer buf) {
+    public static IProgWidget fromPacket(FriendlyByteBuf buf) {
         ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(buf.readUtf(256));
         ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
         if (type != null) {
@@ -306,7 +306,7 @@ public abstract class ProgWidget implements IProgWidget {
         }
     }
 
-    public static IProgWidget fromNBT(CompoundNBT widgetTag) {
+    public static IProgWidget fromNBT(CompoundTag widgetTag) {
         ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(widgetTag.getString("name"));
         ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
         if (type == null) {
@@ -323,7 +323,7 @@ public abstract class ProgWidget implements IProgWidget {
         return getWidgetAI(drone, widget) != null;
     }
 
-    ITextComponent varAsTextComponent(String var) {
-        return var.isEmpty() ? StringTextComponent.EMPTY : new StringTextComponent("\"" + var + "\"");
+    Component varAsTextComponent(String var) {
+        return var.isEmpty() ? TextComponent.EMPTY : new TextComponent("\"" + var + "\"");
     }
 }

@@ -25,17 +25,17 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootFunction;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_AIR_AMOUNT;
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_SIDE_CONFIG;
@@ -43,30 +43,30 @@ import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_SIDE_CONFIG;
 /**
  * Handle the standard serialization of PNC tile entity data to the dropped itemstack.
  * Saved to the "BlockEntityTag" NBT tag, so will be copied directly back to the TE's NBT
- * by {@link net.minecraft.item.BlockItem#updateCustomBlockEntityTag(World, PlayerEntity, BlockPos, ItemStack)}
+ * by {@link net.minecraft.world.item.BlockItem#updateCustomBlockEntityTag(Level, Player, BlockPos, ItemStack)}
  */
-public class TileEntitySerializerFunction extends LootFunction {
-    private TileEntitySerializerFunction(ILootCondition[] conditionsIn) {
+public class TileEntitySerializerFunction extends LootItemConditionalFunction {
+    private TileEntitySerializerFunction(LootItemCondition[] conditionsIn) {
         super(conditionsIn);
     }
 
     @Override
     protected ItemStack run(ItemStack stack, LootContext context) {
-        return applyTEdata(stack, context.getParamOrNull(LootParameters.BLOCK_ENTITY));
+        return applyTEdata(stack, context.getParamOrNull(LootContextParams.BLOCK_ENTITY));
     }
 
-    public static LootFunction.Builder<?> builder() {
+    public static LootItemConditionalFunction.Builder<?> builder() {
         return simpleBuilder(TileEntitySerializerFunction::new);
     }
 
-    private ItemStack applyTEdata(ItemStack teStack, TileEntity te) {
+    private ItemStack applyTEdata(ItemStack teStack, BlockEntity te) {
         // augment existing BlockEntityTag if present, otherwise create a new one
-        CompoundNBT nbt = teStack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        final CompoundNBT subTag = nbt == null ? new CompoundNBT() : nbt;
+        CompoundTag nbt = teStack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+        final CompoundTag subTag = nbt == null ? new CompoundTag() : nbt;
 
         // fluid tanks
         if (te instanceof ISerializableTanks) {
-            CompoundNBT tankTag = ((ISerializableTanks) te).serializeTanks();
+            CompoundTag tankTag = ((ISerializableTanks) te).serializeTanks();
             if (!tankTag.isEmpty()) {
                 subTag.put(NBTKeys.NBT_SAVED_TANKS, tankTag);
             }
@@ -74,7 +74,7 @@ public class TileEntitySerializerFunction extends LootFunction {
 
         // side configuration
         if (te instanceof ISideConfigurable) {
-            CompoundNBT tag = SideConfigurator.writeToNBT((ISideConfigurable) te);
+            CompoundTag tag = SideConfigurator.writeToNBT((ISideConfigurable) te);
             if (!tag.isEmpty()) {
                 subTag.put(NBT_SIDE_CONFIG, tag);
             }
@@ -115,7 +115,7 @@ public class TileEntitySerializerFunction extends LootFunction {
         }
 
         if (!subTag.isEmpty()) {
-            CompoundNBT tag = teStack.getOrCreateTag();
+            CompoundTag tag = teStack.getOrCreateTag();
             tag.put(NBTKeys.BLOCK_ENTITY_TAG, subTag);
         } else {
             if (teStack.hasTag() && teStack.getTag().contains(NBTKeys.BLOCK_ENTITY_TAG)) {
@@ -126,13 +126,13 @@ public class TileEntitySerializerFunction extends LootFunction {
     }
 
     @Override
-    public LootFunctionType getType() {
+    public LootItemFunctionType getType() {
         return ModLootFunctions.TE_SERIALIZER;
     }
 
-    public static class Serializer extends LootFunction.Serializer<TileEntitySerializerFunction> {
+    public static class Serializer extends LootItemConditionalFunction.Serializer<TileEntitySerializerFunction> {
         @Override
-        public TileEntitySerializerFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn) {
+        public TileEntitySerializerFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootItemCondition[] conditionsIn) {
             return new TileEntitySerializerFunction(conditionsIn);
         }
 

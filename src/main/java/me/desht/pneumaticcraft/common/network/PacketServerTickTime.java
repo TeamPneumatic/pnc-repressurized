@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -37,11 +37,11 @@ public class PacketServerTickTime {
         this.tickTime = tickTime;
     }
 
-    public PacketServerTickTime(PacketBuffer buffer) {
+    public PacketServerTickTime(FriendlyByteBuf buffer) {
         this.tickTime = buffer.readDouble();
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeDouble(tickTime);
     }
 

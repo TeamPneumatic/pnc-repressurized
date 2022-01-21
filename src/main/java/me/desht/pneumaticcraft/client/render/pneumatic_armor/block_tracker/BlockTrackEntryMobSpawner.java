@@ -23,19 +23,19 @@ import me.desht.pneumaticcraft.common.hacking.block.HackableMobSpawner;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.Reflections;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.MobSpawnerTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraft.world.spawner.AbstractSpawner;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,12 +47,12 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     private static final ResourceLocation ID = RL("block_tracker.module.spawner");
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
+    public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
         return state.getBlock() == Blocks.SPAWNER;
     }
 
     @Override
-    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+    public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
         return te == null ? Collections.emptyList() : Collections.singletonList(te.getBlockPos());
     }
 
@@ -62,19 +62,19 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
+    public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
         // FIXME translations
-        if (te instanceof MobSpawnerTileEntity) {
-            AbstractSpawner spawner = ((MobSpawnerTileEntity) te).getSpawner();
-            Entity e = spawner.getOrCreateDisplayEntity();
+        if (te instanceof SpawnerBlockEntity spawnerBlockEntity) {
+            BaseSpawner spawner = spawnerBlockEntity.getSpawner();
+            Entity e = spawner.getOrCreateDisplayEntity(world);
             if (e == null) {
                 // seems to happen with enderman spawners, possibly related to EndermanEntity#readAdditional() doing a bad world cast
                 // certainly spams a lot a vanilla-related errors
-                infoList.add(new StringTextComponent("<ERROR> Missing entity?"));
+                infoList.add(new TextComponent("<ERROR> Missing entity?"));
                 return;
             }
             infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.type", e.getName().getString()));
-            if (Reflections.isActivated(spawner) || hasAgitator(world, pos)) {
+            if (isNearPlayer(spawner, world, pos) || hasAgitator(world, pos)) {
                 infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.time",
                         PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false)));
             } else if (HackableMobSpawner.isHacked(world, pos)) {
@@ -85,7 +85,11 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
         }
     }
 
-    private boolean hasAgitator(World world, BlockPos pos) {
+    private boolean isNearPlayer(BaseSpawner spawner, Level pLevel, BlockPos pPos) {
+        return pLevel.hasNearbyAlivePlayer(pPos.getX() + 0.5D, pPos.getY() + 0.5D, pPos.getZ() + 0.5D, spawner.requiredPlayerRange);
+    }
+
+    private boolean hasAgitator(Level world, BlockPos pos) {
         return SemiblockTracker.getInstance().getSemiblock(world, pos) instanceof EntitySpawnerAgitator;
     }
 

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.level.LevelReader;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
@@ -41,7 +41,7 @@ public abstract class FluidLPG {
         }
 
         @Override
-        public int getTickDelay(IWorldReader world) {
+        public int getTickDelay(LevelReader world) {
             return 2;
         }
     }

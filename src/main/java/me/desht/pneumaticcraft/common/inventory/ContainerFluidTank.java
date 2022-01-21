@@ -19,16 +19,16 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 public class ContainerFluidTank extends ContainerPneumaticBase<TileEntityFluidTank> {
-    public ContainerFluidTank(int windowId, PlayerInventory inv, PacketBuffer extraData) {
+    public ContainerFluidTank(int windowId, Inventory inv, FriendlyByteBuf extraData) {
         this(windowId, inv, getTilePos(extraData));
     }
 
-    public ContainerFluidTank(int windowId, PlayerInventory inv, BlockPos pos) {
+    public ContainerFluidTank(int windowId, Inventory inv, BlockPos pos) {
         super(ModContainers.FLUID_TANK.get(), windowId, inv, pos);
 
         addSlot(new SlotFluidContainer(te.getPrimaryInventory(), 0, 132, 22));

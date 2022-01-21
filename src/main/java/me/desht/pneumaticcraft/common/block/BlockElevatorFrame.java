@@ -22,35 +22,44 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLoggable {
+public class BlockElevatorFrame extends BlockPneumaticCraft
+        implements SimpleWaterloggedBlock, EntityBlockPneumaticCraft {
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[16];
     private static final VoxelShape MOSTLY_FULL = Block.box(0.5, 0, 0.5, 15.5, 16, 15.5);
 
@@ -69,27 +78,29 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     }
 
     @Override
-    public void onPlace(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
-        super.onPlace(newState, world, pos, oldState, isMoving);
+    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
+        super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
 
-        getElevatorBase(world, pos).ifPresent(TileEntityElevatorBase::updateMaxElevatorHeight);
+        getElevatorBase(pLevel, pPos).ifPresent(TileEntityElevatorBase::updateMaxElevatorHeight);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(NE, SW, SE, NW, WATERLOGGED);
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         boolean[] connected = getConnections(ctx.getLevel(), ctx.getClickedPos());
         FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
-        return super.getStateForPlacement(ctx)
-                .setValue(NE, connected[0]).setValue(SE, connected[1]).setValue(SW, connected[2]).setValue(NW, connected[3])
-                .setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
-
+        BlockState state = super.getStateForPlacement(ctx);
+        if (state != null) {
+            state.setValue(NE, connected[0]).setValue(SE, connected[1]).setValue(SW, connected[2]).setValue(NW, connected[3])
+                    .setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
+        }
+        return state;
     }
 
     @Override
@@ -98,13 +109,13 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (!canSurvive(stateIn, worldIn, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         }
 
         if (stateIn.getValue(WATERLOGGED)) {
-            worldIn.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
+            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
         }
 
         boolean[] connected = getConnections(worldIn, currentPos);
@@ -115,42 +126,37 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityElevatorFrame.class;
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         return selectionContext.isHoldingItem(this.asItem()) ? MOSTLY_FULL : getCachedShape(state);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         double blockHeight = getElevatorBlockHeight(worldIn, pos);
         if (blockHeight > 1) {
-            return VoxelShapes.block();
+            return Shapes.block();
         } else if (blockHeight > 0) {
             double minY = Math.max(0, blockHeight - 0.06125d) * 16d;
             double maxY = blockHeight * 16d;
-            return VoxelShapes.or(getCachedShape(state), Block.box(0.001, minY, 0.001, 15.999, maxY, 15.999));
+            return Shapes.or(getCachedShape(state), Block.box(0.001, minY, 0.001, 15.999, maxY, 15.999));
         } else {
             return getCachedShape(state);
         }
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         // this avoids a crash when trying to render particles (see ParticleManager#addBlockDestroyEffects)
-        return getCachedShape(state).isEmpty() ? BlockRenderType.INVISIBLE : super.getRenderShape(state);
+        return getCachedShape(state).isEmpty() ? RenderShape.INVISIBLE : super.getRenderShape(state);
     }
 
     private VoxelShape getCachedShape(BlockState state) {
         int shapeIdx = (state.getValue(NE) ? 1 : 0) | (state.getValue(SE) ? 2 : 0) | (state.getValue(SW) ? 4 : 0) | (state.getValue(NW) ? 8 : 0);
         if (SHAPE_CACHE[shapeIdx] == null) {
-            VoxelShape shape = VoxelShapes.empty();
+            VoxelShape shape = Shapes.empty();
             for (Corner corner : Corner.values()) {
                 if (!state.getValue(corner.prop)) {
-                    shape = VoxelShapes.or(shape, corner.shape);
+                    shape = Shapes.or(shape, corner.shape);
                 }
             }
             SHAPE_CACHE[shapeIdx] = shape;
@@ -158,7 +164,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
         return SHAPE_CACHE[shapeIdx];
     }
 
-    private boolean[] getConnections(IBlockReader world, BlockPos pos) {
+    private boolean[] getConnections(BlockGetter world, BlockPos pos) {
         boolean[] res = new boolean[4];
 
         boolean frameXPos = world.getBlockState(pos.east()).getBlock() == ModBlocks.ELEVATOR_FRAME.get();
@@ -175,7 +181,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     }
 
     @Override
-    public void entityInside(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         getElevatorBase(world, pos).ifPresent(teBase -> {
             if (!teBase.isStopped()) {
                 int baseY = teBase.getBlockPos().getY();
@@ -186,7 +192,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
                         // when departing, nudge the entity onto the platform if they're hanging over the edge
                         int x = pos.getX();
                         int z = pos.getZ();
-                        AxisAlignedBB box = entity.getBoundingBox();
+                        AABB box = entity.getBoundingBox();
                         if (box.minX < x && !(teBase.getCachedNeighbor(Direction.WEST) instanceof TileEntityElevatorBase)
                                 || (box.maxX > x + 1 && !(teBase.getCachedNeighbor(Direction.EAST) instanceof TileEntityElevatorBase))) {
                             eX = x + 0.5;
@@ -197,10 +203,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
                         }
                     }
                     entity.setPos(eX, baseY + teBase.extension + 1.2, eZ);
-                    if (entity instanceof ServerPlayerEntity && teBase.getUpgrades(EnumUpgrade.SPEED) >= 6) {
+                    if (entity instanceof ServerPlayer && teBase.getUpgrades(EnumUpgrade.SPEED) >= 6) {
                         // prevents "<player> moved too quickly" problems when the elevator is fast
                         // note: using this can lead to jerky upward movement, so only doing for fast elevators
-                        ((ServerPlayerEntity) entity).connection.resetPosition();
+                        ((ServerPlayer) entity).connection.resetPosition();
                     }
                     entity.fallDistance = 0;
                 }
@@ -208,64 +214,70 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
         });
     }
 
-    static Optional<TileEntityElevatorBase> getElevatorBase(IBlockReader world, BlockPos pos) {
+    static Optional<TileEntityElevatorBase> getElevatorBase(BlockGetter world, BlockPos pos) {
         // caching the elevator base in the frame TE - this should be safe from a caching point of view,
         // since if the base (or any frame below us) is broken, all frames above it - including us - will also break
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityElevatorFrame.class)
                 .map(TileEntityElevatorFrame::getElevatorBase);
     }
 
-    private double getElevatorBlockHeight(IBlockReader world, BlockPos pos) {
+    private double getElevatorBlockHeight(BlockGetter world, BlockPos pos) {
         return getElevatorBase(world, pos)
                 .map(te -> Math.max(te.extension - (pos.getY() - te.getBlockPos().getY()) + 1, 0D))
                 .orElse(0D);
     }
 
     @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         getElevatorBase(world, pos).ifPresent(TileEntityElevatorBase::updateMaxElevatorHeight);
 
         super.onRemove(state, world, pos, newState, isMoving);
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
         BlockState below = worldIn.getBlockState(pos.below());
         return below.getBlock() == this || below.getBlock() == ModBlocks.ELEVATOR_BASE.get();
     }
 
     @Override
-    public boolean isPathfindable(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+    public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
         return getElevatorBlockHeight(worldIn, pos) == 0f;
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (!player.isCrouching() && player.getItemInHand(hand).getItem() == this.asItem()) {
             // build it scaffolding-style
             if (!world.isClientSide) {
-                BlockPos.Mutable mPos = new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ());
+                BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());
                 int worldHeight = world.dimensionType().logicalHeight();
                 while (mPos.getY() < worldHeight && world.getBlockState(mPos).getBlock() == this) {
                     mPos.move(Direction.UP);
                 }
-                if (mPos.getY() < worldHeight && world.getBlockState(mPos).isAir(world, mPos)) {
+                if (mPos.getY() < worldHeight && world.getBlockState(mPos).isAir()) {
                     world.setBlockAndUpdate(mPos, this.defaultBlockState());
                     float pitch = Math.min(1.5f, (mPos.getY() - pos.getY()) * 0.05f + 1f);
-                    world.playSound(null, mPos, SoundEvents.METAL_PLACE, SoundCategory.BLOCKS, 1f, pitch);
+                    world.playSound(null, mPos, SoundEvents.METAL_PLACE, SoundSource.BLOCKS, 1f, pitch);
                     if (!player.isCreative()) {
                         player.getItemInHand(hand).shrink(1);
                     }
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 } else {
-                    return ActionResultType.FAIL;
+                    return InteractionResult.FAIL;
                 }
             } else {
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         } else {
             return super.use(state, world, pos, player, hand, brtr);
         }
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityElevatorFrame(pPos, pState);
     }
 
     private enum Corner {

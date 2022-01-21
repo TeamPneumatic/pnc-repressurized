@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -37,19 +37,19 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         widget = new WidgetCheckBox(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, 0xFF404040, deserializeTextComponent(tag.getString("text")), b -> onActionPerformed());
 //        setTooltip(tag.getString("tooltip"));
-        widget.setTooltip(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Constants.NBT.TAG_STRING)));
+        widget.setTooltip(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Tag.TAG_STRING)));
     }
 
     @Override
-    public CompoundNBT toNBT(int guiLeft, int guiTop) {
-        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+    public CompoundTag toNBT(int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(guiLeft, guiTop);
         tag.putInt("x", widget.x - guiLeft);
         tag.putInt("y", widget.y - guiTop);
-        tag.putString("text", ITextComponent.Serializer.toJson(widget.getMessage()));
+        tag.putString("text", Component.Serializer.toJson(widget.getMessage()));
         tag.put("tooltip", NBTUtils.serializeTextComponents(widget.getTooltip()));
         return tag;
     }
@@ -60,12 +60,12 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
     }
 
     @Override
-    public void setText(ITextComponent text) {
+    public void setText(Component text) {
         widget.setMessage(text);
     }
 
     @Override
-    public ITextComponent getText() {
+    public Component getText() {
         return widget.getMessage();
     }
 
@@ -86,12 +86,12 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
     }
 
     @Override
-    public void setTooltip(List<ITextComponent> text) {
+    public void setTooltip(List<Component> text) {
         widget.setTooltip(text);
     }
 
     @Override
-    public List<ITextComponent> getTooltip() {
+    public List<Component> getTooltip() {
         return widget.getTooltip();
     }
 }

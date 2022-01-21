@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public interface IEntityTrackEntry {
      * @param curInfo list of text component to append information to
      * @param isLookingAtTarget true if the player is focused on the tracked entity
      */
-    void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget);
+    void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget);
 
     /**
      * Update is called every (client) tick, and can be used to update something like a timer (e.g. used for the Creeper
@@ -62,5 +62,5 @@ public interface IEntityTrackEntry {
      * @param entity the tracked entity
      * @param partialTicks partial ticks since last full ticks
      */
-    default void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, Entity entity, float partialTicks) { }
+    default void render(PoseStack matrixStack, MultiBufferSource buffer, Entity entity, float partialTicks) { }
 }

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty;
 
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
 
 import java.util.ArrayList;
 import java.util.List;

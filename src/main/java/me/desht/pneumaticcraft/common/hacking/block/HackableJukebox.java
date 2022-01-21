@@ -18,16 +18,16 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.JukeboxBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.JukeboxBlock;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -41,29 +41,29 @@ public class HackableJukebox implements IHackableBlock {
     }
 
     @Override
-    public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
+    public boolean canHack(BlockGetter world, BlockPos pos, Player player) {
         BlockState state = world.getBlockState(pos);
         return state.getBlock() == Blocks.JUKEBOX && state.getValue(JukeboxBlock.HAS_RECORD);
     }
 
     @Override
-    public void addInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.silence"));
     }
 
     @Override
-    public void addPostHackInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.silenced"));
     }
 
     @Override
-    public int getHackTime(IBlockReader world, BlockPos pos, PlayerEntity player) {
+    public int getHackTime(BlockGetter world, BlockPos pos, Player player) {
         return 100;
     }
 
     @Override
-    public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
+    public void onHackComplete(Level world, BlockPos pos, Player player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, Hand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, InteractionHand.MAIN_HAND, rtr));
     }
 }

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -28,12 +28,12 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
 
     private boolean hasEnoughPressure = true;
 
-    public GuiPressureChamberInterface(ContainerPressureChamberInterface container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiPressureChamberInterface(ContainerPressureChamberInterface container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -57,13 +57,13 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
 
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.pressureChamberInterface.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), 0xFFFFAA00, false);
 
-        exportAnyButton = addButton(new WidgetButtonExtended(leftPos + 111, topPos + 32, 60, 20, StringTextComponent.EMPTY)
+        exportAnyButton = addRenderableWidget(new WidgetButtonExtended(leftPos + 111, topPos + 32, 60, 20, TextComponent.EMPTY)
                 .withTag("export_mode"));
-        exportTypeLabel = addButton(new WidgetLabel(leftPos + 111, topPos + 20, xlate("pneumaticcraft.gui.pressureChamberInterface.exportLabel")));
+        exportTypeLabel = addRenderableWidget(new WidgetLabel(leftPos + 111, topPos + 20, xlate("pneumaticcraft.gui.pressureChamberInterface.exportLabel")));
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         super.renderLabels(matrixStack, x, y);
 
         int inputShift = (int) ((1F - (float) Math.cos(te.inputProgress / (float) MAX_PROGRESS * Math.PI)) * 11);
@@ -84,8 +84,8 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         boolean exporting = te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.EXPORT;
         exportAnyButton.setVisible(exporting);
@@ -98,8 +98,8 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
         }
 
         statusStat.setText(ImmutableList.of(
-                xlate("pneumaticcraft.gui.pressureChamberInterface.mode").withStyle(TextFormatting.WHITE),
-                xlate(te.interfaceMode.getTranslationKey()).withStyle(TextFormatting.BLACK)
+                xlate("pneumaticcraft.gui.pressureChamberInterface.mode").withStyle(ChatFormatting.WHITE),
+                xlate(te.interfaceMode.getTranslationKey()).withStyle(ChatFormatting.BLACK)
         ));
 
         if (hasEnoughPressure && !te.hasEnoughPressure()) {
@@ -111,7 +111,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
         if (te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.NONE) {

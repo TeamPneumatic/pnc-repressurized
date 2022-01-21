@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 /**
  * Implement this and register it via {@code PneumaticRegistry.getItemRegistry().registerMagnetSuppressor() }

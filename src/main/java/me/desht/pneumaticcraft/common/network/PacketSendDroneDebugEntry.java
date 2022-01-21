@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * Received on: CLIENT
@@ -34,18 +34,18 @@ public class PacketSendDroneDebugEntry extends PacketDroneDebugBase {
         this.entry = entry;
     }
 
-    public PacketSendDroneDebugEntry(PacketBuffer buffer) {
+    public PacketSendDroneDebugEntry(FriendlyByteBuf buffer) {
         super(buffer);
         entry = new DroneDebugEntry(buffer);
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         entry.toBytes(buf);
     }
 
     @Override
-    void handle(PlayerEntity player, IDroneBase drone) {
+    void handle(Player player, IDroneBase drone) {
         drone.getDebugger().addEntry(entry);
     }
 }

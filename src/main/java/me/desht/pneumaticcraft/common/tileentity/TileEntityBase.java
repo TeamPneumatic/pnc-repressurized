@@ -38,26 +38,27 @@ import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.INameable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -71,30 +72,37 @@ import javax.annotation.Nullable;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public abstract class TileEntityBase extends TileEntity
-        implements INameable, IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
+public abstract class TileEntityBase extends BlockEntity
+        implements Nameable, IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
     private final UpgradeHandler upgradeHandler;
-    private boolean firstTick = true;
     private List<SyncedField<?>> descriptionFields;
     private final CachedTileNeighbours neighbourCache = new CachedTileNeighbours(this);
     private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
     private final LuaMethodRegistry luaMethodRegistry = new LuaMethodRegistry(this);
-    private ITextComponent customName = null;
+    private Component customName = null;
     private boolean forceFullSync;
     private BitSet fieldsToSync;  // tracks which synced fields have changed and need to be synced on the next tick
 
-    public TileEntityBase(TileEntityType type) {
-        this(type, 0);
+    public TileEntityBase(BlockEntityType type, BlockPos pos, BlockState state) {
+        this(type, pos, state, 0);
     }
 
-    public TileEntityBase(TileEntityType type, int upgradeSize) {
-        super(type);
+    public TileEntityBase(BlockEntityType type, BlockPos pos, BlockState state, int upgradeSize) {
+        super(type, pos, state);
 
         this.upgradeHandler = new UpgradeHandler(upgradeSize);
+    }
+
+    @Nonnull
+    public Level nonNullLevel()
+    {
+        // use in methods where we know the level is not null, e.g. tickers, renderers...
+        return Objects.requireNonNull(super.getLevel());
     }
 
     @Override
@@ -107,35 +115,35 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public ITextComponent getName() {
-        return customName == null ? new TranslationTextComponent(getBlockTranslationKey()) : customName;
+    public Component getName() {
+        return customName == null ? new TranslatableComponent(getBlockTranslationKey()) : customName;
     }
 
     @Nullable
     @Override
-    public ITextComponent getCustomName() {
+    public Component getCustomName() {
         return customName;
     }
 
-    public void setCustomName(ITextComponent customName) {
+    public void setCustomName(Component customName) {
         this.customName = customName;
     }
 
     @Override
-    public ITextComponent getDisplayName() {
+    public Component getDisplayName() {
         return getName();
     }
 
     // server side, chunk sending
     @Override
-    public CompoundNBT getUpdateTag() {
-        CompoundNBT compound = super.getUpdateTag();
+    public CompoundTag getUpdateTag() {
+        CompoundTag compound = super.getUpdateTag();
         return new PacketDescription(this, true).writeNBT(compound);
     }
 
     // client side, chunk sending
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+    public void handleUpdateTag(CompoundTag tag) {
         new PacketDescription(tag).process();
     }
 
@@ -169,7 +177,9 @@ public abstract class TileEntityBase extends TileEntity
     /**
      * Force a sync of this TE to the client right now.
      */
-    public void sendDescriptionPacket() {
+    public final void sendDescriptionPacket() {
+        if (level == null || !level.isClientSide) return;
+
         PacketDescription descPacket = new PacketDescription(this, forceFullSync);
         if (descPacket.hasData()) {
             NetworkHandler.sendToAllTracking(descPacket, this);
@@ -189,23 +199,16 @@ public abstract class TileEntityBase extends TileEntity
      * Even though this class doesn't implement ITickableTileEntity, we'll keep the base update() logic here; classes
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
      */
-    void tickImpl() {
-        if (firstTick && !level.isClientSide) {
-            onFirstServerTick();
-        }
-        firstTick = false;
-
-        upgradeCache.validate();
-
-        if (!level.isClientSide) {
-            if (this instanceof IHeatExchangingTE) {
+    void defaultServerTick() {
+        if (!nonNullLevel().isClientSide) {
+            if (this instanceof IHeatExchangingTE he) {
                 // tick default heat exchanger; if the TE has other exchangers, they are handled in the subclass
-                IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger();
+                IHeatExchangerLogic logic = he.getHeatExchanger();
                 if (logic != null) logic.tick();
             }
 
-            if (this instanceof IAutoFluidEjecting && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-                ((IAutoFluidEjecting) this).autoExportFluid(this);
+            if (this instanceof IAutoFluidEjecting ejector && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+                ejector.autoExportFluid(this);
             }
 
             for (int i = 0; i < getDescriptionFields().size(); i++) {
@@ -232,17 +235,17 @@ public abstract class TileEntityBase extends TileEntity
     public void setChanged() {
         // overridden to only update neighbours if this TE actually has a useful comparator output
         if (level != null) {
-            if (level.isAreaLoaded(worldPosition, 0)) {
-                level.getChunkAt(worldPosition).markUnsaved();
+            if (level.isLoaded(worldPosition)) {
+                level.getChunkAt(worldPosition).setUnsaved(true);
             }
-            if (this instanceof IComparatorSupport && !this.getBlockState().isAir(this.level, this.worldPosition)) {
+            if (this instanceof IComparatorSupport && !this.getBlockState().isAir()) {
                 this.level.updateNeighbourForOutputSignal(this.worldPosition, this.getBlockState().getBlock());
             }
         }
     }
 
-    protected void onFirstServerTick() {
-        // TODO 1.17 should be able to replace onFirstServerTick() with onLoad()
+    @Override
+    public void onLoad() {
         if (this instanceof IHeatExchangingTE) {
             ((IHeatExchangingTE) this).initializeHullHeatExchangers(level, worldPosition);
         }
@@ -255,12 +258,12 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     public void onBlockRotated() {
-        if (this instanceof ISideConfigurable) {
-            for (SideConfigurator<?> sc : ((ISideConfigurable) this).getSideConfigurators()) {
+        if (this instanceof ISideConfigurable c) {
+            for (SideConfigurator<?> sc : c.getSideConfigurators()) {
                 sc.setupFacingMatrix();
             }
         }
-        if (!level.isClientSide) {
+        if (!nonNullLevel().isClientSide) {
             PneumaticRegistry.getInstance().forceClientShapeRecalculation(level, worldPosition);
         }
     }
@@ -276,7 +279,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data written by {@link TileEntityBase#save(CompoundNBT)}
+     * Encoded into the description packet. Also included in saved data written by {@link BlockEntity#saveAdditional(CompoundTag)}
      *
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -284,14 +287,14 @@ public abstract class TileEntityBase extends TileEntity
      * @param tag NBT tag
      */
     @Override
-    public void writeToPacket(CompoundNBT tag) {
+    public void writeToPacket(CompoundTag tag) {
         if (this instanceof ISideConfigurable) {
             tag.put(NBTKeys.NBT_SIDE_CONFIG, SideConfigurator.writeToNBT((ISideConfigurable) this));
         }
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#load(BlockState, CompoundNBT)}.
+     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#load(CompoundTag)}.
      *
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -299,56 +302,54 @@ public abstract class TileEntityBase extends TileEntity
      * @param tag NBT tag
      */
     @Override
-    public void readFromPacket(CompoundNBT tag) {
+    public void readFromPacket(CompoundTag tag) {
         if (this instanceof ISideConfigurable) {
             SideConfigurator.readFromNBT(tag.getCompound(NBTKeys.NBT_SIDE_CONFIG), (ISideConfigurable) this);
         }
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         if (customName != null) {
-            tag.putString("CustomName", ITextComponent.Serializer.toJson(customName));
+            tag.putString("CustomName", Component.Serializer.toJson(customName));
         }
         if (getUpgradeHandler().getSlots() > 0) {
             tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT());
         }
-        if (this instanceof IHeatExchangingTE) {
-            IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger();
+        if (this instanceof IHeatExchangingTE he) {
+            IHeatExchangerLogic logic = he.getHeatExchanger();
             if (logic != null) tag.put(NBTKeys.NBT_HEAT_EXCHANGER, logic.serializeNBT());
         }
-        if (this instanceof IRedstoneControl) {
-            ((IRedstoneControl<?>) this).getRedstoneController().serialize(tag);
+        if (this instanceof IRedstoneControl rc) {
+            rc.getRedstoneController().serialize(tag);
         }
-        if (this instanceof ISerializableTanks) {
-            tag.put(NBTKeys.NBT_SAVED_TANKS, ((ISerializableTanks) this).serializeTanks());
+        if (this instanceof ISerializableTanks st) {
+            tag.put(NBTKeys.NBT_SAVED_TANKS, st.serializeTanks());
         }
         writeToPacket(tag);
-
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
-        if (tag.contains("CustomName", Constants.NBT.TAG_STRING)) {
-            customName = ITextComponent.Serializer.fromJson(tag.getString("CustomName"));
+        if (tag.contains("CustomName", Tag.TAG_STRING)) {
+            customName = Component.Serializer.fromJson(tag.getString("CustomName"));
         }
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
             getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
         }
-        if (this instanceof IHeatExchangingTE) {
-            IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger();
+        if (this instanceof IHeatExchangingTE he) {
+            IHeatExchangerLogic logic = he.getHeatExchanger();
             if (logic != null) logic.deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
         }
-        if (this instanceof IRedstoneControl) {
-            ((IRedstoneControl<?>) this).getRedstoneController().deserialize(tag);
+        if (this instanceof IRedstoneControl rc) {
+            rc.getRedstoneController().deserialize(tag);
         }
-        if (this instanceof ISerializableTanks) {
-            ((ISerializableTanks) this).deserializeTanks(tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
+        if (this instanceof ISerializableTanks st) {
+            st.deserializeTanks(tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
         }
         readFromPacket(tag);
     }
@@ -364,11 +365,11 @@ public abstract class TileEntityBase extends TileEntity
     @Nonnull
     @Override
     public IModelData getModelData() {
-        if (this instanceof ICamouflageableTE) {
+        if (this instanceof ICamouflageableTE c) {
             return new ModelDataMap.Builder()
                     .withInitial(BlockPneumaticCraftCamo.BLOCK_ACCESS, level)
                     .withInitial(BlockPneumaticCraftCamo.BLOCK_POS, worldPosition)
-                    .withInitial(BlockPneumaticCraftCamo.CAMO_STATE, ((ICamouflageableTE) this).getCamouflage())
+                    .withInitial(BlockPneumaticCraftCamo.CAMO_STATE, c.getCamouflage())
                     .build();
         } else {
             return super.getModelData();
@@ -383,7 +384,7 @@ public abstract class TileEntityBase extends TileEntity
 
     public Direction getRotation() {
         BlockState state = getBlockState();
-        return state.getBlock() instanceof BlockPneumaticCraft ? ((BlockPneumaticCraft) state.getBlock()).getRotation(state) : Direction.NORTH;
+        return state.getBlock() instanceof BlockPneumaticCraft b ? b.getRotation(state) : Direction.NORTH;
     }
 
     public int getUpgrades(EnumUpgrade upgrade) {
@@ -399,15 +400,15 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
     }
 
-    public boolean isGuiUseableByPlayer(PlayerEntity player) {
+    public boolean isGuiUseableByPlayer(Player player) {
         return level != null && level.getBlockEntity(getBlockPos()) == this
-                && player.distanceToSqr(Vector3d.atCenterOf(getBlockPos())) <= 64.0D;
+                && player.distanceToSqr(Vec3.atCenterOf(getBlockPos())) <= 64.0D;
     }
 
-    public TileEntity getCachedNeighbor(Direction dir) {
+    public BlockEntity getCachedNeighbor(Direction dir) {
         // don't attempt to cache client-side; we don't get neighbour block updates there so can't reliably clear the cache
         if (level == null) return null;
 
@@ -418,7 +419,7 @@ public abstract class TileEntityBase extends TileEntity
 
     /**
      * Called when a neighboring tile entity changes state (specifically when
-     * {@link net.minecraft.world.World#updateNeighbourForOutputSignal(BlockPos, Block)} is called.
+     * {@link Level#updateNeighbourForOutputSignal(BlockPos, Block)} is called.
      * @param tilePos the blockpos of the neighboring tile entity
      */
     public void onNeighborTileUpdate(BlockPos tilePos) {
@@ -429,11 +430,11 @@ public abstract class TileEntityBase extends TileEntity
      * @param fromPos the blockpos of the block that caused this update
      */
     public void onNeighborBlockUpdate(BlockPos fromPos) {
-        if (this instanceof IHeatExchangingTE) {
-            ((IHeatExchangingTE) this).initializeHullHeatExchangers(level, worldPosition);
+        if (this instanceof IHeatExchangingTE he) {
+            he.initializeHullHeatExchangers(level, worldPosition);
         }
-        if (this instanceof IRedstoneControl) {
-            ((IRedstoneControl<?>)this).getRedstoneController().updateRedstonePower();
+        if (this instanceof IRedstoneControl rc) {
+            rc.getRedstoneController().updateRedstonePower();
         }
         neighbourCache.purge();
     }
@@ -559,8 +560,8 @@ public abstract class TileEntityBase extends TileEntity
             }
         }
 
-        if (this instanceof ICamouflageableTE) {
-            BlockState camoState = ((ICamouflageableTE) this).getCamouflage();
+        if (this instanceof ICamouflageableTE c) {
+            BlockState camoState = c.getCamouflage();
             if (camoState != null) {
                 drops.add(ICamouflageableTE.getStackForState(camoState));
             }
@@ -607,12 +608,12 @@ public abstract class TileEntityBase extends TileEntity
     /**
      * Get any extra data to be serialized onto a dropped item stack. The supplied tag is the "BlockEntityTag" subtag of
      * the item's NBT data, so will be automatically deserialized into the TE (i.e. available to
-     * {@link TileEntity#load(BlockState, CompoundNBT)} method) when the itemblock  is next placed.
+     * {@link BlockEntity#load(CompoundTag)} method) when the itemblock  is next placed.
      *
      * @param blockEntityTag the existing "BlockEntityTag" subtag to add data to
      * @param preserveState true when dropped with a wrench, false when broken with a pickaxe etc.
      */
-    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
     }
 
     /**
@@ -621,7 +622,7 @@ public abstract class TileEntityBase extends TileEntity
      * @return the player count
      */
     public int countPlayersUsing() {
-        return (int) level.players().stream()
+        return (int) nonNullLevel().players().stream()
                 .filter(player -> player.containerMenu instanceof ContainerPneumaticBase)
                 .filter(player -> ((ContainerPneumaticBase<?>) player.containerMenu).te == this)
                 .count();
@@ -631,7 +632,7 @@ public abstract class TileEntityBase extends TileEntity
     public void requestModelDataUpdate() {
         // it is possible for the TE's client world to be a fake one, e.g. Create schematicannon previews
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/812
-        if (level != null && level.isClientSide && level == ClientUtils.getClientWorld()) {
+        if (level != null && level.isClientSide && level == ClientUtils.getClientLevel()) {
             ModelDataManager.requestModelDataRefresh(this);
         }
     }

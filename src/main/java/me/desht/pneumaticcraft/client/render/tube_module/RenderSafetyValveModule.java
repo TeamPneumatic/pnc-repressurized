@@ -1,46 +1,65 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleSafetyValve;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
 
 public class RenderSafetyValveModule extends TubeModuleRendererBase<ModuleSafetyValve> {
-    private final ModelRenderer tubeConnector;
-    private final ModelRenderer valve;
-    private final ModelRenderer valveHandle;
-    private final ModelRenderer valveLid;
+    private final ModelPart tubeConnector;
+    private final ModelPart valve;
+    private final ModelPart valveHandle;
+    private final ModelPart valveLid;
 
-    public RenderSafetyValveModule(){
-        tubeConnector = new ModelRenderer(32, 32, 0, 0);
-        tubeConnector.setPos(-1.5F, 14.5F, 2.0F);
-        tubeConnector.addBox(-0.5F, -0.5F, 0.0F, 4.0F, 4.0F, 2.0F);
-        tubeConnector.mirror = true;
+    private static final String TUBECONNECTOR = "tubeConnector";
+    private static final String VALVE = "valve";
+    private static final String VALVEHANDLE = "valveHandle";
+    private static final String VALVELID = "valveLid";
 
-        valve = new ModelRenderer(32, 32, 0, 6);
-        valve.setPos(-1.0F, 15.0F, 4.0F);
-        valve.addBox(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 4.0F);
-        valve.mirror = true;
-
-        valveHandle = new ModelRenderer(32, 32, 0, 16);
-        valveHandle.setPos(2.0F, 15.5F, 4.0F);
-        setRotation(valveHandle, 0.0F, -0.5934F, 0.0F);
-        valveHandle.addBox(0.5592F, 0.0F, 0.829F, 1.0F, 1.0F, 3.0F);
-        valveHandle.mirror = true;
-
-        valveLid = new ModelRenderer(32, 32, 0, 12);
-        valveLid.setPos(1.5F, 15.5F, 7.25F);
-        valveLid.texOffs(0, 12).addBox(-3.0F, -1.0F, 0.0F, 3.0F, 3.0F, 1.0F);
+    public RenderSafetyValveModule(BlockEntityRendererProvider.Context ctx) {
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.SAFETY_VALVE_MODULE);
+        tubeConnector = root.getChild(TUBECONNECTOR);
+        valve = root.getChild(VALVE);
+        valveHandle = root.getChild(VALVEHANDLE);
+        valveLid = root.getChild(VALVELID);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(TUBECONNECTOR, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("tubeConnector_0", -0.5F, -0.5F, 0.0F, 4, 4, 2),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(VALVE, CubeListBuilder.create().texOffs(0, 6)
+                        .addBox("valve_0", 0.0F, 0.0F, 0.0F, 2, 2, 4),
+                PartPose.offset(-1.0F, 15.0F, 4.0F));
+        partdefinition.addOrReplaceChild(VALVEHANDLE, CubeListBuilder.create().texOffs(0, 16)
+                        .addBox("valveHandle_0", 0.5592F, 0.0F, 0.829F, 1, 1, 3),
+                PartPose.offsetAndRotation(2.0F, 15.5F, 4.0F, 0.0F, -0.5934F, 0.0F));
+        partdefinition.addOrReplaceChild(VALVELID, CubeListBuilder.create().texOffs(0, 12)
+                        .addBox("valveLid_0", -3.0F, -1.0F, 0.0F, 3, 3, 1, 0, 12),
+                PartPose.offset(1.5F, 15.5F, 7.25F));
+
+        return LayerDefinition.create(meshdefinition, 32, 32);
+    }
+
+
     @Override
-    protected void renderDynamic(ModuleSafetyValve module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
-        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        valve.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        valveHandle.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        valveLid.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+    protected void renderDynamic(ModuleSafetyValve module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        valve.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        valveHandle.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        valveLid.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
     }
 
     @Override

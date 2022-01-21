@@ -19,15 +19,19 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
-public class BlockPressurizedSpawner extends BlockPneumaticCraft {
+public class BlockPressurizedSpawner extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     public BlockPressurizedSpawner() {
         super(ModBlocks.defaultProps().noOcclusion());
     }
 
+    @Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityPressurizedSpawner.class;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityPressurizedSpawner(pPos, pState);
     }
 }

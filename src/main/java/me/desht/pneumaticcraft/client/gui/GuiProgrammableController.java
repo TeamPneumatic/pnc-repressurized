@@ -29,15 +29,15 @@ import me.desht.pneumaticcraft.common.inventory.ContainerProgrammableController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.energy.CapabilityEnergy;
 
 import java.util.Collections;
@@ -61,7 +61,7 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
     private WidgetCheckBox chunkloadWork;
     private WidgetCheckBox chunkloadWork3x3;
 
-    public GuiProgrammableController(ContainerProgrammableController container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiProgrammableController(ContainerProgrammableController container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -69,12 +69,12 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
     public void init() {
         super.init();
 
-        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> addButton(new WidgetEnergy(leftPos + 12, topPos + 20, handler)));
+        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> addRenderableWidget(new WidgetEnergy(leftPos + 12, topPos + 20, handler)));
 
-        List<ITextComponent> exc = TileEntityProgrammableController.BLACKLISTED_WIDGETS.stream()
+        List<Component> exc = TileEntityProgrammableController.BLACKLISTED_WIDGETS.stream()
                 .map(s -> Symbols.BULLET + " " + I18n.get("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))
                 .sorted()
-                .map(StringTextComponent::new)
+                .map(TextComponent::new)
                 .collect(Collectors.toList());
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.programmable_controller.excluded"),
                 new ItemStack(ModItems.DRONE.get()), 0xFFFF5050, true).setText(exc);
@@ -96,8 +96,8 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         shouldCharge.checked = te.shouldChargeHeldItem;
         chunkloadWork3x3.active = chunkloadWork.checked;
@@ -123,7 +123,7 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
         if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {

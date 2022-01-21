@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import net.minecraft.entity.ai.controller.MovementController;
+import net.minecraft.world.entity.ai.control.MoveControl;
 
-public class DroneMovementController extends MovementController {
+public class DroneMovementController extends MoveControl {
     private final EntityDroneBase entity;
     private double x, y, z, speed;
     private int timeoutTimer;

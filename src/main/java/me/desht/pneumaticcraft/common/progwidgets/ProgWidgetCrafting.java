@@ -26,19 +26,19 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.recipes.CraftingRecipeCache;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +57,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
 //        boolean usingVariables = false;
 
@@ -70,18 +70,18 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 //                itemFilter = (ProgWidgetItemFilter) itemFilter.getConnectedParameters()[0];
 //            }
 //        }
-        if (!usingVariables && getRecipeResult(ClientUtils.getClientWorld()) == null) {
+        if (!usingVariables && getRecipeResult(ClientUtils.getClientLevel()) == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.crafting.error.noCraftingRecipe"));
         }
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
-        ItemStack stack = getRecipeResult(ClientUtils.getClientWorld());
+        ItemStack stack = getRecipeResult(ClientUtils.getClientLevel());
         if (!stack.isEmpty()) {
-            curTooltip.add(stack.getHoverName().copy().withStyle(TextFormatting.YELLOW));
+            curTooltip.add(stack.getHoverName().copy().withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -121,9 +121,9 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public CraftingInventory getCraftingGrid() {
+    public CraftingContainer getCraftingGrid() {
         usingVariables = false;
-        CraftingInventory invCrafting = new CraftingInventory(new DummyContainer(), 3, 3);
+        CraftingContainer invCrafting = new CraftingContainer(new DummyContainer(), 3, 3);
         for (int y = 0; y < 3; y++) {
             ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter) getConnectedParameters()[y];
             for (int x = 0; x < 3 && itemFilter != null; x++) {
@@ -135,20 +135,20 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         return invCrafting;
     }
 
-    public ItemStack getRecipeResult(World world) {
-        CraftingInventory grid = getCraftingGrid();
+    public ItemStack getRecipeResult(Level world) {
+        CraftingContainer grid = getCraftingGrid();
         return getRecipe(world, grid).map(r -> r.assemble(grid)).orElse(ItemStack.EMPTY);
     }
 
     @Override
-    public Optional<ICraftingRecipe> getRecipe(World world, CraftingInventory grid) {
+    public Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid) {
         // no caching if using variables, because the item can change at any item
         return usingVariables ?
-                world.getRecipeManager().getRecipeFor(IRecipeType.CRAFTING, grid, world) :
+                world.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, grid, world) :
                 CraftingRecipeCache.INSTANCE.getCachedRecipe(world, grid);
     }
 
-    public static IRecipe<CraftingInventory> getRecipe(World world, ICraftingWidget widget) {
+    public static Recipe<CraftingContainer> getRecipe(Level world, ICraftingWidget widget) {
         return widget.getRecipe(world, widget.getCraftingGrid()).orElse(null);
     }
 
@@ -187,28 +187,28 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (useCount) tag.putBoolean("useCount", true);
         tag.putInt("count", count);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         useCount = tag.getBoolean("useCount");
         count = tag.getInt("count");
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(useCount);
         buf.writeVarInt(count);
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         useCount = buf.readBoolean();
         count = buf.readVarInt();

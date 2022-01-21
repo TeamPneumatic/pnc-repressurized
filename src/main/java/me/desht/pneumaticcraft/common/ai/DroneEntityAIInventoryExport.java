@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 
 public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
 
@@ -42,7 +42,7 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
     }
 
     private boolean export(BlockPos pos, boolean simulate) {
-        TileEntity te = drone.world().getBlockEntity(pos);
+        BlockEntity te = drone.world().getBlockEntity(pos);
         if (te != null) {
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);

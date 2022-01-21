@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collections;
@@ -68,8 +68,8 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
         }
 
         @Override
-        public Rectangle2d getArea() {
-            return new Rectangle2d(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
+        public Rect2i getArea() {
+            return new Rect2i(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
         }
 
         @Override
@@ -88,9 +88,9 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
         }
 
         @Override
-        public Rectangle2d getArea() {
+        public Rect2i getArea() {
             PointXY p = gui.getFluidSlotPos(slotNumber);
-            return new Rectangle2d(p.x, p.y, 16, 16);
+            return new Rect2i(p.x(), p.y(), 16, 16);
         }
 
         @Override

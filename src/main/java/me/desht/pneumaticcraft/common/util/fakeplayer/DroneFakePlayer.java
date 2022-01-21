@@ -19,33 +19,33 @@ package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.entity.item.ExperienceOrbEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.FakePlayer;
 
 public class DroneFakePlayer extends FakePlayer {
     private final IDroneBase drone;
     private boolean sneaking;
 
-    public DroneFakePlayer(ServerWorld world, GameProfile name, IDroneBase drone) {
+    public DroneFakePlayer(ServerLevel world, GameProfile name, IDroneBase drone) {
         super(world, name);
         this.drone = drone;
     }
 
     @Override
     public void giveExperiencePoints(int amount) {
-        Vector3d pos = drone.getDronePos();
-        ExperienceOrbEntity orb = new ExperienceOrbEntity(drone.world(), pos.x, pos.y, pos.z, amount);
+        Vec3 pos = drone.getDronePos();
+        ExperienceOrb orb = new ExperienceOrb(drone.world(), pos.x, pos.y, pos.z, amount);
         drone.world().addFreshEntity(orb);
     }
 
     @Override
-    public void playNotifySound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
+    public void playNotifySound(SoundEvent soundEvent, SoundSource category, float volume, float pitch) {
         drone.playSound(soundEvent, category, volume, pitch);
     }
 
@@ -65,12 +65,12 @@ public class DroneFakePlayer extends FakePlayer {
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
+    protected void equipEventAndSound(ItemStack stack) {
         // nothing
     }
 
     @Override
-    public Vector3d position() {
+    public Vec3 position() {
         return drone.getDronePos();
     }
 

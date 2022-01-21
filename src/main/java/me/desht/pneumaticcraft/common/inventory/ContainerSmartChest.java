@@ -19,15 +19,15 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerSmartChest extends ContainerPneumaticBase<TileEntitySmartChest> {
     public static final int N_COLS = 12;
 
-    public ContainerSmartChest(int windowId, PlayerInventory inv, BlockPos pos) {
+    public ContainerSmartChest(int windowId, Inventory inv, BlockPos pos) {
         super(ModContainers.SMART_CHEST.get(), windowId, inv, pos);
 
         for (int i = 0; i < TileEntitySmartChest.CHEST_SIZE; i++) {
@@ -39,7 +39,7 @@ public class ContainerSmartChest extends ContainerPneumaticBase<TileEntitySmartC
         addPlayerSlots(inv, 130);
     }
 
-    public ContainerSmartChest(int windowId, PlayerInventory inv, PacketBuffer buffer) {
+    public ContainerSmartChest(int windowId, Inventory inv, FriendlyByteBuf buffer) {
         this(windowId, inv, getTilePos(buffer));
     }
 }

@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -58,7 +58,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
             abort();
             return false;
         } else {
-            TileEntity te = drone.world().getBlockEntity(pos);
+            BlockEntity te = drone.world().getBlockEntity(pos);
             if (te != null) {
                 FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
                 if (!exportedFluid.isEmpty() && progWidget.isFluidValid(exportedFluid.getFluid())) {
@@ -93,7 +93,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
         }
     }
 
-    private FillStatus trySide(TileEntity te, Direction side, FluidStack fluidToExport, boolean simulate) {
+    private FillStatus trySide(BlockEntity te, Direction side, FluidStack fluidToExport, boolean simulate) {
         return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).map(fluidHandler -> {
             int filledAmount = fluidHandler.fill(fluidToExport, FluidAction.SIMULATE);
             if (filledAmount > 0) {

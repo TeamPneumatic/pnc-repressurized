@@ -25,16 +25,16 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumTrap;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
 public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap, TileEntityVacuumTrap> {
     WidgetButtonExtended rangeButton;
 
-    public GuiVacuumTrap(ContainerVacuumTrap container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiVacuumTrap(ContainerVacuumTrap container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -42,9 +42,9 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(leftPos + 98, topPos + 14, te.getFluidTank()));
+        addRenderableWidget(new WidgetTank(leftPos + 98, topPos + 14, te.getFluidTank()));
 
-        addButton(rangeButton = new WidgetRangeToggleButton(leftPos + 152, topPos + 66, te));
+        addRenderableWidget(rangeButton = new WidgetRangeToggleButton(leftPos + 152, topPos + 66, te));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
         if (te.problem == TileEntityVacuumTrap.Problems.NO_CORE || te.problem == TileEntityVacuumTrap.Problems.CORE_FULL) {
             curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.getTranslationKey()));
@@ -68,7 +68,7 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> curInfo) {
+    protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
         if (te.problem == TileEntityVacuumTrap.Problems.TRAP_CLOSED) {
             curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.getTranslationKey()));

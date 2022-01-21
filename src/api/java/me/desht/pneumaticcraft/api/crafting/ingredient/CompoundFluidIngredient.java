@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.api.crafting.ingredient;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 
 import java.util.Collection;
 import java.util.HashSet;

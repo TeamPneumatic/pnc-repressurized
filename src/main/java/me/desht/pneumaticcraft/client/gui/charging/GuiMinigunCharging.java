@@ -15,19 +15,19 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.gui;
+package me.desht.pneumaticcraft.client.gui.charging;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiMinigun extends GuiChargingUpgradeManager {
-    public GuiMinigun(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
+public class GuiMinigunCharging extends GuiChargingUpgradeManager {
+    public GuiMinigunCharging(ContainerChargingStationUpgradeManager container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

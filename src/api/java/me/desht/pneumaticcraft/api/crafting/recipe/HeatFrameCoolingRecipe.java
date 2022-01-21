@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.concurrent.ThreadLocalRandom;

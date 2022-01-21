@@ -24,19 +24,19 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IHeatTinted;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 
@@ -64,7 +64,7 @@ public class ColorHandlers {
             } else if (block.get() instanceof BlockPneumaticCraftCamo) {
                 event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
                     if (blockAccess != null && pos != null) {
-                        TileEntity te = blockAccess.getBlockEntity(pos);
+                        BlockEntity te = blockAccess.getBlockEntity(pos);
                         if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
                             return event.getBlockColors().getColor(((ICamouflageableTE) te).getCamouflage(), te.getLevel(), pos, tintIndex);
                         }
@@ -93,14 +93,14 @@ public class ColorHandlers {
      * Items implementing this will be automatically registered in the ColorHandler.Block event
      */
     public interface ITintableBlock {
-        int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex);
+        int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex);
     }
 
     public interface IHeatTintable extends ITintableBlock {
         @Override
-        default int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
+        default int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
             if (world != null && pos != null) {
-                TileEntity te = world.getBlockEntity(pos);
+                BlockEntity te = world.getBlockEntity(pos);
                 TintColor tint = te instanceof IHeatTinted ? ((IHeatTinted) te).getColorForTintIndex(tintIndex) : TintColor.WHITE;
                 return tint.getRGB();
             }

@@ -21,25 +21,29 @@ import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -50,12 +54,12 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     private static final double THICKNESS = 1/32D;
     private static final double ANTI_Z_FIGHT = 0.001D;
 
-    private static final DataParameter<Integer> IO_MODE = EntityDataManager.defineId(EntityTransferGadget.class, DataSerializers.INT);
-    private static final DataParameter<Integer> SIDE = EntityDataManager.defineId(EntityTransferGadget.class, DataSerializers.INT);
+    private static final EntityDataAccessor<Integer> IO_MODE = SynchedEntityData.defineId(EntityTransferGadget.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> SIDE = SynchedEntityData.defineId(EntityTransferGadget.class, EntityDataSerializers.INT);
 
     private int counter;
 
-    public EntityTransferGadget(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityTransferGadget(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -78,7 +82,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    public void onPlaced(PlayerEntity player, ItemStack stack, Direction facing) {
+    public void onPlaced(Player player, ItemStack stack, Direction facing) {
         super.onPlaced(player, stack, facing);
 
         setIOMode(IOMode.OUTPUT);
@@ -86,7 +90,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    public boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
+    public boolean onRightClickWithConfigurator(Player player, Direction side) {
         if (getSide() == side) {
             toggle(player);
             return true;
@@ -96,18 +100,18 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    public ActionResultType interactAt(PlayerEntity player, Vector3d hitVec, Hand hand) {
+    public InteractionResult interactAt(Player player, Vec3 hitVec, InteractionHand hand) {
         // since this is a cheap early game item, let's allow toggling with empty hand
         // not force the player to craft & charge up a logistics configurator
         if (player.getItemInHand(hand).isEmpty()) {
             toggle(player);
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
             return super.interactAt(player, hitVec, hand);
         }
     }
 
-    private void toggle(PlayerEntity player) {
+    private void toggle(Player player) {
         setIOMode(getIOMode().toggle());
         player.playSound(SoundEvents.ITEM_PICKUP, 1.0f, 1.0f);
     }
@@ -119,7 +123,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
 
     @Override
     public boolean canPlace(Direction facing) {
-        TileEntity te = getCachedTileEntity();
+        BlockEntity te = getCachedTileEntity();
         return te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent();
     }
 
@@ -142,7 +146,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
 
         counter = compound.getInt("counter");
@@ -151,7 +155,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
         compound.putInt("counter", counter);
@@ -160,44 +164,36 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
-        curInfo.add(xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
-        curInfo.add(xlate(getIOMode().getTranslationKey()));
+    public void addTooltip(Consumer<Component> curInfo, Player player, CompoundTag tag, boolean extended) {
+        curInfo.accept(xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
+        curInfo.accept(xlate(getIOMode().getTranslationKey()));
     }
 
     @Override
-    protected AxisAlignedBB calculateBlockBounds() {
-        AxisAlignedBB b = super.calculateBlockBounds();
-        switch (getSide()) {
-            case UP:
-                return new AxisAlignedBB(b.minX - THICKNESS, b.maxY - INDENT, b.minZ - THICKNESS,
-                        b.maxX + THICKNESS, b.maxY + THICKNESS, b.maxZ + THICKNESS);
-            case DOWN:
-                return new AxisAlignedBB(b.minX - THICKNESS, 0 - ANTI_Z_FIGHT, b.minZ - THICKNESS,
-                        b.maxX + THICKNESS, b.minY + INDENT, b.maxZ + THICKNESS);
-            case NORTH:
-                return new AxisAlignedBB(b.minX - THICKNESS, b.minY - THICKNESS, 0 - ANTI_Z_FIGHT,
-                        b.maxX + THICKNESS, b.maxY + THICKNESS, b.minZ + INDENT);
-            case SOUTH:
-                return new AxisAlignedBB(b.minX - THICKNESS, b.minY - THICKNESS, b.maxZ - INDENT,
-                        b.maxX + THICKNESS, b.maxY + THICKNESS, 1 + ANTI_Z_FIGHT);
-            case WEST:
-                return new AxisAlignedBB(0 - ANTI_Z_FIGHT, b.minY - THICKNESS, b.minZ - THICKNESS,
-                        b.minX + INDENT, b.maxY + THICKNESS, b.maxZ + THICKNESS);
-            case EAST:
-                return new AxisAlignedBB(b.maxX - INDENT, b.minY - THICKNESS, b.minZ - THICKNESS,
-                        1 + ANTI_Z_FIGHT, b.maxY + THICKNESS, b.maxZ + THICKNESS);
-            default:
-                return b;
-        }
+    protected AABB calculateBlockBounds() {
+        AABB b = super.calculateBlockBounds();
+        return switch (getSide()) {
+            case UP -> new AABB(b.minX - THICKNESS, b.maxY - INDENT, b.minZ - THICKNESS,
+                    b.maxX + THICKNESS, b.maxY + THICKNESS, b.maxZ + THICKNESS);
+            case DOWN -> new AABB(b.minX - THICKNESS, 0 - ANTI_Z_FIGHT, b.minZ - THICKNESS,
+                    b.maxX + THICKNESS, b.minY + INDENT, b.maxZ + THICKNESS);
+            case NORTH -> new AABB(b.minX - THICKNESS, b.minY - THICKNESS, 0 - ANTI_Z_FIGHT,
+                    b.maxX + THICKNESS, b.maxY + THICKNESS, b.minZ + INDENT);
+            case SOUTH -> new AABB(b.minX - THICKNESS, b.minY - THICKNESS, b.maxZ - INDENT,
+                    b.maxX + THICKNESS, b.maxY + THICKNESS, 1 + ANTI_Z_FIGHT);
+            case WEST -> new AABB(0 - ANTI_Z_FIGHT, b.minY - THICKNESS, b.minZ - THICKNESS,
+                    b.minX + INDENT, b.maxY + THICKNESS, b.maxZ + THICKNESS);
+            case EAST -> new AABB(b.maxX - INDENT, b.minY - THICKNESS, b.minZ - THICKNESS,
+                    1 + ANTI_Z_FIGHT, b.maxY + THICKNESS, b.maxZ + THICKNESS);
+        };
     }
 
     private void doTransfer() {
         // TODO capability caching
-        TileEntity inputTE = getCachedTileEntity();
+        BlockEntity inputTE = getCachedTileEntity();
         Direction side = getSide();
         Direction otherSide = getSide().getOpposite();
-        TileEntity outputTE = level.getBlockEntity(getBlockPos().relative(side));
+        BlockEntity outputTE = level.getBlockEntity(getBlockPos().relative(side));
         if (inputTE != null && outputTE != null) {
             if (getIOMode() == IOMode.OUTPUT) {
                 tryTransferItem(inputTE, outputTE, side, otherSide);
@@ -209,13 +205,13 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
         }
     }
 
-    private void tryTransferItem(TileEntity inputTE, TileEntity outputTE, Direction side, Direction otherSide) {
+    private void tryTransferItem(BlockEntity inputTE, BlockEntity outputTE, Direction side, Direction otherSide) {
         inputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)
                 .ifPresent(input -> outputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, otherSide)
                         .ifPresent(output -> IOHelper.transferOneItem(input, output)));
     }
 
-    private void tryTransferFluid(TileEntity inputTE, TileEntity outputTE, Direction side, Direction otherSide) {
+    private void tryTransferFluid(BlockEntity inputTE, BlockEntity outputTE, Direction side, Direction otherSide) {
         inputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side)
                 .ifPresent(input -> outputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, otherSide)
                         .ifPresent(output -> FluidUtil.tryFluidTransfer(output, input, 100, true)));

@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 import java.util.Set;
@@ -87,7 +87,7 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
 
         @Override
         public boolean canUse() {
-            drone.setName(widget.getNewName() != null ? new StringTextComponent(widget.getNewName()) : xlate("entity.pneumaticcraft.drone"));
+            drone.setName(widget.getNewName() != null ? new TextComponent(widget.getNewName()) : xlate("entity.pneumaticcraft.drone"));
             return false;
         }
     }

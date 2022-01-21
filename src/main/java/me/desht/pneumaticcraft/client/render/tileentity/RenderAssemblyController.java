@@ -1,33 +1,52 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
 public class RenderAssemblyController extends AbstractTileModelRenderer<TileEntityAssemblyController> {
     private static final float TEXT_SIZE = 0.007F;
-    private final ModelRenderer screen;
+    private final ModelPart screen;
 
-    public RenderAssemblyController(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
-        screen = new ModelRenderer(64, 64, 0, 0);
-        screen.setPos(-5.0F, 8.0F, 1.0F);
-        screen.texOffs(16, 0).addBox(-1.0F, 0.0F, -1.0F, 12.0F, 6.0F, 2.0F, 0.0F, true);
-        screen.xRot = -0.5934119F;
+    private static final String SCREEN = "screen";
+
+    public RenderAssemblyController(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
+
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_CONTROLLER);
+        screen = root.getChild(SCREEN);
+    }
+
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(SCREEN, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("screen_0", -1.0F, 0.0F, -1.0F, 12, 6, 2, 16, 0)
+                        .mirror(),
+                PartPose.offsetAndRotation(-5.0F, 8.0F, 1.0F, -0.5934119F, 0, 0));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
     @Override
-    public void renderModel(TileEntityAssemblyController te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_CONTROLLER));
+    public void renderModel(TileEntityAssemblyController te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_CONTROLLER));
 
         // have the screen face the player
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180 + Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));

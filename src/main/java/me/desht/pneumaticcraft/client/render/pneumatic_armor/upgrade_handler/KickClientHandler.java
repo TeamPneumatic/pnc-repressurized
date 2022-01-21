@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.KickHandler;
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.KeyMapping;
 
 import java.util.Optional;
 
@@ -37,7 +37,7 @@ public class KickClientHandler extends IArmorUpgradeClientHandler.SimpleToggleab
     }
 
     @Override
-    public Optional<KeyBinding> getTriggerKeyBinding() {
+    public Optional<KeyMapping> getTriggerKeyBinding() {
         return Optional.of(KeyHandler.getInstance().keybindKick);
     }
 

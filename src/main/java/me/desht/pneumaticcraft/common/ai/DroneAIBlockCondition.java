@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
 

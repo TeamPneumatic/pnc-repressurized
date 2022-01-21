@@ -3,19 +3,22 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class BlockThermalCompressor extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
+public class BlockThermalCompressor extends BlockPneumaticCraft
+        implements ColorHandlers.IHeatTintable, EntityBlockPneumaticCraft
+{
     private static final VoxelShape BOUNDS = Stream.of(
             Block.box(3, 3, 0, 13, 13, 1),
             Block.box(0, 15, 0, 16, 16, 1),
@@ -36,20 +39,20 @@ public class BlockThermalCompressor extends BlockPneumaticCraft implements Color
             Block.box(15, 3, 3, 16, 13, 13),
             Block.box(0, 3, 3, 1, 13, 13),
             Block.box(4, 0, 4, 12, 1, 12)
-    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     public BlockThermalCompressor() {
         super(ModBlocks.defaultProps());
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
+    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_) {
         return BOUNDS;
     }
 
+    @Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityThermalCompressor.class;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityThermalCompressor(pPos, pState);
     }
-
 }

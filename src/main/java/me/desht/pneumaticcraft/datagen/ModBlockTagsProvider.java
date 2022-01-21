@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.datagen;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.data.BlockTagsProvider;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ITag;
+import net.minecraft.tags.Tag;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -99,17 +99,17 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     }
 
     @SafeVarargs
-    private final void createTag(ITag.INamedTag<Block> tag, Supplier<? extends Block>... blocks) {
+    private final void createTag(Tag.Named<Block> tag, Supplier<? extends Block>... blocks) {
         tag(tag).add(resolveAll(Block[]::new, blocks));
     }
 
     @SafeVarargs
-    private final void appendToTag(ITag.INamedTag<Block> tag, ITag.INamedTag<Block>... toAppend) {
+    private final void appendToTag(Tag.Named<Block> tag, Tag.Named<Block>... toAppend) {
         tag(tag).addTags(toAppend);
     }
 
     @SafeVarargs
-    private final void createAndAppend(ITag.INamedTag<Block> tag, ITag.INamedTag<Block> to, Supplier<? extends Block>... blocks) {
+    private final void createAndAppend(Tag.Named<Block> tag, Tag.Named<Block> to, Supplier<? extends Block>... blocks) {
         createTag(tag, blocks);
         appendToTag(to, tag);
     }

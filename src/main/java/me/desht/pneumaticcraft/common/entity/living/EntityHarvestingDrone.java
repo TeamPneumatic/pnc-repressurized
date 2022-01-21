@@ -22,28 +22,28 @@ import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
 public class EntityHarvestingDrone extends EntityBasicDrone {
-    public EntityHarvestingDrone(EntityType<EntityHarvestingDrone> type, World world) {
+    public EntityHarvestingDrone(EntityType<EntityHarvestingDrone> type, Level world) {
         super(type, world);
     }
 
-    public EntityHarvestingDrone(World world, PlayerEntity player) {
+    public EntityHarvestingDrone(Level world, Player player) {
         super(ModEntities.HARVESTING_DRONE.get(), world, player);
     }
 
     @Override
     public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
-        TileEntity te = level.getBlockEntity(clickPos);
+        BlockEntity te = level.getBlockEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
         harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
         harvestPiece.setOrder(Ordering.HIGH_TO_LOW);

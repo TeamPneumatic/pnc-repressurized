@@ -26,16 +26,16 @@ import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
@@ -108,7 +108,7 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     @Override
-    public ITextComponent getVendorName() {
+    public Component getVendorName() {
         return isVillagerTrade ? xlate("pneumaticcraft.gui.amadron.villager") : xlate("pneumaticcraft.gui.amadron");
     }
 
@@ -123,14 +123,14 @@ public class AmadronOffer extends AmadronRecipe {
         if (inStock < 0 || inStock > max) {
             Log.warning("Amadron Offer %s: new stock %d out of range (0,%d) - clamped", this, inStock, maxStock);
         }
-        this.inStock = MathHelper.clamp(inStock, 0, max);
+        this.inStock = Mth.clamp(inStock, 0, max);
     }
 
     public void onTrade(int tradingAmount, String buyingPlayer) {
     }
 
     @Override
-    public void write(PacketBuffer buf) {
+    public void write(FriendlyByteBuf buf) {
         input.writeToBuf(buf);
         output.writeToBuf(buf);
         buf.writeBoolean(isStaticOffer);
@@ -141,7 +141,7 @@ public class AmadronOffer extends AmadronRecipe {
         blacklist.toBytes(buf);
     }
 
-    public static AmadronRecipe offerFromBuf(ResourceLocation id, PacketBuffer buf) {
+    public static AmadronRecipe offerFromBuf(ResourceLocation id, FriendlyByteBuf buf) {
         return ModRecipes.AMADRON_OFFERS.get().fromNetwork(id, buf);
     }
 
@@ -167,8 +167,8 @@ public class AmadronOffer extends AmadronRecipe {
      * Get a player-friendly description of the offer
      * @return a description string
      */
-    public ITextComponent getDescription() {
-        return new StringTextComponent(String.format("[%s -> %s]", input, output));
+    public Component getDescription() {
+        return new TextComponent(String.format("[%s -> %s]", input, output));
     }
 
     @Override
@@ -186,12 +186,12 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipes.AMADRON_OFFERS.get();
     }
 
     @Override
-    public IRecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return PneumaticCraftRecipeType.AMADRON_OFFERS;
     }
 
@@ -201,20 +201,20 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     @Override
-    public boolean isUsableByPlayer(PlayerEntity player) {
+    public boolean isUsableByPlayer(Player player) {
         return whitelist.test(player) && !blacklist.test(player);
     }
 
     @Override
-    public void addAvailabilityData(PlayerEntity player, List<ITextComponent> curTip) {
+    public void addAvailabilityData(Player player, List<Component> curTip) {
         if (whitelist.isReal()) {
-            ITextComponent suffix = xlate("pneumaticcraft.gui.misc." + (whitelist.matchAll() ? "all" : "any"));
-            curTip.add(xlate("pneumaticcraft.playerFilter.whitelist").append(" (").append(suffix).append(")").withStyle(TextFormatting.GOLD));
+            Component suffix = xlate("pneumaticcraft.gui.misc." + (whitelist.matchAll() ? "all" : "any"));
+            curTip.add(xlate("pneumaticcraft.playerFilter.whitelist").append(" (").append(suffix).append(")").withStyle(ChatFormatting.GOLD));
             whitelist.getDescription(player, curTip);
         }
         if (blacklist.isReal()) {
-            ITextComponent suffix = xlate("pneumaticcraft.gui.misc." + (blacklist.matchAll() ? "all" : "any"));
-            curTip.add(xlate("pneumaticcraft.playerFilter.blacklist").append(" (").append(suffix).append(")").withStyle(TextFormatting.GOLD));
+            Component suffix = xlate("pneumaticcraft.gui.misc." + (blacklist.matchAll() ? "all" : "any"));
+            curTip.add(xlate("pneumaticcraft.playerFilter.blacklist").append(" (").append(suffix).append(")").withStyle(ChatFormatting.GOLD));
             blacklist.getDescription(player, curTip);
         }
     }
@@ -224,7 +224,7 @@ public class AmadronOffer extends AmadronRecipe {
         return whitelist.isReal() || blacklist.isReal();
     }
 
-    public static class Serializer<T extends AmadronRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {
+    public static class Serializer<T extends AmadronRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {
@@ -234,12 +234,12 @@ public class AmadronOffer extends AmadronRecipe {
         @Override
         public T fromJson(ResourceLocation recipeId, JsonObject json) {
             try {
-                int maxStock = JSONUtils.getAsInt(json, "maxStock", -1);
+                int maxStock = GsonHelper.getAsInt(json, "maxStock", -1);
                 return factory.create(recipeId,
                         AmadronTradeResource.fromJson(json.getAsJsonObject("input")),
                         AmadronTradeResource.fromJson(json.getAsJsonObject("output")),
-                        JSONUtils.getAsBoolean(json, "static", true),
-                        JSONUtils.getAsInt(json, "level", 1),
+                        GsonHelper.getAsBoolean(json, "static", true),
+                        GsonHelper.getAsInt(json, "level", 1),
                         maxStock, maxStock,
                         json.has("whitelist") ? PlayerFilter.fromJson(json.getAsJsonObject("whitelist")) : PlayerFilter.YES,
                         json.has("blacklist") ? PlayerFilter.fromJson(json.getAsJsonObject("blacklist")) : PlayerFilter.NO
@@ -251,7 +251,7 @@ public class AmadronOffer extends AmadronRecipe {
 
         @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             return factory.create(recipeId,
                     AmadronTradeResource.fromPacketBuf(buffer),
                     AmadronTradeResource.fromPacketBuf(buffer),
@@ -265,7 +265,7 @@ public class AmadronOffer extends AmadronRecipe {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, T recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
             recipe.write(buffer);
         }
 

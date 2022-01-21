@@ -32,14 +32,14 @@ public class GuiProgWidgetBlockCondition extends GuiProgWidgetCondition<ProgWidg
     public void init() {
         super.init();
 
-        addButton(new WidgetCheckBox(guiLeft + 5, guiTop + 60, 0xFF404040,
+        addRenderableWidget(new WidgetCheckBox(guiLeft + 5, guiTop + 60, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir"),
                         b -> progWidget.checkingForAir = b.checked)
                 .setChecked(progWidget.checkingForAir)
                 .setTooltipKey("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir.tooltip")
         );
 
-        addButton(new WidgetCheckBox(guiLeft + 5, guiTop + 72, 0xFF404040,
+        addRenderableWidget(new WidgetCheckBox(guiLeft + 5, guiTop + 72, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids"),
                 b -> progWidget.checkingForLiquids = b.checked)
                 .setChecked(progWidget.checkingForLiquids)

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client;
 
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.KeyMapping;
 
 public interface IKeyListener {
-    void handleInput(KeyBinding key);
+    void handleInput(KeyMapping key);
 }

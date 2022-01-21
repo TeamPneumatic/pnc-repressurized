@@ -21,13 +21,13 @@ import me.desht.pneumaticcraft.common.ai.DroneAIDropItem;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -73,40 +73,40 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (dropStraight) tag.putBoolean("dropStraight", true);
         if (pickupDelay) tag.putBoolean("pickupDelay", true);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         dropStraight = tag.getBoolean("dropStraight");
         pickupDelay = tag.getBoolean("pickupDelay");
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(dropStraight);
         buf.writeBoolean(pickupDelay);
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         dropStraight = buf.readBoolean();
         pickupDelay = buf.readBoolean();
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         if (pickupDelay) {
-            curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.drop.hasPickupDelay"));
+            curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.drop.hasPickupDelay"));
         } else {
-            curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.drop.noPickupDelay"));
+            curTooltip.add(new TranslatableComponent("pneumaticcraft.gui.progWidget.drop.noPickupDelay"));
         }
     }
 
@@ -121,7 +121,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         return Collections.singletonList(xlate("pneumaticcraft.gui.progWidget.drop.dropMethod." + (dropStraight() ? "straight" : "random")));
     }
 }

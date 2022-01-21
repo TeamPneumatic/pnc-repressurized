@@ -20,22 +20,23 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class BlockCreativeCompressor extends BlockPneumaticCraft {
+public class BlockCreativeCompressor extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
 
     private static final VoxelShape SHAPE = Stream.of(
             Block.box(15, 0, 0, 16, 1, 16),
@@ -57,25 +58,26 @@ public class BlockCreativeCompressor extends BlockPneumaticCraft {
             Block.box(14, 4, 4, 16, 12, 12),
             Block.box(4, 4, 14, 12, 12, 16),
             Block.box(4, 4, 0, 12, 12, 2)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     public BlockCreativeCompressor() {
         super(ModBlocks.defaultProps());
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityCreativeCompressor.class;
-    }
-
-    @Override
-    public VoxelShape getOcclusionShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
         return ALMOST_FULL_SHAPE;
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityCreativeCompressor(pPos, pState);
     }
 
     public static class ItemBlockCreativeCompressor extends BlockItem {

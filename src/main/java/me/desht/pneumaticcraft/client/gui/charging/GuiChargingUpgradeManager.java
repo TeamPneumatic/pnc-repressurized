@@ -15,14 +15,15 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.gui;
+package me.desht.pneumaticcraft.client.gui.charging;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -34,15 +35,15 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     private Button guiBackButton;
     private final Map<EnumUpgrade, IGuiAnimatedStat> cycleTabs = new EnumMap<>(EnumUpgrade.class);
 
-    GuiChargingUpgradeManager(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
+    GuiChargingUpgradeManager(ContainerChargingStationUpgradeManager container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
         itemStack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
 
@@ -78,11 +79,11 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
         guiBackButton = new WidgetButtonExtended(xStart + 8, yStart + 5, 16, 16, Symbols.TRIANGLE_LEFT).withTag("close_upgrades");
-        addButton(guiBackButton);
+        addRenderableWidget(guiBackButton);
     }
 
     @Override
-    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+    protected void addPressureStatInfo(List<Component> pressureStatText) {
         int upgrades = UpgradableItemUtils.getUpgrades(itemStack, EnumUpgrade.VOLUME);
         int volume = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(IAirHandler::getVolume).orElse(getDefaultVolume());
@@ -91,10 +92,10 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     }
 
     @Override
-    protected void addExtraVolumeModifierInfo(List<ITextComponent> text) {
+    protected void addExtraVolumeModifierInfo(List<Component> text) {
         int nHolding = CoFHCore.getHoldingUpgrades(itemStack);
         if (nHolding > 0) {
-            text.add(new StringTextComponent(Symbols.TRIANGLE_RIGHT + " ").append(CoFHCore.holdingEnchantmentName(nHolding)));
+            text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(CoFHCore.holdingEnchantmentName(nHolding)));
         }
     }
 
@@ -121,7 +122,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     protected abstract int getDefaultVolume();
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         font.draw(matrixStack, itemStack.getHoverName().getVisualOrderText(), (imageWidth - font.width(itemStack.getHoverName())) / 2f, 5, 0x404040);
 
         int gaugeX = imageWidth * 3 / 4 + 10;
@@ -152,8 +153,8 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         long gameTime = Minecraft.getInstance().level.getGameTime();
         if (gameTime % TIER_CYCLE_TIME == 0) {
@@ -173,8 +174,8 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
                 int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(item, upgrade);
                 if (max > 0) {
                     ItemStack upgradeStack = upgrade.getItemStack();
-                    List<ITextComponent> text = new ArrayList<>();
-                    text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(TextFormatting.GRAY));
+                    List<Component> text = new ArrayList<>();
+                    text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
                     for (String w : what) {
                         String key = "pneumaticcraft.gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
                         if (I18n.exists(key)) {

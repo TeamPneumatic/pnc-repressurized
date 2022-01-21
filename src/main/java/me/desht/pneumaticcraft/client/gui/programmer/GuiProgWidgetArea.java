@@ -33,12 +33,12 @@ import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetEnum;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetInteger;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -56,8 +56,8 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     private WidgetComboBox variableField2;
 
     private final List<AreaType> allAreaTypes = ProgWidgetArea.getAllAreaTypes();
-    private final List<Pair<AreaTypeWidget, Widget>> areaTypeValueWidgets = new ArrayList<>();
-    private final List<Widget> areaTypeStaticWidgets = new ArrayList<>();
+    private final List<Pair<AreaTypeWidget, AbstractWidget>> areaTypeValueWidgets = new ArrayList<>();
+    private final List<AbstractWidget> areaTypeStaticWidgets = new ArrayList<>();
 
     public GuiProgWidgetArea(ProgWidgetArea widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
@@ -72,14 +72,14 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         boolean advancedMode = ConfigHelper.client().general.programmerDifficulty.get() == IProgWidget.WidgetDifficulty.ADVANCED;
 
         // GPS buttons
-        WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 30, 20, 20, StringTextComponent.EMPTY, b -> openInvSearchGUI(0))
+        WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 30, 20, 20, TextComponent.EMPTY, b -> openInvSearchGUI(0))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
                 .setTooltipText(xlate("pneumaticcraft.gui.progWidget.area.selectGPS1"));
-        addButton(gpsButton1);
-        WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 30, 20, 20, StringTextComponent.EMPTY, b -> openInvSearchGUI(1))
+        addRenderableWidget(gpsButton1);
+        WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 30, 20, 20, TextComponent.EMPTY, b -> openInvSearchGUI(1))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
                 .setTooltipText(xlate("pneumaticcraft.gui.progWidget.area.selectGPS2"));
-        addButton(gpsButton2);
+        addRenderableWidget(gpsButton2);
 
         // variable textfields
         variableField1 = new WidgetComboBox(font, guiLeft + 28, guiTop + 35, 88, font.lineHeight + 1);
@@ -90,8 +90,8 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         variableField1.setValue(progWidget.getCoord1Variable());
         variableField2.setValue(progWidget.getCoord2Variable());
         if (advancedMode) {
-            addButton(variableField1);
-            addButton(variableField2);
+            addRenderableWidget(variableField1);
+            addRenderableWidget(variableField2);
         }
 
         // type selector radio buttons
@@ -109,7 +109,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
             }
             builder.addRadioButton(radioButton, progWidget.type.getClass() == areaType.getClass());
         }
-        builder.build(this::addButton);
+        builder.build(this::addRenderableWidget);
         switchToWidgets(progWidget.type);
 
         if (invSearchGui != null) {
@@ -127,10 +127,10 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         }
 
         // blockpos labels
-        String l1 = "P1: " + TextFormatting.DARK_BLUE + formatPos(progWidget.x1, progWidget.y1, progWidget.z1);
-        addLabel(new StringTextComponent(l1), guiLeft + 8, guiTop + 20);
-        String l2 = "P2: " + TextFormatting.DARK_BLUE + formatPos(progWidget.x2, progWidget.y2, progWidget.z2);
-        addLabel(new StringTextComponent(l2), guiLeft + 133, guiTop + 20);
+        String l1 = "P1: " + ChatFormatting.DARK_BLUE + formatPos(progWidget.x1, progWidget.y1, progWidget.z1);
+        addLabel(new TextComponent(l1), guiLeft + 8, guiTop + 20);
+        String l2 = "P2: " + ChatFormatting.DARK_BLUE + formatPos(progWidget.x2, progWidget.y2, progWidget.z2);
+        addLabel(new TextComponent(l2), guiLeft + 133, guiTop + 20);
     }
 
     private String formatPos(int x, int y, int z) {
@@ -144,7 +144,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         } else {
             ItemGPSTool.setGPSLocation(gpsStack, new BlockPos(progWidget.x2, progWidget.y2, progWidget.z2));
         }
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TextComponent("Inventory Searcher (GPS)"));
         if (minecraft.screen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
@@ -168,7 +168,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         type.addUIWidgets(atWidgets);
         for (AreaTypeWidget areaTypeWidget : atWidgets) {
             WidgetLabel titleWidget = new WidgetLabel(x, curY, xlate(areaTypeWidget.title));
-            addButton(titleWidget);
+            addRenderableWidget(titleWidget);
             areaTypeStaticWidgets.add(titleWidget);
             curY += font.lineHeight + 1;
 
@@ -176,7 +176,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
                 AreaTypeWidgetInteger intWidget = (AreaTypeWidgetInteger) areaTypeWidget;
                 WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.lineHeight + 1).setRange(0, Integer.MAX_VALUE);
                 intField.setValue(intWidget.readAction.get());
-                addButton(intField);
+                addRenderableWidget(intField);
                 areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, intField));
 
                 curY += font.lineHeight + 20;
@@ -185,7 +185,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
                 WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 1).setFixedOptions();
                 enumCbb.setElements(getEnumNames(enumWidget.enumClass));
                 enumCbb.setValue(enumWidget.readAction.get().toString());
-                addButton(enumCbb);
+                addRenderableWidget(enumCbb);
                 areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, enumCbb));
 
                 curY += font.lineHeight + 20;
@@ -196,9 +196,9 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     }
 
     private void saveWidgets() {
-        for (Pair<AreaTypeWidget, Widget> entry : areaTypeValueWidgets) {
+        for (Pair<AreaTypeWidget, AbstractWidget> entry : areaTypeValueWidgets) {
             AreaTypeWidget widget = entry.getLeft();
-            Widget guiWidget = entry.getRight();
+            AbstractWidget guiWidget = entry.getRight();
             if (widget instanceof AreaTypeWidgetInteger) {
                 AreaTypeWidgetInteger intWidget = (AreaTypeWidgetInteger) widget;
                 intWidget.writeAction.accept(((WidgetTextFieldNumber) guiWidget).getIntValue());

@@ -26,13 +26,13 @@ import mezz.jei.api.recipe.IFocusFactory;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
@@ -54,11 +54,11 @@ public class CustomRecipeClickArea {
     }
 
     private static <T extends GuiPneumaticContainerBase<?,?>> IGuiClickableArea createClickableArea(T gui, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
-        Rectangle2d area = new Rectangle2d(xPos, yPos, width, height);
+        Rect2i area = new Rect2i(xPos, yPos, width, height);
         List<ResourceLocation> recipeCategoryUidList = ImmutableList.copyOf(recipeCategoryUids);
         return new IGuiClickableArea() {
             @Override
-            public Rectangle2d getArea() {
+            public Rect2i getArea() {
                 return area;
             }
 
@@ -68,30 +68,30 @@ public class CustomRecipeClickArea {
             }
 
             @Override
-            public List<ITextComponent> getTooltipStrings() {
+            public List<Component> getTooltipStrings() {
                 Collection<ItemStack> items = gui.getTargetItems();
                 Collection<FluidStack> fluids = gui.getTargetFluids();
-                ImmutableList.Builder<ITextComponent> builder = ImmutableList.builder();
+                ImmutableList.Builder<Component> builder = ImmutableList.builder();
                 if (!items.isEmpty() || !fluids.isEmpty()) {
-                    builder.add(new StringTextComponent("Current Recipe:").withStyle(TextFormatting.GRAY));
+                    builder.add(new TextComponent("Current Recipe:").withStyle(ChatFormatting.GRAY));
                     for (ItemStack stack : items) {
                         if (!stack.isEmpty()) {
-                            builder.add(new StringTextComponent(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
-                                    .withStyle(TextFormatting.YELLOW));
+                            builder.add(new TextComponent(Symbols.ARROW_RIGHT + " ").append(stack.getHoverName())
+                                    .withStyle(ChatFormatting.YELLOW));
                         }
                     }
                     for (FluidStack stack : fluids) {
                         if (!stack.isEmpty()) {
-                            builder.add(new StringTextComponent(Symbols.ARROW_RIGHT + " ").append(stack.getDisplayName())
-                                    .withStyle(TextFormatting.AQUA));
+                            builder.add(new TextComponent(Symbols.ARROW_RIGHT + " ").append(stack.getDisplayName())
+                                    .withStyle(ChatFormatting.AQUA));
                         }
                     }
                     if (Minecraft.getInstance().options.advancedItemTooltips) {
-                        builder.add(new StringTextComponent(gui.te.getCurrentRecipeIdSynced()).withStyle(TextFormatting.DARK_GRAY));
+                        builder.add(new TextComponent(gui.te.getCurrentRecipeIdSynced()).withStyle(ChatFormatting.DARK_GRAY));
                     }
-                    builder.add(StringTextComponent.EMPTY);
+                    builder.add(TextComponent.EMPTY);
                 }
-                builder.add(new TranslationTextComponent("jei.tooltip.show.recipes"));
+                builder.add(new TranslatableComponent("jei.tooltip.show.recipes"));
                 return builder.build();
             }
         };

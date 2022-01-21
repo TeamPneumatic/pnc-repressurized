@@ -1,89 +1,125 @@
 package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityHeatFrame;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
 
 public class ModelSpawnerAgitator extends EntityModel<EntityHeatFrame> {
-    //fields
-    private final ModelRenderer top1;
-    private final ModelRenderer top2;
-    private final ModelRenderer top3;
-    private final ModelRenderer top4;
-    private final ModelRenderer side1;
-    private final ModelRenderer side2;
-    private final ModelRenderer side3;
-    private final ModelRenderer side4;
-    private final ModelRenderer bottom1;
-    private final ModelRenderer bottom2;
-    private final ModelRenderer bottom3;
-    private final ModelRenderer bottom4;
+    private final ModelPart top1;
+    private final ModelPart top2;
+    private final ModelPart top3;
+    private final ModelPart top4;
+    private final ModelPart side1;
+    private final ModelPart side2;
+    private final ModelPart side3;
+    private final ModelPart side4;
+    private final ModelPart bottom1;
+    private final ModelPart bottom2;
+    private final ModelPart bottom3;
+    private final ModelPart bottom4;
 
-    public ModelSpawnerAgitator() {
-        texWidth = 64;
-        texHeight = 64;
+    private static final String TOP1 = "top1";
+    private static final String TOP2 = "top2";
+    private static final String TOP3 = "top3";
+    private static final String TOP4 = "top4";
+    private static final String SIDE1 = "side1";
+    private static final String SIDE2 = "side2";
+    private static final String SIDE3 = "side3";
+    private static final String SIDE4 = "side4";
+    private static final String BOTTOM1 = "bottom1";
+    private static final String BOTTOM2 = "bottom2";
+    private static final String BOTTOM3 = "bottom3";
+    private static final String BOTTOM4 = "bottom4";
 
-        top1 = new ModelRenderer(this);
-        top1.setPos(-8.5F, 7.5F, 4.5F);
-        top1.texOffs(0, 0).addBox(0.0F, 0.0F, 1.0F, 17.0F, 3.0F, 3.0F, 0.0F, true);
-
-        top2 = new ModelRenderer(this);
-        top2.setPos(-8.5F, 7.5F, -8.5F);
-        top2.texOffs(0, 6).addBox(0.0F, 0.0F, 0.0F, 17.0F, 3.0F, 3.0F, 0.0F, true);
-
-        top3 = new ModelRenderer(this);
-        top3.setPos(4.5F, 7.5F, 4.5F);
-        top3.texOffs(0, 24).addBox(1.0F, 0.0F, -10.0F, 3.0F, 3.0F, 11.0F, 0.0F, true);
-
-        top4 = new ModelRenderer(this);
-        top4.setPos(-7.5F, 7.5F, 4.5F);
-        top4.texOffs(0, 38).addBox(-1.0F, 0.0F, -10.0F, 3.0F, 3.0F, 11.0F, 0.0F, true);
-
-        side1 = new ModelRenderer(this);
-        side1.setPos(-8.5F, 11.5F, -8.5F);
-        side1.texOffs(28, 52).addBox(0.0F, -1.0F, 0.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-        side1.texOffs(32, 52).addBox(2.0F, -1.0F, 0.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-        side1.texOffs(24, 52).addBox(0.0F, -1.0F, 2.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-
-        side2 = new ModelRenderer(this);
-        side2.setPos(7.5F, 11.5F, -8.5F);
-        side2.texOffs(40, 52).addBox(0.0F, -1.0F, 0.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-        side2.texOffs(44, 52).addBox(0.0F, -1.0F, 2.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-        side2.texOffs(36, 52).addBox(-2.0F, -1.0F, 0.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-
-        side3 = new ModelRenderer(this);
-        side3.setPos(-8.5F, 11.5F, 7.5F);
-        side3.texOffs(16, 52).addBox(0.0F, -1.0F, 0.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-        side3.texOffs(12, 52).addBox(2.0F, -1.0F, 0.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-        side3.texOffs(20, 52).addBox(0.0F, -1.0F, -2.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-
-        side4 = new ModelRenderer(this);
-        side4.setPos(7.5F, 11.5F, 7.5F);
-        side4.texOffs(4, 52).addBox(0.0F, -1.0F, 0.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-        side4.texOffs(8, 52).addBox(-2.0F, -1.0F, 0.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-        side4.texOffs(0, 52).addBox(0.0F, -1.0F, -2.0F, 1.0F, 11.0F, 1.0F, 0.0F, true);
-
-        bottom1 = new ModelRenderer(this);
-        bottom1.setPos(-8.5F, 21.5F, 4.5F);
-        bottom1.texOffs(0, 12).addBox(0.0F, 0.0F, 1.0F, 17.0F, 3.0F, 3.0F, 0.0F, true);
-
-        bottom2 = new ModelRenderer(this);
-        bottom2.setPos(-7.5F, 21.5F, 4.5F);
-        bottom2.texOffs(28, 38).addBox(-1.0F, 0.0F, -10.0F, 3.0F, 3.0F, 11.0F, 0.0F, true);
-
-        bottom3 = new ModelRenderer(this);
-        bottom3.setPos(4.5F, 21.5F, 4.5F);
-        bottom3.texOffs(28, 24).addBox(1.0F, 0.0F, -10.0F, 3.0F, 3.0F, 11.0F, 0.0F, true);
-
-        bottom4 = new ModelRenderer(this);
-        bottom4.setPos(-8.5F, 21.5F, -8.5F);
-        bottom4.texOffs(0, 18).addBox(0.0F, 0.0F, 0.0F, 17.0F, 3.0F, 3.0F, 0.0F, true);
+    public ModelSpawnerAgitator(ModelPart root) {
+        top1 = root.getChild(TOP1);
+        top2 = root.getChild(TOP2);
+        top3 = root.getChild(TOP3);
+        top4 = root.getChild(TOP4);
+        side1 = root.getChild(SIDE1);
+        side2 = root.getChild(SIDE2);
+        side3 = root.getChild(SIDE3);
+        side4 = root.getChild(SIDE4);
+        bottom1 = root.getChild(BOTTOM1);
+        bottom2 = root.getChild(BOTTOM2);
+        bottom3 = root.getChild(BOTTOM3);
+        bottom4 = root.getChild(BOTTOM4);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(TOP1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("top1_0", 0.0F, 0.0F, 1.0F, 17, 3, 3, 0, 0)
+                        .mirror(),
+                PartPose.offset(-8.5F, 7.5F, 4.5F));
+        partdefinition.addOrReplaceChild(TOP2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("top2_0", 0.0F, 0.0F, 0.0F, 17, 3, 3, 0, 6)
+                        .mirror(),
+                PartPose.offset(-8.5F, 7.5F, -8.5F));
+        partdefinition.addOrReplaceChild(TOP3, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("top3_0", 1.0F, 0.0F, -10.0F, 3, 3, 11, 0, 24)
+                        .mirror(),
+                PartPose.offset(4.5F, 7.5F, 4.5F));
+        partdefinition.addOrReplaceChild(TOP4, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("top4_0", -1.0F, 0.0F, -10.0F, 3, 3, 11, 0, 38)
+                        .mirror(),
+                PartPose.offset(-7.5F, 7.5F, 4.5F));
+        partdefinition.addOrReplaceChild(SIDE1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("side1_0", 0.0F, -1.0F, 0.0F, 1, 11, 1, 28, 52)
+                        .addBox("side1_1", 2.0F, -1.0F, 0.0F, 1, 11, 1, 32, 52)
+                        .addBox("side1_2", 0.0F, -1.0F, 2.0F, 1, 11, 1, 24, 52)
+                        .mirror(),
+                PartPose.offset(-8.5F, 11.5F, -8.5F));
+        partdefinition.addOrReplaceChild(SIDE2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("side2_0", 0.0F, -1.0F, 0.0F, 1, 11, 1, 40, 52)
+                        .addBox("side2_1", 0.0F, -1.0F, 2.0F, 1, 11, 1, 44, 52)
+                        .addBox("side2_2", -2.0F, -1.0F, 0.0F, 1, 11, 1, 36, 52)
+                        .mirror(),
+                PartPose.offset(7.5F, 11.5F, -8.5F));
+        partdefinition.addOrReplaceChild(SIDE3, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("side3_0", 0.0F, -1.0F, 0.0F, 1, 11, 1, 16, 52)
+                        .addBox("side3_1", 2.0F, -1.0F, 0.0F, 1, 11, 1, 12, 52)
+                        .addBox("side3_2", 0.0F, -1.0F, -2.0F, 1, 11, 1, 20, 52)
+                        .mirror(),
+                PartPose.offset(-8.5F, 11.5F, 7.5F));
+        partdefinition.addOrReplaceChild(SIDE4, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("side4_0", 0.0F, -1.0F, 0.0F, 1, 11, 1, 4, 52)
+                        .addBox("side4_1", -2.0F, -1.0F, 0.0F, 1, 11, 1, 8, 52)
+                        .addBox("side4_2", 0.0F, -1.0F, -2.0F, 1, 11, 1, 0, 52)
+                        .mirror(),
+                PartPose.offset(7.5F, 11.5F, 7.5F));
+        partdefinition.addOrReplaceChild(BOTTOM1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("bottom1_0", 0.0F, 0.0F, 1.0F, 17, 3, 3, 0, 12)
+                        .mirror(),
+                PartPose.offset(-8.5F, 21.5F, 4.5F));
+        partdefinition.addOrReplaceChild(BOTTOM2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("bottom2_0", -1.0F, 0.0F, -10.0F, 3, 3, 11, 28, 38)
+                        .mirror(),
+                PartPose.offset(-7.5F, 21.5F, 4.5F));
+        partdefinition.addOrReplaceChild(BOTTOM3, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("bottom3_0", 1.0F, 0.0F, -10.0F, 3, 3, 11, 28, 24)
+                        .mirror(),
+                PartPose.offset(4.5F, 21.5F, 4.5F));
+        partdefinition.addOrReplaceChild(BOTTOM4, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("bottom4_0", 0.0F, 0.0F, 0.0F, 17, 3, 3, 0, 18)
+                        .mirror(),
+                PartPose.offset(-8.5F, 21.5F, -8.5F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+
     @Override
-    public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         top1.render(matrixStack, buffer, packedLight, packedOverlay);
         top2.render(matrixStack, buffer, packedLight, packedOverlay);
         top3.render(matrixStack, buffer, packedLight, packedOverlay);
@@ -102,7 +138,7 @@ public class ModelSpawnerAgitator extends EntityModel<EntityHeatFrame> {
     public void setupAnim(EntityHeatFrame entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
-    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
         modelRenderer.zRot = z;

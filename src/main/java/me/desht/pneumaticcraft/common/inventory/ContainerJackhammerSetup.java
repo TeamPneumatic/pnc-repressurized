@@ -23,12 +23,12 @@ import me.desht.pneumaticcraft.common.item.ItemDrillBit;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer.DigMode;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
@@ -36,13 +36,13 @@ import javax.annotation.Nonnull;
 public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityBase> {
     private final ItemJackHammer.DrillBitHandler drillBitHandler;
     private final ItemJackHammer.EnchantmentHandler enchantmentHandler;
-    private final Hand hand;
+    private final InteractionHand hand;
 
-    public ContainerJackhammerSetup(int windowId, PlayerInventory invPlayer, PacketBuffer buffer) {
+    public ContainerJackhammerSetup(int windowId, Inventory invPlayer, FriendlyByteBuf buffer) {
         this(windowId, invPlayer, getHand(buffer));
     }
 
-    public ContainerJackhammerSetup(int windowId, PlayerInventory invPlayer, Hand hand) {
+    public ContainerJackhammerSetup(int windowId, Inventory invPlayer, InteractionHand hand) {
         super(ModContainers.JACKHAMMER_SETUP.get(), windowId, invPlayer);
         this.hand = hand;
 
@@ -60,7 +60,7 @@ public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public void removed(PlayerEntity playerIn) {
+    public void removed(Player playerIn) {
         super.removed(playerIn);
 
         drillBitHandler.save();
@@ -68,26 +68,26 @@ public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return player.getItemInHand(hand).getItem() == ModItems.JACKHAMMER.get();
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         ItemStack hammerStack = player.getItemInHand(hand);
         if (tag.startsWith("digmode:") && hammerStack.getItem() instanceof ItemJackHammer) {
             try {
-                ItemDrillBit.DrillBitType bitType = ((ItemJackHammer) hammerStack.getItem()).getDrillBit(hammerStack);
-                DigMode dt = DigMode.valueOf(tag.substring(8));
-                if (dt.getBitType().getTier() <= bitType.getTier() || dt == DigMode.MODE_1X1) {
-                    ItemJackHammer.setDigMode(hammerStack, dt);
+                ItemDrillBit.DrillBitType ourBit = ((ItemJackHammer) hammerStack.getItem()).getDrillBit(hammerStack);
+                DigMode newDigMode = DigMode.valueOf(tag.substring(8));
+                if (ourBit.getHarvestLevel() >= newDigMode.getBitType().getHarvestLevel() || newDigMode == DigMode.MODE_1X1) {
+                    ItemJackHammer.setDigMode(hammerStack, newDigMode);
                 }
             } catch (IllegalArgumentException ignored) {
             }
         }
     }
 
-    public Hand getHand() {
+    public InteractionHand getHand() {
         return hand;
     }
 

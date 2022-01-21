@@ -17,29 +17,21 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extends TileEntityRenderer<T> {
-    AbstractTileModelRenderer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
-    }
-
-    abstract void renderModel(T te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn);
-
-    protected boolean shouldRender(T te) {
-        return true;
+public abstract class AbstractTileModelRenderer<T extends TileEntityBase> implements BlockEntityRenderer<T> {
+    AbstractTileModelRenderer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+    public void render(T te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         // boilerplate translation code, common to all our model-rendering TERs, is done here
 
-        if (!shouldRender(te) || !te.getLevel().getChunkSource().isEntityTickingChunk(new ChunkPos(te.getBlockPos()))) return;
+        if (!shouldRender(te) || !te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStack.pushPose();
 
@@ -55,7 +47,13 @@ public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extend
         renderExtras(te, partialTicks, matrixStack, iRenderTypeBuffer, combinedLightIn, combinedOverlayIn);
     }
 
-    protected void renderExtras(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+    abstract void renderModel(T te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn);
+
+    protected boolean shouldRender(T te) {
+        return true;
+    }
+
+    protected void renderExtras(T te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
     }
 
 }

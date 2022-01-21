@@ -17,42 +17,40 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.BlockDisplayShelf;
+import me.desht.pneumaticcraft.common.block.BlockDisplayTable;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityDisplayTable;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 
-public class RenderDisplayTable extends TileEntityRenderer<TileEntityDisplayTable> {
-    public RenderDisplayTable(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+public class RenderDisplayTable implements BlockEntityRenderer<TileEntityDisplayTable> {
+    public RenderDisplayTable(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityDisplayTable te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (!te.getLevel().getChunkSource().isEntityTickingChunk(new ChunkPos(te.getBlockPos()))) return;
+    public void render(TileEntityDisplayTable te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        if (!te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 1, 0.5);
         Block b = te.getBlockState().getBlock();
-        double yOff = b instanceof BlockDisplayShelf ? 1d - (((BlockDisplayShelf) b).getTableHeight()): 0d;
+        double yOff = b instanceof BlockDisplayTable.Shelf ? 1d - (((BlockDisplayTable.Shelf) b).getTableHeight()): 0d;
         renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, te.displayedStack, 0d, yOff, 0d, 0.5f, te.getRotation());
         matrixStackIn.popPose();
     }
 
-    static void renderItemAt(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn, ItemStack stack, double xOffset, double yOffset, double zOffset, float scale, Direction rot) {
+    static void renderItemAt(PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, ItemStack stack, double xOffset, double yOffset, double zOffset, float scale, Direction rot) {
         if (!stack.isEmpty()) {
             matrixStackIn.pushPose();
             matrixStackIn.translate(0, -yOffset, 0);
@@ -66,8 +64,8 @@ public class RenderDisplayTable extends TileEntityRenderer<TileEntityDisplayTabl
             }
             matrixStackIn.scale(scale, scale, scale);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-            IBakedModel ibakedmodel = itemRenderer.getModel(stack, Minecraft.getInstance().level, null);
-            itemRenderer.render(stack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+            BakedModel bakedModel = itemRenderer.getModel(stack, Minecraft.getInstance().level, null, 0);
+            itemRenderer.render(stack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
             matrixStackIn.popPose();
         }
     }

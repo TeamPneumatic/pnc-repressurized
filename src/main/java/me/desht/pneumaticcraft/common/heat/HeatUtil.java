@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -76,33 +76,33 @@ public class HeatUtil {
      */
     public static int getEfficiency(int temperature) {
         // 0% efficiency at > 350 degree C, 100% at < 50 degree C.
-        return MathHelper.clamp(((625 - temperature) / 3), 0, 100);
+        return Mth.clamp(((625 - temperature) / 3), 0, 100);
     }
 
-    public static ITextComponent formatHeatString(int tempK) {
+    public static Component formatHeatString(int tempK) {
         return formatHeatString((tempK - 273) + "°C");
     }
 
-    public static ITextComponent formatHeatString(Direction face, int tempK) {
+    public static Component formatHeatString(Direction face, int tempK) {
         return formatHeatString(face, (tempK - 273) + "°C");
     }
 
-    public static ITextComponent formatHeatString(String temp) {
+    public static Component formatHeatString(String temp) {
         return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature")
-                .append(TextFormatting.WHITE + temp)
-                .withStyle(TextFormatting.GRAY);
+                .append(ChatFormatting.WHITE + temp)
+                .withStyle(ChatFormatting.GRAY);
     }
 
-    public static ITextComponent formatHeatString(Direction face, String temp) {
+    public static Component formatHeatString(Direction face, String temp) {
         return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature." + face.toString().toLowerCase(Locale.ROOT))
-                .append(TextFormatting.WHITE + temp)
-                .withStyle(TextFormatting.GRAY);
+                .append(ChatFormatting.WHITE + temp)
+                .withStyle(ChatFormatting.GRAY);
     }
 
-    public static int countExposedFaces(Collection<? extends TileEntity> teList) {
+    public static int countExposedFaces(Collection<? extends BlockEntity> teList) {
         int exposed = 0;
 
-        for (TileEntity te : teList) {
+        for (BlockEntity te : teList) {
             for (Direction face : Direction.values()) {
                 if (te.getLevel().isEmptyBlock(te.getBlockPos().relative(face))) {
                     exposed++;

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -31,13 +31,13 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.HackHandler;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +50,7 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
     }
 
     @Override
-    public Optional<KeyBinding> getTriggerKeyBinding() {
+    public Optional<KeyMapping> getTriggerKeyBinding() {
         return Optional.of(KeyHandler.getInstance().keybindHack);
     }
 
@@ -69,11 +69,11 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
     }
 
     @Override
-    public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+    public void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -90,16 +90,16 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
         return false;
     }
 
-    public static boolean enabledForPlayer(PlayerEntity player) {
-        return ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.HEAD)
-                && CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SECURITY) > 0;
+    public static boolean enabledForPlayer(Player player) {
+        return ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)
+                && CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.SECURITY) > 0;
     }
 
-    public static void addKeybindTooltip(List<ITextComponent> curInfo) {
-        KeyBinding hack = KeyHandler.getInstance().keybindHack;
+    public static void addKeybindTooltip(List<Component> curInfo) {
+        KeyMapping hack = KeyHandler.getInstance().keybindHack;
         if (hack.getKey().getValue() != 0) {
-            IFormattableTextComponent str = xlate("pneumaticcraft.armor.hacking.pressToHack", ClientUtils.translateKeyBind(hack));
-            curInfo.add(str.withStyle(TextFormatting.GOLD));
+            MutableComponent str = xlate("pneumaticcraft.armor.hacking.pressToHack", ClientUtils.translateKeyBind(hack));
+            curInfo.add(str.withStyle(ChatFormatting.GOLD));
         }
     }
 }

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;

@@ -28,14 +28,14 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
@@ -60,7 +60,7 @@ public class DroneAILogistics extends Goal {
             // note: this is an expensive operation!  hence we cache the logistics manager object in the drone
             Set<BlockPos> area = widget.getCachedAreaSet();
             if (!area.isEmpty()) {
-                AxisAlignedBB aabb = widget.getAreaExtents();
+                AABB aabb = widget.getAreaExtents();
                 Stream<ISemiBlock> semiBlocksInArea = SemiblockTracker.getInstance().getSemiblocksInArea(drone.world(), aabb);
                 Stream<EntityLogisticsFrame> logisticFrames = StreamUtils.ofType(EntityLogisticsFrame.class, semiBlocksInArea);
                 LogisticsManager manager = new LogisticsManager();

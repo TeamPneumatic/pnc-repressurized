@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -35,17 +35,17 @@ public class PacketJetBootsStateSync {
     private final UUID playerId;
     private final JetBootsStateTracker.JetBootsState state;
 
-    public PacketJetBootsStateSync(PlayerEntity player, JetBootsStateTracker.JetBootsState state) {
+    public PacketJetBootsStateSync(Player player, JetBootsStateTracker.JetBootsState state) {
         this.playerId = player.getUUID();
         this.state = state;
     }
 
-    PacketJetBootsStateSync(PacketBuffer buf) {
+    PacketJetBootsStateSync(FriendlyByteBuf buf) {
         playerId = new UUID(buf.readLong(), buf.readLong());
         state = new JetBootsStateTracker.JetBootsState(buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeLong(playerId.getMostSignificantBits());
         buf.writeLong(playerId.getLeastSignificantBits());
         buf.writeBoolean(state.isEnabled());

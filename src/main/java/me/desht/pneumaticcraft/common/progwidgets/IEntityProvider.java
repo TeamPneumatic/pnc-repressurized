@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
 public interface IEntityProvider {
-    List<Entity> getValidEntities(World world);
+    List<Entity> getValidEntities(Level world);
 
     boolean isEntityValid(Entity entity);
 

@@ -22,10 +22,10 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDir
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -56,7 +56,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         this.comparatorInput = module.isComparatorInput();
     }
 
-    PacketSyncRedstoneModuleToServer(PacketBuffer buffer) {
+    PacketSyncRedstoneModuleToServer(FriendlyByteBuf buffer) {
         super(buffer);
         side = buffer.readByte();
         input = buffer.readBoolean();
@@ -77,7 +77,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeByte(side);
         buf.writeBoolean(input);
@@ -94,7 +94,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = ctx.get().getSender();
+            Player player = ctx.get().getSender();
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
                 PneumaticCraftUtils.getTileEntityAt(player.level, pos, TileEntityPressureTube.class).ifPresent(te -> {
                     TubeModule tm = te.getModule(Direction.from3DDataValue(side));

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -33,12 +33,12 @@ public class PacketMultiPart {
         this.payload = payload;
     }
 
-    PacketMultiPart(PacketBuffer buf) {
+    PacketMultiPart(FriendlyByteBuf buf) {
         payload = new byte[buf.readInt()];
         buf.readBytes(payload);
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(payload.length);
         buf.writeBytes(payload);
     }

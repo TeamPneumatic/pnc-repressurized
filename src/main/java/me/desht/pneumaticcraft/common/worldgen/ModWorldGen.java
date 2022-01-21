@@ -17,41 +17,63 @@
 
 package me.desht.pneumaticcraft.common.worldgen;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModDecorators;
 import me.desht.pneumaticcraft.common.core.ModFeatures;
 import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.WorldGenRegistries;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.gen.GenerationStage;
-import net.minecraft.world.gen.feature.BlockStateFeatureConfig;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.placement.ChanceConfig;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.data.worldgen.features.FeatureUtils;
+import net.minecraft.data.worldgen.placement.PlacementUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.VerticalAnchor;
+import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.LakeFeature;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
+import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
+import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
-
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModWorldGen {
     public static ConfiguredFeature<?,?> OIL_LAKES;
+    public static PlacedFeature OIL_LAKE_SURFACE;
+    public static PlacedFeature OIL_LAKE_UNDERGROUND;
 
     static WildcardedRLMatcher dimensionMatcher = null;
     static WildcardedRLMatcher biomeMatcher = null;
 
     public static void registerConfiguredFeatures() {
-        Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
-
-        OIL_LAKES = ModFeatures.OIL_LAKE.get()
-                .configured(new BlockStateFeatureConfig(ModBlocks.OIL.get().defaultBlockState()))
-                .decorated(ModDecorators.OIL_LAKE.get().configured(new ChanceConfig(ConfigHelper.getOilLakeChance())));
-        Registry.register(registry, RL("oil_lakes"), OIL_LAKES);
+        OIL_LAKES = FeatureUtils.register(Names.MOD_ID + ":lake_oil", ModFeatures.OIL_LAKE.get()
+                .configured(new LakeFeature.Configuration(BlockStateProvider.simple(ModBlocks.OIL.get().defaultBlockState()), BlockStateProvider.simple(Blocks.AIR))));
+        OIL_LAKE_SURFACE = PlacementUtils.register(Names.MOD_ID + ":lake_oil_surface", OIL_LAKES.placed(
+                RarityFilter.onAverageOnceEvery(200),
+                InSquarePlacement.spread(),
+                PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
+                BiomeFilter.biome()
+        ));
+        OIL_LAKE_UNDERGROUND = PlacementUtils.register(Names.MOD_ID + ":lake_oil_underground", OIL_LAKES.placed(
+                RarityFilter.onAverageOnceEvery(9),
+                InSquarePlacement.spread(),
+                HeightRangePlacement.of(UniformHeight.of(VerticalAnchor.absolute(0), VerticalAnchor.top())),
+                EnvironmentScanPlacement.scanningFor(Direction.DOWN, BlockPredicate.allOf(
+                                BlockPredicate.not(BlockPredicate.ONLY_IN_AIR_PREDICATE),
+                                BlockPredicate.insideWorld(new BlockPos(0, -5, 0))
+                        ), 32
+                ),
+                SurfaceRelativeThresholdFilter.of(Heightmap.Types.OCEAN_FLOOR_WG, Integer.MIN_VALUE, -5),
+                BiomeFilter.biome()
+        ));
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {
         if (!isBiomeBlacklisted(event.getName()) && !ConfigHelper.common().general.oilWorldGenCategoryBlacklist.get().contains(event.getCategory().getName())) {
-            event.getGeneration().addFeature(GenerationStage.Decoration.LAKES, OIL_LAKES);
+            event.getGeneration().addFeature(GenerationStep.Decoration.LAKES, OIL_LAKE_SURFACE);
         }
     }
 
@@ -67,7 +89,7 @@ public class ModWorldGen {
         return biomeMatcher.test(biomeName);
     }
 
-    static boolean isDimensionBlacklisted(ISeedReader level) {
+    static boolean isDimensionBlacklisted(WorldGenLevel level) {
         if (dimensionMatcher == null) {
             dimensionMatcher = new WildcardedRLMatcher(ConfigHelper.common().general.oilWorldGenDimensionBlacklist.get());
         }

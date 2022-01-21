@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
@@ -38,23 +38,23 @@ import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemFrameEntity;
-import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.entity.item.PaintingType;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.monster.CreeperEntity;
-import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.SlimeEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.decoration.Motive;
+import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -126,27 +126,27 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, Entity entity, float partialTicks) {
+        public void render(PoseStack matrixStack, MultiBufferSource buffer, Entity entity, float partialTicks) {
             droneAIRenderer.render(matrixStack, buffer, partialTicks);
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
             EntityDroneBase droneBase = (EntityDroneBase) entity;
             curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", droneBase.getOwnerName().getString()));
             curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.routine", droneBase.getLabel()));
-            PlayerEntity player = ClientUtils.getClientPlayer();
+            Player player = ClientUtils.getClientPlayer();
             if (DroneDebugClientHandler.enabledForPlayer(player)) {
-                ITextComponent debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);
+                Component debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);
                 if (ItemPneumaticArmor.isPlayerDebuggingDrone(player, droneBase)) {
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging").withStyle(TextFormatting.GOLD));
-                    ITextComponent optionsKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions);
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging.key", optionsKey).withStyle(TextFormatting.GOLD));
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging").withStyle(ChatFormatting.GOLD));
+                    Component optionsKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions);
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging.key", optionsKey).withStyle(ChatFormatting.GOLD));
                     if (isLookingAtTarget) {
-                        curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.stopDebugging.key", debugKey).withStyle(TextFormatting.GOLD));
+                        curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.stopDebugging.key", debugKey).withStyle(ChatFormatting.GOLD));
                     }
                 } else if (isLookingAtTarget) {
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.pressDebugKey", debugKey).withStyle(TextFormatting.GOLD));
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.pressDebugKey", debugKey).withStyle(ChatFormatting.GOLD));
                 }
             }
         }
@@ -159,7 +159,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
             float pressure = entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                     .map(IAirHandler::getPressure)
                     .orElseThrow(IllegalStateException::new);
@@ -174,7 +174,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
             int healthPercentage = (int) (((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth() * 100F);
             curInfo.add(xlate("pneumaticcraft.entityTracker.info.health", healthPercentage));
         }
@@ -190,12 +190,12 @@ public class EntityTrackHandler {
 
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof SlimeEntity;
+            return entity instanceof Slime;
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            int size = ((SlimeEntity) entity).getSize();
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
+            int size = ((Slime) entity).getSize();
             if (size >= 1 && size <= 3) {
                 curInfo.add(xlate(MESSAGES[size]));
             } else {
@@ -207,12 +207,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryMob implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof MonsterEntity;
+            return entity instanceof Monster;
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            Entity target = ((MonsterEntity) entity).getTarget();
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
+            Entity target = ((Monster) entity).getTarget();
             if (target != null) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.target", target.getDisplayName().getString()));
             }
@@ -224,12 +224,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryAgeable implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof AgeableEntity;
+            return entity instanceof AgeableMob;
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            int growingAge = ((AgeableEntity) entity).getAge();
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
+            int growingAge = ((AgeableMob) entity).getAge();
             if (growingAge > 0) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.canBreedIn", PneumaticCraftUtils.convertTicksToMinutesAndSeconds(growingAge, false)));
             } else if (growingAge < 0) {
@@ -243,12 +243,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryTameable implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof TameableEntity;
+            return entity instanceof TamableAnimal;
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            LivingEntity owner = ((TameableEntity) entity).getOwner();
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
+            LivingEntity owner = ((TamableAnimal) entity).getOwner();
             if (owner != null) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", owner.getDisplayName().getString()));
             } else {
@@ -262,12 +262,12 @@ public class EntityTrackHandler {
 
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof CreeperEntity;
+            return entity instanceof Creeper;
         }
 
         @Override
         public void update(Entity entity) {
-            if (((CreeperEntity) entity).getSwellDir() == 1) {
+            if (((Creeper) entity).getSwellDir() == 1) {
                 creeperInFuseTime++;
                 if (creeperInFuseTime > 30) creeperInFuseTime = 30;
             } else {
@@ -277,12 +277,12 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
             if (creeperInFuseTime > 0) {
-                if (((CreeperEntity) entity).getSwellDir() == 1) {
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.creeper.fuse", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !").withStyle(TextFormatting.RED));
+                if (((Creeper) entity).getSwellDir() == 1) {
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.creeper.fuse", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !").withStyle(ChatFormatting.RED));
                 } else {
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.creeper.coolDown", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !").withStyle(TextFormatting.DARK_GREEN));
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.creeper.coolDown", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !").withStyle(ChatFormatting.DARK_GREEN));
                 }
             }
         }
@@ -291,20 +291,20 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryPlayer implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof PlayerEntity;
+            return entity instanceof Player;
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            PlayerEntity player = (PlayerEntity) entity;
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
+            Player player = (Player) entity;
 
-            addInventory("pneumaticcraft.entityTracker.info.player.armor", curInfo, player.inventory.armor);
-            addInventory("pneumaticcraft.entityTracker.info.player.holding", curInfo, player.inventory.items);
+            addInventory("pneumaticcraft.entityTracker.info.player.armor", curInfo, player.getInventory().armor);
+            addInventory("pneumaticcraft.entityTracker.info.player.holding", curInfo, player.getInventory().items);
         }
 
-        private static void addInventory(String key, List<ITextComponent> curInfo, NonNullList<ItemStack> stacks) {
-            curInfo.add(xlate(key).withStyle(TextFormatting.GRAY));
-            List<ITextComponent> l = new ArrayList<>();
+        private static void addInventory(String key, List<Component> curInfo, NonNullList<ItemStack> stacks) {
+            curInfo.add(xlate(key).withStyle(ChatFormatting.GRAY));
+            List<Component> l = new ArrayList<>();
             PneumaticCraftUtils.summariseItemStacks(l, asItemStackArray(stacks));
             if (l.isEmpty()) {
                 curInfo.add(xlate("pneumaticcraft.gui.misc.no_items"));
@@ -325,8 +325,8 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            PlayerEntity player = ClientUtils.getClientPlayer();
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
+            Player player = ClientUtils.getClientPlayer();
             IHackableEntity hackable = HackManager.getHackableForEntity(entity, player);
             if (hackable != null) {
                 int hackTime = ArmorUpgradeClientRegistry.getInstance()
@@ -360,12 +360,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryPainting implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof PaintingEntity;
+            return entity instanceof Painting;
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            PaintingType art = ((PaintingEntity) entity).motive;
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
+            Motive art = ((Painting) entity).motive;
 
             if (art != null) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.painting.art", art.getRegistryName().getPath()));
@@ -376,11 +376,11 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryMinecart implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof AbstractMinecartEntity;
+            return entity instanceof AbstractMinecart;
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
             // TODO 1.17 implement an entity syncing protocol (probably as part of a general pneumatic helmet tracker overhaul)
         }
     }
@@ -388,12 +388,12 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryItemFrame implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return entity instanceof ItemFrameEntity;
+            return entity instanceof ItemFrame;
         }
 
         @Override
-        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            ItemFrameEntity frame = (ItemFrameEntity) entity;
+        public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
+            ItemFrame frame = (ItemFrame) entity;
             ItemStack stack = frame.getItem();
 
             if (!stack.isEmpty()) {

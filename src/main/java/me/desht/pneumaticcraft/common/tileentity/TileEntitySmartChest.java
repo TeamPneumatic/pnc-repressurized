@@ -34,23 +34,23 @@ import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -61,7 +61,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class TileEntitySmartChest extends TileEntityTickableBase
-        implements INamedContainerProvider, IRedstoneControl<TileEntitySmartChest>, IComparatorSupport {
+        implements MenuProvider, IRedstoneControl<TileEntitySmartChest>, IComparatorSupport {
     public static final int CHEST_SIZE = 72;
     private static final String NBT_ITEMS = "Items";
 
@@ -83,39 +83,37 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     private final EnumMap<Direction,Integer> pullSlots = new EnumMap<>(Direction.class);
     private final EnumMap<Direction,Integer> pushSlots = new EnumMap<>(Direction.class);
 
-    public TileEntitySmartChest() {
-        super(ModTileEntities.SMART_CHEST.get(), 4);
+    public TileEntitySmartChest(BlockPos pos, BlockState state) {
+        super(ModTileEntities.SMART_CHEST.get(), pos, state, 4);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickClient() {
+        super.tickClient();
 
-        if (!level.isClientSide && rsController.shouldRun()) {
-            if ((level.getGameTime() % Math.max(getTickRate(), cooldown)) == 0) {
-                boolean didWork = false;
-                for (RelativeFace face : RelativeFace.values()) {
-                    switch (getPushPullMode(face)) {
-                        case PUSH:
-                            didWork |= tryPush(getAbsoluteFacing(face, getRotation()));
-                            break;
-                        case PULL:
-                            didWork |= tryPull(getAbsoluteFacing(face, getRotation()));
-                            break;
-                    }
-                }
-                cooldown = didWork ? 0 : Math.min(cooldown + 4, 20);
-            }
+        if (getUpgrades(EnumUpgrade.MAGNET) == 0) {
+            AreaRenderManager.getInstance().removeHandlers(this);
         }
-        if (level.isClientSide) {
-            if (getUpgrades(EnumUpgrade.MAGNET) == 0) {
-                AreaRenderManager.getInstance().removeHandlers(this);
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (rsController.shouldRun() && (nonNullLevel().getGameTime() % Math.max(getTickRate(), cooldown)) == 0) {
+            boolean didWork = false;
+            for (RelativeFace face : RelativeFace.values()) {
+                switch (getPushPullMode(face)) {
+                    case PUSH -> didWork |= tryPush(getAbsoluteFacing(face, getRotation()));
+                    case PULL -> didWork |= tryPull(getAbsoluteFacing(face, getRotation()));
+                }
             }
+            cooldown = didWork ? 0 : Math.min(cooldown + 4, 20);
         }
     }
 
     private boolean tryPush(Direction dir) {
-        TileEntity te = getCachedNeighbor(dir);
+        BlockEntity te = getCachedNeighbor(dir);
 
         if (te == null) {
             return tryDispense(dir);
@@ -145,7 +143,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
 
     private boolean tryDispense(Direction dir) {
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            if (!Block.canSupportCenter(level, worldPosition, dir.getOpposite())) {
+            if (!Block.canSupportCenter(nonNullLevel(), worldPosition, dir.getOpposite())) {
                 ItemStack toPush = findNextItem(inventory, pushSlots, dir);
                 if (!toPush.isEmpty()) {
                     ItemStack pushed = inventory.extractItem(pushSlots.getOrDefault(dir, 0), toPush.getCount(), false);
@@ -159,7 +157,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     private boolean tryPull(Direction dir) {
-        TileEntity te = getCachedNeighbor(dir);
+        BlockEntity te = getCachedNeighbor(dir);
 
         if (te == null) {
             return tryMagnet(dir);
@@ -191,15 +189,15 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         if (getUpgrades(EnumUpgrade.MAGNET) > 0) {
             int range = getUpgrades(EnumUpgrade.RANGE);
             BlockPos centrePos = worldPosition.relative(dir, range + 2);
-            AxisAlignedBB aabb = new AxisAlignedBB(centrePos).inflate(range + 1);
-            List<ItemEntity> items = level.getEntitiesOfClass(ItemEntity.class, aabb,
+            AABB aabb = new AABB(centrePos).inflate(range + 1);
+            List<ItemEntity> items = nonNullLevel().getEntitiesOfClass(ItemEntity.class, aabb,
                     item -> item != null && item.isAlive() && !item.hasPickUpDelay() && !ItemRegistry.getInstance().shouldSuppressMagnet(item));
             boolean didWork = false;
             for (ItemEntity item : items) {
                 ItemStack stack = item.getItem();
                 ItemStack excess = ItemHandlerHelper.insertItemStacked(inventory, stack, false);
                 if (excess.isEmpty()) {
-                    item.remove();
+                    item.discard();
                 } else {
                     item.setItem(excess);
                 }
@@ -263,15 +261,14 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     public Direction getAbsoluteFacing(RelativeFace face, Direction dir) {
-        switch (face) {
-            case TOP: return Direction.UP;
-            case BOTTOM: return Direction.DOWN;
-            case FRONT: return dir;
-            case RIGHT: return dir.getCounterClockWise();
-            case LEFT: return dir.getClockWise();
-            case BACK: return dir.getOpposite();
-            default: throw new IllegalArgumentException("impossible direction " + dir);
-        }
+        return switch (face) {
+            case TOP -> Direction.UP;
+            case BOTTOM -> Direction.DOWN;
+            case FRONT -> dir;
+            case RIGHT -> dir.getCounterClockWise();
+            case LEFT -> dir.getClockWise();
+            case BACK -> dir.getOpposite();
+        };
     }
 
     public PushPullMode getPushPullMode(RelativeFace face) {
@@ -301,9 +298,9 @@ public class TileEntitySmartChest extends TileEntityTickableBase
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
-        if (player instanceof ServerPlayerEntity) {
-            NetworkHandler.sendToPlayer(new PacketSyncSmartChest(this), (ServerPlayerEntity) player);
+    public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
+        if (player instanceof ServerPlayer) {
+            NetworkHandler.sendToPlayer(new PacketSyncSmartChest(this), (ServerPlayer) player);
         }
         return new ContainerSmartChest(windowId, inv, getBlockPos());
     }
@@ -319,23 +316,21 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
         tag.put(NBT_ITEMS, inventory.serializeNBT());
         tag.putInt("pushPull", pushPullModes);
-
-        return super.save(tag);
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         inventory.deserializeNBT(tag.getCompound(NBT_ITEMS));
         pushPullModes = tag.getInt("pushPull");
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
         super.serializeExtraItemData(blockEntityTag, preserveState);
 
         boolean shouldSave = inventory.lastSlot < CHEST_SIZE || rsController.getCurrentMode() != 0;
@@ -353,7 +348,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag))
             return;
         if (tag.startsWith("push_pull:")) {
@@ -438,7 +433,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
     }
 
-    public static IItemHandler deserializeSmartChest(CompoundNBT tag) {
+    public static IItemHandler deserializeSmartChest(CompoundTag tag) {
         SmartChestItemHandler res = new SmartChestItemHandler(null, CHEST_SIZE);
         res.deserializeNBT(tag);
         return res;
@@ -448,7 +443,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         private final ItemStack[] filter = new ItemStack[CHEST_SIZE];
         private int lastSlot = CHEST_SIZE;
 
-        SmartChestItemHandler(TileEntity te, int size) {
+        SmartChestItemHandler(BlockEntity te, int size) {
             super(te, size);
 
             Arrays.fill(filter, ItemStack.EMPTY);
@@ -489,14 +484,14 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT tag = super.serializeNBT();
+        public CompoundTag serializeNBT() {
+            CompoundTag tag = super.serializeNBT();
 
             tag.putInt("LastSlot", lastSlot);
-            ListNBT l = new ListNBT();
+            ListTag l = new ListTag();
             for (int i = 0; i < CHEST_SIZE; i++) {
                 if (!filter[i].isEmpty()) {
-                    CompoundNBT subTag = new CompoundNBT();
+                    CompoundTag subTag = new CompoundTag();
                     subTag.putInt("Slot", i);
                     filter[i].save(subTag);
                     l.add(subTag);
@@ -508,14 +503,14 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundTag nbt) {
             super.deserializeNBT(nbt);
 
             lastSlot = nbt.getInt("LastSlot");
-            ListNBT l = nbt.getList("Filter", Constants.NBT.TAG_COMPOUND);
+            ListTag l = nbt.getList("Filter", Tag.TAG_COMPOUND);
             boolean isV2 = nbt.getBoolean("V2");
             for (int i = 0; i < l.size(); i++) {
-                CompoundNBT tag = l.getCompound(i);
+                CompoundTag tag = l.getCompound(i);
                 ItemStack stack = ItemStack.of(tag);
                 if (!isV2 && stack.getCount() == 1) stack.setCount(stack.getMaxStackSize());
                 filter[tag.getInt("Slot")] = stack;

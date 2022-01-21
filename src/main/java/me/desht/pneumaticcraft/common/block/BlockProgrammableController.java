@@ -20,26 +20,22 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-public class BlockProgrammableController extends BlockPneumaticCraft {
+public class BlockProgrammableController extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
 
     public BlockProgrammableController() {
         super(ModBlocks.defaultProps());
-    }
-
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityProgrammableController.class;
     }
 
     @Override
@@ -60,22 +56,28 @@ public class BlockProgrammableController extends BlockPneumaticCraft {
      * when checking the bottom of the block.
      */
     @Override
-    public int getSignal(BlockState state, IBlockReader blockReader, BlockPos pos, Direction side) {
+    public int getSignal(BlockState state, BlockGetter blockReader, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockReader, pos, TileEntityProgrammableController.class)
                 .map(te -> te.getEmittingRedstone(side.getOpposite())).orElse(0);
     }
 
     @Override
-    public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side) {
+    public boolean shouldCheckWeakPower(BlockState state, LevelReader world, BlockPos pos, Direction side) {
         return false;
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        if (entity instanceof PlayerEntity) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        if (entity instanceof Player) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityProgrammableController.class)
-                    .ifPresent(te -> te.setOwner((PlayerEntity) entity));
+                    .ifPresent(te -> te.setOwner((Player) entity));
         }
         super.setPlacedBy(world, pos, state, entity, stack);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityProgrammableController(pPos, pState);
     }
 }

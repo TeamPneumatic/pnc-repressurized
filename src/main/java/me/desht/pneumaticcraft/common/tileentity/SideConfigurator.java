@@ -18,15 +18,15 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.ByteNBT;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.util.NonNullSupplier;
@@ -40,7 +40,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 /**
  * A class to manage which sides of a TE's block are mapped to which capability handler objects (item/fluid/energy...)
  */
-public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
+public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     private static final String baseButtonTag = "SideConf";
 
     private final List<ConnectionEntry<T>> entries = new ArrayList<>();
@@ -193,12 +193,12 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     }
 
     private Direction rot(Direction in, RelativeFace rf) {
-        switch (rf) {
-            case RIGHT: return in.getCounterClockWise();
-            case LEFT: return in.getClockWise();
-            case BACK: return in.getOpposite();
-            default: return in;
-        }
+        return switch (rf) {
+            case RIGHT -> in.getCounterClockWise();
+            case LEFT -> in.getClockWise();
+            case BACK -> in.getOpposite();
+            default -> in;
+        };
     }
 
     private RelativeFace getRelativeFace(Direction facing) {
@@ -211,7 +211,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         }
     }
 
-    public ITextComponent getFaceLabel(RelativeFace relativeFace) {
+    public Component getFaceLabel(RelativeFace relativeFace) {
         ConnectionEntry<T> c = entries.get(faces[relativeFace.ordinal()]);
         return c == null ?
                 xlate("pneumaticcraft.gui.sideConfigurator.unconnected") :
@@ -223,21 +223,21 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = new CompoundNBT();
-        ListNBT l = new ListNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
+        ListTag l = new ListTag();
         for (byte face : faces) {
-            l.add(ByteNBT.valueOf(face));
+            l.add(ByteTag.valueOf(face));
         }
         tag.put("faces", l);
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        ListNBT l = nbt.getList("faces", Constants.NBT.TAG_BYTE);
+    public void deserializeNBT(CompoundTag nbt) {
+        ListTag l = nbt.getList("faces", Tag.TAG_BYTE);
         for (int i = 0; i < l.size() && i < faces.length; i++) {
-            faces[i] = ((ByteNBT) l.get(i)).getAsByte();
+            faces[i] = ((ByteTag) l.get(i)).getAsByte();
             if (faces[i] < 0 || faces[i] >= entries.size()) {
                 // sanity check: 0th element is always available ("unconnected")
                 faces[i] = 0;
@@ -245,21 +245,21 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         }
     }
 
-    public static CompoundNBT writeToNBT(ISideConfigurable sideConfigurable) {
-        CompoundNBT tag = new CompoundNBT();
+    public static CompoundTag writeToNBT(ISideConfigurable sideConfigurable) {
+        CompoundTag tag = new CompoundTag();
         for (SideConfigurator<?> sc : sideConfigurable.getSideConfigurators()) {
             if (sc.shouldSaveNBT()) {
-                CompoundNBT subtag = sc.serializeNBT();
+                CompoundTag subtag = sc.serializeNBT();
                 tag.put(sc.id, subtag);
             }
         }
         return tag;
     }
 
-    public static void readFromNBT(CompoundNBT tag, ISideConfigurable sideConfigurable) {
+    public static void readFromNBT(CompoundTag tag, ISideConfigurable sideConfigurable) {
         for (SideConfigurator<?> sc : sideConfigurable.getSideConfigurators()) {
             if (tag.contains(sc.id)) {
-                CompoundNBT subtag = tag.getCompound(sc.id);
+                CompoundTag subtag = tag.getCompound(sc.id);
                 sc.deserializeNBT(subtag);
             }
         }

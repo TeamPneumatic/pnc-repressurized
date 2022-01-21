@@ -17,24 +17,25 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Collections;
 import java.util.List;
 
-public class WidgetTooltipArea extends Widget implements ITooltipProvider {
-    public final ITextComponent[] tooltip;
+public class WidgetTooltipArea extends AbstractWidget implements ITooltipProvider {
+    public final Component[] tooltip;
 
-    public WidgetTooltipArea(int x, int y, int width, int height, ITextComponent... tooltip) {
-        super(x, y, width, height, StringTextComponent.EMPTY);
+    public WidgetTooltipArea(int x, int y, int width, int height, Component... tooltip) {
+        super(x, y, width, height, TextComponent.EMPTY);
         this.tooltip = tooltip;
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
+    public void renderButton(PoseStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
         // nothing
     }
 
@@ -45,12 +46,16 @@ public class WidgetTooltipArea extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
         Collections.addAll(curTip, tooltip);
     }
 
     @Override
     public boolean changeFocus(boolean focus) {
         return false;  // not focusable
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

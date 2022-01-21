@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
 
         EntityFilterPair.addErrors(this, curInfo);
@@ -73,7 +73,7 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
     }
 
     @Override
-    public List<Entity> getValidEntities(World world) {
+    public List<Entity> getValidEntities(Level world) {
         return new ArrayList<>();
     }
 

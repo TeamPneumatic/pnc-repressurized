@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.harvesting;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -39,14 +39,14 @@ public abstract class HarvestHandlerAbstractCrop extends HarvestHandler {
     }
     
     @Override
-    public boolean canHarvest(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone){
+    public boolean canHarvest(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone){
         return blockChecker.test(state) && isMaxAge(state);
     }
     
     @Override
-    public boolean harvestAndReplant(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone){
+    public boolean harvestAndReplant(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone){
         harvest(world, chunkCache, pos, state, drone);
-        List<ItemEntity> seedItems = world.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(pos), entityItem -> isSeed(world, pos, state, entityItem.getItem()));
+        List<ItemEntity> seedItems = world.getEntitiesOfClass(ItemEntity.class, new AABB(pos), entityItem -> isSeed(world, pos, state, entityItem.getItem()));
         if(!seedItems.isEmpty()){
             seedItems.get(0).getItem().shrink(1);//Use a seed
             world.setBlockAndUpdate(pos, withMinAge(state)); //And plant it.
@@ -56,7 +56,7 @@ public abstract class HarvestHandlerAbstractCrop extends HarvestHandler {
         }
     }
     
-    protected abstract boolean isSeed(World world, BlockPos pos, BlockState state, ItemStack stack);
+    protected abstract boolean isSeed(Level world, BlockPos pos, BlockState state, ItemStack stack);
     
     protected abstract boolean isMaxAge(BlockState state);
     

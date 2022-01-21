@@ -20,38 +20,36 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressedIronBlock;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 
-public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedIronBlock implements INamedContainerProvider {
+public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedIronBlock implements MenuProvider {
     @GuiSynced
     public int targetTemperature = -1;  // -1 = uninited
 
-    public TileEntityCreativeCompressedIronBlock() {
-        super(ModTileEntities.CREATIVE_COMPRESSED_IRON_BLOCK.get());
+    public TileEntityCreativeCompressedIronBlock(BlockPos pos, BlockState state) {
+        super(ModTileEntities.CREATIVE_COMPRESSED_IRON_BLOCK.get(), pos, state);
 
         heatExchanger.setThermalCapacity(1_000_000);
     }
 
     @Override
-    public void tick() {
-        if (!level.isClientSide) {
-            if (targetTemperature < 0) {
-                targetTemperature = (int) heatExchanger.getAmbientTemperature();
-            }
+    public void tickServer() {
+        super.tickServer();
 
-            heatExchanger.setTemperature(targetTemperature);
+        if (targetTemperature < 0) {
+            targetTemperature = (int) heatExchanger.getAmbientTemperature();
         }
-
-        super.tick();
+        heatExchanger.setTemperature(targetTemperature);
     }
 
     @Override
@@ -60,23 +58,22 @@ public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedI
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
         super.save(tag);
         tag.putInt("targetTemperature", targetTemperature);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         targetTemperature = tag.getInt("targetTemperature");
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         try {
             targetTemperature += Integer.parseInt(tag) * (shiftHeld ? 10 : 1);
-            targetTemperature = MathHelper.clamp(targetTemperature, 0, 2273);
+            targetTemperature = Mth.clamp(targetTemperature, 0, 2273);
         } catch (IllegalArgumentException ignored) {
         }
     }
@@ -87,7 +84,7 @@ public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedI
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
         return new ContainerCreativeCompressedIronBlock(windowId, playerInventory, getBlockPos());
     }
 }

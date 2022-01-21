@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
@@ -93,8 +93,8 @@ public class HeatPropertiesRecipeBuilder extends PneumaticCraftRecipeBuilder<Hea
         private void maybeAddBlockstateProp(JsonObject json, String key, BlockState state) {
             if (state != null) {
                 JsonObject obj = new JsonObject();
-                if (state.getBlock() instanceof FlowingFluidBlock) {
-                    obj.addProperty("fluid", ((FlowingFluidBlock) state.getBlock()).getFluid().getRegistryName().toString());
+                if (state.getBlock() instanceof LiquidBlock) {
+                    obj.addProperty("fluid", ((LiquidBlock) state.getBlock()).getFluid().getRegistryName().toString());
                 } else {
                     obj.addProperty("block", state.toString());
                 }

@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -38,19 +38,19 @@ public class PacketGuiButton {
         this.shiftHeld = ClientUtils.hasShiftDown();
     }
 
-    public PacketGuiButton(PacketBuffer buffer) {
+    public PacketGuiButton(FriendlyByteBuf buffer) {
         tag = buffer.readUtf(1024);
         shiftHeld = buffer.readBoolean();
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeUtf(tag);
         buffer.writeBoolean(shiftHeld);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             if (player != null && player.containerMenu instanceof IGUIButtonSensitive) {
                 ((IGUIButtonSensitive) player.containerMenu).handleGUIButtonPress(tag, shiftHeld, player);
             }

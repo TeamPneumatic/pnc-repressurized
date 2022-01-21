@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
 
 public interface ISimulationController {
     /**
@@ -73,7 +73,7 @@ public interface ISimulationController {
      *
      * @return the player
      */
-    PlayerEntity getHacker();
+    Player getHacker();
 
     /**
      * Is this just a test by the station's owner, or other whitelisted player? If just testing, the security
@@ -88,7 +88,7 @@ public interface ISimulationController {
      *
      * @param buf packet buffer
      */
-    void toBytes(PacketBuffer buf);
+    void toBytes(FriendlyByteBuf buf);
 
     enum HackingSide {
         PLAYER,

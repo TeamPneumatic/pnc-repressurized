@@ -22,38 +22,33 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class BlockSmartChest extends BlockPneumaticCraft {
+public class BlockSmartChest extends BlockPneumaticCraft implements EntityBlockPneumaticCraft, IBlockComparatorSupport {
     private static final VoxelShape SHAPE = box(1, 0, 1, 15, 15, 15);
 
     public BlockSmartChest() {
         super(ModBlocks.reinforcedStoneProps());
-    }
-
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntitySmartChest.class;
     }
 
     @Override
@@ -67,8 +62,14 @@ public class BlockSmartChest extends BlockPneumaticCraft {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntitySmartChest(pPos, pState);
     }
 
     public static class ItemBlockBlockSmartChest extends BlockItem implements IInventoryItem {
@@ -83,17 +84,17 @@ public class BlockSmartChest extends BlockPneumaticCraft {
 
         @Override
         public String getTooltipPrefix(ItemStack stack) {
-            return TextFormatting.GREEN.toString();
+            return ChatFormatting.GREEN.toString();
         }
 
         @Override
-        public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
             super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
-            CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+            CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
             if (tag != null && tag.contains("Items")) {
-                CompoundNBT subTag = tag.getCompound("Items");
-                ListNBT l = subTag.getList("Filter", Constants.NBT.TAG_COMPOUND);
+                CompoundTag subTag = tag.getCompound("Items");
+                ListTag l = subTag.getList("Filter", Tag.TAG_COMPOUND);
                 if (!l.isEmpty()) {
                     tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.filter", l.size()));
                 }

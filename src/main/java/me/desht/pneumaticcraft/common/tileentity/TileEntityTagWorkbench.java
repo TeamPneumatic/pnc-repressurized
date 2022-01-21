@@ -21,17 +21,18 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerTagWorkbench;
 import me.desht.pneumaticcraft.common.item.ItemTagFilter;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -39,7 +40,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Set;
 
-public class TileEntityTagWorkbench extends TileEntityDisplayTable implements INamedContainerProvider {
+public class TileEntityTagWorkbench extends TileEntityDisplayTable implements MenuProvider {
     public static final int PAPER_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
 
@@ -49,8 +50,8 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     public int paperItemId;
     public int outputItemId;
 
-    public TileEntityTagWorkbench() {
-        super(ModTileEntities.TAG_WORKBENCH.get());
+    public TileEntityTagWorkbench(BlockPos pos, BlockState state) {
+        super(ModTileEntities.TAG_WORKBENCH.get(), pos, state);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (tag.startsWith("write:")) {
             String[] data = tag.substring(6).split(",");
             if (data.length == 0) return;
@@ -88,15 +89,14 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
         super.save(tag);
         tag.put("Items", inventory.serializeNBT());
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         displayedStack = inventory.getStackInSlot(0);
@@ -105,7 +105,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     }
 
     @Override
-    public void readFromPacket(CompoundNBT tag) {
+    public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
         paperItemId = tag.getInt("PaperItemId");
@@ -113,7 +113,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     }
 
     @Override
-    public void writeToPacket(CompoundNBT tag) {
+    public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
         tag.putInt("PaperItemId", paperItemId);
@@ -122,7 +122,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         return new ContainerTagWorkbench(windowId, inv, getBlockPos());
     }
 
@@ -133,12 +133,12 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            switch (slot) {
-                case 0: return true;
-                case PAPER_SLOT: return stack.getItem() == Items.PAPER || stack.getItem() == ModItems.TAG_FILTER.get();
-                case OUTPUT_SLOT: return stack.getItem() == ModItems.TAG_FILTER.get();
-                default: throw new IllegalArgumentException("invalid slot " + slot);
-            }
+            return switch (slot) {
+                case 0 -> true;
+                case PAPER_SLOT -> stack.getItem() == Items.PAPER || stack.getItem() == ModItems.TAG_FILTER.get();
+                case OUTPUT_SLOT -> stack.getItem() == ModItems.TAG_FILTER.get();
+                default -> throw new IllegalArgumentException("invalid slot " + slot);
+            };
         }
 
         @Override
@@ -154,14 +154,10 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
 
         @Override
         public int getSlotLimit(int slot) {
-            switch (slot) {
-                case 0:
-                case OUTPUT_SLOT:
-                    return 1;
-                default:
-                    return 64;
-
-            }
+            return switch (slot) {
+                case 0, OUTPUT_SLOT -> 1;
+                default -> 64;
+            };
         }
     }
 }

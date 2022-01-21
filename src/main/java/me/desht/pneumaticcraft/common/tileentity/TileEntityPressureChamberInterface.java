@@ -33,20 +33,19 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -55,7 +54,7 @@ import javax.annotation.Nullable;
 import java.util.Locale;
 
 public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall
-        implements ITickableTileEntity, IRedstoneControl<TileEntityPressureChamberInterface>, INamedContainerProvider {
+        implements IRedstoneControl<TileEntityPressureChamberInterface>, MenuProvider {
     public static final int MAX_PROGRESS = 40;
     public static final int INVENTORY_SIZE = 1;
     private static final int MIN_SOUND_INTERVAL = 400;  // ticks - the sound effect is ~2.5s long
@@ -102,8 +101,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         }
     }
 
-    public TileEntityPressureChamberInterface() {
-        super(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), 4);
+    public TileEntityPressureChamberInterface(BlockPos pos, BlockState state) {
+        super(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), pos, state, 4);
     }
 
     public static void clearCachedItems() {
@@ -112,13 +111,13 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerPressureChamberInterface(i, playerInventory, getBlockPos());
     }
 
     @Override
-    public void tick() {
-        tickImpl();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         boolean wasOpeningI = isOpeningInput;
         boolean wasOpeningO = isOpeningOutput;
@@ -126,7 +125,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         oldOutputProgress = outputProgress;
         TileEntityPressureChamberValve core = getCore();
 
-        if (!getLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide) {
             doorSpeed = getSpeedMultiplierFromUpgrades();
 
             int itemCount = inventory.getStackInSlot(0).getCount();
@@ -183,8 +182,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             isOpeningOutput = false;
         }
 
-        if (getLevel().isClientSide && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningInput || wasOpeningO != isOpeningOutput)) {
-            getLevel().playLocalSound(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, ModSounds.INTERFACE_DOOR.get(), SoundCategory.BLOCKS, 0.5F, 1.0F, true);
+        if (nonNullLevel().isClientSide && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningInput || wasOpeningO != isOpeningOutput)) {
+            nonNullLevel().playLocalSound(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, ModSounds.INTERFACE_DOOR.get(), SoundSource.BLOCKS, 0.5F, 1.0F, true);
             soundTimer = 0;
         }
     }
@@ -195,7 +194,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     private void exportToInventory() {
         Direction facing = getRotation();
-        TileEntity te = getCachedNeighbor(facing);
+        BlockEntity te = getCachedNeighbor(facing);
         ItemStack stack = inventory.getStackInSlot(0);
         if (te != null) {
             int count = stack.getCount();
@@ -287,8 +286,8 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         outputProgress = tag.getFloat("outputProgress");
@@ -298,19 +297,18 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.put("Items", inventory.serializeNBT());
         tag.putFloat("outputProgress", outputProgress);
         tag.putFloat("inputProgress", inputProgress);
         tag.putInt("interfaceMode", interfaceMode.ordinal());
         tag.putBoolean("exportAny", exportAny);
-        return tag;
     }
 
     @Override
-    public boolean isGuiUseableByPlayer(PlayerEntity player) {
-        return getLevel().getBlockEntity(getBlockPos()) == this
+    public boolean isGuiUseableByPlayer(Player player) {
+        return nonNullLevel().getBlockEntity(getBlockPos()) == this
                 && player.distanceToSqr(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 0.5D, getBlockPos().getZ() + 0.5D) <= 64.0D;
     }
 
@@ -320,7 +318,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag))
             return;
         if (tag.equals("export_mode")) {

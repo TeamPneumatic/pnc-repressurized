@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
@@ -37,7 +37,7 @@ public class RenderHackSimulation {
         this.nodeSpacing = nodeSpacing;
     }
 
-    public void render(MatrixStack matrixStack, HackSimulation hackSimulation, int color) {
+    public void render(PoseStack matrixStack, HackSimulation hackSimulation, int color) {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

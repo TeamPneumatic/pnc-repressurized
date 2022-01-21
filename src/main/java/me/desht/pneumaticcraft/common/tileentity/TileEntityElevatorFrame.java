@@ -19,8 +19,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 
 import java.lang.ref.WeakReference;
@@ -30,8 +32,8 @@ public class TileEntityElevatorFrame extends TileEntityBase {
 
     //TODO redo elevator frames
 
-    public TileEntityElevatorFrame() {
-        super(ModTileEntities.ELEVATOR_FRAME.get());
+    public TileEntityElevatorFrame(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ELEVATOR_FRAME.get(), pos, state);
     }
 
     @Override
@@ -48,8 +50,9 @@ public class TileEntityElevatorFrame extends TileEntityBase {
     }
 
     private TileEntityElevatorBase findElevatorBase() {
-        BlockPos.Mutable pos1 = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos pos1 = new BlockPos.MutableBlockPos();
         pos1.set(worldPosition);
+        Level level = nonNullLevel();
         while (true) {
             pos1.move(Direction.DOWN);
             if (level.getBlockState(pos1).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {

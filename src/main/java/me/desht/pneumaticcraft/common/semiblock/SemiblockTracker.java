@@ -20,14 +20,14 @@ package me.desht.pneumaticcraft.common.semiblock;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -52,7 +52,7 @@ public enum SemiblockTracker {
     }
 
     @SubscribeEvent
-    public static void onServerStopping(FMLServerStoppingEvent event) {
+    public static void onServerStopping(ServerStoppingEvent event) {
         if (!event.getServer().isDedicatedServer()) {
             // this is needed for integrated server, otherwise there will be "already exists" errors when starting up again
             semiblockMap.values().forEach(Map::clear);
@@ -66,7 +66,7 @@ public enum SemiblockTracker {
      * @param pos the block
      * @return the entity at the given pos
      */
-    public ISemiBlock getSemiblock(World world, BlockPos pos) {
+    public ISemiBlock getSemiblock(Level world, BlockPos pos) {
         return getSemiblock(world, pos, null);
     }
 
@@ -77,7 +77,7 @@ public enum SemiblockTracker {
      * @param direction face of the blockpos, or null for the block itself
      * @return the entity, or null if none was found
      */
-    public ISemiBlock getSemiblock(World world, BlockPos pos, Direction direction) {
+    public ISemiBlock getSemiblock(Level world, BlockPos pos, Direction direction) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.get(getKey(world));
         if (map == null) return null;
         SemiblockCollection sc = map.get(pos);
@@ -90,7 +90,7 @@ public enum SemiblockTracker {
      * @param pos the blockpos
      * @return a collection of all the semiblocks at the given position
      */
-    public Stream<ISemiBlock> getAllSemiblocks(World world, BlockPos pos) {
+    public Stream<ISemiBlock> getAllSemiblocks(Level world, BlockPos pos) {
         return getAllSemiblocks(world, pos, null);
     }
 
@@ -102,7 +102,7 @@ public enum SemiblockTracker {
      * @param offsetDir a direction to offset if needed
      * @return a stream of all the semiblocks at the given position
      */
-    public Stream<ISemiBlock> getAllSemiblocks(World world, BlockPos pos, Direction offsetDir) {
+    public Stream<ISemiBlock> getAllSemiblocks(Level world, BlockPos pos, Direction offsetDir) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
         if (map.isEmpty()) return Stream.empty();
         SemiblockCollection sc = map.get(pos);
@@ -116,7 +116,7 @@ public enum SemiblockTracker {
      * @param pos the blockpos
      * @param direction the side of the block, or null for the block itself
      */
-    public void clearSemiblock(World world, BlockPos pos, Direction direction) {
+    public void clearSemiblock(Level world, BlockPos pos, Direction direction) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
         SemiblockCollection sc = map.get(pos);
         if (sc != null) sc.clear(direction);
@@ -130,7 +130,7 @@ public enum SemiblockTracker {
      * @param entity the semiblock entity
      * @return true if it was added OK, false if there was already a semiblock there (which is an error)
      */
-    public boolean putSemiblock(World world, BlockPos pos, ISemiBlock entity) {
+    public boolean putSemiblock(Level world, BlockPos pos, ISemiBlock entity) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
 
         SemiblockCollection sc = map.get(pos);
@@ -148,7 +148,7 @@ public enum SemiblockTracker {
      * @param aabb a bounding box which contains all the wanted semiblocks
      * @return a stream of semiblock in the area
      */
-    public Stream<ISemiBlock> getSemiblocksInArea(World world, AxisAlignedBB aabb) {
+    public Stream<ISemiBlock> getSemiblocksInArea(Level world, AABB aabb) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
 
         return map.entrySet().stream()
@@ -156,7 +156,7 @@ public enum SemiblockTracker {
                 .flatMap(e -> e.getValue().getAll());
     }
 
-    private ResourceLocation getKey(World world) {
+    private ResourceLocation getKey(Level world) {
         return world.dimension().location();
     }
 

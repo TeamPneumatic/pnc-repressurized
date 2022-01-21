@@ -19,16 +19,16 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 public class ContainerPressurizedSpawner extends ContainerPneumaticBase<TileEntityPressurizedSpawner> {
-    public ContainerPressurizedSpawner(int windowId, PlayerInventory invPlayer, PacketBuffer buffer) {
+    public ContainerPressurizedSpawner(int windowId, Inventory invPlayer, FriendlyByteBuf buffer) {
         this(windowId, invPlayer, getTilePos(buffer));
     }
 
-    public ContainerPressurizedSpawner(int windowId, PlayerInventory invPlayer, BlockPos pos) {
+    public ContainerPressurizedSpawner(int windowId, Inventory invPlayer, BlockPos pos) {
         super(ModContainers.PRESSURIZED_SPAWNER.get(), windowId, invPlayer, pos);
 
         addSlot(new ContainerVacuumTrap.SlotSpawnerCore(te.getPrimaryInventory(), 0, 62, 38));

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -29,11 +29,11 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     private WidgetCheckBox comparatorInputCheckBox;
     private boolean upgraded;
     private boolean output;
-    private final List<IReorderingProcessor> lowerText = new ArrayList<>();
+    private final List<FormattedCharSequence> lowerText = new ArrayList<>();
 
     public GuiRedstoneModule(ModuleRedstone module) {
         super(module);
@@ -75,29 +75,29 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         ourColor = module.getColorChannel();
         otherColor = module.getOtherColor();
 
-        addButton(new WidgetButtonExtended(guiLeft + xSize - 22, guiTop + 2, 18, 12,
+        addRenderableWidget(new WidgetButtonExtended(guiLeft + xSize - 22, guiTop + 2, 18, 12,
                 getDirText(module), b -> toggleRedstoneDirection())
                 .setTooltipText(ImmutableList.of(
                         xlate(module.getRedstoneDirection().getTranslationKey()),
-                        xlate("pneumaticcraft.gui.redstoneModule.clickToToggle").withStyle(TextFormatting.GRAY)
+                        xlate("pneumaticcraft.gui.redstoneModule.clickToToggle").withStyle(ChatFormatting.GRAY)
                 ))
         );
 
-        addButton(new WidgetLabel(guiLeft + xSize / 2, guiTop + 5, getTitle()).setAlignment(WidgetLabel.Alignment.CENTRE));
+        addRenderableWidget(new WidgetLabel(guiLeft + xSize / 2, guiTop + 5, getTitle()).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         WidgetLabel ourColorLabel;
-        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, xlate("pneumaticcraft.gui.tubeModule.channel")));
+        addRenderableWidget(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, xlate("pneumaticcraft.gui.tubeModule.channel")));
 
         WidgetLabel opLabel;
-        addButton(opLabel = new WidgetLabel(guiLeft + 10, guiTop + 45, xlate("pneumaticcraft.gui.redstoneModule.operation")));
+        addRenderableWidget(opLabel = new WidgetLabel(guiLeft + 10, guiTop + 45, xlate("pneumaticcraft.gui.redstoneModule.operation")));
         opLabel.visible = output;
 
         otherColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 65, xlate("pneumaticcraft.gui.tubeModule.otherChannel"));
         otherColorLabel.visible = output;
-        addButton(otherColorLabel);
+        addRenderableWidget(otherColorLabel);
 
         constLabel = new WidgetLabel(guiLeft + 15, guiTop + 65, xlate("pneumaticcraft.gui.redstoneModule.constant"));
-        addButton(constLabel);
+        addRenderableWidget(constLabel);
         constLabel.visible = output;
 
         int w = 0;
@@ -106,7 +106,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         }
         int xBase = guiLeft + w + 15;
 
-        addButton(new WidgetColorSelector(xBase, guiTop + 20, b -> ourColor = b.getColor().getId())
+        addRenderableWidget(new WidgetColorSelector(xBase, guiTop + 20, b -> ourColor = b.getColor().getId())
                 .withInitialColor(DyeColor.byId(ourColor)));
 
         if (!output) {
@@ -114,24 +114,24 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
             comparatorInputCheckBox.setChecked(module.isComparatorInput());
             comparatorInputCheckBox.setTooltipKey("pneumaticcraft.gui.redstoneModule.comparatorInput.tooltip");
             comparatorInputCheckBox.visible = !output && upgraded;
-            addButton(comparatorInputCheckBox);
+            addRenderableWidget(comparatorInputCheckBox);
         } else {
             comboBox = new WidgetComboBox(font, xBase, guiTop + 43, xSize - xBase + guiLeft - 10, 12)
                     .initFromEnum(module.getOperation());
             comboBox.active = upgraded;
-            addButton(comboBox);
+            addRenderableWidget(comboBox);
 
             otherColorButton = new WidgetColorSelector(xBase, guiTop + 60, b -> otherColor = b.getColor().getId())
                     .withInitialColor(DyeColor.byId(otherColor));
             otherColorButton.active = upgraded;
-            addButton(otherColorButton);
+            addRenderableWidget(otherColorButton);
 
             constTextField = new WidgetTextFieldNumber(font, xBase, guiTop + 63, 30, 12);
             constTextField.minValue = 0;
             constTextField.setDecimals(0);
             constTextField.setValue(module.getConstantVal());
             constTextField.active = upgraded;
-            addButton(constTextField);
+            addRenderableWidget(constTextField);
 
             invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 85, 0xFF404040, xlate("pneumaticcraft.gui.redstoneModule.invert")) {
                 @Override
@@ -142,7 +142,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
             };
             invertCheckBox.setChecked(module.isInverted());
             invertCheckBox.setTooltipKey("pneumaticcraft.gui.redstoneModule.invert.tooltip");
-            addButton(invertCheckBox);
+            addRenderableWidget(invertCheckBox);
 
             updateWidgetVisibility();
         }
@@ -175,7 +175,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
 
         Operation op = getSelectedOp();
         String key = op.getTranslationKey() + ".tooltip";
-        List<ITextComponent> l = new ArrayList<>();
+        List<Component> l = new ArrayList<>();
         if (op.useConstant()) {
             l.add(xlate(key, dyeColorDesc(ourColor), constTextField.getValue()));
         } else if (op.useOtherColor()) {
@@ -184,13 +184,13 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
             l.add(xlate(key, dyeColorDesc(ourColor)));
         }
         if (!upgraded) {
-            l.add(xlate("pneumaticcraft.gui.redstoneModule.addAdvancedPCB").withStyle(TextFormatting.DARK_BLUE));
+            l.add(xlate("pneumaticcraft.gui.redstoneModule.addAdvancedPCB").withStyle(ChatFormatting.DARK_BLUE));
         }
         lowerText.addAll(GuiUtils.wrapTextComponentList(l, xSize - 20, font));
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         int yBase = guiTop + ySize - lowerText.size() * font.lineHeight - 10;
@@ -228,7 +228,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
 
     private String getDirText(ModuleRedstone module) {
         return module.getRedstoneDirection() == EnumRedstoneDirection.INPUT ?
-                TextFormatting.DARK_RED + Symbols.TRIANGLE_LEFT :
-                TextFormatting.RED + Symbols.TRIANGLE_RIGHT;
+                ChatFormatting.DARK_RED + Symbols.TRIANGLE_LEFT :
+                ChatFormatting.RED + Symbols.TRIANGLE_RIGHT;
     }
 }

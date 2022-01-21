@@ -18,27 +18,24 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.FakePlayer;
+import org.jetbrains.annotations.Nullable;
 
-public class BlockAerialInterface extends BlockPneumaticCraft {
+public class BlockAerialInterface extends BlockPneumaticCraft implements IBlockComparatorSupport, EntityBlockPneumaticCraft {
     public BlockAerialInterface() {
         super(ModBlocks.defaultProps());
-    }
-
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityAerialInterface.class;
     }
 
     @Override
@@ -52,9 +49,9 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAerialInterface.class).ifPresent(teAI -> {
-            if (entity instanceof PlayerEntity && !(entity instanceof FakePlayer)) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        world.getBlockEntity(pos, ModTileEntities.AERIAL_INTERFACE.get()).ifPresent(teAI -> {
+            if (entity instanceof Player && !(entity instanceof FakePlayer)) {
                 teAI.setPlayerId(entity.getUUID());
             }
         });
@@ -68,8 +65,14 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
     }
 
     @Override
-    public int getSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityAerialInterface.class)
+    public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
+        return blockAccess.getBlockEntity(pos, ModTileEntities.AERIAL_INTERFACE.get())
                 .map(teAI -> teAI.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityAerialInterface(pPos, pState);
     }
 }

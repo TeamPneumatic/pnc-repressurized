@@ -18,29 +18,33 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.IPlantable;
 
 public class EntityCropSupport extends EntitySemiblockBase {
-    private static final AxisAlignedBB BOUNDS = new AxisAlignedBB(3 / 16D, 0D, 3 / 16D, 13 / 16D, 9 / 16D, 13 / 16D);
+    private static final AABB BOUNDS = new AABB(3 / 16D, 0D, 3 / 16D, 13 / 16D, 9 / 16D, 13 / 16D);
 
-    public EntityCropSupport(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityCropSupport(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
     @Override
-    protected AxisAlignedBB calculateBlockBounds() {
+    protected AABB calculateBlockBounds() {
         return BOUNDS;
     }
 
@@ -48,9 +52,9 @@ public class EntityCropSupport extends EntitySemiblockBase {
     public void tick() {
         super.tick();
 
-        if (level.random.nextDouble() < ConfigHelper.common().machines.cropSticksGrowthBoostChance.get() && !getBlockState().isAir(level, getBlockPos())) {
+        if (level.random.nextDouble() < ConfigHelper.common().machines.cropSticksGrowthBoostChance.get() && !getBlockState().isAir()) {
             if (!level.isClientSide) {
-                getBlockState().tick((ServerWorld) level, getBlockPos(), level.random);
+                getBlockState().tick((ServerLevel) level, getBlockPos(), level.random);
             } else {
                 level.addParticle(ParticleTypes.HAPPY_VILLAGER, getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, 0, 0, 0);
             }
@@ -60,33 +64,33 @@ public class EntityCropSupport extends EntitySemiblockBase {
     @Override
     public boolean canPlace(Direction facing) {
         BlockState state = getBlockState();
-        return (state.getBlock().isAir(state, level, getBlockPos()) || state.getBlock() instanceof IPlantable) && canStay();
+        return (state.isAir() || state.getBlock() instanceof IPlantable) && canStay();
     }
 
     @Override
     public boolean canStay() {
         BlockState state = getBlockState();
-        if (!state.getBlock().isAir(state, level, getBlockPos())) {
+        if (!state.isAir()) {
             return true;
         }
 
         BlockPos posBelow = getBlockPos().relative(Direction.DOWN);
         BlockState stateBelow = level.getBlockState(posBelow);
-        return !stateBelow.getBlock().isAir(stateBelow, level, posBelow);
+        return !stateBelow.isAir();
     }
 
     @Override
-    public ActionResultType interactAt(PlayerEntity player, Vector3d hitVec, Hand hand) {
+    public InteractionResult interactAt(Player player, Vec3 hitVec, InteractionHand hand) {
         BlockState state = getBlockState();
-        if (state.getBlock().isAir(state, level, getBlockPos())) {
+        if (state.isAir()) {
             // try a right click on the block below - makes it easier to plant crops in an empty crop support
             BlockPos below = getBlockPos().below();
-            Vector3d eye = player.getEyePosition(0f);
-            Vector3d end = Vector3d.atCenterOf(below).add(0, 0.25, 0);
-            RayTraceContext ctx = new RayTraceContext(eye, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, player);
-            BlockRayTraceResult brtr = player.level.clip(ctx);
-            if (brtr.getType() == RayTraceResult.Type.BLOCK && brtr.getBlockPos().equals(below)) {
-                return player.getItemInHand(hand).useOn(new ItemUseContext(player, hand, brtr));
+            Vec3 eye = player.getEyePosition(0f);
+            Vec3 end = Vec3.atCenterOf(below).add(0, 0.25, 0);
+            ClipContext ctx = new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player);
+            BlockHitResult brtr = player.level.clip(ctx);
+            if (brtr.getType() == HitResult.Type.BLOCK && brtr.getBlockPos().equals(below)) {
+                return player.getItemInHand(hand).useOn(new UseOnContext(player, hand, brtr));
             }
         }
         return super.interactAt(player, hitVec, hand);

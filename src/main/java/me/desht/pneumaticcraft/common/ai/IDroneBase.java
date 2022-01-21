@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -54,7 +54,7 @@ public interface IDroneBase extends IDrone {
 
     void setLogisticsManager(LogisticsManager logisticsManager);
 
-    void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch);
+    void playSound(SoundEvent soundEvent, SoundSource category, float volume, float pitch);
 
     void addAirToDrone(int air);
 
@@ -82,7 +82,7 @@ public interface IDroneBase extends IDrone {
 
     String getLabel();
 
-    ITextComponent getDroneName();
+    Component getDroneName();
 
     boolean isDroneStillValid();
 

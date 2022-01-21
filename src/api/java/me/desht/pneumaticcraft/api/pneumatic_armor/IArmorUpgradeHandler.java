@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.api.pneumatic_armor;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -103,7 +103,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      *
      * @return the armor slot
      */
-    EquipmentSlotType getEquipmentSlot();
+    EquipmentSlot getEquipmentSlot();
 
     /**
      * Get a translation key for this upgrade, for text display purposes.
@@ -152,7 +152,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      * @param tagName the NBT tag name
      * @param inbt the NBT data
      */
-    default void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, String tagName, INBT inbt) {
+    default void onDataFieldUpdated(ICommonArmorHandler commonArmorHandler, String tagName, Tag inbt) {
     }
 
     /**

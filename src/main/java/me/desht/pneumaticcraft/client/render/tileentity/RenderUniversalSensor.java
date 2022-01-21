@@ -1,177 +1,179 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.util.Mth;
 
 public class RenderUniversalSensor extends AbstractTileModelRenderer<TileEntityUniversalSensor> {
-    private final ModelRenderer part1;
-    private final ModelRenderer part2;
-    private final ModelRenderer part3;
-    private final ModelRenderer part4;
-    private final ModelRenderer part5;
-    private final ModelRenderer part6;
-    private final ModelRenderer part7;
-    private final ModelRenderer part8;
-    private final ModelRenderer part8_r1;
-    private final ModelRenderer part9;
-    private final ModelRenderer part9_r1;
-    private final ModelRenderer part10;
-    private final ModelRenderer part10_r1;
-    private final ModelRenderer part11;
-    private final ModelRenderer part11_r1;
-    private final ModelRenderer part12;
-    private final ModelRenderer part12_r1;
-    private final ModelRenderer part13;
-    private final ModelRenderer part13_r1;
-    private final ModelRenderer part14;
-    private final ModelRenderer part14_r1;
-    private final ModelRenderer part15;
-    private final ModelRenderer part15_r1;
+    private final ModelPart part1;
+    private final ModelPart part2;
+    private final ModelPart part3;
+    private final ModelPart part4;
+    private final ModelPart part5;
+    private final ModelPart part6;
+    private final ModelPart part7;
+    private final ModelPart part8;
+    private final ModelPart part9;
+    private final ModelPart part10;
+    private final ModelPart part11;
+    private final ModelPart part12;
+    private final ModelPart part13;
+    private final ModelPart part14;
+    private final ModelPart part15;
 
-    public RenderUniversalSensor(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private static final String PART1 = "part1";
+    private static final String PART2 = "part2";
+    private static final String PART3 = "part3";
+    private static final String PART4 = "part4";
+    private static final String PART5 = "part5";
+    private static final String PART6 = "part6";
+    private static final String PART7 = "part7";
+    private static final String PART8 = "part8";
+    private static final String PART8_R1 = "part8_r1";
+    private static final String PART9 = "part9";
+    private static final String PART9_R1 = "part9_r1";
+    private static final String PART10 = "part10";
+    private static final String PART10_R1 = "part10_r1";
+    private static final String PART11 = "part11";
+    private static final String PART11_R1 = "part11_r1";
+    private static final String PART12 = "part12";
+    private static final String PART12_R1 = "part12_r1";
+    private static final String PART13 = "part13";
+    private static final String PART13_R1 = "part13_r1";
+    private static final String PART14 = "part14";
+    private static final String PART14_R1 = "part14_r1";
+    private static final String PART15 = "part15";
+    private static final String PART15_R1 = "part15_r1";
 
-        part1 = new ModelRenderer(32, 32, 0, 0);
-        part1.setPos(0.0F, 16.0F, 0.0F);
-        part1.texOffs(0, 0).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 1.0F, 4.0F, 0.0F, true);
+    public RenderUniversalSensor(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
 
-        part2 = new ModelRenderer(32, 32, 0, 9);
-        part2.setPos(0.0F, 9.0F, -2.0F);
-        setRotationAngle(part2, 0.0F, 0.0F, -0.2269F);
-        part2.texOffs(0, 9).addBox(-3.0F, 4.0F, 0.5F, 1.0F, 3.0F, 3.0F, 0.0F, true);
-
-        part3 = new ModelRenderer(32, 32, 16, 3);
-        part3.setPos(0.0F, 12.0F, 0.0F);
-        setRotationAngle(part3, 0.0F, 0.0F, -0.2269F);
-        part3.texOffs(16, 3).addBox(-2.0F, 1.25F, -0.5F, 6.0F, 1.0F, 1.0F, 0.0F, true);
-
-        part4 = new ModelRenderer(32, 32, 16, 0);
-        part4.setPos(0.0F, 10.2F, 0.0F);
-        part4.texOffs(16, 0).addBox(3.25F, 1.25F, -1.0F, 1.0F, 1.0F, 2.0F, 0.0F, true);
-
-        part5 = new ModelRenderer(32, 32, 0, 5);
-        part5.setPos(0.0F, 9.0F, -2.0F);
-        setRotationAngle(part5, 0.0F, 0.0F, -0.2269F);
-        part5.texOffs(0, 5).addBox(-3.0F, 3.0F, 0.5F, 1.0F, 1.0F, 3.0F, 0.0F, true);
-
-        part6 = new ModelRenderer(32, 32, 0, 5);
-        part6.setPos(0.0F, 9.0F, -2.0F);
-        setRotationAngle(part6, 0.0F, 0.0F, -0.2269F);
-        part6.texOffs(0, 5).addBox(-3.0F, -2.0F, 0.5F, 1.0F, 1.0F, 3.0F, 0.0F, true);
-
-        part7 = new ModelRenderer(32, 32, 18, 9);
-        part7.setPos(0.0F, 9.0F, -2.0F);
-        setRotationAngle(part7, 0.0F, 0.0F, -0.2269F);
-        part7.texOffs(18, 9).addBox(-2.5F, -1.0F, 0.5F, 0.0F, 4.0F, 3.0F, 0.0F, true);
-
-        part8 = new ModelRenderer(32, 32, 20, 6);
-        part8.setPos(0.0F, 9.0F, -2.0F);
-        setRotationAngle(part8, 0.0F, 0.0F, -0.2269F);
-
-
-        part8_r1 = new ModelRenderer(32, 32, 20, 6);
-        part8_r1.setPos(-3.0F, 3.5F, 3.5F);
-        part8.addChild(part8_r1);
-        setRotationAngle(part8_r1, 0.0F, 0.3927F, 0.0F);
-        part8_r1.texOffs(20, 6).addBox(0.0F, -0.5F, 0.0F, 1.0F, 1.0F, 5.0F, 0.0F, true);
-
-        part9 = new ModelRenderer(32, 32, 20, 6);
-        part9.setPos(0.0F, 9.0F, -2.0F);
-        setRotationAngle(part9, 0.0F, 0.0F, -0.2269F);
-
-
-        part9_r1 = new ModelRenderer(32, 32, 20, 6);
-        part9_r1.setPos(-3.0F, -1.5F, 3.5F);
-        part9.addChild(part9_r1);
-        setRotationAngle(part9_r1, 0.0F, 0.3927F, 0.0F);
-        part9_r1.texOffs(20, 6).addBox(0.0F, -0.5F, 0.0F, 1.0F, 1.0F, 5.0F, 0.0F, true);
-
-        part10 = new ModelRenderer(32, 32, 15, 2);
-        part10.setPos(0.0F, 9.0F, -2.0F);
-        setRotationAngle(part10, 0.0F, 0.0F, -0.2269F);
-
-
-        part10_r1 = new ModelRenderer(32, 32, 15, 2);
-        part10_r1.setPos(-2.5F, -0.5F, 3.5F);
-        part10.addChild(part10_r1);
-        setRotationAngle(part10_r1, 0.0F, 0.3927F, 0.0F);
-        part10_r1.texOffs(15, 2).addBox(0.0F, -0.5F, 0.0F, 0.0F, 4.0F, 5.0F, 0.0F, true);
-
-        part11 = new ModelRenderer(32, 32, 8, 6);
-        part11.setPos(0.0F, 9.0F, 2.0F);
-        setRotationAngle(part11, 0.0F, 0.0F, -0.2269F);
-
-
-        part11_r1 = new ModelRenderer(32, 32, 8, 6);
-        part11_r1.setPos(-3.0F, 3.5F, -3.5F);
-        part11.addChild(part11_r1);
-        setRotationAngle(part11_r1, 0.0F, -0.3927F, 0.0F);
-        part11_r1.texOffs(8, 6).addBox(0.0F, -0.5F, -5.0F, 1.0F, 1.0F, 5.0F, 0.0F, true);
-
-        part12 = new ModelRenderer(32, 32, 8, 6);
-        part12.setPos(0.0F, 9.0F, 2.0F);
-        setRotationAngle(part12, 0.0F, 0.0F, -0.2269F);
-
-
-        part12_r1 = new ModelRenderer(32, 32, 8, 6);
-        part12_r1.setPos(-3.0F, -1.5F, -3.5F);
-        part12.addChild(part12_r1);
-        setRotationAngle(part12_r1, 0.0F, -0.3927F, 0.0F);
-        part12_r1.texOffs(8, 6).addBox(0.0F, -0.5F, -5.0F, 1.0F, 1.0F, 5.0F, 0.0F, true);
-
-        part13 = new ModelRenderer(32, 32, 8, 7);
-        part13.setPos(0.0F, 9.0F, 2.0F);
-        setRotationAngle(part13, 0.0F, 0.0F, -0.2269F);
-
-
-        part13_r1 = new ModelRenderer(32, 32, 8, 7);
-        part13_r1.setPos(-2.5F, -0.5F, -3.5F);
-        part13.addChild(part13_r1);
-        setRotationAngle(part13_r1, 0.0F, -0.3927F, 0.0F);
-        part13_r1.texOffs(8, 7).addBox(0.0F, -0.5F, -5.0F, 0.0F, 4.0F, 5.0F, 0.0F, true);
-
-        part14 = new ModelRenderer(32, 32, 28, 12);
-        part14.setPos(0.0F, 9.0F, -2.0F);
-        setRotationAngle(part14, 0.0F, 0.0F, -0.2269F);
-
-
-        part14_r1 = new ModelRenderer(32, 32, 28, 12);
-        part14_r1.setPos(-3.0F, 2.5F, 3.5F);
-        part14.addChild(part14_r1);
-        setRotationAngle(part14_r1, 0.0F, 0.3927F, 0.0F);
-        part14_r1.texOffs(28, 12).addBox(0.0F, -3.5F, 4.0F, 1.0F, 4.0F, 1.0F, 0.0F, true);
-
-        part15 = new ModelRenderer(32, 32, 28, 12);
-        part15.setPos(0.0F, 9.0F, 2.0F);
-        setRotationAngle(part15, 0.0F, 0.0F, -0.2269F);
-
-
-        part15_r1 = new ModelRenderer(32, 32, 28, 12);
-        part15_r1.setPos(-3.0F, 2.5F, -3.5F);
-        part15.addChild(part15_r1);
-        setRotationAngle(part15_r1, 0.0F, -0.3927F, 0.0F);
-        part15_r1.texOffs(28, 12).addBox(0.0F, -3.5F, -5.0F, 1.0F, 4.0F, 1.0F, 0.0F, true);
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.UNIVERSAL_SENSOR);
+        part1 = root.getChild(PART1);
+        part2 = root.getChild(PART2);
+        part3 = root.getChild(PART3);
+        part4 = root.getChild(PART4);
+        part5 = root.getChild(PART5);
+        part6 = root.getChild(PART6);
+        part7 = root.getChild(PART7);
+        part8 = root.getChild(PART8);
+        part9 = root.getChild(PART9);
+        part10 = root.getChild(PART10);
+        part11 = root.getChild(PART11);
+        part12 = root.getChild(PART12);
+        part13 = root.getChild(PART13);
+        part14 = root.getChild(PART14);
+        part15 = root.getChild(PART15);
     }
 
-    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(PART1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("part1_0", -2.0F, 0.0F, -2.0F, 4, 1, 4, 0, 0)
+                        .mirror(),
+                PartPose.offset(0.0F, 16.0F, 0.0F));
+        partdefinition.addOrReplaceChild(PART2, CubeListBuilder.create().texOffs(0, 9)
+                        .addBox("part2_0", -3.0F, 4.0F, 0.5F, 1, 3, 3, 0, 9)
+                        .mirror(),
+                PartPose.offsetAndRotation(0.0F, 9.0F, -2.0F, 0.0F, 0.0F, -0.2269F));
+        partdefinition.addOrReplaceChild(PART3, CubeListBuilder.create().texOffs(16, 3)
+                        .addBox("part3_0", -2.0F, 1.25F, -0.5F, 6, 1, 1, 16, 3)
+                        .mirror(),
+                PartPose.offsetAndRotation(0.0F, 12.0F, 0.0F, 0.0F, 0.0F, -0.2269F));
+        partdefinition.addOrReplaceChild(PART4, CubeListBuilder.create().texOffs(16, 0)
+                        .addBox("part4_0", 3.25F, 1.25F, -1.0F, 1, 1, 2, 16, 0)
+                        .mirror(),
+                PartPose.offset(0.0F, 10.2F, 0.0F));
+        partdefinition.addOrReplaceChild(PART5, CubeListBuilder.create().texOffs(0, 5)
+                        .addBox("part5_0", -3.0F, 3.0F, 0.5F, 1, 1, 3, 0, 5)
+                        .mirror(),
+                PartPose.offsetAndRotation(0.0F, 9.0F, -2.0F, 0.0F, 0.0F, -0.2269F));
+        partdefinition.addOrReplaceChild(PART6, CubeListBuilder.create().texOffs(0, 5)
+                        .addBox("part6_0", -3.0F, -2.0F, 0.5F, 1, 1, 3, 0, 5)
+                        .mirror(),
+                PartPose.offsetAndRotation(0.0F, 9.0F, -2.0F, 0.0F, 0.0F, -0.2269F));
+        partdefinition.addOrReplaceChild(PART7, CubeListBuilder.create().texOffs(18, 9)
+                        .addBox("part7_0", -2.5F, -1.0F, 0.5F, 0, 4, 3, 18, 9)
+                        .mirror(),
+                PartPose.offsetAndRotation(0.0F, 9.0F, -2.0F, 0.0F, 0.0F, -0.2269F));
+        PartDefinition part8 = partdefinition.addOrReplaceChild(PART8, CubeListBuilder.create().texOffs(20, 6),
+                PartPose.offsetAndRotation(0.0F, 9.0F, -2.0F, 0.0F, 0.0F, -0.2269F));
+        part8.addOrReplaceChild(PART8_R1, CubeListBuilder.create().texOffs(20, 6)
+                        .addBox("part8_r1_0", 0.0F, -0.5F, 0.0F, 1, 1, 5, 20, 6)
+                        .mirror(),
+                PartPose.offsetAndRotation(-3.0F, 3.5F, 3.5F, 0.0F, 0.3927F, 0.0F));
+        PartDefinition part9 = partdefinition.addOrReplaceChild(PART9, CubeListBuilder.create().texOffs(20, 6),
+                PartPose.offsetAndRotation(0.0F, 9.0F, -2.0F, 0.0F, 0.0F, -0.2269F));
+        part9.addOrReplaceChild(PART9_R1, CubeListBuilder.create().texOffs(20, 6)
+                        .addBox("part9_r1_0", 0.0F, -0.5F, 0.0F, 1, 1, 5, 20, 6)
+                        .mirror(),
+                PartPose.offsetAndRotation(-3.0F, -1.5F, 3.5F, 0.0F, 0.3927F, 0.0F));
+        PartDefinition part10 = partdefinition.addOrReplaceChild(PART10, CubeListBuilder.create().texOffs(15, 2),
+                PartPose.offsetAndRotation(0.0F, 9.0F, -2.0F, 0.0F, 0.0F, -0.2269F));
+        part10.addOrReplaceChild(PART10_R1, CubeListBuilder.create().texOffs(15, 2)
+                        .addBox("part10_r1_0", 0.0F, -0.5F, 0.0F, 0, 4, 5, 15, 2)
+                        .mirror(),
+                PartPose.offsetAndRotation(-2.5F, -0.5F, 3.5F, 0.0F, 0.3927F, 0.0F));
+        PartDefinition part11 = partdefinition.addOrReplaceChild(PART11, CubeListBuilder.create().texOffs(8, 6),
+                PartPose.offsetAndRotation(0.0F, 9.0F, 2.0F, 0.0F, 0.0F, -0.2269F));
+        part11.addOrReplaceChild(PART11_R1, CubeListBuilder.create().texOffs(8, 6)
+                        .addBox("part11_r1_0", 0.0F, -0.5F, -5.0F, 1, 1, 5, 8, 6)
+                        .mirror(),
+                PartPose.offsetAndRotation(-3.0F, 3.5F, -3.5F, 0.0F, -0.3927F, 0.0F));
+        PartDefinition part12 = partdefinition.addOrReplaceChild(PART12, CubeListBuilder.create().texOffs(8, 6),
+                PartPose.offsetAndRotation(0.0F, 9.0F, 2.0F, 0.0F, 0.0F, -0.2269F));
+        part12.addOrReplaceChild(PART12_R1, CubeListBuilder.create().texOffs(8, 6)
+                        .addBox("part12_r1_0", 0.0F, -0.5F, -5.0F, 1, 1, 5, 8, 6)
+                        .mirror(),
+                PartPose.offsetAndRotation(-3.0F, -1.5F, -3.5F, 0.0F, -0.3927F, 0.0F));
+        PartDefinition part13 = partdefinition.addOrReplaceChild(PART13, CubeListBuilder.create().texOffs(8, 7),
+                PartPose.offsetAndRotation(0.0F, 9.0F, 2.0F, 0.0F, 0.0F, -0.2269F));
+        part13.addOrReplaceChild(PART13_R1, CubeListBuilder.create().texOffs(8, 7)
+                        .addBox("part13_r1_0", 0.0F, -0.5F, -5.0F, 0, 4, 5, 8, 7)
+                        .mirror(),
+                PartPose.offsetAndRotation(-2.5F, -0.5F, -3.5F, 0.0F, -0.3927F, 0.0F));
+        PartDefinition part14 = partdefinition.addOrReplaceChild(PART14, CubeListBuilder.create().texOffs(28, 12),
+                PartPose.offsetAndRotation(0.0F, 9.0F, -2.0F, 0.0F, 0.0F, -0.2269F));
+        part14.addOrReplaceChild(PART14_R1, CubeListBuilder.create().texOffs(28, 12)
+                        .addBox("part14_r1_0", 0.0F, -3.5F, 4.0F, 1, 4, 1, 28, 12)
+                        .mirror(),
+                PartPose.offsetAndRotation(-3.0F, 2.5F, 3.5F, 0.0F, 0.3927F, 0.0F));
+        PartDefinition part15 = partdefinition.addOrReplaceChild(PART15, CubeListBuilder.create().texOffs(28, 12),
+                PartPose.offsetAndRotation(0.0F, 9.0F, 2.0F, 0.0F, 0.0F, -0.2269F));
+        part15.addOrReplaceChild(PART15_R1, CubeListBuilder.create().texOffs(28, 12)
+                        .addBox("part15_r1_0", 0.0F, -3.5F, -5.0F, 1, 4, 1, 28, 12)
+                        .mirror(),
+                PartPose.offsetAndRotation(-3.0F, 2.5F, -3.5F, 0.0F, -0.3927F, 0.0F));
+
+        return LayerDefinition.create(meshdefinition, 32, 32);
+    }
+
+    public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
         modelRenderer.zRot = z;
     }
 
     @Override
-    public void renderModel(TileEntityUniversalSensor te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_UNIVERSAL_SENSOR));
+    public void renderModel(TileEntityUniversalSensor te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_UNIVERSAL_SENSOR));
 
-        float rotation = MathHelper.lerp(partialTicks, te.oldDishRotation, te.dishRotation);
+        float rotation = Mth.lerp(partialTicks, te.oldDishRotation, te.dishRotation);
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(rotation));
         part1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         part2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);

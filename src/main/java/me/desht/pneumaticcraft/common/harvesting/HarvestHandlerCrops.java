@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.harvesting;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Harvest handler targeted at handling any subclass of BlockCrops.
@@ -30,22 +30,22 @@ import net.minecraft.world.World;
  */
 public class HarvestHandlerCrops extends HarvestHandlerAbstractCrop {
     public HarvestHandlerCrops(){
-        super(state -> state.getBlock() instanceof CropsBlock);
+        super(state -> state.getBlock() instanceof CropBlock);
     }
     
     @Override
-    public boolean isSeed(World world, BlockPos pos, BlockState state, ItemStack stack){
-        ItemStack seed = ((CropsBlock)state.getBlock()).getCloneItemStack(world, pos, withMinAge(state));
+    public boolean isSeed(Level world, BlockPos pos, BlockState state, ItemStack stack){
+        ItemStack seed = ((CropBlock)state.getBlock()).getCloneItemStack(world, pos, withMinAge(state));
         return seed.sameItem(stack);
     }
 
     @Override
     protected boolean isMaxAge(BlockState state){
-        return ((CropsBlock)state.getBlock()).isMaxAge(state);
+        return ((CropBlock)state.getBlock()).isMaxAge(state);
     }
     
     @Override
     protected BlockState withMinAge(BlockState state){
-        return ((CropsBlock)state.getBlock()).getStateForAge(0);
+        return ((CropBlock)state.getBlock()).getStateForAge(0);
     }
 }

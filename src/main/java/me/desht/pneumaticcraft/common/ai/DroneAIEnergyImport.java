@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 
 public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase> {
@@ -44,7 +44,7 @@ public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase
         if (droneIsFull()) {
             abort();
         } else {
-            TileEntity te = drone.world().getBlockEntity(pos);
+            BlockEntity te = drone.world().getBlockEntity(pos);
             if (te == null) return false;
             for (Direction face : DirectionUtil.VALUES) {
                 if (progWidget.isSideSelected(face)) {
@@ -56,7 +56,7 @@ public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase
         return didWork;
     }
 
-    private boolean tryImportFromSide(TileEntity te, Direction face, boolean simulate) {
+    private boolean tryImportFromSide(BlockEntity te, Direction face, boolean simulate) {
         return te.getCapability(CapabilityEnergy.ENERGY, face).map(tileHandler -> {
             int toExtract = tileHandler.extractEnergy(useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
             int toTransfer = insertToDrone(toExtract, true);

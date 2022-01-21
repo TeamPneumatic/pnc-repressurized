@@ -27,13 +27,13 @@ import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift.PumpMode;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,32 +44,32 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[PumpMode.values().length];
 
-    public GuiGasLift(ContainerGasLift container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiGasLift(ContainerGasLift container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
     @Override
     public void init() {
         super.init();
-        addButton(new WidgetTank(leftPos + 80, topPos + 15, te.getTank()));
+        addRenderableWidget(new WidgetTank(leftPos + 80, topPos + 15, te.getTank()));
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.GAS_LIFT.get()), 0xFFFFAA00, false);
 
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFFFFCC00, false);
         optionStat.setMinimumExpandedDimensions(60, 45);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, StringTextComponent.EMPTY).withTag(PumpMode.PUMP_EMPTY.toString());
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, TextComponent.EMPTY).withTag(PumpMode.PUMP_EMPTY.toString());
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.pumpEmpty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(30, 20, 20, 20, StringTextComponent.EMPTY).withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
+        button = new WidgetButtonExtended(30, 20, 20, 20, TextComponent.EMPTY).withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.pumpLeave"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        button = new WidgetButtonExtended(55, 20, 20, 20, StringTextComponent.EMPTY).withTag(PumpMode.RETRACT.toString());
+        button = new WidgetButtonExtended(55, 20, 20, 20, TextComponent.EMPTY).withTag(PumpMode.RETRACT.toString());
         button.setRenderStacks(new ItemStack(ModBlocks.DRILL_PIPE.get()));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.drawIn"));
         optionStat.addSubWidget(button);
@@ -87,25 +87,25 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
         statusStat.setText(getStatus());
         for (int i = 0; i < modeButtons.length; i++) {
             modeButtons[i].active = te.pumpMode != PumpMode.values()[i];
         }
     }
 
-    private List<ITextComponent> getStatus() {
-        List<ITextComponent> textList = new ArrayList<>();
+    private List<Component> getStatus() {
+        List<Component> textList = new ArrayList<>();
         textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.action"));
-        textList.add(xlate(te.status.getTranslationKey(), te.getTank().getFluid().getDisplayName().getString()).withStyle(TextFormatting.BLACK));
+        textList.add(xlate(te.status.getTranslationKey(), te.getTank().getFluid().getDisplayName().getString()).withStyle(ChatFormatting.BLACK));
         textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.currentDepth"));
-        textList.add(new StringTextComponent(te.currentDepth + " meter(s)").withStyle(TextFormatting.BLACK));
+        textList.add(new TextComponent(te.currentDepth + " meter(s)").withStyle(ChatFormatting.BLACK));
         return textList;
     }
 
     @Override
-    public void addProblems(List<ITextComponent> curInfo) {
+    public void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
         if (te.pumpMode == PumpMode.PUMP_EMPTY || te.pumpMode == PumpMode.PUMP_LEAVE_FLUID) {
             if (te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {

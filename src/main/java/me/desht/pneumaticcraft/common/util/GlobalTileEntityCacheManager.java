@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -63,14 +63,14 @@ public class GlobalTileEntityCacheManager{
     public final GlobalTileEntityCache<TileEntitySecurityStation> securityStations = new GlobalTileEntityCache<>();
     public final GlobalTileEntityCache<TileEntityAerialInterface> aerialInterfaces = new GlobalTileEntityCache<>();
 
-    private void removeFromWorld(IWorld world){
+    private void removeFromWorld(LevelAccessor world){
         universalSensors.removeFromWorld(world);
         chargingStations.removeFromWorld(world);
         securityStations.removeFromWorld(world);
         aerialInterfaces.removeFromWorld(world);
     }
 
-    public static class GlobalTileEntityCache<T extends TileEntity> implements Iterable<T>{
+    public static class GlobalTileEntityCache<T extends BlockEntity> implements Iterable<T>{
         private final Set<T> tileEntities = Collections.newSetFromMap(new WeakHashMap<>());
         
         public void add(T te){
@@ -81,7 +81,7 @@ public class GlobalTileEntityCacheManager{
             tileEntities.remove(te);
         }
         
-        public void removeFromWorld(IWorld world){
+        public void removeFromWorld(LevelAccessor world){
             tileEntities.removeIf(te -> te.getLevel() == world);
         }
         

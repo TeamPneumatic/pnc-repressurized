@@ -19,24 +19,31 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityDroneRedstoneEmitter extends TileEntity implements ITickableTileEntity {
-    public TileEntityDroneRedstoneEmitter() {
-        super(ModTileEntities.DRONE_REDSTONE_EMITTER.get());
+public class TileEntityDroneRedstoneEmitter extends TileEntityTickableBase {
+    public TileEntityDroneRedstoneEmitter(BlockPos pos, BlockState state) {
+        super(ModTileEntities.DRONE_REDSTONE_EMITTER.get(), pos, state);
     }
 
     @Override
-    public void tick() {
-        BlockState state = getLevel().getBlockState(getBlockPos());
+    public void tickServer() {
+        // note: not calling super() - don't need default server tick logic
+
+        BlockState state = nonNullLevel().getBlockState(getBlockPos());
         for (Direction facing : DirectionUtil.VALUES) {
-            if (state.getSignal(getLevel(), getBlockPos(),  facing) > 0) {
+            if (state.getSignal(nonNullLevel(), getBlockPos(),  facing) > 0) {
                 return;
             }
         }
-        getLevel().removeBlock(getBlockPos(), false);
+        nonNullLevel().removeBlock(getBlockPos(), false);
+    }
+
+    @Override
+    public IItemHandler getPrimaryInventory() {
+        return null;
     }
 }

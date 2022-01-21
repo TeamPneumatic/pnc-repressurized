@@ -22,12 +22,12 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 /**
  * Received on: SERVER
@@ -42,22 +42,22 @@ public class PacketUpdateDebuggingDrone extends PacketDroneDebugBase {
         super(-1, controllerPos);
     }
 
-    public PacketUpdateDebuggingDrone(PacketBuffer buf) {
+    public PacketUpdateDebuggingDrone(FriendlyByteBuf buf) {
         super(buf);
     }
 
     @Override
-    void handle(PlayerEntity player, IDroneBase droneBase) {
-        if (player instanceof ServerPlayerEntity) {
+    void handle(Player player, IDroneBase droneBase) {
+        if (player instanceof ServerPlayer) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().droneDebugHandler, false)) {
-                ItemStack stack = player.getItemBySlot(EquipmentSlotType.HEAD);
+                ItemStack stack = player.getItemBySlot(EquipmentSlot.HEAD);
                 if (droneBase == null) {
                     NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
                     NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
                 } else {
                     droneBase.storeTrackerData(stack);
-                    droneBase.getDebugger().trackAsDebugged((ServerPlayerEntity) player);
+                    droneBase.getDebugger().trackAsDebugged((ServerPlayer) player);
                 }
             }
         }

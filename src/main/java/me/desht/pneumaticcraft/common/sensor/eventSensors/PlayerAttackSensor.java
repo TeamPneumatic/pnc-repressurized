@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
@@ -34,7 +34,7 @@ public class PlayerAttackSensor extends PlayerEventSensor {
     }
 
     @Override
-    public int emitRedstoneOnEvent(PlayerEvent event, TileEntity sensor, int range) {
+    public int emitRedstoneOnEvent(PlayerEvent event, BlockEntity sensor, int range) {
         if (event instanceof AttackEntityEvent) {
             return 15;
         }

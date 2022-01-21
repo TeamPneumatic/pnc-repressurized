@@ -20,15 +20,15 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.NonNullList;
 
-public class ContainerItemSearcher extends Container {
+public class ContainerItemSearcher extends AbstractContainerMenu {
     private static final int SEARCH_ROWS = 6;
     private static final int SEARCH_COLS = 8;
 
@@ -37,7 +37,7 @@ public class ContainerItemSearcher extends Container {
     private GuiItemSearcher gui;
 
     @SuppressWarnings("unused")
-    public ContainerItemSearcher(int windowId, PlayerInventory inv, PacketBuffer data) {
+    public ContainerItemSearcher(int windowId, Inventory inv, FriendlyByteBuf data) {
         super(ModContainers.ITEM_SEARCHER.get(), windowId);
     }
 
@@ -55,8 +55,8 @@ public class ContainerItemSearcher extends Container {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
-        return player.getItemBySlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get();
+    public boolean stillValid(Player player) {
+        return player.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get();
     }
 
     /**
@@ -84,12 +84,12 @@ public class ContainerItemSearcher extends Container {
      * Called when a player shift-clicks on a slot. You must override this or you will crash when someone does that.
      */
     @Override
-    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int par2) {
+    public ItemStack quickMoveStack(Player par1EntityPlayer, int par2) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void setItem(int par1, ItemStack par2ItemStack) {
+    public void setItem(int par1, int state, ItemStack par2ItemStack) {
         // override this to do nothing, as NEI tries to place items in this container which makes it crash.
     }
 

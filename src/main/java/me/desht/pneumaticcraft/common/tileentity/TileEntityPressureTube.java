@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
@@ -32,22 +33,24 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -60,23 +63,23 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     private final boolean[] sidesClosed = new boolean[6];
     private final EnumMap<Direction,TubeModule> modules = new EnumMap<>(Direction.class);
     private BlockState camoState;
-    private AxisAlignedBB renderBoundingBox = null;
+    private AABB renderBoundingBox = null;
     private Direction inLineModuleDir = null;  // only one inline module allowed
     private final List<Direction> neighbourDirections = new ArrayList<>();
     private VoxelShape cachedTubeShape = null; // important for performance
     private int pendingCacheShapeClear = 0;
 
-    public TileEntityPressureTube() {
-        this(ModTileEntities.PRESSURE_TUBE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
+    public TileEntityPressureTube(BlockPos pos, BlockState state) {
+        this(ModTileEntities.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
     }
 
-    TileEntityPressureTube(TileEntityType type, float dangerPressurePressureTube, float maxPressurePressureTube, int volumePressureTube, int upgradeSlots) {
-        super(type, dangerPressurePressureTube, maxPressurePressureTube, volumePressureTube, upgradeSlots);
+    TileEntityPressureTube(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier, int volumePressureTube, int upgradeSlots) {
+        super(type, pos, state, tier, volumePressureTube, upgradeSlots);
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         byte closed = tag.getByte("sidesClosed");
         for (int i = 0; i < 6; i++) {
@@ -85,31 +88,30 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
-        super.save(nbt);
+    public void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
 
         byte closed = 0;
         for (int i = 0; i < 6; i++) {
             if (sidesClosed[i]) closed |= 1 << i;
         }
         nbt.putByte("sidesClosed", closed);
-        return nbt;
     }
 
     @Override
-    public void writeToPacket(CompoundNBT tag) {
+    public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
         writeModulesToNBT(tag);
         ICamouflageableTE.writeCamo(tag, camoState);
     }
 
-    public void writeModulesToNBT(CompoundNBT tag) {
-        ListNBT moduleList = new ListNBT();
+    public void writeModulesToNBT(CompoundTag tag) {
+        ListTag moduleList = new ListTag();
         for (Direction d : DirectionUtil.VALUES) {
             TubeModule tm = getModule(d);
             if (tm != null) {
-                CompoundNBT moduleTag = new CompoundNBT();
+                CompoundTag moduleTag = new CompoundTag();
                 moduleTag.putString("type", tm.getType().toString());
                 tm.writeToNBT(moduleTag);
                 moduleList.add(moduleTag);
@@ -119,15 +121,15 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void readFromPacket(CompoundNBT tag) {
+    public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
         clearCachedShape();
 
         EnumSet<Direction> dirs = EnumSet.allOf(Direction.class);
-        ListNBT moduleList = tag.getList("modules", Constants.NBT.TAG_COMPOUND);
+        ListTag moduleList = tag.getList("modules", Tag.TAG_COMPOUND);
         for (int i = 0; i < moduleList.size(); i++) {
-            CompoundNBT moduleTag = moduleList.getCompound(i);
+            CompoundTag moduleTag = moduleList.getCompound(i);
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(moduleTag.getString("type")));
             if (item instanceof ItemTubeModule) {
                 TubeModule module = ((ItemTubeModule) item).createModule();
@@ -152,14 +154,14 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         }
 
         updateRenderBoundingBox();
-        if (hasLevel() && getLevel().isClientSide) {
+        if (hasLevel() && nonNullLevel().isClientSide) {
             rerenderTileEntity();
         }
         camoState = ICamouflageableTE.readCamo(tag);
     }
 
     public void updateRenderBoundingBox() {
-        renderBoundingBox = new AxisAlignedBB(getBlockPos());
+        renderBoundingBox = new AABB(getBlockPos());
 
         for (Direction dir : DirectionUtil.VALUES) {
             if (modules.containsKey(dir) && modules.get(dir).getRenderBoundingBox() != null) {
@@ -169,43 +171,58 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void tick() {
-        boolean hasModules = false;
-        boolean hasClosedSide = false;
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         if (pendingCacheShapeClear > 0 && --pendingCacheShapeClear == 0) {
             cachedTubeShape = null;
         }
+    }
 
-        if (!getLevel().isClientSide) airHandler.setSideLeaking(null);
+    @Override
+    public void tickClient() {
+        super.tickClient();
+        for (Direction dir : DirectionUtil.VALUES) {
+            TubeModule tm = getModule(dir);
+            if (tm != null) tm.tickClient();
+        }
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        boolean couldLeak = true;
 
         for (Direction dir : DirectionUtil.VALUES) {
             TubeModule tm = getModule(dir);
             if (tm != null) {
-                hasModules = true;
+                couldLeak = false;
                 tm.shouldDrop = true;
-                tm.update();
+                tm.tickServer();
             }
             if (isSideClosed(dir)) {
-                hasClosedSide = true;
+                couldLeak = false;
             }
         }
 
         // check for possibility of air leak due to unconnected tube
-        if (!getLevel().isClientSide && !hasModules && !hasClosedSide && neighbourDirections.size() == 1) {
+        if (couldLeak && neighbourDirections.size() == 1) {
             Direction d = neighbourDirections.get(0).getOpposite();
             airHandler.setSideLeaking(canConnectPneumatic(d) ? d : null);
+        } else {
+            airHandler.setSideLeaking(null);
         }
-
-        super.tick();
     }
 
     @Override
-    protected void onFirstServerTick() {
-        super.onFirstServerTick();
+    public void onLoad() {
+        super.onLoad();
 
-        neighbourDirections.clear();
-        airHandler.getConnectedAirHandlers(this).forEach(connection -> neighbourDirections.add(connection.getDirection()));
+        if (!nonNullLevel().isClientSide) {
+            neighbourDirections.clear();
+            airHandler.getConnectedAirHandlers(this).forEach(connection -> neighbourDirections.add(connection.getDirection()));
+        }
     }
 
     @Override
@@ -274,7 +291,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             modules.remove(side);
         }
         if (getLevel() != null && !getLevel().isClientSide) {
-            getLevel().setBlock(getBlockPos(), BlockPressureTube.recalculateState(level, worldPosition, getBlockState()), Constants.BlockFlags.DEFAULT);
+            getLevel().setBlock(getBlockPos(), BlockPressureTube.recalculateState(level, worldPosition, getBlockState()), Block.UPDATE_ALL);
             sendDescriptionPacket();
             setChanged();
         }
@@ -310,10 +327,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         return null;
     }
 
-    public TileEntity getConnectedNeighbor(Direction dir) {
+    public BlockEntity getConnectedNeighbor(Direction dir) {
         TubeModule tm = getModule(dir);
         if (!isSideClosed(dir) && (tm == null || tm.isInline() && dir.getAxis() == tm.getDirection().getAxis())) {
-            TileEntity te = getCachedNeighbor(dir);
+            BlockEntity te = getCachedNeighbor(dir);
             if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
                 return te;
             }
@@ -322,15 +339,15 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return renderBoundingBox != null ? renderBoundingBox : new AxisAlignedBB(getBlockPos());
+    public AABB getRenderBoundingBox() {
+        return renderBoundingBox != null ? renderBoundingBox : new AABB(getBlockPos());
     }
 
     @Override
-    public void printManometerMessage(PlayerEntity player, List<ITextComponent> text) {
-        RayTraceResult mop = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
-        if (mop.hitInfo instanceof Direction) {
-            TubeModule tm = getModule((Direction) mop.hitInfo);
+    public void printManometerMessage(Player player, List<Component> text) {
+        HitResult hitResult = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
+        if (hitResult instanceof BlockHitResult blockHitResult) {
+            TubeModule tm = getModule(blockHitResult.getDirection());
             if (tm != null) tm.addInfo(text);
         }
     }
@@ -349,7 +366,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public VoxelShape getCachedTubeShape(VoxelShape blockShape) {
         if (cachedTubeShape == null) {
             cachedTubeShape = blockShape;
-            tubeModules().forEach(module -> cachedTubeShape = VoxelShapes.or(cachedTubeShape, module.getShape()));
+            tubeModules().forEach(module -> cachedTubeShape = Shapes.or(cachedTubeShape, module.getShape()));
         }
         return cachedTubeShape;
     }

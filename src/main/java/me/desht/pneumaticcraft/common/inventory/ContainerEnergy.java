@@ -19,20 +19,20 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.network.SyncedField;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 
 public class ContainerEnergy<T extends TileEntityBase> extends Container4UpgradeSlots<T> {
 
-    private ContainerEnergy(ContainerType type, int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    private ContainerEnergy(MenuType type, int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(type, i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerEnergy(ContainerType type, int i, PlayerInventory playerInventory, BlockPos tilePos) {
+    public ContainerEnergy(MenuType type, int i, Inventory playerInventory, BlockPos tilePos) {
         super(type, i, playerInventory, tilePos);
 
         if (!te.getCapability(CapabilityEnergy.ENERGY).isPresent()) {

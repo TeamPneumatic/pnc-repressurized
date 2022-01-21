@@ -19,11 +19,13 @@ package me.desht.pneumaticcraft.common.thirdparty.jei.ghost;
 
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetItemFilter;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Collections;
 import java.util.List;
+
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 
 public class ProgWidgetItemFilterGhost implements IGhostIngredientHandler<GuiProgWidgetItemFilter> {
     @Override
@@ -38,15 +40,15 @@ public class ProgWidgetItemFilterGhost implements IGhostIngredientHandler<GuiPro
 
     static class ItemTarget implements Target<ItemStack> {
         private final GuiProgWidgetItemFilter gui;
-        private final Rectangle2d area;
+        private final Rect2i area;
 
         ItemTarget(GuiProgWidgetItemFilter gui) {
             this.gui = gui;
-            this.area = new Rectangle2d(gui.guiLeft + gui.itemX + 1, gui.guiTop + 52, 16, 16);
+            this.area = new Rect2i(gui.guiLeft + gui.itemX + 1, gui.guiTop + 52, 16, 16);
         }
 
         @Override
-        public Rectangle2d getArea() {
+        public Rect2i getArea() {
             return area;
         }
 

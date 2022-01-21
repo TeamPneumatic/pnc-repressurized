@@ -20,11 +20,13 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IGotoWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
+
+import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public class DroneEntityAIGoToLocation extends Goal {
     protected final IDroneBase drone;
@@ -50,7 +52,7 @@ public class DroneEntityAIGoToLocation extends Goal {
         validArea.sort(positionSorter);
         for (BlockPos c : validArea) {
             // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
-            if (drone.getDronePos().distanceToSqr(new Vector3d(c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5)) < 0.75)
+            if (drone.getDronePos().distanceToSqr(new Vec3(c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5)) < 0.75)
                 return false;
             if (drone.getPathNavigator().moveToXYZ(c.getX(), c.getY(), c.getZ())) {
                 return !((IGotoWidget) gotoWidget).doneWhenDeparting();

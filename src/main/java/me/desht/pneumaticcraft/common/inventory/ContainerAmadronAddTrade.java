@@ -22,12 +22,12 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -38,14 +38,14 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
 
     private final ItemStackHandler inv = new ItemStackHandler(2);
 
-    ContainerAmadronAddTrade(int windowId, PlayerInventory playerInventory) {
+    ContainerAmadronAddTrade(int windowId, Inventory playerInventory) {
         super(ModContainers.AMADRON_ADD_TRADE.get(), windowId, playerInventory);
 
         addSlot(new SlotPhantomUnstackable(inv, INPUT_SLOT, 37, 90));
         addSlot(new SlotPhantomUnstackable(inv, OUTPUT_SLOT, 126, 90));
     }
 
-    public ContainerAmadronAddTrade(int windowId, PlayerInventory invPlayer, PacketBuffer extraData) {
+    public ContainerAmadronAddTrade(int windowId, Inventory invPlayer, FriendlyByteBuf extraData) {
         this(windowId, invPlayer);
     }
 
@@ -69,26 +69,26 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return getHand(player) != null;
     }
 
     @Override
-    public void setItem(int slot, @Nonnull ItemStack stack) {
+    public void setItem(int slot, int state, @Nonnull ItemStack stack) {
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity playerIn) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer playerIn) {
        if (tag.equals("showAmadron")) {
            ItemAmadronTablet.openGui(playerIn, getHand(playerIn));
        }
     }
 
-    private Hand getHand(PlayerEntity player) {
+    private InteractionHand getHand(Player player) {
         if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
-            return Hand.MAIN_HAND;
+            return InteractionHand.MAIN_HAND;
         } else if (player.getOffhandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
-            return Hand.OFF_HAND;
+            return InteractionHand.OFF_HAND;
         } else {
             return null;
         }

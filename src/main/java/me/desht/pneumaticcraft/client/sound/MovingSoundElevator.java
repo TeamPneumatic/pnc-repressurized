@@ -20,14 +20,14 @@ package me.desht.pneumaticcraft.client.sound;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
-import net.minecraft.client.audio.TickableSound;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.sounds.SoundSource;
 
-public class MovingSoundElevator extends TickableSound {
+public class MovingSoundElevator extends AbstractTickableSoundInstance {
     private final TileEntityElevatorBase te;
 
     MovingSoundElevator(TileEntityElevatorBase te) {
-        super(ModSounds.ELEVATOR_RISING.get(), SoundCategory.BLOCKS);
+        super(ModSounds.ELEVATOR_RISING.get(), SoundSource.BLOCKS);
         this.te = te;
         x = te.getBlockPos().getX();
         y = te.getBlockPos().getY() + te.extension;

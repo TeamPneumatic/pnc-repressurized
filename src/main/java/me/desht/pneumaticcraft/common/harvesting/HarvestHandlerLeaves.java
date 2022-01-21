@@ -20,13 +20,13 @@ package me.desht.pneumaticcraft.common.harvesting;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.common.core.ModHarvestHandlers.TreePart;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,12 +34,12 @@ import java.util.List;
 public class HarvestHandlerLeaves extends HarvestHandler {
 
     @Override
-    public boolean canHarvest(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone){
+    public boolean canHarvest(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone){
         return state.getBlock() instanceof LeavesBlock;
     }
 
     @Override
-    public List<ItemStack> addFilterItems(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone) {
+    public List<ItemStack> addFilterItems(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone) {
         Block sapling = TreePart.LEAVES.convert(state.getBlock(), TreePart.SAPLING);
         return Collections.singletonList(new ItemStack(sapling));
     }

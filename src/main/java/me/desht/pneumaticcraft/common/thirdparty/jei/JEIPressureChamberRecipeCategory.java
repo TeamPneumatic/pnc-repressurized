@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe.RecipeSlot;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe.SlotCycle;
@@ -34,9 +34,9 @@ import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 
 import java.util.*;
 
@@ -49,7 +49,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
         super(ModCategoryUid.PRESSURE_CHAMBER, PressureChamberRecipe.class,
                 xlate("pneumaticcraft.gui.pressureChamber"),
                 guiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER, 5, 11, 166, 116),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()))
         );
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
@@ -146,13 +146,13 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
     }
 
     @Override
-    public void draw(PressureChamberRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(PressureChamberRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         float pressure = recipe.getCraftingPressureForDisplay() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
         PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressureForDisplay(), pressure, 130, 27);
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(PressureChamberRecipe recipe, double mouseX, double mouseY) {
+    public List<Component> getTooltipStrings(PressureChamberRecipe recipe, double mouseX, double mouseY) {
         if (mouseX >= 100 && mouseY >= 7 && mouseX <= 140 && mouseY <= 47) {
             return ImmutableList.of(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getCraftingPressureForDisplay()));
         }

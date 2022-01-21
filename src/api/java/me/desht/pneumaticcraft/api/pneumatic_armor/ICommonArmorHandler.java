@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.api.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
 
 /**
  * Provides some methods for upgrade handlers to easily retrieve information about the player's equipped armor
@@ -30,7 +30,7 @@ public interface ICommonArmorHandler {
      *
      * @return the player
      */
-    PlayerEntity getPlayer();
+    Player getPlayer();
 
     /**
      * Get the number of the given upgrade installed in the given armor slot
@@ -39,14 +39,14 @@ public interface ICommonArmorHandler {
      * @param upgrade the upgrade to query
      * @return the number of upgrades installed
      */
-    int getUpgradeCount(EquipmentSlotType slot, EnumUpgrade upgrade);
+    int getUpgradeCount(EquipmentSlot slot, EnumUpgrade upgrade);
 
     /**
      * Convenience method to get the speed boost for the given armor piece, which is 1 + {number_of_speed_upgrades}
      * @param slot the equipment slot
      * @return the speed boost
      */
-    int getSpeedFromUpgrades(EquipmentSlotType slot);
+    int getSpeedFromUpgrades(EquipmentSlot slot);
 
     /**
      * Get the pressure for the armor piece in the given equipment slot.
@@ -54,14 +54,14 @@ public interface ICommonArmorHandler {
      * @param slot the equipment slot
      * @return the pressure of the armor piece, in bar
      */
-    float getArmorPressure(EquipmentSlotType slot);
+    float getArmorPressure(EquipmentSlot slot);
 
     /**
      * Check that the armor in the given is above the minimum pressure limit to operate
      * @param slot the slot
      * @return true if the armor piece can function, false if not
      */
-    boolean hasMinPressure(EquipmentSlotType slot);
+    boolean hasMinPressure(EquipmentSlot slot);
 
     /**
      * Add (or remove) air from the armor piece in the given slot.
@@ -70,7 +70,7 @@ public interface ICommonArmorHandler {
      * @param air amount to add (negative amounts remove air)
      * @return the previous pressure for the armor piece
      */
-    float addAir(EquipmentSlotType slot, int air);
+    float addAir(EquipmentSlot slot, int air);
 
     /**
      * Check if the armor master switch is enabled (i.e. core components are active)

@@ -20,34 +20,30 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockDisplayReader;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import org.jetbrains.annotations.Nullable;
 
-public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
+public class BlockPressureChamberGlass extends BlockPressureChamberWallBase implements EntityBlockPneumaticCraft {
     public BlockPressureChamberGlass() {
         super(IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityPressureChamberGlass.class;
-    }
-
-    @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (worldIn.isClientSide()) {
             PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, TileEntityPressureChamberGlass.class).ifPresent(teGlass -> {
                 teGlass.requestModelDataUpdate();
                 // handle any glass that's diagonally connected
                 for (Direction d : DirectionUtil.VALUES) {
                     if (d.getAxis() != facing.getAxis()) {
-                        TileEntity te1 = teGlass.getCachedNeighbor(d);
+                        BlockEntity te1 = teGlass.getCachedNeighbor(d);
                         if (te1 instanceof TileEntityPressureChamberGlass) te1.requestModelDataUpdate();
                     }
                 }
@@ -57,7 +53,7 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     }
 
     @Override
-    public boolean shouldDisplayFluidOverlay(BlockState state, IBlockDisplayReader world, BlockPos pos, FluidState fluidState) {
+    public boolean shouldDisplayFluidOverlay(BlockState state, BlockAndTintGetter world, BlockPos pos, FluidState fluidState) {
         return true;
     }
 
@@ -67,13 +63,19 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     }
 
     @Override
-    public float getShadeBrightness(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
+    public float getShadeBrightness(BlockState p_220080_1_, BlockGetter p_220080_2_, BlockPos p_220080_3_) {
         return 0.2F;
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_) {
+    public boolean propagatesSkylightDown(BlockState p_200123_1_, BlockGetter p_200123_2_, BlockPos p_200123_3_) {
         return true;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityPressureChamberGlass(pPos, pState);
     }
 
 //    @Override

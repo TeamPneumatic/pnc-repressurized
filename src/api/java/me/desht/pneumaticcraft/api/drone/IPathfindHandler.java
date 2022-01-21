@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 /**
  * Implement this and register it via {@link IDroneRegistry#addPathfindableBlock(Block, IPathfindHandler)} to provide
@@ -33,7 +33,7 @@ public interface IPathfindHandler {
      * @param pos the block position to test
      * @return true if the drone may pathfind through this block, false otherwise
      */
-    boolean canPathfindThrough(World world, BlockPos pos);
+    boolean canPathfindThrough(Level world, BlockPos pos);
 
     /**
      * CURRENTLY NOT IMPLEMENTED!
@@ -43,5 +43,5 @@ public interface IPathfindHandler {
      * @param world the drone's world
      * @param pos the block position to test
      */
-    default void onPathingThrough(World world, BlockPos pos) {}
+    default void onPathingThrough(Level world, BlockPos pos) {}
 }

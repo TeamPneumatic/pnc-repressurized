@@ -20,25 +20,25 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SnowBlock;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.potion.Potions;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
 
 import java.util.UUID;
 
@@ -69,7 +69,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         if (target instanceof LivingEntity) {
             LivingEntity living = (LivingEntity) target;
-            living.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, living.getRandom().nextInt(40) + 40, 3));
+            living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, living.getRandom().nextInt(40) + 40, 3));
             if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoEntityIceChance.get())) {
                 createFreezeCloud(minigun, target);
             }
@@ -78,12 +78,12 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     }
 
     private void createFreezeCloud(Minigun minigun, Entity target) {
-        World world = target.getCommandSenderWorld();
-        AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, target.getX(), target.getY(), target.getZ());
+        Level world = target.getCommandSenderWorld();
+        AreaEffectCloud cloud = new AreaEffectCloud(world, target.getX(), target.getY(), target.getZ());
         cloud.setPotion(Potions.SLOWNESS);
         cloud.setOwner(minigun.getPlayer());
-        cloud.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 100, 3));
-        cloud.addEffect(new EffectInstance(Effects.WITHER, 20, 1));
+        cloud.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 3));
+        cloud.addEffect(new MobEffectInstance(MobEffects.WITHER, 20, 1));
         cloud.setRadius(2.0f);
         cloud.setDuration(60);
         cloud.setRadiusOnUse(-0.5f);
@@ -94,12 +94,12 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
-        World world = minigun.getWorld();
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
+        Level world = minigun.getWorld();
         BlockPos pos = brtr.getBlockPos();
         if (!world.dimensionType().ultraWarm() && minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoBlockIceChance.get())) {
             BlockPos pos1;
-            if (world.getBlockState(pos).getShape(world, pos) == VoxelShapes.block() || brtr.getDirection() != Direction.UP) {
+            if (world.getBlockState(pos).getShape(world, pos) == Shapes.block() || brtr.getDirection() != Direction.UP) {
                 pos1 = pos.relative(brtr.getDirection());
             } else {
                 pos1 = pos;
@@ -107,22 +107,22 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
             BlockState newState = null;
             if (world.isEmptyBlock(pos1) && !world.isEmptyBlock(pos1.below())) {
                 // form snow layers on solid blocks
-                newState = Blocks.SNOW.defaultBlockState().setValue(SnowBlock.LAYERS, 1);
+                newState = Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, 1);
             } else if (world.getBlockState(pos1).getBlock() == Blocks.SNOW) {
                 // grow existing snow layers
                 BlockState state = world.getBlockState(pos1);
-                int level = state.getValue(SnowBlock.LAYERS);
+                int level = state.getValue(SnowLayerBlock.LAYERS);
                 if (level < 8) {
-                    newState = Blocks.SNOW.defaultBlockState().setValue(SnowBlock.LAYERS, level + 1);
+                    newState = Blocks.SNOW.defaultBlockState().setValue(SnowLayerBlock.LAYERS, level + 1);
                 } else {
                     newState = Blocks.SNOW_BLOCK.defaultBlockState();
                 }
             } else if (world.getBlockState(pos1).getBlock() == Blocks.WATER) {
                 // freeze surface water
-                Vector3d eye = minigun.getPlayer().getEyePosition(0f);
-                RayTraceContext ctx = new RayTraceContext(eye, brtr.getLocation(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, minigun.getPlayer());
-                BlockRayTraceResult res = world.clip(ctx);
-                if (res.getType() == RayTraceResult.Type.BLOCK) {
+                Vec3 eye = minigun.getPlayer().getEyePosition(0f);
+                ClipContext ctx = new ClipContext(eye, brtr.getLocation(), ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, minigun.getPlayer());
+                BlockHitResult res = world.clip(ctx);
+                if (res.getType() == HitResult.Type.BLOCK) {
                     pos1 = res.getBlockPos();
                     newState = Blocks.ICE.defaultBlockState();
                 }

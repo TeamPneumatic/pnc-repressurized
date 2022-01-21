@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -37,12 +37,12 @@ public class PacketAmadronStockUpdate {
         this.stock = stock;
     }
 
-    public PacketAmadronStockUpdate(PacketBuffer buffer) {
+    public PacketAmadronStockUpdate(FriendlyByteBuf buffer) {
         this.id = buffer.readResourceLocation();
         this.stock = buffer.readVarInt();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeResourceLocation(id);
         buf.writeVarInt(stock);
     }

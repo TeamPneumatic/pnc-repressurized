@@ -29,12 +29,12 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.Validate;
@@ -74,7 +74,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	}
 
 	@Override
-	public void write(PacketBuffer buffer) {
+	public void write(FriendlyByteBuf buffer) {
 		input.toNetwork(buffer);
 		operatingTemp.write(buffer);
 		buffer.writeVarInt(outputs.size());
@@ -82,12 +82,12 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	}
 
 	@Override
-	public IRecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<?> getSerializer() {
 		return ModRecipes.REFINERY.get();
 	}
 
 	@Override
-	public IRecipeType<?> getType() {
+	public RecipeType<?> getType() {
 		return PneumaticCraftRecipeType.REFINERY;
 	}
 
@@ -101,7 +101,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 		return new ItemStack(ModBlocks.REFINERY.get());
 	}
 
-	public static class Serializer<T extends RefineryRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {
+	public static class Serializer<T extends RefineryRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
 		private final IFactory<T> factory;
 
 		public Serializer(IFactory<T> factory) {
@@ -130,7 +130,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
         @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             FluidIngredient input = (FluidIngredient) Ingredient.fromNetwork(buffer);
             TemperatureRange range = TemperatureRange.read(buffer);
             int nOutputs = buffer.readVarInt();
@@ -142,7 +142,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, T recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
         	recipe.write(buffer);
         }
 

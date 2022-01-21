@@ -26,30 +26,30 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -64,33 +64,33 @@ public class ItemRemote extends Item {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
         if (!world.isClientSide) {
             openGui(player, stack, handIn);
         }
-        return ActionResult.success(stack);
+        return InteractionResultHolder.success(stack);
     }
 
     @Override
-    public ActionResultType onItemUseFirst(ItemStack remote, ItemUseContext ctx) {
-        PlayerEntity player = ctx.getPlayer();
-        World world = ctx.getLevel();
+    public InteractionResult onItemUseFirst(ItemStack remote, UseOnContext ctx) {
+        Player player = ctx.getPlayer();
+        Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof TileEntitySecurityStation) {
             if (!world.isClientSide && player.isShiftKeyDown() && isAllowedToEdit(player, remote)) {
                 if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {
                     GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                     setSecurityStationPos(remote, gPos);
                     player.displayClientMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", GlobalPosHelper.prettyPrint(gPos)), false);
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 } else {
                     player.displayClientMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
                 }
             }
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     /**
@@ -98,7 +98,7 @@ public class ItemRemote extends Item {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack remote, World world, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
+    public void appendHoverText(ItemStack remote, Level world, List<Component> curInfo, TooltipFlag moreInfo) {
         super.appendHoverText(remote, world, curInfo, moreInfo);
         curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.sneakRightClickToEdit"));
         GlobalPos gPos = getSecurityStationPos(remote);
@@ -109,14 +109,14 @@ public class ItemRemote extends Item {
         }
     }
 
-    private void openGui(PlayerEntity player, ItemStack remote, Hand hand) {
+    private void openGui(Player player, ItemStack remote, InteractionHand hand) {
         if (player.isCrouching()) {
             if (isAllowedToEdit(player, remote)) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteEditorContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == Hand.MAIN_HAND));
-                NetworkHandler.sendToPlayer(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (ServerPlayerEntity) player);
+                NetworkHooks.openGui((ServerPlayer) player, new RemoteEditorContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == InteractionHand.MAIN_HAND));
+                NetworkHandler.sendToPlayer(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (ServerPlayer) player);
             }
         } else {
-            NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == Hand.MAIN_HAND));
+            NetworkHooks.openGui((ServerPlayer) player, new RemoteContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == InteractionHand.MAIN_HAND));
         }
     }
 
@@ -126,14 +126,14 @@ public class ItemRemote extends Item {
         return g1 == null && g2 == null || g1 != null && g1.equals(g2);
     }
 
-    private boolean isAllowedToEdit(PlayerEntity player, ItemStack remote) {
+    private boolean isAllowedToEdit(Player player, ItemStack remote) {
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
-            TileEntity te = GlobalPosHelper.getTileEntity(gPos);
+            BlockEntity te = GlobalPosHelper.getTileEntity(gPos);
             if (te instanceof TileEntitySecurityStation) {
                 boolean canAccess = ((TileEntitySecurityStation) te).doesAllowPlayer(player);
                 if (!canAccess) {
-                    player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(TextFormatting.RED), false);
+                    player.displayClientMessage(new TranslatableComponent("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(ChatFormatting.RED), false);
                 }
                 return canAccess;
             }
@@ -151,11 +151,11 @@ public class ItemRemote extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack remote, World world, Entity entity, int slot, boolean holdingItem) {
+    public void inventoryTick(ItemStack remote, Level world, Entity entity, int slot, boolean holdingItem) {
         if (!world.isClientSide) {
             GlobalPos gPos = getSecurityStationPos(remote);
             if (gPos != null) {
-                TileEntity te = GlobalPosHelper.getTileEntity(gPos);
+                BlockEntity te = GlobalPosHelper.getTileEntity(gPos);
                 if (!(te instanceof TileEntitySecurityStation) && remote.hasTag()) {
                     remote.getTag().remove(NBT_SECURITY_POS);
                 }
@@ -163,38 +163,38 @@ public class ItemRemote extends Item {
         }
     }
 
-    static class RemoteContainerProvider implements INamedContainerProvider {
+    static class RemoteContainerProvider implements MenuProvider {
         private final ItemStack stack;
-        private final Hand hand;
+        private final InteractionHand hand;
 
-        RemoteContainerProvider(ItemStack stack, Hand hand) {
+        RemoteContainerProvider(ItemStack stack, InteractionHand hand) {
             this.stack = stack;
             this.hand = hand;
         }
 
         @Override
-        public ITextComponent getDisplayName() {
+        public Component getDisplayName() {
             return stack.getHoverName();
         }
 
         @Nullable
         @Override
-        public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+        public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
             return new ContainerRemote(getType(), windowId, playerInventory, hand);
         }
 
-        protected ContainerType<? extends ContainerRemote> getType() {
+        protected MenuType<? extends ContainerRemote> getType() {
             return ModContainers.REMOTE.get();
         }
     }
 
     static class RemoteEditorContainerProvider extends RemoteContainerProvider {
-        RemoteEditorContainerProvider(ItemStack stack, Hand hand) {
+        RemoteEditorContainerProvider(ItemStack stack, InteractionHand hand) {
             super(stack, hand);
         }
 
         @Override
-        protected ContainerType<? extends ContainerRemote> getType() {
+        protected MenuType<? extends ContainerRemote> getType() {
             return ModContainers.REMOTE_EDITOR.get();
         }
     }

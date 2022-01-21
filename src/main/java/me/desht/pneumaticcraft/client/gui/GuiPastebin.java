@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.base.CaseFormat;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -32,15 +32,15 @@ import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.common.util.PastebinHandler;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -48,21 +48,21 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     private WidgetTextField usernameBox, passwordBox;
     private WidgetTextField pastebinBox;
     private WidgetCheckBox prettyCB;
-    private final CompoundNBT pastingNBT;
+    private final CompoundTag pastingNBT;
     private final Screen parentScreen;
-    private ITextComponent statusMessage = StringTextComponent.EMPTY;
-    private ITextComponent lastMessage = StringTextComponent.EMPTY;
+    private Component statusMessage = TextComponent.EMPTY;
+    private Component lastMessage = TextComponent.EMPTY;
     private int messageTimer;
     private EnumState state = EnumState.NONE;
-    CompoundNBT outputTag;
+    CompoundTag outputTag;
     boolean shouldMerge;
 
     private enum EnumState {
         NONE, GETTING, PUTTING, LOGIN, LOGOUT
     }
 
-    GuiPastebin(Screen parentScreen, CompoundNBT tag) {
-        super(new StringTextComponent("Pastebin"));
+    GuiPastebin(Screen parentScreen, CompoundTag tag) {
+        super(new TextComponent("Pastebin"));
         xSize = 183;
         ySize = 202;
         this.pastingNBT = tag;
@@ -76,20 +76,20 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
 
         if (!PastebinHandler.isLoggedIn()) {
             usernameBox = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 80, 10);
-            addButton(usernameBox);
+            addRenderableWidget(usernameBox);
 
             passwordBox = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 80, 10).setAsPasswordBox();
-            addButton(passwordBox);
+            addRenderableWidget(passwordBox);
 
             WidgetButtonExtended loginButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 30, 60, 20, xlate("pneumaticcraft.gui.pastebin.button.login"), b -> login());
             loginButton.setTooltipText(xlate("pneumaticcraft.gui.pastebin.loginOptional"));
-            addButton(loginButton);
+            addRenderableWidget(loginButton);
 
             addLabel(xlate("pneumaticcraft.gui.pastebin.username"), guiLeft + 10, guiTop + 20);
             addLabel(xlate("pneumaticcraft.gui.pastebin.password"), guiLeft + 10, guiTop + 46);
         } else {
             WidgetButtonExtended logoutButton = new WidgetButtonExtended(guiLeft + 60, guiTop + 30, 60, 20, xlate("pneumaticcraft.gui.pastebin.button.logout"), b -> logout());
-            addButton(logoutButton);
+            addRenderableWidget(logoutButton);
         }
 
         pastebinBox = new WidgetTextField(font, guiLeft + 10, guiTop + 130, 160, 10) {
@@ -102,34 +102,34 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
                 super.onFocusedChanged(focused);
             }
         };
-        addButton(pastebinBox);
+        addRenderableWidget(pastebinBox);
 
         WidgetButtonExtended pasteButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 78, 120, 20, xlate("pneumaticcraft.gui.pastebin.button.upload"), b -> sendToPastebin());
-        addButton(pasteButton);
+        addRenderableWidget(pasteButton);
         WidgetButtonExtended getButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 167, 120, 20, xlate("pneumaticcraft.gui.pastebin.button.get"), b -> getFromPastebin());
-        addButton(getButton);
+        addRenderableWidget(getButton);
 
-        WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, StringTextComponent.EMPTY, b -> putToClipboard());
+        WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, TextComponent.EMPTY, b -> putToClipboard());
         putInClipBoard.setRenderedIcon(Textures.GUI_COPY_ICON_LOCATION);
         putInClipBoard.setTooltipText(xlate("pneumaticcraft.gui.pastebin.button.copyToClipboard"));
-        addButton(putInClipBoard);
-        WidgetButtonExtended retrieveFromClipboard = new WidgetButtonExtended(guiLeft + 8, guiTop + 167, 20, 20, StringTextComponent.EMPTY, b -> getFromClipboard());
+        addRenderableWidget(putInClipBoard);
+        WidgetButtonExtended retrieveFromClipboard = new WidgetButtonExtended(guiLeft + 8, guiTop + 167, 20, 20, TextComponent.EMPTY, b -> getFromClipboard());
         retrieveFromClipboard.setRenderedIcon(Textures.GUI_PASTE_ICON_LOCATION);
         retrieveFromClipboard.setTooltipText(xlate("pneumaticcraft.gui.pastebin.button.loadFromClipboard"));
-        addButton(retrieveFromClipboard);
+        addRenderableWidget(retrieveFromClipboard);
 
         prettyCB = new WidgetCheckBox(0, guiTop + 102, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.pretty"),
                 b -> shouldMerge = b.checked);
         prettyCB.x = guiLeft + (170 - prettyCB.getWidth());
         prettyCB.setTooltipKey("pneumaticcraft.gui.pastebin.pretty.tooltip");
-        addButton(prettyCB);
+        addRenderableWidget(prettyCB);
 
         if (parentScreen instanceof GuiProgrammer) {
             WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.merge"),
                     b -> shouldMerge = b.checked);
             mergeCB.x = guiLeft + (170 - mergeCB.getWidth());
             mergeCB.setTooltipKey("pneumaticcraft.gui.pastebin.merge.tooltip");
-            addButton(mergeCB);
+            addRenderableWidget(mergeCB);
         }
 
         addLabel(xlate("pneumaticcraft.gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
@@ -177,7 +177,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             init(minecraft, this.width, this.height);
         }
         if (state != EnumState.NONE && PastebinHandler.isDone()) {
-            statusMessage = StringTextComponent.EMPTY;
+            statusMessage = TextComponent.EMPTY;
             String pastebinText;
             switch (state) {
                 case GETTING:
@@ -190,7 +190,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
                     break;
                 case PUTTING:
                     if (PastebinHandler.getException() != null) {
-                        statusMessage = new StringTextComponent(PastebinHandler.getException().getMessage());
+                        statusMessage = new TextComponent(PastebinHandler.getException().getMessage());
                     } else {
                         pastebinText = PastebinHandler.getHandler().getLink;
                         if (pastebinText == null) pastebinText = "<ERROR>";
@@ -198,7 +198,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
                             pastebinBox.setValue(pastebinText);
                             setTempMessage(xlate("pneumaticcraft.gui.pastebin.uploadedToPastebin"));
                         } else {
-                            statusMessage = new StringTextComponent(pastebinText);
+                            statusMessage = new TextComponent(pastebinText);
                         }
                     }
                     break;
@@ -211,11 +211,11 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             state = EnumState.NONE;
         }
         if (messageTimer > 0 && --messageTimer <= 0) {
-            lastMessage = StringTextComponent.EMPTY;
+            lastMessage = TextComponent.EMPTY;
         }
     }
 
-    private void setTempMessage(ITextComponent msg) {
+    private void setTempMessage(Component msg) {
         lastMessage = msg;
         messageTimer = 60;
     }
@@ -229,7 +229,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             setTempMessage(xlate("pneumaticcraft.gui.pastebin.retrievedFromPastebin"));
         } catch (Exception e) {
             e.printStackTrace();
-            setTempMessage(xlate("pneumaticcraft.gui.pastebin.invalidFormattedPastebin").withStyle(TextFormatting.GOLD));
+            setTempMessage(xlate("pneumaticcraft.gui.pastebin.invalidFormattedPastebin").withStyle(ChatFormatting.GOLD));
         }
     }
 
@@ -240,11 +240,11 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
      *
      * @param nbt the legacy data to convert
      */
-    private void doLegacyConversion(CompoundNBT nbt) {
-        ListNBT l = nbt.getList("widgets", Constants.NBT.TAG_COMPOUND);
+    private void doLegacyConversion(CompoundTag nbt) {
+        ListTag l = nbt.getList("widgets", Tag.TAG_COMPOUND);
         int areaConversions = 0;
         for (int i = 0; i < l.size(); i++) {
-            CompoundNBT subTag = l.getCompound(i);
+            CompoundTag subTag = l.getCompound(i);
             String newName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, subTag.getString("name"));
             subTag.putString("name", Names.MOD_ID + ":" + newName);
             if (newName.equals("area")) {
@@ -263,14 +263,14 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
 
         super.render(matrixStack, x, y, partialTicks);
 
-        if (statusMessage != StringTextComponent.EMPTY) {
+        if (statusMessage != TextComponent.EMPTY) {
             drawString(matrixStack, font, statusMessage, guiLeft + 5, guiTop + 5, 0xFFFFFF00);
-        } else if (lastMessage != StringTextComponent.EMPTY) {
+        } else if (lastMessage != TextComponent.EMPTY) {
             drawString(matrixStack, font, lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00);
         }
     }

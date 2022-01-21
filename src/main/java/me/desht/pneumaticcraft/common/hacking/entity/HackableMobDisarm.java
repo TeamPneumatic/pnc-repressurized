@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,31 +41,31 @@ public class HackableMobDisarm implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
-        return entity instanceof MobEntity && Arrays.stream(EquipmentSlotType.values())
-                .anyMatch(slot -> !((MobEntity) entity).getItemBySlot(slot).isEmpty());
+    public boolean canHack(Entity entity, Player player) {
+        return entity instanceof Mob && Arrays.stream(EquipmentSlot.values())
+                .anyMatch(slot -> !((Mob) entity).getItemBySlot(slot).isEmpty());
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.disarm"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.disarmed"));
     }
 
     @Override
-    public int getHackTime(Entity entity, PlayerEntity player) {
+    public int getHackTime(Entity entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
+    public void onHackFinished(Entity entity, Player player) {
         if (!entity.level.isClientSide) {
-            for (EquipmentSlotType slot : EquipmentSlotType.values()) {
-                if (doDisarm((MobEntity) entity, slot, player.getRandom())) {
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (doDisarm((Mob) entity, slot, player.getRandom())) {
                     return;
                 }
             }
@@ -77,10 +77,10 @@ public class HackableMobDisarm implements IHackableEntity {
         return false;
     }
 
-    private boolean doDisarm(MobEntity entity, EquipmentSlotType slot, Random rand) {
+    private boolean doDisarm(Mob entity, EquipmentSlot slot, Random rand) {
         if (entity.getItemBySlot(slot).isEmpty()) return false;
 
-        float[] dropChances = slot.getType() == EquipmentSlotType.Group.ARMOR ? entity.armorDropChances : entity.handDropChances;
+        float[] dropChances = slot.getType() == EquipmentSlot.Type.ARMOR ? entity.armorDropChances : entity.handDropChances;
         int slotIdx = slot.getIndex();
         boolean noDamage = dropChances[slotIdx] > 1f;
         ItemStack stack = entity.getItemBySlot(slot);
@@ -88,7 +88,7 @@ public class HackableMobDisarm implements IHackableEntity {
             if (!noDamage && stack.isDamageableItem()) {
                 int k = Math.max(stack.getMaxDamage() - 25, 1);
                 int l = stack.getMaxDamage() - rand.nextInt(rand.nextInt(k) + 1);
-                stack.setDamageValue(MathHelper.clamp(l, 1, k));
+                stack.setDamageValue(Mth.clamp(l, 1, k));
             }
             entity.spawnAtLocation(stack, 0f);
         }

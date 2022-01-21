@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.api.universal_sensor;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public interface IPollSensorSetting extends ISensorSetting {
     /**
@@ -29,18 +29,18 @@ public interface IPollSensorSetting extends ISensorSetting {
      * @param te universal sensor
      * @return the interval in ticks between polling operations
      */
-    int getPollFrequency(TileEntity te);
+    int getPollFrequency(BlockEntity te);
 
     /**
      * This method should return the outputted redstone value 0-15 of this sensor. When this sensor is
      * digital, just return 0 or 15.
      *
-     * @param world the world
+     * @param level the level, which must be a server level
      * @param pos the blockpos to test
      * @param sensorRange range of the sensor, based on the number of Range Upgrades inserted in the Universal Sensor.
      * @param textBoxText any text typed in the textfield of the Universal Sensor.
      * @return level of the redstone signal to emit
      */
-    int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText);
+    int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText);
 
 }

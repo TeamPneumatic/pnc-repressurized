@@ -1,32 +1,43 @@
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.IItemRenderProperties;
+import net.minecraftforge.common.util.NonNullLazy;
 
-public class RenderItemMinigun extends ItemStackTileEntityRenderer {
-    private final ModelMinigun model = new ModelMinigun();
+public class RenderItemMinigun extends BlockEntityWithoutLevelRenderer {
+    private final ModelMinigun model;
+
+    public RenderItemMinigun(BlockEntityRenderDispatcher pBlockEntityRenderDispatcher, EntityModelSet pEntityModelSet) {
+        super(pBlockEntityRenderDispatcher, pEntityModelSet);
+
+        model = new ModelMinigun(pEntityModelSet.bakeLayer(PNCModelLayers.MINIGUN));
+    }
 
     @Override
-    public void renderByItem(ItemStack stack, TransformType transformType, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void renderByItem(ItemStack stack, TransformType transformType, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         if (stack.getItem() == ModItems.MINIGUN.get() && stack.hasTag()) {
             Minecraft mc = Minecraft.getInstance();
             int id = stack.getTag().getInt(ItemMinigun.OWNING_PLAYER_ID);
             Entity owningPlayer = Minecraft.getInstance().level.getEntity(id);
-            if (owningPlayer instanceof PlayerEntity) {
-                Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, (PlayerEntity) owningPlayer);
+            if (owningPlayer instanceof Player) {
+                Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, (Player) owningPlayer);
                 matrixStack.pushPose();
                 boolean thirdPerson = transformType == TransformType.THIRD_PERSON_RIGHT_HAND || transformType == TransformType.THIRD_PERSON_LEFT_HAND;
                 if (thirdPerson) {
@@ -48,7 +59,7 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
                     matrixStack.mulPose(Vector3f.XP.rotationDegrees(0));
                     matrixStack.mulPose(Vector3f.YP.rotationDegrees(0));
                     matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
-                    if (mc.options.mainHand == HandSide.RIGHT) {
+                    if (mc.options.mainHand == HumanoidArm.RIGHT) {
                         matrixStack.translate(-1, -1.7, 0.1);
                     } else {
                         matrixStack.translate(0, 0, 0);
@@ -57,6 +68,20 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
                 model.renderMinigun(matrixStack, buffer, combinedLightIn, combinedOverlayIn, minigun, mc.getFrameTime(), false);
                 matrixStack.popPose();
             }
+        }
+    }
+
+    public static class RenderProperties implements IItemRenderProperties {
+        static final NonNullLazy<BlockEntityWithoutLevelRenderer> renderer = NonNullLazy.of(() ->
+                new RenderItemMinigun(
+                        Minecraft.getInstance().getBlockEntityRenderDispatcher(),
+                        Minecraft.getInstance().getEntityModels()
+                )
+        );
+
+        @Override
+        public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+            return renderer.get();
         }
     }
 }

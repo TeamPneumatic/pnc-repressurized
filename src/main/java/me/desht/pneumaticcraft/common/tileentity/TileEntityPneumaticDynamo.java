@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModContainers;
@@ -27,15 +28,17 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -47,7 +50,7 @@ import javax.annotation.Nullable;
 
 public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implements
         IRedstoneControl<TileEntityPneumaticDynamo>, IMinWorkingPressure,
-        INamedContainerProvider, IHeatExchangingTE {
+        MenuProvider, IHeatExchangingTE {
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
@@ -63,8 +66,8 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
-    public TileEntityPneumaticDynamo() {
-        super(ModTileEntities.PNEUMATIC_DYNAMO.get(), PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
+    public TileEntityPneumaticDynamo(BlockPos pos, BlockState state) {
+        super(ModTileEntities.PNEUMATIC_DYNAMO.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
     }
 
     public int getEfficiency() {
@@ -72,41 +75,40 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!level.isClientSide) {
-            if (level.getGameTime() % 20 == 0) {
-                int efficiency = Math.max(1, ConfigHelper.common().machines.pneumaticDynamoEfficiency.get());
-                airPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * 100 / efficiency);
-                rfPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() / 100);
-            }
+        final Level level = nonNullLevel();
+        if (level.getGameTime() % 20 == 0) {
+            int efficiency = Math.max(1, ConfigHelper.common().machines.pneumaticDynamoEfficiency.get());
+            airPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * 100 / efficiency);
+            rfPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() / 100);
+        }
 
-            boolean newEnabled;
-            if (rsController.shouldRun() && getPressure() > getMinWorkingPressure() && energy.getMaxEnergyStored() - energy.getEnergyStored() >= rfPerTick) {
-                this.addAir(-airPerTick);
-                heatExchanger.addHeat(airPerTick / 100D);
-                energy.receiveEnergy(rfPerTick, false);
-                newEnabled = true;
-            } else {
-                newEnabled = false;
-            }
-            if ((level.getGameTime() & 0xf) == 0 && newEnabled != isEnabled) {
-                isEnabled = newEnabled;
-                BlockState state = level.getBlockState(worldPosition);
-                level.setBlockAndUpdate(worldPosition, state.setValue(BlockPneumaticDynamo.ACTIVE, isEnabled));
-            }
+        boolean newEnabled;
+        if (rsController.shouldRun() && getPressure() > getMinWorkingPressure() && energy.getMaxEnergyStored() - energy.getEnergyStored() >= rfPerTick) {
+            this.addAir(-airPerTick);
+            heatExchanger.addHeat(airPerTick / 100D);
+            energy.receiveEnergy(rfPerTick, false);
+            newEnabled = true;
+        } else {
+            newEnabled = false;
+        }
+        if ((level.getGameTime() & 0xf) == 0 && newEnabled != isEnabled) {
+            isEnabled = newEnabled;
+            BlockState state = level.getBlockState(worldPosition);
+            level.setBlockAndUpdate(worldPosition, state.setValue(BlockPneumaticDynamo.ACTIVE, isEnabled));
+        }
 
-            TileEntity receiver = getCachedNeighbor(getRotation());
-            if (receiver != null) {
-                receiver.getCapability(CapabilityEnergy.ENERGY, getRotation().getOpposite()).ifPresent(neighborStorage -> {
-                    int extracted = energy.extractEnergy(rfPerTick * 2, true);
-                    int energyPushed = neighborStorage.receiveEnergy(extracted, true);
-                    if (energyPushed > 0) {
-                        neighborStorage.receiveEnergy(energy.extractEnergy(energyPushed, false), false);
-                    }
-                });
-            }
+        BlockEntity receiver = getCachedNeighbor(getRotation());
+        if (receiver != null) {
+            receiver.getCapability(CapabilityEnergy.ENERGY, getRotation().getOpposite()).ifPresent(neighborStorage -> {
+                int extracted = energy.extractEnergy(rfPerTick * 2, true);
+                int energyPushed = neighborStorage.receiveEnergy(extracted, true);
+                if (energyPushed > 0) {
+                    neighborStorage.receiveEnergy(energy.extractEnergy(energyPushed, false), false);
+                }
+            });
         }
     }
 
@@ -121,7 +123,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player){
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player){
         rsController.parseRedstoneMode(tag);
     }
 
@@ -166,24 +168,23 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         energy.writeToNBT(tag);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         energy.readFromNBT(tag);
     }
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerEnergy<TileEntityPneumaticDynamo>(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getBlockPos());
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
+        return new ContainerEnergy<TileEntityPneumaticDynamo>(ModContainers.PNEUMATIC_DYNAMO.get(), windowId, playerInventory, getBlockPos());
     }
 
     @Nullable

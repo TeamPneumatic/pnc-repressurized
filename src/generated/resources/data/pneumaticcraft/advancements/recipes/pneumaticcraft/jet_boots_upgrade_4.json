@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:pneumatic_boots"
+            "items": [
+              "pneumaticcraft:pneumatic_boots"
+            ]
           }
         ]
       }

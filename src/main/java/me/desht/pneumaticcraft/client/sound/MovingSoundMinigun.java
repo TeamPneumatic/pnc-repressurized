@@ -24,20 +24,20 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
-import net.minecraft.client.audio.TickableSound;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.sounds.SoundSource;
 
-public class MovingSoundMinigun extends TickableSound {
+public class MovingSoundMinigun extends AbstractTickableSoundInstance {
     private final Entity entity;
-    private final TileEntity tileEntity;
+    private final BlockEntity tileEntity;
     private boolean finished = false;
 
     MovingSoundMinigun(Entity entity) {
-        super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
+        super(ModSounds.MINIGUN.get(), SoundSource.NEUTRAL);
         this.entity = entity;
         this.tileEntity = null;
         init(entity instanceof EntityDrone ?
@@ -45,8 +45,8 @@ public class MovingSoundMinigun extends TickableSound {
                 ConfigHelper.client().sound.minigunVolumeHeld.get().floatValue());
     }
 
-    MovingSoundMinigun(TileEntity te) {
-        super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
+    MovingSoundMinigun(BlockEntity te) {
+        super(ModSounds.MINIGUN.get(), SoundSource.NEUTRAL);
         this.entity = null;
         this.tileEntity = te;
         x = tileEntity.getBlockPos().getX();
@@ -72,8 +72,8 @@ public class MovingSoundMinigun extends TickableSound {
                 x = (float) entity.getX();
                 y = (float) entity.getY();
                 z = (float) entity.getZ();
-                if (entity instanceof PlayerEntity) {
-                    PlayerEntity player = (PlayerEntity) entity;
+                if (entity instanceof Player) {
+                    Player player = (Player) entity;
                     ItemStack curItem = player.getMainHandItem();
                     if (curItem.getItem() == ModItems.MINIGUN.get()) {
                         minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
@@ -93,7 +93,7 @@ public class MovingSoundMinigun extends TickableSound {
         }
         finished = minigun == null || !minigun.isMinigunActivated() || minigun.getMinigunSpeed() < Minigun.MAX_GUN_SPEED * 0.9;
         if (finished && !wasFinished) {
-            ClientUtils.getClientWorld().playSound(ClientUtils.getClientPlayer(), x, y, z, ModSounds.MINIGUN_STOP.get(), SoundCategory.NEUTRAL, volume, 1f);
+            ClientUtils.getClientLevel().playSound(ClientUtils.getClientPlayer(), x, y, z, ModSounds.MINIGUN_STOP.get(), SoundSource.NEUTRAL, volume, 1f);
         }
     }
 

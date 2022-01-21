@@ -24,14 +24,14 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +66,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addWarnings(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addWarnings(curInfo, widgets);
         if (!useVariable && x == 0 && y == 0 && z == 0) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.coordinate.warning.noCoordinate"));
@@ -74,7 +74,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (useVariable && variable.equals("")) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
@@ -97,7 +97,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         tag.putInt("posX", x);
         tag.putInt("posY", y);
@@ -107,7 +107,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         x = tag.getInt("posX");
         y = tag.getInt("posY");
@@ -117,7 +117,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeInt(x);
         buf.writeInt(y);
@@ -127,7 +127,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         x = buf.readInt();
         y = buf.readInt();
@@ -191,20 +191,20 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
         if (useVariable) {
-            curTooltip.add(new StringTextComponent("XYZ: '" + variable + "'"));
+            curTooltip.add(new TextComponent("XYZ: '" + variable + "'"));
         } else if (x != 0 || y != 0 || z != 0) {
-            curTooltip.add(new StringTextComponent("X: " + x + ", Y: " + y + ", Z: " + z));
+            curTooltip.add(new TextComponent("X: " + x + ", Y: " + y + ", Z: " + z));
         }
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         if (useVariable) return Collections.singletonList(varAsTextComponent(variable));
-        else return x != 0 || y != 0 || z != 0 ? Collections.singletonList(new StringTextComponent(x + ", " + y + ", " + z)) : Collections.emptyList();
+        else return x != 0 || y != 0 || z != 0 ? Collections.singletonList(new TextComponent(x + ", " + y + ", " + z)) : Collections.emptyList();
     }
 
     @Override

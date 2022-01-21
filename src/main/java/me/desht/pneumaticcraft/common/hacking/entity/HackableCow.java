@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.CowEntity;
-import net.minecraft.entity.passive.MooshroomEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.MushroomCow;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -39,34 +39,34 @@ public class HackableCow implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
+    public boolean canHack(Entity entity, Player player) {
         // mooshrooms are also a type of CowEntity
         return entity.getType() == EntityType.COW;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.fungiInfuse"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.fungiInfusion"));
     }
 
     @Override
-    public int getHackTime(Entity entity, PlayerEntity player) {
+    public int getHackTime(Entity entity, Player player) {
         return 100;
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
+    public void onHackFinished(Entity entity, Player player) {
         if (!entity.level.isClientSide) {
-            entity.remove();
-            MooshroomEntity entitycow = new MooshroomEntity(EntityType.MOOSHROOM, entity.level);
-            entitycow.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot);
-            entitycow.setHealth(((CowEntity) entity).getHealth());
-            entitycow.yBodyRot = ((CowEntity) entity).yBodyRot;
+            entity.discard();
+            MushroomCow entitycow = new MushroomCow(EntityType.MOOSHROOM, entity.level);
+            entitycow.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+            entitycow.setHealth(((Cow) entity).getHealth());
+            entitycow.yBodyRot = ((Cow) entity).yBodyRot;
             entity.level.addFreshEntity(entitycow);
             entity.level.addParticle(ParticleTypes.EXPLOSION, entity.getX(), entity.getY() + entity.getBbHeight() / 2.0F, entity.getZ(), 0.0D, 0.0D, 0.0D);
         }

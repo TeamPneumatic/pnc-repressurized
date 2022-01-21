@@ -21,22 +21,21 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PotionEntity;
-import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -64,7 +63,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     public static void setPotion(ItemStack ammo, ItemStack potion) {
-        CompoundNBT tag = new CompoundNBT();
+        CompoundTag tag = new CompoundTag();
         potion.save(tag);
         NBTUtils.setCompoundTag(ammo, "potion", tag);
     }
@@ -98,11 +97,11 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
+    public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag extraInfo) {
         super.appendHoverText(stack, world, infoList, extraInfo);
         ItemStack potion = getPotion(stack);
         if (!potion.isEmpty()) {
-            List<ITextComponent> potionInfo = new ArrayList<>();
+            List<Component> potionInfo = new ArrayList<>();
             potion.getItem().appendHoverText(potion, world, potionInfo, extraInfo);
             String extra = "";
             if (potion.getItem() instanceof SplashPotionItem) {
@@ -121,16 +120,16 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         ItemStack potion = getPotion(ammo);
         if (!potion.isEmpty() && target instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) target;
-            PlayerEntity shooter = minigun.getPlayer();
+            Player shooter = minigun.getPlayer();
             if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.potionProcChance.get(), 0.25f)) {
                 if (potion.getItem() == Items.POTION) {
-                    List<EffectInstance> effects = PotionUtils.getMobEffects(potion);
-                    for (EffectInstance effect : effects) {
-                        entity.addEffect(new EffectInstance(effect));
+                    List<MobEffectInstance> effects = PotionUtils.getMobEffects(potion);
+                    for (MobEffectInstance effect : effects) {
+                        entity.addEffect(new MobEffectInstance(effect));
                     }
-                    entity.level.playSound(null, entity.blockPosition(), SoundEvents.SPLASH_POTION_BREAK, SoundCategory.PLAYERS, 1f, 1f);
+                    entity.level.playSound(null, entity.blockPosition(), SoundEvents.SPLASH_POTION_BREAK, SoundSource.PLAYERS, 1f, 1f);
                 } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-                    PotionEntity entityPotion = new PotionEntity(shooter.level, shooter);
+                    ThrownPotion entityPotion = new ThrownPotion(shooter.level, shooter);
                     entityPotion.setItem(potion);
                     entityPotion.setPos(entity.getX(), entity.getY(), entity.getZ());
                     shooter.level.addFreshEntity(entityPotion);
@@ -143,13 +142,13 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
         ItemStack potion = getPotion(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-            PlayerEntity shooter = minigun.getPlayer();
+            Player shooter = minigun.getPlayer();
             int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(EnumUpgrade.DISPENSER) * 2;
             if (shooter.level.random.nextInt(100) < chance) {
-                PotionEntity entityPotion = new PotionEntity(shooter.level, shooter);
+                ThrownPotion entityPotion = new ThrownPotion(shooter.level, shooter);
                 entityPotion.setItem(potion);
                 BlockPos pos2 = brtr.getBlockPos().relative(brtr.getDirection());
                 entityPotion.setPos(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);

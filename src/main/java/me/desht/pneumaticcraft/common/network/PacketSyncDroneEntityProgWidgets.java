@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.List;
 
@@ -38,18 +38,18 @@ public class PacketSyncDroneEntityProgWidgets extends PacketDroneDebugBase {
         progWidgets = drone.getProgWidgets();
     }
 
-    PacketSyncDroneEntityProgWidgets(PacketBuffer buffer) {
+    PacketSyncDroneEntityProgWidgets(FriendlyByteBuf buffer) {
         super(buffer);
         progWidgets = TileEntityProgrammer.getWidgetsFromNBT(buffer.readNbt());
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
-        buf.writeNbt(TileEntityProgrammer.putWidgetsToNBT(progWidgets, new CompoundNBT()));
+        buf.writeNbt(TileEntityProgrammer.putWidgetsToNBT(progWidgets, new CompoundTag()));
     }
 
     @Override
-    void handle(PlayerEntity player, IDroneBase droneBase) {
+    void handle(Player player, IDroneBase droneBase) {
         List<IProgWidget> widgets = droneBase.getProgWidgets();
         widgets.clear();
         widgets.addAll(progWidgets);

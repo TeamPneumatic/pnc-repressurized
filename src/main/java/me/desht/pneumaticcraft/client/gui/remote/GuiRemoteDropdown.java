@@ -45,17 +45,17 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
         dropDownElementsField.setMaxLength(1024);
         dropDownElementsField.setValue(actionWidget.getDropDownElements());
         dropDownElementsField.setTooltip(xlate("pneumaticcraft.gui.remote.dropdown.dropDownElements.tooltip"));
-        addButton(dropDownElementsField);
+        addRenderableWidget(dropDownElementsField);
 
         widthField = new WidgetTextFieldNumber(font, guiLeft + 50, guiTop + 99, 30, 10).setRange(10, Integer.MAX_VALUE);
         widthField.setValue(actionWidget.getWidth());
         widthField.minValue = 10;
-        addButton(widthField);
+        addRenderableWidget(widthField);
 
         sortCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 120, 0x404040, xlate("pneumaticcraft.gui.remote.dropdown.sort"))
                 .setTooltipKey("pneumaticcraft.gui.remote.dropdown.sort.tooltip")
                 .setChecked(actionWidget.getSorted());
-        addButton(sortCheckBox);
+        addRenderableWidget(sortCheckBox);
     }
 
     @Override

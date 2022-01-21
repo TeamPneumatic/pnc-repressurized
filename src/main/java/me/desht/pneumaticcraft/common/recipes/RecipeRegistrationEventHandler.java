@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.NoNBTIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.lib.Names;
-import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class RecipeRegistrationEventHandler {
     @SubscribeEvent
-    public static void onRegister(RegistryEvent.Register<IRecipeSerializer<?>> event) {
+    public static void onRegister(RegistryEvent.Register<RecipeSerializer<?>> event) {
         // register our custom recipe and ingredient types
 
         PneumaticCraftRecipeType.registerRecipeTypes(event.getRegistry());

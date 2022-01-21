@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,7 +34,7 @@ public class DroneClaimManager {
     private final Map<BlockPos, Integer> currentPositions = new HashMap<>();
     private static final int TIMEOUT = DroneAIManager.TICK_RATE + 1;
 
-    public static DroneClaimManager getInstance(World world) {
+    public static DroneClaimManager getInstance(Level world) {
         return claimManagers.computeIfAbsent(world.dimension().location(), k -> new DroneClaimManager());
     }
 

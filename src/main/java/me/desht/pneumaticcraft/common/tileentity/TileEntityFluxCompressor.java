@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModContainers;
@@ -27,14 +28,16 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -45,7 +48,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityFluxCompressor extends TileEntityPneumaticBase
-        implements IRedstoneControl<TileEntityFluxCompressor>, INamedContainerProvider, IHeatExchangingTE {
+        implements IRedstoneControl<TileEntityFluxCompressor>, MenuProvider, IHeatExchangingTE {
     private static final int BASE_FE_PRODUCTION = 40;
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
@@ -62,10 +65,8 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
-    public TileEntityFluxCompressor() {
-        super(ModTileEntities.FLUX_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_FLUX_COMPRESSOR,
-                PneumaticValues.MAX_PRESSURE_FLUX_COMPRESSOR,
-                PneumaticValues.VOLUME_FLUX_COMPRESSOR, 4);
+    public TileEntityFluxCompressor(BlockPos pos, BlockState state) {
+        super(ModTileEntities.FLUX_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_FLUX_COMPRESSOR, 4);
 
         heatExchanger.setThermalCapacity(100);
     }
@@ -75,35 +76,34 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!level.isClientSide) {
-            if (level.getGameTime() % 5 == 0) {
-                airPerTick = (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades()
-                        * (getHeatEfficiency() / 100f)
-                        * (ConfigHelper.common().machines.fluxCompressorEfficiency.get() / 100f));
-                rfPerTick = (int) (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades());
-            }
-            boolean newEnabled = false;
-            if (rsController.shouldRun() && energy.getEnergyStored() >= rfPerTick) {
-                airBuffer += airPerTick;
-                if (airBuffer >= 1f) {
-                    int toAdd = (int) airBuffer;
-                    this.addAir(toAdd);
-                    airBuffer -= toAdd;
-                    heatExchanger.addHeat(toAdd / 20d);
-                }
-                energy.extractEnergy(rfPerTick, false);
-                newEnabled = true;
-            }
-            if ((level.getGameTime() & 0x7) == 0 && newEnabled != isEnabled) {
-                isEnabled = newEnabled;
-                BlockState state = level.getBlockState(worldPosition);
-                level.setBlockAndUpdate(worldPosition, state.setValue(BlockPneumaticDynamo.ACTIVE, isEnabled));
-            }
-            airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation().getOpposite() : null);
+        final Level level = nonNullLevel();
+        if (level.getGameTime() % 5 == 0) {
+            airPerTick = (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades()
+                    * (getHeatEfficiency() / 100f)
+                    * (ConfigHelper.common().machines.fluxCompressorEfficiency.get() / 100f));
+            rfPerTick = (int) (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades());
         }
+        boolean newEnabled = false;
+        if (rsController.shouldRun() && energy.getEnergyStored() >= rfPerTick) {
+            airBuffer += airPerTick;
+            if (airBuffer >= 1f) {
+                int toAdd = (int) airBuffer;
+                this.addAir(toAdd);
+                airBuffer -= toAdd;
+                heatExchanger.addHeat(toAdd / 20d);
+            }
+            energy.extractEnergy(rfPerTick, false);
+            newEnabled = true;
+        }
+        if ((level.getGameTime() & 0x7) == 0 && newEnabled != isEnabled) {
+            isEnabled = newEnabled;
+            BlockState state = level.getBlockState(worldPosition);
+            level.setBlockAndUpdate(worldPosition, state.setValue(BlockPneumaticDynamo.ACTIVE, isEnabled));
+        }
+        airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation().getOpposite() : null);
     }
 
     @Override
@@ -127,21 +127,20 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag){
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag){
+        super.saveAdditional(tag);
         energy.writeToNBT(tag);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         energy.readFromNBT(tag);
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         rsController.parseRedstoneMode(tag);
     }
 
@@ -169,7 +168,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerEnergy<>(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getBlockPos());
     }
 

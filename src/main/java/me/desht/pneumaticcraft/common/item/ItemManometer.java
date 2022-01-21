@@ -28,20 +28,24 @@ import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourTransition;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -56,33 +60,33 @@ public class ItemManometer extends ItemPressurizable {
     }
 
     @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        PlayerEntity player = context.getPlayer();
-        if (player == null) return ActionResultType.PASS;
-        World world = context.getLevel();
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        Player player = context.getPlayer();
+        if (player == null) return InteractionResult.PASS;
+        Level world = context.getLevel();
 
-        if (world.isClientSide) return ActionResultType.SUCCESS;
+        if (world.isClientSide) return InteractionResult.SUCCESS;
 
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
             if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
-                player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getHoverName()).withStyle(TextFormatting.RED), true);
-                return ActionResultType.FAIL;
+                player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getHoverName()).withStyle(ChatFormatting.RED), true);
+                return InteractionResult.FAIL;
             }
 
-            List<ITextComponent> curInfo = new ArrayList<>();
+            List<Component> curInfo = new ArrayList<>();
             Direction side = context.getClickedFace();
             BlockPos pos = context.getClickedPos();
 
             BlockState state = world.getBlockState(pos.relative(side));
-            if (!player.isShiftKeyDown() && state.getBlock() instanceof FlowingFluidBlock) {
+            if (!player.isShiftKeyDown() && state.getBlock() instanceof LiquidBlock) {
                 pos = pos.relative(side);
             }
-            TileEntity te = world.getBlockEntity(pos);
+            BlockEntity te = world.getBlockEntity(pos);
             if (te != null) {
-                if (te instanceof INameable) {
-                    curInfo.add(((INameable) te).getDisplayName().copy().withStyle(TextFormatting.AQUA));
+                if (te instanceof Nameable) {
+                    curInfo.add(((Nameable) te).getDisplayName().copy().withStyle(ChatFormatting.AQUA));
                 } else {
-                    curInfo.add(xlate(te.getBlockState().getBlock().getDescriptionId()).withStyle(TextFormatting.AQUA));
+                    curInfo.add(xlate(te.getBlockState().getBlock().getDescriptionId()).withStyle(ChatFormatting.AQUA));
                 }
 
                 if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
@@ -112,12 +116,12 @@ public class ItemManometer extends ItemPressurizable {
                 }
             } else {
                 BlockState state1 = world.getBlockState(pos);
-                if (state1.getBlock() instanceof FlowingFluidBlock) {
-                    Fluid f = ((FlowingFluidBlock) state1.getBlock()).getFluid();
+                if (state1.getBlock() instanceof LiquidBlock) {
+                    Fluid f = ((LiquidBlock) state1.getBlock()).getFluid();
                     FluidStack fs = new FluidStack(f, 1000);
-                    curInfo.add(fs.getDisplayName().copy().withStyle(TextFormatting.AQUA));
+                    curInfo.add(fs.getDisplayName().copy().withStyle(ChatFormatting.AQUA));
                 } else {
-                    curInfo.add(xlate(world.getBlockState(pos).getBlock().getDescriptionId()).withStyle(TextFormatting.AQUA));
+                    curInfo.add(xlate(world.getBlockState(pos).getBlock().getDescriptionId()).withStyle(ChatFormatting.AQUA));
                 }
                 HeatExchangerManager.INSTANCE.getLogic(world, pos, side)
                         .ifPresent(logic -> curInfo.add(HeatUtil.formatHeatString(logic.getTemperatureAsInt())));
@@ -131,14 +135,14 @@ public class ItemManometer extends ItemPressurizable {
                 h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
                 curInfo.forEach(s -> player.displayClientMessage(s, false));
             }
-            return ActionResultType.SUCCESS;
-        }).orElse(ActionResultType.PASS);
+            return InteractionResult.SUCCESS;
+        }).orElse(InteractionResult.PASS);
     }
 
-    private void checkForHeatExtraction(World world, BlockPos pos, List<ITextComponent> curInfo) {
+    private void checkForHeatExtraction(Level world, BlockPos pos, List<Component> curInfo) {
         // look for a heat handling TE adjacent to our pos which has a heat transition behaviour for our pos
         for (Direction d : DirectionUtil.VALUES) {
-            TileEntity te1 = world.getBlockEntity(pos.relative(d));
+            BlockEntity te1 = world.getBlockEntity(pos.relative(d));
             if (te1 != null) {
                 te1.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d.getOpposite())
                         .ifPresent(handler -> handler.getHeatBehaviour(pos, HeatBehaviourTransition.class)
@@ -147,7 +151,7 @@ public class ItemManometer extends ItemPressurizable {
                                             if (progress != 0) {
                                                 String key = "pneumaticcraft.waila.temperature" + (progress < 0 ? "Gain" : "Loss");
                                                 int pct = progress < 0 ? (int) (progress * -100) : (int) (progress * 100);
-                                                curInfo.add(new TranslationTextComponent(key, pct));
+                                                curInfo.add(new TranslatableComponent(key, pct));
                                             }
                                         }
                                 )
@@ -157,33 +161,33 @@ public class ItemManometer extends ItemPressurizable {
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (worldIn.isClientSide) return ActionResult.success(stack);
+        if (worldIn.isClientSide) return InteractionResultHolder.success(stack);
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
             if (h.getPressure() >= 0.1f) {
                 double temp = HeatExchangerLogicAmbient.getAmbientTemperature(worldIn, playerIn.blockPosition());
-                playerIn.displayClientMessage(ItemStack.EMPTY.getHoverName().copy().withStyle(TextFormatting.AQUA), false);
+                playerIn.displayClientMessage(ItemStack.EMPTY.getHoverName().copy().withStyle(ChatFormatting.AQUA), false);
                 playerIn.displayClientMessage(Symbols.bullet().append(HeatUtil.formatHeatString((int) temp)), false);
-                return ActionResult.consume(stack);
+                return InteractionResultHolder.consume(stack);
             }
-            return ActionResult.fail(stack);
-        }).orElse(ActionResult.pass(stack));
+            return InteractionResultHolder.fail(stack);
+        }).orElse(InteractionResultHolder.pass(stack));
     }
 
     @Override
-    public ActionResultType interactLivingEntity(ItemStack iStack, PlayerEntity player, LivingEntity entity, Hand hand) {
+    public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity entity, InteractionHand hand) {
         if (!player.level.isClientSide) {
             return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
-                    player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getHoverName()).withStyle(TextFormatting.RED), true);
-                    return ActionResultType.FAIL;
+                    player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getHoverName()).withStyle(ChatFormatting.RED), true);
+                    return InteractionResult.FAIL;
                 }
-                List<ITextComponent> curInfo = new ArrayList<>();
+                List<Component> curInfo = new ArrayList<>();
                 if (entity instanceof IManoMeasurable) {
                     ((IManoMeasurable) entity).printManometerMessage(player, curInfo);
                 } else {
-                    curInfo.add(entity.getDisplayName().copy().withStyle(TextFormatting.AQUA));
+                    curInfo.add(entity.getDisplayName().copy().withStyle(ChatFormatting.AQUA));
                 }
                 if (curInfo.size() > 0) {
                     h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
@@ -192,9 +196,9 @@ public class ItemManometer extends ItemPressurizable {
                     }
                     curInfo.forEach(s -> player.displayClientMessage(s, false));
                 }
-                return ActionResultType.SUCCESS;
-            }).orElse(ActionResultType.PASS);
+                return InteractionResult.SUCCESS;
+            }).orElse(InteractionResult.PASS);
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 }

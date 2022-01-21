@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -37,14 +37,14 @@ public class PacketUpdateArmorColors {
     private final int eyepiece;
 
     public PacketUpdateArmorColors() {
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(slot);
             if (stack.getItem() instanceof ItemPneumaticArmor) {
                 cols[slot.getIndex()][0] = ((ItemPneumaticArmor) stack.getItem()).getColor(stack);
                 cols[slot.getIndex()][1] = ((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack);
             }
         }
-        ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlotType.HEAD);
+        ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlot.HEAD);
         if (stack.getItem() instanceof ItemPneumaticArmor) {
             eyepiece = ((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack);
         } else {
@@ -52,7 +52,7 @@ public class PacketUpdateArmorColors {
         }
     }
 
-    public PacketUpdateArmorColors(PacketBuffer buffer) {
+    public PacketUpdateArmorColors(FriendlyByteBuf buffer) {
         for (int i = 0; i < 4; i++) {
             cols[i][0] = buffer.readInt();
             cols[i][1] = buffer.readInt();
@@ -60,7 +60,7 @@ public class PacketUpdateArmorColors {
         eyepiece = buffer.readInt();
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         for (int i = 0; i < 4; i++) {
             buffer.writeInt(cols[i][0]);
             buffer.writeInt(cols[i][1]);
@@ -70,16 +70,16 @@ public class PacketUpdateArmorColors {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             if (player != null) {
-                for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                     ItemStack stack = player.getItemBySlot(slot);
                     if (stack.getItem() instanceof ItemPneumaticArmor) {
                         ((ItemPneumaticArmor) stack.getItem()).setColor(stack, cols[slot.getIndex()][0]);
                         ((ItemPneumaticArmor) stack.getItem()).setSecondaryColor(stack, cols[slot.getIndex()][1]);
                     }
                 }
-                ItemStack stack = player.getItemBySlot(EquipmentSlotType.HEAD);
+                ItemStack stack = player.getItemBySlot(EquipmentSlot.HEAD);
                 if (stack.getItem() instanceof ItemPneumaticArmor) {
                     ((ItemPneumaticArmor) stack.getItem()).setEyepieceColor(stack, eyepiece);
                 }

@@ -23,31 +23,30 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetEntityMotion;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.item.ExperienceBottleEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.TNTEntity;
-import net.minecraft.entity.item.minecart.MinecartEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.*;
-import net.minecraft.item.*;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Common code for the Air Cannon and Pneumatic Chestplate item launcher
  */
 public class ItemLaunching {
-    public static void launchEntity(Entity launchedEntity, Vector3d initialPos, Vector3d velocity, boolean doSpawn) {
-        World world = launchedEntity.getCommandSenderWorld();
+    public static void launchEntity(Entity launchedEntity, Vec3 initialPos, Vec3 velocity, boolean doSpawn) {
+        Level world = launchedEntity.getCommandSenderWorld();
 
         if (launchedEntity.getVehicle() != null) {
             launchedEntity.stopRiding();
@@ -56,9 +55,8 @@ public class ItemLaunching {
         BlockPos trackPos = new BlockPos(initialPos);
         launchedEntity.setPos(initialPos.x, initialPos.y, initialPos.z);
         NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(launchedEntity, velocity), world, trackPos);
-        if (launchedEntity instanceof AbstractFireballEntity) {
+        if (launchedEntity instanceof Fireball fireball) {
             // fireball velocity is handled a little differently...
-            AbstractFireballEntity fireball = (AbstractFireballEntity) launchedEntity;
             fireball.xPower = velocity.x * 0.05;
             fireball.yPower = velocity.y * 0.05;
             fireball.zPower = velocity.z * 0.05;
@@ -79,7 +77,7 @@ public class ItemLaunching {
             double velZ = velocity.z * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
             NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world, trackPos);
         }
-        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundCategory.BLOCKS, 1f,world.random.nextFloat() / 4f + 0.75f);
+        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundSource.BLOCKS, 1f,world.random.nextFloat() / 4f + 0.75f);
     }
 
     /**
@@ -91,40 +89,40 @@ public class ItemLaunching {
      * @param fallingBlocks true if block items should be spawned as falling block entities rather than item entities
      * @return the entity to launch
      */
-    public static Entity getEntityToLaunch(World world, ItemStack stack, PlayerEntity player, boolean dispenserLike, boolean fallingBlocks) {
+    public static Entity getEntityToLaunch(Level world, ItemStack stack, Player player, boolean dispenserLike, boolean fallingBlocks) {
         Item item = stack.getItem();
         if (dispenserLike) {
             if (item == Blocks.TNT.asItem()) {
-                TNTEntity tnt = new TNTEntity(world, 0, 0, 0, player);
+                PrimedTnt tnt = new PrimedTnt(world, 0, 0, 0, player);
                 tnt.setFuse(80);
                 return tnt;
             } else if (item == Items.EXPERIENCE_BOTTLE) {
-                return new ExperienceBottleEntity(world, player);
+                return new ThrownExperienceBottle(world, player);
             } else if (item instanceof PotionItem) {
-                PotionEntity potionEntity = new PotionEntity(world, player);
+                ThrownPotion potionEntity = new ThrownPotion(world, player);
                 potionEntity.setItem(stack);
                 return potionEntity;
             } else if (item instanceof ArrowItem) {
                 return ((ArrowItem) item).createArrow(world, stack, player);
             } else if (item == Items.EGG) {
-                return new EggEntity(world, player);
+                return new ThrownEgg(world, player);
             } else if (item == Items.FIRE_CHARGE) {
-                SmallFireballEntity e = new SmallFireballEntity(world, player, 0, 0, 0);
+                SmallFireball e = new SmallFireball(world, player, 0, 0, 0);
                 e.setItem(stack);
                 return e;
             } else if (item == Items.SNOWBALL) {
-                return new SnowballEntity(world, player);
-            } else if (item instanceof SpawnEggItem && world instanceof ServerWorld) {
+                return new Snowball(world, player);
+            } else if (item instanceof SpawnEggItem && world instanceof ServerLevel) {
                 EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
-                Entity e = type.spawn((ServerWorld) world, stack, player, player.blockPosition(), SpawnReason.SPAWN_EGG, false, false);
+                Entity e = type.spawn((ServerLevel) world, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
                 if (e instanceof LivingEntity && stack.hasCustomHoverName()) {
                     e.setCustomName(stack.getHoverName());
                 }
                 return e;
             } else if (item instanceof MinecartItem) {
-                return MinecartEntity.createMinecart(world, 0, 0, 0, ((MinecartItem) item).type);
+                return Minecart.createMinecart(world, 0, 0, 0, ((MinecartItem) item).type);
             }  else if (item instanceof BoatItem) {
-                return new BoatEntity(world, 0, 0, 0);
+                return new Boat(world, 0, 0, 0);
             } else if (item == Items.FIREWORK_ROCKET) {
                 return new FireworkRocketEntity(world, 0, 0, 0, stack);
             }

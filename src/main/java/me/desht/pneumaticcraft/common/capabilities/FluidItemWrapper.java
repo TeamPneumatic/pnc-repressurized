@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -33,6 +33,8 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
+
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class FluidItemWrapper implements ICapabilityProvider {
     private ItemStack stack;
@@ -65,10 +67,10 @@ public class FluidItemWrapper implements ICapabilityProvider {
      */
      private void serializeTank(FluidTank tank, String tagName) {
          ItemStack newStack = stack.copy();
-         CompoundNBT tag = newStack.getOrCreateTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-         CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
+         CompoundTag tag = newStack.getOrCreateTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+         CompoundTag subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
          if (!tank.getFluid().isEmpty()) {
-             subTag.put(tagName, tank.writeToNBT(new CompoundNBT()));
+             subTag.put(tagName, tank.writeToNBT(new CompoundTag()));
          } else {
              subTag.remove(tagName);
          }
@@ -96,10 +98,10 @@ public class FluidItemWrapper implements ICapabilityProvider {
      * @return the deserialized tank, or null
      */
     private FluidTank deserializeTank(ItemStack stack, String tagName, int capacity) {
-        CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+        CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(NBTKeys.NBT_SAVED_TANKS)) {
             FluidTank tank = new FluidTank(capacity);
-            CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
+            CompoundTag subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
             return tank.readFromNBT(subTag.getCompound(tagName));
         }
         return null;

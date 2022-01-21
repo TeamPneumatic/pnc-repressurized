@@ -28,24 +28,24 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.ILivingEntityData;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -55,30 +55,30 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor {
-    private final BiFunction<World, PlayerEntity, EntityDrone> droneCreator;
+    private final BiFunction<Level, Player, EntityDrone> droneCreator;
     private final boolean programmable;
 
-    public ItemDrone(BiFunction<World, PlayerEntity, EntityDrone> droneCreator, boolean programmable) {
+    public ItemDrone(BiFunction<Level, Player, EntityDrone> droneCreator, boolean programmable) {
         super((int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
         this.droneCreator = droneCreator;
         this.programmable = programmable;
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext ctx) {
-        World world = ctx.getLevel();
+    public InteractionResult useOn(UseOnContext ctx) {
+        Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
-        if (world instanceof IServerWorld) {
+        if (world instanceof ServerLevelAccessor) {
             ItemStack iStack = ctx.getPlayer().getItemInHand(ctx.getHand());
             if (iStack.getItem() == ModItems.LOGISTICS_DRONE.get()) {
-                AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((ServerPlayerEntity) ctx.getPlayer());
+                AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((ServerPlayer) ctx.getPlayer());
             }
             BlockState state = world.getBlockState(pos);
             BlockPos placePos = state.getCollisionShape(world, pos).isEmpty() ? pos : pos.relative(ctx.getClickedFace());
             spawnDrone(ctx.getPlayer(), world, pos, ctx.getClickedFace(), placePos, iStack);
             iStack.shrink(1);
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (stack.hasTag() && stack.getTag().contains("Tank")) {
@@ -96,15 +96,15 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
             fluidTank.readFromNBT(stack.getTag().getCompound("Tank"));
             FluidStack fluidStack = fluidTank.getFluid();
             if (!fluidStack.isEmpty()) {
-                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.fluid")
+                tooltip.add(new TranslatableComponent("pneumaticcraft.gui.tooltip.fluid")
                         .append(fluidStack.getAmount() + "mB ")
-                        .append(fluidStack.getDisplayName()).withStyle(TextFormatting.GRAY)
+                        .append(fluidStack.getDisplayName()).withStyle(ChatFormatting.GRAY)
                 );
             }
         }
     }
 
-    public void spawnDrone(PlayerEntity player, World world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
+    public void spawnDrone(Player player, Level world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
         EntityDrone drone = droneCreator.apply(world, player);
 
         drone.setPos(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
@@ -116,8 +116,8 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
             TileEntityProgrammer.updatePuzzleConnections(drone.progWidgets);
         }
 
-        if (world instanceof IServerWorld) {
-            drone.finalizeSpawn((IServerWorld) world, world.getCurrentDifficultyAt(placePos), SpawnReason.TRIGGERED, new ILivingEntityData() {}, null);
+        if (world instanceof ServerLevelAccessor) {
+            drone.finalizeSpawn((ServerLevelAccessor) world, world.getCurrentDifficultyAt(placePos), MobSpawnType.TRIGGERED, new SpawnGroupData() {}, null);
         }
     }
 
@@ -147,7 +147,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     }
 
     @Override
-    public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
+    public MenuProvider getContainerProvider(TileEntityChargingStation te) {
         return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_DRONE.get());
     }
 }

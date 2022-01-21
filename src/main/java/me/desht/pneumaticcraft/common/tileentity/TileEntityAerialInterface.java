@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -39,27 +40,28 @@ import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.SkullTileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -83,7 +85,7 @@ import java.util.*;
 import java.util.function.Function;
 
 public class TileEntityAerialInterface extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControl<TileEntityAerialInterface>, IComparatorSupport, ISideConfigurable, INamedContainerProvider {
+        implements IMinWorkingPressure, IRedstoneControl<TileEntityAerialInterface>, IComparatorSupport, ISideConfigurable, MenuProvider {
 
     private static final UUID NO_PLAYER = new UUID(0L, 0L);
     private static final int ENERGY_CAPACITY = 100000;
@@ -126,15 +128,15 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private final PneumaticEnergyStorage energyStorage = new PneumaticEnergyStorage(ENERGY_CAPACITY);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energyStorage);
 
-    private WeakReference<PlayerEntity> playerRef = new WeakReference<>(null);
+    private WeakReference<Player> playerRef = new WeakReference<>(null);
 
     private final List<Integer> chargeableSlots = new ArrayList<>();
 
     private final List<PlayerInvHandler> invHandlers = new ArrayList<>();
     public GameProfile gameProfileClient;  // for rendering
 
-    public TileEntityAerialInterface() {
-        super(ModTileEntities.AERIAL_INTERFACE.get(), PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
+    public TileEntityAerialInterface(BlockPos pos, BlockState state) {
+        super(ModTileEntities.AERIAL_INTERFACE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
 
         PlayerMainInvHandler playerMainInvHandler = new PlayerMainInvHandler();
         PlayerArmorInvHandler playerArmorInvHandler = new PlayerArmorInvHandler();
@@ -193,7 +195,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         energyCap.invalidate();
     }
 
-    public void setPlayer(PlayerEntity player) {
+    public void setPlayer(Player player) {
         if (player == playerRef.get()) return;
 
         invHandlers.forEach(PlayerInvHandler::invalidate);
@@ -221,8 +223,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public void onDescUpdate() {
         super.onDescUpdate();
 
-        gameProfileClient = playerName.isEmpty() ? null :
-                SkullTileEntity.updateGameprofile(new GameProfile(null, playerName));
+        if (playerName.isEmpty()) {
+            gameProfileClient = null;
+        } else {
+            SkullBlockEntity.updateGameprofile(new GameProfile(null, playerName), profile -> gameProfileClient = profile);
+        }
     }
 
     @Override
@@ -237,37 +242,35 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!getLevel().isClientSide) {
-            if (needUpdateNeighbours) {
-                needUpdateNeighbours = false;
-                updateNeighbours();
-            }
-            if (getLevel() instanceof ServerWorld && (getLevel().getGameTime() & 0xf) == 0) {
-                setPlayer(((ServerWorld) getLevel()).getServer().getPlayerList().getPlayer(playerUUID));
-            }
-            getPlayer().ifPresent(player -> {
-                if (hasEnoughPressure()) {
-                    addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
-                    if ((getLevel().getGameTime() & 0x3f) == 0) {
-                        scanForChargeableItems(player);
-                    }
-                    supplyEnergyToPlayer(player);
-                    supplyAirToPlayer(player);
+        if (needUpdateNeighbours) {
+            needUpdateNeighbours = false;
+            updateNeighbours();
+        }
+        if (getLevel() instanceof ServerLevel && (getLevel().getGameTime() & 0xf) == 0) {
+            setPlayer(((ServerLevel) getLevel()).getServer().getPlayerList().getPlayer(playerUUID));
+        }
+        getPlayer().ifPresent(player -> {
+            if (getPressure() >= getMinWorkingPressure()) {
+                addAir(-PneumaticValues.USAGE_AERIAL_INTERFACE);
+                if ((nonNullLevel().getGameTime() & 0x3f) == 0) {
+                    scanForChargeableItems(player);
                 }
-            });
-
-            if (oldRedstoneStatus != rsController.shouldEmit()) {
-                oldRedstoneStatus = rsController.shouldEmit();
-                needUpdateNeighbours = true;
+                supplyEnergyToPlayer(player);
+                supplyAirToPlayer(player);
             }
+        });
+
+        if (oldRedstoneStatus != rsController.shouldEmit()) {
+            oldRedstoneStatus = rsController.shouldEmit();
+            needUpdateNeighbours = true;
         }
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag))
             return;
 
@@ -295,8 +298,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         return null;
     }
 
-    private Optional<PlayerEntity> getPlayer() {
-        PlayerEntity player = playerRef.get();
+    private Optional<Player> getPlayer() {
+        Player player = playerRef.get();
         return player != null && player.isAlive() ? Optional.of(player) : Optional.empty();
     }
 
@@ -319,8 +322,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         playerUUID = UUID.fromString(tag.getString("playerUUID"));
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
@@ -333,15 +336,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.putString("playerUUID", playerUUID.toString());
         tag.putString("feedMode", feedMode.toString());
         tag.putString("curXpFluid", curXpFluid.getRegistryName().toString());
         energyStorage.writeToNBT(tag);
-
-        return tag;
     }
 
     @Override
@@ -354,11 +355,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         return rsController.shouldEmit() ? 15 : 0;
     }
 
-    private void scanForChargeableItems(PlayerEntity player) {
+    private void scanForChargeableItems(Player player) {
         if (energyStorage.getEnergyStored() == 0) return;
 
         chargeableSlots.clear();
-        PlayerInventory inv = player.inventory;
+        Inventory inv = player.getInventory();
         for (int i = 0; i < inv.getContainerSize(); i++) {
             if (inv.getItem(i).getCapability(CapabilityEnergy.ENERGY).isPresent()) {
                 chargeableSlots.add(i);
@@ -366,9 +367,9 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
-    private void supplyEnergyToPlayer(PlayerEntity player) {
+    private void supplyEnergyToPlayer(Player player) {
         if (energyStorage.getEnergyStored() > 0) {
-            PlayerInventory inv = player.inventory;
+            Inventory inv = player.getInventory();
             for (int slot : chargeableSlots) {
                 ItemStack stack = inv.getItem(slot);
                 int energyLeft = stack.getCapability(CapabilityEnergy.ENERGY).map(receivingStorage -> {
@@ -387,14 +388,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
-    private void supplyAirToPlayer(PlayerEntity player) {
+    private void supplyAirToPlayer(Player player) {
         // A little higher than the pneumatic helmet with scuba upgrade, so aerial interface
         // takes precedence if both are available
         if (player.getAirSupply() <= 170) {
             int playerAir = 300 - player.getAirSupply();
             player.setAirSupply(300);
             addAir(-playerAir * PLAYER_AIR_MULTIPLIER);
-            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.blockPosition(), 1f, 0.9f, false), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundSource.PLAYERS, player.blockPosition(), 1f, 0.9f, false), (ServerPlayer) player);
         }
     }
 
@@ -410,7 +411,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
         return new ContainerAerialInterface(windowId, playerInventory, getBlockPos());
     }
 
@@ -434,8 +435,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             cached = null;
         }
 
-        IItemHandler getCachedHandler(PlayerEntity p, Function<PlayerInventory,IItemHandler> f) {
-            if (cached == null) cached = f.apply(p.inventory);
+        IItemHandler getCachedHandler(Player p, Function<Inventory,IItemHandler> f) {
+            if (cached == null) cached = f.apply(p.getInventory());
             return cached;
         }
 
@@ -444,7 +445,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
          * @return an item handler for the appropriate part of the player's inventory
          * @param player the player
          */
-        protected abstract IItemHandler getInvWrapper(@Nonnull PlayerEntity player);
+        protected abstract IItemHandler getInvWrapper(@Nonnull Player player);
 
         @Override
         public int getSlots() {
@@ -497,14 +498,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     private class PlayerMainInvHandler extends PlayerInvHandler {
         @Override
-        protected IItemHandler getInvWrapper(PlayerEntity player) {
+        protected IItemHandler getInvWrapper(Player player) {
             return getCachedHandler(player, PlayerMainInvWrapper::new);
         }
     }
 
     private class PlayerArmorInvHandler extends PlayerInvHandler {
         @Override
-        protected IItemHandler getInvWrapper(PlayerEntity player) {
+        protected IItemHandler getInvWrapper(Player player) {
             return getCachedHandler(player, PlayerArmorInvWrapper::new);
         }
 
@@ -520,14 +521,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     private class PlayerOffhandInvHandler extends PlayerInvHandler {
         @Override
-        protected IItemHandler getInvWrapper(PlayerEntity player) {
+        protected IItemHandler getInvWrapper(Player player) {
             return getCachedHandler(player, PlayerOffhandInvWrapper::new);
         }
     }
 
     private class PlayerEnderInvHandler extends PlayerInvHandler {
         @Override
-        protected IItemHandler getInvWrapper(PlayerEntity player) {
+        protected IItemHandler getInvWrapper(Player player) {
             if (cached == null) cached = new InvWrapper(player.getEnderChestInventory());
             return cached;
         }
@@ -572,30 +573,28 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                     remainingItem = stack.finishUsingItem(player.level, player);
                     remainingItem = ForgeEventFactory.onItemUseFinish(player, stack, 0, remainingItem);
                     if (remainingItem.getCount() > 0 && (remainingItem != stack || remainingItem.getCount() != startValue)) {
-                        if (!player.inventory.add(remainingItem) && remainingItem.getCount() > 0) {
+                        if (!player.getInventory().add(remainingItem) && remainingItem.getCount() > 0) {
                             player.drop(remainingItem, false);
                         }
                     }
-                    player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()), true);
+                    player.displayClientMessage(new TranslatableComponent("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()), true);
                     if (stack.getCount() == startValue) break;
                 }
                 return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;
             }).orElse(stack);
         }
 
-        private boolean okToFeed(@Nonnull ItemStack stack, PlayerEntity player) {
+        private boolean okToFeed(@Nonnull ItemStack stack, Player player) {
             int foodValue = getFoodValue(stack);
             int curFoodLevel = player.getFoodData().getFoodLevel();
             FeedMode effectiveFeedMode = feedMode == FeedMode.SMART ?
                     (player.getHealth() < player.getMaxHealth() ? FeedMode.GREEDY : FeedMode.FRUGAL) :
                     feedMode;
-            switch (effectiveFeedMode) {
-                case FRUGAL:
-                    return 20 - curFoodLevel >= foodValue * stack.getCount();
-                case GREEDY:
-                    return 20 - curFoodLevel >= foodValue * (stack.getCount() - 1) + 1;
-            }
-            return false;
+            return switch (effectiveFeedMode) {
+                case FRUGAL -> 20 - curFoodLevel >= foodValue * stack.getCount();
+                case GREEDY -> 20 - curFoodLevel >= foodValue * (stack.getCount() - 1) + 1;
+                default -> false;
+            };
         }
 
         @Nonnull

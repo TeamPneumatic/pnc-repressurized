@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 /**
  * TODO Not a true recipe type; here mainly as placeholder, and for JEI purposes.

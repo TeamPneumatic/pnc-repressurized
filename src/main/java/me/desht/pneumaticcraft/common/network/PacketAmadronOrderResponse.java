@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.gui.GuiAmadron;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -42,12 +42,12 @@ public class PacketAmadronOrderResponse {
         this.amount = amount;
     }
 
-    public PacketAmadronOrderResponse(PacketBuffer buf) {
+    public PacketAmadronOrderResponse(FriendlyByteBuf buf) {
         this.offerId = buf.readResourceLocation();
         this.amount = buf.readVarInt();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeResourceLocation(offerId);
         buf.writeVarInt(amount);
     }
@@ -55,7 +55,7 @@ public class PacketAmadronOrderResponse {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = ClientUtils.getClientPlayer();
+            Player player = ClientUtils.getClientPlayer();
             if (player.containerMenu instanceof ContainerAmadron) {
                 ((ContainerAmadron) player.containerMenu).updateBasket(offerId, amount);
                 GuiAmadron.basketUpdated();

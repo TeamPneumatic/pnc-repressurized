@@ -25,15 +25,15 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
 import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.play.server.SSpawnParticlePacket;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,7 +43,7 @@ import java.util.*;
 public class DroneDebugger {
     private final IDroneBase drone;
     private final DroneDebugList debugList = new DroneDebugList();
-    private final Set<ServerPlayerEntity> debuggingPlayers = new HashSet<>();  // players who receive debug data
+    private final Set<ServerPlayer> debuggingPlayers = new HashSet<>();  // players who receive debug data
 
     public DroneDebugger(IDroneBase drone) {
         this.drone = drone;
@@ -65,7 +65,7 @@ public class DroneDebugger {
 
         // add the entry client-side
         PacketSendDroneDebugEntry packet = new PacketSendDroneDebugEntry(entry, drone);
-        for (ServerPlayerEntity player : debuggingPlayers) {
+        for (ServerPlayer player : debuggingPlayers) {
             NetworkHandler.sendToPlayer(packet, player);
         }
     }
@@ -74,7 +74,7 @@ public class DroneDebugger {
         debugList.addEntry(entry);
     }
 
-    public void trackAsDebugged(ServerPlayerEntity player) {
+    public void trackAsDebugged(ServerPlayer player) {
         NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(drone), player);
 
         for (DroneDebugEntry entry : debugList.getAll()) {
@@ -88,7 +88,7 @@ public class DroneDebugger {
         debuggingPlayers.removeIf(player -> !player.isAlive() || !ItemPneumaticArmor.isPlayerDebuggingDrone(player, drone));
     }
 
-    public Collection<ServerPlayerEntity> getDebuggingPlayers() {
+    public Collection<ServerPlayer> getDebuggingPlayers() {
         return debuggingPlayers;
     }
 
@@ -134,8 +134,8 @@ public class DroneDebugger {
             EntityDrone drone = (EntityDrone) event.getEntityLiving();
             if (drone.getDebugger().debuggingPlayers.isEmpty()) return;
 
-            PathNavigator navi = drone.getNavigation();
-            if (drone.level instanceof ServerWorld && drone.level.getGameTime() % 10 == 0) { // only generate every 0.5 seconds, to try and cut back on packet spam
+            PathNavigation navi = drone.getNavigation();
+            if (drone.level instanceof ServerLevel && drone.level.getGameTime() % 10 == 0) { // only generate every 0.5 seconds, to try and cut back on packet spam
                 Path path = navi.getPath();
                 if (path != null) {
                     for (int i = path.getNextNodeIndex(); i < path.getNodeCount(); i++) {
@@ -156,7 +156,7 @@ public class DroneDebugger {
                     // render end point
                     BlockPos pos = navi.getTargetPos();  // yes, this *can* be null: https://github.com/TeamPneumatic/pnc-repressurized/issues/761
                     //noinspection ConstantConditions
-                    if (pos != null && drone.getDronePos().distanceToSqr(Vector3d.atCenterOf(pos)) > 1) {
+                    if (pos != null && drone.getDronePos().distanceToSqr(Vec3.atCenterOf(pos)) > 1) {
                         spawnParticle(drone.getDebugger().debuggingPlayers, ParticleTypes.HEART,
                                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0,
                                 0, 0, 0, 0);
@@ -165,8 +165,8 @@ public class DroneDebugger {
             }
         }
 
-        private static <T extends IParticleData> void spawnParticle(Set<ServerPlayerEntity> players, T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed) {
-            SSpawnParticlePacket packet = new SSpawnParticlePacket(type, false, posX, posY, posZ, (float)xOffset, (float)yOffset, (float)zOffset, (float)speed, particleCount);
+        private static <T extends ParticleOptions> void spawnParticle(Set<ServerPlayer> players, T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed) {
+            ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(type, false, posX, posY, posZ, (float)xOffset, (float)yOffset, (float)zOffset, (float)speed, particleCount);
             players.forEach(player -> player.connection.send(packet));
         }
     }

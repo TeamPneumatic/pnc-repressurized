@@ -18,18 +18,18 @@
 package me.desht.pneumaticcraft.datagen.recipe;
 
 import com.google.gson.JsonObject;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public class WrappedBuilderResult implements IFinishedRecipe {
-    private final IFinishedRecipe wrapped;
-    private final Supplier<? extends IRecipeSerializer<?>> serializer;
+public class WrappedBuilderResult implements FinishedRecipe {
+    private final FinishedRecipe wrapped;
+    private final Supplier<? extends RecipeSerializer<?>> serializer;
 
-    public WrappedBuilderResult(IFinishedRecipe wrapped, Supplier<? extends IRecipeSerializer<?>> serializer) {
+    public WrappedBuilderResult(FinishedRecipe wrapped, Supplier<? extends RecipeSerializer<?>> serializer) {
         this.wrapped = wrapped;
         this.serializer = serializer;
     }
@@ -45,7 +45,7 @@ public class WrappedBuilderResult implements IFinishedRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getType() {
+    public RecipeSerializer<?> getType() {
         return serializer.get();
     }
 

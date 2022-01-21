@@ -32,16 +32,18 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -62,7 +64,7 @@ import java.util.stream.IntStream;
 
 public class TileEntityRefineryController extends TileEntityTickableBase
         implements IRedstoneControl<TileEntityRefineryController>, IComparatorSupport, ISerializableTanks,
-        INamedContainerProvider, IHeatExchangingTE
+        MenuProvider, IHeatExchangingTE
 {
     @GuiSynced
     @DescSynced
@@ -96,15 +98,15 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     private int prevOutputCount = -1;
     private boolean searchForRecipe = true;
 
-    public TileEntityRefineryController() {
-        super(ModTileEntities.REFINERY.get());
+    public TileEntityRefineryController(BlockPos pos, BlockState state) {
+        super(ModTileEntities.REFINERY.get(), pos, state);
 
         for (int i = 0; i < RefineryRecipe.MAX_OUTPUTS; i++) {
             outputsSynced[i] = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
         }
     }
 
-    public static boolean isInputFluidValid(World world, Fluid fluid, int size) {
+    public static boolean isInputFluidValid(Level world, Fluid fluid, int size) {
         RefineryRecipe recipe =  PneumaticCraftRecipeType.REFINERY
                 .findFirst(world, r -> r.getOutputs().size() <= size && FluidUtils.matchFluid(r.getInput(), fluid, true));
         return recipe != null;
@@ -119,75 +121,81 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         inputTank.tick();
+    }
 
-        if (!getLevel().isClientSide) {
-            // server
-            lastProgress = 0;
-            if (outputCache == null) cacheRefineryOutputs();
-            outputCount = outputCache.size();
-            if (prevOutputCount != outputCount) {
-                searchForRecipe = true;
-            }
-            if (searchForRecipe) {
-                currentRecipe = getRecipeFor(inputTank.getFluid());
-                currentRecipeIdSynced = currentRecipe == null ? "" : currentRecipe.getId().toString();
-                operatingTemp = currentRecipe == null ? TemperatureRange.invalid() : currentRecipe.getOperatingTemp();
-                minTemp = operatingTemp.getMin();
-                maxTemp = operatingTemp.getMax();
-                searchForRecipe = false;
-            }
-            boolean hasWork = false;
-            if (currentRecipe != null) {
-                if (prevOutputCount != outputCount && outputCount > 1) {
-                    redistributeFluids();
+    @Override
+    public void tickClient() {
+        super.tickClient();
+
+        if (lastProgress > 0) {
+            TileEntityRefineryOutput teRO = findAdjacentOutput();
+            if (teRO != null) {
+                for (int i = 0; i < lastProgress; i++) {
+                    ClientUtils.emitParticles(getLevel(), teRO.getBlockPos().relative(Direction.UP, outputCount - 1), ParticleTypes.SMOKE);
                 }
-
-                if (outputCount > 1 && doesRedstoneAllow() && doRefiningStep(FluidAction.SIMULATE)) {
-                    hasWork = true;
-                    if (operatingTemp.inRange(heatExchanger.getTemperature())
-                            && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
-                        // TODO support for cryo-refining (faster as it gets colder, adds heat instead of removing)
-                        int progress = Math.max(0, ((int) heatExchanger.getTemperature() - (operatingTemp.getMin() - 30)) / 30);
-                        progress = Math.min(5, progress);
-                        heatExchanger.addHeat(-progress);
-                        workTimer += progress;
-                        while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
-                            workTimer -= 20;
-                            doRefiningStep(FluidAction.EXECUTE);
-                            inputTank.drain(currentRecipe.getInput().getAmount(), FluidAction.EXECUTE);
-                        }
-                        lastProgress = progress;
-                    }
-                } else {
-                    workTimer = 0;
-                }
-            }
-
-            IntStream.range(0, outputCount).forEach(i -> outputCache.get(i).ifPresent(h -> {
-                outputsSynced[i].setFluid(h.getFluidInTank(0).copy());
-                outputsSynced[i].tick();
-            }));
-
-            prevOutputCount = outputCount;
-            maybeUpdateComparatorValue(outputCount, hasWork);
-        } else {
-            // client
-            if (lastProgress > 0) {
-                TileEntityRefineryOutput teRO = findAdjacentOutput();
-                if (teRO != null) {
-                    for (int i = 0; i < lastProgress; i++) {
-                        ClientUtils.emitParticles(getLevel(), teRO.getBlockPos().relative(Direction.UP, outputCount - 1), ParticleTypes.SMOKE);
-                    }
-                }
-            }
-            for (SmartSyncTank smartSyncTank : outputsSynced) {
-                smartSyncTank.tick();
             }
         }
+        for (SmartSyncTank smartSyncTank : outputsSynced) {
+            smartSyncTank.tick();
+        }
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        lastProgress = 0;
+        if (outputCache == null) cacheRefineryOutputs();
+        outputCount = outputCache.size();
+        if (prevOutputCount != outputCount) {
+            searchForRecipe = true;
+        }
+        if (searchForRecipe) {
+            currentRecipe = getRecipeFor(inputTank.getFluid());
+            currentRecipeIdSynced = currentRecipe == null ? "" : currentRecipe.getId().toString();
+            operatingTemp = currentRecipe == null ? TemperatureRange.invalid() : currentRecipe.getOperatingTemp();
+            minTemp = operatingTemp.getMin();
+            maxTemp = operatingTemp.getMax();
+            searchForRecipe = false;
+        }
+        boolean hasWork = false;
+        if (currentRecipe != null) {
+            if (prevOutputCount != outputCount && outputCount > 1) {
+                redistributeFluids();
+            }
+
+            if (outputCount > 1 && doesRedstoneAllow() && doRefiningStep(FluidAction.SIMULATE)) {
+                hasWork = true;
+                if (operatingTemp.inRange(heatExchanger.getTemperature())
+                        && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
+                    // TODO support for cryo-refining (faster as it gets colder, adds heat instead of removing)
+                    int progress = Math.max(0, ((int) heatExchanger.getTemperature() - (operatingTemp.getMin() - 30)) / 30);
+                    progress = Math.min(5, progress);
+                    heatExchanger.addHeat(-progress);
+                    workTimer += progress;
+                    while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
+                        workTimer -= 20;
+                        doRefiningStep(FluidAction.EXECUTE);
+                        inputTank.drain(currentRecipe.getInput().getAmount(), FluidAction.EXECUTE);
+                    }
+                    lastProgress = progress;
+                }
+            } else {
+                workTimer = 0;
+            }
+        }
+
+        IntStream.range(0, outputCount).forEach(i -> outputCache.get(i).ifPresent(h -> {
+            outputsSynced[i].setFluid(h.getFluidInTank(0).copy());
+            outputsSynced[i].tick();
+        }));
+
+        prevOutputCount = outputCount;
+        maybeUpdateComparatorValue(outputCount, hasWork);
     }
 
     /**
@@ -249,7 +257,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
             LazyOptional<IFluidHandler> handler = output.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Direction.DOWN);
             if (handler.isPresent()) handler.addListener(l -> cacheRefineryOutputs());
             cache.add(handler);
-            TileEntity te = output.getCachedNeighbor(Direction.UP);
+            BlockEntity te = output.getCachedNeighbor(Direction.UP);
             output = te instanceof TileEntityRefineryOutput ? (TileEntityRefineryOutput) te : null;
         }
 
@@ -259,7 +267,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     public TileEntityRefineryOutput findAdjacentOutput() {
         for (Direction d : DirectionUtil.VALUES) {
             if (d != Direction.DOWN) {
-                TileEntity te = getCachedNeighbor(d);
+                BlockEntity te = getCachedNeighbor(d);
                 if (te instanceof TileEntityRefineryOutput) return (TileEntityRefineryOutput) te;
             }
         }
@@ -296,12 +304,12 @@ public class TileEntityRefineryController extends TileEntityTickableBase
             }
         }
 
-        switch (getRedstoneController().getCurrentMode()) {
-            case 0: return true;
-            case 1: return totalPower > 0;
-            case 2: return totalPower == 0;
-        }
-        return false;
+        return switch (getRedstoneController().getCurrentMode()) {
+            case 0 -> true;
+            case 1 -> totalPower > 0;
+            case 2 -> totalPower == 0;
+            default -> false;
+        };
     }
 
     @Override
@@ -328,7 +336,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         rsController.parseRedstoneMode(tag);
     }
 
@@ -342,11 +350,11 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         if (newValue != comparatorValue) {
             // update comparator output for the controller AND all known outputs
             comparatorValue = newValue;
-            getLevel().updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
+            nonNullLevel().updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());
             TileEntityRefineryOutput output = findAdjacentOutput();
-            while (output != null && !output.getBlockState().isAir(getLevel(), output.getBlockPos())) {
-                getLevel().updateNeighbourForOutputSignal(output.getBlockPos(), output.getBlockState().getBlock());
-                TileEntity te = output.getCachedNeighbor(Direction.UP);
+            while (output != null && !output.getBlockState().isAir()) {
+                nonNullLevel().updateNeighbourForOutputSignal(output.getBlockPos(), output.getBlockState().getBlock());
+                BlockEntity te = output.getCachedNeighbor(Direction.UP);
                 output = te instanceof TileEntityRefineryOutput ? (TileEntityRefineryOutput) te : null;
             }
         }
@@ -375,7 +383,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerRefinery(i, playerInventory, getBlockPos());
     }
 

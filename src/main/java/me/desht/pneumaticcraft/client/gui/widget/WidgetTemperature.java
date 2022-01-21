@@ -17,19 +17,19 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +38,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale.CELSIUS;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class WidgetTemperature extends Widget implements ITooltipProvider {
+public class WidgetTemperature extends AbstractWidget implements ITooltipProvider {
     private int temperature;
     private int tickInterval;
     private TemperatureRange totalRange;
@@ -47,7 +47,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     private boolean showOperatingRange = true;
 
     public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval) {
-        super(xIn, yIn, 13, 50, StringTextComponent.EMPTY);
+        super(xIn, yIn, 13, 50, TextComponent.EMPTY);
         this.totalRange = totalRange;
         this.temperature = initialTemp;
         this.tickInterval = tickInterval;
@@ -90,11 +90,9 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
-            RenderSystem.disableLighting();
-            Minecraft.getInstance().getTextureManager().bind(Textures.WIDGET_TEMPERATURE);
-            RenderSystem.color4f(1, 1, 1, 1);
+            GuiUtils.bindTexture(Textures.WIDGET_TEMPERATURE);
 
             // the background frame
             blit(matrixStack, x + 6, y, 6, 0, 7, 50, 18, 50);
@@ -114,8 +112,8 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         }
     }
 
-    public void drawTicks(MatrixStack matrixStack) {
-        FontRenderer font = Minecraft.getInstance().font;
+    public void drawTicks(PoseStack matrixStack) {
+        Font font = Minecraft.getInstance().font;
         int tickTempC = findNearestCelsius(totalRange.getMin() - 273, tickInterval);
         int n = 0;
         while (tickTempC <= totalRange.getMax() - 273) {
@@ -134,7 +132,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         }
     }
 
-    public void drawOperatingTempMarkers(MatrixStack matrixStack) {
+    public void drawOperatingTempMarkers(PoseStack matrixStack) {
         if (operatingRange != null) {
             if (totalRange.inRange(operatingRange.getMax())) {
                 int yOffset = getYPos(operatingRange.getMax());
@@ -155,7 +153,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
 
     private int getYPos(int temp) {
         int h = height - 1;
-        return MathHelper.clamp((temp - totalRange.getMin()) * h / (totalRange.getMax() - totalRange.getMin()), 0, h + 4);
+        return Mth.clamp((temp - totalRange.getMin()) * h / (totalRange.getMax() - totalRange.getMin()), 0, h + 4);
     }
 
     private static int findNearestCelsius(int temp, int interval) {
@@ -166,10 +164,10 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
+    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
         curTip.add(HeatUtil.formatHeatString(temperature));
         if (operatingRange != null && showOperatingRange) {
-            TextFormatting tf = operatingRange.inRange(temperature) ? TextFormatting.GREEN : TextFormatting.GOLD;
+            ChatFormatting tf = operatingRange.inRange(temperature) ? ChatFormatting.GREEN : ChatFormatting.GOLD;
             curTip.add(xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).withStyle(tf));
         }
     }
@@ -241,5 +239,9 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         } else {
             return 5;
         }
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 }

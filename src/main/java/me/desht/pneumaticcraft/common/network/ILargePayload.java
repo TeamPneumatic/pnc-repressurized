@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * Marker interface to indicate this message might have a payload larger than
@@ -27,7 +27,7 @@ import net.minecraft.network.PacketBuffer;
 public interface ILargePayload {
     int MAX_PAYLOAD_SIZE = 32000;
 
-    PacketBuffer dumpToBuffer();
+    FriendlyByteBuf dumpToBuffer();
 
-    void handleLargePayload(PlayerEntity player);
+    void handleLargePayload(Player player);
 }

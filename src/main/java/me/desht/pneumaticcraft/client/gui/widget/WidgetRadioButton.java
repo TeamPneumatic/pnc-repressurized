@@ -18,19 +18,17 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.util.Mth;
+import com.mojang.math.Matrix4f;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -38,18 +36,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class WidgetRadioButton extends Widget implements ITooltipProvider {
+public class WidgetRadioButton extends AbstractWidget implements ITooltipProvider {
     private static final int BUTTON_WIDTH = 10;
     private static final int BUTTON_HEIGHT = 10;
 
     private boolean checked;
     public final int color;
     private final Consumer<WidgetRadioButton> pressable;
-    private final FontRenderer fontRenderer = Minecraft.getInstance().font;
-    private List<ITextComponent> tooltip = new ArrayList<>();
+    private final Font fontRenderer = Minecraft.getInstance().font;
+    private List<Component> tooltip = new ArrayList<>();
     private List<? extends WidgetRadioButton> otherChoices = null;
 
-    public WidgetRadioButton(int x, int y, int color, ITextComponent text, Consumer<WidgetRadioButton> pressable) {
+    public WidgetRadioButton(int x, int y, int color, Component text, Consumer<WidgetRadioButton> pressable) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, text);
 
         this.width = BUTTON_WIDTH + fontRenderer.width(getMessage());
@@ -58,12 +56,12 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         this.pressable = pressable;
     }
 
-    public WidgetRadioButton(int x, int y, int color, ITextComponent text) {
+    public WidgetRadioButton(int x, int y, int color, Component text) {
         this(x, y, color, text, null);
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f, active ? 0xFFA0A0A0 : 0xFF999999);
         drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f - 1, active ? 0XFF202020 : 0xFFAAAAAA);
         if (checked) {
@@ -84,26 +82,26 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
 
     private static final float N_POINTS = 12f;
 
-    private void drawCircle(MatrixStack matrixStack, float x, float y, float radius, int color) {
-        BufferBuilder wr = Tessellator.getInstance().getBuilder();
+    private void drawCircle(PoseStack matrixStack, float x, float y, float radius, int color) {
+        BufferBuilder wr = Tesselator.getInstance().getBuilder();
         int[] cols = RenderUtils.decomposeColor(color);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+        wr.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f posMat = matrixStack.last().pose();
         for (int i = 0; i < N_POINTS; i++) {
-            float sin = MathHelper.sin(i / N_POINTS * (float) Math.PI * 2f);
-            float cos = MathHelper.cos(i / N_POINTS * (float) Math.PI * 2f);
+            float sin = Mth.sin(i / N_POINTS * (float) Math.PI * 2f);
+            float cos = Mth.cos(i / N_POINTS * (float) Math.PI * 2f);
             wr.vertex(posMat, x + sin * radius, y + cos * radius, 0f).color(cols[1], cols[2], cols[2], cols[0]).endVertex();
         }
-        Tessellator.getInstance().end();
+        Tesselator.getInstance().end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
-    public Rectangle2d getBounds() {
-        return new Rectangle2d(x, y, BUTTON_WIDTH + fontRenderer.width(getMessage()), BUTTON_HEIGHT);
+    public Rect2i getBounds() {
+        return new Rect2i(x, y, BUTTON_WIDTH + fontRenderer.width(getMessage()), BUTTON_HEIGHT);
     }
 
     @Override
@@ -117,23 +115,27 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         }
     }
 
-    public WidgetRadioButton setTooltip(ITextComponent tooltip) {
+    public WidgetRadioButton setTooltip(Component tooltip) {
         return setTooltip(Collections.singletonList(tooltip));
     }
 
-    public WidgetRadioButton setTooltip(List<ITextComponent> tooltip) {
+    public WidgetRadioButton setTooltip(List<Component> tooltip) {
         this.tooltip = tooltip;
         return this;
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<Component> curTooltip, boolean shiftPressed) {
         curTooltip.addAll(tooltip);
     }
 
     void setOtherChoices(List<? extends WidgetRadioButton> choices) {
         if (otherChoices != null) throw new IllegalStateException("otherChoices has already been init'ed!");
         otherChoices = choices;
+    }
+
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
     }
 
     /**

@@ -21,17 +21,19 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
@@ -67,8 +69,8 @@ public class TileEntityAphorismTile extends TileEntityBase {
     private long lastPoll = 0L;
     public int cursorX = -1, cursorY = -1; // stored in client TE only to remember last editor cursor pos
 
-    public TileEntityAphorismTile() {
-        super(ModTileEntities.APHORISM_TILE.get());
+    public TileEntityAphorismTile(BlockPos pos, BlockState state) {
+        super(ModTileEntities.APHORISM_TILE.get(), pos, state);
     }
 
     @Override
@@ -82,16 +84,16 @@ public class TileEntityAphorismTile extends TileEntityBase {
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
         writeToPacket(blockEntityTag);
     }
 
     @Override
-    public void writeToPacket(CompoundNBT tag) {
+    public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
-        CompoundNBT subTag = new CompoundNBT();
-        subTag.put(NBT_TEXT_LINES, Arrays.stream(textLines).map(StringNBT::valueOf).collect(Collectors.toCollection(ListNBT::new)));
+        CompoundTag subTag = new CompoundTag();
+        subTag.put(NBT_TEXT_LINES, Arrays.stream(textLines).map(StringTag::valueOf).collect(Collectors.toCollection(ListTag::new)));
         subTag.putInt(NBT_TEXT_ROTATION, textRotation);
         subTag.putInt(NBT_BORDER_COLOR, borderColor);
         subTag.putInt(NBT_BACKGROUND_COLOR, backgroundColor);
@@ -101,12 +103,12 @@ public class TileEntityAphorismTile extends TileEntityBase {
     }
 
     @Override
-    public void readFromPacket(CompoundNBT tag) {
+    public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
         if (tag.contains(NBTKeys.NBT_EXTRA)) {
-            CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_EXTRA);
-            ListNBT l = subTag.getList(NBT_TEXT_LINES, Constants.NBT.TAG_STRING);
+            CompoundTag subTag = tag.getCompound(NBTKeys.NBT_EXTRA);
+            ListTag l = subTag.getList(NBT_TEXT_LINES, Tag.TAG_STRING);
             if (l.isEmpty()) {
                 textLines = new String[] { "" };
             } else {
@@ -140,7 +142,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
         this.textLines = textLines;
         this.maxLineWidth = -1; // force recalc
         icons = new ItemStack[textLines.length];
-        if (level.isClientSide) {
+        if (nonNullLevel().isClientSide) {
             updateLineMetadata();
         } else {
             // server
@@ -175,7 +177,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
 
     public void setBorderColor(int color) {
         this.borderColor = color;
-        if (!level.isClientSide) sendDescriptionPacket();
+        if (!nonNullLevel().isClientSide) sendDescriptionPacket();
     }
 
     public int getBorderColor() {
@@ -188,7 +190,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
 
     public void setBackgroundColor(int color) {
         this.backgroundColor = color;
-        if (!level.isClientSide) sendDescriptionPacket();
+        if (!nonNullLevel().isClientSide) sendDescriptionPacket();
     }
 
     public byte getMarginSize() {
@@ -196,7 +198,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
     }
 
     public void setMarginSize(byte marginSize) {
-        this.marginSize = (byte) MathHelper.clamp(marginSize, 0, 9);
+        this.marginSize = (byte) Mth.clamp(marginSize, 0, 9);
         needMaxLineWidthRecalc();
     }
 
@@ -236,12 +238,13 @@ public class TileEntityAphorismTile extends TileEntityBase {
     }
 
     public int pollRedstone() {
+        Level level = nonNullLevel();
         if (level.getGameTime() - lastPoll >= 2) {
             Direction d = getRotation();
-            int p = level.getSignal(worldPosition.relative(d), d);
+            int p = nonNullLevel().getSignal(worldPosition.relative(d), d);
             if (p != currentRedstonePower) needMaxLineWidthRecalc();
             currentRedstonePower = p;
-            lastPoll = level.getGameTime();
+            lastPoll = nonNullLevel().getGameTime();
         }
         return currentRedstonePower;
     }

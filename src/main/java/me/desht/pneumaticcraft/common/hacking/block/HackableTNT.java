@@ -18,13 +18,13 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import net.minecraft.entity.item.TNTEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -38,25 +38,25 @@ public class HackableTNT implements IHackableBlock {
     }
 
     @Override
-    public void addInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.explode"));
     }
 
     @Override
-    public void addPostHackInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.exploded"));
     }
 
     @Override
-    public int getHackTime(IBlockReader world, BlockPos pos, PlayerEntity player) {
+    public int getHackTime(BlockGetter world, BlockPos pos, Player player) {
         return 100;
     }
 
     @Override
-    public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
+    public void onHackComplete(Level world, BlockPos pos, Player player) {
         if (!world.isClientSide) {
             world.removeBlock(pos, false);
-            TNTEntity tnt = new TNTEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, player);
+            PrimedTnt tnt = new PrimedTnt(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, player);
             tnt.setFuse(1);
             world.addFreshEntity(tnt);
         }

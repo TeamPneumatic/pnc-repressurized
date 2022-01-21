@@ -24,24 +24,24 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.IDocsProvider;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.event.ScreenOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import vazkii.patchouli.api.*;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-import static net.minecraft.state.properties.BlockStateProperties.FACING;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 
 public class Patchouli implements IThirdParty, IDocsProvider {
     private static final ResourceLocation PNC_BOOK = RL("book");
@@ -116,17 +116,17 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     }
 
     @SubscribeEvent
-    public void onConfigChange(ModConfig.Reloading event) {
+    public void onConfigChange(ModConfigEvent.Reloading event) {
         if (event.getConfig().getModId().equals(Names.MOD_ID)) {
             setConfigFlags(PatchouliAPI.get());
         }
     }
 
     @SubscribeEvent
-    public void onGuiOpen(GuiOpenEvent event) {
+    public void onGuiOpen(ScreenOpenEvent event) {
         if (prevGui != null) {
             // reopen the programmer GUI if that's where we came from
-            event.setGui(prevGui);
+            event.setScreen(prevGui);
             prevGui = null;
         }
     }

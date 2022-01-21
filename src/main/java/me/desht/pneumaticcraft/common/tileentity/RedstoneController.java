@@ -21,16 +21,16 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.Validate;
 
 import java.lang.ref.WeakReference;
@@ -44,7 +44,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 /**
  * Handles redstone behaviour & emission for a tile entity
  */
-public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
+public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     private static final Pattern RS_TAG_PATTERN = Pattern.compile("^redstone:(\\d+)$");
 
     private final WeakReference<T> teRef;
@@ -105,15 +105,15 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
         return te != null && modes.get(currentMode).emissionPredicate.test(te);
     }
 
-    public void serialize(CompoundNBT tag) {
+    public void serialize(CompoundTag tag) {
         // don't write default mode 0; avoid messy NBT
         if (currentMode != 0) {
             tag.putInt(NBTKeys.NBT_REDSTONE_MODE, currentMode);
         }
     }
 
-    public void deserialize(CompoundNBT tag) {
-        if (tag.contains(NBTKeys.NBT_REDSTONE_MODE, Constants.NBT.TAG_BYTE)) {
+    public void deserialize(CompoundTag tag) {
+        if (tag.contains(NBTKeys.NBT_REDSTONE_MODE, Tag.TAG_BYTE)) {
             // TODO remove in 1.17 - legacy compat
             currentMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         } else {
@@ -122,7 +122,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     }
 
     /**
-     * Attempt to parse a redstone tag string, as received by {@link IGUIButtonSensitive#handleGUIButtonPress(String, boolean, ServerPlayerEntity)}.
+     * Attempt to parse a redstone tag string, as received by {@link IGUIButtonSensitive#handleGUIButtonPress(String, boolean, ServerPlayer)}.
      * If the tag can be parsed, then update the redstone mode for this controller to the integer mode parsed from the tag.
      *
      * @param tag the string tag in the form {@code "redstone:<int>"}
@@ -148,21 +148,21 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
         return !modes.isEmpty() && modes.get(0) instanceof EmittingRedstoneMode;
     }
 
-    public ITextComponent getRedstoneTabTitle() {
+    public Component getRedstoneTabTitle() {
         T te = teRef.get();
-        return te != null ? te.getRedstoneTabTitle() : StringTextComponent.EMPTY;
+        return te != null ? te.getRedstoneTabTitle() : TextComponent.EMPTY;
     }
 
-    public ITextComponent getDescription() {
+    public Component getDescription() {
         T te = teRef.get();
         if (te != null) {
-            return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(currentMode).getTranslationKey()).withStyle(TextFormatting.YELLOW));
+            return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(currentMode).getTranslationKey()).withStyle(ChatFormatting.YELLOW));
         } else {
-            return StringTextComponent.EMPTY;
+            return TextComponent.EMPTY;
         }
     }
 
-    public static abstract class RedstoneMode<T extends TileEntity & IRedstoneControl<T>> {
+    public static abstract class RedstoneMode<T extends BlockEntity & IRedstoneControl<T>> {
         private final String id;
         private final Either<ItemStack,ResourceLocation> texture;
         private final Predicate<T> runPredicate;
@@ -196,7 +196,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
         }
     }
 
-    public static class EmittingRedstoneMode<T extends TileEntity & IRedstoneControl<T>> extends RedstoneMode<T> {
+    public static class EmittingRedstoneMode<T extends BlockEntity & IRedstoneControl<T>> extends RedstoneMode<T> {
         public EmittingRedstoneMode(String id, ResourceLocation texture, Predicate<T> emissionPredicate) {
             super(id, texture, te -> false, emissionPredicate);
         }
@@ -206,7 +206,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
         }
     }
 
-    public static class ReceivingRedstoneMode<T extends TileEntity & IRedstoneControl<T>> extends RedstoneMode<T> {
+    public static class ReceivingRedstoneMode<T extends BlockEntity & IRedstoneControl<T>> extends RedstoneMode<T> {
         public ReceivingRedstoneMode(String id, ResourceLocation texture, Predicate<T> runPredicate) {
             super(id, texture, runPredicate, t -> false);
         }
@@ -216,7 +216,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
         }
     }
 
-    private static class StandardReceivingModes<T extends TileEntity & IRedstoneControl<T>> {
+    private static class StandardReceivingModes<T extends BlockEntity & IRedstoneControl<T>> {
         public List<RedstoneController.RedstoneMode<T>> modes() {
             return ImmutableList.of(
                     new ReceivingRedstoneMode<>("standard.always", new ItemStack(Items.GUNPOWDER),

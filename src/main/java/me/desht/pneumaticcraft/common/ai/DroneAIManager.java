@@ -23,18 +23,18 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -58,7 +58,7 @@ public class DroneAIManager implements IVariableProvider {
     /**
      * Instance of Profiler.
      */
-    private final IProfiler theProfiler;
+    private final ProfilerFiller theProfiler;
     private int tickCount;
     static final int TICK_RATE = 3;
 
@@ -134,19 +134,19 @@ public class DroneAIManager implements IVariableProvider {
         return drone;
     }
 
-    public CompoundNBT writeToNBT(CompoundNBT tag) {
-        ListNBT tagList = new ListNBT();
+    public CompoundTag writeToNBT(CompoundTag tag) {
+        ListTag tagList = new ListTag();
         for (Map.Entry<String, BlockPos> entry : coordinateVariables.entrySet()) {
-            CompoundNBT t = new CompoundNBT();
+            CompoundTag t = new CompoundTag();
             t.putString("key", entry.getKey());
-            t.put("pos", NBTUtil.writeBlockPos(entry.getValue()));
+            t.put("pos", NbtUtils.writeBlockPos(entry.getValue()));
             tagList.add(t);
         }
         tag.put("coords", tagList);
 
-        ListNBT tagList2 = new ListNBT();
+        ListTag tagList2 = new ListTag();
         for (Map.Entry<String, ItemStack> entry : itemVariables.entrySet()) {
-            CompoundNBT t = new CompoundNBT();
+            CompoundTag t = new CompoundTag();
             t.putString("key", entry.getKey());
             t.put("item", entry.getValue().serializeNBT());
             tagList2.add(t);
@@ -156,17 +156,17 @@ public class DroneAIManager implements IVariableProvider {
         return tag;
     }
 
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         coordinateVariables.clear();
-        ListNBT tagList = tag.getList("coords", Constants.NBT.TAG_COMPOUND);
+        ListTag tagList = tag.getList("coords", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
-            CompoundNBT t = tagList.getCompound(i);
-            coordinateVariables.put(t.getString("key"), NBTUtil.readBlockPos(t.getCompound("pos")));
+            CompoundTag t = tagList.getCompound(i);
+            coordinateVariables.put(t.getString("key"), NbtUtils.readBlockPos(t.getCompound("pos")));
         }
 
-        ListNBT tagList2 = tag.getList("items", Constants.NBT.TAG_COMPOUND);
+        ListTag tagList2 = tag.getList("items", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList2.size(); i++) {
-            CompoundNBT t = tagList2.getCompound(i);
+            CompoundTag t = tagList2.getCompound(i);
             itemVariables.put(t.getString("key"), ItemStack.of(t.getCompound("item")));
         }
     }
@@ -378,8 +378,8 @@ public class DroneAIManager implements IVariableProvider {
         if (magnetUpgrades > 0 && !drone.getProgWidgets().isEmpty()) {
             int range = Math.min(6, 1 + magnetUpgrades);
             int rangeSq = range * range;
-            Vector3d v = drone.getDronePos();
-            AxisAlignedBB aabb = new AxisAlignedBB(v.x, v.y, v.z, v.x, v.y, v.z).inflate(range);
+            Vec3 v = drone.getDronePos();
+            AABB aabb = new AABB(v.x, v.y, v.z, v.x, v.y, v.z).inflate(range);
             List<ItemEntity> items = drone.world().getEntitiesOfClass(ItemEntity.class, aabb,
                     item -> item != null
                             && item.isAlive()

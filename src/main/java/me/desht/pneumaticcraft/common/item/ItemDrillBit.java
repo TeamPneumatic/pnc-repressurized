@@ -19,13 +19,11 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer.DigMode;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -48,31 +46,31 @@ public class ItemDrillBit extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
-        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.tier").withStyle(TextFormatting.YELLOW)
-                .append(new StringTextComponent(Integer.toString(getType().tier)).withStyle(TextFormatting.GOLD)));
-        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.blocks").withStyle(TextFormatting.YELLOW)
-                .append(new StringTextComponent(Integer.toString(getType().getBestDigType().getBlocksDug())).withStyle(TextFormatting.GOLD)));
-        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.speed").withStyle(TextFormatting.YELLOW)
-                .append(new StringTextComponent(Integer.toString(getType().baseEfficiency)).withStyle(TextFormatting.GOLD)));
+        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.tier").withStyle(ChatFormatting.YELLOW)
+                .append(new TextComponent(getType().tier.toString()).withStyle(ChatFormatting.GOLD)));
+        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.blocks").withStyle(ChatFormatting.YELLOW)
+                .append(new TextComponent(Integer.toString(getType().getBestDigType().getBlocksDug())).withStyle(ChatFormatting.GOLD)));
+        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.speed").withStyle(ChatFormatting.YELLOW)
+                .append(new TextComponent(Integer.toString(getType().baseEfficiency)).withStyle(ChatFormatting.GOLD)));
     }
 
     public enum DrillBitType {
-        NONE("none", 0, 0x00000000, 1, -1),
-        IRON("iron", 1, 0xFFd8d8d8, 6, 2),
-        COMPRESSED_IRON("compressed_iron", 2, 0xFF4d4846, 7, 2),
-        DIAMOND("diamond", 3, 0xFF4aedd9, 8, 3),
-        NETHERITE("netherite", 4, 0xFF31292a, 9, 4);
+        NONE("none", Tiers.WOOD, 0x00000000, 1, -1),
+        IRON("iron", Tiers.IRON, 0xFFd8d8d8, 6, 2),
+        COMPRESSED_IRON("compressed_iron", Tiers.IRON, 0xFF4d4846, 7, 2),
+        DIAMOND("diamond", Tiers.DIAMOND, 0xFF4aedd9, 8, 3),
+        NETHERITE("netherite", Tiers.NETHERITE, 0xFF31292a, 9, 4);
 
         private final String name;
-        private final int tier;
+        private final Tier tier;
         private final int tint;
         private final int baseEfficiency;
         private final int harvestLevel;
 
-        DrillBitType(String name, int tier, int tint, int baseEfficiency, int harvestLevel) {
+        DrillBitType(String name, Tier tier, int tint, int baseEfficiency, int harvestLevel) {
             this.name = name;
             this.tier = tier;
             this.tint = tint;
@@ -80,7 +78,7 @@ public class ItemDrillBit extends Item {
             this.harvestLevel = harvestLevel;
         }
 
-        public int getTier() {
+        public Tier getTier() {
             return tier;
         }
 
@@ -106,11 +104,11 @@ public class ItemDrillBit extends Item {
 
         public DigMode getBestDigType() {
             DigMode best = DigMode.MODE_1X1;
-            for (DigMode dt : DigMode.values()) {
-                if (dt.getBitType().getTier() > this.getTier()) {
+            for (DigMode digMode : DigMode.values()) {
+                if (digMode.getBitType().getHarvestLevel() >= getHarvestLevel()) {
                     return best;
                 }
-                best = dt;
+                best = digMode;
             }
             return DigMode.MODE_VEIN_PLUS;
         }

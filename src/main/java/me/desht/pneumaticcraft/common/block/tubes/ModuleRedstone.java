@@ -24,19 +24,18 @@ import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Comparator;
 import java.util.List;
@@ -91,37 +90,39 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!getTube().getLevel().isClientSide) {
-            byte[] levels = new byte[16];
+        byte[] levels = new byte[16];
 
-            if (redstoneDirection == EnumRedstoneDirection.OUTPUT) {
-                for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getLevel()).getConnectedModules(this)) {
-                    if (module instanceof ModuleRedstone) {
-                        ModuleRedstone mr = (ModuleRedstone) module;
-                        if (mr.getRedstoneDirection() == EnumRedstoneDirection.INPUT && mr.getInputLevel() > levels[mr.getColorChannel()])
-                            levels[mr.getColorChannel()] = (byte) mr.inputLevel;
-                    }
+        if (redstoneDirection == EnumRedstoneDirection.OUTPUT) {
+            for (TubeModule module : ModuleNetworkManager.getInstance(getTube().nonNullLevel()).getConnectedModules(this)) {
+                if (module instanceof ModuleRedstone mr) {
+                    if (mr.getRedstoneDirection() == EnumRedstoneDirection.INPUT && mr.getInputLevel() > levels[mr.getColorChannel()])
+                        levels[mr.getColorChannel()] = (byte) mr.inputLevel;
                 }
-
-                int out = computeOutputSignal(outputLevel, levels);
-                if (inverted) out = out > 0 ? 0 : 15;
-                if (setOutputLevel(out)) {
-                    NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
-                }
-            } else {
-                if (inputLevel < 0) updateInputLevel();  // first update
             }
-            System.arraycopy(levels, 0, prevLevels, 0, 16);
+
+            int out = computeOutputSignal(outputLevel, levels);
+            if (inverted) out = out > 0 ? 0 : 15;
+            if (setOutputLevel(out)) {
+                NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
+            }
         } else {
-            lastExtension = extension;
-            if (redstoneDirection == EnumRedstoneDirection.OUTPUT) {
-                extension = Math.min(1.0f, extension + 0.125f);
-            } else {
-                extension = Math.max(0.0f, extension - 0.125f);
-            }
+            if (inputLevel < 0) updateInputLevel();  // first update
+        }
+        System.arraycopy(levels, 0, prevLevels, 0, 16);
+    }
+
+    @Override
+    public void tickClient() {
+        super.tickClient();
+
+        lastExtension = extension;
+        if (redstoneDirection == EnumRedstoneDirection.OUTPUT) {
+            extension = Math.min(1.0f, extension + 0.125f);
+        } else {
+            extension = Math.max(0.0f, extension - 0.125f);
         }
     }
 
@@ -130,11 +131,11 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         byte s1prev = prevLevels[getColorChannel()];
         byte s2 = levels[otherColor];
 
-        return operation.signalFunction.compute(lastOutput, s1, s2, getTube().getLevel().getGameTime(), constantVal, s1 > s1prev);
+        return operation.signalFunction.compute(lastOutput, s1, s2, getTube().nonNullLevel().getGameTime(), constantVal, s1 > s1prev);
     }
 
     @Override
-    public CompoundNBT writeToNBT(CompoundNBT tag) {
+    public CompoundTag writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
 
         tag.putBoolean("input", redstoneDirection == EnumRedstoneDirection.INPUT);
@@ -151,7 +152,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
 
         redstoneDirection = tag.getBoolean("input") ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT;
@@ -164,12 +165,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             operation = Operation.PASSTHROUGH;
         }
         otherColor = tag.getByte("color2");
-        if (tag.contains("const", Constants.NBT.TAG_BYTE)) {
-            // TODO: remove legacy code in 1.17
-            constantVal = tag.getByte("const");
-        } else {
-            constantVal = tag.getInt("const");
-        }
+        constantVal = tag.getInt("const");
         inverted = tag.getBoolean("invert");
         decodeLevels(tag.getLong("prevLevels"), prevLevels);
         comparatorInput = tag.getBoolean("comparatorInput");
@@ -201,7 +197,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     public boolean setOutputLevel(int level) {
-        level = MathHelper.clamp(level, 0, 15);
+        level = Mth.clamp(level, 0, 15);
         if (level != outputLevel) {
             outputLevel = level;
             updateNeighbors();
@@ -247,7 +243,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void addInfo(List<ITextComponent> curInfo) {
+    public void addInfo(List<Component> curInfo) {
         super.addInfo(curInfo);
         if (getRedstoneDirection() == EnumRedstoneDirection.INPUT) {
             curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.receiving", inputLevel));
@@ -257,8 +253,8 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         }
     }
 
-    private void addAdvancedInfo(List<ITextComponent> curInfo) {
-        IFormattableTextComponent s = new TranslationTextComponent("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
+    private void addAdvancedInfo(List<Component> curInfo) {
+        MutableComponent s = new TranslatableComponent("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
         if (operation.useOtherColor) {
             s = s.append(" (").append(PneumaticCraftUtils.dyeColorDesc(otherColor)).append(")");
         }
@@ -270,7 +266,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public boolean onActivated(PlayerEntity player, Hand hand) {
+    public boolean onActivated(Player player, InteractionHand hand) {
         ItemStack heldStack = player.getItemInHand(hand);
         DyeColor dyeColor = DyeColor.getColor(heldStack);
         if (dyeColor != null) {
@@ -310,7 +306,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     private int readInputLevel() {
-        World world = Objects.requireNonNull(pressureTube.getLevel());
+        Level world = Objects.requireNonNull(pressureTube.getLevel());
         if (comparatorInput && upgraded) {
             BlockPos pos2 = pressureTube.getBlockPos().relative(getDirection());
             BlockState state = world.getBlockState(pos2);
@@ -368,7 +364,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         COMPARATOR(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
                 s1 > s2 ? 15 : 0),
         SUBTRACT(true, false, (lastOutput, s1, s2, timer, constant, s1rising) ->
-                MathHelper.clamp(s1 - s2, 0, 15)),
+                Mth.clamp(s1 - s2, 0, 15)),
         COMPARE(false, true, (lastOutput, s1, s2, timer, constant, s1rising) ->
                 s1 > constant ? 15 : 0, 0, 15),
         TOGGLE(false, false, (lastOutput, s1, s2, timer, constant, s1rising) ->

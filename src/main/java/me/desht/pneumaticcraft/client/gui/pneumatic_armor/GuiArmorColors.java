@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
@@ -30,19 +30,19 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorColors;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.InventoryScreen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.gui.widget.Slider;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.gui.widget.Slider;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -62,14 +62,14 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     private WidgetLabel scrollLabel;
 
     // these are static so the selected button is remembered across GUI invocations
-    private static EquipmentSlotType selectedSlot = EquipmentSlotType.HEAD;
+    private static EquipmentSlot selectedSlot = EquipmentSlot.HEAD;
     private static SelectorType selectorType = SelectorType.PRIMARY;
 
     public GuiArmorColors() {
-        super(new StringTextComponent("Colors"));
+        super(new TextComponent("Colors"));
 
-        PlayerEntity player = Minecraft.getInstance().player;
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        Player player = Minecraft.getInstance().player;
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack stack = player.getItemBySlot(slot);
             int idx = slot.getIndex();
             if (stack.getItem() instanceof ItemPneumaticArmor) {
@@ -88,14 +88,14 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
         ySize = height;
 
         selectorButtons.clear();
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             for (SelectorType type : SelectorType.values()) {
                 selectorButtons.add(new SelectorButton(this, slot, type));
             }
         }
-        selectorButtons.forEach(this::addButton);
+        selectorButtons.forEach(this::addRenderableWidget);
         for (SelectorType type : SelectorType.values()) {
-            addButton(new WidgetLabel(87 + type.xOffset, 30, new StringTextComponent(type.label), 0xFFFFFFFF).setAlignment(WidgetLabel.Alignment.CENTRE));
+            addRenderableWidget(new WidgetLabel(87 + type.xOffset, 30, new TextComponent(type.label), 0xFFFFFFFF).setAlignment(WidgetLabel.Alignment.CENTRE));
         }
 
         rgbSliders.clear();
@@ -103,23 +103,23 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
             rgbSliders.put(color, new RGBSlider(this, color, 43, 165 + color.yOffset, 128, 10,
                     (getCurrentColor() >> color.bitShift) & 0xFF));
         }
-        rgbSliders.values().forEach(this::addButton);
+        rgbSliders.values().forEach(this::addRenderableWidget);
 
-        addButton(scrollLabel = new WidgetLabel(107, 210, xlate("pneumaticcraft.armor.gui.misc.colors.scrollWheel"), 0xFFA0A0A0).setAlignment(WidgetLabel.Alignment.CENTRE));
+        addRenderableWidget(scrollLabel = new WidgetLabel(107, 210, xlate("pneumaticcraft.armor.gui.misc.colors.scrollWheel"), 0xFFA0A0A0).setAlignment(WidgetLabel.Alignment.CENTRE));
         scrollLabel.visible = false;
 
-        addButton(new WidgetButtonExtended(85, 130, 40, 20, xlate("pneumaticcraft.armor.gui.misc.copy"),
+        addRenderableWidget(new WidgetButtonExtended(85, 130, 40, 20, xlate("pneumaticcraft.armor.gui.misc.copy"),
                 b -> copyColorsToOtherPieces()).setTooltipKey("pneumaticcraft.armor.gui.misc.colors.copyTooltip"));
 
-        saveButton = addButton(new WidgetButtonExtended(43, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.save"),
+        saveButton = addRenderableWidget(new WidgetButtonExtended(43, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.save"),
                 b -> saveChanges()));
-        addButton(new WidgetButtonExtended(88, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.reset"),
+        addRenderableWidget(new WidgetButtonExtended(88, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.reset"),
                 b -> resetColors(Screen.hasShiftDown())).setTooltipKey("pneumaticcraft.armor.gui.misc.colors.resetTooltip"));
-        addButton(new WidgetButtonExtended(133, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.cancel"),
+        addRenderableWidget(new WidgetButtonExtended(133, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.cancel"),
                 b -> onClose()));
 
-        ITextComponent txt = xlate("pneumaticcraft.armor.gui.misc.colors.showEnchantGlint");
-        addButton(new WidgetCheckBox(width - font.width(txt) - 40, height - font.lineHeight - 10, 0xFFFFFFFF, txt,
+        Component txt = xlate("pneumaticcraft.armor.gui.misc.colors.showEnchantGlint");
+        addRenderableWidget(new WidgetCheckBox(width - font.width(txt) - 40, height - font.lineHeight - 10, 0xFFFFFFFF, txt,
                 b -> ConfigHelper.setShowEnchantGlint(b.checked)).setChecked(ConfigHelper.client().armor.showEnchantGlint.get()));
     }
 
@@ -142,7 +142,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
             if (i != selectedSlot.getIndex()) {
                 colors[i][selectorType.ordinal()] = getCurrentColor();
             }
-            updateClientSideArmor(EquipmentSlotType.byTypeAndIndex(EquipmentSlotType.Group.ARMOR, i));
+            updateClientSideArmor(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, i));
         }
     }
 
@@ -151,23 +151,23 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
             for (SelectorType type : SelectorType.values()) {
                 colors[i][type.ordinal()] = factorySettings ? type.defaultColor : origColors[i][type.ordinal()];
             }
-            updateClientSideArmor(EquipmentSlotType.byTypeAndIndex(EquipmentSlotType.Group.ARMOR, i));
+            updateClientSideArmor(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, i));
         }
         updateSliders();
         needSave = factorySettings;
     }
 
-    private void updateClientSideArmor(EquipmentSlotType slot) {
-        PlayerEntity player = Minecraft.getInstance().player;
+    private void updateClientSideArmor(EquipmentSlot slot) {
+        Player player = Minecraft.getInstance().player;
         ItemStack stack = player.getItemBySlot(slot);
         if (stack.getItem() instanceof ItemPneumaticArmor) {
             ((ItemPneumaticArmor) stack.getItem()).setColor(stack, colors[slot.getIndex()][SelectorType.PRIMARY.ordinal()]);
             ((ItemPneumaticArmor) stack.getItem()).setSecondaryColor(stack, colors[slot.getIndex()][SelectorType.SECONDARY.ordinal()]);
-            if (slot == EquipmentSlotType.HEAD) {
+            if (slot == EquipmentSlot.HEAD) {
                 ((ItemPneumaticArmor) stack.getItem()).setEyepieceColor(stack, colors[slot.getIndex()][SelectorType.EYEPIECE.ordinal()]);
             }
         }
-        for (EquipmentSlotType slot2: EquipmentSlotType.values()) HUDHandler.getInstance().updateOverlayColors(slot2);
+        for (EquipmentSlot slot2: EquipmentSlot.values()) HUDHandler.getInstance().updateOverlayColors(slot2);
         selectorButtons.get((3 - slot.getIndex()) * SelectorType.values().length).setRenderStacks(stack);
         needSave = true;
     }
@@ -189,7 +189,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
 
         selectorButtons.forEach(b -> b.active = !(selectorType == b.selectorType && selectedSlot == b.slot));
         saveButton.active = needSave;
-        scrollLabel.visible = rgbSliders.values().stream().anyMatch(Widget::isHovered);
+        scrollLabel.visible = rgbSliders.values().stream().anyMatch(AbstractWidget::isHoveredOrFocused);
     }
 
     @Override
@@ -198,7 +198,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
         super.render(matrixStack, x, y, partialTicks);
         double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
@@ -210,10 +210,10 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         for (RGBSlider slider : rgbSliders.values()) {
-            if (slider.isHovered()) {
+            if (slider.isHoveredOrFocused()) {
                 double val = Math.signum(delta);
                 if (Screen.hasShiftDown()) val *= 10;
-                int newVal = MathHelper.clamp((int) (slider.getValueInt() + val), 0, 255);
+                int newVal = Mth.clamp((int) (slider.getValueInt() + val), 0, 255);
                 if (slider.getValueInt() != newVal) {
                     updateSlider(slider, newVal);
                     onChangeSliderValue(slider);
@@ -251,7 +251,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
         private final ColorComponent color;
 
         public RGBSlider(GuiArmorColors gui, ColorComponent color, int xPos, int yPos, int width, int height, double currentVal) {
-            super(xPos, yPos, width, height, new StringTextComponent(color.prefix), StringTextComponent.EMPTY, 0, 255, currentVal, false, true, null, gui);
+            super(xPos, yPos, width, height, new TextComponent(color.prefix), TextComponent.EMPTY, 0, 255, currentVal, false, true, null, gui);
             this.color = color;
         }
 
@@ -261,9 +261,9 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     }
 
     private enum ColorComponent {
-        RED(16, TextFormatting.RED + "R: ", 0),
-        GREEN(8, TextFormatting.GREEN + "G: ", 15),
-        BLUE(0, TextFormatting.BLUE + "B: ", 30);
+        RED(16, ChatFormatting.RED + "R: ", 0),
+        GREEN(8, ChatFormatting.GREEN + "G: ", 15),
+        BLUE(0, ChatFormatting.BLUE + "B: ", 30);
 
         private final int mask;
         private final int bitShift;
@@ -293,8 +293,8 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
             this.defaultColor = defaultColor;
         }
 
-        boolean showButton(EquipmentSlotType slot) {
-            return slot == EquipmentSlotType.HEAD || this != EYEPIECE;
+        boolean showButton(EquipmentSlot slot) {
+            return slot == EquipmentSlot.HEAD || this != EYEPIECE;
         }
 
         public int getDefaultColor() {
@@ -304,10 +304,10 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
 
     private static class SelectorButton extends WidgetButtonExtended {
         private final GuiArmorColors gui;
-        private final EquipmentSlotType slot;
+        private final EquipmentSlot slot;
         private final SelectorType selectorType;
 
-        public SelectorButton(GuiArmorColors gui, EquipmentSlotType slot, SelectorType selectorType) {
+        public SelectorButton(GuiArmorColors gui, EquipmentSlot slot, SelectorType selectorType) {
             super(78 + selectorType.xOffset, 41 + (3 - slot.getIndex()) * 22, 18, 18, "", b -> {
                 GuiArmorColors.selectedSlot = slot;
                 GuiArmorColors.selectorType = selectorType;
@@ -325,7 +325,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
         }
 
         @Override
-        public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 
             fill(matrixStack, x + 3, y + 3, x + 14, y + 14, gui.colors[slot.getIndex()][selectorType.ordinal()]);

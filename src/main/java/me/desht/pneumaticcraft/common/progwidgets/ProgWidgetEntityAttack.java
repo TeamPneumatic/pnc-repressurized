@@ -26,15 +26,15 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaTypeBox;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
@@ -91,7 +91,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public List<Entity> getValidEntities(World world) {
+    public List<Entity> getValidEntities(Level world) {
         if (entityFilters == null) {
             entityFilters = new EntityFilterPair<>(this);
         }
@@ -158,28 +158,28 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (useMaxActions) tag.putBoolean("useMaxActions", true);
         tag.putInt("maxActions", maxActions);
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         useMaxActions = tag.getBoolean("useMaxActions");
         maxActions = tag.getInt("maxActions");
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(useMaxActions);
         buf.writeVarInt(maxActions);
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         useMaxActions = buf.readBoolean();
         maxActions = buf.readVarInt();

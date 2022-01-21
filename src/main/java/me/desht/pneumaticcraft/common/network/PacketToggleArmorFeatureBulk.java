@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class PacketToggleArmorFeatureBulk {
         this.features = features;
     }
 
-    PacketToggleArmorFeatureBulk(PacketBuffer buffer) {
+    PacketToggleArmorFeatureBulk(FriendlyByteBuf buffer) {
         this.features = new ArrayList<>();
         int len = buffer.readVarInt();
         for (int i = 0; i < len; i++) {
@@ -49,14 +49,14 @@ public class PacketToggleArmorFeatureBulk {
         }
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeVarInt(features.size());
         features.forEach(f -> f.toBytes(buf));
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = ctx.get().getSender();
+            Player player = ctx.get().getSender();
             if (player != null) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 features.forEach(f -> {
@@ -72,21 +72,21 @@ public class PacketToggleArmorFeatureBulk {
     }
 
     public static class FeatureSetting {
-        private final EquipmentSlotType slot;
+        private final EquipmentSlot slot;
         private final byte featureIndex;
         private final boolean state;
 
-        FeatureSetting(PacketBuffer buffer) {
-            this(EquipmentSlotType.values()[buffer.readByte()], buffer.readByte(), buffer.readBoolean());
+        FeatureSetting(FriendlyByteBuf buffer) {
+            this(EquipmentSlot.values()[buffer.readByte()], buffer.readByte(), buffer.readBoolean());
         }
 
-        public FeatureSetting(EquipmentSlotType slot, byte featureIndex, boolean state) {
+        public FeatureSetting(EquipmentSlot slot, byte featureIndex, boolean state) {
             this.slot = slot;
             this.featureIndex = featureIndex;
             this.state = state;
         }
 
-        void toBytes(PacketBuffer buffer) {
+        void toBytes(FriendlyByteBuf buffer) {
             buffer.writeByte(slot.ordinal());
             buffer.writeByte(featureIndex);
             buffer.writeBoolean(state);

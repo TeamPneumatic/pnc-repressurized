@@ -25,11 +25,11 @@ import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderResponse;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -47,7 +47,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
         basket = new Object2IntLinkedOpenHashMap<>();
     }
 
-    public static ShoppingBasket fromNBT(CompoundNBT subTag) {
+    public static ShoppingBasket fromNBT(CompoundTag subTag) {
         ShoppingBasket res = new ShoppingBasket();
         if (subTag != null) {
             for (String key : subTag.getAllKeys()) {
@@ -58,8 +58,8 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
         return res;
     }
 
-    public CompoundNBT toNBT() {
-        CompoundNBT subTag = new CompoundNBT();
+    public CompoundTag toNBT() {
+        CompoundTag subTag = new CompoundTag();
         basket.forEach((key, value) -> {
             if (value > 0) subTag.putInt(key.toString(), value);
         });
@@ -194,7 +194,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
         return problem;
     }
 
-    public void syncToPlayer(ServerPlayerEntity player) {
+    public void syncToPlayer(ServerPlayer player) {
         basket.forEach((offerId, units) -> NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, units), player));
     }
 

@@ -20,21 +20,21 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class ContainerVacuumTrap extends ContainerPneumaticBase<TileEntityVacuumTrap> {
-    public ContainerVacuumTrap(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerVacuumTrap(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(windowId, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerVacuumTrap(int windowId, PlayerInventory invPlayer, BlockPos pos) {
+    public ContainerVacuumTrap(int windowId, Inventory invPlayer, BlockPos pos) {
         super(ModContainers.VACUUM_TRAP.get(), windowId, invPlayer, pos);
 
         addSlot(new SlotSpawnerCore(te.getPrimaryInventory(), 0, 62, 38));

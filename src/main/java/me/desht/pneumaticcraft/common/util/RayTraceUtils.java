@@ -17,51 +17,51 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Optional;
 
 public class RayTraceUtils {
-    public static RayTraceResult getEntityLookedObject(LivingEntity entity, double maxDistance) {
-        Pair<Vector3d, Vector3d> vecs = getStartAndEndLookVec(entity, maxDistance);
-        RayTraceContext ctx = new RayTraceContext(vecs.getLeft(), vecs.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
+    public static HitResult getEntityLookedObject(LivingEntity entity, double maxDistance) {
+        Pair<Vec3, Vec3> vecs = getStartAndEndLookVec(entity, maxDistance);
+        ClipContext ctx = new ClipContext(vecs.getLeft(), vecs.getRight(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
         return entity.level.clip(ctx);
     }
 
-    public static Pair<Vector3d, Vector3d> getStartAndEndLookVec(LivingEntity entity, double maxDistance) {
-        Vector3d entityVec = new Vector3d(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
-        Vector3d maxDistVec = entityVec.add(entity.getViewVector(1F).scale(maxDistance));
+    public static Pair<Vec3, Vec3> getStartAndEndLookVec(LivingEntity entity, double maxDistance) {
+        Vec3 entityVec = new Vec3(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
+        Vec3 maxDistVec = entityVec.add(entity.getViewVector(1F).scale(maxDistance));
         return new ImmutablePair<>(entity.getEyePosition(1F), maxDistVec);
     }
 
-    public static RayTraceResult getMouseOverServer(LivingEntity lookingEntity, double range) {
-        RayTraceResult result = raytraceEntityBlocks(lookingEntity, range);
+    public static HitResult getMouseOverServer(LivingEntity lookingEntity, double range) {
+        HitResult result = raytraceEntityBlocks(lookingEntity, range);
         double rangeSq = range * range;
-        Pair<Vector3d, Vector3d> startAndEnd = getStartAndEndLookVec(lookingEntity, (float) range);
-        Vector3d eyePos = startAndEnd.getLeft();
+        Pair<Vec3, Vec3> startAndEnd = getStartAndEndLookVec(lookingEntity, (float) range);
+        Vec3 eyePos = startAndEnd.getLeft();
 
-        if (result.getType() != RayTraceResult.Type.MISS) {
+        if (result.getType() != HitResult.Type.MISS) {
             rangeSq = result.getLocation().distanceToSqr(eyePos);
         }
 
         double rangeSq2 = rangeSq;
-        Vector3d hitVec = null;
+        Vec3 hitVec = null;
         Entity focusedEntity = null;
 
-        Vector3d lookVec = lookingEntity.getLookAngle().scale(range + 1);
-        AxisAlignedBB box = lookingEntity.getBoundingBox().inflate(lookVec.x, lookVec.y, lookVec.z);
+        Vec3 lookVec = lookingEntity.getLookAngle().scale(range + 1);
+        AABB box = lookingEntity.getBoundingBox().inflate(lookVec.x, lookVec.y, lookVec.z);
 
         for (Entity entity : lookingEntity.level.getEntities(lookingEntity, box, Entity::isPickable)) {
-            AxisAlignedBB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
-            Optional<Vector3d> vec = aabb.clip(eyePos, startAndEnd.getRight());
+            AABB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
+            Optional<Vec3> vec = aabb.clip(eyePos, startAndEnd.getRight());
 
             if (aabb.contains(eyePos)) {
                 if (rangeSq2 >= 0.0D) {
@@ -87,12 +87,12 @@ public class RayTraceUtils {
             }
         }
 
-        return focusedEntity != null && rangeSq2 < rangeSq ? new EntityRayTraceResult(focusedEntity, hitVec) : result;
+        return focusedEntity != null && rangeSq2 < rangeSq ? new EntityHitResult(focusedEntity, hitVec) : result;
     }
 
-    private static RayTraceResult raytraceEntityBlocks(LivingEntity entity, double range) {
-        Pair<Vector3d, Vector3d> startAndEnd = getStartAndEndLookVec(entity, (float) range);
-        RayTraceContext ctx = new RayTraceContext(startAndEnd.getLeft(), startAndEnd.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
+    private static HitResult raytraceEntityBlocks(LivingEntity entity, double range) {
+        Pair<Vec3, Vec3> startAndEnd = getStartAndEndLookVec(entity, (float) range);
+        ClipContext ctx = new ClipContext(startAndEnd.getLeft(), startAndEnd.getRight(), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
         return entity.level.clip(ctx);
     }
 }

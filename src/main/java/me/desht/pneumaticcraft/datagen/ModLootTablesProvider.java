@@ -19,26 +19,35 @@ package me.desht.pneumaticcraft.datagen;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.block.EntityBlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.datagen.loot.TileEntitySerializerFunction;
-import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.LootTableProvider;
-import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.data.loot.ChestLootTables;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.loot.*;
-import net.minecraft.loot.conditions.SurvivesExplosion;
-import net.minecraft.loot.functions.CopyName;
-import net.minecraft.loot.functions.SetCount;
-import net.minecraft.loot.functions.SetNBT;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.ChestLoot;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.functions.SetNbtFunction;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,29 +65,29 @@ public class ModLootTablesProvider extends LootTableProvider {
     }
 
     @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
+    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         return ImmutableList.of(
-                Pair.of(BlockLootTablePNC::new, LootParameterSets.BLOCK),
-                Pair.of(ChestLootTablePNC::new, LootParameterSets.CHEST)
+                Pair.of(BlockLootTablePNC::new, LootContextParamSets.BLOCK),
+                Pair.of(ChestLootTablePNC::new, LootContextParamSets.CHEST)
         );
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationresults) {
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationresults) {
         // ...
     }
 
-    private static class BlockLootTablePNC extends BlockLootTables {
+    private static class BlockLootTablePNC extends BlockLoot {
         @Override
         protected void addTables() {
             for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
                 Block b = ro.get();
-                if (b instanceof BlockPneumaticCraft
-                        && b.hasTileEntity(b.defaultBlockState())
+                if (b instanceof EntityBlockPneumaticCraft
+//                        && b.hasTileEntity(b.defaultBlockState())
                         && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
                     addStandardSerializedDrop(b);
                 } else if (b == ModBlocks.REINFORCED_BRICK_SLAB.get() || b == ModBlocks.REINFORCED_STONE_SLAB.get() || b == ModBlocks.COMPRESSED_BRICK_SLAB.get() || b == ModBlocks.COMPRESSED_STONE_SLAB.get()) {
-                    add(b, BlockLootTables::createSlabItemTable);
+                    add(b, BlockLoot::createSlabItemTable);
                 } else if (b.asItem() != Items.AIR) {
                     dropSelf(b);
                 }
@@ -99,10 +108,10 @@ public class ModLootTablesProvider extends LootTableProvider {
         private void addStandardSerializedDrop(Block block) {
             LootPool.Builder builder = LootPool.lootPool()
                     .name(block.getRegistryName().getPath())
-                    .when(SurvivesExplosion.survivesExplosion())
-                    .setRolls(ConstantRange.exactly(1))
-                    .add(ItemLootEntry.lootTableItem(block)
-                            .apply(CopyName.copyName(CopyName.Source.BLOCK_ENTITY))
+                    .when(ExplosionCondition.survivesExplosion())
+                    .setRolls(ConstantValue.exactly(1))
+                    .add(LootItem.lootTableItem(block)
+                            .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))
                             .apply(TileEntitySerializerFunction.builder()));
             add(block, LootTable.lootTable().withPool(builder));
         }
@@ -114,11 +123,11 @@ public class ModLootTablesProvider extends LootTableProvider {
         return "PneumaticCraft Loot Tables";
     }
 
-    private static class ChestLootTablePNC extends ChestLootTables {
+    private static class ChestLootTablePNC extends ChestLoot {
         @Override
         public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
             LootPool.Builder lootPool = LootPool.lootPool();
-            lootPool.setRolls(new ConstantRange(4))
+            lootPool.setRolls(ConstantValue.exactly(4))
                     .add(createEntry(ModItems.COMPRESSED_IRON_INGOT.get(), 10, 4, 12))
                     .add(createEntry(ModItems.AMADRON_TABLET.get(), 2, 1, 1))
                     .add(createEntry(ModItems.AIR_CANISTER.get(), 10, 1, 5))
@@ -139,17 +148,17 @@ public class ModLootTablesProvider extends LootTableProvider {
             consumer.accept(RL("chests/mechanic_house"), lootTable);
         }
 
-        private LootEntry.Builder<?> createEntry(IItemProvider item, int weight, int min, int max)
+        private LootPoolEntryContainer.Builder<?> createEntry(ItemLike item, int weight, int min, int max)
         {
             return createEntry(new ItemStack(item), weight)
-                    .apply(SetCount.setCount(new RandomValueRange(min, max)));
+                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(min, max)));
         }
 
-        private StandaloneLootEntry.Builder<?> createEntry(ItemStack item, int weight)
+        private LootPoolSingletonContainer.Builder<?> createEntry(ItemStack item, int weight)
         {
-            StandaloneLootEntry.Builder<?> ret = ItemLootEntry.lootTableItem(item.getItem()).setWeight(weight);
+            LootPoolSingletonContainer.Builder<?> ret = LootItem.lootTableItem(item.getItem()).setWeight(weight);
             if(item.hasTag())
-                ret.apply(SetNBT.setTag(item.getOrCreateTag()));
+                ret.apply(SetNbtFunction.setTag(item.getOrCreateTag()));
             return ret;
         }
     }

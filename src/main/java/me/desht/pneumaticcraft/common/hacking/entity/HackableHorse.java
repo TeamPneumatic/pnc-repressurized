@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.horse.HorseEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -34,16 +34,16 @@ public class HackableHorse extends HackableTameable {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
-        return !player.getUUID().equals(((HorseEntity) entity).getOwnerUUID());
+    public boolean canHack(Entity entity, Player player) {
+        return !player.getUUID().equals(((Horse) entity).getOwnerUUID());
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
+    public void onHackFinished(Entity entity, Player player) {
         if (entity.level.isClientSide) {
             entity.handleEntityEvent((byte) 7);
         } else {
-            HorseEntity horse = (HorseEntity) entity;
+            Horse horse = (Horse) entity;
             horse.getNavigation().stop();
             horse.setTarget(null);
             horse.setHealth(20.0F);

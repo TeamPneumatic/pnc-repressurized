@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.lib;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

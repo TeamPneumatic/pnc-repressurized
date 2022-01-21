@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -30,12 +30,12 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.DroneDebugHandler;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -58,7 +58,7 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public Optional<KeyBinding> getTriggerKeyBinding() {
+    public Optional<KeyMapping> getTriggerKeyBinding() {
         return Optional.of(KeyHandler.getInstance().keybindDebuggingDrone);
     }
 
@@ -76,11 +76,11 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+    public void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -97,10 +97,10 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
         return false;
     }
 
-    public static boolean enabledForPlayer(PlayerEntity player) {
-        if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.HEAD)) {
+    public static boolean enabledForPlayer(Player player) {
+        if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            return handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0;
+            return handler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0;
         } else {
             return false;
         }

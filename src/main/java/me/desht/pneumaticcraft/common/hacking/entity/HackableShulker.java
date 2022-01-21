@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.common.util.Reflections;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.entity.monster.ShulkerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.GoalSelector;
+import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -38,28 +38,28 @@ public class HackableShulker implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
+    public boolean canHack(Entity entity, Player player) {
         return true;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.neutralize"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.neutralized"));
     }
 
     @Override
-    public int getHackTime(Entity entity, PlayerEntity player) {
+    public int getHackTime(Entity entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
-        GoalSelector tasks = ((ShulkerEntity) entity).goalSelector;
+    public void onHackFinished(Entity entity, Player player) {
+        GoalSelector tasks = ((Shulker) entity).goalSelector;
 
         tasks.getRunningGoals()
                 .filter(goal -> Reflections.shulker_aiAttack.isAssignableFrom(goal.getClass()))
@@ -69,7 +69,7 @@ public class HackableShulker implements IHackableEntity {
     @Override
     public boolean afterHackTick(Entity entity) {
         if (entity.getCommandSenderWorld().random.nextInt(5) < 4) {
-            ((ShulkerEntity) entity).setRawPeekAmount(100);
+            ((Shulker) entity).setRawPeekAmount(100);
         }
         return false;
     }

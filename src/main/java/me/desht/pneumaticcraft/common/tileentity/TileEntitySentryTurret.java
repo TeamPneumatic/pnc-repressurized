@@ -28,33 +28,30 @@ import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.FakePlayer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -64,7 +61,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class TileEntitySentryTurret extends TileEntityTickableBase implements
-        IRedstoneControl<TileEntitySentryTurret>, IGUITextFieldSensitive, INamedContainerProvider {
+        IRedstoneControl<TileEntitySentryTurret>, IGUITextFieldSensitive, MenuProvider {
     private static final int INVENTORY_SIZE = 4;
     public static final String NBT_ENTITY_FILTER = "entityFilter";
 
@@ -88,53 +85,57 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     private boolean sweeping;
     private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
     private double rangeSq;
-    private Vector3d tileVec;
+    private Vec3 tileVec;
     @DescSynced
     private float idleYaw;
 
-    public TileEntitySentryTurret() {
-        super(ModTileEntities.SENTRY_TURRET.get(), 4);
+    public TileEntitySentryTurret(BlockPos pos, BlockState state) {
+        super(ModTileEntities.SENTRY_TURRET.get(), pos, state, 4);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!getLevel().isClientSide) {
-            if (getMinigun().getAttackTarget() == null && rsController.shouldRun()) {
-                getMinigun().setSweeping(true);
-                if ((getLevel().getGameTime() & 0xF) == 0) {
-                    List<LivingEntity> entities = getLevel().getEntitiesOfClass(LivingEntity.class, getTargetingBoundingBox(), entitySelector);
-                    if (entities.size() > 0) {
-                        entities.sort(new EntityDistanceComparator(getBlockPos()));
-                        getMinigun().setAttackTarget(entities.get(0));
-                        targetEntityId = entities.get(0).getId();
-                    } else if (targetEntityId > 0) {
-                        getMinigun().setReturning(true);
-                        targetEntityId = -1;
-                    }
-                }
-            } else {
-                getMinigun().setSweeping(false);
-            }
-            LivingEntity target = getMinigun().getAttackTarget();
-            if (target != null) {
-                if (rsController.shouldRun() && entitySelector.test(target)) {
-                    if ((getLevel().getGameTime() & 0x7) == 0) {
-                        // Make sure any knockback has the right direction.
-                        getFakePlayer().setPos(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
-                        boolean usedUpAmmo = getMinigun().tryFireMinigun(target);
-                        if (usedUpAmmo) {
-                            clearEmptyAmmo();
-                        }
-                    }
-                } else {
-                    getMinigun().setAttackTarget(null);
-                    getMinigun().minigunYaw = idleYaw;
+        if (getMinigun().getAttackTarget() == null && rsController.shouldRun()) {
+            getMinigun().setSweeping(true);
+            if ((nonNullLevel().getGameTime() & 0xF) == 0) {
+                List<LivingEntity> entities = nonNullLevel().getEntitiesOfClass(LivingEntity.class, getTargetingBoundingBox(), entitySelector);
+                if (entities.size() > 0) {
+                    entities.sort(new EntityDistanceComparator(getBlockPos()));
+                    getMinigun().setAttackTarget(entities.get(0));
+                    targetEntityId = entities.get(0).getId();
+                } else if (targetEntityId > 0) {
+                    getMinigun().setReturning(true);
                     targetEntityId = -1;
                 }
             }
+        } else {
+            getMinigun().setSweeping(false);
         }
+        LivingEntity target = getMinigun().getAttackTarget();
+        if (target != null) {
+            if (rsController.shouldRun() && entitySelector.test(target)) {
+                if ((nonNullLevel().getGameTime() & 0x7) == 0) {
+                    // Make sure any knockback has the right direction.
+                    getFakePlayer().setPos(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
+                    boolean usedUpAmmo = getMinigun().tryFireMinigun(target);
+                    if (usedUpAmmo) {
+                        clearEmptyAmmo();
+                    }
+                }
+            } else {
+                getMinigun().setAttackTarget(null);
+                getMinigun().minigunYaw = idleYaw;
+                targetEntityId = -1;
+            }
+        }
+    }
+
+    @Override
+    public void tickCommonPost() {
+        super.tickCommonPost();
+
         getMinigun().update(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
     }
 
@@ -148,33 +149,33 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
         blockEntityTag.putString(NBT_ENTITY_FILTER, getText(0));
     }
 
     private boolean canTurretSeeEntity(Entity entity) {
-        Vector3d entityVec = new Vector3d(entity.getX() + entity.getBbWidth() / 2, entity.getY() + entity.getBbHeight() / 2, entity.getZ() + entity.getBbWidth() / 2);
-        RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
-        BlockRayTraceResult trace = getLevel().clip(ctx);
+        Vec3 entityVec = new Vec3(entity.getX() + entity.getBbWidth() / 2, entity.getY() + entity.getBbHeight() / 2, entity.getZ() + entity.getBbWidth() / 2);
+        ClipContext ctx = new ClipContext(entityVec, tileVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
+        BlockHitResult trace = nonNullLevel().clip(ctx);
         return trace.getBlockPos().equals(getBlockPos());
     }
 
-    private AxisAlignedBB getTargetingBoundingBox() {
-        return new AxisAlignedBB(getBlockPos(), getBlockPos()).inflate(range);
+    private AABB getTargetingBoundingBox() {
+        return new AABB(getBlockPos(), getBlockPos()).inflate(range);
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         return RenderMinigunTracers.shouldRender(getMinigun()) ?
-                new AxisAlignedBB(getBlockPos(), getMinigun().getAttackTarget().blockPosition()) :
+                new AABB(getBlockPos(), getMinigun().getAttackTarget().blockPosition()) :
                 super.getRenderBoundingBox();
     }
 
     @Override
-    protected void onFirstServerTick() {
-        super.onFirstServerTick();
+    public void onLoad() {
+        super.onLoad();
 
-        tileVec = new Vector3d(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
+        tileVec = new Vec3(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
         updateAmmo();
         onFilterChanged(entityFilter);
     }
@@ -183,7 +184,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     public void onDescUpdate() {
         super.onDescUpdate();
 
-        Entity entity = getLevel().getEntity(targetEntityId);
+        Entity entity = nonNullLevel().getEntity(targetEntityId);
         if (entity instanceof LivingEntity) {
             getMinigun().setAttackTarget((LivingEntity) entity);
         } else {
@@ -194,7 +195,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
 
     public Minigun getMinigun() {
         if (minigun == null) {
-            minigun = new MinigunSentryTurret(level.isClientSide ? null : getFakePlayer());
+            minigun = new MinigunSentryTurret(nonNullLevel().isClientSide ? null : getFakePlayer());
             minigun.setWorld(getLevel());
             minigun.minigunYaw = idleYaw;
             minigun.setIdleYaw(idleYaw);
@@ -202,26 +203,21 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
         return minigun;
     }
 
-    private PlayerEntity getFakePlayer() {
-        FakePlayer fakePlayer = FakePlayerFactory.get((ServerWorld) getLevel(), new GameProfile(null, "Sentry Turret"));
-        if (fakePlayer.connection == null) {
-            fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
-        }
-        return fakePlayer;
+    private Player getFakePlayer() {
+        return FakePlayerFactory.get((ServerLevel) getLevel(), new GameProfile(null, "Sentry Turret"));
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.put("Items", inventory.serializeNBT());
         tag.putString(NBT_ENTITY_FILTER, entityFilter);
         tag.putFloat("idleYaw", idleYaw);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         idleYaw = tag.getFloat("idleYaw");
@@ -239,13 +235,13 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         rsController.parseRedstoneMode(tag);
     }
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerSentryTurret(i, playerInventory, getBlockPos());
     }
 
@@ -254,7 +250,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     }
 
     private class TurretItemStackHandler extends BaseItemStackHandler {
-        TurretItemStackHandler(TileEntity te) {
+        TurretItemStackHandler(BlockEntity te) {
             super(te, INVENTORY_SIZE);
         }
 
@@ -300,15 +296,15 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     private void recalculateRange() {
         range = 16 + Math.min(16, getUpgrades(EnumUpgrade.RANGE));
         ItemStack ammoStack = getMinigun().getAmmoStack();
-        if (ammoStack.getItem() instanceof ItemGunAmmo) {
-            range *= ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack);
+        if (ammoStack.getItem() instanceof ItemGunAmmo ammo) {
+            range *= ammo.getRangeMultiplier(ammoStack);
         }
         rangeSq = range * range;
     }
 
     private class MinigunSentryTurret extends Minigun {
 
-        MinigunSentryTurret(PlayerEntity fakePlayer) {
+        MinigunSentryTurret(Player fakePlayer) {
             super(fakePlayer,true);
         }
 
@@ -340,7 +336,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            world.playSound(null, getBlockPos(), soundName, SoundCategory.BLOCKS, volume, pitch);
+            world.playSound(null, getBlockPos(), soundName, SoundSource.BLOCKS, volume, pitch);
         }
 
         @Override
@@ -354,8 +350,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
         }
 
         @Override
-        public SoundSource getSoundSource() {
-            return SoundSource.of(TileEntitySentryTurret.this);
+        public MovingSoundFocus getSoundSource() {
+            return MovingSoundFocus.of(TileEntitySentryTurret.this);
         }
 
         @Override
@@ -367,8 +363,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     private class SentryTurretEntitySelector extends StringFilterEntitySelector {
         @Override
         public boolean test(Entity entity) {
-            if (entity instanceof PlayerEntity) {
-                PlayerEntity player = (PlayerEntity) entity;
+            if (entity instanceof Player player) {
                 if (player.isCreative() || player.isSpectator() || isExcludedBySecurityStations(player)) return false;
             }
             return super.test(entity) && inRange(entity) && canTurretSeeEntity(entity);
@@ -378,7 +373,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
             return PneumaticCraftUtils.distBetweenSq(new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ()), entity.getX(), entity.getY(), entity.getZ()) <= rangeSq;
         }
 
-        private boolean isExcludedBySecurityStations(PlayerEntity player) {
+        private boolean isExcludedBySecurityStations(Player player) {
             Iterator<TileEntitySecurityStation> iterator = TileEntitySecurityStation.getSecurityStations(getLevel(), getBlockPos(), false).iterator();
             if (iterator.hasNext()) {
                 // When there are any Security Stations, ALL stations need to be allowing the player

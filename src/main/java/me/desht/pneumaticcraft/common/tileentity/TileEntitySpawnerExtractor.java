@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -27,32 +28,34 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SpawnerBlock;
-import net.minecraft.entity.*;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.tileentity.MobSpawnerTileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.spawner.AbstractSpawner;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.SpawnerBlock;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.items.IItemHandler;
@@ -64,7 +67,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 
-public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implements IMinWorkingPressure, INamedContainerProvider {
+public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implements IMinWorkingPressure, MenuProvider {
 
     private static final int MAX_ENTITY_RANGE = 6;
     private Entity cachedEntity;
@@ -84,13 +87,13 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     private float currentSpeed;
     private int spawnFailures;
 
-    public TileEntitySpawnerExtractor() {
-        super(ModTileEntities.SPAWNER_EXTRACTOR.get(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.VOLUME_SPAWNER_EXTRACTOR, 4);
+    public TileEntitySpawnerExtractor(BlockPos pos, BlockState state) {
+        super(ModTileEntities.SPAWNER_EXTRACTOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_SPAWNER_EXTRACTOR, 4);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         if (Math.abs(currentSpeed - targetSpeed) < 0.015f) {
             currentSpeed = targetSpeed;
@@ -104,89 +107,96 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
             updateMode();
         }
         switch (mode) {
-            case RUNNING:
+            case RUNNING -> {
                 float incr = currentSpeed / 1200f;   // at max speed, 1200 ticks to completion
                 progress = Math.min(1f, progress + incr);
-                break;
-            case FINISHED:
+            }
+            case FINISHED -> {
                 progress = 1f;
                 targetSpeed = 0f;
                 rotationDegrees = prevRotationDegrees;
-                break;
-        }
-
-
-        if (!level.isClientSide) {
-            int defenderChance = level.getDifficulty() == Difficulty.EASY ? 40 : 20;
-            if (mode == Mode.RUNNING) {
-                addAir(PneumaticValues.USAGE_SPAWNER_EXTRACTOR);
-                if (progress >= 1f) {
-                    extractSpawnerCore();
-                } else if (currentSpeed > 0.1f && level.random.nextInt(defenderChance) == 0) {
-                    // spawn defending entities; each entity nearby will slow down the extraction process
-                    PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), MobSpawnerTileEntity.class).ifPresent(te -> {
-                        if (!trySpawnDefender(te)) {
-                            spawnFailures++;
-                        }
-                    });
-                }
             }
-            if ((level.getGameTime() & 0xf) == 3) {
-                targetSpeed = getTargetSpeed();
-            }
-            if ((level.getGameTime() & 0x3f) == 3) {
-                spawnFailures = Math.max(0, spawnFailures - 1);
-            }
-        } else {
-            prevRotationDegrees = rotationDegrees;
-            // at full speed, 1 rotation per second
-            rotationDegrees += currentSpeed * 18f;
         }
     }
 
-    private boolean trySpawnDefender(MobSpawnerTileEntity te) {
+    @Override
+    public void tickClient() {
+        super.tickClient();
+
+        prevRotationDegrees = rotationDegrees;
+        // at full speed, 1 rotation per second
+        rotationDegrees += currentSpeed * 18f;
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        int defenderChance = nonNullLevel().getDifficulty() == Difficulty.EASY ? 40 : 20;
+        if (mode == Mode.RUNNING) {
+            addAir(PneumaticValues.USAGE_SPAWNER_EXTRACTOR);
+            if (progress >= 1f) {
+                extractSpawnerCore();
+            } else if (currentSpeed > 0.1f && nonNullLevel().random.nextInt(defenderChance) == 0) {
+                // spawn defending entities; each entity nearby will slow down the extraction process
+                PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), SpawnerBlockEntity.class).ifPresent(te -> {
+                    if (!trySpawnDefender(te)) {
+                        spawnFailures++;
+                    }
+                });
+            }
+        }
+        if ((nonNullLevel().getGameTime() & 0xf) == 3) {
+            targetSpeed = getTargetSpeed();
+        }
+        if ((nonNullLevel().getGameTime() & 0x3f) == 3) {
+            spawnFailures = Math.max(0, spawnFailures - 1);
+        }
+    }
+
+    private boolean trySpawnDefender(SpawnerBlockEntity te) {
         // logic largely lifted from AbstractSpawner#tick()
 
-        AbstractSpawner spawner = te.getSpawner();
+        BaseSpawner spawner = te.getSpawner();
 
         int spawnRange = 4;
         int maxNearbyEntities = 16;
 
-        CompoundNBT nbt = spawner.nextSpawnData.getTag();
+        CompoundTag nbt = spawner.nextSpawnData.getEntityToSpawn();
         Optional<EntityType<?>> optional = EntityType.by(nbt);
-        if (!optional.isPresent()) {
+        if (optional.isEmpty()) {
             return false;
         }
         BlockPos pos = te.getBlockPos();
-        ListNBT listnbt = nbt.getList("Pos", Constants.NBT.TAG_DOUBLE);
+        ListTag listnbt = nbt.getList("Pos", Tag.TAG_DOUBLE);
         int size = listnbt.size();
+        Level level = nonNullLevel();
         double x = size >= 1 ? listnbt.getDouble(0) : (double)pos.getX() + (level.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
         double y = size >= 2 ? listnbt.getDouble(1) : (double)(pos.getY() + level.random.nextInt(3) - 1);
         double z = size >= 3 ? listnbt.getDouble(2) : (double)pos.getZ() + (level.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
         if (level.noCollision(optional.get().getAABB(x, y, z))) {
-            ServerWorld serverworld = (ServerWorld)level;
+            ServerLevel serverworld = (ServerLevel) level;
             Entity entity = EntityType.loadEntityRecursive(nbt, level, (e1) -> {
-                e1.moveTo(x, y, z, e1.yRot, e1.xRot);
+                e1.moveTo(x, y, z, e1.getYRot(), e1.getXRot());
                 return e1;
             });
             if (entity == null) {
                 return false;
             }
 
-            int entityCount = level.getEntitiesOfClass(entity.getClass(), (new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)).inflate(spawnRange)).size();
+            int entityCount = level.getEntitiesOfClass(entity.getClass(), (new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)).inflate(spawnRange)).size();
             if (entityCount >= maxNearbyEntities) {
                 return false;
             }
 
             entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), level.random.nextFloat() * 360.0F, 0.0F);
-            if (entity instanceof MobEntity) {
-                MobEntity mobentity = (MobEntity)entity;
-                if (spawner.nextSpawnData.getTag().size() == 1 && spawner.nextSpawnData.getTag().contains("id", Constants.NBT.TAG_STRING)) {
-                    if (!ForgeEventFactory.doSpecialSpawn(mobentity, level, (float)entity.getX(), (float)entity.getY(), (float)entity.getZ(), spawner, SpawnReason.SPAWNER)) {
-                        mobentity.finalizeSpawn(serverworld, level.getCurrentDifficultyAt(entity.blockPosition()), SpawnReason.SPAWNER, null, null);
+            if (entity instanceof Mob mobentity) {
+                if (nbt.size() == 1 && nbt.contains("id", Tag.TAG_STRING)) {
+                    if (!ForgeEventFactory.doSpecialSpawn(mobentity, this.level, (float)entity.getX(), (float)entity.getY(), (float)entity.getZ(), spawner, MobSpawnType.SPAWNER)) {
+                        mobentity.finalizeSpawn(serverworld, level.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null, null);
                         // note: "pneumaticcraft:defender" tag is added in TileEntityVacuumTrap.Listener.onMobSpawn()
                         if (level.getDifficulty() == Difficulty.HARD) {
-                            getRandomEffects(level.random).forEach(effect -> mobentity.addEffect(new EffectInstance(effect, Integer.MAX_VALUE, 2)));
+                            getRandomEffects(level.random).forEach(effect -> mobentity.addEffect(new MobEffectInstance(effect, Integer.MAX_VALUE, 2)));
                         }
                     }
                 }
@@ -196,39 +206,39 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
                 return false;
             }
 
-            level.levelEvent(Constants.WorldEvents.MOB_SPAWNER_PARTICLES, pos, 0);
-            if (entity instanceof MobEntity) {
-                ((MobEntity)entity).spawnAnim();
+            level.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, pos, 0);
+            if (entity instanceof Mob) {
+                ((Mob)entity).spawnAnim();
             }
         }
         return true;
     }
 
-    private List<Effect> getRandomEffects(Random rand) {
-        List<Effect> l = new ArrayList<>();
+    private List<MobEffect> getRandomEffects(Random rand) {
+        List<MobEffect> l = new ArrayList<>();
         int n = rand.nextInt(100);
-        if (n > 50) l.add(Effects.FIRE_RESISTANCE);
-        if (n > 75) l.add(Effects.MOVEMENT_SPEED);
-        if (n > 82) l.add(Effects.DAMAGE_BOOST);
-        if (n > 92) l.add(Effects.REGENERATION);
-        if (n > 96) l.add(Effects.INVISIBILITY);
+        if (n > 50) l.add(MobEffects.FIRE_RESISTANCE);
+        if (n > 75) l.add(MobEffects.MOVEMENT_SPEED);
+        if (n > 82) l.add(MobEffects.DAMAGE_BOOST);
+        if (n > 92) l.add(MobEffects.REGENERATION);
+        if (n > 96) l.add(MobEffects.INVISIBILITY);
         return l;
     }
 
     private void extractSpawnerCore() {
-        PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), MobSpawnerTileEntity.class).ifPresent(te -> {
+        PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), SpawnerBlockEntity.class).ifPresent(te -> {
             ItemStack spawnerCore = new ItemStack(ModItems.SPAWNER_CORE.get());
             ISpawnerCoreStats stats = PneumaticRegistry.getInstance().getItemRegistry().getSpawnerCoreStats(spawnerCore);
             Entity e = getCachedEntity(te);
             if (e != null && stats != null) {
                 stats.addAmount(e.getType(), 100);
                 stats.serialize(spawnerCore);
-                ItemEntity item = new ItemEntity(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5);
-                item.setItem(spawnerCore);
+                Level level = nonNullLevel();
+                ItemEntity item = new ItemEntity(level, worldPosition.getX() + 0.5, worldPosition.getY() + 1.0, worldPosition.getZ() + 0.5, spawnerCore);
                 level.addFreshEntity(item);
-                level.playSound(null, worldPosition, SoundEvents.ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 0.5f);
-                level.setBlock(worldPosition.below(), ModBlocks.EMPTY_SPAWNER.get().defaultBlockState(), Constants.BlockFlags.DEFAULT);
-                level.levelEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, worldPosition, Block.getId(Blocks.SPAWNER.defaultBlockState()));
+                level.playSound(null, worldPosition, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1f, 0.5f);
+                level.setBlock(worldPosition.below(), ModBlocks.EMPTY_SPAWNER.get().defaultBlockState(), Block.UPDATE_ALL);
+                level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, worldPosition, Block.getId(Blocks.SPAWNER.defaultBlockState()));
             }
         });
     }
@@ -236,14 +246,14 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     private float getTargetSpeed() {
         if (getPressure() > getMinWorkingPressure()) return 0f;
 
-        return PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), MobSpawnerTileEntity.class).map(te -> {
+        return PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), SpawnerBlockEntity.class).map(te -> {
             int players = 0;
             int matches = 0;
             Entity e0 = getCachedEntity(te);
             if (e0 == null) return 0f;
-            List<LivingEntity> l = level.getEntitiesOfClass(LivingEntity.class, new AxisAlignedBB(worldPosition).inflate(MAX_ENTITY_RANGE), e -> true);
+            List<LivingEntity> l = nonNullLevel().getEntitiesOfClass(LivingEntity.class, new AABB(worldPosition).inflate(MAX_ENTITY_RANGE), e -> true);
             for (LivingEntity e : l) {
-                if (e instanceof PlayerEntity && !(e instanceof FakePlayer)) players++;
+                if (e instanceof Player && !(e instanceof FakePlayer)) players++;
                 if (e.getType() == e0.getType()) matches++;
             }
             int n = players > 0 ? Math.min(10, matches + spawnFailures) : 10;
@@ -251,9 +261,9 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
         }).orElse(0f);
     }
 
-    public Entity getCachedEntity(MobSpawnerTileEntity te) {
+    public Entity getCachedEntity(SpawnerBlockEntity te) {
         if (this.cachedEntity == null) {
-            this.cachedEntity = EntityType.loadEntityRecursive(te.getSpawner().nextSpawnData.getTag(), this.getLevel(), Function.identity());
+            this.cachedEntity = EntityType.loadEntityRecursive(te.getSpawner().nextSpawnData.getEntityToSpawn(), this.nonNullLevel(), Function.identity());
         }
         return this.cachedEntity;
     }
@@ -275,19 +285,18 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.putFloat("progress", progress);
         tag.putByte("mode", (byte) mode.ordinal());
         tag.putFloat("targetSpeed", targetSpeed);
         tag.putInt("spawnFailures", spawnFailures);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         progress = tag.getFloat("progress");
         mode = Mode.values()[tag.getByte("mode")];
@@ -312,17 +321,17 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         return new ContainerSpawnerExtractor(windowId, inv, worldPosition);
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), worldPosition.getX() + 1, worldPosition.getY() + 2, worldPosition.getZ() + 1);
+    public AABB getRenderBoundingBox() {
+        return new AABB(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), worldPosition.getX() + 1, worldPosition.getY() + 2, worldPosition.getZ() + 1);
     }
 
     public void updateMode() {
-        BlockState below = level.getBlockState(worldPosition.below());
+        BlockState below = nonNullLevel().getBlockState(worldPosition.below());
         if (below.getBlock() instanceof SpawnerBlock) {
             mode = Mode.RUNNING;
         } else {

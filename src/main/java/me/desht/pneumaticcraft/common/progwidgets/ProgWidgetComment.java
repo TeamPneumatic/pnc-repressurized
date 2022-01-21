@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +44,7 @@ public class ProgWidgetComment extends ProgWidgetText {
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
     }
 
@@ -74,8 +74,8 @@ public class ProgWidgetComment extends ProgWidgetText {
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
-        return Collections.singletonList(new StringTextComponent(string));
+    public List<Component> getExtraStringInfo() {
+        return Collections.singletonList(new TextComponent(string));
     }
 
     @Override

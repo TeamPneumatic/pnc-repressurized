@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,17 +34,17 @@ public class ArmorMessage {
     private final IGuiAnimatedStat stat;
     int lifeSpan;
 
-    public ArmorMessage(ITextComponent title, int duration, int backColor) {
+    public ArmorMessage(Component title, int duration, int backColor) {
         this(title, Collections.emptyList(), duration, backColor);
     }
 
-    public ArmorMessage(ITextComponent title, List<ITextComponent> message, int duration, int backColor) {
+    public ArmorMessage(Component title, List<Component> message, int duration, int backColor) {
         lifeSpan = duration;
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.NONE, backColor, null, ArmorHUDLayout.INSTANCE.messageStat);
         stat.setMinimumContractedDimensions(0, 0);
         stat.setText(message);
-        PlayerEntity player = ClientUtils.getClientPlayer();
-        player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.SCI_FI.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
+        Player player = ClientUtils.getClientPlayer();
+        player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.SCI_FI.get(), SoundSource.PLAYERS, 0.1F, 1.0F, true);
     }
 
     void setDependingMessage(IGuiAnimatedStat dependingStat) {
@@ -56,7 +56,7 @@ public class ArmorMessage {
         return stat;
     }
 
-    void renderMessage(MatrixStack matrixStack, float partialTicks) {
+    void renderMessage(PoseStack matrixStack, float partialTicks) {
         if (lifeSpan > 10) {
             stat.openStat();
         } else {

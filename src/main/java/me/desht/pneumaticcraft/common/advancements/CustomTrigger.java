@@ -18,16 +18,16 @@
 package me.desht.pneumaticcraft.common.advancements;
 
 import com.google.gson.JsonObject;
-import net.minecraft.advancements.criterion.AbstractCriterionTrigger;
-import net.minecraft.advancements.criterion.CriterionInstance;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.loot.ConditionArrayParser;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
+import net.minecraft.advancements.critereon.AbstractCriterionTriggerInstance;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.advancements.critereon.DeserializationContext;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class CustomTrigger extends AbstractCriterionTrigger<CustomTrigger.Instance> {
+public class CustomTrigger extends SimpleCriterionTrigger<CustomTrigger.Instance> {
     private final ResourceLocation triggerID;
 
     public CustomTrigger(String parString) {
@@ -39,7 +39,7 @@ public class CustomTrigger extends AbstractCriterionTrigger<CustomTrigger.Instan
         triggerID = parRL;
     }
 
-    public void trigger(ServerPlayerEntity parPlayer) {
+    public void trigger(ServerPlayer parPlayer) {
         this.trigger(parPlayer, Instance::test);
     }
 
@@ -49,7 +49,7 @@ public class CustomTrigger extends AbstractCriterionTrigger<CustomTrigger.Instan
     }
 
     @Override
-    protected Instance createInstance(JsonObject jsonIn, EntityPredicate.AndPredicate entityPredicateIn, ConditionArrayParser conditionsParserIn) {
+    protected Instance createInstance(JsonObject jsonIn, EntityPredicate.Composite entityPredicateIn, DeserializationContext conditionsParserIn) {
         return new CustomTrigger.Instance(this.getId());
     }
 
@@ -57,9 +57,9 @@ public class CustomTrigger extends AbstractCriterionTrigger<CustomTrigger.Instan
         return new CustomTrigger.Instance(this.getId());
     }
 
-    public static class Instance extends CriterionInstance {
+    public static class Instance extends AbstractCriterionTriggerInstance {
         public Instance(ResourceLocation parID) {
-            super(parID, EntityPredicate.AndPredicate.ANY);
+            super(parID, EntityPredicate.Composite.ANY);
         }
 
         public boolean test() {

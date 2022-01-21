@@ -18,16 +18,20 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.ITickableWidget;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -46,27 +50,26 @@ import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.MainWindow;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.texture.ITickable;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.ITextProperties;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.texture.Tickable;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraftforge.client.gui.widget.Slider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -74,7 +77,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase<T>, T extends TileEntityBase> extends ContainerScreen<C> {
+public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase<T>, T extends TileEntityBase> extends AbstractContainerScreen<C> {
     public final T te;
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
     private WidgetAnimatedStat pressureStat;
@@ -86,7 +89,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     private int sendDelay = -1;
     private final List<Slider> sliders = new ArrayList<>();
 
-    public GuiPneumaticContainerBase(C container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiPneumaticContainerBase(C container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
         this.te = container.te;
     }
@@ -130,13 +133,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    private WidgetAnimatedStat addAnimatedStat(ITextComponent title, StatIcon icon, int color, boolean leftSided) {
+    private WidgetAnimatedStat addAnimatedStat(Component title, StatIcon icon, int color, boolean leftSided) {
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
 
         WidgetAnimatedStat stat = new WidgetAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : imageWidth + 1), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
         stat.setBeveled(true);
-        addButton(stat);
+        addRenderableWidget(stat);
         if (leftSided) {
             lastLeftStat = stat;
         } else {
@@ -146,35 +149,34 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return stat;
     }
 
-    protected WidgetAnimatedStat addAnimatedStat(ITextComponent title, @Nonnull ItemStack icon, int backgroundColor, boolean leftSided) {
+    protected WidgetAnimatedStat addAnimatedStat(Component title, @Nonnull ItemStack icon, int backgroundColor, boolean leftSided) {
         return addAnimatedStat(title, StatIcon.of(icon), backgroundColor, leftSided);
     }
 
-    protected WidgetAnimatedStat addAnimatedStat(ITextComponent title, ResourceLocation icon, int backgroundColor, boolean leftSided) {
+    protected WidgetAnimatedStat addAnimatedStat(Component title, ResourceLocation icon, int backgroundColor, boolean leftSided) {
         return addAnimatedStat(title, StatIcon.of(icon), backgroundColor, leftSided);
     }
 
-    protected WidgetAnimatedStat addAnimatedStat(ITextComponent title, int backgroundColor, boolean leftSided) {
+    protected WidgetAnimatedStat addAnimatedStat(Component title, int backgroundColor, boolean leftSided) {
         return addAnimatedStat(title, StatIcon.NONE, backgroundColor, leftSided);
     }
 
     @Override
-    protected <T extends Widget> T addButton(T widget) {
-        if (widget instanceof Slider) sliders.add((Slider)widget);
-        return super.addButton(widget);
+    protected <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T pWidget) {
+        if (pWidget instanceof Slider s) sliders.add(s);
+        return super.addRenderableWidget(pWidget);
     }
 
-    protected WidgetLabel addLabel(ITextComponent text, int x, int y) {
-        return addButton(new WidgetLabel(x, y, text));
+    protected WidgetLabel addLabel(Component text, int x, int y) {
+        return addRenderableWidget(new WidgetLabel(x, y, text));
     }
 
-    protected WidgetLabel addLabel(ITextComponent text, int x, int y, int color) {
-        return addButton(new WidgetLabel(x, y, text, color));
+    protected WidgetLabel addLabel(Component text, int x, int y, int color) {
+        return addRenderableWidget(new WidgetLabel(x, y, text, color));
     }
 
-    void removeWidget(Widget widget) {
-        buttons.remove(widget);
-        children.remove(widget);
+    void removeWidget(AbstractWidget widget) {
+        super.removeWidget(widget);
         if (widget instanceof IGuiAnimatedStat) statWidgets.remove(widget);
         else if (widget instanceof Slider) sliders.remove(widget);
     }
@@ -200,7 +202,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     private WidgetButtonExtended createRedstoneModeButton(int x, int idx, RedstoneController.RedstoneMode<?> mode) {
-        WidgetButtonExtended b = new WidgetButtonExtended(x, 24, 20, 20, StringTextComponent.EMPTY).withTag("redstone:" + idx);
+        WidgetButtonExtended b = new WidgetButtonExtended(x, 24, 20, 20, TextComponent.EMPTY).withTag("redstone:" + idx);
         mode.getTexture().ifLeft(b::setRenderStacks).ifRight(b::setRenderedIcon);
         b.setTooltipKey(mode.getTranslationKey());
         return b;
@@ -208,8 +210,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     protected void addJeiFilterInfoTab() {
         if (ModList.get().isLoaded(ModIds.JEI)) {
-            addAnimatedStat(new StringTextComponent("JEI"), Textures.GUI_JEI_LOGO, 0xFFCEEDCE, true)
-                    .setText(xlate("pneumaticcraft.gui.jei.filterDrag").withStyle(TextFormatting.DARK_GRAY));
+            addAnimatedStat(new TextComponent("JEI"), Textures.GUI_JEI_LOGO, 0xFFCEEDCE, true)
+                    .setText(xlate("pneumaticcraft.gui.jei.filterDrag").withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 
@@ -218,18 +220,18 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     private void addUpgradeTab() {
-        List<ITextComponent> text = new ArrayList<>();
+        List<Component> text = new ArrayList<>();
         te.getApplicableUpgrades().keySet().stream()
                 .sorted(Comparator.comparing(o -> o.getItemStack().getHoverName().getString()))
                 .forEach(upgrade -> {
                     if (isUpgradeAvailable(upgrade)) {
                         int max = te.getApplicableUpgrades().get(upgrade);
-                        text.add(upgrade.getItemStack().getHoverName().copy().withStyle(TextFormatting.WHITE, TextFormatting.UNDERLINE));
-                        text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(TextFormatting.GRAY));
+                        text.add(upgrade.getItemStack().getHoverName().copy().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE));
+                        text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
                         String upgradeName = upgrade.toString().toLowerCase(Locale.ROOT);
                         String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
                         text.addAll(I18n.exists(k) ? GuiUtils.xlateAndSplit(k) : GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName));
-                        text.add(StringTextComponent.EMPTY);
+                        text.add(TextComponent.EMPTY);
                     }
                 });
         if (!text.isEmpty()) {
@@ -258,7 +260,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     private WidgetButtonExtended makeSideConfButton(final SideConfigurator<?> sideConfigurator, RelativeFace relativeFace, int x, int y) {
-        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, StringTextComponent.EMPTY, b -> {
+        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, TextComponent.EMPTY, b -> {
             WidgetButtonExtended gbs = (WidgetButtonExtended) b;
             ((ISideConfigurable) te).getSideConfigurators().stream()
                     .filter(sc -> sc.handleButtonPress(gbs.getTag()))
@@ -279,7 +281,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                 button.setRenderedIcon(Textures.GUI_X_BUTTON);
             }
             button.setTooltipText(ImmutableList.of(
-                    new StringTextComponent(relativeFace.toString()).withStyle(TextFormatting.YELLOW),
+                    new TextComponent(relativeFace.toString()).withStyle(ChatFormatting.YELLOW),
                     sc.getFaceLabel(relativeFace)
             ));
         } catch (IllegalArgumentException e) {
@@ -287,16 +289,16 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    protected void addInfoTab(List<ITextComponent> info) {
+    protected void addInfoTab(List<Component> info) {
         IGuiAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true);
         stat.setForegroundColor(0xFF000000);
         stat.setText(info);
         if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
-            stat.appendText(Arrays.asList(StringTextComponent.EMPTY, xlate("pneumaticcraft.gui.tab.info.installDocsProvider")));
+            stat.appendText(Arrays.asList(TextComponent.EMPTY, xlate("pneumaticcraft.gui.tab.info.installDocsProvider")));
         }
     }
 
-    protected void addInfoTab(ITextComponent info) {
+    protected void addInfoTab(Component info) {
         addInfoTab(Collections.singletonList(info));
     }
 
@@ -329,7 +331,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int i, int j) {
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int i, int j) {
         if (shouldDrawBackground()) {
             GuiUtils.glColorHex(0xFF000000 | getBackgroundTint());
             bindGuiTexture();
@@ -340,13 +342,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         if (getInvNameOffset() != null) {
-            font.draw(matrixStack, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2f + getInvNameOffset().x, 5 + getInvNameOffset().y, getTitleColor());
+            font.draw(matrixStack, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2f + getInvNameOffset().x(), 5 + getInvNameOffset().y(), getTitleColor());
         }
 
         if (getInvTextOffset() != null) {
-            font.draw(matrixStack, I18n.get("container.inventory"), 8 + getInvTextOffset().x, imageHeight - 94 + getInvTextOffset().y, 0x404040);
+            font.draw(matrixStack, I18n.get("container.inventory"), 8 + getInvTextOffset().x(), imageHeight - 94 + getInvTextOffset().y(), 0x404040);
         }
 
         if (pressureStat != null) {
@@ -354,7 +356,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             if (gaugeLocation != null) {
                 TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
                 float minWorking = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE;
-                PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x - leftPos, gaugeLocation.y - topPos);
+                PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x() - leftPos, gaugeLocation.y() - topPos);
             }
         }
     }
@@ -362,7 +364,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     void bindGuiTexture() {
         ResourceLocation guiTexture = getGuiTexture();
         if (guiTexture != null) {
-            minecraft.getTextureManager().bind(guiTexture);
+            GuiUtils.bindTexture(guiTexture);
             RenderSystem.enableTexture();
         }
     }
@@ -388,24 +390,22 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, float partialTick) {
+    public void render(PoseStack matrixStack, int x, int y, float partialTick) {
         renderBackground(matrixStack);
 
         super.render(matrixStack, x, y, partialTick);
 
         renderTooltip(matrixStack, x, y);
 
-        List<ITextComponent> tooltip = new ArrayList<>();
-        RenderSystem.color4f(1, 1, 1, 1);
-        RenderSystem.disableLighting();
-        for (Widget widget : buttons) {
-            if (widget instanceof ITooltipProvider && widget.isHovered() && widget.visible) {
-                ((ITooltipProvider) widget).addTooltip(x, y, tooltip, Screen.hasShiftDown());
+        List<Component> tooltip = new ArrayList<>();
+        for (Widget widget : renderables) {
+            if (widget instanceof ITooltipProvider provider && provider.shouldProvide()) {
+               provider.addTooltip(x, y, tooltip, Screen.hasShiftDown());
             }
         }
         if (shouldParseVariablesInTooltips()) {
             for (int i = 0; i < tooltip.size(); i++) {
-                tooltip.set(i, new StringTextComponent(new TextVariableParser(tooltip.get(i).getString()).parse()));
+                tooltip.set(i, new TextComponent(new TextVariableParser(tooltip.get(i).getString()).parse()));
             }
         }
 
@@ -432,18 +432,22 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         if (sendDelay > 0 && --sendDelay <= 0) {
             doDelayedAction();
             sendDelay = -1;
         }
 
-        buttons.stream().filter(w -> w instanceof ITickableWidget).forEach(w -> ((ITickableWidget) w).tickWidget());
+        for (Widget w : renderables) {
+            if (w instanceof ITickableWidget t) {
+                t.tickWidget();
+            }
+        }
 
         if (pressureStat != null && pressureStat.isDoneExpanding()) {
-            List<ITextComponent> pressureText = new ArrayList<>();
+            List<Component> pressureText = new ArrayList<>();
             addPressureStatInfo(pressureText);
             pressureStat.setText(pressureText);
         }
@@ -462,7 +466,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     private void handleProblemsTab() {
-        List<ITextComponent> problemText = new ArrayList<>();
+        List<Component> problemText = new ArrayList<>();
         addProblems(problemText);
         int nProbs = problemText.size();
         addWarnings(problemText);
@@ -485,7 +489,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         problemTab.setText(problemText);
     }
 
-    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+    protected void addPressureStatInfo(List<Component> pressureStatText) {
         te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
             float curPressure = airHandler.getPressure();
             int volume = airHandler.getVolume();
@@ -495,13 +499,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         });
     }
 
-    void addPressureInfo(List<ITextComponent> text, float curPressure, int volume, int baseVolume, int upgrades) {
+    public void addPressureInfo(List<Component> text, float curPressure, int volume, int baseVolume, int upgrades) {
         text.add(xlate("pneumaticcraft.gui.tooltip.pressure",
                 PneumaticCraftUtils.roundNumberTo(curPressure, 2)));
         text.add(xlate("pneumaticcraft.gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
         text.add(xlate("pneumaticcraft.gui.tooltip.baseVolume", String.format("%,d", baseVolume)));
         if (volume > baseVolume) {
-            text.add(new StringTextComponent(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
+            text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
                     .append(EnumUpgrade.VOLUME.getItemStack().getHoverName())
             );
             addExtraVolumeModifierInfo(text);
@@ -509,7 +513,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    protected void addExtraVolumeModifierInfo(List<ITextComponent> text) {
+    protected void addExtraVolumeModifierInfo(List<Component> text) {
         // nothing, override in subclasses
     }
 
@@ -518,7 +522,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
      *
      * @param curInfo string list to append to
      */
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         if (te instanceof IMinWorkingPressure) {
             float min = ((IMinWorkingPressure) te).getMinWorkingPressure();
             float pressure = ((TileEntityPneumaticBase) te).getPressure();
@@ -537,7 +541,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
      *
      * @param curInfo string list to append to, which may already contain some problem text
      */
-    protected void addInformation(List<ITextComponent> curInfo) {
+    protected void addInformation(List<Component> curInfo) {
     }
 
     /**
@@ -545,9 +549,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
      *
      * @param curInfo string list to append to, which may already contain some problem text
      */
-    protected void addWarnings(List<ITextComponent> curInfo) {
-        if (te instanceof IRedstoneControl) {
-            IRedstoneControl<?> teR = (IRedstoneControl<?>) te;
+    protected void addWarnings(List<Component> curInfo) {
+        if (te instanceof IRedstoneControl<?> teR) {
             if (!teR.getRedstoneController().isEmitter() && !teR.getRedstoneController().shouldRun()) {
                 curInfo.add(xlate("pneumaticcraft.gui.tab.problems.redstoneDisallows"));
                 if (teR.getRedstoneMode() == 1) {
@@ -563,21 +566,21 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         NetworkHandler.sendToServer(new PacketGuiButton(tag));
     }
 
-    void drawHoveringString(MatrixStack matrixStack, List<? extends ITextProperties> text, int x, int y, FontRenderer fontRenderer) {
-        net.minecraftforge.fml.client.gui.GuiUtils.drawHoveringText(matrixStack, text, x, y, width, height, -1, fontRenderer);
-    }
+//    void drawHoveringString(PoseStack matrixStack, List<? extends FormattedText> text, int x, int y, Font fontRenderer) {
+//        net.minecraftforge.client.gui.GuiUtils.drawHoveringText(matrixStack, text, x, y, width, height, -1, fontRenderer);
+//    }
 
-    WidgetButtonExtended getButtonFromRectangle(String tag, Rectangle2d buttonSize, String buttonText, Button.IPressable pressable) {
-        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), buttonText, pressable).withTag(tag);
-    }
-
-    WidgetButtonExtended getInvisibleButtonFromRectangle(String tag, Rectangle2d buttonSize, Button.IPressable pressable) {
-        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), StringTextComponent.EMPTY, pressable).withTag(tag);
-    }
-
-    WidgetTextField getTextFieldFromRectangle(Rectangle2d textFieldSize) {
-        return new WidgetTextField(font, textFieldSize.getX(), textFieldSize.getY(), textFieldSize.getWidth(), textFieldSize.getHeight());
-    }
+//    WidgetButtonExtended getButtonFromRectangle(String tag, Rect2i buttonSize, String buttonText, Button.OnPress pressable) {
+//        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), buttonText, pressable).withTag(tag);
+//    }
+//
+//    WidgetButtonExtended getInvisibleButtonFromRectangle(String tag, Rect2i buttonSize, Button.OnPress pressable) {
+//        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), TextComponent.EMPTY, pressable).withTag(tag);
+//    }
+//
+//    WidgetTextField getTextFieldFromRectangle(Rect2i textFieldSize) {
+//        return new WidgetTextField(font, textFieldSize.getX(), textFieldSize.getY(), textFieldSize.getWidth(), textFieldSize.getHeight());
+//    }
 
     @Override
     public int getGuiLeft() {
@@ -589,18 +592,18 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return topPos;
     }
 
-    public List<Rectangle2d> getTabRectangles() {
+    public List<Rect2i> getTabRectangles() {
         return getStatWidgets().stream()
                 .map(IGuiAnimatedStat::getBounds)
                 .collect(Collectors.toList());
     }
 
     void refreshScreen() {
-        MainWindow mw = Minecraft.getInstance().getWindow();
+        Window mw = Minecraft.getInstance().getWindow();
         int i = mw.getGuiScaledWidth();
         int j = mw.getGuiScaledHeight();
         init(Minecraft.getInstance(), i, j);
-        buttons.stream().filter(widget -> widget instanceof ITickable).forEach(w -> ((ITickable) w).tick());
+        renderables.stream().filter(widget -> widget instanceof Tickable).forEach(w -> ((Tickable) w).tick());
     }
 
     /**
@@ -648,6 +651,6 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     <R extends PneumaticCraftRecipe> Optional<R> getCurrentRecipe(PneumaticCraftRecipeType<R> type) {
         String id = te.getCurrentRecipeIdSynced();
         return id.isEmpty() ? Optional.empty() :
-                Optional.ofNullable(type.getRecipe(ClientUtils.getClientWorld(), new ResourceLocation(id)));
+                Optional.ofNullable(type.getRecipe(ClientUtils.getClientLevel(), new ResourceLocation(id)));
     }
 }

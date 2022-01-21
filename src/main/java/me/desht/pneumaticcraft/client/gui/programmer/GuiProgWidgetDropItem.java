@@ -45,9 +45,9 @@ public class GuiProgWidgetDropItem extends GuiProgWidgetImportExport<ProgWidgetD
                                 xlate("pneumaticcraft.gui.progWidget.drop.dropMethod.straight"),
                                 b -> progWidget.setDropStraight(true)),
                         progWidget.dropStraight())
-                .build(this::addButton);
+                .build(this::addRenderableWidget);
 
-        addButton(new WidgetCheckBox(guiLeft + 8, guiTop + 115, 0xFF404040,
+        addRenderableWidget(new WidgetCheckBox(guiLeft + 8, guiTop + 115, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.drop.hasPickupDelay"), b -> progWidget.setPickupDelay(b.checked))
                 .setChecked(progWidget.hasPickupDelay()));
     }

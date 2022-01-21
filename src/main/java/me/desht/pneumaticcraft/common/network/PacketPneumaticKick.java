@@ -22,18 +22,18 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Comparator;
 import java.util.List;
@@ -47,20 +47,20 @@ public class PacketPneumaticKick {
     public PacketPneumaticKick() {
     }
 
-    public PacketPneumaticKick(@SuppressWarnings("unused") PacketBuffer buffer) {
+    public PacketPneumaticKick(@SuppressWarnings("unused") FriendlyByteBuf buffer) {
         // empty
     }
 
     @SuppressWarnings("EmptyMethod")
-    public void toBytes(@SuppressWarnings("unused") PacketBuffer buf) {
+    public void toBytes(@SuppressWarnings("unused") FriendlyByteBuf buf) {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().kickHandler, false)) {
-                int upgrades = handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER);
+                int upgrades = handler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.DISPENSER);
                 if (upgrades > 0) {
                     handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
                 }
@@ -69,11 +69,11 @@ public class PacketPneumaticKick {
         ctx.get().setPacketHandled(true);
     }
 
-    private void handleKick(PlayerEntity player, int upgrades) {
-        Vector3d lookVec = new Vector3d(player.getLookAngle().x, Math.max(0, player.getLookAngle().y), player.getLookAngle().z).normalize();
+    private void handleKick(Player player, int upgrades) {
+        Vec3 lookVec = new Vec3(player.getLookAngle().x, Math.max(0, player.getLookAngle().y), player.getLookAngle().z).normalize();
 
         double playerFootY = player.getY() - player.getBbHeight() / 2;
-        AxisAlignedBB box = new AxisAlignedBB(player.getX(), playerFootY, player.getZ(), player.getX(), playerFootY, player.getZ())
+        AABB box = new AABB(player.getX(), playerFootY, player.getZ(), player.getX(), playerFootY, player.getZ())
                 .inflate(1.5, 1.5, 1.5).move(lookVec);
         List<Entity> entities = player.level.getEntities(player, box);
         if (entities.isEmpty()) return;
@@ -90,9 +90,9 @@ public class PacketPneumaticKick {
             target.verticalCollision = false;
             target.setDeltaMovement(target.getDeltaMovement().add(lookVec.scale(1.0 + upgrades * 0.5)).add(0, upgrades * 0.1, 0));
         }
-        player.level.playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.PUNCH.get(), SoundCategory.PLAYERS, 1f, 1f);
+        player.level.playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.PUNCH.get(), SoundSource.PLAYERS, 1f, 1f);
         NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(target, target.getDeltaMovement()), target);
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.getX(), target.getY(), target.getZ(), 1.0D, 0.0D, 0.0D), target);
-        CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlotType.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * upgrades);
+        CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlot.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * upgrades);
     }
 }

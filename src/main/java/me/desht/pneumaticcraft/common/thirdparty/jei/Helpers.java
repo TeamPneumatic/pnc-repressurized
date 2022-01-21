@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 class Helpers {
     static IDrawable makeTankOverlay(int height) {

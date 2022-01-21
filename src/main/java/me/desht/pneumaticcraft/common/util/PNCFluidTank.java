@@ -17,14 +17,16 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nonnull;
 import java.util.function.Predicate;
+
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 /**
  * Much like the default FluidTank implementation in Forge, but also passes the previous fluid & amount in its
@@ -74,13 +76,13 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
         return fluid.getAmount();
     }
 
-    public PNCFluidTank readFromNBT(CompoundNBT nbt) {
+    public PNCFluidTank readFromNBT(CompoundTag nbt) {
         FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt);
         setFluid(fluid);
         return this;
     }
 
-    public CompoundNBT writeToNBT(CompoundNBT nbt) {
+    public CompoundTag writeToNBT(CompoundTag nbt) {
         fluid.writeToNBT(nbt);
         return nbt;
     }

@@ -20,21 +20,21 @@ package me.desht.pneumaticcraft.common.entity.living;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
 public class EntityGuardDrone extends EntityBasicDrone {
-    public EntityGuardDrone(EntityType<? extends EntityDrone> type, World world) {
+    public EntityGuardDrone(EntityType<? extends EntityDrone> type, Level world) {
         super(type, world);
     }
 
-    public EntityGuardDrone(World world, PlayerEntity player) {
+    public EntityGuardDrone(Level world, Player player) {
         super(ModEntities.GUARD_DRONE.get(), world, player);
     }
 

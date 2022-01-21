@@ -44,6 +44,6 @@ public class GuiProgWidgetGoToLocation<T extends ProgWidgetGoToLocation> extends
                                 b -> progWidget.setDoneWhenDeparting(true))
                                 .setTooltip(xlate("pneumaticcraft.gui.progWidget.goto.doneWhenDeparting.tooltip")),
                         progWidget.doneWhenDeparting())
-                .build(this::addButton);
+                .build(this::addRenderableWidget);
     }
 }

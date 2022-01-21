@@ -21,17 +21,17 @@ import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -48,21 +48,21 @@ public class ItemTagFilter extends Item implements ITagFilteringItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (worldIn != null) {
-            tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(TextFormatting.YELLOW));
+            tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(ChatFormatting.YELLOW));
             for (ResourceLocation rl : getConfiguredTagList(stack)) {
-                tooltip.add(Symbols.bullet().append(rl.toString()).withStyle(TextFormatting.GOLD));
+                tooltip.add(Symbols.bullet().append(rl.toString()).withStyle(ChatFormatting.GOLD));
             }
         }
     }
 
     public static Set<ResourceLocation> getConfiguredTagList(ItemStack stack) {
-        CompoundNBT nbt = stack.getTag();
+        CompoundTag nbt = stack.getTag();
         if (nbt != null && nbt.contains(NBT_TAG_LIST)) {
-            ListNBT l = nbt.getList("TagList", Constants.NBT.TAG_STRING);
+            ListTag l = nbt.getList("TagList", Tag.TAG_STRING);
             Set<ResourceLocation> res = new HashSet<>();
             for (int i = 0; i < l.size(); i++) {
                 res.add(new ResourceLocation(l.getString(i)));
@@ -74,8 +74,8 @@ public class ItemTagFilter extends Item implements ITagFilteringItem {
     }
 
     public static void setConfiguredTagList(ItemStack stack, Set<ResourceLocation> tags) {
-        ListNBT l = new ListNBT();
-        tags.forEach(rl -> l.add(StringNBT.valueOf(rl.toString())));
+        ListTag l = new ListTag();
+        tags.forEach(rl -> l.add(StringTag.valueOf(rl.toString())));
         stack.getOrCreateTag().put("TagList", l);
     }
 

@@ -28,15 +28,20 @@ import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.*;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
+
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Names.MOD_ID);
@@ -105,22 +110,22 @@ public class ModItems {
             ItemJackHammer::new);
 
     public static final RegistryObject<Item> COMPRESSED_IRON_HELMET = register("compressed_iron_helmet",
-            () -> new ItemCompressedIronArmor(EquipmentSlotType.HEAD));
+            () -> new ItemCompressedIronArmor(EquipmentSlot.HEAD));
     public static final RegistryObject<Item> COMPRESSED_IRON_CHESTPLATE = register("compressed_iron_chestplate",
-            () -> new ItemCompressedIronArmor(EquipmentSlotType.CHEST));
+            () -> new ItemCompressedIronArmor(EquipmentSlot.CHEST));
     public static final RegistryObject<Item> COMPRESSED_IRON_LEGGINGS = register("compressed_iron_leggings",
-            () -> new ItemCompressedIronArmor(EquipmentSlotType.LEGS));
+            () -> new ItemCompressedIronArmor(EquipmentSlot.LEGS));
     public static final RegistryObject<Item> COMPRESSED_IRON_BOOTS = register("compressed_iron_boots",
-            () -> new ItemCompressedIronArmor(EquipmentSlotType.FEET));
+            () -> new ItemCompressedIronArmor(EquipmentSlot.FEET));
 
     public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_HELMET = register("pneumatic_helmet",
-            () -> new ItemPneumaticArmor(EquipmentSlotType.HEAD));
+            () -> new ItemPneumaticArmor(EquipmentSlot.HEAD));
     public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_CHESTPLATE = register("pneumatic_chestplate",
-            () -> new ItemPneumaticArmor(EquipmentSlotType.CHEST));
+            () -> new ItemPneumaticArmor(EquipmentSlot.CHEST));
     public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_LEGGINGS = register("pneumatic_leggings",
-            () -> new ItemPneumaticArmor(EquipmentSlotType.LEGS));
+            () -> new ItemPneumaticArmor(EquipmentSlot.LEGS));
     public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_BOOTS = register("pneumatic_boots",
-            () -> new ItemPneumaticArmor(EquipmentSlotType.FEET));
+            () -> new ItemPneumaticArmor(EquipmentSlot.FEET));
 
     public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_LASER = register(AssemblyRecipe.AssemblyProgramType.LASER);
     public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL = register(AssemblyRecipe.AssemblyProgramType.DRILL);
@@ -279,7 +284,7 @@ public class ModItems {
         return register(name, () -> new ItemBucketPneumaticCraft(sup));
     }
 
-    private static RegistryObject<Item> registerFood(final String name, Food food) {
+    private static RegistryObject<Item> registerFood(final String name, FoodProperties food) {
         return register(name, () -> new Item(defaultProps().food(food)));
     }
 
@@ -290,7 +295,7 @@ public class ModItems {
     }
 
     static class ItemGroups {
-        static final ItemGroup PNC_CREATIVE_TAB = new ItemGroup(Names.MOD_ID) {
+        static final CreativeModeTab PNC_CREATIVE_TAB = new CreativeModeTab(Names.MOD_ID) {
             @Override
             public ItemStack makeIcon() {
                 return new ItemStack(ModBlocks.AIR_COMPRESSOR.get());

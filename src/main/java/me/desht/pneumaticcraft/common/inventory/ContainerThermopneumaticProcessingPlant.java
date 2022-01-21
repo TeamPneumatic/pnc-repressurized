@@ -19,19 +19,19 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerThermopneumaticProcessingPlant extends
         ContainerPneumaticBase<TileEntityThermopneumaticProcessingPlant> {
 
-    public ContainerThermopneumaticProcessingPlant(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerThermopneumaticProcessingPlant(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerThermopneumaticProcessingPlant(int windowId, PlayerInventory playerInventory, BlockPos pos) {
+    public ContainerThermopneumaticProcessingPlant(int windowId, Inventory playerInventory, BlockPos pos) {
         super(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT.get(), windowId, playerInventory, pos);
 
         // add upgrade slots

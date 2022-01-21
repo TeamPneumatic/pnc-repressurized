@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.resources.language.I18n;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender {
 
     private final ArrayList<String> elements = new ArrayList<>();
-    private final FontRenderer fontRenderer;
+    private final Font fontRenderer;
     private boolean enabled = true;
     private boolean fixedOptions;
     private boolean shouldSort = true;
@@ -41,11 +41,11 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     private final Consumer<WidgetComboBox> pressable;
     private List<String> applicable = null;
 
-    public WidgetComboBox(FontRenderer fontRenderer, int x, int y, int width, int height) {
+    public WidgetComboBox(Font fontRenderer, int x, int y, int width, int height) {
         this(fontRenderer, x, y, width, height, b -> {});
     }
 
-    public WidgetComboBox(FontRenderer fontRenderer, int x, int y, int width, int height, Consumer<WidgetComboBox> pressable) {
+    public WidgetComboBox(Font fontRenderer, int x, int y, int width, int height, Consumer<WidgetComboBox> pressable) {
         super(fontRenderer, x, y, width, height);
         this.fontRenderer = fontRenderer;
         this.baseHeight = height;
@@ -89,14 +89,14 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
         fontRenderer.draw(matrixStack, isFocused() ? Symbols.TRIANGLE_UP : Symbols.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
     }
 
     @Override
-    public void renderAfterEverythingElse(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderAfterEverythingElse(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (enabled && active && isFocused()) {
             List<String> applicableElements = getApplicableElements();
             fill(matrixStack, x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.lineHeight, 0xFFA0A0A0);

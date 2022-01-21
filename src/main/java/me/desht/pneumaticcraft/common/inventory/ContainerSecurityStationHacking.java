@@ -24,11 +24,11 @@ import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.H
 import me.desht.pneumaticcraft.common.hacking.secstation.SimulationController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -38,11 +38,11 @@ import java.util.List;
 public class ContainerSecurityStationHacking extends ContainerPneumaticBase<TileEntitySecurityStation> {
     public static final int NODE_SPACING = 31;
 
-    public ContainerSecurityStationHacking(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerSecurityStationHacking(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, fromBytes(playerInventory.player, buffer));
     }
 
-    public ContainerSecurityStationHacking(int windowId, PlayerInventory playerInventory, BlockPos pos) {
+    public ContainerSecurityStationHacking(int windowId, Inventory playerInventory, BlockPos pos) {
         super(ModContainers.SECURITY_STATION_HACKING.get(), windowId, playerInventory, pos);
 
         //add the network slots
@@ -54,7 +54,7 @@ public class ContainerSecurityStationHacking extends ContainerPneumaticBase<Tile
         }
     }
 
-    private static BlockPos fromBytes(PlayerEntity player, PacketBuffer buffer) {
+    private static BlockPos fromBytes(Player player, FriendlyByteBuf buffer) {
         BlockPos tilePos = buffer.readBlockPos();
 
         HackSimulation playerSimulation = HackSimulation.readFromNetwork(buffer);
@@ -81,7 +81,7 @@ public class ContainerSecurityStationHacking extends ContainerPneumaticBase<Tile
 
     @Nonnull
     @Override
-    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int par2) {
+    public ItemStack quickMoveStack(Player par1EntityPlayer, int par2) {
         return ItemStack.EMPTY;
     }
 

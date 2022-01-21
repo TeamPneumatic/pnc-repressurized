@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.pressure;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 import org.apache.commons.lang3.Validate;
 
 public class PressureHelper {
@@ -36,7 +36,7 @@ public class PressureHelper {
         Validate.isTrue(upgradeCount >= 0 && upgradeCount <= 64, "upgrade count must be in range 0..64 inclusive!");
 
         if (UPGRADE_CACHE[upgradeCount] == 0f) {
-            UPGRADE_CACHE[upgradeCount] = upgradeCount == 0 ? 1f : 2f * MathHelper.sqrt(upgradeCount);
+            UPGRADE_CACHE[upgradeCount] = upgradeCount == 0 ? 1f : 2f * Mth.sqrt(upgradeCount);
         }
         return (int) (baseVolume * UPGRADE_CACHE[upgradeCount]);
     }

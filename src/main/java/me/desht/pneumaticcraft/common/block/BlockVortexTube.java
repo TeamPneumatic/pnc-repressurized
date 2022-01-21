@@ -4,20 +4,21 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
+public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable, EntityBlockPneumaticCraft {
 
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(12, 4, 15, 13, 12, 16),
@@ -62,7 +63,7 @@ public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandler
             Block.box(10, 10, 13, 11, 11, 14),
             Block.box(5, 5, 13, 6, 6, 14),
             Block.box(5, 10, 13, 6, 11, 14)
-    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return Shapes.join(v1, v2, BooleanOp.OR);}).get();
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
@@ -71,15 +72,6 @@ public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandler
     private static final VoxelShape SHAPE_D = VoxelShapeUtils.rotateX(SHAPE_S, 90);
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] { SHAPE_D, SHAPE_U, SHAPE_N, SHAPE_S, SHAPE_W, SHAPE_E };
-
-//    private static final VoxelShape[] SHAPES = new VoxelShape[] {  // DUNSWE order
-//            Block.box(0,0, 0, 15, 15, 15),
-//            Block.box(0,1, 1, 15, 16, 16),
-//            Block.box(1,0, 0, 16, 15, 15),
-//            Block.box(0,0, 1, 15, 15, 16),
-//            Block.box(0,0, 0, 15, 15, 15),
-//            Block.box(1,0, 1, 16, 15, 16),
-//    };
 
     public BlockVortexTube() {
         super(ModBlocks.defaultProps());
@@ -95,18 +87,13 @@ public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandler
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(CONNECTION_PROPERTIES);
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityVortexTube.class;
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPES[getRotation(state).get3DDataValue()];
     }
 
@@ -118,5 +105,11 @@ public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandler
     @Override
     protected boolean canRotateToTopOrBottom() {
         return true;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityVortexTube(pPos, pState);
     }
 }

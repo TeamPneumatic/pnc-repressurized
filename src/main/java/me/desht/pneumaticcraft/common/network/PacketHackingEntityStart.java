@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Ent
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -42,21 +42,21 @@ public class PacketHackingEntityStart {
         entityId = entity.getId();
     }
 
-    public PacketHackingEntityStart(PacketBuffer buffer) {
+    public PacketHackingEntityStart(FriendlyByteBuf buffer) {
         entityId = buffer.readInt();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(entityId);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
             if (player == null) {
                 // client
-                PlayerEntity cPlayer = ClientUtils.getClientPlayer();
+                Player cPlayer = ClientUtils.getClientPlayer();
                 Entity entity = cPlayer.level.getEntity(entityId);
                 if (entity != null) {
                     CommonArmorHandler.getHandlerForPlayer(cPlayer)

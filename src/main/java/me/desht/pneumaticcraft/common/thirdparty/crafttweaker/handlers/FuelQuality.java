@@ -18,26 +18,26 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
-import com.blamejared.crafttweaker.api.annotations.ZenRegister;
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
-import com.blamejared.crafttweaker.api.managers.IRecipeManager;
-import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
+import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
+import com.blamejared.crafttweaker.api.action.recipe.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.resources.ResourceLocation;
 import org.openzen.zencode.java.ZenCodeType;
 
 @Document("mods/PneumaticCraft/FuelQuality")
 @ZenCodeType.Name("mods.pneumaticcraft.fuelquality")
 @ZenRegister
-public class FuelQuality implements IRecipeManager {
+public class FuelQuality implements IRecipeManager<FuelQualityRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, CTFluidIngredient ingredient, int airPerBucket, @ZenCodeType.OptionalFloat(1f) float burnRate) {
-        CraftTweakerAPI.apply(new ActionAddRecipe(this,
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new FuelQualityRecipeImpl(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                         CTUtils.toFluidIngredient(ingredient),
                         airPerBucket,
@@ -46,7 +46,7 @@ public class FuelQuality implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<FuelQualityRecipe> getRecipeType() {
+    public RecipeType<FuelQualityRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.FUEL_QUALITY;
     }
 }

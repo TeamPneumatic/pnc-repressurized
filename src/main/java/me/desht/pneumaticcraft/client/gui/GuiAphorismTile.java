@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -31,13 +31,13 @@ import me.desht.pneumaticcraft.common.network.PacketAphorismTileUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.drama.DramaGenerator;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SharedConstants;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.client.gui.widget.Slider;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.gui.widget.Slider;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
@@ -79,22 +79,22 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         int yPos = (height - PANEL_HEIGHT) / 2;
-        addButton(new Slider(5, yPos, 90, 16,  new StringTextComponent("Margin: "), StringTextComponent.EMPTY,
+        addRenderableWidget(new Slider(5, yPos, 90, 16,  new TextComponent("Margin: "), TextComponent.EMPTY,
                 0, 9, tile.getMarginSize(), false, true, b -> { }, this));
 
         WidgetCheckBox cb;
         WidgetButtonExtended itemButton, rsButton;
 
-        addButton(cb = new WidgetCheckBox(5, yPos + 22, 0xFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.invisible"), b -> tile.setInvisible(b.checked))
+        addRenderableWidget(cb = new WidgetCheckBox(5, yPos + 22, 0xFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.invisible"), b -> tile.setInvisible(b.checked))
                 .setChecked(tile.isInvisible()));
 
-        addButton(new WidgetLabel(5, yPos + 38, xlate("pneumaticcraft.gui.aphorismTile.insert"), 0xFFFFFF80));
+        addRenderableWidget(new WidgetLabel(5, yPos + 38, xlate("pneumaticcraft.gui.aphorismTile.insert"), 0xFFFFFF80));
 
-        ITextComponent txt = xlate("pneumaticcraft.gui.aphorismTile.insertItem");
-        addButton(itemButton = new WidgetButtonExtended(10, yPos + 50, font.width(txt) + 10, 18, txt, b -> openItemSelector()));
+        Component txt = xlate("pneumaticcraft.gui.aphorismTile.insertItem");
+        addRenderableWidget(itemButton = new WidgetButtonExtended(10, yPos + 50, font.width(txt) + 10, 18, txt, b -> openItemSelector()));
 
         txt = xlate("pneumaticcraft.gui.redstone");
-        addButton(rsButton = new WidgetButtonExtended(10, yPos + 70, font.width(txt) + 10, 18, txt, b -> {
+        addRenderableWidget(rsButton = new WidgetButtonExtended(10, yPos + 70, font.width(txt) + 10, 18, txt, b -> {
             textLines[cursorY] = textLines[cursorY] + "{redstone}";
             tile.setTextLines(textLines);
         }));
@@ -110,7 +110,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
     }
 
     private void openItemSelector() {
-        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Searcher"));
+        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new TextComponent("Searcher"));
         if (minecraft.screen instanceof GuiItemSearcher) {
             itemSearchGui = (GuiItemSearcher) minecraft.screen;
         }
@@ -128,7 +128,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         GuiUtils.drawPanel(matrixStack, -5, (height - PANEL_HEIGHT) / 2, PANEL_HEIGHT, panelWidth);
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);

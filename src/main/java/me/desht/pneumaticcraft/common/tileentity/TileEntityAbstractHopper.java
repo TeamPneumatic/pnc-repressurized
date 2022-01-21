@@ -21,24 +21,25 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneControl<T>> extends TileEntityTickableBase
-        implements IRedstoneControl<T>, IComparatorSupport, INamedContainerProvider {
+public abstract class TileEntityAbstractHopper<T extends BlockEntity & IRedstoneControl<T>> extends TileEntityTickableBase
+        implements IRedstoneControl<T>, IComparatorSupport, MenuProvider {
     private static final int BASE_TICK_RATE = 8;
 
     private int lastComparatorValue = -1;
@@ -51,13 +52,13 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     private boolean wasCreative = false;
     Direction inputDir = Direction.UP;
     // regions to check for entities (items, or maybe entities with an item/fluid capability)
-    AxisAlignedBB inputAABB;
-    AxisAlignedBB outputAABB;
+    AABB inputAABB;
+    AABB outputAABB;
     final List<Entity> cachedInputEntities = new ArrayList<>();
     final List<Entity> cachedOutputEntities = new ArrayList<>();
 
-    TileEntityAbstractHopper(TileEntityType type) {
-        super(type, 4);
+    TileEntityAbstractHopper(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state, 4);
     }
 
     public Direction getInputDirection() {
@@ -65,11 +66,13 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     }
 
     @Override
-    protected void onFirstServerTick() {
-        super.onFirstServerTick();
+    public void onLoad() {
+        super.onLoad();
 
-        isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
-        setupInputOutputRegions();
+        if (!nonNullLevel().isClientSide) {
+            isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
+            setupInputOutputRegions();
+        }
     }
 
     @Override
@@ -81,20 +84,20 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     }
 
     @Override
-    public void tick() {
+    public void tickServer() {
         inputDir = getInputDirection();
 
-        super.tick();
+        super.tickServer();
 
-        if (!getLevel().isClientSide && getRedstoneController().shouldRun()) {
+        if (getRedstoneController().shouldRun()) {
             if (--entityScanCooldown <= 0) {
                 cachedInputEntities.clear();
                 if (shouldScanForEntities(inputDir)) {
-                    cachedInputEntities.addAll(level.getEntitiesOfClass(Entity.class, inputAABB, EntityPredicates.ENTITY_STILL_ALIVE));
+                    cachedInputEntities.addAll(nonNullLevel().getEntitiesOfClass(Entity.class, inputAABB, EntitySelector.ENTITY_STILL_ALIVE));
                 }
                 cachedOutputEntities.clear();
                 if (shouldScanForEntities(getRotation())) {
-                    cachedOutputEntities.addAll(level.getEntitiesOfClass(Entity.class, outputAABB, EntityPredicates.ENTITY_STILL_ALIVE));
+                    cachedOutputEntities.addAll(nonNullLevel().getEntitiesOfClass(Entity.class, outputAABB, EntitySelector.ENTITY_STILL_ALIVE));
                 }
                 entityScanCooldown = BASE_TICK_RATE;
             }
@@ -143,15 +146,14 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     protected abstract int getComparatorValueInternal();
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putInt("leaveMaterialCount", leaveMaterialCount);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         if (tag.contains("leaveMaterial")) {
             leaveMaterialCount = (byte)(tag.getBoolean("leaveMaterial") ? 1 : 0);
@@ -161,17 +163,13 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (getRedstoneController().parseRedstoneMode(tag))
             return;
 
         switch (tag) {
-            case "empty":
-                leaveMaterialCount = 0;
-                break;
-            case "leave":
-                leaveMaterialCount = 1;
-                break;
+            case "empty" -> leaveMaterialCount = 0;
+            case "leave" -> leaveMaterialCount = 1;
         }
 
         setChanged();
@@ -202,8 +200,8 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
         return true;
     }
 
-    List<ItemEntity> getNeighborItems(AxisAlignedBB aabb) {
-        return aabb == null ? Collections.emptyList() : level.getEntitiesOfClass(ItemEntity.class, aabb, EntityPredicates.ENTITY_STILL_ALIVE);
+    List<ItemEntity> getNeighborItems(AABB aabb) {
+        return aabb == null ? Collections.emptyList() : level.getEntitiesOfClass(ItemEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
     }
 
     abstract boolean shouldScanForEntities(Direction dir);

@@ -17,8 +17,7 @@
 
 package me.desht.pneumaticcraft.client.event;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
@@ -34,31 +33,24 @@ import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fml.common.Mod;
-import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 
@@ -83,16 +75,15 @@ public class TooltipEventHandler {
         }
     }
 
-    private static void addStandardTooltip(ItemStack stack, List<ITextComponent> curInfo, ITooltipFlag flagIn) {
+    private static void addStandardTooltip(ItemStack stack, List<Component> curInfo, TooltipFlag flagIn) {
         addPressureTooltip(stack, curInfo);
 
         if (stack.getItem() instanceof IUpgradeAcceptor) {
-            UpgradableItemUtils.addUpgradeInformation(stack, curInfo, ITooltipFlag.TooltipFlags.NORMAL);
+            UpgradableItemUtils.addUpgradeInformation(stack, curInfo, TooltipFlag.Default.NORMAL);
         }
 
-        if (stack.getItem() instanceof IInventoryItem) {
+        if (stack.getItem() instanceof IInventoryItem item) {
             List<ItemStack> stacks = new ArrayList<>();
-            IInventoryItem item = (IInventoryItem) stack.getItem();
             item.getStacksInItem(stack, stacks);
             if (item.getInventoryHeader() != null && !stacks.isEmpty()) {
                 curInfo.add(item.getInventoryHeader());
@@ -103,27 +94,27 @@ public class TooltipEventHandler {
         String key = ICustomTooltipName.getTranslationKey(stack, true);
         if (I18n.exists(key)) {
             if (ClientUtils.hasShiftDown()) {
-                String translatedInfo = TextFormatting.AQUA + I18n.get(key);
+                String translatedInfo = ChatFormatting.AQUA + I18n.get(key);
                 curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo)));
                 if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
                     curInfo.add(xlate("pneumaticcraft.gui.tab.info.installDocsProvider"));
                 }
             } else {
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").withStyle(TextFormatting.AQUA));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").withStyle(ChatFormatting.AQUA));
             }
         }
     }
 
-    private static void addPressureTooltip(ItemStack stack, List<ITextComponent> textList) {
+    private static void addPressureTooltip(ItemStack stack, List<Component> textList) {
         stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
             float f = airHandler.getPressure() / airHandler.maxPressure();
-            TextFormatting color;
+            ChatFormatting color;
             if (f < 0.1f) {
-                color = TextFormatting.RED;
+                color = ChatFormatting.RED;
             } else if (f < 0.5f) {
-                color = TextFormatting.GOLD;
+                color = ChatFormatting.GOLD;
             } else {
-                color = TextFormatting.DARK_GREEN;
+                color = ChatFormatting.DARK_GREEN;
             }
             textList.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1)).withStyle(color));
         });
@@ -133,30 +124,30 @@ public class TooltipEventHandler {
         IProgrammable programmable = (IProgrammable) event.getItemStack().getItem();
         if (programmable.canProgram(event.getItemStack()) && programmable.showProgramTooltip()) {
             boolean hasInvalidPrograms = false;
-            List<ITextComponent> addedEntries = new ArrayList<>();
+            List<Component> addedEntries = new ArrayList<>();
             List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(event.getItemStack());
             Map<ResourceLocation, Integer> widgetMap = getPuzzleSummary(widgets);
             for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
-                TextFormatting[] prefix = new TextFormatting[0];
+                ChatFormatting[] prefix = new ChatFormatting[0];
                 ProgWidgetType<?> widgetType = ModProgWidgets.PROG_WIDGETS.get().getValue(entry.getKey());
                 Screen curScreen = Minecraft.getInstance().screen;
                 if (curScreen instanceof IGuiDrone) {
                     if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widgetType)) {
-                        prefix = new TextFormatting[]{ TextFormatting.RED, TextFormatting.ITALIC };
+                        prefix = new ChatFormatting[]{ ChatFormatting.RED, ChatFormatting.ITALIC };
                         hasInvalidPrograms = true;
                     }
                 }
-                addedEntries.add(new StringTextComponent(Symbols.BULLET + " " + entry.getValue() + " x ")
+                addedEntries.add(new TextComponent(Symbols.BULLET + " " + entry.getValue() + " x ")
                         .append(xlate(widgetType.getTranslationKey()))
                         .withStyle(prefix));
             }
             if (hasInvalidPrograms) {
-                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.invalidPieces").withStyle(TextFormatting.RED));
+                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.invalidPieces").withStyle(ChatFormatting.RED));
             }
-            addedEntries.sort(Comparator.comparing(ITextComponent::getString));
+            addedEntries.sort(Comparator.comparing(Component::getString));
             event.getToolTip().addAll(addedEntries);
             if (ClientUtils.hasShiftDown() && !widgets.isEmpty()) {
-                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", widgets.size()).withStyle(TextFormatting.GREEN));
+                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", widgets.size()).withStyle(ChatFormatting.GREEN));
             }
         }
     }
@@ -175,10 +166,10 @@ public class TooltipEventHandler {
 //                    prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
 //                }
                 if (Screen.hasShiftDown()) {
-                    String translatedInfo = TextFormatting.AQUA + I18n.get(key);
+                    String translatedInfo = ChatFormatting.AQUA + I18n.get(key);
                     event.getToolTip().addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(/*prefix +*/ translatedInfo)));
                 } else {
-                    event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").withStyle(TextFormatting.AQUA));
+                    event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").withStyle(ChatFormatting.AQUA));
                 }
             }
         });
@@ -192,48 +183,13 @@ public class TooltipEventHandler {
         return map;
     }
 
-
     @SubscribeEvent
-    public static void renderTooltipEvent(RenderTooltipEvent.PostText event) {
-        ItemStack stack = event.getStack();
+    public static void gatherComponents(RenderTooltipEvent.GatherComponents event) {
+        ItemStack stack = event.getItemStack();
         if (stack.getItem() instanceof ItemMicromissiles
                 && stack.hasTag()
-                && ItemMicromissiles.getFireMode(stack) == ItemMicromissiles.FireMode.SMART)
-        {
-            int width = 0;
-            FontRenderer fr = event.getFontRenderer();
-            int vSpace = fr.lineHeight + 1;
-            int y = event.getY() + vSpace * 2 + 2;
-            MatrixStack matrixStack = event.getMatrixStack();
-            matrixStack.pushPose();
-            matrixStack.translate(0, 0, 500);
-            width = Math.max(width, fr.width(I18n.get("pneumaticcraft.gui.micromissile.topSpeed")));
-            width = Math.max(width, fr.width(I18n.get("pneumaticcraft.gui.micromissile.turnSpeed")));
-            width = Math.max(width, fr.width(I18n.get("pneumaticcraft.gui.micromissile.damage")));
-            matrixStack.popPose();
-
-            int barX = event.getX() + width + 2;
-            int barW = event.getWidth() - width - 10;
-            RenderSystem.disableTexture();
-            RenderSystem.lineWidth(10);
-            GL11.glEnable(GL11.GL_LINE_STIPPLE);
-            GL11.glLineStipple(1, (short) 0xFEFE);
-            RenderSystem.shadeModel(GL11.GL_SMOOTH);
-            drawLine(matrixStack, barX, y, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)));
-            drawLine(matrixStack, barX, y + vSpace, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));
-            drawLine(matrixStack, barX, y + 2 * vSpace, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_DAMAGE)));
-            RenderSystem.lineWidth(1);
-            GL11.glDisable(GL11.GL_LINE_STIPPLE);
-            RenderSystem.shadeModel(GL11.GL_FLAT);
+                && ItemMicromissiles.getFireMode(stack) == ItemMicromissiles.FireMode.SMART) {
+            event.getTooltipElements().add(Either.right(new ItemMicromissiles.Tooltip(stack)));
         }
-    }
-
-    private static void drawLine(MatrixStack matrixStack, int x, int y, int length) {
-        BufferBuilder bb = Tessellator.getInstance().getBuilder();
-        Matrix4f posMat = matrixStack.last().pose();
-        bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-        bb.vertex(posMat, x, y + 4, 0).color(128, 128, 0, 255).endVertex();
-        bb.vertex(posMat, x + length, y + 4, 0).color(0, 192, 0, 255).endVertex();
-        Tessellator.getInstance().end();
     }
 }

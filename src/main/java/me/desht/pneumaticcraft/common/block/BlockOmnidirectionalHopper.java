@@ -26,37 +26,38 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockDisplayReader;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
-public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
-
+public class BlockOmnidirectionalHopper extends BlockPneumaticCraft
+        implements ColorHandlers.ITintableBlock, EntityBlockPneumaticCraft, IBlockComparatorSupport
+{
     private static final VoxelShape MIDDLE_SHAPE = Block.box(4, 4, 4, 12, 10, 12);
     private static final VoxelShape INPUT_SHAPE = Block.box(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-    private static final VoxelShape INPUT_MIDDLE_SHAPE = VoxelShapes.or(MIDDLE_SHAPE, INPUT_SHAPE);
+    private static final VoxelShape INPUT_MIDDLE_SHAPE = Shapes.or(MIDDLE_SHAPE, INPUT_SHAPE);
     private static final VoxelShape BOWL_SHAPE = Block.box(2.0D, 11.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
-    private static final VoxelShape INPUT_UP    = VoxelShapes.join(INPUT_MIDDLE_SHAPE, BOWL_SHAPE, IBooleanFunction.ONLY_FIRST);
+    private static final VoxelShape INPUT_UP    = Shapes.join(INPUT_MIDDLE_SHAPE, BOWL_SHAPE, BooleanOp.ONLY_FIRST);
     private static final VoxelShape INPUT_NORTH = VoxelShapeUtils.rotateX(INPUT_UP, 270);
     private static final VoxelShape INPUT_DOWN  = VoxelShapeUtils.rotateX(INPUT_NORTH, 270);
     private static final VoxelShape INPUT_SOUTH = VoxelShapeUtils.rotateX(INPUT_UP, 90);
@@ -66,8 +67,8 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
     };
 
-    private static final VoxelShape OUTPUT_DOWN = VoxelShapes.join(Block.box(6, 3, 6, 10, 4, 10), Block.box(6.5, 0, 6.5, 9.5, 4, 9.5), IBooleanFunction.OR);
-    private static final VoxelShape OUTPUT_UP = VoxelShapes.join(Block.box(6, 12, 6, 10, 13, 10), Block.box(6.5, 12, 6.5, 9.5, 16, 9.5), IBooleanFunction.OR);
+    private static final VoxelShape OUTPUT_DOWN = Shapes.join(Block.box(6, 3, 6, 10, 4, 10), Block.box(6.5, 0, 6.5, 9.5, 4, 9.5), BooleanOp.OR);
+    private static final VoxelShape OUTPUT_UP = Shapes.join(Block.box(6, 12, 6, 10, 13, 10), Block.box(6.5, 12, 6.5, 9.5, 16, 9.5), BooleanOp.OR);
     private static final VoxelShape OUTPUT_NORTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 90);
     private static final VoxelShape OUTPUT_SOUTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 270);
     private static final VoxelShape OUTPUT_WEST = VoxelShapeUtils.rotateY(OUTPUT_NORTH, 270);
@@ -85,30 +86,25 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityOmnidirectionalHopper.class;
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         int idx = state.getValue(INPUT_FACING).get3DDataValue() + state.getValue(directionProperty()).get3DDataValue() * 6;
         if (SHAPE_CACHE[idx] == null) {
-            SHAPE_CACHE[idx] = VoxelShapes.join(
+            SHAPE_CACHE[idx] = Shapes.join(
                     INPUT_SHAPES[state.getValue(INPUT_FACING).get3DDataValue()],
                     OUTPUT_SHAPES[state.getValue(directionProperty()).get3DDataValue()],
-                    IBooleanFunction.OR);
+                    BooleanOp.OR);
         }
         return SHAPE_CACHE[idx];
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(INPUT_FACING);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         return this.defaultBlockState()
                 .setValue(BlockStateProperties.FACING, ctx.getClickedFace().getOpposite())
                 .setValue(INPUT_FACING, ctx.getNearestLookingDirection().getOpposite());
@@ -124,12 +120,12 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         return true;
     }
 
-    private Direction getInputDirection(World world, BlockPos pos) {
+    private Direction getInputDirection(Level world, BlockPos pos) {
         return world.getBlockState(pos).getValue(BlockOmnidirectionalHopper.INPUT_FACING);
     }
 
     @Override
-    public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
+    public boolean onWrenched(Level world, Player player, BlockPos pos, Direction face, InteractionHand hand) {
         BlockState state = world.getBlockState(pos);
         if (player != null && player.isShiftKeyDown()) {
             Direction outputDir = getRotation(state);
@@ -147,7 +143,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
             switch (tintIndex) {
                 case 0:
@@ -159,6 +155,12 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
             }
         }
         return 0xFFFFFFFF;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityOmnidirectionalHopper(pPos, pState);
     }
 
     public static class ItemBlockOmnidirectionalHopper extends BlockItem implements ColorHandlers.ITintableItem {

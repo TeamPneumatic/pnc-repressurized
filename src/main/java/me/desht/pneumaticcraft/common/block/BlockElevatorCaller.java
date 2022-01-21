@@ -18,48 +18,44 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
+public class BlockElevatorCaller extends BlockPneumaticCraftCamo implements EntityBlockPneumaticCraft {
     public BlockElevatorCaller() {
         super(ModBlocks.defaultProps().noOcclusion());
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityElevatorCaller.class;
-    }
-
-    @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        TileEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityElevatorCaller) {
-            TileEntityElevatorCaller teEC = (TileEntityElevatorCaller) te;
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+        BlockEntity te = world.getBlockEntity(pos);
+        if (te instanceof TileEntityElevatorCaller teEC) {
             if (!world.isClientSide) {
                 int floor = getFloorForHit(teEC, brtr.getDirection(), brtr.getLocation().x, brtr.getLocation().y, brtr.getLocation().z);
                 if (floor >= 0) setSurroundingElevators(world, pos, floor);
             }
         }
-        return getRotation(state).getOpposite() == brtr.getDirection() ? ActionResultType.SUCCESS : ActionResultType.PASS;
+        return getRotation(state).getOpposite() == brtr.getDirection() ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
     private int getFloorForHit(TileEntityElevatorCaller teEC, Direction side, double hitX, double hitY, double hitZ) {
@@ -82,25 +78,25 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
-        return VoxelShapes.block();
+    public VoxelShape getUncamouflagedShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext ctx) {
+        return Shapes.block();
     }
 
-    public static void setSurroundingElevators(World world, BlockPos pos, int floor) {
+    public static void setSurroundingElevators(Level world, BlockPos pos, int floor) {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
             getElevatorBase(world, pos.relative(dir).relative(Direction.DOWN, 2)).ifPresent(te -> te.goToFloor(floor));
         }
     }
 
     @Override
-    public void onPlace(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+    public void onPlace(BlockState newState, Level world, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(newState, world, pos, oldState, isMoving);
 
         updateElevatorButtons(world, pos);
     }
 
     @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         updateElevatorButtons(world, pos);
 
         super.onRemove(state, world, pos, newState, isMoving);
@@ -112,7 +108,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
      * @param world the world
      * @param pos the blockpos where the caller has been placed/removed
      */
-    private void updateElevatorButtons(World world, BlockPos pos) {
+    private void updateElevatorButtons(Level world, BlockPos pos) {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
             boolean ok = getElevatorBase(world, pos.relative(dir).relative(Direction.DOWN, 2)).map(te -> {
                 te.updateFloors(true);
@@ -122,7 +118,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
         }
     }
 
-    private static Optional<TileEntityElevatorBase> getElevatorBase(World world, BlockPos pos) {
+    private static Optional<TileEntityElevatorBase> getElevatorBase(Level world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
         if (block == ModBlocks.ELEVATOR_FRAME.get()) {
             return BlockElevatorFrame.getElevatorBase(world, pos);
@@ -144,13 +140,15 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public int getSignal(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
-        TileEntity te = par1IBlockAccess.getBlockEntity(pos);
-        if (te instanceof TileEntityElevatorCaller) {
-            TileEntityElevatorCaller teEc = (TileEntityElevatorCaller) te;
-            return teEc.getEmittingRedstone() ? 15 : 0;
-        }
+    public int getSignal(BlockState state, BlockGetter pLevel, BlockPos pos, Direction side) {
+        return pLevel.getBlockEntity(pos, ModTileEntities.ELEVATOR_CALLER.get())
+                .map(teEc -> teEc.getEmittingRedstone() ? 15 : 0)
+                .orElse(0);
+    }
 
-        return 0;
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityElevatorCaller(pPos, pState);
     }
 }

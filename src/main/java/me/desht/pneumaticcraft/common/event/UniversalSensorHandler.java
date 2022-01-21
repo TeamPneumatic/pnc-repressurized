@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -42,7 +42,7 @@ public class UniversalSensorHandler {
         sendEventToSensors(event.getEntity().level, event);
     }
 
-    private void sendEventToSensors(World world, Event event) {
+    private void sendEventToSensors(Level world, Event event) {
         if (!world.isClientSide) {
             for (TileEntityUniversalSensor sensor : GlobalTileEntityCacheManager.getInstance().universalSensors) {
                 sensor.onEvent(event);

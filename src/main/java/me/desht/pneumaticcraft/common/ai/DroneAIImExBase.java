@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.IBlockInteractHandler;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public abstract class DroneAIImExBase<W extends ProgWidgetInventoryBase>
         extends DroneAIBlockInteraction<W>

@@ -1,30 +1,21 @@
 package me.desht.pneumaticcraft.client.render.entity.drone;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraft.resources.ResourceLocation;
 
 public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
-    public static final IRenderFactory<EntityDroneBase> REGULAR_FACTORY = manager -> new RenderDrone(manager, Textures.DRONE_ENTITY);
-    public static final IRenderFactory<EntityDroneBase> PROGRAMMABLE_CONTROLLER_FACTORY = manager -> new RenderDrone(manager, Textures.DRONE_ENTITY, 0.25f);
-    public static final IRenderFactory<EntityDroneBase> LOGISTICS_FACTORY = manager -> new RenderDrone(manager, Textures.LOGISTICS_DRONE_ENTITY);
-    public static final IRenderFactory<EntityDroneBase> HARVESTING_FACTORY = manager -> new RenderDrone(manager, Textures.HARVESTING_DRONE_ENTITY);
-    public static final IRenderFactory<EntityDroneBase> GUARD_FACTORY = manager -> new RenderDrone(manager, Textures.GUARD_DRONE_ENTITY);
-    public static final IRenderFactory<EntityDroneBase> COLLECTOR_FACTORY = manager -> new RenderDrone(manager, Textures.COLLECTOR_DRONE_ENTITY);
-    public static final IRenderFactory<EntityDroneBase> AMADRONE_FACTORY = manager -> new RenderDrone(manager, Textures.AMADRONE_ENTITY);
-
     private final ResourceLocation texture;
-
     private final float scale;
 
-    private RenderDrone(EntityRendererManager entityRendererManager, ResourceLocation texture, float scale) {
-        super(entityRendererManager, new ModelDrone(), 0f);
+    private RenderDrone(EntityRendererProvider.Context ctx, float scale, ResourceLocation texture) {
+        super(ctx, new ModelDrone(ctx.bakeLayer(PNCModelLayers.DRONE)), 0.25f);
 
         this.scale = scale;
         this.texture = texture;
@@ -36,12 +27,36 @@ public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
         addLayer(new DroneTargetLaserLayer(this));
     }
 
-    private RenderDrone(EntityRendererManager manager, ResourceLocation texture) {
-        this(manager,  texture, 0.35f);
+    public static RenderDrone standard(EntityRendererProvider.Context ctx) {
+        return new RenderDrone(ctx, 0.35f, Textures.DRONE_ENTITY);
+    }
+
+    public static RenderDrone programmableController(EntityRendererProvider.Context ctx) {
+        return new RenderDrone(ctx, 0.25f, Textures.DRONE_ENTITY);
+    }
+
+    public static RenderDrone logistics(EntityRendererProvider.Context ctx) {
+        return new RenderDrone(ctx, 0.35f, Textures.LOGISTICS_DRONE_ENTITY);
+    }
+
+    public static RenderDrone harvesting(EntityRendererProvider.Context ctx) {
+        return new RenderDrone(ctx, 0.35f, Textures.HARVESTING_DRONE_ENTITY);
+    }
+
+    public static RenderDrone guard(EntityRendererProvider.Context ctx) {
+        return new RenderDrone(ctx, 0.35f, Textures.GUARD_DRONE_ENTITY);
+    }
+
+    public static RenderDrone collector(EntityRendererProvider.Context ctx) {
+        return new RenderDrone(ctx, 0.35f, Textures.COLLECTOR_DRONE_ENTITY);
+    }
+
+    public static RenderDrone amadrone(EntityRendererProvider.Context ctx) {
+        return new RenderDrone(ctx, 0.35f, Textures.AMADRONE_ENTITY);
     }
 
     @Override
-    public void render(EntityDroneBase entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+    public void render(EntityDroneBase entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         matrixStackIn.pushPose();
 //        matrixStackIn.translate(entityIn.getWidth() / 2, entityIn.getHeight() / 2, entityIn.getWidth() / 2);
         matrixStackIn.scale(scale, scale, scale);

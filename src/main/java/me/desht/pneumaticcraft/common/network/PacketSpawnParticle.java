@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleType;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
@@ -33,18 +33,18 @@ import java.util.function.Supplier;
  * Sent by server to spawn a particle (with support for multiple particles in an random area around the target point)
  */
 public class PacketSpawnParticle extends LocationDoublePacket {
-    private final IParticleData particle;
+    private final ParticleOptions particle;
     private final double dx;
     private final double dy;
     private final double dz;
     private final int numParticles;
     private final double rx, ry, rz;
 
-    public PacketSpawnParticle(IParticleData particle, double x, double y, double z, double dx, double dy, double dz) {
+    public PacketSpawnParticle(ParticleOptions particle, double x, double y, double z, double dx, double dy, double dz) {
         this(particle, x, y, z, dx, dy, dz, 1, 0, 0, 0);
     }
 
-    public PacketSpawnParticle(IParticleData particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
+    public PacketSpawnParticle(ParticleOptions particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
         super(x, y, z);
         this.particle = particle;
         this.dx = dx;
@@ -56,7 +56,7 @@ public class PacketSpawnParticle extends LocationDoublePacket {
         this.rz = rz;
     }
 
-    public PacketSpawnParticle(PacketBuffer buffer) {
+    public PacketSpawnParticle(FriendlyByteBuf buffer) {
         super(buffer);
         ParticleType<?> type = ForgeRegistries.PARTICLE_TYPES.getValue(buffer.readResourceLocation());
         assert type != null;
@@ -74,12 +74,12 @@ public class PacketSpawnParticle extends LocationDoublePacket {
         particle = readParticle(type, buffer);
     }
 
-    private <T extends IParticleData> T readParticle(ParticleType<T> type, PacketBuffer buffer) {
+    private <T extends ParticleOptions> T readParticle(ParticleType<T> type, FriendlyByteBuf buffer) {
         return type.getDeserializer().fromNetwork(type, buffer);
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
 
         buffer.writeResourceLocation(Objects.requireNonNull(particle.getType().getRegistryName()));
@@ -92,12 +92,12 @@ public class PacketSpawnParticle extends LocationDoublePacket {
             buffer.writeDouble(ry);
             buffer.writeDouble(rz);
         }
-        particle.writeToNetwork(new PacketBuffer(buffer));
+        particle.writeToNetwork(new FriendlyByteBuf(buffer));
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            World world = ClientUtils.getClientWorld();
+            Level world = ClientUtils.getClientLevel();
             for (int i = 0; i < numParticles; i++) {
                 double x1 = x + (numParticles == 1 ? 0 : world.random.nextDouble() * rx);
                 double y1 = y + (numParticles == 1 ? 0 : world.random.nextDouble() * ry);

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import net.minecraftforge.client.event.GuiContainerEvent;
+import net.minecraftforge.client.event.ContainerScreenEvent;
 
 public interface IExtraGuiHandling {
-    void drawExtras(GuiContainerEvent.DrawForeground event);
+    void drawExtras(ContainerScreenEvent.DrawForeground event);
 }

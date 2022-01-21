@@ -1,69 +1,82 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
 
 public class RenderAirGrateModule extends TubeModuleRendererBase<ModuleAirGrate> {
-    private final ModelRenderer top;
-    private final ModelRenderer side1;
-    private final ModelRenderer side2;
-    private final ModelRenderer side3;
-    private final ModelRenderer side4;
-    private final ModelRenderer base1;
-    private final ModelRenderer base2;
-    private final ModelRenderer base3;
+    private final ModelPart top;
+    private final ModelPart side1;
+    private final ModelPart side2;
+    private final ModelPart side3;
+    private final ModelPart side4;
+    private final ModelPart base1;
+    private final ModelPart base2;
+    private final ModelPart base3;
 
-    public RenderAirGrateModule() {
-        top = new ModelRenderer(128, 64, 42, 19);
-        top.addBox(0F, 0F, 0F, 14F, 0F, 14F);
-        top.setPos(-7F, 9F, 8F);
-        top.mirror = true;
-        top.xRot = -1.570796F;
+    private static final String TOP = "top";
+    private static final String SIDE1 = "side1";
+    private static final String SIDE2 = "side2";
+    private static final String SIDE3 = "side3";
+    private static final String SIDE4 = "side4";
+    private static final String BASE1 = "base1";
+    private static final String BASE2 = "base2";
+    private static final String BASE3 = "base3";
 
-        side1 = new ModelRenderer(128, 64, 0, 18);
-        side1.addBox(0F, 0F, 0F, 16F, 1F, 1F);
-        side1.setPos(-8F, 23F, 7F);
-        side1.mirror = true;
-
-        side2 = new ModelRenderer(128, 64, 0, 21);
-        side2.addBox(0F, 0F, 0F, 16F, 1F, 1F);
-        side2.setPos(-8F, 8F, 7F);
-        side2.mirror = true;
-
-        side3 = new ModelRenderer(128, 64, 50, 0);
-        side3.addBox(0F, 0F, 0F, 1F, 1F, 14F);
-        side3.setPos(-8F, 23F, 7F);
-        side3.mirror = true;
-        side3.xRot = 1.570796F;
-
-        side4 = new ModelRenderer(128, 64, 82, 0);
-        side4.addBox(0F, 0F, 0F, 1F, 1F, 14F);
-        side4.setPos(7F, 23F, 7F);
-        side4.mirror = true;
-        side4.xRot = 1.570796F;
-
-        base1 = new ModelRenderer(128, 64, 69, 0);
-        base1.addBox(0F, 0F, 0F, 6F, 2F, 6F);
-        base1.setPos(-3F, 13F, 4F);
-        base1.mirror = true;
-        base1.xRot = -1.570796F;
-
-        base2 = new ModelRenderer(128, 64, 0, 25);
-        base2.addBox(0F, 0F, 0F, 12F, 2F, 12F);
-        base2.setPos(-6F, 10F, 6F);
-        base2.mirror = true;
-        base2.xRot = -1.570796F;
-
-        base3 = new ModelRenderer(128, 64, 0, 0);
-        base3.addBox(2F, 0F, 0F, 16F, 1F, 16F);
-        base3.setPos(-10F, 8F, 7F);
-        base3.mirror = true;
-        base3.xRot = -1.570796F;
+    public RenderAirGrateModule(BlockEntityRendererProvider.Context ctx) {
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.AIR_GRATE_MODULE);
+        top = root.getChild(TOP);
+        side1 = root.getChild(SIDE1);
+        side2 = root.getChild(SIDE2);
+        side3 = root.getChild(SIDE3);
+        side4 = root.getChild(SIDE4);
+        base1 = root.getChild(BASE1);
+        base2 = root.getChild(BASE2);
+        base3 = root.getChild(BASE3);
     }
+
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(TOP, CubeListBuilder.create().texOffs(42, 19)
+                        .addBox("top_0", 0F, 0F, 0F, 14F, 0F, 14F),
+                PartPose.offsetAndRotation(-7F, 9F, 8F, -1.570796F, 0, 0));
+        partdefinition.addOrReplaceChild(SIDE1, CubeListBuilder.create().texOffs(0, 18)
+                        .addBox("side1_0", 0F, 0F, 0F, 16F, 1F, 1F),
+                PartPose.offset(-8F, 23F, 7F));
+        partdefinition.addOrReplaceChild(SIDE2, CubeListBuilder.create().texOffs(0, 21)
+                        .addBox("side2_0", 0F, 0F, 0F, 16F, 1F, 1F),
+                PartPose.offset(-8F, 8F, 7F));
+        partdefinition.addOrReplaceChild(SIDE3, CubeListBuilder.create().texOffs(50, 0)
+                        .addBox("side3_0", 0F, 0F, 0F, 1F, 1F, 14F),
+                PartPose.offsetAndRotation(-8F, 23F, 7F, 1.570796F, 0, 0));
+        partdefinition.addOrReplaceChild(SIDE4, CubeListBuilder.create().texOffs(82, 0)
+                        .addBox("side4_0", 0F, 0F, 0F, 1F, 1F, 14F),
+                PartPose.offsetAndRotation(7F, 23F, 7F, 1.570796F, 0, 0));
+        partdefinition.addOrReplaceChild(BASE1, CubeListBuilder.create().texOffs(69, 0)
+                        .addBox("base1_0", 0F, 0F, 0F, 6F, 2F, 6F),
+                PartPose.offsetAndRotation(-3F, 13F, 4F, -1.570796F, 0, 0));
+        partdefinition.addOrReplaceChild(BASE2, CubeListBuilder.create().texOffs(0, 25)
+                        .addBox("base2_0", 0F, 0F, 0F, 12F, 2F, 12F),
+                PartPose.offsetAndRotation(-6F, 10F, 6F, -1.570796F, 0, 0));
+        partdefinition.addOrReplaceChild(BASE3, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("base3_0", 2F, 0F, 0F, 16F, 1F, 16F),
+                PartPose.offsetAndRotation(-10F, 8F, 7F, -1.570796F, 0, 0));
+
+        return LayerDefinition.create(meshdefinition, 128, 64);
+    }
+
 
     @Override
     protected ResourceLocation getTexture() {
@@ -77,14 +90,14 @@ public class RenderAirGrateModule extends TubeModuleRendererBase<ModuleAirGrate>
     }
 
     @Override
-    protected void renderDynamic(ModuleAirGrate module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
-        top.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        side1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        side2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        side3.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        side4.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        base1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        base2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        base3.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+    protected void renderDynamic(ModuleAirGrate module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+        top.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        side1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        side2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        side3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        side4.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        base1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        base2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        base3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
     }
 }

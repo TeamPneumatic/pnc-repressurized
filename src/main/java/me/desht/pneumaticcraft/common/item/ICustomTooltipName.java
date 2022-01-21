@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Allows a group of items/blocks to share a translation key, e.g. see plastic construction bricks

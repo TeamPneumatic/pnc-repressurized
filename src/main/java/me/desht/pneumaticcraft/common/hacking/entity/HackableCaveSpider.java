@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.monster.SpiderEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Spider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -37,33 +37,33 @@ public class HackableCaveSpider implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
+    public boolean canHack(Entity entity, Player player) {
         return true;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.neutralize"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.neutralized"));
     }
 
     @Override
-    public int getHackTime(Entity entity, PlayerEntity player) {
+    public int getHackTime(Entity entity, Player player) {
         return 50;
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
+    public void onHackFinished(Entity entity, Player player) {
         if (!entity.level.isClientSide) {
-            entity.remove();
-            SpiderEntity spider = new SpiderEntity(EntityType.SPIDER, entity.level);
-            spider.absMoveTo(entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot);
-            spider.setHealth(((SpiderEntity) entity).getHealth());
-            spider.yBodyRot = ((SpiderEntity) entity).yBodyRot;
+            entity.discard();
+            Spider spider = new Spider(EntityType.SPIDER, entity.level);
+            spider.absMoveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+            spider.setHealth(((Spider) entity).getHealth());
+            spider.yBodyRot = ((Spider) entity).yBodyRot;
             entity.level.addFreshEntity(spider);
         }
     }

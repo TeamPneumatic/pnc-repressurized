@@ -1,85 +1,103 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.util.Mth;
 
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
 
 public class RenderPressureChamberInterface extends AbstractTileModelRenderer<TileEntityPressureChamberInterface> {
 
-    private final ModelRenderer inputLeft;
-    private final ModelRenderer inputRight;
-    private final ModelRenderer inputBottom;
-    private final ModelRenderer inputTop;
-    private final ModelRenderer outputLeft;
-    private final ModelRenderer outputRight;
-    private final ModelRenderer outputBottom;
-    private final ModelRenderer outputTop;
+    private final ModelPart inputLeft;
+    private final ModelPart inputRight;
+    private final ModelPart inputBottom;
+    private final ModelPart inputTop;
+    private final ModelPart outputLeft;
+    private final ModelPart outputRight;
+    private final ModelPart outputBottom;
+    private final ModelPart outputTop;
 
-    public RenderPressureChamberInterface(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private static final String INPUTLEFT = "inputLeft";
+    private static final String INPUTRIGHT = "inputRight";
+    private static final String INPUTBOTTOM = "inputBottom";
+    private static final String INPUTTOP = "inputTop";
+    private static final String OUTPUTLEFT = "outputLeft";
+    private static final String OUTPUTRIGHT = "outputRight";
+    private static final String OUTPUTBOTTOM = "outputBottom";
+    private static final String OUTPUTTOP = "outputTop";
 
-        inputLeft = new ModelRenderer(32, 32, 0, 0);
-        inputLeft.addBox(-4.0F, -12.0F, -6.0F, 4.0F, 8.0F, 1.0F);
-        inputLeft.setPos(0.0F, 24.0F, 0.0F);
-        inputLeft.mirror = true;
+    public RenderPressureChamberInterface(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
 
-        inputRight = new ModelRenderer(32, 32, 10, 0);
-        inputRight.addBox(0.0F, -12.0F, -6.0F, 4.0F, 8.0F, 1.0F);
-        inputRight.setPos(0.0F, 24.0F, 0.0F);
-        inputRight.mirror = true;
-
-        inputBottom = new ModelRenderer(32, 32, 0, 9);
-        inputBottom.addBox(-4.0F, -8.0F, -5.0F, 8.0F, 4.0F, 1.0F);
-        inputBottom.setPos(0.0F, 24.0F, 0.0F);
-        inputBottom.mirror = false;
-
-        inputTop = new ModelRenderer(32, 32, 0, 14);
-        inputTop.addBox(-4.0F, -12.0F, -5.0F, 8.0F, 4.0F, 1.0F);
-        inputTop.setPos(0.0F, 24.0F, 0.0F);
-        inputTop.mirror = false;
-
-        outputLeft = new ModelRenderer(32, 32, 0, 19);
-        outputLeft.addBox(-4.0F, -12.0F, 5.0F, 4.0F, 8.0F, 1.0F);
-        outputLeft.setPos(0.0F, 24.0F, 0.0F);
-        outputLeft.mirror = true;
-
-        outputRight = new ModelRenderer(32, 32, 10, 19);
-        outputRight.addBox(0.0F, -12.0F, 5.0F, 4.0F, 8.0F, 1.0F);
-        outputRight.setPos(0.0F, 24.0F, 0.0F);
-        outputRight.mirror = true;
-
-        outputBottom = new ModelRenderer(32, 32, 0, 9);
-        outputBottom.addBox(-4.0F, -8.0F, 4.0F, 8.0F, 4.0F, 1.0F);
-        outputBottom.setPos(0.0F, 24.0F, 0.0F);
-        outputBottom.mirror = false;
-
-        outputTop = new ModelRenderer(32, 32, 0, 14);
-        outputTop.addBox(-4.0F, -12.0F, 4.0F, 8.0F, 4.0F, 1.0F);
-        outputTop.setPos(0.0F, 24.0F, 0.0F);
-        outputTop.mirror = false;
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.PRESSURE_CHAMBER_INTERFACE);
+        inputLeft = root.getChild(INPUTLEFT);
+        inputRight = root.getChild(INPUTRIGHT);
+        inputBottom = root.getChild(INPUTBOTTOM);
+        inputTop = root.getChild(INPUTTOP);
+        outputLeft = root.getChild(OUTPUTLEFT);
+        outputRight = root.getChild(OUTPUTRIGHT);
+        outputBottom = root.getChild(OUTPUTBOTTOM);
+        outputTop = root.getChild(OUTPUTTOP);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(INPUTLEFT, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("inputLeft_0", -4.0F, -12.0F, -6.0F, 4, 8, 1),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+        partdefinition.addOrReplaceChild(INPUTRIGHT, CubeListBuilder.create().texOffs(10, 0)
+                        .addBox("inputRight_0", 0.0F, -12.0F, -6.0F, 4, 8, 1),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+        partdefinition.addOrReplaceChild(INPUTBOTTOM, CubeListBuilder.create().texOffs(0, 9)
+                        .addBox("inputBottom_0", -4.0F, -8.0F, -5.0F, 8, 4, 1),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+        partdefinition.addOrReplaceChild(INPUTTOP, CubeListBuilder.create().texOffs(0, 14)
+                        .addBox("inputTop_0", -4.0F, -12.0F, -5.0F, 8, 4, 1),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+        partdefinition.addOrReplaceChild(OUTPUTLEFT, CubeListBuilder.create().texOffs(0, 19)
+                        .addBox("outputLeft_0", -4.0F, -12.0F, 5.0F, 4, 8, 1),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+        partdefinition.addOrReplaceChild(OUTPUTRIGHT, CubeListBuilder.create().texOffs(10, 19)
+                        .addBox("outputRight_0", 0.0F, -12.0F, 5.0F, 4, 8, 1),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+        partdefinition.addOrReplaceChild(OUTPUTBOTTOM, CubeListBuilder.create().texOffs(0, 9)
+                        .addBox("outputBottom_0", -4.0F, -8.0F, 4.0F, 8, 4, 1),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+        partdefinition.addOrReplaceChild(OUTPUTTOP, CubeListBuilder.create().texOffs(0, 14)
+                        .addBox("outputTop_0", -4.0F, -12.0F, 4.0F, 8, 4, 1),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+
+        return LayerDefinition.create(meshdefinition, 32, 32);
+    }
+
+
     @Override
-    public void renderModel(TileEntityPressureChamberInterface te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE));
+    public void renderModel(TileEntityPressureChamberInterface te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE));
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
 
-        float inputProgress = MathHelper.lerp(partialTicks, te.oldInputProgress, te.inputProgress) / MAX_PROGRESS;
-        float outputProgress = MathHelper.lerp(partialTicks, te.oldOutputProgress, te.outputProgress) / MAX_PROGRESS;
+        float inputProgress = Mth.lerp(partialTicks, te.oldInputProgress, te.inputProgress) / MAX_PROGRESS;
+        float outputProgress = Mth.lerp(partialTicks, te.oldOutputProgress, te.outputProgress) / MAX_PROGRESS;
         if (inputProgress <= 1f) {
             // REMOVED:           matrixStackIn.scale(1F - inputProgress, 1, 1);
             matrixStackIn.pushPose();
@@ -126,7 +144,7 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
     }
 
     @Override
-    protected void renderExtras(TileEntityPressureChamberInterface te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+    protected void renderExtras(TileEntityPressureChamberInterface te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         if (!te.getStackInInterface().isEmpty()) {
             matrixStack.pushPose();
 
@@ -134,8 +152,8 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
             RenderUtils.rotateMatrixForDirection(matrixStack, te.getRotation());
             matrixStack.scale(0.5F, 0.5F, 0.5F);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-            IBakedModel ibakedmodel = itemRenderer.getModel(te.getStackInInterface(), te.getLevel(), null);
-            itemRenderer.render(te.getStackInInterface(), ItemCameraTransforms.TransformType.FIXED, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, ibakedmodel);
+            BakedModel bakedModel = itemRenderer.getModel(te.getStackInInterface(), te.getLevel(), null, 0);
+            itemRenderer.render(te.getStackInInterface(), ItemTransforms.TransformType.FIXED, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, bakedModel);
 
             matrixStack.popPose();
         }

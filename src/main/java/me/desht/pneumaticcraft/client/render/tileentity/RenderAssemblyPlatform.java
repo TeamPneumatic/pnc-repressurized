@@ -17,51 +17,73 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyPlatform;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntityAssemblyPlatform> {
     private static final float ITEM_SCALE = 0.5F;
 
-    private final ModelRenderer claw1;
-    private final ModelRenderer claw2;
+    private final ModelPart claw1;
+    private final ModelPart claw2;
 
-    public RenderAssemblyPlatform(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private static final String CLAW1 = "claw1";
+    private static final String CLAW2 = "claw2";
 
-        claw1 = new ModelRenderer(64, 64, 0, 0);
-        claw1.setPos(-1.0F, 17.0F, 0.0F);
-        claw1.texOffs(0, 12).addBox(-0.5F, 0.0F, 0.1F, 3.0F, 1.0F, 1.0F, -0.1F, true);
-        claw1.texOffs(8, 14).addBox(-0.5F, 0.0F, 0.6F, 3.0F, 1.0F, 1.0F, 0.0F, true);
+    public RenderAssemblyPlatform(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
 
-        claw2 = new ModelRenderer(64, 64, 0, 0);
-        claw2.setPos(-1.0F, 17.0F, -1.0F);
-        claw2.texOffs(0, 14).addBox(-0.5F, 0.0F, -0.1F, 3.0F, 1.0F, 1.0F, -0.1F, true);
-        claw2.texOffs(8, 12).addBox(-0.5F, 0.0F, -0.6F, 3.0F, 1.0F, 1.0F, 0.0F, true);
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_PLATFORM);
+        claw1 = root.getChild(CLAW1);
+        claw2 = root.getChild(CLAW2);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(CLAW1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("claw1_0", -0.5F, 0.0F, 0.1F, 3, 1, 1, 0, 12)
+                        .addBox("claw1_1", -0.5F, 0.0F, 0.6F, 3, 1, 1, 8, 14)
+                        .mirror(),
+                PartPose.offset(-1.0F, 17.0F, 0.0F));
+        partdefinition.addOrReplaceChild(CLAW2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("claw2_0", -0.5F, 0.0F, -0.1F, 3, 1, 1, 0, 14)
+                        .addBox("claw2_1", -0.5F, 0.0F, -0.6F, 3, 1, 1, 8, 12)
+                        .mirror(),
+                PartPose.offset(-1.0F, 17.0F, -1.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+
     @Override
-    public void renderModel(TileEntityAssemblyPlatform te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(TileEntityAssemblyPlatform te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         ItemStack heldStack = te.getPrimaryInventory().getStackInSlot(0);
-        Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(MathHelper.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_PLATFORM));
+        Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_PLATFORM));
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0, 0, clawTranslation.getRight());
@@ -78,8 +100,8 @@ public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntity
                 matrixStackIn.translate(0, yOffset + 0.05, 0);
                 matrixStackIn.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                IBakedModel ibakedmodel = itemRenderer.getModel(heldStack, te.getLevel(), null);
-                itemRenderer.render(heldStack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+                BakedModel bakedModel = itemRenderer.getModel(heldStack, te.getLevel(), null, 0);
+                itemRenderer.render(heldStack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
             }
         }
     }

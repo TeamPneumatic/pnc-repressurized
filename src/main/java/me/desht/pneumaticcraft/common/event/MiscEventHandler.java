@@ -45,28 +45,30 @@ import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.TableLootEntry;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.*;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
@@ -80,7 +82,7 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Iterator;
 
@@ -94,7 +96,7 @@ public class MiscEventHandler {
             DroneClaimManager.getInstance(event.world).update();
 
             if (event.world.getGameTime() % 100 == 0) {
-                double tickTime = MathHelper.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
+                double tickTime = Mth.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
                 // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.dimension());
             }
@@ -158,8 +160,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (!event.getWorld().isClientSide && event.getEntity() instanceof MobEntity) {
-            MobEntity mob = (MobEntity) event.getEntity();
+        if (!event.getWorld().isClientSide && event.getEntity() instanceof Mob mob) {
             mob.goalSelector.addGoal(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone(mob));
         }
     }
@@ -171,14 +172,14 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void onFillBucket(FillBucketEvent event) {
-        RayTraceResult rtr = event.getTarget();
-        if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
-            BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
+        HitResult rtr = event.getTarget();
+        if (rtr != null && rtr.getType() == HitResult.Type.BLOCK) {
+            BlockHitResult brtr = (BlockHitResult) rtr;
             Block b = event.getWorld().getBlockState(brtr.getBlockPos()).getBlock();
-            if (b instanceof FlowingFluidBlock) {
-                Fluid fluid = ((FlowingFluidBlock) b).getFluid();
-                if (TileEntityRefineryController.isInputFluidValid(event.getWorld(), fluid, 4) && event.getPlayer() instanceof ServerPlayerEntity) {
-                    AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayerEntity) event.getPlayer());
+            if (b instanceof LiquidBlock) {
+                Fluid fluid = ((LiquidBlock) b).getFluid();
+                if (TileEntityRefineryController.isInputFluidValid(event.getWorld(), fluid, 4) && event.getPlayer() instanceof ServerPlayer) {
+                    AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayer) event.getPlayer());
                 }
             }
         }
@@ -188,7 +189,7 @@ public class MiscEventHandler {
     public void onModdedWrenchBlock(PlayerInteractEvent.RightClickBlock event) {
         BlockState state = event.getWorld().getBlockState(event.getPos());
         if (!event.isCanceled() && state.getBlock() instanceof IPneumaticWrenchable) {
-            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(Hand.MAIN_HAND))) {
+            if (event.getHand() == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND))) {
                 event.setCanceled(true);
             } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(event.getHand()))) {
                 if (event.getWorld().isClientSide) {
@@ -202,7 +203,7 @@ public class MiscEventHandler {
     @SubscribeEvent
     public void onModdedWrenchEntity(PlayerInteractEvent.EntityInteract event) {
         if (!event.isCanceled() && event.getTarget() instanceof IPneumaticWrenchable) {
-            if (event.getHand() == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(Hand.MAIN_HAND))) {
+            if (event.getHand() == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(InteractionHand.MAIN_HAND))) {
                 event.setCanceled(true);
             } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getPlayer().getItemInHand(event.getHand()))) {
                 if (event.getWorld().isClientSide) {
@@ -217,14 +218,13 @@ public class MiscEventHandler {
     public void quetziMoo(ServerChatEvent event) {
         if (event.getUsername().equals("Quetzz") && event.getMessage().equals("m00")) {
             for (int i = 0; i < 4; i++)
-                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundCategory.NEUTRAL, event.getPlayer().getX(), event.getPlayer().getY(), event.getPlayer().getZ(), 1, 1, true), event.getPlayer());
+                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundSource.NEUTRAL, event.getPlayer().getX(), event.getPlayer().getY(), event.getPlayer().getZ(), 1, 1, true), event.getPlayer());
         }
     }
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
-        if (event.getWorld() instanceof World) {
-            World world = (World) event.getWorld();
+        if (event.getWorld() instanceof Level world) {
             if (!world.isClientSide) {
                 ModuleNetworkManager.getInstance(world).invalidateCache();
             }
@@ -244,16 +244,9 @@ public class MiscEventHandler {
             if (name.startsWith(prefix)) {
                 String file = name.substring(name.indexOf(prefix) + prefix.length());
                 switch (file) {
-                    case "abandoned_mineshaft":
-                    case "desert_pyramid":
-                    case "jungle_temple":
-                    case "simple_dungeon":
-                    case "stronghold_corridor":
-                    case "village_blacksmith":
-                        event.getTable().addPool(buildLootPool("simple_dungeon_loot"));
-                        break;
-                    default:
-                        break;
+                    case "abandoned_mineshaft", "desert_pyramid", "jungle_temple", "simple_dungeon", "stronghold_corridor", "village_blacksmith" -> event.getTable().addPool(buildLootPool("simple_dungeon_loot"));
+                    default -> {
+                    }
                 }
             }
         }
@@ -261,26 +254,26 @@ public class MiscEventHandler {
 
     private LootPool buildLootPool(String name) {
         return LootPool.lootPool()
-                .add(TableLootEntry.lootTableReference(RL("inject/" + name)).setWeight(1))
-                .bonusRolls(0, 1)
+                .add(LootTableReference.lootTableReference(RL("inject/" + name)).setWeight(1))
+                .setBonusRolls(UniformGenerator.between(0, 1))
                 .name("pneumaticcraft_inject")
                 .build();
     }
 
     @SubscribeEvent
     public void onEquipmentChanged(LivingEquipmentChangeEvent event) {
-        if (event.getEntityLiving() instanceof ServerPlayerEntity) {
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
-            if (event.getSlot().getType() == EquipmentSlotType.Group.HAND && event.getTo().getItem() instanceof IPositionProvider) {
+        if (event.getEntityLiving() instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer) event.getEntityLiving();
+            if (event.getSlot().getType() == EquipmentSlot.Type.HAND && event.getTo().getItem() instanceof IPositionProvider) {
                 // sync any variable values in this position provider item to the client for rendering purposes
                 ((IPositionProvider) event.getTo().getItem()).syncVariables(player, event.getTo());
-            } else if (event.getSlot() == EquipmentSlotType.MAINHAND) {
+            } else if (event.getSlot() == EquipmentSlot.MAINHAND) {
                 if (event.getTo().getItem() instanceof ItemMinigun) {
                     ((ItemMinigun) event.getTo().getItem()).onEquipmentChange(player, event.getTo(), true);
                 } else if (event.getFrom().getItem() instanceof ItemMinigun) {
                     ((ItemMinigun) event.getFrom().getItem()).onEquipmentChange(player, event.getFrom(), false);
                 }
-            } else if (event.getSlot().getType() == EquipmentSlotType.Group.ARMOR) {
+            } else if (event.getSlot().getType() == EquipmentSlot.Type.ARMOR) {
                 // trigger the "compressed iron man" advancement if wearing a full suit
                 for (ItemStack stack : player.getArmorSlots()) {
                     if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
@@ -297,7 +290,7 @@ public class MiscEventHandler {
         if (event.isMounting()) {
             // prevent minecarts/boats which have just been dropped by drones from immediately picking up the drone
             if (event.getEntityMounting() instanceof EntityDrone
-                    && (event.getEntityBeingMounted() instanceof AbstractMinecartEntity || event.getEntityBeingMounted() instanceof BoatEntity)) {
+                    && (event.getEntityBeingMounted() instanceof AbstractMinecart || event.getEntityBeingMounted() instanceof Boat)) {
                 if (!event.getEntityBeingMounted().isOnGround()) {
                     event.setCanceled(true);
                 }
@@ -307,7 +300,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {
-        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlocks());
+        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getOrEmpty(Registry.BLOCK_REGISTRY));
 
         PneumaticRegistry.getInstance().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
     }

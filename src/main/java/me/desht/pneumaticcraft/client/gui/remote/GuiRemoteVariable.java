@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui.remote;
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -37,13 +37,13 @@ public class GuiRemoteVariable<A extends ActionWidgetVariable<?>> extends GuiRem
         super.init();
 
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 70);
-        addLabel(new StringTextComponent("#"), guiLeft + 10, guiTop + 81);
+        addLabel(new TextComponent("#"), guiLeft + 10, guiTop + 81);
 
         variableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 80, 152, 10);
         variableField.setElements(guiRemote.getMenu().variables);
         variableField.setValue(actionWidget.getVariableName());
         variableField.setTooltip(xlate("pneumaticcraft.gui.remote.variable.tooltip"));
-        addButton(variableField);
+        addRenderableWidget(variableField);
     }
 
     @Override

@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -46,8 +46,8 @@ public class AreaTypeWall extends AreaType{
         switch (axis) {
             case X:
                 {
-                    Vector3d lineVec = new Vector3d(0, p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vector3d(lineVec.x, lineVec.y / 10, lineVec.z / 10);
+                    Vec3 lineVec = new Vec3(0, p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vec3(lineVec.x, lineVec.y / 10, lineVec.z / 10);
                     double curY = p1.getY() + 0.5;
                     double curZ = p1.getZ() + 0.5;
                     double totalDistance = 0;
@@ -67,8 +67,8 @@ public class AreaTypeWall extends AreaType{
                 break;
             case Y:
                 {
-                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), 0, p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vector3d(lineVec.x, lineVec.y / 10, lineVec.z / 10);
+                    Vec3 lineVec = new Vec3(p2.getX() - p1.getX(), 0, p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vec3(lineVec.x, lineVec.y / 10, lineVec.z / 10);
                     double curX = p1.getX() + 0.5;
                     double curZ = p1.getZ() + 0.5;
                     double totalDistance = 0;
@@ -86,8 +86,8 @@ public class AreaTypeWall extends AreaType{
                 break;
             case Z:
                 {
-                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), 0).normalize();
-                    lineVec = new Vector3d(lineVec.x / 10, lineVec.y / 10, lineVec.z);
+                    Vec3 lineVec = new Vec3(p2.getX() - p1.getX(), p2.getY() - p1.getY(), 0).normalize();
+                    lineVec = new Vec3(lineVec.x / 10, lineVec.y / 10, lineVec.z);
                     double curX = p1.getX() + 0.5;
                     double curY = p1.getY() + 0.5;
                     double totalDistance = 0;
@@ -117,25 +117,25 @@ public class AreaTypeWall extends AreaType{
     }
     
     @Override
-    public void writeToNBT(CompoundNBT tag){
+    public void writeToNBT(CompoundTag tag){
         super.writeToNBT(tag);
         tag.putByte("axis", (byte)axis.ordinal());
     }
     
     @Override
-    public void readFromNBT(CompoundNBT tag){
+    public void readFromNBT(CompoundTag tag){
         super.readFromNBT(tag);
         axis = EnumAxis.values()[tag.getByte("axis")];
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
+    public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
         buffer.writeByte(axis.ordinal());
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         axis = EnumAxis.values()[buf.readByte()];
     }

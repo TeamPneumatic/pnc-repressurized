@@ -21,12 +21,12 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -40,11 +40,11 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
 
     private final Set<ResourceLocation> wrenches = new HashSet<>();
 
-    private static final BiFunction<ItemUseContext,BlockState,ActionResultType> NO_OP_PRE = (ctx, state) -> ActionResultType.PASS;
-    private static final BiConsumer<ItemUseContext,BlockState> NO_OP_POST = (ctx, state) -> {};
+    private static final BiFunction<UseOnContext,BlockState,InteractionResult> NO_OP_PRE = (ctx, state) -> InteractionResult.PASS;
+    private static final BiConsumer<UseOnContext,BlockState> NO_OP_POST = (ctx, state) -> {};
 
-    private final Map<String, BiFunction<ItemUseContext,BlockState,ActionResultType>> modBehavioursPre = new Object2ObjectOpenHashMap<>();
-    private final Map<String, BiConsumer<ItemUseContext,BlockState>> modBehavioursPost = new Object2ObjectOpenHashMap<>();
+    private final Map<String, BiFunction<UseOnContext,BlockState,InteractionResult>> modBehavioursPre = new Object2ObjectOpenHashMap<>();
+    private final Map<String, BiConsumer<UseOnContext,BlockState>> modBehavioursPost = new Object2ObjectOpenHashMap<>();
 
     public static ModdedWrenchUtils getInstance() {
         return INSTANCE;
@@ -72,7 +72,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
     @Override
     public boolean isModdedWrench(@Nonnull ItemStack stack) {
         return !(stack.getItem() instanceof ItemPneumaticWrench) &&
-                (stack.getItem().is(PneumaticCraftTags.Items.WRENCHES) || wrenches.contains(stack.getItem().getRegistryName()));
+                (PneumaticCraftTags.Items.WRENCHES.contains(stack.getItem()) || wrenches.contains(stack.getItem().getRegistryName()));
     }
 
     @Override
@@ -86,7 +86,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
     }
 
     @Override
-    public void addModdedWrenchBehaviour(String modid, BiFunction<ItemUseContext,BlockState,ActionResultType> behaviourPre, BiConsumer<ItemUseContext,BlockState> behaviourPost) {
+    public void addModdedWrenchBehaviour(String modid, BiFunction<UseOnContext,BlockState,InteractionResult> behaviourPre, BiConsumer<UseOnContext,BlockState> behaviourPost) {
         modBehavioursPre.put(modid, behaviourPre);
         modBehavioursPost.put(modid, behaviourPost);
     }
@@ -99,17 +99,17 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
      * @return the action result; if SUCCESS or CONSUME, then Pneumatic Wrenching behaviour will not be carried out; if
      *         CONSUME then the Pneumatic Wrench sound effect will also not be played
      */
-    public ActionResultType onWrenchedPre(ItemUseContext ctx, BlockState state) {
+    public InteractionResult onWrenchedPre(UseOnContext ctx, BlockState state) {
         return modBehavioursPre.getOrDefault(state.getBlock().getRegistryName().getNamespace(), NO_OP_PRE).apply(ctx, state);
     }
 
     /**
      * Called server-side when a non-PneumaticCraft block has just been wrenched by the Pneumatic Wrench. Will not be
-     * called if {@link #onWrenchedPre(ItemUseContext, BlockState)} returned SUCCESS or CONSUME.
+     * called if {@link #onWrenchedPre(UseOnContext, BlockState)} returned SUCCESS or CONSUME.
      * @param ctx the item usage context
      * @param state the block being wrenched
      */
-    public void onWrenchedPost(ItemUseContext ctx, BlockState state) {
+    public void onWrenchedPost(UseOnContext ctx, BlockState state) {
         modBehavioursPost.getOrDefault(state.getBlock().getRegistryName().getNamespace(), NO_OP_POST).accept(ctx, state);
     }
 }

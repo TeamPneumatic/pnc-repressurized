@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -33,25 +33,25 @@ import java.util.function.Supplier;
 public class PacketSetEntityMotion extends LocationDoublePacket {
     private final int entityId;
 
-    public PacketSetEntityMotion(Entity entity, Vector3d motion) {
+    public PacketSetEntityMotion(Entity entity, Vec3 motion) {
         super(motion);
         entityId = entity.getId();
     }
 
-    PacketSetEntityMotion(PacketBuffer buffer) {
+    PacketSetEntityMotion(FriendlyByteBuf buffer) {
         super(buffer);
         entityId = buffer.readInt();
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeInt(entityId);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Entity entity = ClientUtils.getClientWorld().getEntity(entityId);
+            Entity entity = ClientUtils.getClientLevel().getEntity(entityId);
             if (entity != null) {
                 entity.setDeltaMovement(x, y, z);
                 entity.setOnGround(false);

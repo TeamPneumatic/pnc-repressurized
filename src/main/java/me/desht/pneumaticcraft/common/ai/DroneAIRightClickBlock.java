@@ -21,26 +21,25 @@ import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CommandBlockBlock;
-import net.minecraft.block.StructureBlock;
-import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CommandBlock;
+import net.minecraft.world.level.block.StructureBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -87,7 +86,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         if (rightClick(pos)) {
             // Successful click. Clear the mainhand item if necessary.
             if (drone.getFakePlayer().getMainHandItem().getCount() <= 0) {
-                drone.getFakePlayer().setItemInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+                drone.getFakePlayer().setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
             }
 
             // Copy mainhand item back from fake player inv to slot 0 of drone's inventory (which always exists)
@@ -119,20 +118,20 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         }
 
         ItemStack stack = fakePlayer.getMainHandItem();
-        World world = fakePlayer.getCommandSenderWorld();
+        Level world = fakePlayer.getCommandSenderWorld();
 
         // this is adapted from PlayerInteractionManager#processRightClickBlock()
         try {
-            BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
+            BlockHitResult brtr = doTrace(world, pos, fakePlayer);
             if (brtr == null) return false;
 
-            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
+            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, InteractionHand.MAIN_HAND, pos, brtr);
             if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
                 return false;
             }
 
-            ActionResultType ret = stack.onItemUseFirst(new ItemUseContext(fakePlayer, Hand.MAIN_HAND, brtr));
-            if (ret != ActionResultType.PASS) return ret.consumesAction();
+            InteractionResult ret = stack.onItemUseFirst(new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, brtr));
+            if (ret != InteractionResult.PASS) return ret.consumesAction();
 
             if (stack.isEmpty() || fakePlayer.getCooldowns().isOnCooldown(stack.getItem())) {
                 return false;
@@ -140,20 +139,20 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
 
             if (stack.getItem() instanceof BlockItem) {
                 Block block = ((BlockItem)stack.getItem()).getBlock();
-                if (block instanceof CommandBlockBlock || block instanceof StructureBlock) {
+                if (block instanceof CommandBlock || block instanceof StructureBlock) {
                     return false;
                 }
             }
 
             if (event.getUseItem() != Event.Result.DENY) {
                 ItemStack copyBeforeUse = stack.copy();
-                ActionResultType result = stack.useOn(new ItemUseContext(fakePlayer, Hand.MAIN_HAND, brtr));
-                if (result == ActionResultType.PASS) {
-                    ActionResult<ItemStack> rightClickResult = stack.getItem().use(world, fakePlayer, Hand.MAIN_HAND);
-                    fakePlayer.setItemInHand(Hand.MAIN_HAND, rightClickResult.getObject());
+                InteractionResult result = stack.useOn(new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, brtr));
+                if (result == InteractionResult.PASS) {
+                    InteractionResultHolder<ItemStack> rightClickResult = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND);
+                    fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, rightClickResult.getObject());
                 }
-                if (fakePlayer.getItemInHand(Hand.MAIN_HAND).isEmpty()) {
-                    net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(fakePlayer, copyBeforeUse, Hand.MAIN_HAND);
+                if (fakePlayer.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
+                    net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(fakePlayer, copyBeforeUse, InteractionHand.MAIN_HAND);
                 }
                 return true;
             }
@@ -166,16 +165,16 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     }
 
     private boolean rightClickBlock(FakePlayer fakePlayer, BlockPos pos) {
-        World world = fakePlayer.getCommandSenderWorld();
+        Level world = fakePlayer.getCommandSenderWorld();
         BlockState state = world.getBlockState(pos);
-        BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
+        BlockHitResult brtr = doTrace(world, pos, fakePlayer);
         if (brtr != null) {
-            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
+            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, InteractionHand.MAIN_HAND, pos, brtr);
             try {
                 if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
-                    ActionResultType res = state.use(world, fakePlayer, Hand.MAIN_HAND, brtr);
+                    InteractionResult res = state.use(world, fakePlayer, InteractionHand.MAIN_HAND, brtr);
                     if (res.consumesAction()) {
-                        world.sendBlockUpdated(pos, state, state, Constants.BlockFlags.DEFAULT);
+                        world.sendBlockUpdated(pos, state, state, Block.UPDATE_ALL);
                         return true;
                     }
                 }
@@ -200,16 +199,16 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         return false;
     }
 
-    private BlockRayTraceResult doTrace(World world, BlockPos pos, FakePlayer fakePlayer) {
+    private BlockHitResult doTrace(Level world, BlockPos pos, FakePlayer fakePlayer) {
         BlockState state = world.getBlockState(pos);
-        List<AxisAlignedBB> l = state.getShape(world, pos).toAabbs();
-        Vector3d targetVec = l.isEmpty() ? Vector3d.atCenterOf(pos) : l.get(0).getCenter().add(Vector3d.atLowerCornerOf(pos));
+        List<AABB> l = state.getShape(world, pos).toAabbs();
+        Vec3 targetVec = l.isEmpty() ? Vec3.atCenterOf(pos) : l.get(0).getCenter().add(Vec3.atLowerCornerOf(pos));
         Direction side = ((ProgWidgetBlockRightClick) progWidget).getClickSide();
-        Vector3d saved = new Vector3d(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ());
-        Vector3d posVec = targetVec.add(side.getStepX(), side.getStepY(), side.getStepZ());
+        Vec3 saved = new Vec3(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ());
+        Vec3 posVec = targetVec.add(side.getStepX(), side.getStepY(), side.getStepZ());
         fakePlayer.setPos(posVec.x, posVec.y, posVec.z);
-        fakePlayer.lookAt(EntityAnchorArgument.Type.FEET, targetVec);
-        BlockRayTraceResult brtr = drone.world().clip(new RayTraceContext(posVec, targetVec, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.SOURCE_ONLY, fakePlayer));
+        fakePlayer.lookAt(EntityAnchorArgument.Anchor.FEET, targetVec);
+        BlockHitResult brtr = drone.world().clip(new ClipContext(posVec, targetVec, ClipContext.Block.OUTLINE, ClipContext.Fluid.SOURCE_ONLY, fakePlayer));
         fakePlayer.setPos(saved.x, saved.y, saved.z);
         if (!brtr.getBlockPos().equals(pos) || brtr.getDirection() != side) return null;
         return brtr;

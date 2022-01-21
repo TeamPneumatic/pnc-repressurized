@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -106,25 +106,25 @@ public class AreaTypeBox extends AreaType {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         tag.putByte("boxType", (byte) boxType.ordinal());
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         boxType = EnumBoxType.values()[tag.getByte("boxType")];
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
+    public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
         buffer.writeByte(boxType.ordinal());
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         boxType = EnumBoxType.values()[buf.readByte()];
     }

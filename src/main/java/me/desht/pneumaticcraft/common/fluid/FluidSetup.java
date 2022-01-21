@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class FluidSetup {

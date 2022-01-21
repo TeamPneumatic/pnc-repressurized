@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 /**
  * Represents a tile entity which has a range manager and the concept of a range area of effect.
@@ -32,8 +32,8 @@ public interface IRangedTE {
      * Text to be displayed on the range toggle GUI button
      * @return a text component
      */
-    default ITextComponent rangeText() {
-        return new StringTextComponent("R").withStyle(getRangeManager().shouldShowRange() ? TextFormatting.AQUA : TextFormatting.GRAY);
+    default Component rangeText() {
+        return new TextComponent("R").withStyle(getRangeManager().shouldShowRange() ? ChatFormatting.AQUA : ChatFormatting.GRAY);
     }
 
     default int getRange() {

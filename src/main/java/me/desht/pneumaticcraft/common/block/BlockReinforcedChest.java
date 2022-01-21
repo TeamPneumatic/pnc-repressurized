@@ -21,28 +21,24 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.BlockGetter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BlockReinforcedChest extends BlockPneumaticCraft {
+public class BlockReinforcedChest extends BlockPneumaticCraft implements EntityBlockPneumaticCraft, IBlockComparatorSupport {
     private static final VoxelShape SHAPE = box(1, 0, 1, 15, 15, 15);
 
     public BlockReinforcedChest() {
         super(ModBlocks.reinforcedStoneProps());
-    }
-
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityReinforcedChest.class;
     }
 
     @Override
@@ -56,8 +52,14 @@ public class BlockReinforcedChest extends BlockPneumaticCraft {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityReinforcedChest(pPos, pState);
     }
 
     public static class ItemBlockReinforcedChest extends BlockItem implements IInventoryItem {
@@ -72,7 +74,7 @@ public class BlockReinforcedChest extends BlockPneumaticCraft {
 
         @Override
         public String getTooltipPrefix(ItemStack stack) {
-            return TextFormatting.GREEN.toString();
+            return ChatFormatting.GREEN.toString();
         }
 
     }

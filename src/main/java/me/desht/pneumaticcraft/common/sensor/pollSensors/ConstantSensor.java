@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RangedInteger;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 import java.util.Set;
@@ -43,7 +43,7 @@ public class ConstantSensor implements IPollSensorSetting {
     }
 
     @Override
-    public int getPollFrequency(TileEntity te) {
+    public int getPollFrequency(BlockEntity te) {
         return 1;
     }
 
@@ -53,12 +53,12 @@ public class ConstantSensor implements IPollSensorSetting {
     }
 
     @Override
-    public RangedInteger getTextboxIntRange() {
-        return RangedInteger.of(0, 16);
+    public RangedInt getTextboxIntRange() {
+        return new RangedInt(0, 16);
     }
 
     @Override
-    public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
+    public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
         try {
             return Math.min(15, Math.max(0, Integer.parseInt(textBoxText)));
         } catch (Exception e) {
@@ -67,12 +67,12 @@ public class ConstantSensor implements IPollSensorSetting {
     }
 
     @Override
-    public void getAdditionalInfo(List<ITextComponent> info) {
-        info.add(new StringTextComponent("Signal Level"));
+    public void getAdditionalInfo(List<Component> info) {
+        info.add(new TextComponent("Signal Level"));
     }
 
     @Override
-    public int getAirUsage(World world, BlockPos pos) {
+    public int getAirUsage(Level world, BlockPos pos) {
         // it's just a constant redstone signal, let's make it free
         return 0;
     }

@@ -17,26 +17,26 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.components.AbstractWidget;
 
 /**
  * Represents a button in a options screen which can be used to rebind a key.  Don't implement this; use
- * {@link IPneumaticHelmetRegistry#makeKeybindingButton(int, KeyBinding)} to get an instance of a keybinding
+ * {@link IPneumaticHelmetRegistry#makeKeybindingButton(int, KeyMapping)} to get an instance of a keybinding
  * button widget.
  * <p>
  * See also {@link IOptionPage#getKeybindingButton()}, which should be overridden to return this button instance
  * if it exists in this screen.
  */
 public interface IKeybindingButton {
-    boolean receiveKey(InputMappings.Type type, int keyCode);
+    boolean receiveKey(InputConstants.Type type, int keyCode);
 
     void receiveKeyReleased();
 
     /**
-     * Convenience method to get this button as a widget, suitable for passing to {@link IGuiScreen#addWidget(Widget)}
+     * Convenience method to get this button as a widget, suitable for passing to {@link IGuiScreen#addWidget(AbstractWidget)}
      * @return this keybinding button, as a vanilla widget
      */
-    default Widget asWidget() { return (Widget) this; }
+    default AbstractWidget asWidget() { return (AbstractWidget) this; }
 }

@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStandby;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 /**
  * Base class for all pre-programmed (and not programmable) drones.
@@ -35,11 +35,11 @@ import net.minecraft.world.World;
  */
 abstract class EntityBasicDrone extends EntityDrone {
 
-    EntityBasicDrone(EntityType<? extends EntityDrone> type, World world, PlayerEntity player) {
+    EntityBasicDrone(EntityType<? extends EntityDrone> type, Level world, Player player) {
         super(type, world, player);
     }
 
-    EntityBasicDrone(EntityType<? extends EntityDrone> type, World world) {
+    EntityBasicDrone(EntityType<? extends EntityDrone> type, Level world) {
         super(type, world);
     }
 

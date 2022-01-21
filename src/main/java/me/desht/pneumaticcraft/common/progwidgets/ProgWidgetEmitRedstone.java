@@ -25,14 +25,14 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.Arrays;
@@ -69,7 +69,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
 
         boolean sideActive = false;
@@ -80,14 +80,14 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(xlate("pneumaticcraft.gui.progWidget.general.affectingSides"));
         curTooltip.addAll(getExtraStringInfo());
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         boolean allSides = true;
         boolean noSides = true;
         for (boolean bool : accessingSides) {
@@ -106,12 +106,12 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
                     .filter(side -> accessingSides[side.get3DDataValue()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
-            return Collections.singletonList(new StringTextComponent(Strings.join(l, ", ")));
+            return Collections.singletonList(new TextComponent(Strings.join(l, ", ")));
         }
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
             if (accessingSides[i]) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
@@ -119,7 +119,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         for (int i = 0; i < 6; i++) {
             accessingSides[i] = tag.getBoolean(Direction.from3DDataValue(i).name());
@@ -127,7 +127,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         for (int i = 0; i < 6; i++) {
             buf.writeBoolean(accessingSides[i]);
@@ -135,7 +135,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         for (int i = 0; i < 6; i++) {
             accessingSides[i] = buf.readBoolean();

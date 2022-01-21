@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.CatEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -38,31 +38,31 @@ public class HackableTameable implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
-        return entity instanceof TameableEntity && ((TameableEntity) entity).getOwner() != player;
+    public boolean canHack(Entity entity, Player player) {
+        return entity instanceof TamableAnimal && ((TamableAnimal) entity).getOwner() != player;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.tame"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.tamed"));
     }
 
     @Override
-    public int getHackTime(Entity entity, PlayerEntity player) {
+    public int getHackTime(Entity entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
+    public void onHackFinished(Entity entity, Player player) {
         if (entity.level.isClientSide) {
             entity.handleEntityEvent((byte) 7);
         } else {
-            TameableEntity tameable = (TameableEntity) entity;
+            TamableAnimal tameable = (TamableAnimal) entity;
             tameable.getNavigation().stop();
             tameable.setTarget(null);
             tameable.setHealth(20.0F);
@@ -73,8 +73,8 @@ public class HackableTameable implements IHackableEntity {
             // TODO: code smell
             // Would be better to have a HackableCat subclass, but HackableHandler.getHackableForEntity() isn't
             // set up to prioritise getting a cat over a generic tameable.
-            if (entity instanceof CatEntity) {
-                ((CatEntity) entity).setCatType(-1);  // < 0 means "use a random type"
+            if (entity instanceof Cat) {
+                ((Cat) entity).setCatType(-1);  // < 0 means "use a random type"
             }
         }
     }

@@ -21,16 +21,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class WorldTicktimeSensor implements IPollSensorSetting {
@@ -56,14 +55,13 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
     }
 
     @Override
-    public int getPollFrequency(TileEntity te) {
+    public int getPollFrequency(BlockEntity te) {
         return 40;
     }
 
     @Override
-    public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        double worldTickTime = mean(server.getTickTime(world.dimension())) * 1.0E-6D;
+    public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
+        double worldTickTime = mean(Objects.requireNonNull(level.getServer()).getTickTime(level.dimension())) * 1.0E-6D;
         try {
             int redstoneStrength = (int) (worldTickTime * Double.parseDouble(textBoxText));
             return Math.min(15, redstoneStrength);
@@ -78,7 +76,7 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
     }
 
     @Override
-    public void getAdditionalInfo(List<ITextComponent> info) {
-        info.add(new StringTextComponent("Tick Resolution"));
+    public void getAdditionalInfo(List<Component> info) {
+        info.add(new TextComponent("Tick Resolution"));
     }
 }

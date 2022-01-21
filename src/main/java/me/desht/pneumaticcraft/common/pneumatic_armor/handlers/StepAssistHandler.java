@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -44,8 +44,8 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
     }
 
     @Override
-    public EquipmentSlotType getEquipmentSlot() {
-        return EquipmentSlotType.FEET;
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.FEET;
     }
 
     @Override
@@ -53,8 +53,8 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
         // we will give the player a step height boost every tick if enabled
         // but we won't take it away here, since that could mess up items from other
         // mods which grant step assist
-        if (commonArmorHandler.hasMinPressure(EquipmentSlotType.FEET) && enabled) {
-            PlayerEntity player = commonArmorHandler.getPlayer();
+        if (commonArmorHandler.hasMinPressure(EquipmentSlot.FEET) && enabled) {
+            Player player = commonArmorHandler.getPlayer();
             player.maxUpStep = player.isShiftKeyDown() ? 0.6001F : 1.25F;
         }
     }

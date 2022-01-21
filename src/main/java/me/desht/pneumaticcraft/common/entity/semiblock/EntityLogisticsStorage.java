@@ -21,18 +21,18 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.EntityType;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 
 public class EntityLogisticsStorage extends EntityLogisticsFrame implements ISpecificProvider, ISpecificRequester {
     private int minItems = 1;
     private int minFluid = 1;
 
-    public EntityLogisticsStorage(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityLogisticsStorage(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -52,7 +52,7 @@ public class EntityLogisticsStorage extends EntityLogisticsFrame implements ISpe
     }
 
     @Override
-    protected ContainerType<?> getContainerType() {
+    protected MenuType<?> getContainerType() {
         return ModContainers.LOGISTICS_FRAME_STORAGE.get();
     }
 

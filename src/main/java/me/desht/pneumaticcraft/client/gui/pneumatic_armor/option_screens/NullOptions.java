@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
-import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.network.chat.MutableComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -51,7 +51,7 @@ public class NullOptions implements IOptionPage {
     }
 
     @Override
-    public IFormattableTextComponent getPageName() {
+    public MutableComponent getPageName() {
         return xlate("pneumaticcraft.armor.gui.misc.noUpgrades");
     }
 
@@ -60,11 +60,11 @@ public class NullOptions implements IOptionPage {
     }
 
     @Override
-    public void renderPre(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void renderPre(PoseStack matrixStack, int x, int y, float partialTicks) {
     }
 
     @Override
-    public void renderPost(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void renderPost(PoseStack matrixStack, int x, int y, float partialTicks) {
     }
 
     @Override

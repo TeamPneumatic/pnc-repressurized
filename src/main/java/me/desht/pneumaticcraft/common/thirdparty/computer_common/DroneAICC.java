@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 
 import java.util.Set;
 
@@ -38,7 +38,7 @@ class DroneAICC extends Goal {
         this.widget = widget;
         Set<BlockPos> area = widget.getInterfaceArea();
         for (BlockPos pos : area) {
-            TileEntity te = drone.level.getBlockEntity(pos);
+            BlockEntity te = drone.level.getBlockEntity(pos);
             if (te instanceof TileEntityDroneInterface) {
                 TileEntityDroneInterface interfaceTE = (TileEntityDroneInterface) te;
                 if (targetAI) {

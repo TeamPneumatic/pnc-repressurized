@@ -25,8 +25,8 @@ import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -44,11 +44,11 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
 
         if (showSides()) {
             for (Direction dir : DirectionUtil.VALUES) {
-                ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
+                Component sideName = ClientUtils.translateDirectionComponent(dir);
                 WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 32 + dir.get3DDataValue() * 12, 0xFF404040,
                         sideName, b -> progWidget.getSides()[dir.get3DDataValue()] = b.checked);
                 checkBox.checked = progWidget.getSides()[dir.get3DDataValue()];
-                addButton(checkBox);
+                addRenderableWidget(checkBox);
 
                 addLabel(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20);
             }
@@ -58,13 +58,13 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
                 xlate("pneumaticcraft.gui.progWidget.itemFilter.useItemCount"),
                 b -> { progWidget.setUseCount(b.checked); textField.setEditable(b.checked); }
         ).setTooltipKey("pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip").setChecked(progWidget.useCount());
-        addButton(useItemCount);
+        addRenderableWidget(useItemCount);
 
         textField = new WidgetTextFieldNumber(font, guiLeft + 10, guiTop + (showSides() ? 128 : 43), 50, 11).setRange(0, Integer.MAX_VALUE);
         textField.setValue(progWidget.getCount());
         textField.setEditable(useItemCount.checked);
         textField.setResponder(s -> progWidget.setCount(textField.getIntValue()));
-        addButton(textField);
+        addRenderableWidget(textField);
 
     }
 

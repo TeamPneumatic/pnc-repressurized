@@ -20,18 +20,18 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 
 import java.util.Locale;
 
 public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
-    public enum EnumWallState implements IStringSerializable {
+    public enum EnumWallState implements StringRepresentable {
         NONE, CENTER, XEDGE, ZEDGE, YEDGE, XMIN_YMIN_ZMIN, XMIN_YMIN_ZMAX, XMIN_YMAX_ZMIN, XMIN_YMAX_ZMAX;
 
         @Override
@@ -47,12 +47,12 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
     private static final EnumProperty<EnumWallState> WALL_STATE = EnumProperty.create("wall_state", EnumWallState.class);
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(WALL_STATE);
     }
 
-    public BlockState updateState(BlockState state, IBlockReader world, BlockPos pos) {
+    public BlockState updateState(BlockState state, BlockGetter world, BlockPos pos) {
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(wall -> {
             EnumWallState wallState = EnumWallState.NONE;
             TileEntityPressureChamberValve core = wall.getCore();

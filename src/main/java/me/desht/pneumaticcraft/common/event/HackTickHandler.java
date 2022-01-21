@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -65,7 +65,7 @@ public enum HackTickHandler {
         }
     }
 
-    public void trackBlock(World world, BlockPos pos, IHackableBlock iHackable) {
+    public void trackBlock(Level world, BlockPos pos, IHackableBlock iHackable) {
         hackedBlocks.computeIfAbsent(getKey(world), k1 -> new HashMap<>()).put(pos, iHackable);
     }
 
@@ -78,7 +78,7 @@ public enum HackTickHandler {
         }
     }
 
-    private ResourceLocation getKey(World w) {
+    private ResourceLocation getKey(Level w) {
         return w.dimension().location();
     }
 }

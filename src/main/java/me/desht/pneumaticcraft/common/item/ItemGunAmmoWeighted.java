@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemGunAmmoWeighted extends ItemGunAmmo {
     @Override

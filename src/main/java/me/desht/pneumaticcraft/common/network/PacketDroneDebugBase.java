@@ -21,13 +21,13 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -47,7 +47,7 @@ public abstract class PacketDroneDebugBase {
         }
     }
 
-    public PacketDroneDebugBase(PacketBuffer buffer) {
+    public PacketDroneDebugBase(FriendlyByteBuf buffer) {
         if (buffer.readBoolean()) {
             entityId = buffer.readInt();
             pos = null;
@@ -62,7 +62,7 @@ public abstract class PacketDroneDebugBase {
         this.pos = pos;
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         if (pos != null) {
             buf.writeBoolean(false);
             buf.writeBlockPos(pos);
@@ -74,15 +74,15 @@ public abstract class PacketDroneDebugBase {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            World world = ctx.get().getSender() == null ? ClientUtils.getClientWorld() : ctx.get().getSender().level;
-            PlayerEntity player =  ctx.get().getSender() == null ? ClientUtils.getClientPlayer() : ctx.get().getSender();
+            Level world = ctx.get().getSender() == null ? ClientUtils.getClientLevel() : ctx.get().getSender().level;
+            Player player =  ctx.get().getSender() == null ? ClientUtils.getClientPlayer() : ctx.get().getSender();
             if (entityId >= 0) {
                 Entity entity = world.getEntity(entityId);
                 if (entity instanceof EntityDrone) {
                     handle(player, (IDroneBase) entity);
                 }
             } else if (pos != null) {
-                TileEntity te = world.getBlockEntity(pos);
+                BlockEntity te = world.getBlockEntity(pos);
                 if (te instanceof TileEntityProgrammableController) {
                     handle(player, (IDroneBase) te);
                 }
@@ -93,6 +93,6 @@ public abstract class PacketDroneDebugBase {
         ctx.get().setPacketHandled(true);
     }
 
-    abstract void handle(PlayerEntity player, IDroneBase drone);
+    abstract void handle(Player player, IDroneBase drone);
 
 }

@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * Sent by server to get a message displayed on the Pneumatic Armor HUD
  */
 public class PacketSendArmorHUDMessage {
-    private final ITextComponent message;
+    private final Component message;
     private final int duration;
     private final int color;
 
@@ -38,19 +38,19 @@ public class PacketSendArmorHUDMessage {
 //        this(message, duration, 0x7000FF00);
 //    }
 
-    public PacketSendArmorHUDMessage(ITextComponent message, int duration, int color) {
+    public PacketSendArmorHUDMessage(Component message, int duration, int color) {
         this.message = message;
         this.duration = duration;
         this.color = color;
     }
 
-    PacketSendArmorHUDMessage(PacketBuffer buffer) {
+    PacketSendArmorHUDMessage(FriendlyByteBuf buffer) {
         this.message = buffer.readComponent();
         this.duration = buffer.readInt();
         this.color = buffer.readInt();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeComponent(this.message);
         buf.writeInt(this.duration);
         buf.writeInt(this.color);

@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.datagen.loot;
 
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.core.Registry;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModLootFunctions {
-    public static final LootFunctionType TE_SERIALIZER = Registry.register(Registry.LOOT_FUNCTION_TYPE,
-            RL("te_serializer"), new LootFunctionType(new TileEntitySerializerFunction.Serializer())
+    public static final LootItemFunctionType TE_SERIALIZER = Registry.register(Registry.LOOT_FUNCTION_TYPE,
+            RL("te_serializer"), new LootItemFunctionType(new TileEntitySerializerFunction.Serializer())
     );
 
     @SuppressWarnings("EmptyMethod")

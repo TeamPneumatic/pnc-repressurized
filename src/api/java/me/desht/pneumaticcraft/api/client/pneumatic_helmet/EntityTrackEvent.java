@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 

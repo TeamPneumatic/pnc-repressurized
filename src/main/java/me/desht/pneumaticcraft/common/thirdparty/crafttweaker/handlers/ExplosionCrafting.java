@@ -18,32 +18,32 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
-import com.blamejared.crafttweaker.api.annotations.ZenRegister;
-import com.blamejared.crafttweaker.api.item.IIngredient;
-import com.blamejared.crafttweaker.api.item.IIngredientWithAmount;
+import com.blamejared.crafttweaker.api.action.recipe.ActionAddRecipe;
+import com.blamejared.crafttweaker.api.action.recipe.ActionRemoveRecipe;
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker.api.ingredient.IIngredient;
+import com.blamejared.crafttweaker.api.ingredient.IIngredientWithAmount;
 import com.blamejared.crafttweaker.api.item.IItemStack;
-import com.blamejared.crafttweaker.api.managers.IRecipeManager;
-import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
-import com.blamejared.crafttweaker.impl.actions.recipes.ActionRemoveRecipe;
-import com.blamejared.crafttweaker.impl.item.MCItemStack;
+import com.blamejared.crafttweaker.api.item.MCItemStack;
+import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
 
 @Document("mods/PneumaticCraft/ExplosionCrafting")
 @ZenCodeType.Name("mods.pneumaticcraft.explosioncrafting")
 @ZenRegister
-public class ExplosionCrafting implements IRecipeManager {
+public class ExplosionCrafting implements IRecipeManager<ExplosionCraftingRecipe> {
     public static final String name = "PneumaticCraft Explosion Crafting";
 
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount input, IItemStack[] outputs, int lossRate) {
-        CraftTweakerAPI.apply(new ActionAddRecipe(this,
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new ExplosionCraftingRecipeImpl(
                         new ResourceLocation("crafttweaker", fixRecipeName(name)),
                         CTUtils.toStackedIngredient(input),
@@ -53,10 +53,10 @@ public class ExplosionCrafting implements IRecipeManager {
     }
 
     @Override
-    public void removeRecipe(IIngredient output) {
-        CraftTweakerAPI.apply(new ActionRemoveRecipe(this, iRecipe -> {
-            if (iRecipe instanceof ExplosionCraftingRecipe) {
-                return ((ExplosionCraftingRecipe)iRecipe).getOutputs().stream()
+    public void remove(IIngredient output) {
+        CraftTweakerAPI.apply(new ActionRemoveRecipe<>(this, iRecipe -> {
+            if (iRecipe != null) {
+                return iRecipe.getOutputs().stream()
                         .anyMatch(stack -> output.matches(new MCItemStack(stack)));
             }
             return false;
@@ -64,7 +64,7 @@ public class ExplosionCrafting implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<ExplosionCraftingRecipe> getRecipeType() {
+    public RecipeType<ExplosionCraftingRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.EXPLOSION_CRAFTING;
     }
 }

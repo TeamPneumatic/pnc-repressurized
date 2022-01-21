@@ -21,16 +21,20 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.*;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.Direction;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.resources.model.*;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
@@ -43,9 +47,9 @@ import java.util.*;
 import java.util.function.Function;
 
 public class CamouflageModel implements IDynamicBakedModel {
-    private final IBakedModel originalModel;
+    private final BakedModel originalModel;
 
-    private CamouflageModel(IBakedModel originalModel) {
+    private CamouflageModel(BakedModel originalModel) {
         this.originalModel = originalModel;
     }
 
@@ -56,16 +60,16 @@ public class CamouflageModel implements IDynamicBakedModel {
         }
         BlockState camoState = modelData.getData(BlockPneumaticCraftCamo.CAMO_STATE);
 
-        RenderType layer = MinecraftForgeClient.getRenderLayer();
+        RenderType layer = MinecraftForgeClient.getRenderType();
         if (layer == null) {
             layer = RenderType.solid(); // workaround for when this isn't set (digging, etc.)
         }
         if (camoState == null && layer == RenderType.solid()) {
             // No camo
             return originalModel.getQuads(state, side, rand, modelData);
-        } else if (camoState != null && RenderTypeLookup.canRenderInLayer(camoState, layer)) {
+        } else if (camoState != null && ItemBlockRenderTypes.canRenderInLayer(camoState, layer)) {
             // Steal camo's model
-            IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(camoState);
+            BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(camoState);
             return model.getQuads(camoState, side, rand, modelData);
         } else {
             // Not rendering in this layer
@@ -99,12 +103,12 @@ public class CamouflageModel implements IDynamicBakedModel {
     }
 
     @Override
-    public ItemCameraTransforms getTransforms() {
+    public ItemTransforms getTransforms() {
         return originalModel.getTransforms();
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
         return originalModel.getOverrides();
     }
 
@@ -112,12 +116,12 @@ public class CamouflageModel implements IDynamicBakedModel {
         INSTANCE;
 
         @Override
-        public void onResourceManagerReload(IResourceManager resourceManager) {
+        public void onResourceManagerReload(ResourceManager resourceManager) {
         }
 
         @Override
         public Geometry read(JsonDeserializationContext deserializationContext, JsonObject modelContents) {
-            BlockModel baseModel = deserializationContext.deserialize(JSONUtils.getAsJsonObject(modelContents, "base_model"), BlockModel.class);
+            BlockModel baseModel = deserializationContext.deserialize(GsonHelper.getAsJsonObject(modelContents, "base_model"), BlockModel.class);
             return new CamouflageModel.Geometry(baseModel);
         }
     }
@@ -130,12 +134,12 @@ public class CamouflageModel implements IDynamicBakedModel {
         }
 
         @Override
-        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+        public BakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ItemOverrides overrides, ResourceLocation modelLocation) {
             return new CamouflageModel(baseModel.bake(bakery, baseModel, spriteGetter, modelTransform, modelLocation, true));
         }
 
         @Override
-        public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
+        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
             return baseModel.getMaterials(modelGetter, missingTextureErrors);
         }
     }

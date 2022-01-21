@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

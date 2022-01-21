@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -36,11 +36,11 @@ public class EnchantmentUtils {
      * @param player the player
      * @return player's current XP amount
      */
-    public static int getPlayerXP(PlayerEntity player) {
+    public static int getPlayerXP(Player player) {
         return (int)(EnchantmentUtils.getExperienceForLevel(player.experienceLevel) + (player.experienceProgress * player.getXpNeededForNextLevel()));
     }
 
-    public static void addPlayerXP(PlayerEntity player, int amount) {
+    public static void addPlayerXP(Player player, int amount) {
         int experience = getPlayerXP(player) + amount;
         player.totalExperience = experience;
         player.experienceLevel = EnchantmentUtils.getLevelForExperience(experience);
@@ -85,7 +85,7 @@ public class EnchantmentUtils {
         }
     }
 
-    public static float getPower(World world, BlockPos position) {
+    public static float getPower(Level world, BlockPos position) {
         float power = 0;
 
         for (int deltaZ = -1; deltaZ <= 1; ++deltaZ) {
@@ -107,12 +107,12 @@ public class EnchantmentUtils {
         return power;
     }
 
-    public static float getEnchantPower(World world, BlockPos pos) {
+    public static float getEnchantPower(Level world, BlockPos pos) {
         return world.getBlockState(pos).getEnchantPowerBonus(world, pos);
     }
 
     public static void addAllBooks(Enchantment enchantment, List<ItemStack> items) {
         for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++)
-            items.add(EnchantedBookItem.createForEnchantment(new EnchantmentData(enchantment, i)));
+            items.add(EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
     }
 }

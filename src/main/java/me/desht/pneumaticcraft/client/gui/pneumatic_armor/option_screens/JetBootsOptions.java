@@ -37,11 +37,11 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Optional;
 
@@ -93,11 +93,11 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
 
     private void setFlag(String flagName, int minTier, ICheckboxWidget cb) {
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-        if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= minTier) {
-            CompoundNBT tag = new CompoundNBT();
+        if (commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS) >= minTier) {
+            CompoundTag tag = new CompoundTag();
             tag.putBoolean(flagName, cb.isChecked());
             JetBootsHandler upgradeHandler = getClientUpgradeHandler().getCommonHandler();
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.FEET, tag, upgradeHandler.getID()));
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.FEET, tag, upgradeHandler.getID()));
             upgradeHandler.onDataFieldUpdated(CommonArmorHandler.getHandlerForPlayer(), flagName, tag.get(flagName));
             ResourceLocation ownerId = upgradeHandler.getID();
             HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(ownerId), ArmorUpgradeRegistry.getStringKey(cb.getUpgradeId()), cb.isChecked());
@@ -108,7 +108,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
     public void tick() {
         super.tick();
 
-        int nUpgrades = CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS);
+        int nUpgrades = CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS);
         checkBoxBuilderMode.asWidget().active = nUpgrades >= JetBootsHandler.BUILDER_MODE_LEVEL;
         checkBoxStabilizers.asWidget().active = nUpgrades >= JetBootsHandler.STABLIZERS_LEVEL;
     }
@@ -119,13 +119,13 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
     }
 
     @Override
-    protected ITextComponent getPrefix() {
-        return new StringTextComponent("Power: ");
+    protected Component getPrefix() {
+        return new TextComponent("Power: ");
     }
 
     @Override
-    protected ITextComponent getSuffix() {
-        return new StringTextComponent("%");
+    protected Component getSuffix() {
+        return new TextComponent("%");
     }
 
     @Override

@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.gui.GuiRemote;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -46,12 +46,12 @@ public class PacketSetGlobalVariable extends LocationIntPacket {
         this(varName, value ? 1 : 0);
     }
 
-    public PacketSetGlobalVariable(PacketBuffer buf) {
+    public PacketSetGlobalVariable(FriendlyByteBuf buf) {
         super(buf);
         this.varName = buf.readUtf(32767);
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeUtf(varName);
     }

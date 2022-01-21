@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -47,26 +47,26 @@ public class NightVisionHandler extends BaseArmorUpgradeHandler<IArmorExtensionD
     }
 
     @Override
-    public EquipmentSlotType getEquipmentSlot() {
-        return EquipmentSlotType.HEAD;
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.HEAD;
     }
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        PlayerEntity player = commonArmorHandler.getPlayer();
-        boolean hasPressure = commonArmorHandler.hasMinPressure(EquipmentSlotType.HEAD);
+        Player player = commonArmorHandler.getPlayer();
+        boolean hasPressure = commonArmorHandler.hasMinPressure(EquipmentSlot.HEAD);
         if (!player.level.isClientSide) {
-            EffectInstance nvInstance = player.getEffect(Effects.NIGHT_VISION);
+            MobEffectInstance nvInstance = player.getEffect(MobEffects.NIGHT_VISION);
             if (enabled && hasPressure && (nvInstance == null || nvInstance.getDuration() <= 220)) {
-                player.addEffect(new EffectInstance(Effects.NIGHT_VISION, 500, 0, false, false));
+                player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 500, 0, false, false));
             } else if ((!enabled || !hasPressure) && nvInstance != null) {
-                player.removeEffect(Effects.NIGHT_VISION);
+                player.removeEffect(MobEffects.NIGHT_VISION);
             }
         }
     }
 
     @Override
     public void onShutdown(ICommonArmorHandler commonArmorHandler) {
-        commonArmorHandler.getPlayer().removeEffect(Effects.NIGHT_VISION);
+        commonArmorHandler.getPlayer().removeEffect(MobEffects.NIGHT_VISION);
     }
 }

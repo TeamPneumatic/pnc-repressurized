@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
 
@@ -26,6 +26,6 @@ import javax.annotation.Nullable;
  * @author Maarten
  *
  */
-public interface IInfoForwarder{
-    @Nullable TileEntity getInfoTileEntity();
+public interface IInfoForwarder {
+    @Nullable BlockEntity getInfoBlockEntity();
 }

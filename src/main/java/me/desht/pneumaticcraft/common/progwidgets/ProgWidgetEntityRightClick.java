@@ -23,17 +23,17 @@ import me.desht.pneumaticcraft.common.ai.DroneEntityBase;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +50,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
@@ -102,18 +102,18 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
             protected boolean doAction() {
                 visitedEntities.add(targetedEntity);
                 ItemStack stack = drone.getInv().getStackInSlot(0);
-                PlayerEntity fakePlayer = drone.getFakePlayer();
-                if (stack.getItem().interactLivingEntity(stack, fakePlayer, targetedEntity, Hand.MAIN_HAND).consumesAction()
-                        || targetedEntity.interact(fakePlayer, Hand.MAIN_HAND).consumesAction()) {
+                Player fakePlayer = drone.getFakePlayer();
+                if (stack.getItem().interactLivingEntity(stack, fakePlayer, targetedEntity, InteractionHand.MAIN_HAND).consumesAction()
+                        || targetedEntity.interact(fakePlayer, InteractionHand.MAIN_HAND).consumesAction()) {
                     // fake player's inventory has probably been modified in some way
                     // copy items back to drone inventory, dropping on the ground any items that don't fit
-                    for (int i = 0; i < fakePlayer.inventory.items.size(); i++) {
-                        ItemStack fakePlayerStack = fakePlayer.inventory.items.get(i);
+                    for (int i = 0; i < fakePlayer.getInventory().items.size(); i++) {
+                        ItemStack fakePlayerStack = fakePlayer.getInventory().items.get(i);
                         if (i < drone.getInv().getSlots()) {
                             drone.getInv().setStackInSlot(i, fakePlayerStack);
                         } else if (!fakePlayerStack.isEmpty()) {
                             drone.dropItem(fakePlayerStack);
-                            fakePlayer.inventory.items.set(i, ItemStack.EMPTY);
+                            fakePlayer.getInventory().items.set(i, ItemStack.EMPTY);
                         }
                     }
                 }
@@ -123,7 +123,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public List<Entity> getValidEntities(World world) {
+    public List<Entity> getValidEntities(Level world) {
         if (entityFilters == null) {
             entityFilters = new EntityFilterPair<>(this);
         }

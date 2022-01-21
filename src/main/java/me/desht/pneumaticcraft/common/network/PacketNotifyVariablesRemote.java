@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -38,21 +38,21 @@ public class PacketNotifyVariablesRemote {
         this.variables = variables;
     }
 
-    public PacketNotifyVariablesRemote(PacketBuffer buffer) {
+    public PacketNotifyVariablesRemote(FriendlyByteBuf buffer) {
         variables = new String[buffer.readVarInt()];
         for (int i = 0; i < variables.length; i++) {
             variables[i] = buffer.readUtf();
         }
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeVarInt(variables.length);
         Arrays.stream(variables).forEach(buf::writeUtf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = ClientUtils.getClientPlayer();
+            Player player = ClientUtils.getClientPlayer();
             if (player.containerMenu instanceof ContainerRemote) {
                 ((ContainerRemote) player.containerMenu).variables = variables;
             }

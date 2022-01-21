@@ -20,14 +20,14 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -37,26 +37,26 @@ import java.util.function.Supplier;
  */
 public class PacketModWrenchBlock extends LocationIntPacket {
     private final Direction side;
-    private final Hand hand;
+    private final InteractionHand hand;
     private final int entityID;
 
-    public PacketModWrenchBlock(BlockPos pos, Direction side, Hand hand) {
+    public PacketModWrenchBlock(BlockPos pos, Direction side, InteractionHand hand) {
         super(pos);
         this.side = side;
         this.hand = hand;
         this.entityID = -1;
     }
 
-    public PacketModWrenchBlock(BlockPos pos, Hand hand, int entityID) {
+    public PacketModWrenchBlock(BlockPos pos, InteractionHand hand, int entityID) {
         super(pos);
         this.side = null;
         this.hand = hand;
         this.entityID = entityID;
     }
 
-    public PacketModWrenchBlock(PacketBuffer buffer) {
+    public PacketModWrenchBlock(FriendlyByteBuf buffer) {
         super(buffer);
-        hand = Hand.values()[buffer.readByte()];
+        hand = InteractionHand.values()[buffer.readByte()];
         if (buffer.readBoolean()) {
             entityID = buffer.readInt();
             side = null;
@@ -67,7 +67,7 @@ public class PacketModWrenchBlock extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeByte(hand.ordinal());
         if (entityID >= 0) {
@@ -81,7 +81,7 @@ public class PacketModWrenchBlock extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             if (player.level.isAreaLoaded(pos, 0) && PneumaticCraftUtils.canPlayerReach(player, pos)) {
                 if (ModdedWrenchUtils.getInstance().isModdedWrench(player.getItemInHand(hand))) {
                     if (entityID >= 0) {

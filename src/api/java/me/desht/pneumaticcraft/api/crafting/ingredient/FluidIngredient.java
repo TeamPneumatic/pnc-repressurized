@@ -21,20 +21,21 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -56,13 +57,13 @@ public class FluidIngredient extends Ingredient {
     private ItemStack[] cachedStacks;
     private final int amount;
     private final ResourceLocation fluidId;
-    private final ITag<Fluid> fluidTag;
-    private final CompoundNBT nbt;
+    private final Tag<Fluid> fluidTag;
+    private final CompoundTag nbt;
     private final boolean fuzzyNBT;
 
     public static final FluidIngredient EMPTY = new FluidIngredient(Collections.emptyList(), 0, null, null, null, false);
 
-    protected FluidIngredient(List<Fluid> fluids, int amount, ResourceLocation fluidId, ITag<Fluid> fluidTag, CompoundNBT nbt, boolean fuzzyNBT) {
+    protected FluidIngredient(List<Fluid> fluids, int amount, ResourceLocation fluidId, Tag<Fluid> fluidTag, CompoundTag nbt, boolean fuzzyNBT) {
         super(Stream.empty());
         this.fluids = fluids;
         this.amount = amount;
@@ -91,7 +92,7 @@ public class FluidIngredient extends Ingredient {
      * @param fluids the list of fluids
      * @return the fluid ingredient
      */
-    public static FluidIngredient of(int amount, @Nullable CompoundNBT nbt, boolean fuzzyNBT, Fluid... fluids) {
+    public static FluidIngredient of(int amount, @Nullable CompoundTag nbt, boolean fuzzyNBT, Fluid... fluids) {
         return new FluidIngredient(Arrays.asList(fluids), amount, null, null, nbt, fuzzyNBT);
     }
 
@@ -114,7 +115,7 @@ public class FluidIngredient extends Ingredient {
      * @param fluidTag the fluid tag
      * @return the fluid ingredient
      */
-    public static FluidIngredient of(int amount, @Nullable CompoundNBT nbt, boolean fuzzyNBT, ITag<Fluid> fluidTag) {
+    public static FluidIngredient of(int amount, @Nullable CompoundTag nbt, boolean fuzzyNBT, Tag<Fluid> fluidTag) {
         return new FluidIngredient(null, amount, null, fluidTag, nbt, fuzzyNBT);
     }
 
@@ -124,7 +125,7 @@ public class FluidIngredient extends Ingredient {
      * @param fluidTag the fluid tag
      * @return the fluid ingredient
      */
-    public static FluidIngredient of(int amount, ITag<Fluid> fluidTag) {
+    public static FluidIngredient of(int amount, Tag<Fluid> fluidTag) {
         return of(amount, null, false, fluidTag);
     }
 
@@ -140,7 +141,7 @@ public class FluidIngredient extends Ingredient {
      * @param fluidId the fluid's registry ID
      * @return the fluid ingredient
      */
-    public static FluidIngredient of(int amount, @Nullable CompoundNBT nbt, boolean fuzzyNBT, ResourceLocation fluidId) {
+    public static FluidIngredient of(int amount, @Nullable CompoundTag nbt, boolean fuzzyNBT, ResourceLocation fluidId) {
         return new FluidIngredient(null, amount, fluidId, null, nbt, fuzzyNBT);
     }
 
@@ -261,10 +262,10 @@ public class FluidIngredient extends Ingredient {
 
         if (fuzzyNBT) {
             // match only the fields which are actually present in the ingredient
-            return nbt.getAllKeys().stream().allMatch(key -> NBTUtil.compareNbt(nbt.get(key), fluidStack.getTag().get(key), true));
+            return nbt.getAllKeys().stream().allMatch(key -> NbtUtils.compareNbt(nbt.get(key), fluidStack.getTag().get(key), true));
         } else {
             // exact match of all fields is required
-            return NBTUtil.compareNbt(nbt, fluidStack.getTag(), true);
+            return NbtUtils.compareNbt(nbt, fluidStack.getTag(), true);
         }
     }
 
@@ -273,7 +274,9 @@ public class FluidIngredient extends Ingredient {
         JsonObject json = new JsonObject();
         json.addProperty("type", Serializer.ID.toString());
         if (fluidTag != null) {
-            ResourceLocation tagId = TagCollectionManager.getInstance().getFluids().getIdOrThrow(fluidTag);
+            ResourceLocation tagId = SerializationTags.getInstance().getIdOrThrow(Registry.FLUID_REGISTRY, fluidTag, () -> {
+                throw new IllegalStateException("unknown fluid tag");
+            });
             json.addProperty("tag", tagId.toString());
         } else if (fluidId != null) {
             json.addProperty("fluid", fluidId.toString());
@@ -309,7 +312,7 @@ public class FluidIngredient extends Ingredient {
         private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
         @Override
-        public FluidIngredient parse(PacketBuffer buffer) {
+        public FluidIngredient parse(FriendlyByteBuf buffer) {
             int nFluids = buffer.readVarInt();
             int amount = buffer.readVarInt();
             Set<Fluid> fluids = new HashSet<>();
@@ -325,17 +328,18 @@ public class FluidIngredient extends Ingredient {
 
         @Override
         public FluidIngredient parse(JsonObject json) {
-            int amount = JSONUtils.getAsInt(json, "amount", 1000);
+            int amount = GsonHelper.getAsInt(json, "amount", 1000);
             FluidIngredient result;
-            CompoundNBT nbt = possibleNBT(json);
-            boolean fuzzyNBT = JSONUtils.getAsBoolean(json, "fuzzyNBT", false);
+            CompoundTag nbt = possibleNBT(json);
+            boolean fuzzyNBT = GsonHelper.getAsBoolean(json, "fuzzyNBT", false);
             if (json.has("tag")) {
-                ResourceLocation rl = new ResourceLocation(JSONUtils.getAsString(json, "tag"));
-                ITag<Fluid> tag = TagCollectionManager.getInstance().getFluids().getTag(rl);
-                if (tag == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
+                ResourceLocation rl = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
+                Tag<Fluid> tag = SerializationTags.getInstance().getTagOrThrow(Registry.FLUID_REGISTRY, rl, (r) -> {
+                    throw new JsonSyntaxException("unknown fluid tag '" + r + "'");
+                });
                 result = FluidIngredient.of(amount, nbt, fuzzyNBT, tag);
             } else if (json.has("fluid")) {
-                ResourceLocation fluidId = new ResourceLocation(JSONUtils.getAsString(json, "fluid"));
+                ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
                 Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
                 if (fluid == null || fluid == Fluids.EMPTY) throw new JsonSyntaxException("Unknown fluid '" + fluidId + "'");
                 result = FluidIngredient.of(amount, nbt, fuzzyNBT, fluid);
@@ -345,14 +349,14 @@ public class FluidIngredient extends Ingredient {
             return result;
         }
 
-        private CompoundNBT possibleNBT(JsonObject json) {
+        private CompoundTag possibleNBT(JsonObject json) {
             if (json.has("nbt")) {
                 JsonElement element = json.get("nbt");
                 try {
                     if (element.isJsonObject())
-                        return JsonToNBT.parseTag(GSON.toJson(element));
+                        return TagParser.parseTag(GSON.toJson(element));
                     else
-                        return JsonToNBT.parseTag(JSONUtils.convertToString(element, "nbt"));
+                        return TagParser.parseTag(GsonHelper.convertToString(element, "nbt"));
                 } catch (CommandSyntaxException e) {
                     throw new JsonSyntaxException(e);
                 }
@@ -361,7 +365,7 @@ public class FluidIngredient extends Ingredient {
         }
 
         @Override
-        public void write(PacketBuffer buffer, FluidIngredient ingredient) {
+        public void write(FriendlyByteBuf buffer, FluidIngredient ingredient) {
             buffer.writeVarInt(ingredient.getFluidList().size());
             buffer.writeVarInt(ingredient.getAmount());
             ingredient.getFluidList().forEach(buffer::writeRegistryId);

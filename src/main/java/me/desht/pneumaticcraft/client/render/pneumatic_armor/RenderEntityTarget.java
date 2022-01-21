@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
@@ -38,14 +38,14 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
@@ -62,7 +62,7 @@ public class RenderEntityTarget {
     private final IGuiAnimatedStat stat;
     private boolean didMakeLockSound;
     public boolean isLookingAtTarget;
-    private List<ITextComponent> textList = new ArrayList<>();
+    private List<Component> textList = new ArrayList<>();
     private final List<IEntityTrackEntry> trackEntries;
     private int hackTime;
     private double distToEntity;
@@ -91,13 +91,13 @@ public class RenderEntityTarget {
     public void update() {
         stat.tickWidget();
         stat.setTitle(entity.getDisplayName());
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
 
         distToEntity = entity.distanceTo(ClientUtils.getClientPlayer());
 
         if (ticksExisted >= 30 && !didMakeLockSound) {
             didMakeLockSound = true;
-            player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
+            player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundSource.PLAYERS, 0.1F, 1.0F, true);
         }
 
         boolean tagged = entity instanceof EntityDroneBase && ItemPneumaticArmor.isPlayerDebuggingDrone(player, (EntityDroneBase) entity);
@@ -125,14 +125,14 @@ public class RenderEntityTarget {
         return ticksExisted > 120;
     }
 
-    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, boolean justRenderWhenHovering) {
+    public void render(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, boolean justRenderWhenHovering) {
         for (IEntityTrackEntry tracker : trackEntries) {
             tracker.render(matrixStack, buffer, entity, partialTicks);
         }
 
-        double x = MathHelper.lerp(partialTicks, entity.xo, entity.getX());
-        double y = MathHelper.lerp(partialTicks, entity.yo, entity.getY()) + entity.getBbHeight() / 2D;
-        double z = MathHelper.lerp(partialTicks, entity.zo, entity.getZ());
+        double x = Mth.lerp(partialTicks, entity.xo, entity.getX());
+        double y = Mth.lerp(partialTicks, entity.yo, entity.getY()) + entity.getBbHeight() / 2D;
+        double z = Mth.lerp(partialTicks, entity.zo, entity.getZ());
 
         matrixStack.pushPose();
 
@@ -145,7 +145,7 @@ public class RenderEntityTarget {
             size += 5 - Math.abs(ticksExisted) * 0.083F;
             alpha = Math.abs(ticksExisted) * 0.005F;
         }
-        float renderSize = MathHelper.lerp(partialTicks, oldSize, size);
+        float renderSize = Mth.lerp(partialTicks, oldSize, size);
 
         circle1.render(matrixStack, buffer, renderSize, partialTicks, alpha);
         circle2.render(matrixStack, buffer, renderSize + 0.2F, partialTicks, alpha);
@@ -167,7 +167,7 @@ public class RenderEntityTarget {
             for (IEntityTrackEntry tracker : trackEntries) {
                 tracker.addInfo(entity, textList, isLookingAtTarget);
             }
-            textList.add(new StringTextComponent(String.format("Dist: %.1fm", distToEntity)));
+            textList.add(new TextComponent(String.format("Dist: %.1fm", distToEntity)));
             stat.setText(textList);
             // a bit of growing or shrinking to keep the stat on screen and/or of legible size
             float mul = getStatSizeMultiplier(distToEntity);
@@ -197,15 +197,15 @@ public class RenderEntityTarget {
         }
     }
 
-    public List<ITextComponent> getEntityText() {
+    public List<Component> getEntityText() {
         return textList;
     }
 
     private boolean isPlayerLookingAtTarget() {
         // code used from the Enderman player looking code.
-        PlayerEntity player = Minecraft.getInstance().player;
-        Vector3d vec3 = player.getViewVector(1.0F).normalize();
-        Vector3d vec31 = new Vector3d(entity.getX() - player.getX(), entity.getBoundingBox().minY + entity.getBbHeight() / 2.0F - (player.getY() + player.getEyeHeight()), entity.getZ() - player.getZ());
+        Player player = Minecraft.getInstance().player;
+        Vec3 vec3 = player.getViewVector(1.0F).normalize();
+        Vec3 vec31 = new Vec3(entity.getX() - player.getX(), entity.getBoundingBox().minY + entity.getBbHeight() / 2.0F - (player.getY() + player.getEyeHeight()), entity.getZ() - player.getZ());
         double d0 = vec31.length();
         vec31 = vec31.normalize();
         double d1 = vec3.dot(vec31);

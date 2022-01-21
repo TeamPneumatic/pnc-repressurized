@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener.Tile
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -58,10 +58,10 @@ public class LogisticsManager {
         PriorityQueue<LogisticsTask> tasks = new PriorityQueue<>();
         for (int priority = logistics.size() - 1; priority >= 0; priority--) {
             for (EntityLogisticsFrame requester : logistics.get(priority)) {
-                if (droneAccess && requester.isObstructed(PathType.AIR)) continue;
+                if (droneAccess && requester.isObstructed(PathComputationType.AIR)) continue;
                 for (int i = 0; i < priority; i++) {
                     for (EntityLogisticsFrame provider : logistics.get(i)) {
-                        if (droneAccess && provider.isObstructed(PathType.AIR)) continue;
+                        if (droneAccess && provider.isObstructed(PathComputationType.AIR)) continue;
                         if (provider.shouldProvideTo(priority)) {
                             if (!item.isEmpty()) {
                                 int requestedAmount = getRequestedAmount(requester, item, false);
@@ -133,7 +133,7 @@ public class LogisticsManager {
     }
 
     private static int getRequestedAmount(EntityLogisticsFrame requester, ItemStack providingStack, boolean honourMin) {
-        TileEntity te = requester.getCachedTileEntity();
+        BlockEntity te = requester.getCachedTileEntity();
         if (te == null) return 0;
 
         int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getMaxStackSize();
@@ -150,7 +150,7 @@ public class LogisticsManager {
     }
 
     private static int getRequestedAmount(EntityLogisticsFrame requester, FluidStack providingStack, boolean honourMin) {
-        TileEntity te = requester.getCachedTileEntity();
+        BlockEntity te = requester.getCachedTileEntity();
         if (te == null) return 0;
 
         int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getAmount();

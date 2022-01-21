@@ -19,14 +19,14 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,12 +37,12 @@ public class BlockTrackEntryMisc implements IBlockTrackEntry {
     private static final ResourceLocation ID = RL("block_tracker.module.misc");
 
     @Override
-    public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
-        return state.getBlock().is(PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC);
+    public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
+        return PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC.contains(state.getBlock());
     }
 
     @Override
-    public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+    public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
         return Collections.emptyList();
     }
 
@@ -52,7 +52,7 @@ public class BlockTrackEntryMisc implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
+    public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
     }
 
     @Override

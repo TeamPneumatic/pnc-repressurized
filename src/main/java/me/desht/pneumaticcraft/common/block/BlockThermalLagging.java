@@ -2,22 +2,22 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.ToolActions;
 
 import javax.annotation.Nullable;
 
@@ -36,36 +36,31 @@ public class BlockThermalLagging extends BlockPneumaticCraft {
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return null;
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        if (selectionContext.getEntity() instanceof LivingEntity) {
-            ItemStack stack = ((LivingEntity) selectionContext.getEntity()).getMainHandItem();
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
+        if (selectionContext instanceof EntityCollisionContext ecc && ecc.getEntity() instanceof LivingEntity livingEntity) {
+            ItemStack stack = livingEntity.getMainHandItem();
             return ModdedWrenchUtils.getInstance().isWrench(stack)
-                    || stack.getToolTypes().contains(ToolType.PICKAXE)
-                    || selectionContext.getEntity().isShiftKeyDown() ?
-                    SHAPES[getRotation(state).get3DDataValue()] : VoxelShapes.empty();
+                    || stack.getItem().canPerformAction(stack, ToolActions.PICKAXE_DIG)
+                    || livingEntity.isCrouching() ?
+                    SHAPES[getRotation(state).get3DDataValue()] : Shapes.empty();
         }
         return SHAPES[getRotation(state).get3DDataValue()];
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         return defaultBlockState().setValue(directionProperty(), ctx.getClickedFace().getOpposite());
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
         Direction dir = getRotation(state);
-        return !worldIn.getBlockState(pos.relative(dir)).isAir(worldIn, pos.relative(dir));
+        return !worldIn.getBlockState(pos.relative(dir)).isAir();
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (!canSurvive(stateIn, worldIn, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         }

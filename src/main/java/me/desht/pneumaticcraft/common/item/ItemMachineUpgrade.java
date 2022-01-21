@@ -23,14 +23,18 @@ import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.*;
-import net.minecraft.util.*;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -59,12 +63,12 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag par4) {
+    public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn"));
             PneumaticRegistry.getInstance().getItemRegistry().addTooltip(upgrade, infoList);
         } else {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(TextFormatting.AQUA));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(ChatFormatting.AQUA));
         }
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
             Direction dir = stack.hasTag() ? Direction.byName(NBTUtils.getString(stack, NBT_DIRECTION)) : null;
@@ -75,35 +79,35 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
             if (!context.getLevel().isClientSide) {
                 setDirection(context.getPlayer(), context.getHand(), context.getClickedFace());
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.useOn(context);
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
             if (!worldIn.isClientSide) {
                 setDirection(playerIn, handIn, null);
             }
-            return ActionResult.success(playerIn.getItemInHand(handIn));
+            return InteractionResultHolder.success(playerIn.getItemInHand(handIn));
         }
         return super.use(worldIn, playerIn, handIn);
     }
 
-    private void setDirection(PlayerEntity player, Hand hand, Direction facing) {
+    private void setDirection(Player player, InteractionHand hand, Direction facing) {
         ItemStack stack = player.getItemInHand(hand);
         if (facing == null) {
             stack.setTag(null);
-            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", "*"), true);
+            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.dispenser.direction", "*"), true);
         } else {
             NBTUtils.setString(stack, NBT_DIRECTION, facing.getSerializedName());
-            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", facing.getSerializedName()), true);
+            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.dispenser.direction", facing.getSerializedName()), true);
         }
     }
 
@@ -117,7 +121,7 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         if (this.allowdedIn(group)) {
             if (upgrade.isDepLoaded()) {
                 items.add(new ItemStack(this));

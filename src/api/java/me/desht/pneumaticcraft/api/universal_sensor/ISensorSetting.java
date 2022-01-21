@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +30,7 @@ public interface ISensorSetting extends IBaseSensor {
      * 
      * @return the sensor air usage in mL air per tick
      */
-    default int getAirUsage(World world, BlockPos pos) {
+    default int getAirUsage(Level world, BlockPos pos) {
         return 1;
     }
 

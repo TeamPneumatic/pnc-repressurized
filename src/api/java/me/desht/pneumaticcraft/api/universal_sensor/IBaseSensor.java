@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import net.minecraft.util.RangedInteger;
-import net.minecraft.util.text.ITextComponent;
+import me.desht.pneumaticcraft.api.misc.RangedInt;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.Set;
@@ -53,7 +53,7 @@ public interface IBaseSensor {
      *
      * @return the numeric range, or null if the textbox should allow freeform text
      */
-    default RangedInteger getTextboxIntRange() {
+    default RangedInt getTextboxIntRange() {
         return null;
     }
 
@@ -79,5 +79,5 @@ public interface IBaseSensor {
      *
      * @param info a text component list to be appended to
      */
-    default void getAdditionalInfo(List<ITextComponent> info) {}
+    default void getAdditionalInfo(List<Component> info) {}
 }

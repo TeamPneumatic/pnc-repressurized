@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -37,7 +37,7 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     protected final GuiProgrammer guiProgrammer;
 
     GuiProgWidgetOptionBase(P progWidget, GuiProgrammer guiProgrammer) {
-        super(new TranslationTextComponent(progWidget.getTranslationKey()));
+        super(new TranslatableComponent(progWidget.getTranslationKey()));
 
         this.progWidget = progWidget;
         this.guiProgrammer = guiProgrammer;
@@ -49,12 +49,12 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     public void init() {
         super.init();
 
-        ITextComponent title = xlate(progWidget.getTranslationKey());
+        Component title = xlate(progWidget.getTranslationKey());
         addLabel(title, width / 2 - font.width(title) / 2, guiTop + 5);
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrixStack);
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -87,7 +87,7 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
         return ConfigHelper.client().general.programmerGuiPauses.get();
     }
 
-    public Container getProgrammerContainer() {
+    public AbstractContainerMenu getProgrammerContainer() {
         return guiProgrammer == null ? null : guiProgrammer.getMenu();
     }
 }

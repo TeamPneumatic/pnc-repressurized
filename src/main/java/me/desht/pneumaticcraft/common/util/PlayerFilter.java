@@ -24,10 +24,10 @@ import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.common.amadron.BiomeMatcher;
 import me.desht.pneumaticcraft.common.amadron.DimensionMatcher;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -43,7 +43,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Custom matcher objects can be registered and have support for reading & writing to JSON and packet buffers, so
  * are suitable for use in recipes, for example.
  */
-public class PlayerFilter implements Predicate<PlayerEntity> {
+public class PlayerFilter implements Predicate<Player> {
     public static final PlayerFilter YES = new PlayerFilter(Op.YES, Collections.emptyMap());
     public static final PlayerFilter NO = new PlayerFilter(Op.NO, Collections.emptyMap());
 
@@ -88,7 +88,7 @@ public class PlayerFilter implements Predicate<PlayerEntity> {
         throw new JsonSyntaxException("must provide one of 'and' or 'or'!");
     }
 
-    public static PlayerFilter fromBytes(PacketBuffer buffer) {
+    public static PlayerFilter fromBytes(FriendlyByteBuf buffer) {
         Op op = buffer.readEnum(Op.class);
         int nMatchers = buffer.readVarInt();
 
@@ -122,7 +122,7 @@ public class PlayerFilter implements Predicate<PlayerEntity> {
         return key.contains(":") ? new ResourceLocation(key) : RL(key);
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeEnum(op);
         buffer.writeVarInt(matchers.size());
         matchers.forEach((id, matcher) -> {
@@ -140,7 +140,7 @@ public class PlayerFilter implements Predicate<PlayerEntity> {
     }
 
     @Override
-    public boolean test(PlayerEntity player) {
+    public boolean test(Player player) {
         switch (op) {
             case YES: return true;
             case NO: return false;
@@ -150,7 +150,7 @@ public class PlayerFilter implements Predicate<PlayerEntity> {
         return false;
     }
 
-    public void getDescription(PlayerEntity player, List<ITextComponent> tooltip) {
+    public void getDescription(Player player, List<Component> tooltip) {
         if (isReal()) {
             matchers.values().forEach(matcher -> matcher.addDescription(player, tooltip));
         }

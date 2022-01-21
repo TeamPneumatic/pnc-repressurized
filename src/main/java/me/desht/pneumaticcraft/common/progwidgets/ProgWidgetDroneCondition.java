@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +60,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         if (!measureVar.isEmpty()) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").append(measureVar));
@@ -113,7 +113,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (isAndFunction) tag.putBoolean("isAndFunction", true);
         tag.putByte("operator", (byte) operator.ordinal());
@@ -122,7 +122,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         isAndFunction = tag.getBoolean("isAndFunction");
         operator = Operator.values()[tag.getByte("operator")];
@@ -131,7 +131,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(isAndFunction);
         buf.writeByte(operator.ordinal());
@@ -140,7 +140,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         isAndFunction = buf.readBoolean();
         operator = Operator.values()[buf.readByte()];
@@ -149,8 +149,8 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
-        IFormattableTextComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.misc.all" : "pneumaticcraft.gui.misc.any")
+    public List<Component> getExtraStringInfo() {
+        MutableComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.misc.all" : "pneumaticcraft.gui.misc.any")
                 .append(" " + getOperator().toString() + " " + getRequiredCount());
         return measureVar.isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(measureVar));
     }

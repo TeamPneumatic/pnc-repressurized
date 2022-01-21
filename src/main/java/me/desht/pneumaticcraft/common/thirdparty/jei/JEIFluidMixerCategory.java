@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -31,10 +31,10 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
         super(ModCategoryUid.FLUID_MIXER, FluidMixerRecipe.class,
                 xlate(ModBlocks.FLUID_MIXER.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_FLUID_MIXER, 0, 0, 166, 70),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.FLUID_MIXER.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.FLUID_MIXER.get()))
         );
         tickTimer = guiHelper().createTickTimer(60, 60, false);
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_FLUID_MIXER, 180, 0, 44, 30);
@@ -100,7 +100,7 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
     }
 
     @Override
-    public void draw(FluidMixerRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(FluidMixerRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
         PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 138, 35);
 
@@ -108,13 +108,13 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(FluidMixerRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getTooltipStrings(FluidMixerRecipe recipe, double mouseX, double mouseY) {
+        List<Component> res = new ArrayList<>();
         if (recipe.getRequiredPressure() > 0 && mouseX >= 117 && mouseY >= 15 && mouseX <= 157 && mouseY <= 55) {
             res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
         } else if (mouseX >= 45 && mouseY >= 20 && mouseX <= 89 && mouseY <= 50) {
-            res.add(new StringTextComponent((recipe.getProcessingTime()) / 20f + "s"));
-            res.add(xlate("pneumaticcraft.gui.jei.tooltip.processingTime").withStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
+            res.add(new TextComponent((recipe.getProcessingTime()) / 20f + "s"));
+            res.add(xlate("pneumaticcraft.gui.jei.tooltip.processingTime").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         }
         return res;
     }

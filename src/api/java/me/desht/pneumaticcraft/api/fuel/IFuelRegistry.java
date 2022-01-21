@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.api.fuel;
 
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tags.ITag;
-import net.minecraft.world.World;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.Level;
 
 import java.util.Collection;
 
@@ -37,7 +37,7 @@ public interface IFuelRegistry {
      * @deprecated fuel values should be loaded from datapack recipes
      */
     @Deprecated
-    void registerFuel(ITag<Fluid> fluidTag, int mLPerBucket, float burnRateMultiplier);
+    void registerFuel(Tag<Fluid> fluidTag, int mLPerBucket, float burnRateMultiplier);
 
     /**
      * As {@link #registerFuel(ITag, int, float)}, with a default burn rate of 1.
@@ -49,7 +49,7 @@ public interface IFuelRegistry {
      * @deprecated fuel values should be loaded from datapack recipes
      */
     @Deprecated
-    default void registerFuel(ITag<Fluid> fluidTag, int mLPerBucket) {
+    default void registerFuel(Tag<Fluid> fluidTag, int mLPerBucket) {
         registerFuel(fluidTag, mLPerBucket, 1f);
     }
 
@@ -59,7 +59,7 @@ public interface IFuelRegistry {
      * @param fluid the fluid
      * @return the fuel value (0 for fluids which have not been registered as fuels)
      */
-    int getFuelValue(World world, Fluid fluid);
+    int getFuelValue(Level world, Fluid fluid);
 
     @Deprecated
     default int getFuelValue(Fluid fluid) { return getFuelValue(null, fluid); }
@@ -70,7 +70,7 @@ public interface IFuelRegistry {
      * @param fluid the fluid
      * @return the burn rate (1.0f is the standard, default, rate)
      */
-    float getBurnRateMultiplier(World world, Fluid fluid);
+    float getBurnRateMultiplier(Level world, Fluid fluid);
 
     @Deprecated
     default float getBurnRateMultiplier(Fluid fluid) { return getBurnRateMultiplier(null, fluid); }
@@ -85,5 +85,5 @@ public interface IFuelRegistry {
      * @param world the world
      * @return a collection of fuel fluids
      */
-    Collection<Fluid> registeredFuels(World world);
+    Collection<Fluid> registeredFuels(Level world);
 }

@@ -20,24 +20,22 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.network.play.client.CPlayerDiggingPacket;
-import net.minecraft.server.management.PlayerInteractionManager;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayerGameMode;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.List;
-import java.util.Objects;
 
 public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends DroneAIBlockInteraction<W> {
     public DroneAIDig(IDroneBase drone, W widget) {
@@ -111,7 +109,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
 
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
-        PlayerInteractionManager manager = drone.getFakePlayer().gameMode;
+        ServerPlayerGameMode manager = drone.getFakePlayer().gameMode;
         if (!manager.isDestroyingBlock || !manager.hasDelayedDestroy) { //is not destroying and is not acknowledged.
             BlockState blockState = worldCache.getBlockState(pos);
             if (!ignoreBlock(blockState) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
@@ -124,9 +122,9 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                 PlayerInteractEvent.LeftClickBlock event = new PlayerInteractEvent.LeftClickBlock(drone.getFakePlayer(), pos, Direction.UP);
                 MinecraftForge.EVENT_BUS.post(event);
                 if (!event.isCanceled()) {
-                    int limit = Objects.requireNonNull(drone.world().getServer()).getMaxBuildHeight();
-                    manager.handleBlockBreakAction(pos, CPlayerDiggingPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit);
-                    manager.handleBlockBreakAction(pos, CPlayerDiggingPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit);
+                    int limit = drone.world().getMaxBuildHeight();
+                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit);
+                    manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit);
                     drone.setDugBlock(pos);
                     return true;
                 }
@@ -138,11 +136,10 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         }
     }
 
-    public static boolean isBlockValidForFilter(IBlockReader worldCache, BlockPos pos, IDroneBase drone, ProgWidgetAreaItemBase widget) {
+    public static boolean isBlockValidForFilter(BlockGetter worldCache, BlockPos pos, IDroneBase drone, ProgWidgetAreaItemBase widget) {
         BlockState blockState = worldCache.getBlockState(pos);
-        Block block = blockState.getBlock();
 
-        if (!block.isAir(blockState, worldCache, pos)) {
+        if (!blockState.isAir()) {
             for (ItemStack droppedStack : getDrops(worldCache, pos, drone)) {
                 if (widget.isItemValidForFilters(droppedStack, blockState)) {
                     return true;
@@ -153,13 +150,13 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         return false;
     }
 
-    private static List<ItemStack> getDrops(IBlockReader worldCache, BlockPos pos, IDroneBase drone) {
+    private static List<ItemStack> getDrops(BlockGetter worldCache, BlockPos pos, IDroneBase drone) {
         BlockState state = worldCache.getBlockState(pos);
         return state.getDrops(
-                new LootContext.Builder((ServerWorld) drone.world())
-                        .withParameter(LootParameters.BLOCK_STATE, state)
-                        .withParameter(LootParameters.ORIGIN, Vector3d.atCenterOf(pos))
-                        .withParameter(LootParameters.TOOL, drone.getInv().getStackInSlot(0))
+                new LootContext.Builder((ServerLevel) drone.world())
+                        .withParameter(LootContextParams.BLOCK_STATE, state)
+                        .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
+                        .withParameter(LootContextParams.TOOL, drone.getInv().getStackInSlot(0))
         );
     }
 

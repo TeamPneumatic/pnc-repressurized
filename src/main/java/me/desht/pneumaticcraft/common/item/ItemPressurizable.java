@@ -24,17 +24,17 @@ import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import net.minecraft.enchantment.IVanishable;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Vanishable;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 
-public class ItemPressurizable extends Item implements IPressurizableItem, IVanishable {
+public class ItemPressurizable extends Item implements IPressurizableItem, Vanishable {
     private final int volume;
     private final float maxPressure;
 
@@ -55,20 +55,20 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
     }
 
     @Override
-    public boolean showDurabilityBar(ItemStack stack) {
-        return shouldShowPressureDurability(stack);
+    public boolean isBarVisible(ItemStack pStack) {
+        return shouldShowPressureDurability(pStack);
     }
 
     @Override
-    public int getRGBDurabilityForDisplay(ItemStack stack) {
-        return getPressureDurabilityColor(stack);
+    public int getBarWidth(ItemStack pStack) {
+        return pStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                .map(h -> Math.round(13F - (h.getPressure() / h.maxPressure() * 13F)))
+                .orElse(13);
     }
 
     @Override
-    public double getDurabilityForDisplay(ItemStack stack) {
-        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .map(h -> 1 - (h.getPressure() / h.maxPressure()))
-                .orElse(1f);
+    public int getBarColor(ItemStack pStack) {
+        return getPressureDurabilityColor(pStack);
     }
 
     static int getPressureDurabilityColor(ItemStack stack) {
@@ -86,7 +86,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
         // too early to use a capability here :(
         if (this.allowdedIn(group)) {
             items.add(new ItemStack(this));
@@ -99,7 +99,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
 
     @Nullable
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         return stack.getItem() instanceof ItemPressurizable ?
                 new AirHandlerItemStack(stack, maxPressure) :
                 super.initCapabilities(stack, nbt);
@@ -107,7 +107,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
 
     @Nullable
     @Override
-    public CompoundNBT getShareTag(ItemStack stack) {
+    public CompoundTag getShareTag(ItemStack stack) {
         return roundedPressure(stack);
     }
 
@@ -123,7 +123,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
 
     @Override
     public int getAir(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = stack.getTag();
         return tag != null ? tag.getInt(AirHandlerItemStack.AIR_NBT_KEY) : 0;
     }
 
@@ -144,14 +144,14 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
      * @param stack the itemstack being sync'd
      * @return the item's NBT, but with the air level rounded
      */
-    public static CompoundNBT roundedPressure(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
+    public static CompoundTag roundedPressure(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
 
         if (stack.getItem() instanceof IPressurizableItem && tag != null && tag.contains(AirHandlerItemStack.AIR_NBT_KEY)) {
             // Using a capability here *should* work but it seems to fail under some odd circumstances which I haven't been
             // able to reproduce. Hence the direct-access code above via the internal-use IPressurizableItem interface.
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
-            CompoundNBT tag2 = tag.copy();
+            CompoundTag tag2 = tag.copy();
             int volume = ((IPressurizableItem) stack.getItem()).getEffectiveVolume(stack);
             int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
             tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / ConfigHelper.common().advanced.pressureSyncPrecision.get()));

@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.api.item;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 

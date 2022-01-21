@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.explosiveAmmoExplosionChance.get())) {
-            Explosion.Mode mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
+            Explosion.BlockInteraction mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ? Explosion.BlockInteraction.BREAK : Explosion.BlockInteraction.NONE;
             minigun.getWorld().explode(null, target.getX(), target.getY(), target.getZ(),
                     ConfigHelper.common().minigun.explosiveAmmoExplosionPower.get().floatValue(), mode);
         }
@@ -58,9 +58,9 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     }
 
     @Override
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
         if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.explosiveAmmoExplosionChance.get())) {
-            Explosion.Mode mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
+            Explosion.BlockInteraction mode = ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get() ? Explosion.BlockInteraction.BREAK : Explosion.BlockInteraction.NONE;
             minigun.getWorld().explode(null, brtr.getLocation().x, brtr.getLocation().y, brtr.getLocation().z,
                     ConfigHelper.common().minigun.explosiveAmmoExplosionPower.get().floatValue(), mode);
         }
@@ -68,7 +68,7 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
+    public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag extraInfo) {
         super.appendHoverText(stack, world, infoList, extraInfo);
         if (ConfigHelper.common().minigun.explosiveAmmoTerrainDamage.get()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));

@@ -21,23 +21,24 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
-public class BlockPressureChamberValve extends BlockPneumaticCraft implements IBlockPressureChamber {
+public class BlockPressureChamberValve extends BlockPneumaticCraft implements IBlockPressureChamber, EntityBlockPneumaticCraft {
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
 
     public BlockPressureChamberValve() {
@@ -46,15 +47,10 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityPressureChamberValve.class;
-    }
-
-    @Override
-    public void setPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
+    public void setPlacedBy(Level par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
         if (!par1World.isClientSide && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
-            AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayerEntity) par5EntityLiving);
+            AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayer) par5EntityLiving);
         }
     }
 
@@ -69,46 +65,46 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(FORMED);
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (player.isShiftKeyDown()) {
-            return ActionResultType.PASS;
+            return InteractionResult.PASS;
         }
         if (!world.isClientSide) {
             return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberValve.class).map(te -> {
                 if (te.multiBlockSize > 0) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, te, pos);
+                    NetworkHooks.openGui((ServerPlayer) player, te, pos);
                 } else if (te.accessoryValves.size() > 0) {
                     // when this isn't the core valve, track down the core valve
                     for (TileEntityPressureChamberValve valve : te.accessoryValves) {
                         if (valve.multiBlockSize > 0) {
-                            NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getBlockPos());
+                            NetworkHooks.openGui((ServerPlayer) player, valve, valve.getBlockPos());
                             break;
                         }
                     }
                 } else {
-                    return ActionResultType.PASS;
+                    return InteractionResult.PASS;
                 }
-                return ActionResultType.SUCCESS;
-            }).orElse(ActionResultType.SUCCESS);
+                return InteractionResult.SUCCESS;
+            }).orElse(InteractionResult.SUCCESS);
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             invalidateMultiBlock(world, pos);
         }
         super.onRemove(state, world, pos, newState, isMoving);
     }
 
-    private void invalidateMultiBlock(World world, BlockPos pos) {
+    private void invalidateMultiBlock(Level world, BlockPos pos) {
         if (!world.isClientSide) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberValve.class).ifPresent(teValve -> {
                 if (teValve.multiBlockSize > 0) {
@@ -121,5 +117,11 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
                 }
             });
         }
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityPressureChamberValve(pPos, pState);
     }
 }

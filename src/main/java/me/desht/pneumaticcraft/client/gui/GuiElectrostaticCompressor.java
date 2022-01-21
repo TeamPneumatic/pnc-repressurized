@@ -26,11 +26,11 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompress
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +43,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     private int connectedCompressors;
     private WidgetAnimatedStat electrostaticStat;
 
-    public GuiElectrostaticCompressor(ContainerElectrostaticCompressor container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiElectrostaticCompressor(ContainerElectrostaticCompressor container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -60,7 +60,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> textList) {
+    protected void addWarnings(List<Component> textList) {
         super.addWarnings(textList);
         int grounding = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath;
         if (connectedCompressors > 0) {
@@ -72,8 +72,8 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     }
 
     @Override
-    public void tick() {
-        if (firstUpdate || ClientUtils.getClientWorld().getGameTime() % 20 == 0) {
+    public void containerTick() {
+        if (firstUpdate || ClientUtils.getClientLevel().getGameTime() % 20 == 0) {
             Set<BlockPos> positions = new HashSet<>();
             Set<TileEntityElectrostaticCompressor> compressors = new HashSet<>();
             positions.add(te.getBlockPos());
@@ -81,9 +81,9 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
             connectedCompressors = compressors.size();
         }
 
-        super.tick();
+        super.containerTick();
 
-        List<ITextComponent> info = new ArrayList<>();
+        List<Component> info = new ArrayList<>();
         if (connectedCompressors > 0) {
             // should always be the case...
             info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.generating",

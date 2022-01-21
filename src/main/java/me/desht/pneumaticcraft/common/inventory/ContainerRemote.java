@@ -24,17 +24,17 @@ import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -45,10 +45,10 @@ import java.util.Set;
 public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
     private final List<String> syncedVars;
     private final BlockPos[] lastValues;
-    private final Hand hand;
+    private final InteractionHand hand;
     public String[] variables = new String[0];
 
-    public ContainerRemote(ContainerType<? extends ContainerRemote> type, int windowId, PlayerInventory playerInventory, Hand hand) {
+    public ContainerRemote(MenuType<? extends ContainerRemote> type, int windowId, Inventory playerInventory, InteractionHand hand) {
         super(type, windowId, playerInventory);
 
         this.hand = hand;
@@ -56,29 +56,29 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
         lastValues = new BlockPos[syncedVars.size()];
     }
 
-    private ContainerRemote(ContainerType<ContainerRemote> type, int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
+    private ContainerRemote(MenuType<ContainerRemote> type, int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(type, windowId, playerInventory, getHandFromBuffer(buffer));
     }
 
-    public static ContainerRemote createRemoteContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public static ContainerRemote createRemoteContainer(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new ContainerRemote(ModContainers.REMOTE.get(), windowId, playerInventory, buffer);
     }
 
-    public static ContainerRemote createRemoteEditorContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public static ContainerRemote createRemoteEditorContainer(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new ContainerRemote(ModContainers.REMOTE_EDITOR.get(), windowId, playerInventory, buffer);
     }
 
-    private static Hand getHandFromBuffer(PacketBuffer buffer) {
-        return buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+    private static InteractionHand getHandFromBuffer(FriendlyByteBuf buffer) {
+        return buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
     }
 
     private static Set<String> getRelevantVariableNames(@Nonnull ItemStack remote) {
         Set<String> variables = new HashSet<>();
-        CompoundNBT tag = remote.getTag();
+        CompoundTag tag = remote.getTag();
         if (tag != null) {
-            ListNBT tagList = tag.getList("actionWidgets", Constants.NBT.TAG_COMPOUND);
+            ListTag tagList = tag.getList("actionWidgets", Tag.TAG_COMPOUND);
             for (int i = 0; i < tagList.size(); i++) {
-                CompoundNBT widgetTag = tagList.getCompound(i);
+                CompoundTag widgetTag = tagList.getCompound(i);
                 variables.add(widgetTag.getString("variableName"));
                 variables.add(widgetTag.getString("enableVariable"));
                 TextVariableParser parser = new TextVariableParser(widgetTag.getString("text"));
@@ -100,19 +100,19 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
             if (!newValue.equals(lastValues[i])) {
                 lastValues[i] = newValue;
                 for (Object o : containerListeners) {
-                    if (o instanceof ServerPlayerEntity)
-                        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), (ServerPlayerEntity) o);
+                    if (o instanceof ServerPlayer)
+                        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), (ServerPlayer) o);
                 }
             }
         }
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return player.getItemInHand(hand).getItem() == ModItems.REMOTE.get();
     }
 
-    public Hand getHand() {
+    public InteractionHand getHand() {
         return hand;
     }
 }

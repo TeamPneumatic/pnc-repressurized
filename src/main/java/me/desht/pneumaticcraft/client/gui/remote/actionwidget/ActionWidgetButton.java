@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -42,21 +42,21 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         widget = new WidgetButtonExtended(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, tag.getInt("width"), tag.getInt("height"), deserializeTextComponent(tag.getString("text")), b -> onActionPerformed());
         settingCoordinate = new BlockPos(tag.getInt("settingX"), tag.getInt("settingY"), tag.getInt("settingZ"));
-        widget.setTooltipText(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Constants.NBT.TAG_STRING)));
+        widget.setTooltipText(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Tag.TAG_STRING)));
     }
 
     @Override
-    public CompoundNBT toNBT(int guiLeft, int guiTop) {
-        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+    public CompoundTag toNBT(int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(guiLeft, guiTop);
         tag.putInt("x", widget.x - guiLeft);
         tag.putInt("y", widget.y - guiTop);
         tag.putInt("width", widget.getWidth());
         tag.putInt("height", widget.getHeight());
-        tag.putString("text", ITextComponent.Serializer.toJson(widget.getMessage()));
+        tag.putString("text", Component.Serializer.toJson(widget.getMessage()));
         tag.putInt("settingX", settingCoordinate.getX());
         tag.putInt("settingY", settingCoordinate.getY());
         tag.putInt("settingZ", settingCoordinate.getZ());
@@ -70,12 +70,12 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
     }
 
     @Override
-    public void setText(ITextComponent text) {
+    public void setText(Component text) {
         widget.setMessage(text);
     }
 
     @Override
-    public ITextComponent getText() {
+    public Component getText() {
         return widget.getMessage();
     }
 
@@ -116,12 +116,12 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
     }
 
     @Override
-    public void setTooltip(List<ITextComponent> text) {
+    public void setTooltip(List<Component> text) {
         widget.setTooltipText(text);
     }
 
     @Override
-    public List<ITextComponent> getTooltip() {
+    public List<Component> getTooltip() {
         return widget.getTooltip();
     }
 }

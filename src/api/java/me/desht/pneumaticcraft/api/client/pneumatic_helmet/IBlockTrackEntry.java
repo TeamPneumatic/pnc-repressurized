@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
@@ -51,7 +51,7 @@ public interface IBlockTrackEntry {
      * @param te    The TileEntity at this x,y,z  (may be null)
      * @return true if the coordinate should be tracked by this BlockTrackEntry.
      */
-    boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te);
+    boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te);
 
     /**
      * This method controls whether the block should be updated by the server (at 5
@@ -64,7 +64,7 @@ public interface IBlockTrackEntry {
      * @param te the tile entity at the currently checked location, may be null
      * @return a list of the block positions for which update request packets should be sent
      */
-    List<BlockPos> getServerUpdatePositions(@Nullable TileEntity te);
+    List<BlockPos> getServerUpdatePositions(@Nullable BlockEntity te);
 
     /**
      * The return of this method defines at how many tracked blocks of this type
@@ -76,8 +76,8 @@ public interface IBlockTrackEntry {
 
     /**
      * This method is called each client tick to retrieve the block's additional
-     * information. The method behaves much the same as {@link net.minecraft.item.Item#appendHoverText(ItemStack, World, List, ITooltipFlag)}.
-     * This method is only called if {@link #shouldTrackWithThisEntry(IBlockReader, BlockPos, BlockState, TileEntity)}
+     * information. The method behaves much the same as {@link net.minecraft.world.item.Item#appendHoverText(ItemStack, Level, List, TooltipFlag)}.
+     * This method is only called if {@link #shouldTrackWithThisEntry(BlockGetter, BlockPos, BlockState, BlockEntity)}
      * returned true, and the player is curently focused on the block.
      *
      * @param world    The world the block is in.
@@ -86,7 +86,7 @@ public interface IBlockTrackEntry {
      * @param face     The blockface the player is looking at (null if player is not looking directly at the block)
      * @param infoList The list of lines to display.
      */
-    void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList);
+    void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList);
 
     /**
      * Return a unique identifier for this block track entry. This is also used for translation key and keybind naming

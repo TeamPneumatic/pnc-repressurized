@@ -17,31 +17,34 @@
 
 package me.desht.pneumaticcraft.client.render.entity.drone;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDroneCore;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.IEntityRenderer;
-import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.item.DyeColor;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.world.item.DyeColor;
 
-public class DroneColourLayer extends LayerRenderer<EntityDroneBase, ModelDrone> {
-    private final ModelDroneCore model = new ModelDroneCore();
+public class DroneColourLayer extends RenderLayer<EntityDroneBase, ModelDrone> {
+    private final ModelDroneCore model;
 
-    DroneColourLayer(IEntityRenderer<EntityDroneBase, ModelDrone> rendererIn) {
+    DroneColourLayer(RenderLayerParent<EntityDroneBase, ModelDrone> rendererIn) {
         super(rendererIn);
+
+        model = new ModelDroneCore(Minecraft.getInstance().getEntityModels().bakeLayer(PNCModelLayers.DRONE_CORE));
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, EntityDroneBase entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        float[] cols = RenderUtils.decomposeColorF(DyeColor.byId(entityIn.getDroneColor()).getColorValue());
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(Textures.DRONE_ENTITY));
-        model.renderToBuffer(matrixStackIn, builder, packedLightIn, LivingRenderer.getOverlayCoords(entityIn, 0.0F), cols[1], cols[2], cols[3], 1f);
+    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, EntityDroneBase entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        float[] cols = DyeColor.byId(entityIn.getDroneColor()).getTextureDiffuseColors();
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(Textures.DRONE_ENTITY));
+        model.renderToBuffer(matrixStackIn, builder, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F), cols[1], cols[2], cols[3], 1f);
     }
 }

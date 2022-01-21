@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -37,14 +37,14 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +90,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                 b -> programmerUnit.gotoPiece(selectedDrone.getActiveWidget()));
         gui.addWidget(showActive);
 
-        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, new StringTextComponent(" ").append(xlate("pneumaticcraft.gui.progWidget.debug.followActive")));
+        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, new TextComponent(" ").append(xlate("pneumaticcraft.gui.progWidget.debug.followActive")));
         followCheckbox.x = 180 - followCheckbox.getWidth();
         gui.addWidget(followCheckbox);
 
@@ -100,7 +100,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
         programmingHeight = guiScreen.height - PROGRAMMING_MARGIN - PROGRAMMING_START_Y;
         programmerUnit = new DebugWidgetAreaRenderer(guiScreen, selectedDrone != null ? selectedDrone.getProgWidgets() : new ArrayList<>(),
                 0, 0,
-                new Rectangle2d(programmingStartX, PROGRAMMING_START_Y, programmingWidth, programmingHeight),
+                new Rect2i(programmingStartX, PROGRAMMING_START_Y, programmingWidth, programmingHeight),
                 0, 0, 0);
         if (isDroneValid()) {
             programmerUnit.gotoPiece(GuiProgrammer.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class));
@@ -112,12 +112,12 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     }
 
     @Override
-    public void renderPre(MatrixStack matrixStack, int x, int y, float partialTicks) {
-        AbstractGui.fill(matrixStack, programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
+    public void renderPre(PoseStack matrixStack, int x, int y, float partialTicks) {
+        GuiComponent.fill(matrixStack, programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
     }
 
     @Override
-    public void renderPost(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void renderPost(PoseStack matrixStack, int x, int y, float partialTicks) {
         Screen guiScreen = getGuiScreen().getScreen();
 
         int screenWidth = guiScreen.width;
@@ -150,7 +150,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
             }
         } else {
             matrixStack.translate(0, 0, 200);
-            AbstractGui.drawCenteredString(matrixStack, Minecraft.getInstance().font,
+            GuiComponent.drawCenteredString(matrixStack, Minecraft.getInstance().font,
                     xlate("pneumaticcraft.gui.progWidget.debug.pressToDebug",
                             ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone)),
                     screenWidth / 2, screenHeight - 40, 0xFFFF0000
@@ -207,14 +207,14 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     private class DebugWidgetAreaRenderer extends ProgrammerWidgetAreaRenderer {
 
         DebugWidgetAreaRenderer(Screen parent, List<IProgWidget> progWidgets,
-                                int guiLeft, int guiTop, Rectangle2d bounds,
+                                int guiLeft, int guiTop, Rect2i bounds,
                                 int translatedX, int translatedY, int lastZoom) {
             super(parent, progWidgets, guiLeft, guiTop, bounds, translatedX, translatedY, lastZoom);
             TileEntityProgrammer.updatePuzzleConnections(progWidgets);
         }
 
         @Override
-        protected void addAdditionalInfoToTooltip(IProgWidget widget, List<ITextComponent> tooltip) {
+        protected void addAdditionalInfoToTooltip(IProgWidget widget, List<Component> tooltip) {
             if (!isDroneValid()) return;
 
             int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
@@ -223,32 +223,32 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
             if (entry != null) {
                 long elapsed = (System.currentTimeMillis() - entry.getReceivedTime()) / 50;
                 tooltip.add((xlate("pneumaticcraft.gui.progWidget.debug.lastMessage",
-                                PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))).withStyle(TextFormatting.AQUA)
+                                PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))).withStyle(ChatFormatting.AQUA)
                 );
-                tooltip.add(new StringTextComponent("  \"")
+                tooltip.add(new TextComponent("  \"")
                         .append(xlate(entry.getMessage()))
                         .append("\"  ")
-                        .withStyle(TextFormatting.AQUA, TextFormatting.ITALIC));
+                        .withStyle(ChatFormatting.AQUA, ChatFormatting.ITALIC));
                 if (entry.hasCoords()) {
-                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.hasPositions").withStyle(TextFormatting.YELLOW));
-                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.clickToShow").withStyle(TextFormatting.GREEN));
+                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.hasPositions").withStyle(ChatFormatting.YELLOW));
+                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.clickToShow").withStyle(ChatFormatting.GREEN));
                 }
             }
             if (widget instanceof IAreaProvider) {
                 if (widgetId == areaShowWidgetId) {
-                    tooltip.add(new StringTextComponent("Right-Click: ")
+                    tooltip.add(new TextComponent("Right-Click: ")
                             .append(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"))
-                            .withStyle(TextFormatting.GREEN));
+                            .withStyle(ChatFormatting.GREEN));
                 } else {
-                    tooltip.add(new StringTextComponent("Right-Click: ")
+                    tooltip.add(new TextComponent("Right-Click: ")
                             .append(xlate("pneumaticcraft.gui.programmer.button.showArea"))
-                            .withStyle(TextFormatting.GREEN));
+                            .withStyle(ChatFormatting.GREEN));
                 }
             }
         }
 
         @Override
-        protected void renderAdditionally(MatrixStack matrixStack) {
+        protected void renderAdditionally(PoseStack matrixStack) {
             if (isDroneValid() && selectedDrone.getActiveWidget() != null) {
                 drawBorder(matrixStack, selectedDrone.getActiveWidget(), 0xFF00FF00);
                 if (areaShowWidgetId >= 0) {

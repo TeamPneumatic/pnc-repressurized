@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.network.chat.MutableComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 @FunctionalInterface
-public interface IRedstoneControl<T extends TileEntity & IRedstoneControl<T>> {
+public interface IRedstoneControl<T extends BlockEntity & IRedstoneControl<T>> {
     /**
      * Get the redstone controller object for this TE
      *
@@ -31,7 +31,7 @@ public interface IRedstoneControl<T extends TileEntity & IRedstoneControl<T>> {
      */
     RedstoneController<T> getRedstoneController();
 
-    default IFormattableTextComponent getRedstoneTabTitle() {
+    default MutableComponent getRedstoneTabTitle() {
         return ((IRedstoneControl<?>) this).getRedstoneController().isEmitter() ?
                 xlate("pneumaticcraft.gui.tab.redstoneBehaviour.emitRedstoneWhen") :
                 xlate("pneumaticcraft.gui.tab.redstoneBehaviour.enableOn");

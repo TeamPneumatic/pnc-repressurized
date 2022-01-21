@@ -25,21 +25,21 @@ import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetText;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.AgeableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.item.ExperienceOrbEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
@@ -55,16 +55,16 @@ public class EntityFilter implements Predicate<Entity> {
     private static final Pattern ELEMENT_DIVIDER = Pattern.compile(";");
     private static final Pattern ELEMENT_SUBDIVIDER = Pattern.compile("[(),]");
     private static final Map<String,Predicate<Entity>> ENTITY_PREDICATES = ImmutableMap.<String,Predicate<Entity>>builder()
-            .put("mob", e -> e instanceof IMob && !(e instanceof TameableEntity && ((TameableEntity) e).isTame()))
-            .put("animal", e -> e instanceof AnimalEntity)
+            .put("mob", e -> e instanceof Enemy && !(e instanceof TamableAnimal && ((TamableAnimal) e).isTame()))
+            .put("animal", e -> e instanceof Animal)
             .put("living", e -> e instanceof LivingEntity)
-            .put("player", e -> e instanceof PlayerEntity)
+            .put("player", e -> e instanceof Player)
             .put("item", e -> e instanceof ItemEntity)
             .put("drone", e -> e instanceof EntityDrone)
-            .put("boat", e -> e instanceof BoatEntity)
-            .put("minecart", e -> e instanceof AbstractMinecartEntity)
-            .put("painting", e -> e instanceof PaintingEntity)
-            .put("orb", e -> e instanceof ExperienceOrbEntity)
+            .put("boat", e -> e instanceof Boat)
+            .put("minecart", e -> e instanceof AbstractMinecart)
+            .put("painting", e -> e instanceof Painting)
+            .put("orb", e -> e instanceof ExperienceOrb)
             .build();
 
     private final List<EntityMatcher> matchers = new ArrayList<>();
@@ -191,14 +191,14 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean testBreedable(Entity entity, String val) {
-            return entity instanceof AnimalEntity && (((AnimalEntity) entity).getAge() == 0 ?
+            return entity instanceof Animal && (((Animal) entity).getAge() == 0 ?
                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no")
             );
         }
 
         private static boolean testAge(Entity entity, String val) {
-            return entity instanceof AgeableEntity && (((AgeableEntity) entity).getAge() >= 0 ?
-                    val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby"));
+            return entity instanceof AgeableMob a && a.getAge() >= 0 ?
+                    val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby");
         }
 
         boolean isValid(String s) {
@@ -215,12 +215,12 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean hasColor(Entity entity, String val) {
-            if (entity instanceof SheepEntity) {
-                return ((SheepEntity) entity).getColor().getName().equalsIgnoreCase(val);
-            } else if (entity instanceof WolfEntity) {
-                return ((WolfEntity) entity).getCollarColor().getName().equalsIgnoreCase(val);
-            } else if (entity instanceof CatEntity) {
-                return ((CatEntity) entity).getCollarColor().getName().equalsIgnoreCase(val);
+            if (entity instanceof Sheep) {
+                return ((Sheep) entity).getColor().getName().equalsIgnoreCase(val);
+            } else if (entity instanceof Wolf) {
+                return ((Wolf) entity).getCollarColor().getName().equalsIgnoreCase(val);
+            } else if (entity instanceof Cat) {
+                return ((Cat) entity).getCollarColor().getName().equalsIgnoreCase(val);
             } else {
                 return false;
             }

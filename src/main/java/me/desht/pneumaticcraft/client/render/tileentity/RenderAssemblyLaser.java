@@ -17,76 +17,103 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.util.Mth;
 
 public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAssemblyLaser> {
-    private final ModelRenderer baseTurn;
-    private final ModelRenderer baseTurn2;
-    private final ModelRenderer armBase;
-    private final ModelRenderer armMiddle;
-    private final ModelRenderer laserBase;
-    private final ModelRenderer laser;
+    private final ModelPart baseTurn;
+    private final ModelPart baseTurn2;
+    private final ModelPart armBase;
+    private final ModelPart armMiddle;
+    private final ModelPart laserBase;
+    private final ModelPart laser;
 
-//    private static final float TEXTURE_SIZE = 1 / 150f;
+    private static final String BASETURN = "baseTurn";
+    private static final String BASETURN2 = "baseTurn2";
+    private static final String ARMBASE = "armBase";
+    private static final String ARMMIDDLE = "armMiddle";
+    private static final String LASERBASE = "laserBase";
+    private static final String LASER = "laser";
 
-    public RenderAssemblyLaser(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public RenderAssemblyLaser(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
 
-        baseTurn = new ModelRenderer(64, 64, 0, 0);
-        baseTurn.setPos(-3.5F, 22.0F, -3.5F);
-        baseTurn.texOffs(0, 0).addBox(-1.0F, 0.0F, -1.0F, 9.0F, 1.0F, 9.0F, 0.0F, true);
-
-        baseTurn2 = new ModelRenderer(64, 64, 0, 0);
-        baseTurn2.setPos(-2.0F, 17.0F, -2.0F);
-        baseTurn2.texOffs(0, 30).addBox(-2.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, false);
-        baseTurn2.texOffs(0, 10).addBox(-2.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
-        baseTurn2.texOffs(10, 30).addBox(4.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, true);
-        baseTurn2.texOffs(0, 20).addBox(4.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
-
-        armBase = new ModelRenderer(64, 64, 0, 0);
-        armBase.setPos(-3.0F, 17.0F, -1.0F);
-        armBase.texOffs(0, 49).addBox(2.0F, 0.0F, 1.0F, 2.0F, 2.0F, 5.0F, 0.3F, true);
-        armBase.texOffs(0, 43).addBox(1.5F, -0.5F, -0.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
-        armBase.texOffs(12, 43).addBox(1.5F, -0.5F, 5.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
-        armBase.texOffs(0, 39).addBox(-1.5F, 0.0F, 0.0F, 9.0F, 2.0F, 2.0F, 0.0F, true);
-
-        armMiddle = new ModelRenderer(64, 64, 0, 0);
-        armMiddle.setPos(-4.0F, 2.0F, 5.0F);
-        armMiddle.texOffs(28, 10).addBox(0.0F, 2.0F, 0.0F, 2.0F, 13.0F, 2.0F, 0.0F, true);
-        armMiddle.texOffs(12, 24).addBox(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
-        armMiddle.texOffs(0, 24).addBox(0.0F, 15.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
-        armMiddle.texOffs(14, 52).addBox(-0.5F, 15.0F, 0.0F, 3.0F, 2.0F, 2.0F, 0.0F, true);
-        armMiddle.texOffs(60, 38).addBox(4.0F, 0.5F, 0.5F, 1.0F, 7.0F, 1.0F, 0.0F, true);
-        armMiddle.texOffs(54, 38).addBox(2.0F, 6.5F, 0.5F, 2.0F, 1.0F, 1.0F, 0.0F, true);
-
-        laserBase = new ModelRenderer(64, 64, 0, 0);
-        laserBase.setPos(-4.0F, 2.0F, 5.0F);
-        laserBase.texOffs(46, 15).addBox(2.5F, -1.5F, -1.0F, 3.0F, 6.0F, 6.0F, 0.0F, false);
-        laserBase.texOffs(48, 27).addBox(3.5F, -0.5F, -0.5F, 3.0F, 6.0F, 5.0F, 0.0F, false);
-        laserBase.texOffs(48, 38).addBox(2.0F, 0.5F, 0.5F, 2.0F, 1.0F, 1.0F, 0.3F, false);
-
-        laser = new ModelRenderer(64, 64, 0, 0);
-        laser.setPos(0.0F, 24.0F, 0.0F);
-        laser.texOffs(8, 36).addBox(-0.5F, -21.5F, 1.0F, 1.0F, 1.0F, 27.0F, 0.0F, true);
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_LASER);
+        baseTurn = root.getChild(BASETURN);
+        baseTurn2 = root.getChild(BASETURN2);
+        armBase = root.getChild(ARMBASE);
+        armMiddle = root.getChild(ARMMIDDLE);
+        laserBase = root.getChild(LASERBASE);
+        laser = root.getChild(LASER);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(BASETURN, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("baseTurn_0", -1.0F, 0.0F, -1.0F, 9, 1, 9, 0, 0)
+                        .mirror(),
+                PartPose.offset(-3.5F, 22.0F, -3.5F));
+        partdefinition.addOrReplaceChild(BASETURN2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("baseTurn2_0", -2.0F, -0.5F, 0.5F, 2, 6, 3, 0, 30)
+                        .addBox("baseTurn2_1", -2.0F, 3.75F, -2.0F, 2, 2, 8, 0, 10)
+                        .addBox("baseTurn2_2", 4.0F, -0.5F, 0.5F, 2, 6, 3, 10, 30)
+                        .addBox("baseTurn2_3", 4.0F, 3.75F, -2.0F, 2, 2, 8, 0, 20)
+                        .mirror(),
+                PartPose.offset(-2.0F, 17.0F, -2.0F));
+        partdefinition.addOrReplaceChild(ARMBASE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("armBase_0", 2.0F, 0.0F, 1.0F, 2, 2, 5, 0, 49)
+                        .addBox("armBase_1", 1.5F, -0.5F, -0.5F, 3, 3, 3, 0, 43)
+                        .addBox("armBase_2", 1.5F, -0.5F, 5.5F, 3, 3, 3, 12, 43)
+                        .addBox("armBase_3", -1.5F, 0.0F, 0.0F, 9, 2, 2, 0, 39)
+                        .mirror(),
+                PartPose.offset(-3.0F, 17.0F, -1.0F));
+        partdefinition.addOrReplaceChild(ARMMIDDLE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("armMiddle_0", 0.0F, 2.0F, 0.0F, 2, 13, 2, 28, 10)
+                        .addBox("armMiddle_1", 0.0F, 0.0F, 0.0F, 2, 2, 2, 12, 24)
+                        .addBox("armMiddle_2", 0.0F, 15.0F, 0.0F, 2, 2, 2, 0, 24)
+                        .addBox("armMiddle_3", -0.5F, 15.0F, 0.0F, 3, 2, 2, 14, 52)
+                        .addBox("armMiddle_4", 4.0F, 0.5F, 0.5F, 1, 7, 1, 60, 38)
+                        .addBox("armMiddle_5", 2.0F, 6.5F, 0.5F, 2, 1, 1, 54, 38)
+                        .mirror(),
+                PartPose.offset(-4.0F, 2.0F, 5.0F));
+        partdefinition.addOrReplaceChild(LASERBASE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("laserBase_0", 2.5F, -1.5F, -1.0F, 3, 6, 6, 46, 15)
+                        .addBox("laserBase_1", 3.5F, -0.5F, -0.5F, 3, 6, 5, 48, 27)
+                        .addBox("laserBase_2", 2.0F, 0.5F, 0.5F, 2, 1, 1, 48, 38),
+                PartPose.offset(-4.0F, 2.0F, 5.0F));
+        partdefinition.addOrReplaceChild(LASER, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("laser_0", -0.5F, -21.5F, 1.0F, 1, 1, 27, 8, 36)
+                        .mirror(),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+
     @Override
-    public void renderModel(TileEntityAssemblyLaser te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(TileEntityAssemblyLaser te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 5; i++) {
-            angles[i] = MathHelper.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
+            angles[i] = Mth.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
 
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(angles[0]));
 

@@ -25,11 +25,11 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,10 +38,10 @@ import java.util.UUID;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final Vector3d FORWARD = new Vector3d(0, 0, 1);
+    private static final Vec3 FORWARD = new Vec3(0, 0, 1);
 
     // track player movement across ticks on the server - very transient, a capability would be overkill here
-    private static final Map<UUID,Vector3d> moveMap = new HashMap<>();
+    private static final Map<UUID,Vec3> moveMap = new HashMap<>();
 
     @Override
     public ResourceLocation getID() {
@@ -59,13 +59,13 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
     }
 
     @Override
-    public EquipmentSlotType getEquipmentSlot() {
-        return EquipmentSlotType.LEGS;
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.LEGS;
     }
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        PlayerEntity player = commonArmorHandler.getPlayer();
+        Player player = commonArmorHandler.getPlayer();
 
         double speedBoost = getSpeedBoostFromLegs(commonArmorHandler);
         if (speedBoost == 0) return;
@@ -75,7 +75,7 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
             if (player.zza > 0) {
                 JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
                 if (!player.isOnGround() && jbState.isEnabled() && jbState.isBuilderMode()) {
-                    player.moveRelative(commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) / 250f, FORWARD);
+                    player.moveRelative(commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS) / 250f, FORWARD);
                 }
                 if (player.isOnGround() && !player.isInWater()) {
                     player.moveRelative((float) speedBoost, FORWARD);
@@ -83,11 +83,11 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
             }
         }
         if (!player.level.isClientSide && speedBoost > 0) {
-            Vector3d prev = moveMap.get(player.getUUID());
+            Vec3 prev = moveMap.get(player.getUUID());
             boolean moved = prev != null && (Math.abs(player.getX() - prev.x) > 0.0001 || Math.abs(player.getZ() - prev.z) > 0.0001);
             if (moved && player.isOnGround() && !player.isInWater()) {
                 int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 8);
-                commonArmorHandler.addAir(EquipmentSlotType.LEGS, -airUsage);
+                commonArmorHandler.addAir(EquipmentSlot.LEGS, -airUsage);
             }
             moveMap.put(player.getUUID(), player.position());
         }
@@ -95,9 +95,9 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
 
     public double getSpeedBoostFromLegs(ICommonArmorHandler commonArmorHandler) {
         if (commonArmorHandler.upgradeUsable(ArmorUpgradeRegistry.getInstance().runSpeedHandler, true)) {
-            int speedUpgrades = commonArmorHandler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.SPEED);
-            PlayerEntity player = commonArmorHandler.getPlayer();
-            ItemStack armorStack = player.getItemBySlot(EquipmentSlotType.LEGS);
+            int speedUpgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.LEGS, EnumUpgrade.SPEED);
+            Player player = commonArmorHandler.getPlayer();
+            ItemStack armorStack = player.getItemBySlot(EquipmentSlot.LEGS);
             float speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_SPEED_BOOST, 100, 0, 100) / 100f;
             return PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades * speedBoostMult;
         } else {

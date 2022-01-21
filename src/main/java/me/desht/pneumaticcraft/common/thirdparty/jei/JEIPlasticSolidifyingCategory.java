@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +43,7 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
         super(ModCategoryUid.PLASTIC_SOLIDIFYING, PlasticSolidifyingRecipe.class,
                 xlate("pneumaticcraft.gui.jei.title.plasticSolidifying"),
                 guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
-                guiHelper().createDrawableIngredient(new ItemStack(ModItems.PLASTIC.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.PLASTIC.get()))
         );
     }
 
@@ -71,8 +71,8 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(PlasticSolidifyingRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getTooltipStrings(PlasticSolidifyingRecipe recipe, double mouseX, double mouseY) {
+        List<Component> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
             res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.jei.tooltip.plasticSolidifying")));
         }

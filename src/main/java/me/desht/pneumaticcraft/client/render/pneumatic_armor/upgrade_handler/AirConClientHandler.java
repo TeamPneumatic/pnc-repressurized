@@ -29,9 +29,9 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.AirConHandler;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.Mth;
 
 public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<AirConHandler> {
     private static final int MAX_AC = 20;
@@ -62,12 +62,12 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
         }
 
         if (acStat.isStatOpen()) {
-            int ac = MathHelper.clamp(currentAC, -MAX_AC, MAX_AC);
-            String bar = (ac < 0 ? TextFormatting.BLUE : TextFormatting.GOLD)
+            int ac = Mth.clamp(currentAC, -MAX_AC, MAX_AC);
+            String bar = (ac < 0 ? ChatFormatting.BLUE : ChatFormatting.GOLD)
                     + Strings.repeat("|", Math.abs(ac))
-                    + TextFormatting.DARK_GRAY
+                    + ChatFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));
-            acStat.setTitle(new StringTextComponent("A/C: " + bar).withStyle(TextFormatting.YELLOW));
+            acStat.setTitle(new TextComponent("A/C: " + bar).withStyle(ChatFormatting.YELLOW));
             acStat.setBackgroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }
@@ -75,7 +75,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (acStat == null) {
-            acStat = new WidgetAnimatedStat(null, StringTextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,
+            acStat = new WidgetAnimatedStat(null, TextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,
                     HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.airConStat);
             acStat.setMinimumContractedDimensions(0, 0);
         }

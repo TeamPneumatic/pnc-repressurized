@@ -23,12 +23,12 @@ import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
@@ -51,13 +51,13 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
 
             @Override
             protected boolean evaluate(BlockPos pos) {
-                TileEntity te = drone.world().getBlockEntity(pos);
+                BlockEntity te = drone.world().getBlockEntity(pos);
                 int count = te == null ? countFluid(drone.world(), pos) : countFluid(te);
                 maybeRecordMeasuredVal(drone, count);
                 return ((ICondition) progWidget).getOperator().evaluate(count, ((ICondition) progWidget).getRequiredCount());
             }
 
-            private int countFluid(World world, BlockPos pos) {
+            private int countFluid(Level world, BlockPos pos) {
                 FluidState state = world.getFluidState(pos);
                 if (state.getType() != Fluids.EMPTY && ProgWidgetLiquidFilter.isLiquidValid(state.getType(), progWidget, 1)) {
                     return 1000;
@@ -66,7 +66,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
                 }
             }
 
-            private int countFluid(TileEntity te) {
+            private int countFluid(BlockEntity te) {
                 return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).map(handler -> {
                     int total = 0;
                     for (int i = 0; i < handler.getTanks(); i++) {

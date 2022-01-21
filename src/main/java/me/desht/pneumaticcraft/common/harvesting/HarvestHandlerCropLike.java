@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.harvesting;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.IntegerProperty;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.function.Predicate;
 
@@ -40,7 +40,7 @@ public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop {
     }
     
     @Override
-    protected boolean isSeed(World world, BlockPos pos, BlockState state, ItemStack stack){
+    protected boolean isSeed(Level world, BlockPos pos, BlockState state, ItemStack stack){
         return isSeed.test(stack);
     }
     

@@ -17,22 +17,22 @@
 
 package me.desht.pneumaticcraft.api.semiblock;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Represents a "semiblock" - an attachable gadget which sits on a real block, such as a logistics frame or
@@ -52,13 +52,13 @@ public interface ISemiBlock extends ICapabilityProvider {
      *
      * @return the name
      */
-    ITextComponent getDisplayName();
+    Component getDisplayName();
 
     /**
      * Get the world this semiblock is in.
      * @return the world
      */
-    World getWorld();
+    Level getWorld();
 
     /**
      * Get the block position this entity occupies.
@@ -71,7 +71,7 @@ public interface ISemiBlock extends ICapabilityProvider {
      * Get the tile entity at the semiblock's position.  This is cached for performance.
      * @return the tile entity, or null if there is none
      */
-    TileEntity getCachedTileEntity();
+    BlockEntity getCachedTileEntity();
 
     /**
      * Written to the dropped item (under the "EntityTag" subtag) when the semiblock is broken, to persisted entity
@@ -80,11 +80,11 @@ public interface ISemiBlock extends ICapabilityProvider {
      * displayed on TOP/Waila.
      * <p>
      * @implNote Data written to itemstacks is automatically applied to newly-spawned entities by
-     * {@link EntityType#updateCustomEntityTag(World, PlayerEntity, Entity, CompoundNBT)} when the
+     * {@link net.minecraft.world.entity.EntityType#updateCustomEntityTag(Level, Player, Entity, CompoundTag)} when the
      * semiblock entity is spawned from an item (i.e. placed by a player).
      * @param tag NBT tag to write data to
      */
-    CompoundNBT serializeNBT(CompoundNBT tag);
+    CompoundTag serializeNBT(CompoundTag tag);
 
     /**
      * Implement tick logic here. Always be sure to call {@code super.tick()} in subclass overrides!
@@ -117,7 +117,7 @@ public interface ISemiBlock extends ICapabilityProvider {
      * @param stack itemstack used to create the entity
      * @param facing the side of the block which was clicked to place the entity
      */
-    default void onPlaced(PlayerEntity player, ItemStack stack, Direction facing) {
+    default void onPlaced(Player player, ItemStack stack, Direction facing) {
     }
 
     /**
@@ -126,7 +126,7 @@ public interface ISemiBlock extends ICapabilityProvider {
      * @param side the side of the block being clicked
      * @return true if something was done, false if the semiblock doesn't care about being clicked
      */
-    default boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
+    default boolean onRightClickWithConfigurator(Player player, Direction side) {
         return false;
     }
 
@@ -142,7 +142,7 @@ public interface ISemiBlock extends ICapabilityProvider {
     /**
      * Get the tracking for this semiblock; this should only be used for network sync purposes, and is subject to change
      * on a world reload.
-     * @see ISemiBlock#byTrackingId(World, int)
+     * @see ISemiBlock#byTrackingId(Level, int)
      * @return the underlying entity's ID, or -1 if the entity has not been added to the world
      */
     int getTrackingId();
@@ -152,30 +152,30 @@ public interface ISemiBlock extends ICapabilityProvider {
      *
      * @param player player who is removing the semiblock
      */
-    void removeSemiblock(PlayerEntity player);
+    void removeSemiblock(Player player);
 
     /**
      * Add tooltip information for this semiblock. This info is used by info mods such as Waila or TOP.
      *
-     * @param curInfo append info to this list
+     * @param consumer the component consumer
      * @param player the player looking at the entity or item
-     * @param tag NBT data as saved by {@link ISemiBlock#serializeNBT(CompoundNBT)}
+     * @param tag NBT data as saved by {@link ISemiBlock#serializeNBT(CompoundTag)}
      * @param extended true if extended data should be shown
      */
-    default void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
+    default void addTooltip(Consumer<Component> consumer, Player player, CompoundTag tag, boolean extended) {
     }
 
     /**
      * Write this semiblock to network buffer for network sync purposes.
      * @param payload the buffer
      */
-    void writeToBuf(PacketBuffer payload);
+    void writeToBuf(FriendlyByteBuf payload);
 
     /**
      * Read this semiblock from network buffer for network sync purposes.
      * @param payload the buffer
      */
-    void readFromBuf(PacketBuffer payload);
+    void readFromBuf(FriendlyByteBuf payload);
 
     /**
      * A color in ARGB format.  Used for various things: GUI/item/render tinting, as well as TOP colour coding.
@@ -191,7 +191,7 @@ public interface ISemiBlock extends ICapabilityProvider {
      * @param id the tracking ID
      * @return a semiblock, or null if ID is not valid
      */
-    static ISemiBlock byTrackingId(World world, int id) {
+    static ISemiBlock byTrackingId(Level world, int id) {
         Entity e = world.getEntity(id);
         return e instanceof ISemiBlock ? (ISemiBlock) e : null;
     }

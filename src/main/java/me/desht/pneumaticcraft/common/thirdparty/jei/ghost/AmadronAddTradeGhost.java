@@ -21,13 +21,15 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.GuiAmadronAddTrade;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collections;
 import java.util.List;
+
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
 
 public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronAddTrade> {
 
@@ -69,8 +71,8 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronA
         }
 
         @Override
-        public Rectangle2d getArea() {
-            return new Rectangle2d(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
+        public Rect2i getArea() {
+            return new Rect2i(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
         }
     }
 

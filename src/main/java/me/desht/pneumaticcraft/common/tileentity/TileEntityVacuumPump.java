@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
@@ -27,17 +28,18 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -49,7 +51,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
-        IRedstoneControl<TileEntityVacuumPump>, IManoMeasurable, INamedContainerProvider {
+        IRedstoneControl<TileEntityVacuumPump>, IManoMeasurable, MenuProvider {
     @GuiSynced
     private final IAirHandlerMachine vacuumHandler;
     private final LazyOptional<IAirHandlerMachine> vacuumCap;
@@ -62,10 +64,10 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
     @GuiSynced
     public final RedstoneController<TileEntityVacuumPump> rsController = new RedstoneController<>(this);
 
-    public TileEntityVacuumPump() {
-        super(ModTileEntities.VACUUM_PUMP.get(), PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
+    public TileEntityVacuumPump(BlockPos pos, BlockState state) {
+        super(ModTileEntities.VACUUM_PUMP.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
 
-        this.vacuumHandler  = new MachineAirHandler(PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP);
+        this.vacuumHandler  = new MachineAirHandler(PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_PUMP);
         this.vacuumCap = LazyOptional.of(() -> vacuumHandler);
     }
 
@@ -97,68 +99,70 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickClient() {
+        super.tickClient();
 
-        if (!getLevel().isClientSide) {
-            if (turnTimer >= 0) turnTimer--;
-
-            if (airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && vacuumHandler.getPressure() > -0.99F && rsController.shouldRun()) {
-                if (turnTimer == -1) {
-                    turning = true;
-                }
-                airHandler.addAir((int) (-PneumaticValues.USAGE_VACUUM_PUMP * getSpeedUsageMultiplierFromUpgrades()));
-                // negative because it's creating a vacuum.
-                vacuumHandler.addAir((int) (-PneumaticValues.PRODUCTION_VACUUM_PUMP * getSpeedMultiplierFromUpgrades()));
-                turnTimer = 40;
-            }
-            if (turnTimer == 0) {
-                turning = false;
-            }
-            airHandler.setSideLeaking(airHandler.getConnectedAirHandlers(this).isEmpty() ? getInputSide() : null);
-            vacuumHandler.setSideLeaking(vacuumHandler.getConnectedAirHandlers(this).isEmpty() ? getVacuumSide() : null);
+        oldRotation = rotation;
+        if (turning) {
+            rotationSpeed = Math.min(rotationSpeed + 1, 20);
         } else {
-            oldRotation = rotation;
-            if (turning) {
-                rotationSpeed = Math.min(rotationSpeed + 1, 20);
-            } else {
-                rotationSpeed = Math.max(rotationSpeed - 1, 0);
-            }
-            rotation += rotationSpeed;
+            rotationSpeed = Math.max(rotationSpeed - 1, 0);
         }
+        rotation += rotationSpeed;
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
+    public void tickServer() {
+        super.tickServer();
+
+        if (turnTimer >= 0) turnTimer--;
+
+        if (airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && vacuumHandler.getPressure() > -0.99F && rsController.shouldRun()) {
+            if (turnTimer == -1) {
+                turning = true;
+            }
+            airHandler.addAir((int) (-PneumaticValues.USAGE_VACUUM_PUMP * getSpeedUsageMultiplierFromUpgrades()));
+            // negative because it's creating a vacuum.
+            vacuumHandler.addAir((int) (-PneumaticValues.PRODUCTION_VACUUM_PUMP * getSpeedMultiplierFromUpgrades()));
+            turnTimer = 40;
+        }
+        if (turnTimer == 0) {
+            turning = false;
+        }
+        airHandler.setSideLeaking(airHandler.getConnectedAirHandlers(this).isEmpty() ? getInputSide() : null);
+        vacuumHandler.setSideLeaking(vacuumHandler.getConnectedAirHandlers(this).isEmpty() ? getVacuumSide() : null);
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public AABB getRenderBoundingBox() {
+        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
+    }
+
+    @Override
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.put("vacuum", vacuumHandler.serializeNBT());
         tag.putBoolean("turning", turning);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         vacuumHandler.deserializeNBT(tag.getCompound("vacuum"));
         turning = tag.getBoolean("turning");
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         rsController.parseRedstoneMode(tag);
     }
 
     @Override
-    public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
+    public void printManometerMessage(Player player, List<Component> curInfo) {
         String input = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1);
         String vac = PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 1);
-        curInfo.add(xlate("pneumaticcraft.message.vacuum_pump.manometer", input, vac).withStyle(TextFormatting.GREEN));
+        curInfo.add(xlate("pneumaticcraft.message.vacuum_pump.manometer", input, vac).withStyle(ChatFormatting.GREEN));
     }
 
     @Override
@@ -168,7 +172,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerVacuumPump(i, playerInventory, getBlockPos());
     }
 }

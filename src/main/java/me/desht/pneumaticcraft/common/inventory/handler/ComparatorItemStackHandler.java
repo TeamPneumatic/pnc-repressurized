@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.inventory.handler;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 /**
@@ -28,7 +28,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 public class ComparatorItemStackHandler extends BaseItemStackHandler {
     private int signalLevel = -1;  // -1 indicates recalc needed
 
-    public ComparatorItemStackHandler(TileEntity te, int invSize) {
+    public ComparatorItemStackHandler(BlockEntity te, int invSize) {
         super(te, invSize);
     }
 
@@ -39,7 +39,7 @@ public class ComparatorItemStackHandler extends BaseItemStackHandler {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
         signalLevel = -1;
     }

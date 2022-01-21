@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleType;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
@@ -35,12 +35,12 @@ import java.util.function.Supplier;
  * Sent by server to play a trail of particles between two points
  */
 public class PacketSpawnParticleTrail extends LocationDoublePacket {
-    private final IParticleData particle;
+    private final ParticleOptions particle;
     private final double x2;
     private final double y2;
     private final double z2;
 
-    public PacketSpawnParticleTrail(IParticleData particle, double x1, double y1, double z1, double x2, double y2, double z2) {
+    public PacketSpawnParticleTrail(ParticleOptions particle, double x1, double y1, double z1, double x2, double y2, double z2) {
         super(x1, y1, z1);
         this.particle = particle;
         this.x2 = x2;
@@ -48,7 +48,7 @@ public class PacketSpawnParticleTrail extends LocationDoublePacket {
         this.z2 = z2;
     }
 
-    public PacketSpawnParticleTrail(PacketBuffer buffer) {
+    public PacketSpawnParticleTrail(FriendlyByteBuf buffer) {
         super(buffer);
         ParticleType<?> type = ForgeRegistries.PARTICLE_TYPES.getValue(buffer.readResourceLocation());
         assert type != null;
@@ -59,29 +59,29 @@ public class PacketSpawnParticleTrail extends LocationDoublePacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
         buffer.writeResourceLocation(Objects.requireNonNull(particle.getType().getRegistryName()));
         buffer.writeDouble(x2);
         buffer.writeDouble(y2);
         buffer.writeDouble(z2);
-        particle.writeToNetwork(new PacketBuffer(buffer));
+        particle.writeToNetwork(new FriendlyByteBuf(buffer));
     }
 
-    private <T extends IParticleData> T readParticle(ParticleType<T> type, PacketBuffer buffer) {
+    private <T extends ParticleOptions> T readParticle(ParticleType<T> type, FriendlyByteBuf buffer) {
         return type.getDeserializer().fromNetwork(type, buffer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            World world = ClientUtils.getClientWorld();
+            Level world = ClientUtils.getClientLevel();
             int numParticles = (int) PneumaticCraftUtils.distBetween(x, y, z, x2, y2, z2) * 25;
             if (numParticles == 0) numParticles = 1;
             for (int i = 0; i <= numParticles; i++) {
                 double pct = (double) i / numParticles;
-                double px = MathHelper.lerp(pct, x, x2);
-                double py = MathHelper.lerp(pct, y, y2);
-                double pz = MathHelper.lerp(pct, z, z2);
+                double px = Mth.lerp(pct, x, x2);
+                double py = Mth.lerp(pct, y, y2);
+                double pz = Mth.lerp(pct, z, z2);
                 world.addParticle(particle, px + world.random.nextDouble() * 0.2 - 0.1, py + world.random.nextDouble() * 0.2 - 0.1, pz + world.random.nextDouble() * 0.2 - 0.1, 0, 0, 0);
             }
         });

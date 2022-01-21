@@ -26,26 +26,26 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticleTrail;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.FlyingPathNavigator;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPathNavigator {
+public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPathNavigator {
     private final EntityDrone droneEntity;
     private boolean forceTeleport;
     private int teleportCounter = -1;
@@ -53,7 +53,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     private static final int TELEPORT_TICKS = 120;
     private int stuckTicks = 0;
 
-    public EntityPathNavigateDrone(EntityDrone droneEntity, World world) {
+    public EntityPathNavigateDrone(EntityDrone droneEntity, Level world) {
         super(droneEntity, world);
         this.droneEntity = droneEntity;
     }
@@ -70,7 +70,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     public Path createPath(Entity par1Entity, int p2) {
         BlockPos pos = new BlockPos(par1Entity.getX(), par1Entity.getBoundingBox().minY, par1Entity.getZ());
 
-        if ((par1Entity instanceof ItemEntity && !droneEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof AbstractMinecartEntity) {
+        if ((par1Entity instanceof ItemEntity && !droneEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof AbstractMinecart) {
             // items can end up with a blockpos of the ground they're sitting on,
             // which will prevent the drone pathfinding to them
             // minecarts apparently prevent the drone moving to the same blockpos
@@ -98,7 +98,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
         if (droneEntity.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 0.75) {
             // TODO 1.14 what does this boolean do?  true or false here?  appears to be villager-related...
-            return new Path(Lists.newArrayList(new PathPoint(pos.getX(), pos.getY(), pos.getZ())), pos, true);
+            return new Path(Lists.newArrayList(new Node(pos.getX(), pos.getY(), pos.getZ())), pos, true);
         }
 
         // Store the potential teleport destination
@@ -128,7 +128,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         // Only paths that actually end up where we want to are valid, not just partway
         // (but if we had to stop short due to a "tall" block, account for that)
         if (path != null) {
-            PathPoint lastPoint = path.getEndNode();
+            Node lastPoint = path.getEndNode();
             if (lastPoint != null && pos.distManhattan(lastPoint.asBlockPos()) > (tallBlockKludge ? 1 : 0)) {
                 path = null;
             }
@@ -165,7 +165,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         ++tick;
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
-                droneEntity.level.playSound(null, droneEntity.blockPosition(), ModSounds.HUD_INIT.get(), SoundCategory.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
+                droneEntity.level.playSound(null, droneEntity.blockPosition(), ModSounds.HUD_INIT.get(), SoundSource.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {
@@ -191,7 +191,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                 if (path != null && !path.isDone()) {
                     if (ConfigHelper.common().advanced.stuckDroneTeleportTicks.get() > 0 && mob.getDeltaMovement().lengthSqr() < 0.0001) {
                         if (stuckTicks++ > ConfigHelper.common().advanced.stuckDroneTeleportTicks.get()) {
-                            Vector3d v = droneEntity.getDronePos();
+                            Vec3 v = droneEntity.getDronePos();
                             droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.stuckBlock",
                                     new BlockPos(Math.round(v.x), Math.round(v.y), Math.round(v.z)));
                             teleportCounter = 0;
@@ -202,7 +202,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                         stuckTicks = 0;
                     }
                     if (!isDone()) {
-                        Vector3d vec32 = path.getNextEntityPos(mob);
+                        Vec3 vec32 = path.getNextEntityPos(mob);
                         mob.getMoveControl().setWantedPosition(vec32.x, vec32.y, vec32.z, speedModifier);
                     }
                 }
@@ -211,7 +211,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     }
 
     public void teleport() {
-        Vector3d dest = Vector3d.atCenterOf(telPos);
+        Vec3 dest = Vec3.atCenterOf(telPos);
         NetworkHandler.sendToAllTracking(new PacketSpawnParticleTrail(ParticleTypes.PORTAL,
                         droneEntity.getX(), droneEntity.getY(), droneEntity.getZ(),
                         dest.x, dest.y, dest.z),
@@ -247,8 +247,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
      */
     private void forceRidingEntityPaths() {
         for (Entity ridingEntity : droneEntity.getPassengers()) {
-            if (ridingEntity instanceof MobEntity) {
-                MobEntity ridingLiving = (MobEntity) ridingEntity;
+            if (ridingEntity instanceof Mob ridingLiving) {
                 ridingLiving.getNavigation().moveTo(droneEntity.getNavigation().getPath(), droneEntity.getDroneSpeed());
             }
         }
@@ -259,10 +258,10 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         return isDone();
     }
 
-    @Override
-    public boolean canMoveDirectly(Vector3d p_75493_1_, Vector3d p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_) {
-        return false;
-    }
+//    @Override
+//    public boolean canMoveDirectly(Vec3 p_75493_1_, Vec3 p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_) {
+//        return false;
+//    }
 
     @Override
     protected PathFinder createPathFinder(int r) {
@@ -272,7 +271,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     }
 
     @Override
-    protected Vector3d getTempMobPos() {
+    protected Vec3 getTempMobPos() {
         return droneEntity.getDronePos();
     }
 

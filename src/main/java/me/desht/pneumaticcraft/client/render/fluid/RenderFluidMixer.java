@@ -19,19 +19,19 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Collection;
 
 public class RenderFluidMixer extends AbstractFluidTER<TileEntityFluidMixer> {
-    private static final AxisAlignedBB[] TANK_BOUNDS_BASE = new AxisAlignedBB[]{
-            new AxisAlignedBB(0.1 / 16f, 1 / 16f, 11.1 / 16f, 6.9 / 16f, 8.9/ 16f, 15.9 / 16f),  // in1
-            new AxisAlignedBB(9.1 / 16f, 1 / 16f, 11.1 / 16f, 15.9 / 16f, 8.9 / 16f, 15.9 / 16f),  // in2
-            new AxisAlignedBB(2.1 / 16f,  10.1 / 16f, 11.1 / 16f,  13.9 / 16f, 15.9 / 16f, 15.9 / 16f)    // out
+    private static final AABB[] TANK_BOUNDS_BASE = new AABB[]{
+            new AABB(0.1 / 16f, 1 / 16f, 11.1 / 16f, 6.9 / 16f, 8.9/ 16f, 15.9 / 16f),  // in1
+            new AABB(9.1 / 16f, 1 / 16f, 11.1 / 16f, 15.9 / 16f, 8.9 / 16f, 15.9 / 16f),  // in2
+            new AABB(2.1 / 16f,  10.1 / 16f, 11.1 / 16f,  13.9 / 16f, 15.9 / 16f, 15.9 / 16f)    // out
     };
-    private static final AxisAlignedBB[][] BOUNDS = new AxisAlignedBB[3][4];
+    private static final AABB[][] BOUNDS = new AABB[3][4];
     static {
         for (int i = 0; i < TANK_BOUNDS_BASE.length; i++) {
             BOUNDS[i][0] = TANK_BOUNDS_BASE[i];
@@ -41,8 +41,8 @@ public class RenderFluidMixer extends AbstractFluidTER<TileEntityFluidMixer> {
         }
     }
 
-    public RenderFluidMixer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public RenderFluidMixer(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
     }
 
     @Override

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -29,8 +29,8 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
@@ -45,7 +45,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
         super(ModCategoryUid.ETCHING_TANK, EtchingTankRecipe.class,
                 xlate(ModBlocks.ETCHING_TANK.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 0, 0, 83, 42),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ETCHING_TANK.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.ETCHING_TANK.get()))
         );
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 83, 0, 42, 42);
         progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
@@ -74,7 +74,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
     }
 
     @Override
-    public void draw(EtchingTankRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(EtchingTankRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 20, 0);
     }
 

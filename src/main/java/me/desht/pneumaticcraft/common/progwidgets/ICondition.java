@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public interface ICondition {
     boolean isAndFunction();

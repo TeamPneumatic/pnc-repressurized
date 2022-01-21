@@ -27,11 +27,11 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.gui.widget.Slider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.gui.widget.Slider;
 import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler<?>> extends IOptionPage.SimpleOptionPage<T>
@@ -57,11 +57,11 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
      */
     protected abstract String getTagName();
 
-    protected abstract ITextComponent getPrefix();
+    protected abstract Component getPrefix();
 
-    protected abstract ITextComponent getSuffix();
+    protected abstract Component getSuffix();
 
-    EquipmentSlotType getSlot() {
+    EquipmentSlot getSlot() {
         return getClientUpgradeHandler().getCommonHandler().getEquipmentSlot();
     }
 
@@ -74,7 +74,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
             initVal = ItemPneumaticArmor.getIntData(stack, getTagName(), range.getRight());
         }
         PointXY pos = getSliderPos();
-        slider = new Slider(pos.x, pos.y, 150, 20,  getPrefix(), getSuffix(),
+        slider = new Slider(pos.x(), pos.y(), 150, 20,  getPrefix(), getSuffix(),
                 range.getLeft(), range.getRight(), initVal, false, true, b -> { }, this);
         gui.addWidget(slider);
     }
@@ -88,7 +88,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
     public void tick() {
         if (pendingVal != null && !slider.dragging) {
             // avoid sending a stream of update packets if player is dragging slider
-            CompoundNBT tag = new CompoundNBT();
+            CompoundTag tag = new CompoundTag();
             tag.putInt(getTagName(), pendingVal);
             IArmorUpgradeHandler<?> upgradeHandler = getClientUpgradeHandler().getCommonHandler();
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), tag, upgradeHandler.getID()));

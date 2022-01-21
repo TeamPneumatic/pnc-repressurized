@@ -17,7 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
@@ -30,13 +31,12 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.client.MainWindow;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.gui.widget.Slider;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraftforge.client.gui.widget.Slider;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     private final IArmorUpgradeClientHandler<?> renderHandler;
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
-    private final List<ITextComponent> helpText = new ArrayList<>();
+    private final List<Component> helpText = new ArrayList<>();
     private final ArmorHUDLayout.LayoutType layoutItem;
 
     private WidgetCheckBox snapToGrid;
@@ -63,7 +63,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     public GuiMoveStat(IArmorUpgradeClientHandler<?> renderHandler, ArmorHUDLayout.LayoutType layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
-        super(new StringTextComponent("Move Gui"));
+        super(new TextComponent("Move Gui"));
 
         this.movedStat = movedStat;
         this.renderHandler = renderHandler;
@@ -72,7 +72,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         movedStat.openStat();
 
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             List<IArmorUpgradeClientHandler<?>> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
             for (int i = 0; i < renderHandlers.size(); i++) {
                 IArmorUpgradeClientHandler<?> upgradeRenderHandler = renderHandlers.get(i);
@@ -88,7 +88,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         CoreComponentsClientHandler mainOptions = ArmorUpgradeClientRegistry.getInstance()
                 .getClientHandler(ArmorUpgradeRegistry.getInstance().coreComponentsHandler, CoreComponentsClientHandler.class);
         if (movedStat != mainOptions.testMessageStat) {
-            mainOptions.testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
+            mainOptions.testMessageStat = new WidgetAnimatedStat(null, new TextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);
             mainOptions.testMessageStat.openStat();
             otherStats.add(mainOptions.testMessageStat);
@@ -102,11 +102,11 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         snapToGrid = new WidgetCheckBox(10, (height * 3) / 5, 0xC0C0C0, xlate("pneumaticcraft.gui.misc.snapToGrid"));
         snapToGrid.x = (width - snapToGrid.getWidth()) / 2;
         snapToGrid.checked = snap;
-        addButton(snapToGrid);
+        addRenderableWidget(snapToGrid);
 
         gridSlider = new Slider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
-                StringTextComponent.EMPTY, StringTextComponent.EMPTY, 1, 12, gridSize, false, true, b -> {}, null);
-        addButton(gridSlider);
+                TextComponent.EMPTY, TextComponent.EMPTY, 1, 12, gridSize, false, true, b -> {}, null);
+        addRenderableWidget(gridSlider);
     }
 
     @Override
@@ -172,7 +172,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
 
         GuiUtils.showPopupHelpScreen(matrixStack,this, font, helpText);
@@ -201,20 +201,20 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         otherStats.forEach(IGuiAnimatedStat::tickWidget);
 
         if (helpText.isEmpty()) {
-            helpText.add(xlate(ArmorUpgradeRegistry.getStringKey(renderHandler.getCommonHandler().getID())).withStyle(TextFormatting.GREEN, TextFormatting.UNDERLINE));
-            helpText.add(StringTextComponent.EMPTY);
+            helpText.add(xlate(ArmorUpgradeRegistry.getStringKey(renderHandler.getCommonHandler().getID())).withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE));
+            helpText.add(TextComponent.EMPTY);
             helpText.add(xlate("pneumaticcraft.armor.moveStat.move"));
-            helpText.add(new StringTextComponent("<REPLACEME>"));
+            helpText.add(new TextComponent("<REPLACEME>"));
         }
         helpText.set(3, xlate("pneumaticcraft.armor.moveStat.expand" + (movedStat.isLeftSided() ? "Left" : "Right")));
     }
 
     private String getDir(boolean left) {
-        return TextFormatting.YELLOW + (left ? "Left" : "Right") + TextFormatting.RESET;
+        return ChatFormatting.YELLOW + (left ? "Left" : "Right") + ChatFormatting.RESET;
     }
 
     private void save() {
-        MainWindow sr = minecraft.getWindow();
+        Window sr = minecraft.getWindow();
         ArmorHUDLayout.INSTANCE.updateLayout(layoutItem,
                 ((float) movedStat.getBaseX() / (float) sr.getGuiScaledWidth()),
                 ((float) movedStat.getBaseY() / (float) sr.getGuiScaledHeight()),

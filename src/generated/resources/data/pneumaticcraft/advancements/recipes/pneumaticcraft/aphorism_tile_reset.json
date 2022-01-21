@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:aphorism_tile"
+            "items": [
+              "pneumaticcraft:aphorism_tile"
+            ]
           }
         ]
       }

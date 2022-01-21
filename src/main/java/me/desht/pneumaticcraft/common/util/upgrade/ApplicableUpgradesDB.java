@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.util.upgrade;
 
 import com.google.common.primitives.Ints;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public enum ApplicableUpgradesDB {
         return INSTANCE;
     }
 
-    public void addApplicableUpgrades(TileEntityType<?> type, UpgradesDBSetup.Builder builder) {
+    public void addApplicableUpgrades(BlockEntityType<?> type, UpgradesDBSetup.Builder builder) {
         addUpgrades(TILE_ENTITIES, type.getRegistryName(), builder);
     }
 
@@ -58,7 +58,7 @@ public enum ApplicableUpgradesDB {
         addUpgrades(ITEMS, item.getRegistryName(), builder);
     }
 
-    public int getMaxUpgrades(TileEntity te, EnumUpgrade upgrade) {
+    public int getMaxUpgrades(BlockEntity te, EnumUpgrade upgrade) {
         if (te == null || upgrade == null) return 0;
         return TILE_ENTITIES.getOrDefault(te.getType().getRegistryName(), NO_UPGRADES).get(upgrade.ordinal());
     }
@@ -73,7 +73,7 @@ public enum ApplicableUpgradesDB {
         return ITEMS.getOrDefault(item.getRegistryName(), NO_UPGRADES).get(upgrade.ordinal());
     }
 
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades(TileEntity te) {
+    public Map<EnumUpgrade, Integer> getApplicableUpgrades(BlockEntity te) {
         return getApplicableUpgrades(TILE_ENTITIES.getOrDefault(te.getType().getRegistryName(), NO_UPGRADES));
     }
 

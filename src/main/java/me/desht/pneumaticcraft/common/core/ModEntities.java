@@ -25,15 +25,15 @@ import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.entity.semiblock.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
@@ -89,7 +89,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityVortex> vortex() {
-        return EntityType.Builder.of(EntityVortex::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityVortex::new, MobCategory.MISC)
                 .sized(0.5f, 0.5f)
                 .fireImmune()
                 .setTrackingRange(4)
@@ -99,7 +99,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityDrone> drone() {
-        return EntityType.Builder.<EntityDrone>of(EntityDrone::new, EntityClassification.CREATURE)
+        return EntityType.Builder.<EntityDrone>of(EntityDrone::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -108,7 +108,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityAmadrone> amadrone() {
-        return EntityType.Builder.of(EntityAmadrone::new, EntityClassification.CREATURE)
+        return EntityType.Builder.of(EntityAmadrone::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -117,7 +117,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsDrone> logisticsDrone() {
-        return EntityType.Builder.<EntityLogisticsDrone>of(EntityLogisticsDrone::new, EntityClassification.CREATURE)
+        return EntityType.Builder.<EntityLogisticsDrone>of(EntityLogisticsDrone::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -126,7 +126,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityHarvestingDrone> harvestingDrone() {
-        return EntityType.Builder.<EntityHarvestingDrone>of(EntityHarvestingDrone::new, EntityClassification.CREATURE)
+        return EntityType.Builder.<EntityHarvestingDrone>of(EntityHarvestingDrone::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -135,7 +135,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityGuardDrone> guardDrone() {
-        return EntityType.Builder.<EntityGuardDrone>of(EntityGuardDrone::new, EntityClassification.CREATURE)
+        return EntityType.Builder.<EntityGuardDrone>of(EntityGuardDrone::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -144,7 +144,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityCollectorDrone> collectorDrone() {
-        return EntityType.Builder.<EntityCollectorDrone>of(EntityCollectorDrone::new, EntityClassification.CREATURE)
+        return EntityType.Builder.<EntityCollectorDrone>of(EntityCollectorDrone::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -153,7 +153,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityProgrammableController> programmableController() {
-        return EntityType.Builder.of(EntityProgrammableController::new, EntityClassification.CREATURE)
+        return EntityType.Builder.of(EntityProgrammableController::new, MobCategory.CREATURE)
                 .sized(0.35f, 0.175f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -162,7 +162,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityMicromissile> micromissile() {
-        return EntityType.Builder.<EntityMicromissile>of(EntityMicromissile::new, EntityClassification.MISC)
+        return EntityType.Builder.<EntityMicromissile>of(EntityMicromissile::new, MobCategory.MISC)
                 .sized(0.5f, 0.5f)
                 .fireImmune()
                 .setTrackingRange(4)
@@ -172,7 +172,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityTumblingBlock> tumblingBlock() {
-        return EntityType.Builder.<EntityTumblingBlock>of(EntityTumblingBlock::new, EntityClassification.MISC)
+        return EntityType.Builder.<EntityTumblingBlock>of(EntityTumblingBlock::new, MobCategory.MISC)
                 .sized(0.5f, 0.5f)
                 .fireImmune()
                 .setTrackingRange(4)
@@ -182,7 +182,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityRing> ring() {
-        return EntityType.Builder.<EntityRing>of(EntityRing::new, EntityClassification.MISC)
+        return EntityType.Builder.<EntityRing>of(EntityRing::new, MobCategory.MISC)
                 .sized(0.5f, 0.5f)
                 .fireImmune()
                 .setTrackingRange(4)
@@ -192,7 +192,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityCropSupport> cropSupport() {
-        return EntityType.Builder.of(EntityCropSupport::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityCropSupport::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -202,7 +202,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntitySpawnerAgitator> spawnerAgitator() {
-        return EntityType.Builder.of(EntitySpawnerAgitator::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntitySpawnerAgitator::new, MobCategory.MISC)
                 .sized(1F, 1F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -212,7 +212,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityHeatFrame> heatFrame() {
-        return EntityType.Builder.of(EntityHeatFrame::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityHeatFrame::new, MobCategory.MISC)
                 .sized(1F, 1F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -222,7 +222,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityTransferGadget> transferGadget() {
-        return EntityType.Builder.of(EntityTransferGadget::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityTransferGadget::new, MobCategory.MISC)
                 .sized(1F, 1F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -232,7 +232,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsActiveProvider> activeProvider() {
-        return EntityType.Builder.of(EntityLogisticsActiveProvider::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityLogisticsActiveProvider::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -242,7 +242,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsPassiveProvider> passiveProvider() {
-        return EntityType.Builder.of(EntityLogisticsPassiveProvider::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityLogisticsPassiveProvider::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -252,7 +252,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsStorage> storage() {
-        return EntityType.Builder.of(EntityLogisticsStorage::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityLogisticsStorage::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -262,7 +262,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsDefaultStorage> defaultStorage() {
-        return EntityType.Builder.of(EntityLogisticsDefaultStorage::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityLogisticsDefaultStorage::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -272,7 +272,7 @@ public class ModEntities {
     }
 
     private static EntityType.Builder<EntityLogisticsRequester> requester() {
-        return EntityType.Builder.of(EntityLogisticsRequester::new, EntityClassification.MISC)
+        return EntityType.Builder.of(EntityLogisticsRequester::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)

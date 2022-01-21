@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -41,7 +41,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
         this.colors = colors;
     }
 
-    public PacketSpawnRing(PacketBuffer buffer) {
+    public PacketSpawnRing(FriendlyByteBuf buffer) {
         super(buffer);
         targetEntityId = buffer.readInt();
         colors = new int[buffer.readVarInt()];
@@ -51,7 +51,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
         buffer.writeInt(targetEntityId);
         buffer.writeVarInt(colors.length);
@@ -60,7 +60,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            World world = ClientUtils.getClientWorld();
+            Level world = ClientUtils.getClientLevel();
             Entity entity = world.getEntity(targetEntityId);
             if (entity != null) {
                 for (int color : colors) {

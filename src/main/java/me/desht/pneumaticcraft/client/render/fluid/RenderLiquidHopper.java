@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import java.util.Collection;
@@ -30,18 +30,18 @@ import java.util.Collections;
 import java.util.List;
 
 public class RenderLiquidHopper extends AbstractFluidTER<TileEntityLiquidHopper> {
-    private static final AxisAlignedBB[] BOUNDS = new AxisAlignedBB[6];
+    private static final AABB[] BOUNDS = new AABB[6];
     static {
-        BOUNDS[Direction.DOWN.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 4.99 / 16f, 15.49 / 16f);
-        BOUNDS[Direction.UP.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 11.01 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
-        BOUNDS[Direction.NORTH.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 4.99 / 16f);
-        BOUNDS[Direction.SOUTH.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 0.51 / 16f, 11.49 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
-        BOUNDS[Direction.WEST.get3DDataValue()] = new AxisAlignedBB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 4.99 / 16f, 15.49 / 16f, 15.49 / 16f);
-        BOUNDS[Direction.EAST.get3DDataValue()] = new AxisAlignedBB(11.01 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.DOWN.get3DDataValue()] = new AABB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 4.99 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.UP.get3DDataValue()] = new AABB(0.51 / 16f, 11.01 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.NORTH.get3DDataValue()] = new AABB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 4.99 / 16f);
+        BOUNDS[Direction.SOUTH.get3DDataValue()] = new AABB(0.51 / 16f, 0.51 / 16f, 11.49 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.WEST.get3DDataValue()] = new AABB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 4.99 / 16f, 15.49 / 16f, 15.49 / 16f);
+        BOUNDS[Direction.EAST.get3DDataValue()] = new AABB(11.01 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 15.49 / 16f, 15.49 / 16f);
     }
 
-    public RenderLiquidHopper(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public RenderLiquidHopper(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class RenderLiquidHopper extends AbstractFluidTER<TileEntityLiquidHopper>
     }
 
     public static class ItemRenderInfoProvider implements IFluidItemRenderInfoProvider {
-        private static final AxisAlignedBB BOUNDS_UP = BOUNDS[Direction.UP.get3DDataValue()];  // item model is always oriented with input UP
+        private static final AABB BOUNDS_UP = BOUNDS[Direction.UP.get3DDataValue()];  // item model is always oriented with input UP
 
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {

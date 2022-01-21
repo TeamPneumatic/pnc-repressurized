@@ -32,24 +32,24 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
 import me.desht.pneumaticcraft.common.hacking.entity.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemFrameEntity;
-import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.entity.monster.*;
-import net.minecraft.entity.passive.BatEntity;
-import net.minecraft.entity.passive.CowEntity;
-import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.passive.horse.HorseEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class HackManager {
     private final Map<WorldAndCoord, Pair<Block,IHackableBlock>> trackedHackableBlocks = new HashMap<>();
     private static HackManager clientInstance, serverInstance;
 
-    private static HackManager getInstance(World world) {
+    private static HackManager getInstance(Level world) {
         if (world.isClientSide) {
             if (clientInstance == null) clientInstance = new HackManager();
             return clientInstance;
@@ -95,25 +95,25 @@ public class HackManager {
         registry.addHackable(BlockTags.TRAPDOORS, HackableTrapDoor::new);
         // entities
         registry.addHackable(LivingEntity.class, HackableMobDisarm::new);
-        registry.addHackable(CreeperEntity.class, HackableCreeper::new);
-        registry.addHackable(TameableEntity.class, HackableTameable::new);
-        registry.addHackable(CowEntity.class, HackableCow::new);
-        registry.addHackable(SheepEntity.class, HackableSheep::new);
-        registry.addHackable(CaveSpiderEntity.class, HackableCaveSpider::new);
-        registry.addHackable(BlazeEntity.class, HackableBlaze::new);
-        registry.addHackable(GhastEntity.class, HackableGhast::new);
-        registry.addHackable(WitchEntity.class, HackableWitch::new);
-        registry.addHackable(EndermanEntity.class, HackableEnderman::new);
-        registry.addHackable(BatEntity.class, HackableBat::new);
-        registry.addHackable(HorseEntity.class, HackableHorse::new);
-        registry.addHackable(ShulkerEntity.class, HackableShulker::new);
-        registry.addHackable(GuardianEntity.class, HackableGuardian::new);
-        registry.addHackable(VillagerEntity.class, HackableVillager::new);
-        registry.addHackable(PaintingEntity.class, HackablePainting::new);
-        registry.addHackable(ItemFrameEntity.class, HackableItemFrame::new);
+        registry.addHackable(Creeper.class, HackableCreeper::new);
+        registry.addHackable(TamableAnimal.class, HackableTameable::new);
+        registry.addHackable(Cow.class, HackableCow::new);
+        registry.addHackable(Sheep.class, HackableSheep::new);
+        registry.addHackable(CaveSpider.class, HackableCaveSpider::new);
+        registry.addHackable(Blaze.class, HackableBlaze::new);
+        registry.addHackable(Ghast.class, HackableGhast::new);
+        registry.addHackable(Witch.class, HackableWitch::new);
+        registry.addHackable(EnderMan.class, HackableEnderman::new);
+        registry.addHackable(Bat.class, HackableBat::new);
+        registry.addHackable(Horse.class, HackableHorse::new);
+        registry.addHackable(Shulker.class, HackableShulker::new);
+        registry.addHackable(Guardian.class, HackableGuardian::new);
+        registry.addHackable(Villager.class, HackableVillager::new);
+        registry.addHackable(Painting.class, HackablePainting::new);
+        registry.addHackable(ItemFrame.class, HackableItemFrame::new);
     }
 
-    public static IHackableEntity getHackableForEntity(Entity entity, PlayerEntity player) {
+    public static IHackableEntity getHackableForEntity(Entity entity, Player player) {
         // clean up the tracked entities map
         getInstance(player.getCommandSenderWorld()).trackedHackableEntities.entrySet().removeIf(
                 entry -> !entry.getKey().isAlive()
@@ -133,7 +133,7 @@ public class HackManager {
         return hackable;
     }
 
-    public static IHackableBlock getHackableForBlock(IBlockReader world, BlockPos pos, PlayerEntity player) {
+    public static IHackableBlock getHackableForBlock(BlockGetter world, BlockPos pos, Player player) {
         Block block = world.getBlockState(pos).getBlock();
 
         // clean up the tracked blocks map
@@ -164,7 +164,7 @@ public class HackManager {
         return pair.getRight();
     }
 
-    private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, IBlockReader world, BlockPos pos, PlayerEntity player) {
+    private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, BlockGetter world, BlockPos pos, Player player) {
         if (player.level.isClientSide) {
             RenderBlockTarget target = ArmorUpgradeClientRegistry.getInstance()
                     .getClientHandler(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, BlockTrackerClientHandler.class)

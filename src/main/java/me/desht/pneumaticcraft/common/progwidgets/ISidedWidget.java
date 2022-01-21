@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 public interface ISidedWidget {
     boolean[] ALL_SIDES = new boolean[] { true, true, true, true, true, true };

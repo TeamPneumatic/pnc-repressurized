@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -35,9 +35,9 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
  */
 @Cancelable
 public class FluidTrackEvent extends Event {
-    private final TileEntity te;
+    private final BlockEntity te;
 
-    public FluidTrackEvent(TileEntity te) {
+    public FluidTrackEvent(BlockEntity te) {
         this.te = te;
     }
 

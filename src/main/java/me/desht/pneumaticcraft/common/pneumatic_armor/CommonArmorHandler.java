@@ -34,10 +34,10 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.util.LazyOptional;
@@ -54,13 +54,13 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private static final CommonArmorHandler clientHandler = new CommonArmorHandler(null);
     private static final CommonArmorHandler serverHandler = new CommonArmorHandler(null);
 
-    private static final Vector3d FORWARD = new Vector3d(0, 0, 1);
+    private static final Vec3 FORWARD = new Vec3(0, 0, 1);
 
     public static final float CRITICAL_PRESSURE = 0.1F;
     public static final float LOW_PRESSURE = 0.5F;
 
     private final HashMap<UUID, CommonArmorHandler> playerHandlers = new HashMap<>();
-    private PlayerEntity player;
+    private Player player;
     private final boolean[][] upgradeRenderersInserted = new boolean[4][];
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
     private final int[] ticksSinceEquip = new int[4];
@@ -71,9 +71,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     private boolean isValid; // true if the handler is valid; gets invalidated if player disconnects
 
-    private CommonArmorHandler(PlayerEntity player) {
+    private CommonArmorHandler(Player player) {
         this.player = player;
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             List<IArmorUpgradeHandler<?>> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
             upgradeRenderersInserted[slot.getIndex()] = new boolean[upgradeHandlers.size()];
             upgradeRenderersEnabled[slot.getIndex()] = new boolean[upgradeHandlers.size()];
@@ -88,11 +88,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         isValid = true;
     }
 
-    private static CommonArmorHandler getManagerInstance(PlayerEntity player) {
+    private static CommonArmorHandler getManagerInstance(Player player) {
         return player.level.isClientSide ? clientHandler : serverHandler;
     }
 
-    public static CommonArmorHandler getHandlerForPlayer(PlayerEntity player) {
+    public static CommonArmorHandler getHandlerForPlayer(Player player) {
         return getManagerInstance(player).playerHandlers.computeIfAbsent(player.getUUID(), v -> new CommonArmorHandler(player));
     }
 
@@ -106,7 +106,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
             if (event.phase == TickEvent.Phase.END) {
                 CommonArmorHandler handler = getHandlerForPlayer(event.player);
-                for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                     handler.tickArmorPiece(slot);
                 }
             }
@@ -122,8 +122,8 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
             // this will happen when a player changes dimension; they get a new player entity, so the armor
             // handler must be updated to reflect that
-            if (event.getEntity() instanceof PlayerEntity) {
-                PlayerEntity player = (PlayerEntity) event.getEntity();
+            if (event.getEntity() instanceof Player) {
+                Player player = (Player) event.getEntity();
                 CommonArmorHandler handler = getManagerInstance(player).playerHandlers.get(player.getUUID());
                 if (handler != null) handler.player = player;
             }
@@ -135,7 +135,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         @SubscribeEvent
         public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
             // called client side when client disconnects
-            PlayerEntity player = ClientUtils.getClientPlayer();
+            Player player = ClientUtils.getClientPlayer();
             if (player != null) {
                 clearHandlerForPlayer(player);
             }
@@ -145,7 +145,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         public static void tickEnd(TickEvent.ClientTickEvent event) {
             if (event.phase == TickEvent.Phase.END) {
                 if (Minecraft.getInstance().player == null) {
-                    for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                    for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                         for (IArmorUpgradeClientHandler<?> handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
                             handler.reset();
                         }
@@ -161,12 +161,12 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return (T) extensionData[handler.getEquipmentSlot().getIndex()][handler.getIndex()];
     }
 
-    private static void clearHandlerForPlayer(PlayerEntity player) {
+    private static void clearHandlerForPlayer(Player player) {
         CommonArmorHandler h = getManagerInstance(player);
         h.playerHandlers.computeIfPresent(player.getUUID(), (name, val) -> { val.invalidate(); return null; } );
     }
 
-    public void tickArmorPiece(EquipmentSlotType slot) {
+    public void tickArmorPiece(EquipmentSlot slot) {
         ItemStack armorStack = player.getItemBySlot(slot);
         boolean armorActive = false;
         if (armorStack.getItem() instanceof ItemPneumaticArmor) {
@@ -197,7 +197,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
-    public float getIdleAirUsage(EquipmentSlotType slot, boolean countDisabled) {
+    public float getIdleAirUsage(EquipmentSlot slot, boolean countDisabled) {
         float totalUsage = 0f;
         List<IArmorUpgradeHandler<?>> handlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
         for (int i = 0; i < handlers.size(); i++) {
@@ -210,7 +210,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     /*
      * Called when an armor piece is removed, or otherwise disabled - out of air, armor disabled
      */
-    private void onArmorRemoved(EquipmentSlotType slot) {
+    private void onArmorRemoved(EquipmentSlot slot) {
         List<IArmorUpgradeHandler<?>> handlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
         for (int i = 0; i < handlers.size(); i++) {
             if (isUpgradeInserted(slot, i)) {
@@ -220,7 +220,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     @Override
-    public float addAir(EquipmentSlotType slot, int airAmount) {
+    public float addAir(EquipmentSlot slot, int airAmount) {
         float oldPressure = getArmorPressure(slot);
         if (!player.isCreative() || airAmount > 0) {
             airHandlers.get(slot.getIndex()).ifPresent(h -> h.addAir(airAmount));
@@ -228,7 +228,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return oldPressure;
     }
 
-    private void doArmorActions(EquipmentSlotType slot) {
+    private void doArmorActions(EquipmentSlot slot) {
         if (!isArmorReady(slot)) return;
 
         List<IArmorUpgradeHandler<?>> handlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
@@ -240,9 +240,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
         // flippers & repairing are special cases; they don't have upgrade handlers
 
-        if (slot == EquipmentSlotType.FEET && player.level.isClientSide && player.isInWater() && player.zza > 0) {
+        if (slot == EquipmentSlot.FEET && player.level.isClientSide && player.isInWater() && player.zza > 0) {
             // doing this client-side only appears to be effective
-            if (isArmorReady(EquipmentSlotType.FEET) && getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.FLIPPERS) > 0) {
+            if (isArmorReady(EquipmentSlot.FEET) && getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.FLIPPERS) > 0) {
                 player.moveRelative(player.isOnGround() ? ConfigHelper.common().armor.flippersSpeedBoostGround.get().floatValue() : ConfigHelper.common().armor.flippersSpeedBoostFloating.get().floatValue(), FORWARD);
             }
         }
@@ -252,7 +252,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
-    private void tryRepairArmor(EquipmentSlotType slot) {
+    private void tryRepairArmor(EquipmentSlot slot) {
         int upgrades = getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE, PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
         int interval = 120 - (20 * upgrades);
         int airUsage = ConfigHelper.common().armor.repairAirUsage.get() * upgrades;
@@ -274,7 +274,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
      *
      * @param slot the equipment slot
      */
-    public void initArmorInventory(EquipmentSlotType slot) {
+    public void initArmorInventory(EquipmentSlot slot) {
         // armorStack has already been validated as a pneumatic armor piece at this point
         ItemStack armorStack = player.getItemBySlot(slot);
 
@@ -303,34 +303,34 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     @Override
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
     @Override
-    public int getUpgradeCount(EquipmentSlotType slot, EnumUpgrade upgrade) {
+    public int getUpgradeCount(EquipmentSlot slot, EnumUpgrade upgrade) {
         return upgradeMatrix.get(slot.getIndex()).getOrDefault(upgrade, 0);
     }
 
-    public int getUpgradeCount(EquipmentSlotType slot, EnumUpgrade upgrade, int max) {
+    public int getUpgradeCount(EquipmentSlot slot, EnumUpgrade upgrade, int max) {
         return Math.min(max, getUpgradeCount(slot, upgrade));
     }
 
-    public boolean isUpgradeInserted(EquipmentSlotType slot, int featureIndex) {
+    public boolean isUpgradeInserted(EquipmentSlot slot, int featureIndex) {
         return upgradeRenderersInserted[slot.getIndex()][featureIndex];
     }
 
-    public boolean isUpgradeEnabled(EquipmentSlotType slot, int featureIndex) {
+    public boolean isUpgradeEnabled(EquipmentSlot slot, int featureIndex) {
         return upgradeRenderersEnabled[slot.getIndex()][featureIndex];
     }
 
-    public void setUpgradeEnabled(EquipmentSlotType slot, byte featureIndex, boolean state) {
+    public void setUpgradeEnabled(EquipmentSlot slot, byte featureIndex, boolean state) {
         upgradeRenderersEnabled[slot.getIndex()][featureIndex] = state;
         IArmorUpgradeHandler<?> handler = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).get(featureIndex);
         handler.onToggle(this, state);
     }
 
-    public int getTicksSinceEquipped(EquipmentSlotType slot) {
+    public int getTicksSinceEquipped(EquipmentSlot slot) {
         return ticksSinceEquip[slot.getIndex()];
     }
 
@@ -349,26 +349,26 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     @Override
-    public int getSpeedFromUpgrades(EquipmentSlotType slot) {
+    public int getSpeedFromUpgrades(EquipmentSlot slot) {
         return 1 + getUpgradeCount(slot, EnumUpgrade.SPEED);
     }
 
-    public int getStartupTime(EquipmentSlotType slot) {
+    public int getStartupTime(EquipmentSlot slot) {
         return startupTimes[slot.getIndex()];
     }
 
-    public boolean isArmorReady(EquipmentSlotType slot) {
+    public boolean isArmorReady(EquipmentSlot slot) {
         return getTicksSinceEquipped(slot) > getStartupTime(slot);
     }
 
     @Override
-    public float getArmorPressure(EquipmentSlotType slot) {
+    public float getArmorPressure(EquipmentSlot slot) {
         return airHandlers.get(slot.getIndex()).map(IAirHandler::getPressure).orElse(0F);
     }
 
     @Override
     public boolean isArmorEnabled() {
-        return isUpgradeEnabled(EquipmentSlotType.HEAD, ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getIndex());
+        return isUpgradeEnabled(EquipmentSlot.HEAD, ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getIndex());
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -381,7 +381,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     @Override
-    public boolean hasMinPressure(EquipmentSlotType slot) {
+    public boolean hasMinPressure(EquipmentSlot slot) {
         return getArmorPressure(slot) >= CRITICAL_PRESSURE;
     }
 
@@ -396,7 +396,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
      */
     @Override
     public boolean upgradeUsable(IArmorUpgradeHandler<?> upgrade, boolean mustBeActive) {
-        EquipmentSlotType slot = upgrade.getEquipmentSlot();
+        EquipmentSlot slot = upgrade.getEquipmentSlot();
         int idx = upgrade.getIndex();
         return isArmorEnabled() && isArmorReady(slot) && hasMinPressure(slot)
                 && isUpgradeInserted(slot, idx) && (!mustBeActive || isUpgradeEnabled(slot, idx));

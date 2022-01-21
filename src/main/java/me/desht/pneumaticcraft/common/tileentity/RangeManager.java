@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,22 +28,22 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class RangeManager {
-    private final TileEntity te;
+    private final BlockEntity te;
     private final int renderColour;
     private int range = 0;
     private boolean showRange = false;
-    private AxisAlignedBB extents;
-    private Supplier<AxisAlignedBB> extentsGenerator;
+    private AABB extents;
+    private Supplier<AABB> extentsGenerator;
     private Set<BlockPos> frame;  // for rendering
 
-    public RangeManager(TileEntity te, int renderColour) {
+    public RangeManager(BlockEntity te, int renderColour) {
         this.te = te;
         this.renderColour = renderColour;
-        this.extentsGenerator = () -> new AxisAlignedBB(te.getBlockPos(), te.getBlockPos()).inflate(range);
+        this.extentsGenerator = () -> new AABB(te.getBlockPos(), te.getBlockPos()).inflate(range);
         this.setRange(1);
     }
 
-    public RangeManager withCustomExtents(Supplier<AxisAlignedBB> generator) {
+    public RangeManager withCustomExtents(Supplier<AABB> generator) {
         this.extentsGenerator = generator;
         return this;
     }
@@ -79,11 +79,11 @@ public class RangeManager {
         return showRange;
     }
 
-    public AxisAlignedBB getExtents() {
+    public AABB getExtents() {
         return extents;
     }
 
-    public static Set<BlockPos> getFrame(AxisAlignedBB extents) {
+    public static Set<BlockPos> getFrame(AABB extents) {
         Set<BlockPos> res = new HashSet<>();
         int minX = (int) extents.minX;
         int minY = (int) extents.minY;

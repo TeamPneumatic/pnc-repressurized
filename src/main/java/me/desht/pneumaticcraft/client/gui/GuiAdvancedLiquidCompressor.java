@@ -24,16 +24,16 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
 public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     private WidgetTemperature tempWidget;
 
-    public GuiAdvancedLiquidCompressor(ContainerLiquidCompressor container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiAdvancedLiquidCompressor(ContainerLiquidCompressor container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -41,13 +41,13 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     public void init() {
         super.init();
 
-        addButton(tempWidget = new WidgetTemperature(leftPos + 100, topPos + 20, TemperatureRange.of(273, 673), 273, 50)
+        addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 100, topPos + 20, TemperatureRange.of(273, 673), 273, 50)
                 .setOperatingRange(TemperatureRange.of(323, 625)).setShowOperatingRange(false));
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         tempWidget.setTemperature(((TileEntityAdvancedLiquidCompressor) te).getHeatExchanger().getTemperatureAsInt());
         tempWidget.autoScaleForTemperature();
@@ -59,7 +59,7 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     }
 
     @Override
-    public void addWarnings(List<ITextComponent> curInfo) {
+    public void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
 
         if (te.getHeatEfficiency() < 100) {

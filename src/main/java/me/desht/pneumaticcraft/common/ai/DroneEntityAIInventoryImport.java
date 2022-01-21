@@ -21,10 +21,10 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 
 public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInventoryBase> {
@@ -44,7 +44,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
     }
 
     private boolean importItems(BlockPos pos, boolean simulate) {
-        TileEntity te = drone.world().getBlockEntity(pos);
+        BlockEntity te = drone.world().getBlockEntity(pos);
         boolean imported = false;
         for (Direction dir : DirectionUtil.VALUES) {
             if (progWidget.isSideSelected(dir)) {

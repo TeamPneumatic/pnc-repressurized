@@ -17,17 +17,16 @@
 
 package me.desht.pneumaticcraft.api.harvesting;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.IntegerProperty;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 /**
- * Registry for registering harvest handlers. Note that any subclass of {@link CropsBlock} is
+ * Registry for registering harvest handlers. Note that any subclass of {@link net.minecraft.world.level.block.CropBlock} is
  * supported automatically.
  * <p>
  * Harvest handlers are Forge registry entries, and should be registered via the Forge registration system:
@@ -74,5 +73,5 @@ public interface IHarvestRegistry{
      * @param isHoeWithDurability return true if the given item stack is a hoe, with durability left.
      * @param useDurability Called when isHoeWithDurability returns true, durability should be used in this implementation.
      */
-    void registerHoe(Predicate<ItemStack> isHoeWithDurability, BiConsumer<ItemStack, PlayerEntity> useDurability);
+    void registerHoe(Predicate<ItemStack> isHoeWithDurability, BiConsumer<ItemStack, Player> useDurability);
 }

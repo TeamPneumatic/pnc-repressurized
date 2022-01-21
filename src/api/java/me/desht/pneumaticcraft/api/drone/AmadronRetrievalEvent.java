@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.fluids.FluidStack;
 

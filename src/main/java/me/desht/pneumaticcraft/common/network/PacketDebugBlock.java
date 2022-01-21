@@ -26,9 +26,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.BlockIndicator;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -42,14 +42,14 @@ public class PacketDebugBlock extends LocationIntPacket {
         super(pos);
     }
 
-    PacketDebugBlock(PacketBuffer buffer) {
+    PacketDebugBlock(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (ctx.get().getSender() == null) {
-                BlockIndicator.indicateBlock(ClientUtils.getClientWorld(), pos);
+                BlockIndicator.indicateBlock(ClientUtils.getClientLevel(), pos);
             }
         });
         ctx.get().setPacketHandled(true);

@@ -17,19 +17,19 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Optional;
@@ -64,31 +64,31 @@ public interface IHackableBlock {
      * @param pos the block pos
      * @param player the player observing the block
      */
-    default boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
+    default boolean canHack(BlockGetter world, BlockPos pos, Player player) {
         return true;
     }
 
     /**
      * Add info that is displayed on the tracker tooltip here. Text like "Hack to explode" can be added.
-     * This method is only called when {@link #canHack(IBlockReader, BlockPos, PlayerEntity)} has returned true.
+     * This method is only called when {@link #canHack(BlockGetter, BlockPos, Player)} has returned true.
      * Keep this message short; one short sentence is enough.
      * @param world the world
      * @param pos the block pos of the to-be-hacked block
      * @param curInfo text component list to add info to
      * @param player the player observing the hackable block
      */
-    void addInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player);
+    void addInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player);
 
     /**
      * Add info to be displayed on the HUD after hacking is complete, as long as
-     * {@link #afterHackTick(IBlockReader, BlockPos)} continues to returning true, e.g. "Spawner Disabled".
+     * {@link #afterHackTick(BlockGetter, BlockPos)} continues to returning true, e.g. "Spawner Disabled".
      * Keep this message short; one short sentence or even a couple of words is enough.
      * @param world the world
      * @param pos the block pos of the hacked block
      * @param curInfo text component list to add info to
      * @param player the player observing the hacked block
      */
-    void addPostHackInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player);
+    void addPostHackInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player);
 
     /**
      * Get the time it takes to hack this block in ticks. For more powerful hacks, a longer hacking time
@@ -98,17 +98,17 @@ public interface IHackableBlock {
      * @param pos the block pos
      * @param player the player observing the hackable block
      */
-    int getHackTime(IBlockReader world, BlockPos pos, PlayerEntity player);
+    int getHackTime(BlockGetter world, BlockPos pos, Player player);
 
     /**
-     * When the player has been hacking the block for {@link #getHackTime(IBlockReader, BlockPos, PlayerEntity)} ticks,
+     * When the player has been hacking the block for {@link #getHackTime(BlockGetter, BlockPos, Player)} ticks,
      * this will be called on both server and client side.
      *
      * @param world the world
      * @param pos the block pos
      * @param player the player observing the hacked block
      */
-    void onHackComplete(World world, BlockPos pos, PlayerEntity player);
+    void onHackComplete(Level world, BlockPos pos, Player player);
 
     /**
      * Called every tick after the hacking finished (on both server and client side). Returning true will keep this
@@ -121,24 +121,24 @@ public interface IHackableBlock {
      * @param pos the block pos
      * @return true to keep the hack running (e.g. mob spawners), or false for one-shot hacks (e.g. levers/doors)
      */
-    default boolean afterHackTick(IBlockReader world, BlockPos pos) {
+    default boolean afterHackTick(BlockGetter world, BlockPos pos) {
         return false;
     }
 
     /**
      * Fake up a ray trace result for a targeted block. This is intended to be passed into
-     * {@link BlockState#use(World, PlayerEntity, Hand, BlockRayTraceResult)}, which needs a non-null
+     * {@link BlockState#use(Level, Player, InteractionHand, BlockHitResult)}, which needs a non-null
      * ray trace result to get the block's position.
      *
      * @param player player doing the hacking
      * @param targetPos position of the to-be-hacked block
      * @return an optional ray trace result
      */
-    default Optional<BlockRayTraceResult> fakeRayTrace(PlayerEntity player, BlockPos targetPos) {
+    default Optional<BlockHitResult> fakeRayTrace(Player player, BlockPos targetPos) {
         BlockState state = player.level.getBlockState(targetPos);
-        AxisAlignedBB aabb = state.getShape(player.level, targetPos).bounds().move(targetPos);
-        Optional<Vector3d> hit = aabb.clip(player.getEyePosition(1f), aabb.getCenter());
+        AABB aabb = state.getShape(player.level, targetPos).bounds().move(targetPos);
+        Optional<Vec3> hit = aabb.clip(player.getEyePosition(1f), aabb.getCenter());
         Direction dir = Direction.orderedByNearest(player)[0];
-        return hit.map(v -> new BlockRayTraceResult(v, dir.getOpposite(), targetPos, false));
+        return hit.map(v -> new BlockHitResult(v, dir.getOpposite(), targetPos, false));
     }
 }

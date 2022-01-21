@@ -25,27 +25,27 @@ import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.BlockPosArgument;
-import net.minecraft.command.arguments.EntityArgument;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.command.Commands.argument;
-import static net.minecraft.command.arguments.BlockPosArgument.getLoadedBlockPos;
-import static net.minecraft.command.arguments.EntityArgument.getPlayer;
+import static net.minecraft.commands.Commands.argument;
+import static net.minecraft.commands.arguments.EntityArgument.getPlayer;
+import static net.minecraft.commands.arguments.coordinates.BlockPosArgument.getLoadedBlockPos;
 
 public class ModCommands {
-    public static void register(CommandDispatcher<CommandSource> dispatcher) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("dumpNBT")
                 .requires(cs -> cs.hasPermission(2))
                 .executes(ModCommands::dumpNBT)
@@ -74,31 +74,31 @@ public class ModCommands {
         dispatcher.register(Commands.literal("set_global_var")
                 .then(argument("varname", StringArgumentType.string())
                         .then(argument("pos", BlockPosArgument.blockPos())
-                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), BlockPosArgument.getLoadedBlockPos(c, "pos")))
+                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), getLoadedBlockPos(c, "pos")))
                         )
                 )
         );
     }
 
-    private static int dumpNBT(CommandContext<CommandSource> ctx) {
-        CommandSource source = ctx.getSource();
-        if (source.getEntity() instanceof PlayerEntity) {
-            ItemStack held = ((PlayerEntity) source.getEntity()).getMainHandItem();
+    private static int dumpNBT(CommandContext<CommandSourceStack> ctx) {
+        CommandSourceStack source = ctx.getSource();
+        if (source.getEntity() instanceof Player) {
+            ItemStack held = ((Player) source.getEntity()).getMainHandItem();
             if (held.getTag() == null) {
-                source.sendFailure(new StringTextComponent("No NBT"));
+                source.sendFailure(new TextComponent("No NBT"));
                 return 0;
             } else if (held.getTag().isEmpty()) {
-                source.sendFailure(new StringTextComponent("Empty NBT"));
+                source.sendFailure(new TextComponent("Empty NBT"));
                 return 0;
             }
-            source.sendSuccess(new StringTextComponent(held.getTag().toString()), false);
+            source.sendSuccess(new TextComponent(held.getTag().toString()), false);
             return 1;
         }
         return 0;
     }
 
-    private static int amadroneDeliver(CommandSource source, BlockPos toPos, BlockPos fromPos) {
-        TileEntity te = source.getLevel().getBlockEntity(fromPos);
+    private static int amadroneDeliver(CommandSourceStack source, BlockPos toPos, BlockPos fromPos) {
+        BlockEntity te = source.getLevel().getBlockEntity(fromPos);
 
         int status = IOHelper.getInventoryForTE(te).map(inv -> {
             List<ItemStack> deliveredStacks = new ArrayList<>();
@@ -120,8 +120,8 @@ public class ModCommands {
         return status;
     }
 
-    private static int getGlobalVar(CommandContext<CommandSource> ctx, String varName) {
-        CommandSource source = ctx.getSource();
+    private static int getGlobalVar(CommandContext<CommandSourceStack> ctx, String varName) {
+        CommandSourceStack source = ctx.getSource();
         if (varName.startsWith("#")) varName = varName.substring(1);
         BlockPos pos = GlobalVariableManager.getInstance().getPos(varName);
         ItemStack stack = GlobalVariableManager.getInstance().getItem(varName);
@@ -129,8 +129,8 @@ public class ModCommands {
         return 1;
     }
 
-    private static int setGlobalVar(CommandContext<CommandSource> ctx, String varName, BlockPos pos) {
-        CommandSource source = ctx.getSource();
+    private static int setGlobalVar(CommandContext<CommandSourceStack> ctx, String varName, BlockPos pos) {
+        CommandSourceStack source = ctx.getSource();
         if (varName.startsWith("#")) varName = varName.substring(1);
         GlobalVariableManager.getInstance().set(varName, pos);
         source.sendSuccess(xlate("pneumaticcraft.command.setGlobalVariable.output", varName, PneumaticCraftUtils.posToString(pos)), false);

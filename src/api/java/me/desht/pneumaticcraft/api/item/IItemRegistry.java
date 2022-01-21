@@ -18,12 +18,11 @@
 package me.desht.pneumaticcraft.api.item;
 
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -50,13 +49,13 @@ public interface IItemRegistry {
     /**
      * Can be used for custom upgrade items to handle tooltips. This will work for implementors registered via
      * {@link IItemRegistry#registerUpgradeAcceptor(IUpgradeAcceptor)}. This is intended to be called from
-     * {@link Item#appendHoverText(ItemStack, World, List, ITooltipFlag)} method to display
+     * {@link net.minecraft.world.item.Item#appendHoverText(ItemStack, Level, List, TooltipFlag)} method to display
      * which machines and/or items accept it.
      *
      * @param upgrade the upgrade item
      * @param tooltip the tooltip string list to append to
      */
-    void addTooltip(EnumUpgrade upgrade, List<ITextComponent> tooltip);
+    void addTooltip(EnumUpgrade upgrade, List<Component> tooltip);
 
     /**
      * Register a magnet suppressor; an object which can prevent the Magnet Upgrade from pulling in (usually item)
@@ -109,7 +108,7 @@ public interface IItemRegistry {
 
     /**
      * Create an instance of PneumaticCraft's default item air handler provider, suitable for returning
-     * from {@link Item#initCapabilities(ItemStack, CompoundNBT)}.
+     * from {@link net.minecraft.world.item.Item#initCapabilities(ItemStack, CompoundTag)}.
      * <p>
      * You can use this method for your own air-handling items, <em>provided that</em> your item implements
      * {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}. If you want to avoid a hard dependency on

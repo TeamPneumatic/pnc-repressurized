@@ -21,29 +21,30 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-public class BlockSentryTurret extends BlockPneumaticCraft {
+public class BlockSentryTurret extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     private final VoxelShape BOUNDS = Stream.of(
             Block.box(3, 8, 3, 13, 16, 13),
             Block.box(3, 1, 3, 13, 5, 13),
@@ -61,36 +62,37 @@ public class BlockSentryTurret extends BlockPneumaticCraft {
             Block.box(14, 0, 0, 16, 3, 2),
             Block.box(14.5, 3, 0.5, 15.5, 4, 1.5),
             Block.box(14, 3.5, 0, 16, 4.5, 2)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     public BlockSentryTurret() {
         super(ModBlocks.defaultProps());
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
+    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_, CollisionContext p_220053_4_) {
         return BOUNDS;
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntitySentryTurret.class;
-    }
-
-    @Override
-    public void addExtraInformation(ItemStack stack, IBlockReader world, List<ITextComponent> curInfo, ITooltipFlag flag) {
-        CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        if (tag != null && tag.contains(TileEntitySentryTurret.NBT_ENTITY_FILTER, Constants.NBT.TAG_STRING)) {
-            curInfo.add(new TranslationTextComponent("pneumaticcraft.gui.entityFilter")
-                    .append(": " + tag.getString(TileEntitySentryTurret.NBT_ENTITY_FILTER)).withStyle(TextFormatting.YELLOW));
+    public void addExtraInformation(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
+        CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+        if (tag != null && tag.contains(TileEntitySentryTurret.NBT_ENTITY_FILTER, Tag.TAG_STRING)) {
+            curInfo.add(new TranslatableComponent("pneumaticcraft.gui.entityFilter")
+                    .append(": " + tag.getString(TileEntitySentryTurret.NBT_ENTITY_FILTER)).withStyle(ChatFormatting.YELLOW));
         }
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySentryTurret.class)
                 .ifPresent(te -> te.setIdleYaw(entity.getViewYRot(0f)));
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntitySentryTurret(pPos, pState);
     }
 }

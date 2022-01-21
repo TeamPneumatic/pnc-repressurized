@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -27,17 +28,17 @@ import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -46,7 +47,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class TileEntityAssemblyController extends TileEntityPneumaticBase
-        implements IAssemblyMachine, IMinWorkingPressure, INamedContainerProvider {
+        implements IAssemblyMachine, IMinWorkingPressure, MenuProvider {
     private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;
 
@@ -74,8 +75,8 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     public boolean hasProblem;
     private AssemblySystem assemblySystem = null;
 
-    public TileEntityAssemblyController() {
-        super(ModTileEntities.ASSEMBLY_CONTROLLER.get(),  PneumaticValues.DANGER_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.MAX_PRESSURE_ASSEMBLY_CONTROLLER, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
+    public TileEntityAssemblyController(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ASSEMBLY_CONTROLLER.get(),  pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_ASSEMBLY_CONTROLLER, 4);
     }
 
     @Override
@@ -89,52 +90,56 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void tick() {
+    public void tickCommonPre() {
+        super.tickCommonPre();
+
         ItemStack programStack = itemHandler.getStackInSlot(PROGRAM_SLOT);
 
         // curProgram must be available on the client, or we can't show program-problems in the GUI
-        if (curProgram == null && !goingToHomePosition && programStack.getItem() instanceof ItemAssemblyProgram) {
-            curProgram = ItemAssemblyProgram.getProgram(programStack);
-        } else if (curProgram != null &&
-                (programStack.isEmpty() || curProgram.getType() != ItemAssemblyProgram.getProgram(programStack).getType())) {
+        AssemblyProgram newProgram = ItemAssemblyProgram.getProgram(programStack);
+        if (curProgram == null && !goingToHomePosition && newProgram != null) {
+            curProgram = newProgram;
+        } else if (curProgram != null && newProgram == null) {
             curProgram = null;
-            if (!getLevel().isClientSide) goingToHomePosition = true;
+            if (!nonNullLevel().isClientSide) goingToHomePosition = true;
         }
+    }
 
-        if (!getLevel().isClientSide) {
-            setStatus("Standby");
-            if (getPressure() >= PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER) {
-                if (curProgram != null || goingToHomePosition) {
-                    if (assemblySystem == null) {
-                        assemblySystem = findAssemblySystem();
-                    }
-                    if ((!isMachineMissing || curProgram == null) && !isMachineDuplicate) {
-                        boolean useAir;
-                        if (curProgram != null) {
-                            useAir = curProgram.executeStep(assemblySystem);
-                            if (useAir) {
-                                setStatus("Running...");
-                            }
-                        } else {
-                            useAir = true;
-                            boolean resetDone = assemblySystem.reset();
-                            goingToHomePosition = isMachineMissing || !resetDone;
-                            setStatus("Resetting...");
-                        }
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        setStatus("Standby");
+        if (getPressure() >= PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER) {
+            if (curProgram != null || goingToHomePosition) {
+                if (assemblySystem == null) {
+                    assemblySystem = findAssemblySystem();
+                }
+                if ((!isMachineMissing || curProgram == null) && !isMachineDuplicate) {
+                    boolean useAir;
+                    if (curProgram != null) {
+                        useAir = curProgram.executeStep(assemblySystem);
                         if (useAir) {
-                            addAir(-(int) (PneumaticValues.USAGE_ASSEMBLING * getSpeedUsageMultiplierFromUpgrades()));
+                            setStatus("Running...");
                         }
-                        assemblySystem.setSpeed(getSpeedMultiplierFromUpgrades());
+                    } else {
+                        useAir = true;
+                        boolean resetDone = assemblySystem.reset();
+                        goingToHomePosition = isMachineMissing || !resetDone;
+                        setStatus("Resetting...");
                     }
+                    if (useAir) {
+                        addAir(-(int) (PneumaticValues.USAGE_ASSEMBLING * getSpeedUsageMultiplierFromUpgrades()));
+                    }
+                    assemblySystem.setSpeed(getSpeedMultiplierFromUpgrades());
                 }
             }
-            hasProblem = isMachineMissing
-                    || isMachineDuplicate
-                    || getPressure() < PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER
-                    || curProgram == null
-                    || curProgram.curProblem != AssemblyProgram.EnumAssemblyProblem.NO_PROBLEM;
         }
-        super.tick();
+        hasProblem = isMachineMissing
+                || isMachineDuplicate
+                || getPressure() < PneumaticValues.MIN_PRESSURE_ASSEMBLY_CONTROLLER
+                || curProgram == null
+                || curProgram.curProblem != AssemblyProgram.EnumAssemblyProblem.NO_PROBLEM;
     }
 
     /**
@@ -179,7 +184,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
 
     private void findMachines(List<IAssemblyMachine> machineList, BlockPos pos, int max) {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
-            TileEntity te = getLevel().getBlockEntity(pos.relative(dir));
+            BlockEntity te = nonNullLevel().getBlockEntity(pos.relative(dir));
             if (te instanceof IAssemblyMachine && !machineList.contains(te) && machineList.size() < max) {
                 machineList.add((IAssemblyMachine) te);
                 findMachines(machineList, te.getBlockPos(), max);
@@ -200,13 +205,13 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
+    public AABB getRenderBoundingBox() {
+        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         goingToHomePosition = tag.getBoolean("goingToHomePosition");
         displayedText = tag.getString("displayedText");
@@ -218,13 +223,12 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putBoolean("goingToHomePosition", goingToHomePosition);
         tag.putString("displayedText", displayedText);
         if (curProgram != null) curProgram.writeToNBT(tag);
         tag.put("Items", itemHandler.serializeNBT());
-        return tag;
     }
 
     @Override
@@ -253,7 +257,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerAssemblyController(i, playerInventory, getBlockPos());
     }
 

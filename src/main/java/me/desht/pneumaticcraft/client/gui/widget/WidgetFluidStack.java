@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
@@ -54,13 +54,13 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTick) {
         super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
         if (!fluidStack.isEmpty()) {
             int fluidAmount = fluidStack.getAmount() / 1000;
             if (fluidAmount > 1) {
-                FontRenderer fr = Minecraft.getInstance().font;
+                Font fr = Minecraft.getInstance().font;
                 matrixStack.pushPose();
                 matrixStack.translate(0, 0, 200);  // ensure amount is drawn in front of the fluid texture
                 String s = fluidAmount + "B";
@@ -76,17 +76,14 @@ public class WidgetFluidStack extends WidgetFluidFilter {
             if (!fluidStack.isEmpty() && adjustable) {
                 boolean shift = Screen.hasShiftDown();
                 switch (button) {
-                    case 0:  // left-click: drain 1000mB (or halve with Shift held)
+                    case 0 -> {  // left-click: drain 1000mB (or halve with Shift held)
                         fluidStack.setAmount(shift ? fluidStack.getAmount() / 2 : Math.max(0, fluidStack.getAmount() - 1000));
                         if (fluidStack.getAmount() < 1000) fluidStack.setAmount(0);
-                        break;
-                    case 1:  // right-click: add 1000mB (or double with Shift held)
-                        fluidStack.setAmount(shift ? fluidStack.getAmount() * 2 : fluidStack.getAmount() + 1000);
-                        break;
-                    case 2:  // middle-click: clear slot
-                        fluidStack.setAmount(0);
-                        break;
-
+                    }
+                    case 1 ->  // right-click: add 1000mB (or double with Shift held)
+                            fluidStack.setAmount(shift ? fluidStack.getAmount() * 2 : fluidStack.getAmount() + 1000);
+                    case 2 ->  // middle-click: clear slot
+                            fluidStack.setAmount(0);
                 }
             }
             if (pressable != null) pressable.accept(this);
@@ -97,12 +94,12 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shiftPressed) {
         if (!fluidStack.isEmpty()) {
             curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
-            curTip.add(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(TextFormatting.GRAY));
-            curTip.add(new StringTextComponent(ModNameCache.getModName(fluidStack.getFluid()))
-                    .withStyle(TextFormatting.BLUE,  TextFormatting.ITALIC));
+            curTip.add(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
+            curTip.add(new TextComponent(ModNameCache.getModName(fluidStack.getFluid()))
+                    .withStyle(ChatFormatting.BLUE,  ChatFormatting.ITALIC));
         }
     }
 }

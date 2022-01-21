@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -28,21 +29,21 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -60,7 +61,7 @@ import java.util.*;
 
 public class TileEntityGasLift extends TileEntityPneumaticBase implements
         IMinWorkingPressure, IRedstoneControl<TileEntityGasLift>, ISerializableTanks,
-        IAutoFluidEjecting, INamedContainerProvider
+        IAutoFluidEjecting, MenuProvider
 {
     private static final int INVENTORY_SIZE = 1;
 
@@ -108,8 +109,8 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     private List<BlockPos> pumpingLake;
     private static final int MAX_PUMP_RANGE_SQUARED = 15 * 15;
 
-    public TileEntityGasLift() {
-        super(ModTileEntities.GAS_LIFT.get(), 5, 7, 3000, 4);
+    public TileEntityGasLift(BlockPos pos, BlockState state) {
+        super(ModTileEntities.GAS_LIFT.get(), pos, state, PressureTier.TIER_ONE, 3000, 4);
     }
 
     @Override
@@ -128,46 +129,50 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         tank.tick();
+    }
 
-        if (!getLevel().isClientSide) {
-            ticker++;
-            if (currentDepth > 0) {
-                int curCheckingPipe = ticker % currentDepth;
-                if (curCheckingPipe > 0 && !isPipe(level, getBlockPos().relative(Direction.DOWN, curCheckingPipe))) {
-                    currentDepth = curCheckingPipe - 1;
-                }
-            }
-            if (ticker == 400) {
-                pumpingLake = null;
-                ticker = 0;
-            }
+    @Override
+    public void tickServer() {
+        super.tickServer();
 
-            if (rsController.shouldRun() && getPressure() >= getMinWorkingPressure()) {
-                workTimer += this.getSpeedMultiplierFromUpgrades();
-                while (workTimer > 20) {
-                    workTimer -= 20;
-                    status = Status.IDLE;
-                    if (pumpMode == PumpMode.RETRACT) {
-                        retractPipes();
-                    } else {
-                        if (!suckLiquid() && !tryDigDown()) {
-                            break;
-                        }
+        ticker++;
+        if (currentDepth > 0) {
+            int curCheckingPipe = ticker % currentDepth;
+            if (curCheckingPipe > 0 && !isPipe(nonNullLevel(), getBlockPos().relative(Direction.DOWN, curCheckingPipe))) {
+                currentDepth = curCheckingPipe - 1;
+            }
+        }
+        if (ticker == 400) {
+            pumpingLake = null;
+            ticker = 0;
+        }
+
+        if (rsController.shouldRun() && getPressure() >= getMinWorkingPressure()) {
+            workTimer += this.getSpeedMultiplierFromUpgrades();
+            while (workTimer > 20) {
+                workTimer -= 20;
+                status = Status.IDLE;
+                if (pumpMode == PumpMode.RETRACT) {
+                    retractPipes();
+                } else {
+                    if (!suckLiquid() && !tryDigDown()) {
+                        break;
                     }
                 }
-            } else {
-                status = Status.IDLE;
             }
+        } else {
+            status = Status.IDLE;
         }
     }
 
     private void retractPipes() {
         if (currentDepth > 0) {
             status = Status.RETRACTING;
+            final Level level = nonNullLevel();
             if (isPipe(level, getBlockPos().offset(0, -currentDepth, 0))) {
                 BlockPos pos1 = getBlockPos().relative(Direction.DOWN, currentDepth);
                 ItemStack toInsert = new ItemStack(level.getBlockState(pos1).getBlock());
@@ -192,6 +197,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
             status = Status.DIGGING;
             currentDepth++;
             BlockPos pos1 = getBlockPos().relative(Direction.DOWN, currentDepth);
+            final Level level = nonNullLevel();
             if (!isPipe(level, pos1)) {
                 ItemStack extracted = inventory.extractItem(0, 1, true);
                 if (extracted.getItem() == ModBlocks.DRILL_PIPE.get().asItem()) {
@@ -222,17 +228,18 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
         return status == Status.DIGGING;
     }
 
-    private boolean isPipe(World world, BlockPos pos) {
+    private boolean isPipe(Level world, BlockPos pos) {
         return world.getBlockState(pos).getBlock() == ModBlocks.DRILL_PIPE.get();
     }
 
     private boolean isUnbreakable(BlockPos pos) {
-        return getLevel().getBlockState(pos).getDestroySpeed(level, pos) < 0;
+        return nonNullLevel().getBlockState(pos).getDestroySpeed(nonNullLevel(), pos) < 0;
     }
 
     private boolean suckLiquid() {
         BlockPos pos = getBlockPos().relative(Direction.DOWN, currentDepth + 1);
 
+        final Level level = nonNullLevel();
         FluidState fluidState = level.getFluidState(pos);
         if (fluidState.getType() == Fluids.EMPTY) {
             pumpingLake = null;
@@ -248,7 +255,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
             BlockPos curPos = null;
             while (pumpingLake.size() > 0) {
                 curPos = pumpingLake.get(0);
-                if (FluidUtils.isSourceFluidBlock(getLevel(), curPos, fluidStack.getFluid())) {
+                if (FluidUtils.isSourceFluidBlock(level, curPos, fluidStack.getFluid())) {
                     foundSource = true;
                     break;
                 }
@@ -279,7 +286,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
                 if (d == Direction.DOWN) continue;
                 BlockPos newPos = checkingPos.relative(d);
                 if (PneumaticCraftUtils.distBetweenSq(newPos, thisPos) <= MAX_PUMP_RANGE_SQUARED
-                        && FluidUtils.isSourceFluidBlock(getLevel(), newPos, fluid)
+                        && FluidUtils.isSourceFluidBlock(nonNullLevel(), newPos, fluid)
                         && !pumpingLake.contains(newPos)) {
                     pendingPositions.add(newPos);
                     pumpingLake.add(newPos);
@@ -291,7 +298,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag))
             return;
 
@@ -312,18 +319,17 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.put("Items", inventory.serializeNBT());
         tag.putString("mode", pumpMode.toString());
         tag.putInt("currentDepth", currentDepth);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
@@ -351,7 +357,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerGasLift(i, playerInventory, getBlockPos());
     }
 

@@ -29,21 +29,21 @@ import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
@@ -76,9 +76,9 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (stack.getCount() != 1) return ActionResult.pass(stack);
+        if (stack.getCount() != 1) return InteractionResultHolder.pass(stack);
 
         if (!worldIn.isClientSide) {
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
@@ -122,11 +122,11 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                 }
             });
         }
-        return ActionResult.success(stack);
+        return InteractionResultHolder.success(stack);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         if (worldIn != null) {
@@ -136,35 +136,37 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                     FluidStack fluidStack = handler.getFluidInTank(0);
                     int amount = fluidStack.getAmount();
                     int levels = EnchantmentUtils.getLevelForExperience(amount / ratio);
-                    tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(TextFormatting.GREEN));
+                    tooltip.add(new TranslatableComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(ChatFormatting.GREEN));
                 }
             });
             boolean absorb = shouldAbsorbXPOrbs(stack);
-            tooltip.add(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(TextFormatting.YELLOW));
+            tooltip.add(new TranslatableComponent("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(ChatFormatting.YELLOW));
         }
     }
 
     @Override
-    public double getDurabilityForDisplay(ItemStack stack) {
-        return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
+    public int getBarWidth(ItemStack pStack) {
+        return pStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
             FluidStack fluidStack = handler.getFluidInTank(0);
-            return 1d - ((double)fluidStack.getAmount() / (double) handler.getTankCapacity(0));
-        }).orElse(1d);
+            return Math.round(13F - ((float)fluidStack.getAmount() / (float) handler.getTankCapacity(0) * 13F));
+        }).orElse(0);
     }
 
     @Override
-    public boolean showDurabilityBar(ItemStack stack) {
+    public boolean isBarVisible(ItemStack pStack) {
         return true;
     }
 
     @Nullable
     @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         return new FluidItemWrapper(stack, TANK_NAME, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
     }
 
     public static boolean shouldAbsorbXPOrbs(ItemStack stack) {
-        return stack.getItem() == ModItems.MEMORY_STICK.get() && stack.getCount() == 1 && stack.hasTag() && stack.getTag().getBoolean(NBT_ABSORB_ORBS);
+        return stack.getItem() == ModItems.MEMORY_STICK.get()
+                && stack.getCount() == 1
+                && stack.hasTag() && Objects.requireNonNull(stack.getTag()).getBoolean(NBT_ABSORB_ORBS);
     }
 
     public static void setAbsorbXPOrbs(ItemStack stack, boolean absorb) {
@@ -175,30 +177,27 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
 
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
-        switch (tintIndex) {
-            case 1:
-                return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
-                    FluidStack fluidStack = handler.getFluidInTank(0);
-                    if (fluidStack.isEmpty()) return 0xFFFFFF;
-                    float f = (float) fluidStack.getAmount() / (float) handler.getTankCapacity(0);
-                    return TINT_COLORS[(int)(f * 5)];
-                }).orElse(0xFFFFFFFF);
-            case 2:
-                return shouldAbsorbXPOrbs(stack) ? 0xFF00FF00 : 0xFF808080;
-            default:
-                return 0xFFFFFFFF;
-        }
+        return switch (tintIndex) {
+            case 1 -> stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
+                FluidStack fluidStack = handler.getFluidInTank(0);
+                if (fluidStack.isEmpty()) return 0xFFFFFF;
+                float f = (float) fluidStack.getAmount() / (float) handler.getTankCapacity(0);
+                return TINT_COLORS[(int) (f * 5)];
+            }).orElse(0xFFFFFFFF);
+            case 2 -> shouldAbsorbXPOrbs(stack) ? 0xFF00FF00 : 0xFF808080;
+            default -> 0xFFFFFFFF;
+        };
     }
 
     @Override
-    public void onLeftClickEmpty(ServerPlayerEntity sender) {
+    public void onLeftClickEmpty(ServerPlayer sender) {
         toggleXPAbsorption(sender, sender.getMainHandItem());
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (shouldAbsorbXPOrbs(stack) && entityIn instanceof PlayerEntity && itemSlot >= 0) {
-            cacheMemoryStickLocation((PlayerEntity) entityIn, MemoryStickLocator.playerInv(itemSlot));
+    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (shouldAbsorbXPOrbs(stack) && entityIn instanceof Player && itemSlot >= 0) {
+            cacheMemoryStickLocation((Player) entityIn, MemoryStickLocator.playerInv(itemSlot));
         }
     }
 
@@ -208,16 +207,16 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                 .orElseThrow(RuntimeException::new);
     }
 
-    private static void toggleXPAbsorption(PlayerEntity player, ItemStack stack) {
+    private static void toggleXPAbsorption(Player player, ItemStack stack) {
         if (stack.getItem() instanceof ItemMemoryStick) {
             boolean absorb = shouldAbsorbXPOrbs(stack);
             setAbsorbXPOrbs(stack, !absorb);
-            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(TextFormatting.YELLOW), true);
-            player.getCommandSenderWorld().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 1f, absorb ? 1.5f : 2f);
+            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW), true);
+            player.getCommandSenderWorld().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME, SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
         }
     }
 
-    public static void cacheMemoryStickLocation(PlayerEntity entityIn, MemoryStickLocator locator) {
+    public static void cacheMemoryStickLocation(Player entityIn, MemoryStickLocator locator) {
         Listener.memoryStickCache.computeIfAbsent(entityIn.getUUID(), k -> new HashSet<>()).add(locator);
     }
 
@@ -257,14 +256,14 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                     if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), IFluidHandler.FluidAction.EXECUTE)) {
                         // orb's xp can fit in the memory stick: remove the entity, cancel the event
                         stack.setTag(handler.getContainer().getTag());
-                        event.getOrb().remove();
+                        event.getOrb().discard();
                         event.setCanceled(true);
                     }
                 });
             }
         }
 
-        private static ItemStack findMemoryStick(PlayerEntity player) {
+        private static ItemStack findMemoryStick(Player player) {
             Set<MemoryStickLocator> locators = memoryStickCache.get(player.getUUID());
             if (locators == null || locators.isEmpty()) return ItemStack.EMPTY;
 
@@ -298,9 +297,9 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
             return new MemoryStickLocator(name, slot);
         }
 
-        public ItemStack getMemoryStick(PlayerEntity player) {
+        public ItemStack getMemoryStick(Player player) {
             if (invName.isEmpty()) {
-                return player.inventory.getItem(slot);
+                return player.getInventory().getItem(slot);
             } else if (Curios.available) {
                 return CuriosUtils.getStack(player, invName, slot);
             }
@@ -310,8 +309,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof MemoryStickLocator)) return false;
-            MemoryStickLocator that = (MemoryStickLocator) o;
+            if (!(o instanceof MemoryStickLocator that)) return false;
             return slot == that.slot && invName.equals(that.invName);
         }
 

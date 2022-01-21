@@ -18,8 +18,10 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
+import org.jetbrains.annotations.Nullable;
 
 public class ItemGlycerol extends Item {
     public ItemGlycerol() {
@@ -27,7 +29,7 @@ public class ItemGlycerol extends Item {
     }
 
     @Override
-    public int getBurnTime(ItemStack itemStack) {
+    public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
         return 800;
     }
 }

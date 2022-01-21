@@ -26,13 +26,13 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
-import net.minecraft.block.Block;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -49,14 +49,14 @@ public enum HeatExchangerManager implements IHeatRegistry {
     }
 
     @Nonnull
-    public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side) {
+    public LazyOptional<IHeatExchangerLogic> getLogic(Level world, BlockPos pos, Direction side) {
         return getLogic(world, pos, side, IHeatExchangerLogic.ALL_BLOCKS);
     }
 
     @Nonnull
-    public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side, BiPredicate<IWorld,BlockPos> blockFilter) {
+    public LazyOptional<IHeatExchangerLogic> getLogic(Level world, BlockPos pos, Direction side, BiPredicate<LevelAccessor,BlockPos> blockFilter) {
         if (!world.isAreaLoaded(pos, 0)) return LazyOptional.empty();
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         // important: use cap here, not IHeatExchangingTE interface
         if (te != null && te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side).isPresent()) {
             return te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side);

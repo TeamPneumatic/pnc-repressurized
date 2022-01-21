@@ -17,28 +17,26 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
 
-public class RenderProgrammer extends TileEntityRenderer<TileEntityProgrammer> {
-    public RenderProgrammer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+public class RenderProgrammer implements BlockEntityRenderer<TileEntityProgrammer> {
+    public RenderProgrammer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityProgrammer te, float pPartialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (!te.getLevel().getChunkSource().isEntityTickingChunk(new ChunkPos(te.getBlockPos()))) return;
+    public void render(TileEntityProgrammer te, float pPartialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        if (!te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 11/16d, 0.5);
@@ -55,8 +53,8 @@ public class RenderProgrammer extends TileEntityRenderer<TileEntityProgrammer> {
         matrixStackIn.scale(0.25f, 0.25f, 0.25f);
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        IBakedModel ibakedmodel = itemRenderer.getModel(te.displayedStack, Minecraft.getInstance().level, null);
-        itemRenderer.render(te.displayedStack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+        BakedModel bakedModel = itemRenderer.getModel(te.displayedStack, Minecraft.getInstance().level, null, 0);
+        itemRenderer.render(te.displayedStack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
 
         matrixStackIn.popPose();
     }

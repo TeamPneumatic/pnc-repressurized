@@ -32,30 +32,30 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -71,22 +71,22 @@ public class ItemAmadronTablet extends ItemPressurizable
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (!worldIn.isClientSide) {
             openGui(playerIn, handIn);
         }
-        return ActionResult.success(playerIn.getItemInHand(handIn));
+        return InteractionResultHolder.success(playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext ctx) {
+    public InteractionResult useOn(UseOnContext ctx) {
         Direction facing = ctx.getClickedFace();
-        PlayerEntity player = ctx.getPlayer();
-        World worldIn = ctx.getLevel();
+        Player player = ctx.getPlayer();
+        Level worldIn = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
 
-        TileEntity te = worldIn.getBlockEntity(pos);
-        if (te == null) return ActionResultType.PASS;
+        BlockEntity te = worldIn.getBlockEntity(pos);
+        if (te == null) return InteractionResult.PASS;
 
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent()) {
             if (!worldIn.isClientSide) {
@@ -101,24 +101,24 @@ public class ItemAmadronTablet extends ItemPressurizable
                 ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
         } else {
-            return ActionResultType.PASS;
+            return InteractionResult.PASS;
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> infoList, TooltipFlag flag) {
         super.appendHoverText(stack, worldIn, infoList, flag);
         GlobalPos gPos = getItemProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(TextFormatting.YELLOW));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectItemLocation"));
         }
 
         gPos = getFluidProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(TextFormatting.YELLOW));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectFluidLocation"));
         }
@@ -127,7 +127,7 @@ public class ItemAmadronTablet extends ItemPressurizable
     public static LazyOptional<IItemHandler> getItemCapability(ItemStack tablet) {
         GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
-            TileEntity te = GlobalPosHelper.getTileEntity(pos);
+            BlockEntity te = GlobalPosHelper.getTileEntity(pos);
             for (Direction dir : DirectionUtil.VALUES) {
                 LazyOptional<IItemHandler> lazy = IOHelper.getInventoryForTE(te, dir);
                 if (lazy.isPresent()) return lazy;
@@ -149,7 +149,7 @@ public class ItemAmadronTablet extends ItemPressurizable
     public static LazyOptional<IFluidHandler> getFluidCapability(ItemStack tablet) {
         GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
-            TileEntity te = GlobalPosHelper.getTileEntity(pos);
+            BlockEntity te = GlobalPosHelper.getTileEntity(pos);
             for (Direction dir : DirectionUtil.VALUES) {
                 LazyOptional<IFluidHandler> lazy = IOHelper.getFluidHandlerForTE(te, dir);
                 if (lazy.isPresent()) return lazy;
@@ -181,7 +181,7 @@ public class ItemAmadronTablet extends ItemPressurizable
     }
 
     @Override
-    public List<BlockPos> getStoredPositions(World world, @Nonnull ItemStack stack) {
+    public List<BlockPos> getStoredPositions(Level world, @Nonnull ItemStack stack) {
         GlobalPos gp1 = getItemProvidingLocation(stack);
         GlobalPos gp2 = getFluidProvidingLocation(stack);
         return Arrays.asList(gp1 == null ? null : gp1.pos(), gp2 == null ? null : gp2.pos());
@@ -196,18 +196,18 @@ public class ItemAmadronTablet extends ItemPressurizable
         }
     }
 
-    public static void openGui(PlayerEntity playerIn, Hand handIn) {
-        NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
+    public static void openGui(Player playerIn, InteractionHand handIn) {
+        NetworkHooks.openGui((ServerPlayer) playerIn, new MenuProvider() {
             @Override
-            public ITextComponent getDisplayName() {
+            public Component getDisplayName() {
                 return playerIn.getItemInHand(handIn).getHoverName();
             }
 
             @Override
-            public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
                 return new ContainerAmadron(windowId, playerInventory, handIn);
             }
-        }, buf -> buf.writeBoolean(handIn == Hand.MAIN_HAND));
+        }, buf -> buf.writeBoolean(handIn == InteractionHand.MAIN_HAND));
     }
 
     @Override
@@ -221,7 +221,7 @@ public class ItemAmadronTablet extends ItemPressurizable
     }
 
     @Override
-    public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
+    public MenuProvider getContainerProvider(TileEntityChargingStation te) {
         return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_AMADRON.get());
     }
 }

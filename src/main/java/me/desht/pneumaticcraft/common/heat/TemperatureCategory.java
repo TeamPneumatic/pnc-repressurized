@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.resources.ResourceLocation;
 
-public enum TemperatureCategory implements IStringSerializable {
+public enum TemperatureCategory implements StringRepresentable {
     SUPER_COLD(0, "super_cold"),
     VERY_COLD(1, "very_cold"),
     COLD(2, "cold"),

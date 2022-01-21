@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         IProgWidget widget = getConnectedParameters()[getParameters().size() - 1];
         IProgWidget widget2 = getConnectedParameters()[getParameters().size() * 2 - 1];

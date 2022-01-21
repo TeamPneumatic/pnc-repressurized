@@ -17,16 +17,19 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.ITickableWidget;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.gui.widget.Slider;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.gui.widget.Slider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +38,7 @@ public abstract class GuiPneumaticScreenBase extends Screen {
     public int guiLeft, guiTop, xSize, ySize;
     private final List<Slider> sliders = new ArrayList<>();
 
-    public GuiPneumaticScreenBase(ITextComponent title) {
+    public GuiPneumaticScreenBase(Component title) {
         super(title);
     }
 
@@ -48,24 +51,22 @@ public abstract class GuiPneumaticScreenBase extends Screen {
 
     protected abstract ResourceLocation getTexture();
 
-    protected WidgetLabel addLabel(ITextComponent text, int x, int y) {
+    protected WidgetLabel addLabel(Component text, int x, int y) {
         return addLabel(text, x, y, WidgetLabel.Alignment.LEFT);
     }
 
-    protected WidgetLabel addLabel(ITextComponent text, int x, int y, WidgetLabel.Alignment alignment) {
-        return addButton(new WidgetLabel(x, y, text).setAlignment(alignment));
+    protected WidgetLabel addLabel(Component text, int x, int y, WidgetLabel.Alignment alignment) {
+        return addRenderableWidget(new WidgetLabel(x, y, text).setAlignment(alignment));
     }
 
     @Override
-    protected <T extends Widget> T addButton(T widget) {
-        if (widget instanceof Slider) sliders.add((Slider) widget);
-
-        return super.addButton(widget);
+    protected <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T pWidget) {
+        if (pWidget instanceof Slider s) sliders.add(s);
+        return super.addRenderableWidget(pWidget);
     }
 
-    protected void removeWidget(Widget widget) {
-        buttons.remove(widget);
-        children.remove(widget);
+    protected void removeWidget(AbstractWidget widget) {
+        super.removeWidget(widget);
         if (widget instanceof Slider) sliders.remove(widget);
     }
 
@@ -81,13 +82,13 @@ public abstract class GuiPneumaticScreenBase extends Screen {
     public void tick() {
         super.tick();
 
-        buttons.stream().filter(w -> w instanceof ITickableWidget).forEach(w -> ((ITickableWidget) w).tickWidget());
+        renderables.stream().filter(w -> w instanceof ITickableWidget).forEach(w -> ((ITickableWidget) w).tickWidget());
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
         if (getTexture() != null) {
-            minecraft.getTextureManager().bind(getTexture());
+            GuiUtils.bindTexture(getTexture());
             blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
         }
 
@@ -95,10 +96,10 @@ public abstract class GuiPneumaticScreenBase extends Screen {
 
         drawForeground(matrixStack, x, y, partialTicks);
 
-        List<ITextComponent> tooltip = new ArrayList<>();
+        List<Component> tooltip = new ArrayList<>();
         boolean shift = Screen.hasShiftDown();
-        buttons.stream()
-                .filter(widget -> widget instanceof ITooltipProvider && widget.isHovered())
+        renderables.stream()
+                .filter(widget -> widget instanceof ITooltipProvider provider && provider.shouldProvide())
                 .forEach(widget -> ((ITooltipProvider) widget).addTooltip(x, y, tooltip, shift));
 
         if (!tooltip.isEmpty()) {
@@ -116,6 +117,6 @@ public abstract class GuiPneumaticScreenBase extends Screen {
      * @param y mouse Y
      * @param partialTicks partial ticks
      */
-    protected void drawForeground(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    protected void drawForeground(PoseStack matrixStack, int x, int y, float partialTicks) {
     }
 }

@@ -17,57 +17,78 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.DyeColor;
 
 public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPneumaticDoor> {
-    private final ModelRenderer door;
-    public RenderPneumaticDoor(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private static final String DOOR = "door";
 
-        door = new ModelRenderer(64, 64, 0, 0);
-        door.setPos(-8.0F, 3.0F, -8.0F);
-        door.texOffs(0, 0).addBox(0.0F, -11.0F, 0.0F, 16.0F, 32.0F, 3.0F, 0.0F, true);
-        door.texOffs(42, 2).addBox(1.0F, -11.0F, 2.25F, 1.0F, 32.0F, 1.0F, -0.01F, false);
-        door.texOffs(38, 2).addBox(3.0F, -11.0F, 2.25F, 1.0F, 32.0F, 1.0F, -0.01F, false);
-        door.texOffs(38, 2).addBox(3.0F, -11.0F, -0.25F, 1.0F, 32.0F, 1.0F, -0.01F, false);
-        door.texOffs(42, 2).addBox(1.0F, -11.0F, -0.25F, 1.0F, 32.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 46).addBox(0.0F, -9.0F, 2.5F, 5.0F, 1.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 44).addBox(0.0F, 18.0F, 2.5F, 5.0F, 1.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 46).addBox(0.0F, -9.0F, -0.5F, 5.0F, 1.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 44).addBox(0.0F, 18.0F, -0.5F, 5.0F, 1.0F, 1.0F, -0.01F, false);
-        door.texOffs(16, 35).addBox(0.5F, 1.0F, 3.0F, 4.0F, 8.0F, 1.0F, 0.0F, false);
-        door.texOffs(16, 35).addBox(0.5F, 1.0F, -1.0F, 4.0F, 8.0F, 1.0F, 0.0F, false);
-        door.texOffs(26, 35).addBox(1.5F, 2.0F, 4.0F, 2.0F, 2.0F, 1.0F, 0.0F, false);
-        door.texOffs(26, 35).addBox(1.5F, 2.0F, -2.0F, 2.0F, 2.0F, 1.0F, 0.0F, false);
-        door.texOffs(26, 38).addBox(2.5F, 2.5F, 4.0F, 4.0F, 1.0F, 1.0F, -0.2F, false);
-        door.texOffs(26, 38).addBox(2.5F, 2.5F, -2.0F, 4.0F, 1.0F, 1.0F, -0.2F, false);
-        door.texOffs(0, 41).addBox(9.0F, -8.0F, 2.25F, 7.0F, 2.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 38).addBox(9.0F, 9.0F, 2.25F, 7.0F, 2.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 35).addBox(9.0F, 16.0F, 2.25F, 7.0F, 2.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 41).addBox(9.0F, -8.0F, -0.25F, 7.0F, 2.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 38).addBox(9.0F, 9.0F, -0.25F, 7.0F, 2.0F, 1.0F, -0.01F, false);
-        door.texOffs(0, 35).addBox(9.0F, 16.0F, -0.25F, 7.0F, 2.0F, 1.0F, -0.01F, false);
+    private final ModelPart door;
+
+    public RenderPneumaticDoor(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
+
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.PNEUMATIC_DOOR);
+        door = root.getChild(DOOR);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(DOOR, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("door_0", 0.0F, -11.0F, 0.0F, 16, 32, 3, 0, 0)
+                        .addBox("door_1", 1.0F, -11.0F, 2.25F, 1, 32, 1, 42, 2)
+                        .addBox("door_2", 3.0F, -11.0F, 2.25F, 1, 32, 1, 38, 2)
+                        .addBox("door_3", 3.0F, -11.0F, -0.25F, 1, 32, 1, 38, 2)
+                        .addBox("door_4", 1.0F, -11.0F, -0.25F, 1, 32, 1, 42, 2)
+                        .addBox("door_5", 0.0F, -9.0F, 2.5F, 5, 1, 1, 0, 46)
+                        .addBox("door_6", 0.0F, 18.0F, 2.5F, 5, 1, 1, 0, 44)
+                        .addBox("door_7", 0.0F, -9.0F, -0.5F, 5, 1, 1, 0, 46)
+                        .addBox("door_8", 0.0F, 18.0F, -0.5F, 5, 1, 1, 0, 44)
+                        .addBox("door_9", 0.5F, 1.0F, 3.0F, 4, 8, 1, 16, 35)
+                        .addBox("door_10", 0.5F, 1.0F, -1.0F, 4, 8, 1, 16, 35)
+                        .addBox("door_11", 1.5F, 2.0F, 4.0F, 2, 2, 1, 26, 35)
+                        .addBox("door_12", 1.5F, 2.0F, -2.0F, 2, 2, 1, 26, 35)
+                        .addBox("door_13", 2.5F, 2.5F, 4.0F, 4, 1, 1, 26, 38)
+                        .addBox("door_14", 2.5F, 2.5F, -2.0F, 4, 1, 1, 26, 38)
+                        .addBox("door_15", 9.0F, -8.0F, 2.25F, 7, 2, 1, 0, 41)
+                        .addBox("door_16", 9.0F, 9.0F, 2.25F, 7, 2, 1, 0, 38)
+                        .addBox("door_17", 9.0F, 16.0F, 2.25F, 7, 2, 1, 0, 35)
+                        .addBox("door_18", 9.0F, -8.0F, -0.25F, 7, 2, 1, 0, 41)
+                        .addBox("door_19", 9.0F, 9.0F, -0.25F, 7, 2, 1, 0, 38)
+                        .addBox("door_20", 9.0F, 16.0F, -0.25F, 7, 2, 1, 0, 35)
+                        .mirror(),
+                PartPose.offset(-8.0F, 3.0F, -8.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+
     @Override
-    public void renderModel(TileEntityPneumaticDoor te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(TileEntityPneumaticDoor te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (te.getBlockState().getValue(BlockPneumaticDoor.TOP_DOOR)) return;
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC));
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC));
 
-        float rotation = MathHelper.lerp(partialTicks, te.oldRotationAngle, te.rotationAngle);
+        float rotation = Mth.lerp(partialTicks, te.oldRotationAngle, te.rotationAngle);
         boolean rightGoing = te.rightGoing;
         float[] rgb = DyeColor.byId(te.color).getTextureDiffuseColors();
 

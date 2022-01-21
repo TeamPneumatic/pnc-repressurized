@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -28,10 +28,10 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +47,7 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
         super(ModCategoryUid.HEAT_FRAME_COOLING, HeatFrameCoolingRecipe.class,
                 xlate("pneumaticcraft.gui.nei.title.heatFrameCooling"),
                 guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
-                guiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.HEAT_FRAME.get()))
         );
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
         progressBar = guiHelper().createAnimatedDrawable(d, 30, IDrawableAnimated.StartDirection.LEFT, false);
@@ -58,7 +58,7 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
     }
 
     @Override
-    public void draw(HeatFrameCoolingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(HeatFrameCoolingRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 22, 0);
         if (recipe.getBonusMultiplier() > 0f) {
             bonusIcon.draw(matrixStack, 30, 0);
@@ -81,12 +81,12 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getTooltipStrings(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
+        List<Component> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
             res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.nei.recipe.heatFrameCooling", recipe.getThresholdTemperature() - 273)));
             if (recipe.getBonusMultiplier() > 0f) {
-                String bonus = TextFormatting.YELLOW + I18n.get("pneumaticcraft.gui.nei.recipe.heatFrameCooling.bonus", recipe.getBonusMultiplier() * 100, recipe.getOutput().getHoverName().getString(), recipe.getThresholdTemperature() - 273, recipe.getBonusLimit() + 1);
+                String bonus = ChatFormatting.YELLOW + I18n.get("pneumaticcraft.gui.nei.recipe.heatFrameCooling.bonus", recipe.getBonusMultiplier() * 100, recipe.getOutput().getHoverName().getString(), recipe.getThresholdTemperature() - 273, recipe.getBonusLimit() + 1);
                 res.addAll(PneumaticCraftUtils.splitStringComponent(bonus));
             }
         }

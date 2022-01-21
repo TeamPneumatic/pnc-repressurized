@@ -28,50 +28,56 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, IGUIButtonSensitive {
-    private static final DataParameter<Integer> TIME_SINCE_HIT = EntityDataManager.defineId(EntitySemiblockBase.class, DataSerializers.INT);
-    private static final DataParameter<Float> DAMAGE_TAKEN = EntityDataManager.defineId(EntitySemiblockBase.class, DataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> TIME_SINCE_HIT = SynchedEntityData.defineId(EntitySemiblockBase.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> DAMAGE_TAKEN = SynchedEntityData.defineId(EntitySemiblockBase.class, EntityDataSerializers.FLOAT);
 
     private static final float MAX_HEALTH = 40.0F;
 
-    private TileEntity cachedTE;
+    private BlockEntity cachedTE;
     private boolean shouldDropItem = true;
-    private AxisAlignedBB blockBounds;
+    private AABB blockBounds;
     private BlockPos blockPos;
-    private Vector3d dropOffset = Vector3d.ZERO;
+    private Vec3 dropOffset = Vec3.ZERO;
     private Block lastBlock;  // to detect if the underlying block has changed
 
-    EntitySemiblockBase(EntityType<?> entityTypeIn, World worldIn) {
+    EntitySemiblockBase(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -83,7 +89,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             if (shouldDropItem) {
                 getDrops().forEach(this::dropItem);
             }
-            if (level.isAreaLoaded(blockPos, 1)) {
+            if (level.isLoaded(blockPos)) {
                 level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
             }
         }
@@ -121,7 +127,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         }
 
         if (!level.isClientSide && isAlive() && !canStay()) {
-            remove();
+            discard();
         }
 
         Block curBlock = getBlockState().getBlock();
@@ -133,37 +139,37 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public ActionResultType interactAt(PlayerEntity player, Vector3d hitVec, Hand hand) {
-        Vector3d eye = player.getEyePosition(0f);
-        Vector3d end = eye.add(player.getLookAngle().normalize().scale(5f));
-        RayTraceContext ctx = new RayTraceContext(eye, end, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player);
-        BlockRayTraceResult brtr = player.level.clip(ctx);
+    public InteractionResult interactAt(Player player, Vec3 hitVec, InteractionHand hand) {
+        Vec3 eye = player.getEyePosition(0f);
+        Vec3 end = eye.add(player.getLookAngle().normalize().scale(5f));
+        ClipContext ctx = new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
+        BlockHitResult brtr = player.level.clip(ctx);
 
         if (brtr == null) {
             // shouldn't happen, but sanity checking...
-            return ActionResultType.PASS;
+            return InteractionResult.PASS;
         }
 
         if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()) {
             if (player.isShiftKeyDown()) {
                 removeSemiblock(player);
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             } else {
                 if (onRightClickWithConfigurator(player, brtr.getDirection())) {
                     player.getItemInHand(hand).getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                             .ifPresent(h -> h.addAir(-PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR));
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 } else {
-                    return ActionResultType.PASS;
+                    return InteractionResult.PASS;
                 }
             }
         } else {
             // allow right-clicks to pass through to the inventory block being covered
-            ItemUseContext itemCtx = new ItemUseContext(player, hand, brtr);
-            ActionResultType res = player.isShiftKeyDown() ? ActionResultType.PASS : getBlockState().use(level, player, hand, brtr);
-            if (res.consumesAction() || res == ActionResultType.FAIL) return res;
+            UseOnContext itemCtx = new UseOnContext(player, hand, brtr);
+            InteractionResult res = player.isShiftKeyDown() ? InteractionResult.PASS : getBlockState().use(level, player, hand, brtr);
+            if (res.consumesAction() || res == InteractionResult.FAIL) return res;
             res = player.getItemInHand(hand).onItemUseFirst(itemCtx);
-            return res == ActionResultType.PASS ? player.getItemInHand(hand).useOn(itemCtx) : res;
+            return res == InteractionResult.PASS ? player.getItemInHand(hand).useOn(itemCtx) : res;
         }
     }
 
@@ -174,7 +180,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public World getWorld() {
+    public Level getWorld() {
         return level;
     }
 
@@ -208,7 +214,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public TileEntity getCachedTileEntity() {
+    public BlockEntity getCachedTileEntity() {
         if (cachedTE == null || cachedTE.isRemoved()) {
             cachedTE = level.getBlockEntity(blockPos);
         }
@@ -232,7 +238,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         Item item = getDroppedItem();
         if (item != null) {
             ItemStack stack = new ItemStack(getDroppedItem());
-            CompoundNBT tag = new CompoundNBT();
+            CompoundTag tag = new CompoundTag();
             serializeNBT(tag);
             if (!tag.isEmpty()) stack.getOrCreateTag().put(NBTKeys.ENTITY_TAG, tag); // see EntityType#applyItemNBT()
             drops.add(stack);
@@ -245,7 +251,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
      *
      * @return a bounding box
      */
-    public final AxisAlignedBB getBlockBounds() {
+    public final AABB getBlockBounds() {
         // we can cache this because the bounding box won't change after placement
         if (blockBounds == null) {
             blockBounds = calculateBlockBounds();
@@ -260,14 +266,14 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
      *
      * @return a bounding box
      */
-    protected AxisAlignedBB calculateBlockBounds() {
+    protected AABB calculateBlockBounds() {
         // default behaviour: try & fit around the block in this blockpos
-        AxisAlignedBB aabb;
+        AABB aabb;
         if (level != null) {
             VoxelShape shape = level.getBlockState(blockPos).getShape(level, blockPos);
-            aabb = shape.isEmpty() ? VoxelShapes.block().bounds() : shape.bounds();
+            aabb = shape.isEmpty() ? Shapes.block().bounds() : shape.bounds();
         } else {
-            aabb = VoxelShapes.block().bounds();
+            aabb = Shapes.block().bounds();
         }
         return aabb;
     }
@@ -287,21 +293,21 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public CompoundNBT serializeNBT(CompoundNBT tag) {
+    public CompoundTag serializeNBT(CompoundTag tag) {
         return tag;
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
         serializeNBT(compound);
     }
 
@@ -363,24 +369,24 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public void removeSemiblock(PlayerEntity player) {
+    public void removeSemiblock(Player player) {
         player.playSound(SoundEvents.ITEM_PICKUP, 1.0f, 1.0f);
         dropOffset = player.position().subtract(this.position()).normalize();
-        this.remove();
+        this.discard();
     }
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source) || !(source.getDirectEntity() instanceof PlayerEntity)) {
+        if (this.isInvulnerableTo(source) || !(source.getDirectEntity() instanceof Player)) {
             return false;
         } else if (!this.level.isClientSide && this.isAlive()) {
             this.setTimeSinceHit(10);
             this.setDamageTaken(this.getDamageTaken() + amount * 10.0F);
-            boolean isCreative = source.getEntity() instanceof PlayerEntity
-                    && ((PlayerEntity)source.getEntity()).abilities.instabuild;
+            boolean isCreative = source.getEntity() instanceof Player
+                    && ((Player)source.getEntity()).getAbilities().instabuild;
             if (isCreative || this.getDamageTaken() > MAX_HEALTH) {
                 shouldDropItem = !isCreative;
-                remove();
+                discard();
             }
         }
         return true;
@@ -403,19 +409,19 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     public boolean isAir() {
-        return getBlockState().isAir(level, blockPos);
+        return getBlockState().isAir();
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         // nothing
     }
 
     @Override
-    public void writeToBuf(PacketBuffer payload) {
+    public void writeToBuf(FriendlyByteBuf payload) {
     }
 
     @Override
-    public void readFromBuf(PacketBuffer payload) {
+    public void readFromBuf(FriendlyByteBuf payload) {
     }
 }

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class DroneAIVoidLiquid extends Goal {

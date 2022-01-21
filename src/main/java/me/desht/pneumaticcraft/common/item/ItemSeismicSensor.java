@@ -21,16 +21,20 @@ import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayDeque;
@@ -50,33 +54,33 @@ public class ItemSeismicSensor extends Item {
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext ctx) {
-        World world = ctx.getLevel();
-        PlayerEntity player = ctx.getPlayer();
+    public InteractionResult useOn(UseOnContext ctx) {
+        Level world = ctx.getLevel();
+        Player player = ctx.getPlayer();
         if (!world.isClientSide && player != null) {
-            BlockPos.Mutable searchPos = ctx.getClickedPos().mutable();
+            BlockPos.MutableBlockPos searchPos = ctx.getClickedPos().mutable();
             while (searchPos.getY() > PneumaticCraftUtils.getMinHeight(world)) {
                 searchPos.move(Direction.DOWN);
                 Fluid fluid = findFluid(world, searchPos);
                 if (fluid != null) {
                     Set<BlockPos> fluidPositions = findLake(world, searchPos.immutable(), fluid);
                     int count = Math.max(1, fluidPositions.size() / 10 * 10);
-                    player.displayClientMessage(new TranslationTextComponent(
+                    player.displayClientMessage(new TranslatableComponent(
                             "pneumaticcraft.message.seismicSensor.foundOilDetails",
-                            new TranslationTextComponent(fluid.getAttributes().getTranslationKey()),
-                            TextFormatting.GREEN.toString() + (ctx.getClickedPos().getY() - searchPos.getY()),
-                            TextFormatting.GREEN.toString() + count),
+                            new TranslatableComponent(fluid.getAttributes().getTranslationKey()),
+                            ChatFormatting.GREEN.toString() + (ctx.getClickedPos().getY() - searchPos.getY()),
+                            ChatFormatting.GREEN.toString() + count),
                             false);
-                    world.playSound(null, ctx.getClickedPos(), SoundEvents.NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 1f, 1f);
-                    return ActionResultType.SUCCESS;
+                    world.playSound(null, ctx.getClickedPos(), SoundEvents.NOTE_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1f);
+                    return InteractionResult.SUCCESS;
                 }
             }
-            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.seismicSensor.noOilFound"), false);
+            player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.seismicSensor.noOilFound"), false);
         }
-        return ActionResultType.SUCCESS; // we don't want to use the item.
+        return InteractionResult.SUCCESS; // we don't want to use the item.
     }
 
-    private Fluid findFluid(World world, BlockPos pos) {
+    private Fluid findFluid(Level world, BlockPos pos) {
         if (needRecache) {
             fluidsOfInterest.clear();
             Set<ResourceLocation> tagsFromConfig = ConfigHelper.common().machines.seismicSensorFluidTags.get().stream()
@@ -99,7 +103,7 @@ public class ItemSeismicSensor extends Item {
         return fluidsOfInterest.contains(state.getType().getRegistryName()) ? state.getType() : null;
     }
 
-    private Set<BlockPos> findLake(World world, BlockPos searchPos, Fluid fluid) {
+    private Set<BlockPos> findLake(Level world, BlockPos searchPos, Fluid fluid) {
         Set<BlockPos> fluidPositions = new HashSet<>();
         Deque<BlockPos> pendingPositions = new ArrayDeque<>();
         pendingPositions.add(searchPos);

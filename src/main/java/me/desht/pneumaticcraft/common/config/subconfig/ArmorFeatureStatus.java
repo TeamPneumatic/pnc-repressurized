@@ -23,8 +23,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.ResourceLocationException;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ResourceLocationException;
 
 import java.util.Set;
 

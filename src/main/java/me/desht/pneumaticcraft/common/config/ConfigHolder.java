@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -48,7 +49,7 @@ public class ConfigHolder {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ConfigHolder::onConfigChanged);
     }
 
-    private static void onConfigChanged(final ModConfig.ModConfigEvent event) {
+    private static void onConfigChanged(final ModConfigEvent event) {
         ModConfig config = event.getConfig();
         if (config.getSpec() == ConfigHolder.configClientSpec) {
             refreshClient();

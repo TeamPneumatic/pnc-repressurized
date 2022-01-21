@@ -17,45 +17,53 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.IEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.ForgeHooksClient;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>, A extends BipedModel<T>> extends LayerRenderer<T, M> {
-    private final A modelLeggings;
-    private final A modelArmor;
+public class PneumaticArmorLayer<E extends LivingEntity, M extends EntityModel<E>> extends RenderLayer<E, M> {
+    private final HumanoidModel<E> modelLeggings;
+    private final HumanoidModel<E> modelArmor;
 
-    public PneumaticArmorLayer(IEntityRenderer<T, M> entityRendererIn, A modelLeggings, A modelArmor) {
+    public PneumaticArmorLayer(RenderLayerParent<E, M> entityRendererIn, EntityModelSet models) {
         super(entityRendererIn);
-        this.modelLeggings = modelLeggings;
-        this.modelArmor = modelArmor;
+        this.modelLeggings = new HumanoidModel<>(models.bakeLayer(PNCModelLayers.PNEUMATIC_LEGS));
+        this.modelArmor = new HumanoidModel<>(models.bakeLayer(PNCModelLayers.PNEUMATIC_ARMOR));;
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlotType.CHEST, packedLightIn, modelArmor);
-        renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlotType.LEGS, packedLightIn, modelLeggings);
-        renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlotType.FEET, packedLightIn, modelArmor);
-        renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlotType.HEAD, packedLightIn, modelArmor);
+    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, E entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(ClientUtils.getClientPlayer())) {
+            modelArmor.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            modelLeggings.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.CHEST, packedLightIn, modelArmor);
+            renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.LEGS, packedLightIn, modelLeggings);
+            renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.FEET, packedLightIn, modelArmor);
+            renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.HEAD, packedLightIn, modelArmor);
+        }
     }
 
-    private void renderSlot(MatrixStack matrixStack, IRenderTypeBuffer buffer, T entity, EquipmentSlotType slot, int light, A model) {
+    private void renderSlot(PoseStack matrixStack, MultiBufferSource buffer, E entity, EquipmentSlot slot, int light, HumanoidModel<E> model) {
         ItemStack stack = entity.getItemBySlot(slot);
         if (stack.getItem() instanceof ItemPneumaticArmor) {
             if (((ItemPneumaticArmor) stack.getItem()).getSlot() == slot) {
@@ -68,12 +76,12 @@ public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>
                 float[] secondary = RenderUtils.decomposeColorF(((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack));
                 this.doRender(matrixStack, buffer, light, glint, model, secondary[1], secondary[2], secondary[3], slot, ExtraLayer.SECONDARY_COLOR);
 
-                if (slot == EquipmentSlotType.CHEST) {
+                if (slot == EquipmentSlot.CHEST) {
                     // currently just the chestpiece "core" - untinted
                     this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, glint, model, 1f, 1f, 1f, slot, ExtraLayer.TRANSLUCENT);
                 }
 
-                if (slot == EquipmentSlotType.HEAD) {
+                if (slot == EquipmentSlot.HEAD) {
                     // eyepiece in head slot only
                     float[] eyepiece = RenderUtils.decomposeColorF(((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack));
                     this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, false, model, eyepiece[1], eyepiece[2], eyepiece[3], slot, ExtraLayer.EYEPIECE);
@@ -82,32 +90,33 @@ public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>
         }
     }
 
-    private void doRender(MatrixStack matrixStack, IRenderTypeBuffer buffer, int light, boolean glint, A model, float r, float g, float b, EquipmentSlotType slot, ExtraLayer extraLayer) {
+    private void doRender(PoseStack matrixStack, MultiBufferSource buffer, int light, boolean glint, HumanoidModel<E> model, float r, float g, float b, EquipmentSlot slot, ExtraLayer extraLayer) {
         ResourceLocation armorResource = extraLayer.getArmorResource(slot);
-        IVertexBuilder ivertexbuilder = ItemRenderer.getArmorFoilBuffer(buffer, extraLayer.getRenderType(armorResource), false, glint);
+        VertexConsumer ivertexbuilder = ItemRenderer.getArmorFoilBuffer(buffer, extraLayer.getRenderType(armorResource), false, glint);
         model.renderToBuffer(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY, r, g, b, 1.0F);
     }
 
-    protected void setModelSlotVisible(A model, EquipmentSlotType slotIn) {
+    protected void setModelSlotVisible(HumanoidModel<E> model, EquipmentSlot slotIn) {
         model.setAllVisible(false);
         switch (slotIn) {
-            case HEAD:
+            case HEAD -> {
                 model.head.visible = true;
                 model.hat.visible = true;
-                break;
-            case CHEST:
+            }
+            case CHEST -> {
                 model.body.visible = true;
                 model.rightArm.visible = true;
                 model.leftArm.visible = true;
-                break;
-            case LEGS:
+            }
+            case LEGS -> {
                 model.body.visible = true;
                 model.rightLeg.visible = true;
                 model.leftLeg.visible = true;
-                break;
-            case FEET:
+            }
+            case FEET -> {
                 model.rightLeg.visible = true;
                 model.leftLeg.visible = true;
+            }
         }
     }
 
@@ -129,8 +138,8 @@ public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>
             return translucent ? ModRenderTypes.getArmorTranslucentNoCull(rl) :  RenderType.armorCutoutNoCull(rl);
         }
 
-        ResourceLocation getArmorResource(EquipmentSlotType slot) {
-            return slot == EquipmentSlotType.LEGS ? rl2 : rl1;
+        ResourceLocation getArmorResource(EquipmentSlot slot) {
+            return slot == EquipmentSlot.LEGS ? rl2 : rl1;
         }
     }
 }

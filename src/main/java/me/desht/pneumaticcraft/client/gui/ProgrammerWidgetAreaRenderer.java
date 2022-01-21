@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
@@ -29,20 +29,17 @@ import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import net.minecraft.client.MainWindow;
+import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
+import com.mojang.math.Matrix4f;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
@@ -59,13 +56,13 @@ public class ProgrammerWidgetAreaRenderer {
     private final WidgetVerticalScrollbar scaleScroll;
     private double translatedX, translatedY;
     private int lastZoom;
-    private final List<List<ITextComponent>> widgetErrors = new ArrayList<>();
-    private final List<List<ITextComponent>> widgetWarnings = new ArrayList<>();
+    private final List<List<Component>> widgetErrors = new ArrayList<>();
+    private final List<List<Component>> widgetWarnings = new ArrayList<>();
     private int totalErrors = 0;
     private int totalWarnings = 0;
 
     public ProgrammerWidgetAreaRenderer(Screen parent, List<IProgWidget> progWidgets, int guiLeft, int guiTop,
-                                        Rectangle2d bounds, double translatedX, double translatedY, int lastZoom) {
+                                        Rect2i bounds, double translatedX, double translatedY, int lastZoom) {
         this.parent = parent;
         this.progWidgets = progWidgets;
         this.guiLeft = guiLeft;
@@ -100,26 +97,26 @@ public class ProgrammerWidgetAreaRenderer {
         return translatedY;
     }
 
-    private void addMessages(List<ITextComponent> tooltip, List<ITextComponent> msgList, String key, TextFormatting color) {
+    private void addMessages(List<Component> tooltip, List<Component> msgList, String key, ChatFormatting color) {
         if (!msgList.isEmpty()) {
-            tooltip.add(xlate(key).withStyle(color, TextFormatting.UNDERLINE));
-            for (ITextComponent msg : msgList) {
-                tooltip.add(new StringTextComponent(Symbols.TRIANGLE_RIGHT + " ").append(msg).withStyle(color));
+            tooltip.add(xlate(key).withStyle(color, ChatFormatting.UNDERLINE));
+            for (Component msg : msgList) {
+                tooltip.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(msg).withStyle(color));
             }
         }
     }
 
-    public void renderForeground(MatrixStack matrixStack, int x, int y, IProgWidget tooltipExcludingWidget, FontRenderer font) {
+    public void renderForeground(PoseStack matrixStack, int x, int y, IProgWidget tooltipExcludingWidget, Font font) {
         int idx = getHoveredWidgetIndex(x, y);
         if (idx >= 0) {
             IProgWidget progWidget = progWidgets.get(idx);
             if (progWidget != null && progWidget != tooltipExcludingWidget) {
-                List<ITextComponent> tooltip = new ArrayList<>();
+                List<Component> tooltip = new ArrayList<>();
                 progWidget.getTooltip(tooltip);
                 if (widgetErrors.size() == progWidgets.size())
-                    addMessages(tooltip, widgetErrors.get(idx), "pneumaticcraft.gui.programmer.errors", TextFormatting.RED);
+                    addMessages(tooltip, widgetErrors.get(idx), "pneumaticcraft.gui.programmer.errors", ChatFormatting.RED);
                 if (widgetWarnings.size() == progWidgets.size())
-                    addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", TextFormatting.YELLOW);
+                    addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", ChatFormatting.YELLOW);
                 addAdditionalInfoToTooltip(progWidget, tooltip);
                 if (!tooltip.isEmpty()) {
                     parent.renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
@@ -148,13 +145,13 @@ public class ProgrammerWidgetAreaRenderer {
         return i >= 0 ? progWidgets.get(i) : null;
     }
 
-    protected void addAdditionalInfoToTooltip(IProgWidget widget, List<ITextComponent> tooltip) {
+    protected void addAdditionalInfoToTooltip(IProgWidget widget, List<Component> tooltip) {
         if (ProgWidgetGuiManager.hasGui(widget)) {
-            tooltip.add(xlate("pneumaticcraft.gui.programmer.rightClickForOptions").withStyle(TextFormatting.GOLD));
+            tooltip.add(xlate("pneumaticcraft.gui.programmer.rightClickForOptions").withStyle(ChatFormatting.GOLD));
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            tooltip.add(new StringTextComponent(widget.getType().getRegistryName().toString()).withStyle(TextFormatting.DARK_GRAY));
+            tooltip.add(new TextComponent(widget.getType().getRegistryName().toString()).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 
@@ -164,11 +161,11 @@ public class ProgrammerWidgetAreaRenderer {
             widgetWarnings.clear();
             totalErrors = totalWarnings = 0;
             for (IProgWidget widget : progWidgets) {
-                List<ITextComponent> e = new ArrayList<>();
+                List<Component> e = new ArrayList<>();
                 widget.addErrors(e, progWidgets);
                 widgetErrors.add(e.isEmpty() ? Collections.emptyList() : e);
                 totalErrors += e.size();
-                List<ITextComponent> w = new ArrayList<>();
+                List<Component> w = new ArrayList<>();
                 widget.addWarnings(w, progWidgets);
                 widgetWarnings.add(w.isEmpty() ? Collections.emptyList() : w);
                 totalWarnings += w.size();
@@ -176,7 +173,7 @@ public class ProgrammerWidgetAreaRenderer {
         }
     }
 
-    public void render(MatrixStack matrixStack, int x, int y, boolean showFlow, boolean showInfo) {
+    public void render(PoseStack matrixStack, int x, int y, boolean showFlow, boolean showInfo) {
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
             float prevScale = 2.0F - lastZoom * SCALE_PER_STEP;
@@ -185,7 +182,7 @@ public class ProgrammerWidgetAreaRenderer {
         }
         lastZoom = scaleScroll.getState();
 
-        MainWindow mw = Minecraft.getInstance().getWindow();
+        Window mw = Minecraft.getInstance().getWindow();
         double sf = mw.getGuiScale();
         GL11.glScissor((int)((guiLeft + startX) * mw.getGuiScale()), (int)(mw.getGuiScaledHeight() * sf - areaHeight * sf - (guiTop + startY) * sf), (int)(areaWidth * sf), (int)(areaHeight * sf));
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
@@ -239,7 +236,7 @@ public class ProgrammerWidgetAreaRenderer {
     }
 
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dx, double dy) {
-        if (mouseButton == 0 && !scaleScroll.isDragging() && new Rectangle2d(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains((int)mouseX, (int)mouseY)) {
+        if (mouseButton == 0 && !scaleScroll.isDragging() && new Rect2i(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains((int)mouseX, (int)mouseY)) {
             translatedX += dx;
             translatedY += dy;
             return true;
@@ -251,15 +248,15 @@ public class ProgrammerWidgetAreaRenderer {
         return scaleScroll.mouseScrolled(mouseX, mouseY, dir);
     }
 
-    protected void renderAdditionally(MatrixStack matrixStack) {
+    protected void renderAdditionally(PoseStack matrixStack) {
         // nothing; to be overridden
     }
 
-    protected void drawBorder(MatrixStack matrixStack, IProgWidget widget, int color) {
+    protected void drawBorder(PoseStack matrixStack, IProgWidget widget, int color) {
         drawBorder(matrixStack, widget, color, 0);
     }
 
-    protected void drawBorder(MatrixStack matrixStack, IProgWidget widget, int color, int inset) {
+    protected void drawBorder(PoseStack matrixStack, IProgWidget widget, int color, int inset) {
         matrixStack.pushPose();
         matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
         matrixStack.scale(0.5f, 0.5f, 1f);
@@ -270,29 +267,29 @@ public class ProgrammerWidgetAreaRenderer {
         matrixStack.popPose();
     }
 
-    private void hLine(MatrixStack matrixStack, int minX, int maxX, int y, int color) {
+    private void hLine(PoseStack matrixStack, int minX, int maxX, int y, int color) {
         if (maxX < minX) {
             int i = minX; minX = maxX; maxX = i;
         }
-        AbstractGui.fill(matrixStack, minX, y, maxX + 1, y + 1, color);
+        GuiComponent.fill(matrixStack, minX, y, maxX + 1, y + 1, color);
     }
 
-    private void vLine(MatrixStack matrixStack, int x, int minY, int maxY, int color) {
+    private void vLine(PoseStack matrixStack, int x, int minY, int maxY, int color) {
         if (maxY < minY) {
             int i = minY; minY = maxY; maxY = i;
         }
-        AbstractGui.fill(matrixStack, x, minY + 1, x + 1, maxY, color);
+        GuiComponent.fill(matrixStack, x, minY + 1, x + 1, maxY, color);
     }
 
     private static final float ARROW_ANGLE = (float) Math.toRadians(30);
     private static final float ARROW_SIZE = 5;
 
-    private void showFlow(MatrixStack matrixStack) {
+    private void showFlow(PoseStack matrixStack) {
         RenderSystem.lineWidth(1);
         RenderSystem.disableTexture();
 
-        BufferBuilder wr = Tessellator.getInstance().getBuilder();
-        wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+        BufferBuilder wr = Tesselator.getInstance().getBuilder();
+        wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION);
 
         Map<String, List<IProgWidget>> labelWidgets = new HashMap<>();
         for (IProgWidget w : progWidgets) {
@@ -314,8 +311,8 @@ public class ProgrammerWidgetAreaRenderer {
                         float midY = (y2 + y1) / 2F;
                         wr.vertex(posMat,guiLeft + x1, guiTop + y1, 0.0f).endVertex();
                         wr.vertex(posMat,guiLeft + x2, guiTop + y2, 0.0f).endVertex();
-                        Vector3d arrowVec = new Vector3d(x1 - x2, y1 - y2, 0).normalize();
-                        arrowVec = new Vector3d(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
+                        Vec3 arrowVec = new Vec3(x1 - x2, y1 - y2, 0).normalize();
+                        arrowVec = new Vec3(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
                         arrowVec = arrowVec.yRot(ARROW_ANGLE);
                         wr.vertex(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
                         wr.vertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
@@ -327,7 +324,7 @@ public class ProgrammerWidgetAreaRenderer {
             }
         }
 
-        Tessellator.getInstance().end();
+        Tesselator.getInstance().end();
 
         RenderSystem.enableTexture();
     }

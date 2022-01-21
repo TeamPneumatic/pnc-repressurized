@@ -41,29 +41,36 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -77,7 +84,12 @@ public class ItemMinigun extends ItemPressurizable implements
     public static final String OWNING_PLAYER_ID = "owningPlayerId";
 
     public ItemMinigun() {
-        super(ModItems.toolProps().setISTER(() -> RenderItemMinigun::new), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(ModItems.toolProps(), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+    }
+
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        consumer.accept(new RenderItemMinigun.RenderProperties());
     }
 
     @Nonnull
@@ -92,7 +104,7 @@ public class ItemMinigun extends ItemPressurizable implements
      * @param stack the minigun item
      * @param equipping true if equipping, false if unequipping
      */
-    public void onEquipmentChange(ServerPlayerEntity player, ItemStack stack, boolean equipping) {
+    public void onEquipmentChange(ServerPlayer player, ItemStack stack, boolean equipping) {
         if (equipping) {
             // tag the minigun with the player's entity ID - it's sync'd to clients
             // so other clients will know who's wielding it, and render appropriately
@@ -116,10 +128,10 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean currentItem) {
         super.inventoryTick(stack, world, entity, slot, currentItem);
 
-        PlayerEntity player = (PlayerEntity) entity;
+        Player player = (Player) entity;
 
         Minigun minigun = null;
         if (currentItem) {
@@ -133,7 +145,7 @@ public class ItemMinigun extends ItemPressurizable implements
         }
     }
 
-    private void handleAmmoRepair(ItemStack stack, World world, Minigun minigun) {
+    private void handleAmmoRepair(ItemStack stack, Level world, Minigun minigun) {
         if (minigun.getPlayer().containerMenu instanceof ContainerMinigunMagazine) {
             return;  // avoid potential item duping or other shenanigans
         }
@@ -159,54 +171,53 @@ public class ItemMinigun extends ItemPressurizable implements
         }
     }
 
-    private Minigun getMinigun(ItemStack stack, PlayerEntity player, ItemStack ammo) {
+    private Minigun getMinigun(ItemStack stack, Player player, ItemStack ammo) {
         return new MinigunItem(player, stack)
                 .setAmmoStack(ammo)
                 .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY), PneumaticValues.USAGE_ITEM_MINIGUN)
                 .setWorld(player.level);
     }
 
-    public Minigun getMinigun(ItemStack stack, PlayerEntity player) {
+    public Minigun getMinigun(ItemStack stack, Player player) {
         return getMinigun(stack, player, getMagazine(stack).getAmmo());
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
         if (player.isShiftKeyDown()) {
             if (!world.isClientSide && stack.getCount() == 1) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
+                NetworkHooks.openGui((ServerPlayer) player, new MenuProvider() {
                     @Override
-                    public ITextComponent getDisplayName() {
+                    public Component getDisplayName() {
                         return stack.getHoverName();
                     }
 
                     @Override
-                    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
                         return new ContainerMinigunMagazine(i, playerInventory, handIn);
                     }
                 }, buf -> ContainerPneumaticBase.putHand(buf, handIn));
             }
-            return ActionResult.consume(stack);
+            return InteractionResultHolder.consume(stack);
         } else {
             MagazineHandler magazineHandler = getMagazine(stack);
             ItemStack ammo = magazineHandler.getAmmo();
             if (!ammo.isEmpty()) {
                 player.startUsingItem(handIn);
-                return ActionResult.sidedSuccess(stack, world.isClientSide);
+                return InteractionResultHolder.sidedSuccess(stack, world.isClientSide);
             }
             if (player.level.isClientSide) {
                 player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
-                player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
+                player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
-            return ActionResult.fail(stack);
+            return InteractionResultHolder.fail(stack);
         }
     }
 
     @Override
     public void onUsingTick(ItemStack stack, LivingEntity entity, int count) {
-        if (!(entity instanceof PlayerEntity)) return;
-        PlayerEntity player = (PlayerEntity) entity;
+        if (!(entity instanceof Player player)) return;
 
         MagazineHandler magazineHandler = getMagazine(stack);
         ItemStack ammo = magazineHandler.getAmmo();
@@ -222,14 +233,14 @@ public class ItemMinigun extends ItemPressurizable implements
         } else {
             if (player.level.isClientSide) {
                 player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
-                player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
+                player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
             player.releaseUsingItem();
         }
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+    public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
         return super.finishUsingItem(stack, worldIn, entityLiving);
     }
 
@@ -249,7 +260,7 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     @Override
-    public float getFOVModifier(ItemStack stack, PlayerEntity player, EquipmentSlotType slot) {
+    public float getFOVModifier(ItemStack stack, Player player, EquipmentSlot slot) {
         Minigun minigun = getMinigun(stack, player);
         int trackers = minigun.getUpgrades(EnumUpgrade.ENTITY_TRACKER);
         if (!minigun.isMinigunActivated() || trackers == 0) return 1.0f;
@@ -267,17 +278,17 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     @Override
-    public ITextComponent getInventoryHeader() {
-        return xlate("pneumaticcraft.gui.tooltip.gunAmmo.loaded").withStyle(TextFormatting.GREEN);
+    public Component getInventoryHeader() {
+        return xlate("pneumaticcraft.gui.tooltip.gunAmmo.loaded").withStyle(ChatFormatting.GREEN);
     }
 
     @Override
-    public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
+    public MenuProvider getContainerProvider(TileEntityChargingStation te) {
         return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_MINIGUN.get());
     }
 
     @Override
-    public void onShiftScrolled(PlayerEntity player, boolean forward, Hand hand) {
+    public void onShiftScrolled(Player player, boolean forward, InteractionHand hand) {
         // cycle the locked slot to the next valid ammo type (assuming any valid ammo)
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() instanceof ItemMinigun) {
@@ -313,11 +324,9 @@ public class ItemMinigun extends ItemPressurizable implements
     public static class Listener {
         @SubscribeEvent
         public static void onLivingAttack(LivingAttackEvent event) {
-            if (event.getEntityLiving() instanceof PlayerEntity
-                    && event.getSource() instanceof EntityDamageSource
-                    && ((EntityDamageSource) event.getSource()).isThorns()) {
+            if (event.getEntityLiving() instanceof Player player
+                    && event.getSource() instanceof EntityDamageSource d && d.isThorns()) {
                 // don't take thorns damage when attacking with minigun (it applies direct damage, but it's effectively ranged...)
-                PlayerEntity player = (PlayerEntity) event.getEntityLiving();
                 ItemStack stack = player.getMainHandItem();
                 if (stack.getItem() instanceof ItemMinigun) {
                     Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
@@ -368,7 +377,7 @@ public class ItemMinigun extends ItemPressurizable implements
         private final ItemStack minigunStack;
         private final MinigunPlayerTracker tracker;
 
-        MinigunItem(PlayerEntity player, ItemStack stack) {
+        MinigunItem(Player player, ItemStack stack) {
             super(player, false);
             tracker = MinigunPlayerTracker.getInstance(player);
             this.minigunStack = stack;
@@ -401,7 +410,7 @@ public class ItemMinigun extends ItemPressurizable implements
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
             if (!player.level.isClientSide) {
-                NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundCategory.PLAYERS, player.blockPosition(), volume, pitch, false), player.level, player.blockPosition());
+                NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundSource.PLAYERS, player.blockPosition(), volume, pitch, false), player.level, player.blockPosition());
             }
         }
 

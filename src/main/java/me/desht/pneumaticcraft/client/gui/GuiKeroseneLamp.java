@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.client.gui.widget.Slider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraftforge.client.gui.widget.Slider;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     private WidgetLabel rangeLabel;
     private Slider slider;
 
-    public GuiKeroseneLamp(ContainerKeroseneLamp container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiKeroseneLamp(ContainerKeroseneLamp container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -46,18 +46,18 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
-        addButton(rangeLabel = new WidgetLabel(leftPos + 20, topPos + 55, StringTextComponent.EMPTY));
+        addRenderableWidget(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
+        addRenderableWidget(rangeLabel = new WidgetLabel(leftPos + 20, topPos + 55, TextComponent.EMPTY));
 
-        addButton(slider = new Slider(leftPos + 7, topPos + 30, 118, 20,
-                xlate("pneumaticcraft.gui.keroseneLamp.maxRange").append(" "), StringTextComponent.EMPTY,
+        addRenderableWidget(slider = new Slider(leftPos + 7, topPos + 30, 118, 20,
+                xlate("pneumaticcraft.gui.keroseneLamp.maxRange").append(" "), TextComponent.EMPTY,
                 1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true,
                 b -> { }, this));
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         if (firstUpdate) {
             // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
@@ -84,7 +84,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
         if (te.getTank().getFluidAmount() == 0) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.keroseneLamp.noFuel"));
@@ -94,7 +94,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> curInfo) {
+    protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
         if (te.getTank().getFluidAmount() < 30 && te.getTank().getFluidAmount() > 0) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.keroseneLamp.lowFuel"));

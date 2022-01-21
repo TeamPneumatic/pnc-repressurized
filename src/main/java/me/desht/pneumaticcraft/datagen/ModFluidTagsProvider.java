@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.FluidTagsProvider;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tags.ITag;
+import net.minecraft.data.tags.FluidTagsProvider;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.tags.Tag;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Arrays;
@@ -63,17 +63,17 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
     }
 
     @SafeVarargs
-    private final void createTag(ITag.INamedTag<Fluid> tag, Supplier<? extends Fluid>... blocks) {
+    private final void createTag(Tag.Named<Fluid> tag, Supplier<? extends Fluid>... blocks) {
         tag(tag).add(resolveAll(Fluid[]::new, blocks));
     }
 
     @SafeVarargs
-    private final void appendToTag(ITag.INamedTag<Fluid> tag, ITag.INamedTag<Fluid>... toAppend) {
+    private final void appendToTag(Tag.Named<Fluid> tag, Tag.Named<Fluid>... toAppend) {
         tag(tag).addTags(toAppend);
     }
 
     @SafeVarargs
-    private final void createAndAppend(ITag.INamedTag<Fluid> tag, ITag.INamedTag<Fluid> to, Supplier<? extends Fluid>... fluids) {
+    private final void createAndAppend(Tag.Named<Fluid> tag, Tag.Named<Fluid> to, Supplier<? extends Fluid>... fluids) {
         createTag(tag, fluids);
         appendToTag(to, tag);
     }

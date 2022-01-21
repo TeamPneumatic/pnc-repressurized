@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:etching_acid_bucket"
+            "items": [
+              "pneumaticcraft:etching_acid_bucket"
+            ]
           }
         ]
       }

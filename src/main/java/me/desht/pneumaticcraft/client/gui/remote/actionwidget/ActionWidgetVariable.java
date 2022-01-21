@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteVariable;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.nbt.CompoundTag;
 
-public abstract class ActionWidgetVariable<W extends Widget> extends ActionWidget<W> {
+public abstract class ActionWidgetVariable<W extends AbstractWidget> extends ActionWidget<W> {
     private String variableName = "";
 
     ActionWidgetVariable(W widget) {
@@ -34,14 +34,14 @@ public abstract class ActionWidgetVariable<W extends Widget> extends ActionWidge
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         variableName = tag.getString("variableName");
     }
 
     @Override
-    public CompoundNBT toNBT(int guiLeft, int guiTop) {
-        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+    public CompoundTag toNBT(int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(guiLeft, guiTop);
         tag.putString("variableName", variableName);
         return tag;
     }

@@ -29,14 +29,13 @@ import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.items.IItemHandler;
 
@@ -112,10 +111,10 @@ public final class PneumaticRegistry {
          * @param showRangeLines this is ignored and will disappear in a future release
          * @return the number of Security Stations that disallow interaction for the given player.
          * @throws IllegalArgumentException when called from the client side
-         * @deprecated use {@link #getProtectingSecurityStations(PlayerEntity, BlockPos)}
+         * @deprecated use {@link #getProtectingSecurityStations(Player, BlockPos)}
          */
         @Deprecated
-        int getProtectingSecurityStations(PlayerEntity player, BlockPos pos, boolean showRangeLines);
+        int getProtectingSecurityStations(Player player, BlockPos pos, boolean showRangeLines);
 
         /**
          * Returns the number of Security Stations that disallow interaction with the given coordinate for the given
@@ -126,7 +125,7 @@ public final class PneumaticRegistry {
          * @return the number of Security Stations that disallow interaction for the given player.
          * @throws IllegalArgumentException when called from the client side
          */
-        int getProtectingSecurityStations(PlayerEntity player, BlockPos pos);
+        int getProtectingSecurityStations(Player player, BlockPos pos);
 
         /**
          * Register a fluid that represents liquid XP (e.g. PneumaticCraft Memory Essence, CoFH Essence of
@@ -171,7 +170,7 @@ public final class PneumaticRegistry {
          * @param player the player to sync to
          * @param varName the global variable name (with or without the leading '#')
          */
-        void syncGlobalVariable(ServerPlayerEntity player, String varName);
+        void syncGlobalVariable(ServerPlayer player, String varName);
 
         /**
          * Register a custom player matcher object. This is safe to call from a
@@ -189,7 +188,7 @@ public final class PneumaticRegistry {
          * @param tag NBT to be deserialized, previously serialized from a Smart Chest
          * @return an item handler deserialized by the Smart Chest
          */
-        IItemHandler deserializeSmartChest(CompoundNBT tag);
+        IItemHandler deserializeSmartChest(CompoundTag tag);
 
         /**
          * Notify tracking clients to recalculate the block shapes of all neighbours of the block at the given world
@@ -203,6 +202,6 @@ public final class PneumaticRegistry {
          * @param world the world
          * @param pos the position of the block that has been changed or removed
          */
-        void forceClientShapeRecalculation(World world, BlockPos pos);
+        void forceClientShapeRecalculation(Level world, BlockPos pos);
     }
 }

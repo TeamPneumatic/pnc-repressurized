@@ -23,12 +23,12 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
@@ -66,7 +66,7 @@ public enum ItemRegistry implements IItemRegistry {
     }
 
     @Override
-    public void addTooltip(EnumUpgrade upgrade, List<ITextComponent> tooltip) {
+    public void addTooltip(EnumUpgrade upgrade, List<Component> tooltip) {
         List<IUpgradeAcceptor> acceptors = upgradeToAcceptors.get(upgrade);
         if (acceptors != null) {
             List<String> tempList = new ArrayList<>(acceptors.size());
@@ -74,7 +74,7 @@ public enum ItemRegistry implements IItemRegistry {
                 tempList.add(Symbols.BULLET + " " + I18n.get(acceptor.getUpgradeAcceptorTranslationKey()));
             }
             Collections.sort(tempList);
-            tooltip.addAll(tempList.stream().map(StringTextComponent::new).collect(Collectors.toList()));
+            tooltip.addAll(tempList.stream().map(TextComponent::new).collect(Collectors.toList()));
         }
     }
 

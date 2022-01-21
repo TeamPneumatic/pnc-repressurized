@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -49,7 +49,7 @@ public class ComputerCraft implements IThirdParty {
     }
 
     @SubscribeEvent
-    public static void attachPeripheralCap(AttachCapabilitiesEvent<TileEntity> event) {
+    public static void attachPeripheralCap(AttachCapabilitiesEvent<BlockEntity> event) {
         if (available && event.getObject() instanceof ILuaMethodProvider) {
             event.addCapability(RL(ModIds.COMPUTERCRAFT), new PneumaticPeripheralProvider((ILuaMethodProvider) event.getObject()));
         }

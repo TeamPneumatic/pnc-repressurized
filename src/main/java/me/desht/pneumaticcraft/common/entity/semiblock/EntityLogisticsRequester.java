@@ -24,21 +24,23 @@ import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2RequesterIntegration;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
+import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener.TileEntityAndFace;
+
 public class EntityLogisticsRequester extends EntityLogisticsFrame implements ISpecificRequester, IProvidingInventoryListener {
-    private static final DataParameter<Boolean> AE2_ENABLED = EntityDataManager.defineId(EntityLogisticsRequester.class, DataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> AE2_ENABLED = SynchedEntityData.defineId(EntityLogisticsRequester.class, EntityDataSerializers.BOOLEAN);
 
     private static final String NBT_AE2_INTEGRATION = "AE2_Integration";
 
@@ -47,7 +49,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
 
     private AE2RequesterIntegration ae2requester = null;
 
-    public EntityLogisticsRequester(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityLogisticsRequester(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -76,7 +78,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     }
 
     @Override
-    protected ContainerType<?> getContainerType() {
+    protected MenuType<?> getContainerType() {
         return ModContainers.LOGISTICS_FRAME_REQUESTER.get();
     }
 
@@ -101,7 +103,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT tag) {
+    protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
         if (AE2Integration.isAvailable()) {
@@ -110,7 +112,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     }
 
     @Override
-    public CompoundNBT serializeNBT(CompoundNBT tag) {
+    public CompoundTag serializeNBT(CompoundTag tag) {
         tag = super.serializeNBT(tag);
 
         if (AE2Integration.isAvailable()) {
@@ -133,35 +135,35 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     public void tick() {
         super.tick();
 
-        if (!level.isClientSide && AE2Integration.isAvailable()) {
-            getAE2integration().maybeCheckForInterface();
-        }
+//        if (!level.isClientSide && AE2Integration.isAvailable()) {
+//            getAE2integration().maybeCheckForInterface();
+//        }
     }
 
     @Override
     public void notify(TileEntityAndFace teAndFace) {
-        if (AE2Integration.isAvailable()) {
-            getAE2integration().maybeAddTE(teAndFace);
-        }
+//        if (AE2Integration.isAvailable()) {
+//            getAE2integration().maybeAddTE(teAndFace);
+//        }
     }
 
     @Override
     protected void onBroken() {
         super.onBroken();
 
-        if (AE2Integration.isAvailable()) {
-            getAE2integration().shutdown();
-        }
+//        if (AE2Integration.isAvailable()) {
+//            getAE2integration().shutdown();
+//        }
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         super.handleGUIButtonPress(tag, shiftHeld, player);
 
-        if (tag.equals("ae2") && AE2Integration.isAvailable()) {
-            setAE2enabled(!isAE2enabled());
-            getAE2integration().setEnabled(isAE2enabled());
-        }
+//        if (tag.equals("ae2") && AE2Integration.isAvailable()) {
+//            setAE2enabled(!isAE2enabled());
+//            getAE2integration().setEnabled(isAE2enabled());
+//        }
     }
 
     @Override
@@ -227,10 +229,10 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
         return AE2Integration.isAvailable() && getEntityData().get(AE2_ENABLED);
     }
 
-    public AE2RequesterIntegration getAE2integration() {
-        if (ae2requester == null) {
-            ae2requester = new AE2RequesterIntegration(this);
-        }
-        return ae2requester;
-    }
+//    public AE2RequesterIntegration getAE2integration() {
+//        if (ae2requester == null) {
+//            ae2requester = new AE2RequesterIntegration(this);
+//        }
+//        return ae2requester;
+//    }
 }

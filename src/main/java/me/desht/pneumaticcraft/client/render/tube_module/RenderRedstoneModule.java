@@ -1,88 +1,119 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.DyeColor;
 
 public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone> {
-    private final ModelRenderer redstoneConnector;
-    private final ModelRenderer faceplate;
-    private final ModelRenderer tubeConnector1;
-    private final ModelRenderer tubeConnector2;
-    private final ModelRenderer tubeConnector3;
-    private final ModelRenderer tubeConnector4;
-    private final ModelRenderer tubeConnector5;
-    private final ModelRenderer tubeConnector6;
-    private final ModelRenderer frame1;
-    private final ModelRenderer frame2;
-    private final ModelRenderer frame3;
-    private final ModelRenderer frame4;
+    private final ModelPart redstoneConnector;
+    private final ModelPart faceplate;
+    private final ModelPart tubeConnector1;
+    private final ModelPart tubeConnector2;
+    private final ModelPart tubeConnector3;
+    private final ModelPart tubeConnector4;
+    private final ModelPart tubeConnector5;
+    private final ModelPart tubeConnector6;
+    private final ModelPart frame1;
+    private final ModelPart frame2;
+    private final ModelPart frame3;
+    private final ModelPart frame4;
 
-    public RenderRedstoneModule() {
-        this.frame1 = new ModelRenderer(64, 32, 32, 0);
-        this.frame1.setPos(-4.0F, 11.5F, 6.0F);
-        this.frame1.addBox(2.0F, 1.5F, -3.75F, 4.0F, 1.0F, 4.0F, 0.0F);
+    private static final String REDSTONECONNECTOR = "redstoneConnector";
+    private static final String FACEPLATE = "faceplate";
+    private static final String TUBECONNECTOR1 = "tubeConnector1";
+    private static final String TUBECONNECTOR2 = "tubeConnector2";
+    private static final String TUBECONNECTOR3 = "tubeConnector3";
+    private static final String TUBECONNECTOR4 = "tubeConnector4";
+    private static final String TUBECONNECTOR5 = "tubeConnector5";
+    private static final String TUBECONNECTOR6 = "tubeConnector6";
+    private static final String FRAME1 = "frame1";
+    private static final String FRAME2 = "frame2";
+    private static final String FRAME3 = "frame3";
+    private static final String FRAME4 = "frame4";
 
-        this.frame2 = new ModelRenderer(64, 32, 32, 5);
-        this.frame2.setPos(-4.0F, 19.5F, 6.0F);
-        this.frame2.addBox(2.0F, -1.5F, -3.75F, 4.0F, 1.0F, 4.0F, 0.0F);
-
-        this.frame3 = new ModelRenderer(64, 32, 0, 6);
-        this.frame3.setPos(3.5F, 12.5F, 6.0F);
-        this.frame3.addBox(-1.5F, 0.5F, -3.75F, 1.0F, 6.0F, 4.0F, 0.0F);
-
-        this.frame4 = new ModelRenderer(64, 32, 0, 16);
-        this.frame4.setPos(-4.5F, 12.5F, 6.0F);
-        this.frame4.addBox(1.5F, 0.5F, -3.75F, 1.0F, 6.0F, 4.0F, 0.0F);
-
-        this.tubeConnector1 = new ModelRenderer(64, 32, 12, 10);
-        this.tubeConnector1.setPos(-1.5F, 14.5F, 2.0F);
-        this.tubeConnector1.addBox(-2.0F, -2.0F, 1.0F, 7.0F, 7.0F, 1.0F, 0.0F);
-
-        this.tubeConnector2 = new ModelRenderer(64, 32, 12, 18);
-        this.tubeConnector2.setPos(-1.5F, 14.5F, 2.0F);
-        this.tubeConnector2.addBox(-1.0F, -1.0F, 0.0F, 5.0F, 5.0F, 1.0F, 0.0F);
-
-        this.tubeConnector3 = new ModelRenderer(64, 32, 28, 12);
-        this.tubeConnector3.setPos(-1.5F, 14.5F, 2.0F);
-        this.tubeConnector3.addBox(4.0F, 0.0F, 0.0F, 1.0F, 3.0F, 1.0F, 0.0F);
-
-        this.tubeConnector4 = new ModelRenderer(64, 32, 28, 16);
-        this.tubeConnector4.setPos(-1.5F, 14.5F, 2.0F);
-        this.tubeConnector4.addBox(0.0F, 4.0F, 0.0F, 3.0F, 1.0F, 1.0F, 0.0F);
-
-        this.tubeConnector5 = new ModelRenderer(64, 32, 32, 12);
-        this.tubeConnector5.setPos(-1.5F, 14.5F, 2.0F);
-        this.tubeConnector5.addBox(-2.0F, 0.0F, 0.0F, 1.0F, 3.0F, 1.0F, 0.0F);
-
-        this.tubeConnector6 = new ModelRenderer(64, 32, 28, 10);
-        this.tubeConnector6.setPos(-1.5F, 14.5F, 2.0F);
-        this.tubeConnector6.addBox(0.0F, -2.0F, 0.0F, 3.0F, 1.0F, 1.0F, 0.0F);
-
-        this.faceplate = new ModelRenderer(64, 32, 12, 0);
-        this.faceplate.setPos(-4.0F, 12.0F, 5.0F);
-        this.faceplate.addBox(0.0F, 0.0F, -1.0F, 8.0F, 8.0F, 2.0F, 0.0F);
-
-        this.redstoneConnector = new ModelRenderer(64, 32, 0, 0);
-        this.redstoneConnector.setPos(-1.5F, 14.5F, 6.05F);
-        this.redstoneConnector.addBox(0.0F, 0.0F, 0.0F, 3.0F, 3.0F, 3.0F, 0.0F);
+    public RenderRedstoneModule(BlockEntityRendererProvider.Context ctx) {
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.REDSTONE_MODULE);
+        redstoneConnector = root.getChild(REDSTONECONNECTOR);
+        faceplate = root.getChild(FACEPLATE);
+        tubeConnector1 = root.getChild(TUBECONNECTOR1);
+        tubeConnector2 = root.getChild(TUBECONNECTOR2);
+        tubeConnector3 = root.getChild(TUBECONNECTOR3);
+        tubeConnector4 = root.getChild(TUBECONNECTOR4);
+        tubeConnector5 = root.getChild(TUBECONNECTOR5);
+        tubeConnector6 = root.getChild(TUBECONNECTOR6);
+        frame1 = root.getChild(FRAME1);
+        frame2 = root.getChild(FRAME2);
+        frame3 = root.getChild(FRAME3);
+        frame4 = root.getChild(FRAME4);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(REDSTONECONNECTOR, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("redstoneConnector_0", 0.0F, 0.0F, 0.0F, 3, 3, 3),
+                PartPose.offset(-1.5F, 14.5F, 6.05F));
+        partdefinition.addOrReplaceChild(FACEPLATE, CubeListBuilder.create().texOffs(12, 0)
+                        .addBox("faceplate_0", 0.0F, 0.0F, -1.0F, 8, 8, 2),
+                PartPose.offset(-4.0F, 12.0F, 5.0F));
+        partdefinition.addOrReplaceChild(TUBECONNECTOR1, CubeListBuilder.create().texOffs(12, 10)
+                        .addBox("tubeConnector1_0", -2.0F, -2.0F, 1.0F, 7, 7, 1),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(TUBECONNECTOR2, CubeListBuilder.create().texOffs(12, 18)
+                        .addBox("tubeConnector2_0", -1.0F, -1.0F, 0.0F, 5, 5, 1),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(TUBECONNECTOR3, CubeListBuilder.create().texOffs(28, 12)
+                        .addBox("tubeConnector3_0", 4.0F, 0.0F, 0.0F, 1, 3, 1),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(TUBECONNECTOR4, CubeListBuilder.create().texOffs(28, 16)
+                        .addBox("tubeConnector4_0", 0.0F, 4.0F, 0.0F, 3, 1, 1),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(TUBECONNECTOR5, CubeListBuilder.create().texOffs(32, 12)
+                        .addBox("tubeConnector5_0", -2.0F, 0.0F, 0.0F, 1, 3, 1),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(TUBECONNECTOR6, CubeListBuilder.create().texOffs(28, 10)
+                        .addBox("tubeConnector6_0", 0.0F, -2.0F, 0.0F, 3, 1, 1),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(FRAME1, CubeListBuilder.create().texOffs(32, 0)
+                        .addBox("frame1_0", 2.0F, 1.5F, -3.75F, 4, 1, 4),
+                PartPose.offset(-4.0F, 11.5F, 6.0F));
+        partdefinition.addOrReplaceChild(FRAME2, CubeListBuilder.create().texOffs(32, 5)
+                        .addBox("frame2_0", 2.0F, -1.5F, -3.75F, 4, 1, 4),
+                PartPose.offset(-4.0F, 19.5F, 6.0F));
+        partdefinition.addOrReplaceChild(FRAME3, CubeListBuilder.create().texOffs(0, 6)
+                        .addBox("frame3_0", -1.5F, 0.5F, -3.75F, 1, 6, 4),
+                PartPose.offset(3.5F, 12.5F, 6.0F));
+        partdefinition.addOrReplaceChild(FRAME4, CubeListBuilder.create().texOffs(0, 16)
+                        .addBox("frame4_0", 1.5F, 0.5F, -3.75F, 1, 6, 4),
+                PartPose.offset(-4.5F, 12.5F, 6.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 32);
+    }
+
+
     @Override
-    protected void renderDynamic(ModuleRedstone module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
-        tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        tubeConnector3.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        tubeConnector4.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        tubeConnector5.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        tubeConnector6.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+    protected void renderDynamic(ModuleRedstone module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+        tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        tubeConnector3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        tubeConnector4.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        tubeConnector5.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        tubeConnector6.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
 
         float[] cols = { 1f, 1f, 1f, 1f };
         if (!module.isFake()) {
@@ -90,14 +121,14 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone>
             cols = RenderUtils.decomposeColorF(0xFF300000 | (l * 13 << 16));
             matrixStack.pushPose();
             matrixStack.translate(0, 0, 5.2 / 16);
-            matrixStack.scale(1, 1, 0.25f + 0.72f * MathHelper.lerp(partialTicks, module.lastExtension, module.extension));
+            matrixStack.scale(1, 1, 0.25f + 0.72f * Mth.lerp(partialTicks, module.lastExtension, module.extension));
             matrixStack.translate(0, 0, -5.2 / 16);
         }
         redstoneConnector.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
         if (!module.isFake()) {
             matrixStack.popPose();
         }
-        cols = RenderUtils.decomposeColorF(0xFF000000 | DyeColor.byId(module.getColorChannel()).getColorValue());
+        cols = DyeColor.byId(module.getColorChannel()).getTextureDiffuseColors();
         frame1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
         frame2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
         frame3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);

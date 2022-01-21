@@ -20,28 +20,29 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SpawnerBlock;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SpawnerBlock;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class BlockSpawnerExtractor extends BlockPneumaticCraft {
+public class BlockSpawnerExtractor extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     private static final VoxelShape SHAPE = Stream.of(
             Block.box(10, 12, 2, 11, 31, 3),
             Block.box(-0.5, -2.5, 13.5, 16.5, 0.5, 16.5),
@@ -79,7 +80,7 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft {
             Block.box(9.5, 29.5, 3.75, 11.5, 31.5, 4.75),
             Block.box(9.5, 11.25, 1.5, 11.5, 12.25, 3.5),
             Block.box(0.5, 0, 0.5, 15.5, 12, 15.5)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     public BlockSpawnerExtractor() {
         super(ModBlocks.defaultProps());
@@ -88,30 +89,25 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
 
         builder.add(NORTH, SOUTH, WEST, EAST);
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntitySpawnerExtractor.class;
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
         BlockState below = worldIn.getBlockState(pos.below());
         return below.getBlock() instanceof SpawnerBlock || below.getBlock() instanceof BlockEmptySpawner;
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySpawnerExtractor.class)
@@ -119,7 +115,7 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft {
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (!canSurvive(stateIn, worldIn, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         } else {
@@ -127,5 +123,11 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft {
                     .ifPresent(TileEntitySpawnerExtractor::updateMode);
             return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
         }
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntitySpawnerExtractor(pPos, pState);
     }
 }

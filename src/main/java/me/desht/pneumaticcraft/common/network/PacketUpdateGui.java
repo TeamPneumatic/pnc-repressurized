@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -44,13 +44,13 @@ public class PacketUpdateGui {
         type = SyncedField.getType(syncField);
     }
 
-    public PacketUpdateGui(PacketBuffer buf) {
+    public PacketUpdateGui(FriendlyByteBuf buf) {
         syncId = buf.readVarInt();
         type = buf.readByte();
         value = SyncedField.fromBytes(buf, type);
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeVarInt(syncId);
         buf.writeByte(type);
         SyncedField.toBytes(buf, value, type);
@@ -58,8 +58,8 @@ public class PacketUpdateGui {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (Minecraft.getInstance().screen instanceof ContainerScreen) {
-                Container container = ((ContainerScreen<?>) Minecraft.getInstance().screen).getMenu();
+            if (Minecraft.getInstance().screen instanceof AbstractContainerScreen) {
+                AbstractContainerMenu container = ((AbstractContainerScreen<?>) Minecraft.getInstance().screen).getMenu();
                 if (container instanceof ContainerPneumaticBase) {
                     ((ContainerPneumaticBase<?>) container).updateField(syncId, value);
                 }

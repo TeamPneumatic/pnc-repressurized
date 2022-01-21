@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.LockableLootTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -37,7 +37,7 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
         super(pos);
     }
 
-    public PacketDescriptionPacketRequest(PacketBuffer buffer) {
+    public PacketDescriptionPacketRequest(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
@@ -45,7 +45,7 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.get().getSender());
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, true)) {
-                TileEntity te = ctx.get().getSender().level.getBlockEntity(pos);
+                BlockEntity te = ctx.get().getSender().level.getBlockEntity(pos);
                 if (te != null) {
                     forceLootGeneration(te);
                     NetworkHandler.sendToPlayer(new PacketSendNBTPacket(te), ctx.get().getSender());
@@ -60,9 +60,9 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
      * The client is not able to generate the loot.
      * @param te the tile entity
      */
-    private void forceLootGeneration(TileEntity te){
-        if(te instanceof LockableLootTileEntity){
-            LockableLootTileEntity teLoot = (LockableLootTileEntity)te;
+    private void forceLootGeneration(BlockEntity te){
+        if(te instanceof RandomizableContainerBlockEntity){
+            RandomizableContainerBlockEntity teLoot = (RandomizableContainerBlockEntity)te;
             teLoot.unpackLootTable(null);
         }
     }

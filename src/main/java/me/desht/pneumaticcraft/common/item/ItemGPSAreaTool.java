@@ -26,22 +26,25 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.network.play.server.SHeldItemChangePacket;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.text.*;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -62,45 +65,45 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext ctx) {
+    public InteractionResult useOn(UseOnContext ctx) {
         setGPSPosAndNotify(ctx.getPlayer(), ctx.getClickedPos(), ctx.getHand(), 0);
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
-        return ActionResultType.SUCCESS; // we don't want to use the item.
+        return InteractionResult.SUCCESS; // we don't want to use the item.
     }
 
     @Override
-    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (worldIn.isClientSide) {
             GuiGPSAreaTool.showGUI(stack, handIn, 0);
         }
-        return ActionResult.success(stack);
+        return InteractionResultHolder.success(stack);
     }
 
 
-    public static void setGPSPosAndNotify(PlayerEntity player, BlockPos pos, Hand hand, int index) {
+    public static void setGPSPosAndNotify(Player player, BlockPos pos, InteractionHand hand, int index) {
         ItemStack stack = player.getItemInHand(hand);
         setGPSLocation(stack, pos, index);
         if (!player.level.isClientSide) {
-            player.displayClientMessage(new StringTextComponent(TextFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
+            player.displayClientMessage(new TextComponent(ChatFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
                     .append(getMessageText(player.level, pos, index)), false);
-            if (player instanceof ServerPlayerEntity)
-                ((ServerPlayerEntity) player).connection.send(new SHeldItemChangePacket(player.inventory.selected));
+            if (player instanceof ServerPlayer sp)
+                sp.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
         }
     }
 
-    private static ITextComponent getMessageText(World worldIn, BlockPos pos, int index) {
-        ITextComponent translated = new TranslationTextComponent(worldIn.getBlockState(pos).getBlock().getDescriptionId());
-        IFormattableTextComponent blockName = worldIn.getChunkSource().isEntityTickingChunk(new ChunkPos(pos)) ?
-                new StringTextComponent(" (").append(translated).append(")") :
-                StringTextComponent.EMPTY.plainCopy();
-        String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW, pos.getX(), pos.getY(), pos.getZ());
-        return new StringTextComponent(str).withStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN).append(blockName.withStyle(TextFormatting.GREEN));
+    private static Component getMessageText(Level worldIn, BlockPos pos, int index) {
+        Component translated = PneumaticCraftUtils.getBlockNameAt(worldIn, pos);
+        MutableComponent blockName = worldIn.isLoaded(pos) ?
+                new TextComponent(" (").append(translated).append(")") :
+                TextComponent.EMPTY.plainCopy();
+        String str = String.format("P%d%s: [%d, %d, %d]", index + 1, ChatFormatting.YELLOW, pos.getX(), pos.getY(), pos.getZ());
+        return new TextComponent(str).withStyle(index == 0 ? ChatFormatting.RED : ChatFormatting.GREEN).append(blockName.withStyle(ChatFormatting.GREEN));
     }
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> infoList, TooltipFlag par4) {
         super.appendHoverText(stack, worldIn, infoList, par4);
 
         if (worldIn != null) {
@@ -122,7 +125,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
+    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean heldItem) {
         if (!world.isClientSide) {
             for (int index = 0; index < 2; index++) {
                 String var = getVariable(stack, index);
@@ -145,7 +148,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         return area;
     }
 
-    public static BlockPos getGPSLocation(World world, ItemStack gpsTool, int index) {
+    public static BlockPos getGPSLocation(Level world, ItemStack gpsTool, int index) {
         ProgWidgetArea area = getArea(gpsTool);
 
         String var = getVariable(gpsTool, index);
@@ -193,7 +196,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     }
 
     @Override
-    public void syncVariables(ServerPlayerEntity player, ItemStack stack) {
+    public void syncVariables(ServerPlayer player, ItemStack stack) {
         String v1 = getVariable(stack, 0);
         if (!v1.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v1);
         String v2 = getVariable(stack, 1);
@@ -201,14 +204,14 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     }
 
     @Override
-    public List<BlockPos> getStoredPositions(World world, @Nonnull ItemStack stack) {
+    public List<BlockPos> getStoredPositions(Level world, @Nonnull ItemStack stack) {
         Set<BlockPos> posSet = new HashSet<>();
         getArea(stack).getArea(posSet);
         return new ArrayList<>(posSet);
     }
 
     @Override
-    public List<BlockPos> getRawStoredPositions(World world, ItemStack stack) {
+    public List<BlockPos> getRawStoredPositions(Level world, ItemStack stack) {
         ProgWidgetArea area = getArea(stack);
         return ImmutableList.of(
                 new BlockPos(area.x1, area.y1, area.z1),

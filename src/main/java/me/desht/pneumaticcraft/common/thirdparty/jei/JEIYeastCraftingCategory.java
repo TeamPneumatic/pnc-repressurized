@@ -26,11 +26,11 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCrafti
         super(ModCategoryUid.YEAST_CRAFTING, YeastCraftingRecipe.class,
                 xlate("pneumaticcraft.gui.jei.title.yeastCrafting"),
                 guiHelper().createDrawable(Textures.GUI_JEI_YEAST_CRAFTING, 0, 0, 128, 40),
-                guiHelper().createDrawableIngredient(new ItemStack(ModItems.YEAST_CULTURE_BUCKET.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.YEAST_CULTURE_BUCKET.get()))
         );
     }
 
@@ -88,8 +88,8 @@ public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCrafti
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(YeastCraftingRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getTooltipStrings(YeastCraftingRecipe recipe, double mouseX, double mouseY) {
+        List<Component> res = new ArrayList<>();
         if (mouseX >= 48 && mouseX <= 80) {
             res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.jei.tooltip.yeastCrafting")));
         }

@@ -28,10 +28,10 @@ import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
     WidgetAnimatedStat infoStat;
     WidgetButtonExtended rangeButton;
 
-    public GuiPressurizedSpawner(ContainerPressurizedSpawner container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiPressurizedSpawner(ContainerPressurizedSpawner container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -49,14 +49,14 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
     public void init() {
         super.init();
 
-        addButton(rangeButton = new WidgetRangeToggleButton(leftPos + 152, topPos + 66, te));
+        addRenderableWidget(rangeButton = new WidgetRangeToggleButton(leftPos + 152, topPos + 66, te));
 
         infoStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURIZED_SPAWNER.get()), 0xFF4E4066, false);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         infoStat.setText(ImmutableList.of(
             xlate("pneumaticcraft.gui.tab.status.pressurizedSpawner.spawnRate", te.getSpawnInterval()),
@@ -77,7 +77,7 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
         if (te.problem == TileEntityVacuumTrap.Problems.NO_CORE) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressurized_spawner.no_core"));

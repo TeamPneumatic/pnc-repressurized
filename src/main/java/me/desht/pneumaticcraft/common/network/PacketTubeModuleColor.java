@@ -21,10 +21,10 @@ import me.desht.pneumaticcraft.common.block.tubes.INetworkedModule;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -43,7 +43,7 @@ public class PacketTubeModuleColor extends LocationIntPacket {
         this.side = module.getDirection();
     }
 
-    PacketTubeModuleColor(PacketBuffer buffer) {
+    PacketTubeModuleColor(FriendlyByteBuf buffer) {
         super(buffer);
 
         this.ourColor = buffer.readByte();
@@ -51,7 +51,7 @@ public class PacketTubeModuleColor extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
 
         buf.writeByte(ourColor);
@@ -60,7 +60,7 @@ public class PacketTubeModuleColor extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             if (player != null) {
                 PneumaticCraftUtils.getTileEntityAt(player.level, pos, TileEntityPressureTube.class).ifPresent(te -> {
                     TubeModule module = te.getModule(side);

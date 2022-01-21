@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +48,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
 
         boolean sideActive = false;
@@ -89,10 +89,10 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         if (isUsingSides()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"));
-        curTooltip.add(new StringTextComponent(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().get(0)));
+        curTooltip.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().get(0)));
         if (useCount) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", count));
     }
 
@@ -101,7 +101,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         boolean allSides = true;
         boolean noSides = true;
         for (boolean bool : accessingSides) {
@@ -120,12 +120,12 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
                     .filter(side -> accessingSides[side.get3DDataValue()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
-            return Collections.singletonList(new StringTextComponent(Strings.join(l, ", ")));
+            return Collections.singletonList(new TextComponent(Strings.join(l, ", ")));
         }
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
             if (accessingSides[i]) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
@@ -135,7 +135,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         for (int i = 0; i < 6; i++) {
             accessingSides[i] = tag.getBoolean(Direction.from3DDataValue(i).name());
@@ -145,7 +145,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         for (int i = 0; i < 6; i++) {
             buf.writeBoolean(accessingSides[i]);
@@ -155,7 +155,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         for (int i = 0; i < 6; i++) {
             accessingSides[i] = buf.readBoolean();

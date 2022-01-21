@@ -18,12 +18,15 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedAirCompressor;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockAdvancedAirCompressor extends BlockAirCompressor {
+    @Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityAdvancedAirCompressor.class;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityAdvancedAirCompressor(pPos, pState);
     }
-
 }

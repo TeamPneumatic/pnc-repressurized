@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.api.wrench;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.InteractionResult;
 
 import javax.annotation.Nonnull;
 import java.util.function.BiConsumer;
@@ -76,6 +76,6 @@ public interface IWrenchRegistry {
      * @param behaviourPost code to run when blocks from the mod have just been wrenched with the Pneumatic Wrench
      */
     void addModdedWrenchBehaviour(String modid,
-                                  BiFunction<ItemUseContext, BlockState, ActionResultType> behaviourPre,
-                                  BiConsumer<ItemUseContext, BlockState> behaviourPost);
+                                  BiFunction<UseOnContext, BlockState, InteractionResult> behaviourPre,
+                                  BiConsumer<UseOnContext, BlockState> behaviourPost);
 }

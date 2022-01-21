@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;

@@ -24,12 +24,12 @@ import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.ProgramDrill;
 import me.desht.pneumaticcraft.common.recipes.assembly.ProgramDrillLaser;
 import me.desht.pneumaticcraft.common.recipes.assembly.ProgramLaser;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -64,8 +64,8 @@ public class ItemAssemblyProgram extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
-        infoList.add(new StringTextComponent("Required Machines:"));
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> infoList, TooltipFlag par4) {
+        infoList.add(new TextComponent("Required Machines:"));
         infoList.add(bullet().append(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId())));
         Arrays.stream(getProgram().getRequiredMachines())
                 .map(machine -> bullet().append(xlate(machine.getMachineBlock().getDescriptionId())))

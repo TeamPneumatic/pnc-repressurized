@@ -66,10 +66,8 @@ public abstract class AuxConfigJson implements IAuxConfig {
         writeToJson(root);
         String jsonString = root.toString();
 
-        JsonParser parser = new JsonParser();
+        JsonElement el = JsonParser.parseString(jsonString);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        JsonElement el = parser.parse(jsonString);
         FileUtils.write(file, gson.toJson(el), Charsets.UTF_8);
     }
 
@@ -82,8 +80,7 @@ public abstract class AuxConfigJson implements IAuxConfig {
     }
 
     private void readFromFile() throws IOException {
-        JsonParser parser = new JsonParser();
-        JsonObject root = (JsonObject) parser.parse(FileUtils.readFileToString(file, Charsets.UTF_8));
+        JsonObject root = (JsonObject) JsonParser.parseString(FileUtils.readFileToString(file, Charsets.UTF_8));
         readFromJson(root);
     }
 

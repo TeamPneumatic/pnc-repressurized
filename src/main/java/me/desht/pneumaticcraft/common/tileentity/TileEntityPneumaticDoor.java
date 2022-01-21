@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityPneumaticDoor extends TileEntityTickableBase {
@@ -41,8 +41,8 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     @DescSynced
     public int color = DyeColor.WHITE.getId();
 
-    public TileEntityPneumaticDoor() {
-        super(ModTileEntities.PNEUMATIC_DOOR.get());
+    public TileEntityPneumaticDoor(BlockPos pos, BlockState state) {
+        super(ModTileEntities.PNEUMATIC_DOOR.get(), pos, state);
     }
 
     public void setRotationAngle(float rotationAngle) {
@@ -52,9 +52,9 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
         this.rotationAngle = rotationAngle;
 
         if (oldRotationAngle < 90f && rotationAngle == 90f) {
-            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(DoorBlock.OPEN, true));
+            nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(DoorBlock.OPEN, true));
         } else if (oldRotationAngle == 90f && rotationAngle < 90f) {
-            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(DoorBlock.OPEN, false));
+            nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(DoorBlock.OPEN, false));
         }
 
         // also rotate the TE for the other half of the door
@@ -73,7 +73,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
             color = (byte) dyeColor.getId();
             PneumaticCraftUtils.getTileEntityAt(level, getBlockPos(), TileEntityPneumaticDoor.class).ifPresent(topHalf -> {
                 topHalf.color = color;
-                if (!getLevel().isClientSide) {
+                if (!nonNullLevel().isClientSide) {
                     setChanged();
                     topHalf.setChanged();
                     sendDescriptionPacket();
@@ -85,21 +85,20 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     private boolean isTopDoor() {
-        return BlockPneumaticDoor.isTopDoor(getLevel().getBlockState(getBlockPos()));
+        return BlockPneumaticDoor.isTopDoor(nonNullLevel().getBlockState(getBlockPos()));
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
         super.save(tag);
 
         tag.putBoolean("rightGoing", rightGoing);
         tag.putInt("color", color);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         rightGoing = tag.getBoolean("rightGoing");
         color = tag.getInt("color");
@@ -107,7 +106,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
         super.serializeExtraItemData(blockEntityTag, preserveState);
 
         blockEntityTag.putInt("color", color);
@@ -119,8 +118,8 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
+    public AABB getRenderBoundingBox() {
+        return new AABB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
                 getBlockPos().getX() + 1, getBlockPos().getY() + 2, getBlockPos().getZ() + 1);
     }
 

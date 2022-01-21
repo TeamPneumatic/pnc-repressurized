@@ -24,11 +24,11 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.HashSet;
@@ -52,7 +52,7 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
 
             @Override
             protected boolean evaluate(BlockPos pos) {
-                TileEntity te = drone.world().getBlockEntity(pos);
+                BlockEntity te = drone.world().getBlockEntity(pos);
 
                 boolean[] sides = ((ISidedWidget) progWidget).getSides();
 

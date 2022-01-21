@@ -20,17 +20,17 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
-    private final ITextComponent localizedName;
+    private final Component localizedName;
     private final IDrawable background;
     private final IDrawable icon;
     private final ResourceLocation id;
     private final Class<? extends T> cls;
 
-    protected AbstractPNCCategory(ResourceLocation id, Class<? extends T> cls, ITextComponent localizedName, IDrawable background, IDrawable icon) {
+    protected AbstractPNCCategory(ResourceLocation id, Class<? extends T> cls, Component localizedName, IDrawable background, IDrawable icon) {
         this.id = id;
         this.cls = cls;
         this.localizedName = localizedName;
@@ -39,12 +39,7 @@ public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
     }
 
     @Override
-    public String getTitle() {
-        return null;
-    }
-
-    @Override
-    public ITextComponent getTitleAsTextComponent() {
+    public Component getTitle() {
         return localizedName;
     }
 

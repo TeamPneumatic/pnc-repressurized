@@ -19,22 +19,24 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModFluids;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
-public class BlockFluidEtchingAcid extends FlowingFluidBlock {
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+
+public class BlockFluidEtchingAcid extends LiquidBlock {
 
     public BlockFluidEtchingAcid(Properties props) {
         super(() -> (FlowingFluid) ModFluids.ETCHING_ACID.get(), props);
     }
 
     @Override
-    public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entity) {
         if (entity instanceof LivingEntity && entity.tickCount % 10 == 0) {
             entity.hurt(DamageSourcePneumaticCraft.ETCHING_ACID, 1);
         }

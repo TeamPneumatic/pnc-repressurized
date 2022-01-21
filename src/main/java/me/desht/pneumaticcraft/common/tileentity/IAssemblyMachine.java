@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nonnull;
 

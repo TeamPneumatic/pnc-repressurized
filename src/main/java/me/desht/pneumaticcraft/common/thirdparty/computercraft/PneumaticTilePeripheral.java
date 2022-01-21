@@ -26,18 +26,17 @@ import dan200.computercraft.api.peripheral.IDynamicPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEventManager.IComputerEventSender {
-    @SuppressWarnings("FieldMayBeFinal")
-    @CapabilityInject(IPeripheral.class)
-    public static Capability<IPeripheral> PERIPHERAL_CAPABILITY = null;
+    public static final Capability<IPeripheral> PERIPHERAL_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() { });
 
     private final ILuaMethodProvider provider;
     private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
@@ -85,7 +84,7 @@ public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEven
     }
 
     @Override
-    public void sendEvent(TileEntity te, String name, Object... params) {
+    public void sendEvent(BlockEntity te, String name, Object... params) {
         attachedComputers.forEach(a -> a.queueEvent(name, params));
     }
 }

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -29,15 +29,12 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -49,10 +46,10 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     private WidgetButtonExtended upgradeOnlyButton;
     private float renderAirProgress;
 
-    private static final ITextComponent UPGRADE_ONLY_ON = new StringTextComponent("\u2b06").withStyle(TextFormatting.AQUA);
-    private static final ITextComponent UPGRADE_ONLY_OFF = new StringTextComponent("\u2b06").withStyle(TextFormatting.GRAY);
+    private static final Component UPGRADE_ONLY_ON = new TextComponent("\u2b06").withStyle(ChatFormatting.AQUA);
+    private static final Component UPGRADE_ONLY_OFF = new TextComponent("\u2b06").withStyle(ChatFormatting.GRAY);
 
-    public GuiChargingStation(ContainerChargingStation container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiChargingStation(ContainerChargingStation container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 182;
@@ -62,12 +59,12 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     public void init() {
         super.init();
 
-        guiSelectButton = new WidgetButtonExtended(leftPos + 90, topPos + 22, 18, 19, StringTextComponent.EMPTY).withTag("open_upgrades");
+        guiSelectButton = new WidgetButtonExtended(leftPos + 90, topPos + 22, 18, 19, TextComponent.EMPTY).withTag("open_upgrades");
         guiSelectButton.setRenderedIcon(Textures.GUI_UPGRADES_LOCATION);
         guiSelectButton.visible = false;
-        addButton(guiSelectButton);
+        addRenderableWidget(guiSelectButton);
 
-        addButton(upgradeOnlyButton = new WidgetButtonExtended(leftPos + 129, topPos + 80, 14, 14, "U")
+        addRenderableWidget(upgradeOnlyButton = new WidgetButtonExtended(leftPos + 129, topPos + 80, 14, 14, "U")
                 .withTag("toggle_upgrade_only"));
     }
 
@@ -82,7 +79,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float opacity, int x, int y) {
+    protected void renderBg(PoseStack matrixStack, float opacity, int x, int y) {
         super.renderBg(matrixStack, opacity, x, y);
 
         if (te.upgradeOnly) {
@@ -93,8 +90,8 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
@@ -123,29 +120,29 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     }
 
     @Override
-    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
+    protected void addPressureStatInfo(List<Component> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         if (te.charging || te.discharging) {
             String key = te.charging ? "pneumaticcraft.gui.tooltip.charging" : "pneumaticcraft.gui.tooltip.discharging";
             String amount = PneumaticCraftUtils.roundNumberTo(PneumaticValues.CHARGING_STATION_CHARGE_RATE * te.getSpeedMultiplierFromUpgrades(), 1);
-            pressureStatText.add(xlate(key, amount).withStyle(TextFormatting.BLACK));
+            pressureStatText.add(xlate(key, amount).withStyle(ChatFormatting.BLACK));
         } else {
-            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.charging", 0).withStyle(TextFormatting.BLACK));
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.charging", 0).withStyle(ChatFormatting.BLACK));
         }
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> textList) {
+    protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (!chargeStack.isEmpty() && !chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             // shouldn't ever happen - I can't be bothered to add a translation
-            textList.add(new StringTextComponent(TextFormatting.RED + "Non-pneumatic item in the charge slot!?"));
+            textList.add(new TextComponent(ChatFormatting.RED + "Non-pneumatic item in the charge slot!?"));
         }
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> curInfo) {
+    protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (chargeStack.isEmpty()) {
@@ -164,9 +161,8 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         }
     }
 
-    private void renderAir(MatrixStack matrixStack) {
+    private void renderAir(PoseStack matrixStack) {
         RenderSystem.disableTexture();
-        RenderSystem.color4f(1, 1, 1, 1);
         RenderSystem.lineWidth(2.0F);
         int particles = 10;
         for (int i = 0; i < particles; i++) {
@@ -176,7 +172,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         RenderSystem.enableTexture();
     }
 
-    private void renderAirParticle(MatrixStack matrixStack, float particleProgress) {
+    private void renderAirParticle(PoseStack matrixStack, float particleProgress) {
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
         float x = xStart + 117F;
@@ -191,10 +187,11 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
             x -= 18;
             y -= (particleProgress - 0.7F) * 70;
         }
-        BufferBuilder wr = Tessellator.getInstance().getBuilder();
+        BufferBuilder wr = Tesselator.getInstance().getBuilder();
         GL11.glPointSize(5);
-        wr.begin(GL11.GL_POINTS, DefaultVertexFormats.POSITION);
+        wr.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION);
         wr.vertex(matrixStack.last().pose(), x, y, 0f).endVertex();
-        Tessellator.getInstance().end();
+        wr.vertex(matrixStack.last().pose(), x + 1, y + 1, 0f).endVertex();
+        Tesselator.getInstance().end();
     }
 }

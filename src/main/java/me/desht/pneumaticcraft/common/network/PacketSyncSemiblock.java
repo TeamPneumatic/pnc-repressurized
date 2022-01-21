@@ -22,10 +22,10 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
 import org.apache.commons.lang3.Validate;
 
 import java.util.function.Supplier;
@@ -38,22 +38,22 @@ import java.util.function.Supplier;
  */
 public class PacketSyncSemiblock {
     private final int entityID;  // -1 indicates no entity, sync'ing to item in hand
-    private final PacketBuffer payload;
+    private final FriendlyByteBuf payload;
 
     public PacketSyncSemiblock(ISemiBlock semiBlock) {
         this.entityID = semiBlock.getTrackingId();
-        this.payload = new PacketBuffer(Unpooled.buffer());
+        this.payload = new FriendlyByteBuf(Unpooled.buffer());
         semiBlock.writeToBuf(payload);
     }
 
-    PacketSyncSemiblock(PacketBuffer buffer) {
+    PacketSyncSemiblock(FriendlyByteBuf buffer) {
         this.entityID = buffer.readInt();
         int size = buffer.readVarInt();
-        this.payload = new PacketBuffer(Unpooled.buffer());
+        this.payload = new FriendlyByteBuf(Unpooled.buffer());
         buffer.readBytes(this.payload, size);
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeInt(entityID);
         buffer.writeVarInt(payload.writerIndex());
         buffer.writeBytes(payload);
@@ -70,7 +70,7 @@ public class PacketSyncSemiblock {
         ctx.get().setPacketHandled(true);
     }
 
-    private void handleServer(ServerPlayerEntity sender) {
+    private void handleServer(ServerPlayer sender) {
         if (entityID == -1) {
             if (sender.containerMenu instanceof ISyncableSemiblockItem) {
                 ((ISyncableSemiblockItem) sender.containerMenu).syncSemiblockItemFromClient(sender, payload);
@@ -82,10 +82,10 @@ public class PacketSyncSemiblock {
 
     private void handleClient() {
         Validate.isTrue(entityID >= 0);
-        processEntity(ClientUtils.getClientWorld());
+        processEntity(ClientUtils.getClientLevel());
     }
 
-    private void processEntity(World world) {
+    private void processEntity(Level world) {
         ISemiBlock semiBlock = ISemiBlock.byTrackingId(world, entityID);
         if (semiBlock != null) {
             semiBlock.readFromBuf(payload);

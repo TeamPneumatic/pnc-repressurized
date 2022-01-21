@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -31,12 +31,12 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant.TPProblem;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
@@ -50,7 +50,7 @@ public class GuiThermopneumaticProcessingPlant extends
     private WidgetButtonExtended dumpButton;
     private int nExposedFaces;
 
-    public GuiThermopneumaticProcessingPlant(ContainerThermopneumaticProcessingPlant container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiThermopneumaticProcessingPlant(ContainerThermopneumaticProcessingPlant container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
         imageHeight = 212;
     }
@@ -64,22 +64,22 @@ public class GuiThermopneumaticProcessingPlant extends
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(leftPos + 13, topPos + 19, te.getInputTank()));
-        addButton(new WidgetTank(leftPos + 79, topPos + 19, te.getOutputTank()));
+        addRenderableWidget(new WidgetTank(leftPos + 13, topPos + 19, te.getInputTank()));
+        addRenderableWidget(new WidgetTank(leftPos + 79, topPos + 19, te.getOutputTank()));
 
         tempWidget = new WidgetTemperature(leftPos + 105, topPos + 25, TemperatureRange.of(273, 673), 273, 50);
-        addButton(tempWidget);
+        addRenderableWidget(tempWidget);
 
-        dumpButton = new WidgetButtonExtended(leftPos + 14, topPos + 86, 14, 14, StringTextComponent.EMPTY)
+        dumpButton = new WidgetButtonExtended(leftPos + 14, topPos + 86, 14, 14, TextComponent.EMPTY)
                 .withTag("dump");
-        addButton(dumpButton);
+        addRenderableWidget(dumpButton);
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         if (te.maxTemperature > te.minTemperature && !te.getCurrentRecipeIdSynced().isEmpty()) {
             tempWidget.setOperatingRange(TemperatureRange.of(te.minTemperature, te.maxTemperature));
@@ -90,16 +90,16 @@ public class GuiThermopneumaticProcessingPlant extends
         tempWidget.autoScaleForTemperature();
 
         if (hasShiftDown()) {
-            dumpButton.setMessage(new StringTextComponent("X").withStyle(TextFormatting.RED));
+            dumpButton.setMessage(new TextComponent("X").withStyle(ChatFormatting.RED));
             dumpButton.setTooltipKey("pneumaticcraft.gui.thermopneumatic.dumpInput");
         } else {
-            dumpButton.setMessage(new StringTextComponent(Symbols.TRIANGLE_RIGHT).withStyle(TextFormatting.DARK_AQUA));
+            dumpButton.setMessage(new TextComponent(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA));
             dumpButton.setTooltipKey("pneumaticcraft.gui.thermopneumatic.moveInput");
         }
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
         super.renderBg(matrixStack, partialTicks, x, y);
 
         // animated progress bar
@@ -110,7 +110,7 @@ public class GuiThermopneumaticProcessingPlant extends
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         matrixStack.pushPose();
         matrixStack.scale(0.95f, 1f, 1f);
         font.draw(matrixStack, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2.1f , 5, 0x404040);
@@ -132,7 +132,7 @@ public class GuiThermopneumaticProcessingPlant extends
     }
 
     @Override
-    public void addProblems(List<ITextComponent> curInfo) {
+    public void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
         if (te.problem != null && te.problem != TPProblem.OK) {
@@ -141,7 +141,7 @@ public class GuiThermopneumaticProcessingPlant extends
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> curInfo) {
+    protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
 
         if (nExposedFaces > 0) {

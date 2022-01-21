@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
 
 import java.util.BitSet;
 
@@ -42,25 +42,25 @@ public class AxisOptions {
         options.set(axis.ordinal(), check);
     }
 
-    public void writeToNBT(CompoundNBT nbt) {
+    public void writeToNBT(CompoundTag nbt) {
         nbt.putBoolean("checkX", shouldCheck(Direction.Axis.X));
         nbt.putBoolean("checkY", shouldCheck(Direction.Axis.Y));
         nbt.putBoolean("checkZ", shouldCheck(Direction.Axis.Z));
     }
 
-    public void readFromNBT(CompoundNBT nbt, boolean def) {
+    public void readFromNBT(CompoundTag nbt, boolean def) {
         setCheck(Direction.Axis.X, nbt.contains("checkX") ? nbt.getBoolean("checkX") : def);
         setCheck(Direction.Axis.Y, nbt.contains("checkY") ? nbt.getBoolean("checkY") : def);
         setCheck(Direction.Axis.Z, nbt.contains("checkZ") ? nbt.getBoolean("checkZ") : def);
     }
 
-    public void writeToBuffer(PacketBuffer buffer) {
+    public void writeToBuffer(FriendlyByteBuf buffer) {
         buffer.writeBoolean(shouldCheck(Direction.Axis.X));
         buffer.writeBoolean(shouldCheck(Direction.Axis.Y));
         buffer.writeBoolean(shouldCheck(Direction.Axis.Z));
     }
 
-    public void readFromBuffer(PacketBuffer buffer) {
+    public void readFromBuffer(FriendlyByteBuf buffer) {
         setCheck(Direction.Axis.X, buffer.readBoolean());
         setCheck(Direction.Axis.Y, buffer.readBoolean());
         setCheck(Direction.Axis.Z, buffer.readBoolean());

@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -56,13 +56,13 @@ public class ElectricAttackHandler {
                             0, -dy, 0, (int) (dmg), 0, 0, 0), drone);
                 playLeakSound(drone);
             }
-        } else if (event.getEntityLiving() instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity)event.getEntityLiving();
+        } else if (event.getEntityLiving() instanceof Player) {
+            Player player = (Player)event.getEntityLiving();
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.SECURITY) > 0
-                    && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1
-                    && handler.isArmorReady(EquipmentSlotType.CHEST)) {
-                handler.addAir(EquipmentSlotType.CHEST, (int)(-150 * event.getAmount()));
+            if (handler.getUpgradeCount(EquipmentSlot.CHEST, EnumUpgrade.SECURITY) > 0
+                    && handler.getArmorPressure(EquipmentSlot.CHEST) > 0.1
+                    && handler.isArmorReady(EquipmentSlot.CHEST)) {
+                handler.addAir(EquipmentSlot.CHEST, (int)(-150 * event.getAmount()));
                 float sx = player.getRandom().nextFloat() * 1.5F - 0.75F;
                 float sz = player.getRandom().nextFloat() * 1.5F - 0.75F;
                 double dy = Math.min(event.getAmount() / 4, 0.5);
@@ -75,7 +75,7 @@ public class ElectricAttackHandler {
 
     private static void playLeakSound(Entity e) {
         if (e.level.getGameTime() - sounds.getOrDefault(e.getUUID(), 0L) > 16) {
-            e.level.playSound(null, e.blockPosition(), ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, 0.5f, 0.7f);
+            e.level.playSound(null, e.blockPosition(), ModSounds.LEAKING_GAS.get(), SoundSource.PLAYERS, 0.5f, 0.7f);
             sounds.put(e.getUUID(), e.level.getGameTime());
         }
     }

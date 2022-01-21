@@ -21,15 +21,15 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -52,7 +52,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (fluid == Fluids.EMPTY) curInfo.add(xlate("pneumaticcraft.gui.progWidget.liquidFilter.error.noLiquid"));
     }
@@ -78,7 +78,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         fluid = tag.contains("fluid") ?
                 ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("fluid"))) :
@@ -86,29 +86,29 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (fluid != Fluids.EMPTY) tag.putString("fluid", fluid.getRegistryName().toString());
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeFluidStack(new FluidStack(fluid, 1000));
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         fluid = buf.readFluidStack().getFluid();
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
         if (fluid != null) {
-            curTooltip.add(new StringTextComponent("Fluid: " )
-                    .withStyle(TextFormatting.AQUA)
+            curTooltip.add(new TextComponent("Fluid: " )
+                    .withStyle(ChatFormatting.AQUA)
                     .append(asTextComponent()));
         }
     }
@@ -151,11 +151,11 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         return Collections.singletonList(asTextComponent());
     }
 
-    private ITextComponent asTextComponent() {
+    private Component asTextComponent() {
         return fluid != Fluids.EMPTY ?
                 new FluidStack(fluid, 1).getDisplayName() :
                 xlate("pneumaticcraft.gui.progWidget.liquidFilter.noFluid");

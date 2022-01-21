@@ -21,27 +21,27 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.KeyMapping;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class KeybindingButton extends WidgetButtonExtended implements IKeybindingButton {
-    private final KeyBinding keyBinding;
-    private final ITextComponent origButtonText;
+    private final KeyMapping keyBinding;
+    private final Component origButtonText;
     private boolean bindingMode = false;
     private boolean modifier = false;
     private Action action = Action.NONE;
 
     private enum Action { NONE, ADD, REMOVE }
 
-    public KeybindingButton(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, KeyBinding keyBinding) {
+    public KeybindingButton(int startX, int startY, int xSize, int ySize, Component buttonText, KeyMapping keyBinding) {
         super(startX, startY, xSize, ySize, buttonText);
         this.keyBinding = keyBinding;
         this.origButtonText = buttonText;
@@ -66,38 +66,34 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
     private void setBindingMode(boolean newMode) {
         bindingMode = newMode;
         if (bindingMode) {
-            setMessage(xlate("pneumaticcraft.gui.setKeybind").withStyle(TextFormatting.YELLOW));
-            setTooltipText(StringTextComponent.EMPTY);
+            setMessage(xlate("pneumaticcraft.gui.setKeybind").withStyle(ChatFormatting.YELLOW));
+            setTooltipText(TextComponent.EMPTY);
         } else {
             setMessage(origButtonText);
             addTooltip();
             switch (action) {
-                case ADD:
-                    Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME, 1.0f, 1.0f);
-                    break;
-                case REMOVE:
-                    Minecraft.getInstance().player.playSound(SoundEvents.GLASS_BREAK, 1.0f, 1.0f);
-                    break;
+                case ADD -> Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME, 1.0f, 1.0f);
+                case REMOVE -> Minecraft.getInstance().player.playSound(SoundEvents.GLASS_BREAK, 1.0f, 1.0f);
             }
             action = Action.NONE;
         }
     }
 
     @Override
-    public boolean receiveKey(InputMappings.Type type, int keyCode) {
+    public boolean receiveKey(InputConstants.Type type, int keyCode) {
         if (bindingMode) {
-            if (type == InputMappings.Type.KEYSYM && keyCode == GLFW.GLFW_KEY_ESCAPE) {
-                keyBinding.setKeyModifierAndCode(KeyModifier.NONE, InputMappings.UNKNOWN);
-                Minecraft.getInstance().options.setKey(keyBinding, InputMappings.UNKNOWN);
+            if (type == InputConstants.Type.KEYSYM && keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                keyBinding.setKeyModifierAndCode(KeyModifier.NONE, InputConstants.UNKNOWN);
+                Minecraft.getInstance().options.setKey(keyBinding, InputConstants.UNKNOWN);
                 action = Action.REMOVE;
             } else {
-                InputMappings.Input input = type.getOrCreate(keyCode);
+                InputConstants.Key input = type.getOrCreate(keyCode);
                 modifier = KeyModifier.isKeyCodeModifier(input);
                 keyBinding.setKeyModifierAndCode(KeyModifier.getActiveModifier(), input);
                 Minecraft.getInstance().options.setKey(keyBinding, input);
                 action = Action.ADD;
             }
-            KeyBinding.resetMapping();
+            KeyMapping.resetMapping();
             onPress();
             return true;
         }

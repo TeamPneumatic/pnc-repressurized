@@ -18,17 +18,17 @@
 package me.desht.pneumaticcraft.api.drone;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.GoalSelector;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fluids.IFluidTank;
@@ -56,7 +56,7 @@ public interface IDrone extends ICapabilityProvider {
      *
      * @return a world
      */
-    World world();
+    Level world();
 
     /**
      * Get the drone's fluid tank.  Note that this is also accessible via the
@@ -80,7 +80,7 @@ public interface IDrone extends ICapabilityProvider {
      *
      * @return the entity position
      */
-    Vector3d getDronePos();
+    Vec3 getDronePos();
 
     /**
      * Get the position of the drone's controller. For actual drone entities, this will always be (0,0,0).  If the
@@ -155,7 +155,7 @@ public interface IDrone extends ICapabilityProvider {
      *
      * @param string a custom name
      */
-    void setName(ITextComponent string);
+    void setName(Component string);
 
     /**
      * Make the drone pick up the given entity.  The given entity will be set as a rider of the drone.
@@ -193,7 +193,7 @@ public interface IDrone extends ICapabilityProvider {
      *
      * @return the owning player; will be null if the owner is offline or the drone was not player-deployed
      */
-    PlayerEntity getOwner();
+    Player getOwner();
 
     /**
      * Get the UUID of the drone's owner.  This will be non-null even if the owning player is offline. A drone

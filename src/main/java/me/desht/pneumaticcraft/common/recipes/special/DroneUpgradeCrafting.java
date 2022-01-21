@@ -20,15 +20,15 @@ package me.desht.pneumaticcraft.common.recipes.special;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 
 public class DroneUpgradeCrafting extends ShapelessRecipe {
     // you'd think using Ingredient.fromTag(PneumaticCraftTags.Items.BASIC_DRONES) would work, but nope
@@ -47,7 +47,7 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack basicDrone = ItemStack.EMPTY;
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
@@ -58,7 +58,7 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
         }
         if (basicDrone.isEmpty()) return ItemStack.EMPTY;
         ItemStack drone = new ItemStack(ModItems.DRONE.get());
-        CompoundNBT droneTag = basicDrone.getOrCreateTag();
+        CompoundTag droneTag = basicDrone.getOrCreateTag();
         drone.setTag(droneTag);
         return drone;
     }
@@ -68,7 +68,7 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipes.DRONE_UPGRADE_CRAFTING.get();
     }
 }

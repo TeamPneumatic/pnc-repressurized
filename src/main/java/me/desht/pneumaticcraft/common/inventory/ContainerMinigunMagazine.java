@@ -21,26 +21,26 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityBase> {
     private final ItemMinigun.MagazineHandler gunInv;
-    private final Hand hand;
+    private final InteractionHand hand;
 
-    public ContainerMinigunMagazine(int i, PlayerInventory playerInventory, @SuppressWarnings("unused") PacketBuffer buffer) {
+    public ContainerMinigunMagazine(int i, Inventory playerInventory, @SuppressWarnings("unused") FriendlyByteBuf buffer) {
         this(i, playerInventory, getHand(buffer));
     }
 
-    public ContainerMinigunMagazine(int windowId, PlayerInventory playerInventory, Hand hand) {
+    public ContainerMinigunMagazine(int windowId, Inventory playerInventory, InteractionHand hand) {
         super(ModContainers.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
         this.hand = hand;
 
@@ -54,20 +54,20 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public void removed(PlayerEntity playerIn) {
+    public void removed(Player playerIn) {
         super.removed(playerIn);
 
         gunInv.save();
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 
     @Nonnull
     @Override
-    public ItemStack clicked(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
+    public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
         if (clickType == ClickType.CLONE && dragType == 2 && slotId >= 0 && slotId < ItemMinigun.MAGAZINE_SIZE) {
             // middle-click to lock a slot
             ItemStack gunStack = player.getItemInHand(hand);
@@ -82,13 +82,12 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
                     player.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1.0f);
                 }
             }
-            return ItemStack.EMPTY;
         } else {
-            return super.clicked(slotId, dragType, clickType, player);
+            super.clicked(slotId, dragType, clickType, player);
         }
     }
 
-    public Hand getHand() {
+    public InteractionHand getHand() {
         return hand;
     }
 }

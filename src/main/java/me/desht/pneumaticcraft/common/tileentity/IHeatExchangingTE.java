@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public interface IHeatExchangingTE {
      * Should this (heat-using) machine lose heat to the surrounding air blocks? Most blocks do.
      * @return true if heat will be lost to the air on exposed faces, false otherwise
      */
-    default BiPredicate<IWorld, BlockPos> heatExchangerBlockFilter() {
+    default BiPredicate<LevelAccessor, BlockPos> heatExchangerBlockFilter() {
         return IHeatExchangerLogic.ALL_BLOCKS;
     }
 
@@ -68,7 +68,7 @@ public interface IHeatExchangingTE {
      * @param world the TE's world
      * @param pos the TE's block pos
      */
-    default void initHeatExchangersOnPlacement(World world, BlockPos pos) {
+    default void initHeatExchangersOnPlacement(Level world, BlockPos pos) {
         IHeatExchangerLogic logic = getHeatExchanger();
         if (logic != null) logic.setTemperature(HeatExchangerLogicAmbient.getAmbientTemperature(world, pos));
     }
@@ -81,7 +81,7 @@ public interface IHeatExchangingTE {
      * @param world the TE's world
      * @param pos the TE's block pos
      */
-    default void initializeHullHeatExchangers(World world, BlockPos pos) {
+    default void initializeHullHeatExchangers(Level world, BlockPos pos) {
         Map<IHeatExchangerLogic, List<Direction>> map = new IdentityHashMap<>();
         for (Direction side : DirectionUtil.VALUES) {
             IHeatExchangerLogic logic = getHeatExchanger(side);

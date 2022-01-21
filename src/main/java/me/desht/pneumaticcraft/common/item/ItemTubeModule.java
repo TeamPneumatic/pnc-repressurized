@@ -20,17 +20,17 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -53,20 +53,20 @@ public class ItemTubeModule extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
 
         TubeModule module = createModule();
-        tooltip.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(TextFormatting.DARK_AQUA));
+        tooltip.add(new TextComponent("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(ChatFormatting.DARK_AQUA));
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         if (context.getPlayer() != null && context.getPlayer().isCrouching()) {
             // sneak-click module to attach it to opposite side of tube, if possible
             BlockState state = context.getLevel().getBlockState(context.getClickedPos());
             if (state.getBlock() instanceof BlockPressureTube) {
-                BlockRayTraceResult brtr = new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace().getOpposite(), context.getClickedPos(), false);
+                BlockHitResult brtr = new BlockHitResult(context.getClickLocation(), context.getClickedFace().getOpposite(), context.getClickedPos(), false);
                 return state.use(context.getLevel(), context.getPlayer(), context.getHand(), brtr);
             }
         }

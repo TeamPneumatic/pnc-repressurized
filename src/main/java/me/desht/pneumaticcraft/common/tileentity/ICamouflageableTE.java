@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Implement this interface in tile entities which should store a camouflaged state.  The corresponding block should
@@ -65,13 +65,13 @@ public interface ICamouflageableTE {
         }
     }
 
-    static BlockState readCamo(CompoundNBT tag) {
-        return tag.contains("camoState", Constants.NBT.TAG_COMPOUND) ? NBTUtil.readBlockState(tag.getCompound("camoState")) : null;
+    static BlockState readCamo(CompoundTag tag) {
+        return tag.contains("camoState", Tag.TAG_COMPOUND) ? NbtUtils.readBlockState(tag.getCompound("camoState")) : null;
     }
 
-    static void writeCamo(CompoundNBT tag, BlockState state) {
+    static void writeCamo(CompoundTag tag, BlockState state) {
         if (state != null) {
-            tag.put("camoState", NBTUtil.writeBlockState(state));
+            tag.put("camoState", NbtUtils.writeBlockState(state));
         }
     }
 }

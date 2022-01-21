@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker.RightClickType;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -43,26 +43,26 @@ public class GuiProgWidgetBlockRightClick extends GuiProgWidgetDigAndPlace<ProgW
         super.init();
 
         WidgetLabel sideLabel;
-        addButton(sideLabel = new WidgetLabel(guiLeft + 8, guiTop + 45, xlate("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")));
+        addRenderableWidget(sideLabel = new WidgetLabel(guiLeft + 8, guiTop + 45, xlate("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")));
 
         sideSelector = new WidgetComboBox(font, guiLeft + 8 + sideLabel.getWidth() + 5, guiTop + 43, 50, 12)
                 .initFromEnum(progWidget.getClickSide(), ClientUtils::translateDirection);
-        addButton(sideSelector);
+        addRenderableWidget(sideSelector);
 
         WidgetLabel opLabel;
-        addButton(opLabel = new WidgetLabel(guiLeft + 8, guiTop + 65,
+        addRenderableWidget(opLabel = new WidgetLabel(guiLeft + 8, guiTop + 65,
                 xlate("pneumaticcraft.gui.progWidget.blockRightClick.operation")));
 
         clickTypeSelector = new WidgetComboBox(font, guiLeft + 8 + opLabel.getWidth() + 5, guiTop + 63, 80, 12)
                 .initFromEnum(progWidget.getClickType());
         clickTypeSelector.setTooltip(GuiUtils.xlateAndSplit("pneumaticcraft.gui.progWidget.blockRightClick.clickType.tooltip"));
-        addButton(clickTypeSelector);
+        addRenderableWidget(clickTypeSelector);
 
         checkboxSneaking = new WidgetCheckBox(guiLeft + 8, guiTop + 83, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"))
                 .setChecked(progWidget.isSneaking())
                 .setTooltipKey("pneumaticcraft.gui.progWidget.blockRightClick.sneaking.tooltip");
-        addButton(checkboxSneaking);
+        addRenderableWidget(checkboxSneaking);
     }
 
     @Override

@@ -17,102 +17,137 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAssemblyIOUnit> {
-    private final ModelRenderer baseTurn;
-    private final ModelRenderer baseTurn2;
-    private final ModelRenderer armBase;
-    private final ModelRenderer armMiddle;
-    private final ModelRenderer clawBase;
-    private final ModelRenderer clawAxle;
-    private final ModelRenderer clawTurn;
-    private final ModelRenderer claw1;
-    private final ModelRenderer claw2;
+    private final ModelPart baseTurn;
+    private final ModelPart baseTurn2;
+    private final ModelPart armBase;
+    private final ModelPart armMiddle;
+    private final ModelPart clawBase;
+    private final ModelPart clawAxle;
+    private final ModelPart clawTurn;
+    private final ModelPart claw1;
+    private final ModelPart claw2;
 
     private static final float ITEM_SCALE = 0.5F;
 
-    public RenderAssemblyIOUnit(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private static final String BASETURN = "baseTurn";
+    private static final String BASETURN2 = "baseTurn2";
+    private static final String ARMBASE = "armBase";
+    private static final String ARMMIDDLE = "armMiddle";
+    private static final String CLAWBASE = "clawBase";
+    private static final String CLAWAXLE = "clawAxle";
+    private static final String CLAWTURN = "clawTurn";
+    private static final String CLAW1 = "claw1";
+    private static final String CLAW2 = "claw2";
 
-        baseTurn = new ModelRenderer(64, 64, 0, 0);
-        baseTurn.setPos(-3.5F, 22.0F, -3.5F);
-        baseTurn.texOffs(0, 0).addBox(-1.0F, 0.0F, -1.0F, 9.0F, 1.0F, 9.0F, 0.0F, true);
+    public RenderAssemblyIOUnit(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
 
-        baseTurn2 = new ModelRenderer(64, 64, 0, 0);
-        baseTurn2.setPos(-2.0F, 17.0F, -2.0F);
-        baseTurn2.texOffs(0, 30).addBox(-2.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, false);
-        baseTurn2.texOffs(0, 10).addBox(-2.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
-        baseTurn2.texOffs(10, 30).addBox(4.0F, -0.5F, 0.5F, 2.0F, 6.0F, 3.0F, 0.2F, true);
-        baseTurn2.texOffs(0, 20).addBox(4.0F, 3.75F, -2.0F, 2.0F, 2.0F, 8.0F, 0.0F, true);
-
-        armBase = new ModelRenderer(64, 64, 0, 0);
-        armBase.setPos(-3.0F, 17.0F, -1.0F);
-        armBase.texOffs(0, 49).addBox(2.0F, 0.0F, 1.0F, 2.0F, 2.0F, 5.0F, 0.3F, true);
-        armBase.texOffs(0, 43).addBox(1.5F, -0.5F, -0.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
-        armBase.texOffs(12, 43).addBox(1.5F, -0.5F, 5.5F, 3.0F, 3.0F, 3.0F, 0.0F, true);
-        armBase.texOffs(0, 39).addBox(-1.5F, 0.0F, 0.0F, 9.0F, 2.0F, 2.0F, 0.0F, true);
-
-        armMiddle = new ModelRenderer(64, 64, 0, 0);
-        armMiddle.setPos(-4.0F, 2.0F, 5.0F);
-        armMiddle.texOffs(20, 10).addBox(0.0F, 2.0F, 0.0F, 2.0F, 13.0F, 2.0F, 0.0F, true);
-        armMiddle.texOffs(12, 24).addBox(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
-        armMiddle.texOffs(0, 24).addBox(0.0F, 15.0F, 0.0F, 2.0F, 2.0F, 2.0F, 0.3F, true);
-        armMiddle.texOffs(14, 52).addBox(-0.5F, 15.0F, 0.0F, 3.0F, 2.0F, 2.0F, 0.0F, true);
-
-
-        clawBase = new ModelRenderer(64, 64, 0, 0);
-        clawBase.setPos(-1.0F, 2.0F, 4.5F);
-        clawBase.texOffs(46, 0).addBox(-1.0F, -1.0F, 0.0F, 4.0F, 4.0F, 5.0F, 0.0F, true);
-
-        clawAxle = new ModelRenderer(64, 64, 0, 0);
-        clawAxle.setPos(-0.5F, 2.5F, 4.0F);
-        clawAxle.texOffs(58, 9).addBox(-0.5F, -0.5F, 0.0F, 2.0F, 2.0F, 1.0F, 0.0F, true);
-
-        clawTurn = new ModelRenderer(64, 64, 0, 0);
-        clawTurn.setPos(-2.0F, 2.0F, 3.0F);
-        clawTurn.texOffs(54, 12).addBox(0.0F, -0.5F, 0.0F, 4.0F, 3.0F, 1.0F, 0.1F, true);
-
-        claw1 = new ModelRenderer(64, 64, 0, 0);
-        claw1.setPos(0.0F, 2.0F, 2.25F);
-        claw1.texOffs(52, 21).addBox(-0.1F, -0.5F, -1.35F, 1.0F, 3.0F, 2.0F, -0.1F, true);
-        claw1.texOffs(58, 21).addBox(0.25F, 0.0F, -1.35F, 1.0F, 2.0F, 2.0F, 0.0F, true);
-
-        claw2 = new ModelRenderer(64, 64, 0, 0);
-        claw2.setPos(-1.0F, 2.0F, 2.25F);
-        claw2.texOffs(52, 16).addBox(0.1F, -0.5F, -1.35F, 1.0F, 3.0F, 2.0F, -0.1F, true);
-        claw2.texOffs(58, 16).addBox(-0.25F, 0.0F, -1.35F, 1.0F, 2.0F, 2.0F, 0.0F, true);
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_IO_UNIT);
+        baseTurn = root.getChild(BASETURN);
+        baseTurn2 = root.getChild(BASETURN2);
+        armBase = root.getChild(ARMBASE);
+        armMiddle = root.getChild(ARMMIDDLE);
+        clawBase = root.getChild(CLAWBASE);
+        clawAxle = root.getChild(CLAWAXLE);
+        clawTurn = root.getChild(CLAWTURN);
+        claw1 = root.getChild(CLAW1);
+        claw2 = root.getChild(CLAW2);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(BASETURN, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("baseTurn_0", -1.0F, 0.0F, -1.0F, 9, 1, 9, 0, 0)
+                        .mirror(),
+                PartPose.offset(-3.5F, 22.0F, -3.5F));
+        partdefinition.addOrReplaceChild(BASETURN2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("baseTurn2_0", -2.0F, -0.5F, 0.5F, 2, 6, 3, 0, 30)
+                        .addBox("baseTurn2_1", -2.0F, 3.75F, -2.0F, 2, 2, 8, 0, 10)
+                        .addBox("baseTurn2_2", 4.0F, -0.5F, 0.5F, 2, 6, 3, 10, 30)
+                        .addBox("baseTurn2_3", 4.0F, 3.75F, -2.0F, 2, 2, 8, 0, 20)
+                        .mirror(),
+                PartPose.offset(-2.0F, 17.0F, -2.0F));
+        partdefinition.addOrReplaceChild(ARMBASE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("armBase_0", 2.0F, 0.0F, 1.0F, 2, 2, 5, 0, 49)
+                        .addBox("armBase_1", 1.5F, -0.5F, -0.5F, 3, 3, 3, 0, 43)
+                        .addBox("armBase_2", 1.5F, -0.5F, 5.5F, 3, 3, 3, 12, 43)
+                        .addBox("armBase_3", -1.5F, 0.0F, 0.0F, 9, 2, 2, 0, 39)
+                        .mirror(),
+                PartPose.offset(-3.0F, 17.0F, -1.0F));
+        partdefinition.addOrReplaceChild(ARMMIDDLE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("armMiddle_0", 0.0F, 2.0F, 0.0F, 2, 13, 2, 20, 10)
+                        .addBox("armMiddle_1", 0.0F, 0.0F, 0.0F, 2, 2, 2, 12, 24)
+                        .addBox("armMiddle_2", 0.0F, 15.0F, 0.0F, 2, 2, 2, 0, 24)
+                        .addBox("armMiddle_3", -0.5F, 15.0F, 0.0F, 3, 2, 2, 14, 52)
+                        .mirror(),
+                PartPose.offset(-4.0F, 2.0F, 5.0F));
+        partdefinition.addOrReplaceChild(CLAWBASE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("clawBase_0", -1.0F, -1.0F, 0.0F, 4, 4, 5, 46, 0)
+                        .mirror(),
+                PartPose.offset(-1.0F, 2.0F, 4.5F));
+        partdefinition.addOrReplaceChild(CLAWAXLE, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("clawAxle_0", -0.5F, -0.5F, 0.0F, 2, 2, 1, 58, 9)
+                        .mirror(),
+                PartPose.offset(-0.5F, 2.5F, 4.0F));
+        partdefinition.addOrReplaceChild(CLAWTURN, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("clawTurn_0", 0.0F, -0.5F, 0.0F, 4, 3, 1, 54, 12)
+                        .mirror(),
+                PartPose.offset(-2.0F, 2.0F, 3.0F));
+        partdefinition.addOrReplaceChild(CLAW1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("claw1_0", -0.1F, -0.5F, -1.35F, 1, 3, 2, 52, 21)
+                        .addBox("claw1_1", 0.25F, 0.0F, -1.35F, 1, 2, 2, 58, 21)
+                        .mirror(),
+                PartPose.offset(0.0F, 2.0F, 2.25F));
+        partdefinition.addOrReplaceChild(CLAW2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("claw2_0", 0.1F, -0.5F, -1.35F, 1, 3, 2, 52, 16)
+                        .addBox("claw2_1", -0.25F, 0.0F, -1.35F, 1, 2, 2, 58, 16)
+                        .mirror(),
+                PartPose.offset(-1.0F, 2.0F, 2.25F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+
     @Override
-    void renderModel(TileEntityAssemblyIOUnit te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(TileEntityAssemblyIOUnit te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 5; i++) {
             angles[i] = te.oldAngles[i] + (te.angles[i] - te.oldAngles[i]) * partialTicks;
         }
 
         ItemStack heldStack = te.getPrimaryInventory().getStackInSlot(0);
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTexture(te)));
-        Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(MathHelper.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTexture(te)));
+        Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
 
         matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(angles[0]));
 
@@ -164,8 +199,8 @@ public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAs
                 matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(-90));
                 matrixStackIn.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                IBakedModel ibakedmodel = itemRenderer.getModel(heldStack, te.getLevel(), null);
-                itemRenderer.render(heldStack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+                BakedModel bakedModel = itemRenderer.getModel(heldStack, te.getLevel(), null, 0);
+                itemRenderer.render(heldStack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
             }
         }
     }

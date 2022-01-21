@@ -17,40 +17,37 @@
 
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.StringTextComponent;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiPressureModule extends GuiTubeModule<TubeModule> {
-    private TextFieldWidget lowerBoundField;
-    private TextFieldWidget higherBoundField;
+    private EditBox lowerBoundField;
+    private EditBox higherBoundField;
     private int graphLowY;
     private int graphHighY;
     private int graphLeft;
     private int graphRight;
-    private Rectangle2d lowerBoundArea, higherBoundArea;
+    private Rect2i lowerBoundArea, higherBoundArea;
     private boolean grabLower, grabHigher;
 
     public static GuiTubeModule<?> createGUI(TubeModule module) {
@@ -68,45 +65,45 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        addLabel(new StringTextComponent("lower"), guiLeft + 15, guiTop + 33);
-        addLabel(new StringTextComponent("bar"), guiLeft + 50, guiTop + 44);
-        addLabel(new StringTextComponent("higher"), guiLeft + 140, guiTop + 33);
+        addLabel(new TextComponent("lower"), guiLeft + 15, guiTop + 33);
+        addLabel(new TextComponent("bar"), guiLeft + 50, guiTop + 44);
+        addLabel(new TextComponent("higher"), guiLeft + 140, guiTop + 33);
 
         addLabel(title, width / 2 - font.width(title) / 2, guiTop + 5);
 
-        lowerBoundField = new TextFieldWidget(font, xStart + 15, yStart + 43, 30, 10,
-                new StringTextComponent(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1)));
+        lowerBoundField = new EditBox(font, xStart + 15, yStart + 43, 30, 10,
+                new TextComponent(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1)));
         lowerBoundField.setResponder(s -> updateBoundFromTextfield(0));
-        addButton(lowerBoundField);
+        addRenderableWidget(lowerBoundField);
 
-        higherBoundField = new TextFieldWidget(font, xStart + 140, yStart + 43, 30, 10,
-                new StringTextComponent(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1)));
+        higherBoundField = new EditBox(font, xStart + 140, yStart + 43, 30, 10,
+                new TextComponent(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1)));
         higherBoundField.setResponder(s -> updateBoundFromTextfield(1));
-        addButton(higherBoundField);
+        addRenderableWidget(higherBoundField);
 
         graphLowY = guiTop + 158;
         graphHighY = guiTop + 98;
         graphLeft = guiLeft + 22;
         graphRight = guiLeft + 172;
 
-        addButton(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY,
+        addRenderableWidget(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY,
                 xlate("pneumaticcraft.gui.redstone")));
-        addButton(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25,
+        addRenderableWidget(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25,
                 xlate("pneumaticcraft.gui.threshold")));
 
         WidgetAnimatedStat stat = new WidgetAnimatedStat(this, xlate("pneumaticcraft.gui.tab.info"), WidgetAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
         stat.setText(xlate("pneumaticcraft.gui.tab.info.tubeModule"));
         stat.setBeveled(true);
-        addButton(stat);
+        addRenderableWidget(stat);
 
         WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = b.checked;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         }).setTooltipKey("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip").setChecked(true);
-        addButton(advancedMode);
+        addRenderableWidget(advancedMode);
 
-        higherBoundArea = new Rectangle2d(guiLeft + 11, guiTop + 59, 158, 15);
-        lowerBoundArea = new Rectangle2d(guiLeft + 11, guiTop + 73, 158, 15);
+        higherBoundArea = new Rect2i(guiLeft + 11, guiTop + 59, 158, 15);
+        lowerBoundArea = new Rect2i(guiLeft + 11, guiTop + 73, 158, 15);
     }
 
     @Override
@@ -115,8 +112,8 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     }
 
     @Override
-    public void drawForeground(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        minecraft.getTextureManager().bind(getTexture());
+    public void drawForeground(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        GuiUtils.bindTexture(getTexture());
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.lowerBound / (TubeModule.MAX_VALUE + 1)));
         int scrollbarHigherBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.higherBound / (TubeModule.MAX_VALUE + 1)));
 
@@ -135,8 +132,8 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         }
 
         // the actual graph data
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuilder();
-        bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.disableTexture();
@@ -146,13 +143,13 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
             float x = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30f;
             bufferBuilder.vertex(posMat, x, y, 90f).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
         }
-        Tessellator.getInstance().end();
+        Tesselator.getInstance().end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
 
     }
 
-    private void renderGraph(MatrixStack matrixStack) {
+    private void renderGraph(PoseStack matrixStack) {
         vLine(matrixStack, graphLeft, graphHighY, graphLowY, 0xFF303030);
         for (int i = 0; i < 16; i++) {
             boolean longer = i % 5 == 0;
@@ -177,22 +174,21 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         try {
             float prev;
             switch (fieldId) {
-                case 0:
+                case 0 -> {
                     prev = module.lowerBound;
-                    module.lowerBound = MathHelper.clamp(Float.parseFloat(lowerBoundField.getValue()), -1, TubeModule.MAX_VALUE);
-                    if (!MathHelper.equal(module.lowerBound, prev)) {
+                    module.lowerBound = Mth.clamp(Float.parseFloat(lowerBoundField.getValue()), -1, TubeModule.MAX_VALUE);
+                    if (!Mth.equal(module.lowerBound, prev)) {
                         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
                     }
-                    break;
-                case 1:
+                }
+                case 1 -> {
                     prev = module.higherBound;
-                    module.higherBound = MathHelper.clamp(Float.parseFloat(higherBoundField.getValue()), -1, TubeModule.MAX_VALUE);
-                    if (!MathHelper.equal(module.higherBound, prev)) {
+                    module.higherBound = Mth.clamp(Float.parseFloat(higherBoundField.getValue()), -1, TubeModule.MAX_VALUE);
+                    if (!Mth.equal(module.higherBound, prev)) {
                         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
                     }
-                    break;
-                default:
-                    throw new IllegalArgumentException("unknown field id " + fieldId);
+                }
+                default -> throw new IllegalArgumentException("unknown field id " + fieldId);
             }
         } catch (NumberFormatException ignored) {
         }

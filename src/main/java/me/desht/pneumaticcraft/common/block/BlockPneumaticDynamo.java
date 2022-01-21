@@ -20,23 +20,23 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDynamo;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public class BlockPneumaticDynamo extends BlockPneumaticCraft {
+public class BlockPneumaticDynamo extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
 
     private static final VoxelShape SHAPE_UP = Stream.of(
             Block.box(0, 0, 0, 16, 10, 16),
@@ -49,7 +49,7 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraft {
             Block.box(15, 11, 0, 16, 12, 16),
             Block.box(1, 11, 0, 15, 12, 1),
             Block.box(1, 11, 15, 15, 12, 16)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
     private static final VoxelShape SHAPE_NORTH = VoxelShapeUtils.rotateX(SHAPE_UP, 270);
     private static final VoxelShape SHAPE_DOWN = VoxelShapeUtils.rotateX(SHAPE_NORTH, 270);
     private static final VoxelShape SHAPE_SOUTH = VoxelShapeUtils.rotateY(SHAPE_NORTH, 180);
@@ -67,12 +67,7 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraft {
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityPneumaticDynamo.class;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(ACTIVE);
     }
@@ -89,14 +84,20 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraft {
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         // coil faces the block it's placed against
         BlockState state = super.getStateForPlacement(ctx);
         return state == null ? null : state.setValue(directionProperty(), ctx.getClickedFace());
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPES[getRotation(state).get3DDataValue()];
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityPneumaticDynamo(pPos, pState);
     }
 }

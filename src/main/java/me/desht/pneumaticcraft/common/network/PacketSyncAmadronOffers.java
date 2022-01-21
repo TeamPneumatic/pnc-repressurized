@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class PacketSyncAmadronOffers {
         this.activeOffers = AmadronOfferManager.getInstance().getActiveOffers();
     }
 
-    public PacketSyncAmadronOffers(PacketBuffer buf) {
+    public PacketSyncAmadronOffers(FriendlyByteBuf buf) {
         this.notifyPlayer = buf.readBoolean();
         this.activeOffers = new ArrayList<>();
         int offerCount = buf.readVarInt();
@@ -55,7 +55,7 @@ public class PacketSyncAmadronOffers {
         }
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeBoolean(notifyPlayer);
         buf.writeVarInt(activeOffers.size());
         for (AmadronRecipe offer : activeOffers) {

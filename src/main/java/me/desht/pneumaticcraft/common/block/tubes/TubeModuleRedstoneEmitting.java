@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public abstract class TubeModuleRedstoneEmitting extends TubeModule {
      * @return true if the redstone has changed compared to last time.
      */
     boolean setRedstone(int level) {
-        level = MathHelper.clamp(level, 0, 15);
+        level = Mth.clamp(level, 0, 15);
         if (redstone != level) {
             redstone = level;
             updateNeighbors();
@@ -53,37 +53,35 @@ public abstract class TubeModuleRedstoneEmitting extends TubeModule {
     }
 
     @Override
-    public void addInfo(List<ITextComponent> curInfo) {
+    public void addInfo(List<Component> curInfo) {
         super.addInfo(curInfo);
         curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.emitting", redstone));
     }
 
     @Override
-    public CompoundNBT writeToNBT(CompoundNBT tag) {
+    public CompoundTag writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         tag.putInt("redstone", redstone);
         return tag;
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         redstone = tag.getInt("redstone");
     }
 
     @Override
-    public void update() {
+    public void tickCommon() {
         if (upgraded && !advancedConfig) {
             if (higherBound < lowerBound) {
                 if (higherBound != lowerBound - 0.1F) {
                     higherBound = lowerBound - 0.1F;
-                    if (!pressureTube.getLevel().isClientSide) sendDescriptionPacket();
+                    sendDescriptionPacket();
                 }
-            } else {
-                if (higherBound != lowerBound + 0.1F) {
-                    higherBound = lowerBound + 0.1F;
-                    if (!pressureTube.getLevel().isClientSide) sendDescriptionPacket();
-                }
+            } else if (higherBound != lowerBound + 0.1F) {
+                higherBound = lowerBound + 0.1F;
+                sendDescriptionPacket();
             }
         }
     }

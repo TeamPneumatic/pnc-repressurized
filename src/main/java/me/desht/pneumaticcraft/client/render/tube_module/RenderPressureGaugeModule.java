@@ -1,99 +1,127 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer3D;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 
 public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePressureGauge> {
     private static final float GAUGE_SCALE = 0.007f;
 
-    private final ModelRenderer tubeConnector1;
-    private final ModelRenderer tubeConnector2;
-    private final ModelRenderer faceplate;
-    private final ModelRenderer gauge1;
-    private final ModelRenderer gauge2;
-    private final ModelRenderer gauge3;
-    private final ModelRenderer gauge4;
-    private final ModelRenderer gauge5;
-    private final ModelRenderer gauge6;
-    private final ModelRenderer gauge7;
-    private final ModelRenderer gauge8;
+    private final ModelPart tubeConnector1;
+    private final ModelPart tubeConnector2;
+    private final ModelPart faceplate;
+    private final ModelPart gauge1;
+    private final ModelPart gauge2;
+    private final ModelPart gauge3;
+    private final ModelPart gauge4;
+    private final ModelPart gauge5;
+    private final ModelPart gauge6;
+    private final ModelPart gauge7;
+    private final ModelPart gauge8;
 
-    public RenderPressureGaugeModule() {
-        tubeConnector1 = new ModelRenderer(64, 32, 0, 0);
-        tubeConnector1.addBox(0.0F, 0.0F, 0.0F, 3.0F, 3.0F, 3.0F);
-        tubeConnector1.setPos(-1.5F, 14.5F, 2.0F);
-        tubeConnector1.mirror = true;
-        tubeConnector2 = new ModelRenderer(64, 32, 22, 6);
-        tubeConnector2.addBox(-2.0F, -2.0F, 2.0F, 7.0F, 7.0F, 1.0F);
-        tubeConnector2.setPos(-1.5F, 14.5F, 2.0F);
-        tubeConnector2.mirror = true;
+    private static final String TUBECONNECTOR1 = "tubeConnector1";
+    private static final String TUBECONNECTOR2 = "tubeConnector2";
+    private static final String FACEPLATE = "faceplate";
+    private static final String GAUGE1 = "gauge1";
+    private static final String GAUGE2 = "gauge2";
+    private static final String GAUGE3 = "gauge3";
+    private static final String GAUGE4 = "gauge4";
+    private static final String GAUGE5 = "gauge5";
+    private static final String GAUGE6 = "gauge6";
+    private static final String GAUGE7 = "gauge7";
+    private static final String GAUGE8 = "gauge8";
 
-        faceplate = new ModelRenderer(64, 32, 0, 6);
-        faceplate.addBox(-1.0F, -1.0F, 0.0F, 10.0F, 10.0F, 1.0F);
-        faceplate.setPos(-4.0F, 12.0F, 5.0F);
-        faceplate.mirror = true;
+    public RenderPressureGaugeModule(BlockEntityRendererProvider.Context ctx) {
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.PRESSURE_GAUGE_MODULE);
+        tubeConnector1 = root.getChild(TUBECONNECTOR1);
+        tubeConnector2 = root.getChild(TUBECONNECTOR2);
+        faceplate = root.getChild(FACEPLATE);
+        gauge1 = root.getChild(GAUGE1);
+        gauge2 = root.getChild(GAUGE2);
+        gauge3 = root.getChild(GAUGE3);
+        gauge4 = root.getChild(GAUGE4);
+        gauge5 = root.getChild(GAUGE5);
+        gauge6 = root.getChild(GAUGE6);
+        gauge7 = root.getChild(GAUGE7);
+        gauge8 = root.getChild(GAUGE8);
+    }
 
-        gauge1 = new ModelRenderer(64, 32, 0, 17);
-        gauge1.addBox(-3.0F, -2.0F, 0.0F, 1.0F, 4.0F, 1.0F);
-        gauge1.setPos(-1.0F, 16.0F, 5.5F);
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
 
-        gauge2 = new ModelRenderer(64, 32, 4, 17);
-        gauge2.addBox(4.0F, -2.0F, 0.0F, 1.0F, 4.0F, 1.0F);
-        gauge2.setPos(-1.0F, 16.0F, 5.5F);
+        partdefinition.addOrReplaceChild(TUBECONNECTOR1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("tubeConnector1_0", 0.0F, 0.0F, 0.0F, 3, 3, 3),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(TUBECONNECTOR2, CubeListBuilder.create().texOffs(22, 6)
+                        .addBox("tubeConnector2_0", -2.0F, -2.0F, 2.0F, 7, 7, 1),
+                PartPose.offset(-1.5F, 14.5F, 2.0F));
+        partdefinition.addOrReplaceChild(FACEPLATE, CubeListBuilder.create().texOffs(0, 6)
+                        .addBox("faceplate_0", -1.0F, -1.0F, 0.0F, 10, 10, 1),
+                PartPose.offset(-4.0F, 12.0F, 5.0F));
+        partdefinition.addOrReplaceChild(GAUGE1, CubeListBuilder.create().texOffs(0, 17)
+                        .addBox("gauge1_0", -3.0F, -2.0F, 0.0F, 1, 4, 1),
+                PartPose.offset(-1.0F, 16.0F, 5.5F));
+        partdefinition.addOrReplaceChild(GAUGE2, CubeListBuilder.create().texOffs(4, 17)
+                        .addBox("gauge2_0", 4.0F, -2.0F, 0.0F, 1, 4, 1),
+                PartPose.offset(-1.0F, 16.0F, 5.5F));
+        partdefinition.addOrReplaceChild(GAUGE3, CubeListBuilder.create().texOffs(8, 17)
+                        .addBox("gauge3_0", 3.0F, -3.0F, 0.0F, 1, 1, 1),
+                PartPose.offset(-1.0F, 16.0F, 5.5F));
+        partdefinition.addOrReplaceChild(GAUGE4, CubeListBuilder.create().texOffs(12, 17)
+                        .addBox("gauge4_0", 3.0F, 2.0F, 0.0F, 1, 1, 1),
+                PartPose.offset(-1.0F, 16.0F, 5.5F));
+        partdefinition.addOrReplaceChild(GAUGE5, CubeListBuilder.create().texOffs(8, 19)
+                        .addBox("gauge5_0", -2.0F, -3.0F, 0.0F, 1, 1, 1),
+                PartPose.offset(-1.0F, 16.0F, 5.5F));
+        partdefinition.addOrReplaceChild(GAUGE6, CubeListBuilder.create().texOffs(12, 19)
+                        .addBox("gauge6_0", -2.0F, 2.0F, 0.0F, 1, 1, 1),
+                PartPose.offset(-1.0F, 16.0F, 5.5F));
+        partdefinition.addOrReplaceChild(GAUGE7, CubeListBuilder.create().texOffs(0, 24)
+                        .addBox("gauge7_0", -1.0F, 3.0F, 0.0F, 4, 1, 1),
+                PartPose.offset(-1.0F, 16.0F, 5.5F));
+        partdefinition.addOrReplaceChild(GAUGE8, CubeListBuilder.create().texOffs(0, 22)
+                        .addBox("gauge8_0", -1.0F, -4.0F, 0.0F, 4, 1, 1),
+                PartPose.offset(-1.0F, 16.0F, 5.5F));
 
-        gauge3 = new ModelRenderer(64, 32, 8, 17);
-        gauge3.addBox(3.0F, -3.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        gauge3.setPos(-1.0F, 16.0F, 5.5F);
+        return LayerDefinition.create(meshdefinition, 64, 32);
+    }
 
-        gauge4 = new ModelRenderer(64, 32, 12, 17);
-        gauge4.addBox(3.0F, 2.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        gauge4.setPos(-1.0F, 16.0F, 5.5F);
 
-        gauge5 = new ModelRenderer(64, 32, 8, 19);
-        gauge5.addBox(-2.0F, -3.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        gauge5.setPos(-1.0F, 16.0F, 5.5F);
-
-        gauge6 = new ModelRenderer(64, 32, 12, 19);
-        gauge6.addBox(-2.0F, 2.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        gauge6.setPos(-1.0F, 16.0F, 5.5F);
-
-        gauge7 = new ModelRenderer(64, 32, 0, 24);
-        gauge7.addBox(-1.0F, 3.0F, 0.0F, 4.0F, 1.0F, 1.0F);
-        gauge7.setPos(-1.0F, 16.0F, 5.5F);
-
-        gauge8 = new ModelRenderer(64, 32, 0, 22);
-        gauge8.addBox(-1.0F, -4.0F, 0.0F, 4.0F, 1.0F, 1.0F);
-        gauge8.setPos(-1.0F, 16.0F, 5.5F);
+    @Override
+    protected void renderDynamic(ModulePressureGauge module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+        tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        gauge1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        gauge2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        gauge3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        gauge4.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        gauge5.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        gauge6.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        gauge7.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
+        gauge8.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
     }
 
     @Override
-    protected void renderDynamic(ModulePressureGauge module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
-        tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        gauge1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        gauge2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        gauge3.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        gauge4.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        gauge5.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        gauge6.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        gauge7.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        gauge8.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-    }
-
-    @Override
-    public void renderExtras(ModulePressureGauge module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
+    public void renderExtras(ModulePressureGauge module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         BlockPos pos = module.getTube().getBlockPos();
         if (ClientUtils.getClientPlayer().distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
 

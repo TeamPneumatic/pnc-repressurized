@@ -20,18 +20,18 @@ package me.desht.pneumaticcraft.common.recipes.special;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmoStandard;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.PotionItem;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapelessRecipe;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -44,7 +44,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack potion = ItemStack.EMPTY;
         ItemStack ammo = ItemStack.EMPTY;
         for (int i = 0; i < inv.getContainerSize(); i++) {
@@ -65,7 +65,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipes.GUN_AMMO_POTION_CRAFTING.get();
     }
 
@@ -77,7 +77,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
         @Override
         public ItemStack[] getItems() {
             NonNullList<ItemStack> potions = NonNullList.create();
-            for (Potion p : ForgeRegistries.POTION_TYPES.getValues()) {
+            for (Potion p : ForgeRegistries.POTIONS.getValues()) {
                 if (p != Potions.EMPTY) potions.add(PotionUtils.setPotion(new ItemStack(Items.POTION), p));
             }
 

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -34,17 +34,17 @@ import me.desht.pneumaticcraft.common.item.ItemRemote;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateRemoteLayout;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public class GuiRemoteEditor extends GuiRemote {
     private int dragWidgetStartX, dragWidgetStartY;
     private int oldGuiLeft, oldGuiTop;
 
-    public GuiRemoteEditor(ContainerRemote container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiRemoteEditor(ContainerRemote container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageWidth = 283;
@@ -74,18 +74,18 @@ public class GuiRemoteEditor extends GuiRemote {
     @Override
     public void init() {
         if (pastebinGui != null && pastebinGui.outputTag != null) {
-            CompoundNBT tag = remote.getOrCreateTag();
-            tag.put("actionWidgets", pastebinGui.outputTag.getList("main", Constants.NBT.TAG_COMPOUND));
+            CompoundTag tag = remote.getOrCreateTag();
+            tag.put("actionWidgets", pastebinGui.outputTag.getList("main", Tag.TAG_COMPOUND));
         } else if (remoteLayout != null) {
-            CompoundNBT tag = remote.getOrCreateTag();
-            tag.put("actionWidgets", remoteLayout.toNBT(oldGuiLeft, oldGuiTop).getList("actionWidgets", Constants.NBT.TAG_COMPOUND));
+            CompoundTag tag = remote.getOrCreateTag();
+            tag.put("actionWidgets", remoteLayout.toNBT(oldGuiLeft, oldGuiTop).getList("actionWidgets", Tag.TAG_COMPOUND));
         }
 
         if (invSearchGui != null && invSearchGui.getSearchStack().getItem() == ModItems.REMOTE.get()) {
             if (ItemRemote.hasSameSecuritySettings(remote, invSearchGui.getSearchStack())) {
                 remoteLayout = new RemoteLayout(invSearchGui.getSearchStack(), leftPos, topPos);
             } else {
-                minecraft.player.displayClientMessage(new StringTextComponent("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
+                minecraft.player.displayClientMessage(new TextComponent("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
             }
         }
 
@@ -101,15 +101,15 @@ public class GuiRemoteEditor extends GuiRemote {
         widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, leftPos + 200, topPos + 80, 70, font.lineHeight + 1).setFixedOptions()));
 
         for (ActionWidget<?> actionWidget : widgetTray) {
-            addButton(actionWidget.getWidget());
+            addRenderableWidget(actionWidget.getWidget());
         }
 
-        addButton(new WidgetButtonExtended(leftPos - 24, topPos, 20, 20, StringTextComponent.EMPTY, b -> doImport())
+        addRenderableWidget(new WidgetButtonExtended(leftPos - 24, topPos, 20, 20, TextComponent.EMPTY, b -> doImport())
                 .setTooltipText(xlate("pneumaticcraft.gui.remote.button.importRemoteButton"))
                 .setRenderStacks(new ItemStack(ModItems.REMOTE.get()))
         );
 
-        addButton(new WidgetButtonExtended(leftPos - 24, topPos + 22, 20, 20, StringTextComponent.EMPTY, b -> doPastebin())
+        addRenderableWidget(new WidgetButtonExtended(leftPos - 24, topPos + 22, 20, 20, TextComponent.EMPTY, b -> doPastebin())
                 .setTooltipText(xlate("pneumaticcraft.gui.remote.button.pastebinButton"))
                 .setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION)
         );
@@ -117,15 +117,15 @@ public class GuiRemoteEditor extends GuiRemote {
         WidgetCheckBox snapCheck = new WidgetCheckBox(leftPos + 194, topPos + 105, 0xFF404040, xlate("pneumaticcraft.gui.misc.snapToGrid"),
                 b -> ConfigHelper.setGuiRemoteGridSnap(b.checked));
         snapCheck.checked = ConfigHelper.client().general.guiRemoteGridSnap.get();
-        addButton(snapCheck);
+        addRenderableWidget(snapCheck);
 
-        addButton(new WidgetLabel(leftPos + 234, topPos + 7, xlate("pneumaticcraft.gui.remote.widgetTray").withStyle(TextFormatting.BOLD)).setAlignment(WidgetLabel.Alignment.CENTRE));
+        addRenderableWidget(new WidgetLabel(leftPos + 234, topPos + 7, xlate("pneumaticcraft.gui.remote.widgetTray").withStyle(ChatFormatting.BOLD)).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
     }
 
     private void doImport() {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TranslationTextComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
         if (minecraft.screen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setStackPredicate(s -> s.getItem() == ModItems.REMOTE.get());
@@ -133,8 +133,8 @@ public class GuiRemoteEditor extends GuiRemote {
     }
 
     private void doPastebin() {
-        CompoundNBT mainTag = new CompoundNBT();
-        mainTag.put("main", remote.hasTag() ? remote.getTag().getList("actionWidgets", Constants.NBT.TAG_COMPOUND) : new CompoundNBT());
+        CompoundTag mainTag = new CompoundTag();
+        mainTag.put("main", remote.hasTag() ? remote.getTag().getList("actionWidgets", Tag.TAG_COMPOUND) : new CompoundTag());
         minecraft.setScreen(pastebinGui = new GuiPastebin(this, mainTag));
     }
 
@@ -144,7 +144,7 @@ public class GuiRemoteEditor extends GuiRemote {
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
         renderBackground(matrixStack);
         bindGuiTexture();
         blit(matrixStack, leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
@@ -157,7 +157,7 @@ public class GuiRemoteEditor extends GuiRemote {
     }
 
     private boolean isOutsideProgrammingArea(ActionWidget<?> actionWidget) {
-        Widget w = actionWidget.getWidget();
+        AbstractWidget w = actionWidget.getWidget();
         return w.x < leftPos || w.y < topPos || w.x + w.getWidth() > leftPos + 183 || w.y + w.getHeight() > topPos + imageHeight;
     }
 
@@ -170,17 +170,17 @@ public class GuiRemoteEditor extends GuiRemote {
             case 0:
                 // left click - drag widget
                 for (ActionWidget<?> actionWidget : widgetTray) {
-                    if (actionWidget.getWidget().isHovered()) {
+                    if (actionWidget.getWidget().isHoveredOrFocused()) {
                         // create new widget from tray
                         startDrag(actionWidget.copy(), x, y);
                         remoteLayout.addWidget(draggingWidget);
-                        addButton(draggingWidget.getWidget());
+                        addRenderableWidget(draggingWidget.getWidget());
                         return true;
                     }
                 }
                 if (draggingWidget == null) {
                     for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
-                        if (actionWidget.getWidget().isHovered()) {
+                        if (actionWidget.getWidget().isHoveredOrFocused()) {
                             // move existing widget
                             startDrag(actionWidget, x, y);
                             return true;
@@ -192,7 +192,7 @@ public class GuiRemoteEditor extends GuiRemote {
                 // right click - configure widget
                 for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
                     if (!isOutsideProgrammingArea(actionWidget)) {
-                        if (actionWidget.getWidget().isHovered()) {
+                        if (actionWidget.getWidget().isHoveredOrFocused()) {
                             Screen screen = actionWidget.getGui(this);
                             if (screen != null) minecraft.setScreen(screen);
                             return true;
@@ -203,10 +203,10 @@ public class GuiRemoteEditor extends GuiRemote {
             case 2:
                 // middle click - copy existing widget
                 for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
-                    if (actionWidget.getWidget().isHovered()) {
+                    if (actionWidget.getWidget().isHoveredOrFocused()) {
                         startDrag(actionWidget.copy(), x, y);
                         remoteLayout.addWidget(draggingWidget);
-                        addButton(draggingWidget.getWidget());
+                        addRenderableWidget(draggingWidget.getWidget());
                         return true;
                     }
                 }
@@ -264,8 +264,8 @@ public class GuiRemoteEditor extends GuiRemote {
     public void removed() {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(menu.getHand());
         if (stack.getItem() == ModItems.REMOTE.get()) {
-            CompoundNBT nbt = remoteLayout.toNBT(leftPos, topPos);
-            stack.getOrCreateTag().put("actionWidgets", nbt.getList("actionWidgets", Constants.NBT.TAG_COMPOUND));
+            CompoundTag nbt = remoteLayout.toNBT(leftPos, topPos);
+            stack.getOrCreateTag().put("actionWidgets", nbt.getList("actionWidgets", Tag.TAG_COMPOUND));
             NetworkHandler.sendToServer(new PacketUpdateRemoteLayout(remoteLayout.toNBT(leftPos, topPos), menu.getHand()));
         }
 

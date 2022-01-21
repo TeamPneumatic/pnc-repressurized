@@ -26,12 +26,12 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     private int gpsY;
     private int gpsZ;
 
-    public GuiAirCannon(ContainerAirCannon container, PlayerInventory inventoryPlayer, ITextComponent displayName) {
+    public GuiAirCannon(ContainerAirCannon container, Inventory inventoryPlayer, Component displayName) {
         super(container, inventoryPlayer, displayName);
 
         gpsX = te.gpsX;
@@ -68,7 +68,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         strengthTab.addSubWidget(new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"));
         strengthTab.addSubWidget(new WidgetButtonExtended(82, 16, 20, 20, "++").withTag("++"));
 
-        addLabel(new StringTextComponent("GPS"),  leftPos + 50, topPos + 20);
+        addLabel(new TextComponent("GPS"),  leftPos + 50, topPos + 20);
     }
 
     @Override
@@ -77,8 +77,8 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         statusStat.setText(getStatusText());
         strengthTab.setMessage(xlate("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult));
@@ -91,21 +91,21 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         }
     }
 
-    private List<ITextComponent> getStatusText() {
-        List<ITextComponent> text = new ArrayList<>();
+    private List<Component> getStatusText() {
+        List<Component> text = new ArrayList<>();
         if (te.gpsX != 0 || te.gpsY != 0 || te.gpsZ != 0) {
-            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ).withStyle(TextFormatting.BLACK));
+            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ).withStyle(ChatFormatting.BLACK));
         } else {
-            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.no_coord").withStyle(TextFormatting.BLACK));
+            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.no_coord").withStyle(ChatFormatting.BLACK));
         }
-        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)).withStyle(TextFormatting.BLACK));
-        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.height", Math.round(te.heightAngle)).withStyle(TextFormatting.BLACK));
-        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)).withStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)).withStyle(ChatFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.height", Math.round(te.heightAngle)).withStyle(ChatFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)).withStyle(ChatFormatting.BLACK));
         return text;
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> textList) {
+    protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
 
         if (te.hasNoConnectedAirHandlers()) {
@@ -126,12 +126,12 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> curInfo) {
+    protected void addWarnings(List<Component> curInfo) {
         // nothing: override default redstone warnings
     }
 
     @Override
-    protected void addInformation(List<ITextComponent> curInfo) {
+    protected void addInformation(List<Component> curInfo) {
         super.addInformation(curInfo);
         if (curInfo.isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.tooltip.apply_redstone"));

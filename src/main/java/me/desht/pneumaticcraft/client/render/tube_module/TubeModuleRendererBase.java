@@ -1,24 +1,17 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public abstract class TubeModuleRendererBase<T extends TubeModule> {
     private boolean isUpgraded;
 
-    protected final void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.xRot = x;
-        model.yRot = y;
-        model.zRot = z;
-    }
-
-    public final void renderModule(T module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
+    public final void renderModule(T module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
 
         // transforms to get model orientation right
@@ -27,23 +20,23 @@ public abstract class TubeModuleRendererBase<T extends TubeModule> {
 
         RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
         isUpgraded = module.isUpgraded();
-        float a = module.isFake() ? 0.3f : 1f;
+        float alpha = module.isFake() ? 0.3f : 1f;
 
-        IVertexBuilder builder = module.isFake() ?
+        VertexConsumer builder = module.isFake() ?
                 buffer.getBuffer(RenderType.entityTranslucent(getTexture())) :
                 buffer.getBuffer(RenderType.entityCutout(getTexture()));
-        renderDynamic(module, matrixStack, builder, partialTicks, combinedLight, combinedOverlay, 1, 1, 1, a);
+        renderDynamic(module, matrixStack, builder, partialTicks, combinedLight, combinedOverlay, alpha);
 
         matrixStack.popPose();
 
         renderExtras(module, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
     }
 
-    protected abstract void renderDynamic(T module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a);
+    protected abstract void renderDynamic(T module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha);
 
     protected abstract ResourceLocation getTexture();
 
-    public void renderExtras(T module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
+    public void renderExtras(T module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         // nothing; override in subclasses
     }
 

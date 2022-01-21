@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.hacking;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 
 public class WorldAndCoord {
-    public final IBlockReader world;
+    public final BlockGetter world;
     public final BlockPos pos;
 
-    public WorldAndCoord(IBlockReader world, BlockPos pos) {
+    public WorldAndCoord(BlockGetter world, BlockPos pos) {
         this.world = world;
         this.pos = pos;
     }

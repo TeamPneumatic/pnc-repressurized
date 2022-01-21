@@ -18,19 +18,22 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
 
 import java.util.stream.Stream;
 
-public abstract class BlockAssemblyIOUnit extends BlockPneumaticCraft {
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import org.jetbrains.annotations.Nullable;
+
+public abstract class BlockAssemblyIOUnit extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     private static final VoxelShape SHAPE = Stream.of(
             Block.box(3.5, 1, 3.5, 12.5, 2, 12.5),
             Block.box(4, 1.25, 4, 6, 3.25, 12),
@@ -39,20 +42,21 @@ public abstract class BlockAssemblyIOUnit extends BlockPneumaticCraft {
             Block.box(9.8, 1.3, 6.3, 12.2, 7.7, 9.7),
             Block.box(3.5, 5, 7, 12.5, 7, 9),
             Block.box(0, 0, 0, 16, 1, 16)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     public BlockAssemblyIOUnit(Properties props) {
         super(props);
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         return SHAPE;
     }
 
+    @Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityAssemblyIOUnit.class;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityAssemblyIOUnit(pPos, pState);
     }
 
     public static class Import extends BlockAssemblyIOUnit {

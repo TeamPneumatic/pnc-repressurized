@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tags.ITag;
-import net.minecraft.world.World;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
@@ -37,7 +37,7 @@ public enum FuelRegistry implements IFuelRegistry {
     private static final FuelRecord MISSING_FUEL_ENTRY = new FuelRecord(0, 1f);
 
     // values which have been registered in code (could be accessed from off-thread via API)
-    private final Map<ITag<Fluid>, FuelRecord> fuelTags = new ConcurrentHashMap<>();
+    private final Map<Tag<Fluid>, FuelRecord> fuelTags = new ConcurrentHashMap<>();
 
     private final Map<Fluid, FuelRecord> cachedFuels = new HashMap<>();  // cleared on a /reload
     private final Map<Fluid, FuelRecord> hotFluids = new HashMap<>();
@@ -47,7 +47,7 @@ public enum FuelRegistry implements IFuelRegistry {
     }
 
     @Override
-    public void registerFuel(ITag<Fluid> fluidTag, int mLPerBucket, float burnRateMultiplier) {
+    public void registerFuel(Tag<Fluid> fluidTag, int mLPerBucket, float burnRateMultiplier) {
         Validate.notNull(fluidTag);
         Validate.isTrue(mLPerBucket >= 0, "mlPerBucket can't be < 0!");
         Validate.isTrue(burnRateMultiplier > 0f, "burnRate can't be <= 0!");
@@ -67,17 +67,17 @@ public enum FuelRegistry implements IFuelRegistry {
     }
 
     @Override
-    public int getFuelValue(World world, Fluid fluid) {
+    public int getFuelValue(Level world, Fluid fluid) {
         return cachedFuels.computeIfAbsent(fluid, k -> findEntry(world, fluid)).mLperBucket;
     }
 
     @Override
-    public float getBurnRateMultiplier(World world, Fluid fluid) {
+    public float getBurnRateMultiplier(Level world, Fluid fluid) {
         return cachedFuels.computeIfAbsent(fluid, k -> findEntry(world, fluid)).burnRateMultiplier;
     }
 
     @Override
-    public Collection<Fluid> registeredFuels(World world) {
+    public Collection<Fluid> registeredFuels(Level world) {
         Set<Fluid> res = new HashSet<>(hotFluids.keySet());
 
         // recipes, from datapacks
@@ -104,7 +104,7 @@ public enum FuelRegistry implements IFuelRegistry {
         cachedFuels.clear();
     }
 
-    private FuelRecord findEntry(World world, Fluid fluid) {
+    private FuelRecord findEntry(Level world, Fluid fluid) {
         // special case for high-temperature fluids
         FuelRecord fe = hotFluids.get(fluid);
         if (fe != null) return fe;
@@ -117,7 +117,7 @@ public enum FuelRegistry implements IFuelRegistry {
         }
 
         // fluid tags registered in code
-        for (Map.Entry<ITag<Fluid>, FuelRecord> entry : fuelTags.entrySet()) {
+        for (Map.Entry<Tag<Fluid>, FuelRecord> entry : fuelTags.entrySet()) {
             if (entry.getKey().contains(fluid)) {
                 return entry.getValue();
             }

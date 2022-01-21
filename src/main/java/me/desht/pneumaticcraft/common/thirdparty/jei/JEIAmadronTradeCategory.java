@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -27,9 +27,9 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
         super(ModCategoryUid.AMADRON_TRADE, AmadronRecipe.class,
                 xlate(ModItems.AMADRON_TABLET.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.WIDGET_AMADRON_OFFER, 0, 0, 73, 35),
-                guiHelper().createDrawableIngredient(new ItemStack(ModItems.AMADRON_TABLET.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.AMADRON_TABLET.get()))
         );
 
         limitedIcon = guiHelper()
@@ -94,8 +94,8 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     }
 
     @Override
-    public void draw(AmadronRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-        FontRenderer fr = Minecraft.getInstance().font;
+    public void draw(AmadronRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+        Font fr = Minecraft.getInstance().font;
         int x = (getBackground().getWidth() - fr.width(recipe.getVendorName())) / 2;
         if (recipe.isLocationLimited()) {
             limitedIcon.draw(matrixStack, 60, -4);
@@ -104,8 +104,8 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(AmadronRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getTooltipStrings(AmadronRecipe recipe, double mouseX, double mouseY) {
+        List<Component> res = new ArrayList<>();
         if (mouseX >= 22 && mouseX <= 51) {
             WidgetAmadronOffer.addTooltip(recipe, res, -1);
         }
@@ -130,8 +130,8 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
         }
 
         @Override
-        public void draw(MatrixStack matrixStack, int x, int y) {
-            FontRenderer fr = Minecraft.getInstance().font;
+        public void draw(PoseStack matrixStack, int x, int y) {
+            Font fr = Minecraft.getInstance().font;
             fr.drawShadow(matrixStack, text, x + getWidth() - fr.width(text), y + getHeight() - fr.lineHeight, 0xFFFFFFFF);
         }
     }

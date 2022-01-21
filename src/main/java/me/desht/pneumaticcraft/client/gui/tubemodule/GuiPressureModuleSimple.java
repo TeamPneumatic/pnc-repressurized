@@ -25,9 +25,9 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -52,30 +52,30 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
             module.advancedConfig = true;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
         }).setTooltipKey("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip").setChecked(false);
-        addButton(advancedMode);
+        addRenderableWidget(advancedMode);
 
         thresholdField = new WidgetTextFieldNumber(font, guiLeft + 105, guiTop + 35, 30, font.lineHeight + 2)
                 .setDecimals(1)
                 .setAdjustments(0.1, 1.0);
-        addButton(thresholdField);
+        addRenderableWidget(thresholdField);
         setFocused(thresholdField);
         thresholdField.setWidth(40);
         thresholdField.setFocus(true);
 
         if (module instanceof TubeModuleRedstoneReceiving) {
             thresholdField.setValue(((TubeModuleRedstoneReceiving) module).getThreshold());
-            ITextComponent s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.threshold");
+            Component s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.threshold");
             addLabel(s, guiLeft + 80 - font.width(s), guiTop + 36);
         } else {
             thresholdField.setValue(module.lowerBound);
-            ITextComponent s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.turn");
+            Component s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.turn");
             addLabel(s,guiLeft + 80 - font.width(s), guiTop + 36);
             moreOrLessButton = new WidgetButtonExtended(guiLeft + 85, guiTop + 33, 16, 16, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
             moreOrLessButton.setTooltipText(xlate(module.lowerBound < module.higherBound ?
                     "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" :
                     "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan")
             );
-            addButton(moreOrLessButton);
+            addRenderableWidget(moreOrLessButton);
         }
         addLabel(xlate("pneumaticcraft.gui.general.bar"), thresholdField.x + thresholdField.getWidth() + 3, thresholdField.y + 1);
     }
@@ -86,7 +86,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
         module.lowerBound = temp;
 
         updateThreshold();
-        moreOrLessButton.setMessage(new StringTextComponent(module.lowerBound < module.higherBound ? ">" : "<"));
+        moreOrLessButton.setMessage(new TextComponent(module.lowerBound < module.higherBound ? ">" : "<"));
         moreOrLessButton.setTooltipText(xlate(module.lowerBound < module.higherBound ?
                 "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" :
                 "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan")

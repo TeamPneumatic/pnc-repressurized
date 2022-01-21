@@ -19,28 +19,28 @@ package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.core.ModEntities;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 
 public class EntityRing extends Entity {
     public ProgressingLine ring, oldRing;
     private final Entity targetEntity;
     public final int color;
 
-    public EntityRing(EntityType<EntityRing> type, World world) {
+    public EntityRing(EntityType<EntityRing> type, Level world) {
         super(type, world);
 
         targetEntity = null;
         color = 0;
     }
 
-    public EntityRing(World par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
+    public EntityRing(Level par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
         super(ModEntities.RING.get(), par1World);
 
         setPos(startX, startY, startZ);
@@ -53,9 +53,11 @@ public class EntityRing extends Entity {
         double dx = targetEntity.getX() - getX();
         double dy = targetEntity.getY() - getY();
         double dz = targetEntity.getZ() - getZ();
-        float f = MathHelper.sqrt(dx * dx + dz * dz);
-        yRotO = yRot = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
-        xRotO = xRot = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);
+        float f = Mth.sqrt((float) (dx * dx + dz * dz));
+        setYRot((float) (Math.atan2(dx, dz) * 180.0D / Math.PI));
+        setXRot((float) (Math.atan2(dy, f) * 180.0D / Math.PI));
+        yRotO = getYRot();
+        xRotO = getXRot();
         noCulling = true;
         if (par1World.isClientSide) {
             setViewScale(10.0D);
@@ -63,7 +65,7 @@ public class EntityRing extends Entity {
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -71,9 +73,9 @@ public class EntityRing extends Entity {
     public void tick() {
         if (targetEntity == null) return;
 
-        Vector3d end = targetEntity.position();
-        yRotO = yRot;
-        xRotO = xRot;
+        Vec3 end = targetEntity.position();
+        yRotO = getYRot();
+        xRotO = getXRot();
 
         if (ring == null) {
             ring = new ProgressingLine(position(), end);
@@ -92,13 +94,13 @@ public class EntityRing extends Entity {
             double dx = end.x - getX();
             double dy = end.y - getY();
             double dz = end.z - getZ();
-            float f = MathHelper.sqrt(dx * dx + dz * dz);
-            yRot = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
-            xRot = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);
+            double f = Math.sqrt(dx * dx + dz * dz);
+            setYRot((float) (Math.atan2(dx, dz) * 180.0D / Math.PI));
+            setXRot((float) (Math.atan2(dy, f) * 180.0D / Math.PI));
 
             oldRing.setProgress(ring.getProgress());
             if (ring.incProgress(0.05F)) {
-                remove();
+                discard();
             }
         }
     }
@@ -108,11 +110,11 @@ public class EntityRing extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundTag compound) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundTag compound) {
     }
 
 }

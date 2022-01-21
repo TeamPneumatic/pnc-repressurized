@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.tileentity.MobSpawnerTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.world.World;
-import net.minecraft.world.spawner.AbstractSpawner;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.BaseSpawner;
 
 public class EntitySpawnerAgitator extends EntitySemiblockBase {
-    public EntitySpawnerAgitator(EntityType<?> entityTypeIn, World worldIn) {
+    public EntitySpawnerAgitator(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -40,7 +40,7 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
         super.tick();
 
         if (!level.isClientSide) {
-            AbstractSpawner spawner = getSpawner();
+            BaseSpawner spawner = getSpawner();
             if (spawner != null) {
                 // just altering the range when added isn't enough - needs to be kept updated each tick
                 spawner.requiredPlayerRange = Integer.MAX_VALUE;
@@ -56,7 +56,7 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
         super.onBroken();
 
         if (!level.isClientSide) {
-            AbstractSpawner spawner = getSpawner();
+            BaseSpawner spawner = getSpawner();
             if (spawner != null) {
                 spawner.requiredPlayerRange = 16;
                 setSpawnPersistentEntities(spawner, false);
@@ -64,12 +64,12 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
         }
     }
 
-    private AbstractSpawner getSpawner() {
-        TileEntity te = getCachedTileEntity();
-        return te instanceof MobSpawnerTileEntity ? ((MobSpawnerTileEntity) te).getSpawner() : null;
+    private BaseSpawner getSpawner() {
+        BlockEntity te = getCachedTileEntity();
+        return te instanceof SpawnerBlockEntity ? ((SpawnerBlockEntity) te).getSpawner() : null;
     }
 
-    private void setSpawnPersistentEntities(AbstractSpawner spawner, boolean persistent) {
-        spawner.nextSpawnData.getTag().putBoolean("PersistenceRequired", persistent);
+    private void setSpawnPersistentEntities(BaseSpawner spawner, boolean persistent) {
+        spawner.nextSpawnData.getEntityToSpawn().putBoolean("PersistenceRequired", persistent);
     }
 }

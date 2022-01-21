@@ -20,23 +20,23 @@ package me.desht.pneumaticcraft.common.heat;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TemperatureData implements INBTSerializable<CompoundNBT> {
+public class TemperatureData implements INBTSerializable<CompoundTag> {
     private final Double[] temp = new Double[7];
 
     private boolean isMultisided;
 
-    public static TemperatureData fromNBT(CompoundNBT nbt) {
+    public static TemperatureData fromNBT(CompoundTag nbt) {
         TemperatureData data = new TemperatureData();
         data.deserializeNBT(nbt);
         return data;
@@ -81,13 +81,13 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         return face == null ? temp[6] != null : temp[face.get3DDataValue()] != null;
     }
 
-    public CompoundNBT toNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag toNBT() {
+        CompoundTag nbt = new CompoundTag();
         if (isMultisided()) {
-            ListNBT tagList = new ListNBT();
+            ListTag tagList = new ListTag();
             for (Direction face : DirectionUtil.VALUES) {
                 if (temp[face.get3DDataValue()] != null) {
-                    CompoundNBT heatTag = new CompoundNBT();
+                    CompoundTag heatTag = new CompoundTag();
                     heatTag.putByte("side", (byte) face.get3DDataValue());
                     heatTag.putInt("temp", (int) getTemperature(face));
                     tagList.add(heatTag);
@@ -101,12 +101,12 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = new CompoundTag();
         if (isMultisided()) {
-            ListNBT tagList = new ListNBT();
+            ListTag tagList = new ListTag();
             for (Direction face : DirectionUtil.VALUES) {
-                CompoundNBT heatTag = new CompoundNBT();
+                CompoundTag heatTag = new CompoundTag();
                 heatTag.putByte("side", (byte) face.get3DDataValue());
                 heatTag.putInt("temp", (int) getTemperature(face));
                 tagList.add(heatTag);
@@ -119,12 +119,12 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         if (nbt.contains("heat")) {
             isMultisided = true;
-            ListNBT tagList = nbt.getList("heat", Constants.NBT.TAG_COMPOUND);
+            ListTag tagList = nbt.getList("heat", Tag.TAG_COMPOUND);
             for (int i = 0; i < tagList.size(); i++) {
-                CompoundNBT heatTag = tagList.getCompound(i);
+                CompoundTag heatTag = tagList.getCompound(i);
                 temp[heatTag.getByte("side")] = (double) heatTag.getInt("temp");
             }
         } else {

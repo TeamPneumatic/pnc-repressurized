@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -27,9 +27,9 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCondition;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEntityCondition;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -47,11 +47,11 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
 
         if (isSidedWidget()) {
             for (Direction dir : DirectionUtil.VALUES) {
-                ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
+                Component sideName = ClientUtils.translateDirectionComponent(dir);
                 WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
                         b -> ((ISidedWidget) progWidget).getSides()[dir.get3DDataValue()] = b.checked);
                 checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.get3DDataValue()];
-                addButton(checkBox);
+                addRenderableWidget(checkBox);
             }
         }
 
@@ -70,22 +70,22 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
                                     xlate("pneumaticcraft.gui.progWidget.condition.allBlocks"),
                                     b -> progWidget.setAndFunction(true)),
                             progWidget.isAndFunction())
-                    .build(this::addButton);
+                    .build(this::addRenderableWidget);
         }
 
         if (requiresNumber()) {
             for (ICondition.Operator op : ICondition.Operator.values()) {
                 radioButton = new WidgetRadioButton(guiLeft + baseX, guiTop + baseY + op.ordinal() * 12, 0xFF404040,
-                        new StringTextComponent(op.toString()), b -> progWidget.setOperator(op));
+                        new TextComponent(op.toString()), b -> progWidget.setOperator(op));
                 builder.addRadioButton(radioButton, progWidget.getOperator() == op);
             }
-            builder.build(this::addButton);
+            builder.build(this::addRenderableWidget);
 
             textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11)
                     .setValue(progWidget.getRequiredCount()).setRange(0, Integer.MAX_VALUE);
             textField.setFocus(true);
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getIntValue()));
-            addButton(textField);
+            addRenderableWidget(textField);
         }
 
         WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.progWidget.condition.measure"), guiLeft + 8, guiTop + 152);
@@ -95,7 +95,7 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
         measureTextField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         measureTextField.setValue(progWidget.getMeasureVar());
         measureTextField.setResponder(progWidget::setMeasureVar);
-        addButton(measureTextField);
+        addRenderableWidget(measureTextField);
     }
 
     protected boolean isSidedWidget() {
@@ -111,13 +111,13 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (isSidedWidget()) {
             font.draw(matrixStack, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
         }
-        ITextComponent s = progWidget.getExtraStringInfo().get(0);
+        Component s = progWidget.getExtraStringInfo().get(0);
         font.draw(matrixStack, s, guiLeft + xSize / 2f - font.width(s) / 2f, guiTop + 120, 0xFF404060);
     }
 

@@ -22,14 +22,14 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class UpgradableItemUtils {
      * @param textList list of text to append tooltip too
      * @param flag tooltip flag
      */
-    public static void addUpgradeInformation(ItemStack iStack, List<ITextComponent> textList, ITooltipFlag flag) {
+    public static void addUpgradeInformation(ItemStack iStack, List<Component> textList, TooltipFlag flag) {
         ItemStack[] inventoryStacks = getUpgradeStacks(iStack);
         boolean isItemEmpty = true;
         for (ItemStack stack : inventoryStacks) {
@@ -66,11 +66,11 @@ public class UpgradableItemUtils {
         }
         if (isItemEmpty) {
             if (!(iStack.getItem() instanceof BlockItem)) {
-                textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.empty").withStyle(TextFormatting.DARK_GREEN));
+                textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.empty").withStyle(ChatFormatting.DARK_GREEN));
             }
         } else {
-            textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(TextFormatting.GREEN));
-            PneumaticCraftUtils.summariseItemStacks(textList, inventoryStacks, TextFormatting.DARK_GREEN + Symbols.BULLET + " ");
+            textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(ChatFormatting.GREEN));
+            PneumaticCraftUtils.summariseItemStacks(textList, inventoryStacks, ChatFormatting.DARK_GREEN + Symbols.BULLET + " ");
         }
     }
 
@@ -98,12 +98,12 @@ public class UpgradableItemUtils {
      * Retrieves the upgrades currently installed on the given itemstack.
      */
     public static ItemStack[] getUpgradeStacks(ItemStack stack) {
-        CompoundNBT tag = getSerializedUpgrades(stack);
+        CompoundTag tag = getSerializedUpgrades(stack);
         ItemStack[] inventoryStacks = new ItemStack[UPGRADE_INV_SIZE];
         Arrays.fill(inventoryStacks, ItemStack.EMPTY);
-        ListNBT itemList = tag.getList("Items", Constants.NBT.TAG_COMPOUND);
+        ListTag itemList = tag.getList("Items", Tag.TAG_COMPOUND);
         for (int i = 0; i < itemList.size(); i++) {
-            CompoundNBT slotEntry = itemList.getCompound(i);
+            CompoundTag slotEntry = itemList.getCompound(i);
             int j = slotEntry.getByte("Slot");
             if (j >= 0 && j < UPGRADE_INV_SIZE) {
                 inventoryStacks[j] = ItemStack.of(slotEntry);
@@ -114,13 +114,13 @@ public class UpgradableItemUtils {
 
     public static ItemStackHandler getUpgrades(ItemStack stack) {
         ItemStackHandler handler = new ItemStackHandler(UPGRADE_INV_SIZE);
-        CompoundNBT tag = getSerializedUpgrades(stack);
+        CompoundTag tag = getSerializedUpgrades(stack);
         if (!tag.isEmpty()) handler.deserializeNBT(tag);
         return handler;
     }
 
     public static int getUpgrades(ItemStack stack, EnumUpgrade upgrade) {
-        CompoundNBT tag = getSerializedUpgrades(stack);
+        CompoundTag tag = getSerializedUpgrades(stack);
         if (!tag.isEmpty()) {
             byte[] upgrades = stack.getTag().getByteArray(NBT_UPGRADE_CACHE_TAG);
             if (upgrades.length != EnumUpgrade.values().length) {
@@ -133,7 +133,7 @@ public class UpgradableItemUtils {
     }
 
     public static List<Integer> getUpgradeList(ItemStack stack, EnumUpgrade... upgradeList) {
-        CompoundNBT tag = getSerializedUpgrades(stack);
+        CompoundTag tag = getSerializedUpgrades(stack);
         List<Integer> res = new ArrayList<>();
         if (!tag.isEmpty()) {
             byte[] upgrades = stack.getTag().getByteArray(NBT_UPGRADE_CACHE_TAG);
@@ -156,8 +156,8 @@ public class UpgradableItemUtils {
         return stack.hasTag() && stack.getTag().getBoolean(UpgradableItemUtils.NBT_CREATIVE);
     }
 
-    private static CompoundNBT getSerializedUpgrades(ItemStack stack) {
-        if (!stack.hasTag()) return new CompoundNBT();
+    private static CompoundTag getSerializedUpgrades(ItemStack stack) {
+        if (!stack.hasTag()) return new CompoundTag();
         if (stack.getTag().contains(NBTKeys.BLOCK_ENTITY_TAG)) {
             return stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG).getCompound(NBT_UPGRADE_TAG);
         } else {
@@ -165,7 +165,7 @@ public class UpgradableItemUtils {
         }
     }
 
-    private static void fixUpgradeCache(ItemStack stack, CompoundNBT tag) {
+    private static void fixUpgradeCache(ItemStack stack, CompoundTag tag) {
         ItemStackHandler handler = new ItemStackHandler();
         handler.deserializeNBT(tag);
         UpgradeCache cache = new UpgradeCache(() -> handler);

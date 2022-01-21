@@ -23,9 +23,9 @@ import net.minecraft.nbt.*;
 import java.util.Set;
 
 public class NBTToJsonConverter {
-    private final CompoundNBT tag;
+    private final CompoundTag tag;
 
-    public NBTToJsonConverter(CompoundNBT tag) {
+    public NBTToJsonConverter(CompoundTag tag) {
         this.tag = tag;
     }
 
@@ -42,32 +42,32 @@ public class NBTToJsonConverter {
         return gson.toJson(el); // done
     }
 
-    public static JsonObject getObject(CompoundNBT tag) {
+    public static JsonObject getObject(CompoundTag tag) {
         Set<String> keys = tag.getAllKeys();
         JsonObject jsonRoot = new JsonObject();
         for (String key : keys) {
             JsonObject keyObject = new JsonObject();
             jsonRoot.add(key, keyObject);
-            INBT nbt = tag.get(key);
+            Tag nbt = tag.get(key);
 
             keyObject.addProperty("type", nbt.getId());
 
-            if (nbt instanceof CompoundNBT) {
-                keyObject.add("value", getObject((CompoundNBT) nbt));
-            } else if (nbt instanceof NumberNBT) {
-                keyObject.addProperty("value", ((NumberNBT) nbt).getAsDouble());
-            } else if (nbt instanceof StringNBT) {
+            if (nbt instanceof CompoundTag) {
+                keyObject.add("value", getObject((CompoundTag) nbt));
+            } else if (nbt instanceof NumericTag) {
+                keyObject.addProperty("value", ((NumericTag) nbt).getAsDouble());
+            } else if (nbt instanceof StringTag) {
                 keyObject.addProperty("value", nbt.getAsString());
-            } else if (nbt instanceof ListNBT) {
+            } else if (nbt instanceof ListTag) {
                 JsonArray array = new JsonArray();
-                ListNBT tagList = (ListNBT) nbt;
+                ListTag tagList = (ListTag) nbt;
                 for (int i = 0; i < tagList.size(); i++) {
                     array.add(getObject(tagList.getCompound(i)));
                 }
                 keyObject.add("value", array);
-            } else if (nbt instanceof IntArrayNBT) {
+            } else if (nbt instanceof IntArrayTag) {
                 JsonArray array = new JsonArray();
-                IntArrayNBT intArray = (IntArrayNBT) nbt;
+                IntArrayTag intArray = (IntArrayTag) nbt;
                 for (int i : intArray.getAsIntArray()) {
                     array.add(new JsonPrimitive(i));
                 }

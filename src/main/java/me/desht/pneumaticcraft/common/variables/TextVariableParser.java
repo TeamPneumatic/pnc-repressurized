@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.variables;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -85,11 +85,11 @@ public class TextVariableParser {
     }
 
     private String posToStr(BlockPos pos, String ext) {
-        switch (ext) {
-            case "x": return Integer.toString(pos.getX());
-            case "y": return Integer.toString(pos.getY());
-            case "z": return Integer.toString(pos.getZ());
-            default: return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
-        }
+        return switch (ext) {
+            case "x" -> Integer.toString(pos.getX());
+            case "y" -> Integer.toString(pos.getY());
+            case "z" -> Integer.toString(pos.getZ());
+            default -> pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
+        };
     }
 }

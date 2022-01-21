@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;

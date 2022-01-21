@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -53,7 +53,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
+    public void readFromNBT(CompoundTag tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         x = tag.getInt("x") + guiLeft;
         y = tag.getInt("y") + guiTop;
@@ -65,8 +65,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     @Override
-    public CompoundNBT toNBT(int guiLeft, int guiTop) {
-        CompoundNBT tag = super.toNBT(guiLeft, guiTop);
+    public CompoundTag toNBT(int guiLeft, int guiTop) {
+        CompoundTag tag = super.toNBT(guiLeft, guiTop);
         tag.putInt("x", x - guiLeft);
         tag.putInt("y", y - guiTop);
         tag.putInt("width", width);
@@ -130,7 +130,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     private void updateWidget() {
         String[] elements = getDropdownElements();
-        selectedElement = elements[MathHelper.clamp(GlobalVariableManager.getInstance().getInteger(getVariableName()), 0, elements.length - 1)];
+        selectedElement = elements[Mth.clamp(GlobalVariableManager.getInstance().getInteger(getVariableName()), 0, elements.length - 1)];
 
         if (widget != null) {
             widget.x = x;

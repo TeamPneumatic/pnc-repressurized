@@ -21,21 +21,53 @@ import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 class IEHeatHandler {
-    static void registerHeatHandler() {
-        ExternalHeaterHandler.registerHeatableAdapter(TileEntityBase.class, new ExternalHeaterHandler.HeatableAdapter<TileEntity>() {
-            @Override
-            public int doHeatTick(TileEntity tileEntity, int energyAvailable, boolean canHeat) {
-                return tileEntity.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).map(handler -> {
-                    if (energyAvailable >= ConfigHelper.common().integration.ieExternalHeaterRFperTick.get()) {
-                        handler.addHeat(ConfigHelper.common().integration.ieExternalHeaterRFperTick.get() * ConfigHelper.common().integration.ieExternalHeaterHeatPerRF.get());
-                        return ConfigHelper.common().integration.ieExternalHeaterRFperTick.get();
-                    }
-                    return 0;
-                }).orElse(0);
-            }
-        });
+    public static class Impl implements ExternalHeaterHandler.IExternalHeatable {
+        private final BlockEntity blockEntity;
+
+        public Impl(BlockEntity blockEntity) {
+            this.blockEntity = blockEntity;
+        }
+
+        @Override
+        public int doHeatTick(int energyAvailable, boolean redstone) {
+            return blockEntity.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).map(handler -> {
+                int rfPerTick = ConfigHelper.common().integration.ieExternalHeaterRFperTick.get();
+                double heatPerRF = ConfigHelper.common().integration.ieExternalHeaterHeatPerRF.get();
+                if (energyAvailable >= rfPerTick) {
+                    handler.addHeat(rfPerTick * heatPerRF);
+                    return rfPerTick;
+                }
+                return 0;
+            }).orElse(0);
+        }
+    }
+
+    public static class Provider implements net.minecraftforge.common.capabilities.ICapabilityProvider {
+        private final Impl impl;
+        private final LazyOptional<ExternalHeaterHandler.IExternalHeatable> lazy;
+
+        public Provider(BlockEntity blockEntity) {
+            this.impl = new Impl(blockEntity);
+            this.lazy = LazyOptional.of(() -> impl);
+        }
+
+        @Nonnull
+        @Override
+        public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+            return ExternalHeaterHandler.CAPABILITY.orEmpty(cap, lazy);
+        }
+
+        public void invalidate() {
+            lazy.invalidate();
+        }
     }
 }

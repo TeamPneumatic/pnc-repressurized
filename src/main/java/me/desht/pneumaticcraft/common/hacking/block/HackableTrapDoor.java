@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.hacking.block;
 
-import net.minecraft.block.TrapDoorBlock;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

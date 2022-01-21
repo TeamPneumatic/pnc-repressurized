@@ -28,19 +28,19 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class ItemPneumaticWrench extends ItemPressurizable {
 
@@ -49,15 +49,15 @@ public class ItemPneumaticWrench extends ItemPressurizable {
     }
 
     @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext ctx) {
-        Hand hand = ctx.getHand();
-        World world = ctx.getLevel();
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext ctx) {
+        InteractionHand hand = ctx.getHand();
+        Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
         if (!world.isClientSide) {
             BlockState state = world.getBlockState(pos);
-            ActionResultType res = ModdedWrenchUtils.getInstance().onWrenchedPre(ctx, state);
-            if (res != ActionResultType.PASS) {
-                if (res == ActionResultType.SUCCESS) playWrenchSound(world, pos);
+            InteractionResult res = ModdedWrenchUtils.getInstance().onWrenchedPre(ctx, state);
+            if (res != InteractionResult.PASS) {
+                if (res == InteractionResult.SUCCESS) playWrenchSound(world, pos);
                 return res;
             }
             IAirHandler airHandler = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new);
@@ -83,47 +83,47 @@ public class ItemPneumaticWrench extends ItemPressurizable {
             if (didWork) {
                 playWrenchSound(world, pos);
                 ModdedWrenchUtils.getInstance().onWrenchedPost(ctx, state);
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
-            return ActionResultType.PASS;
+            return InteractionResult.PASS;
         } else {
             // client-side: prevent GUI's opening etc.
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
     }
 
-    private void playWrenchSound(World world, BlockPos pos) {
-        NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH.get(), SoundCategory.PLAYERS, pos, 1.0F, 1.0F, true), world, pos);
+    private void playWrenchSound(Level world, BlockPos pos) {
+        NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH.get(), SoundSource.PLAYERS, pos, 1.0F, 1.0F, true), world, pos);
     }
 
     @Override
-    public ActionResultType interactLivingEntity(ItemStack iStack, PlayerEntity player, LivingEntity target, Hand hand) {
+    public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity target, InteractionHand hand) {
         if (player.level.isClientSide) {
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
             return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 if (!player.isCreative() && h.getAir() < PneumaticValues.USAGE_PNEUMATIC_WRENCH) {
-                    return ActionResultType.FAIL;
+                    return InteractionResult.FAIL;
                 }
                 if (((IPneumaticWrenchable) target).onWrenched(target.level, player, null, null, hand)) {
                     if (!player.isCreative()) {
                         h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     }
                     playWrenchSound(target.level, target.blockPosition());
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 } else {
-                    return ActionResultType.PASS;
+                    return InteractionResult.PASS;
                 }
             }).orElseThrow(RuntimeException::new);
         }
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (entityIn instanceof ServerPlayerEntity && stack.getItem() instanceof IPressurizableItem
+    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (entityIn instanceof ServerPlayer && stack.getItem() instanceof IPressurizableItem
                 && ((IPressurizableItem) stack.getItem()).getPressure(stack) >= 3f) {
-            AdvancementTriggers.CHARGED_WRENCH.trigger((ServerPlayerEntity) entityIn);
+            AdvancementTriggers.CHARGED_WRENCH.trigger((ServerPlayer) entityIn);
         }
     }
 }

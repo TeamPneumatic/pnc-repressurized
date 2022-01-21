@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:liquid_compressor"
+            "items": [
+              "pneumaticcraft:liquid_compressor"
+            ]
           }
         ]
       }

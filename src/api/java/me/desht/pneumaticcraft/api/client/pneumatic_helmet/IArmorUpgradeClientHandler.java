@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.KeyMapping;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
@@ -72,7 +72,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * @param buffer the render type buffer
      * @param partialTicks partial ticks since last world tick
      */
-    void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks);
+    void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks);
 
     /**
      * Called in the 2D render stage (via {@link net.minecraftforge.client.event.RenderGameOverlayEvent.Post})
@@ -81,7 +81,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * @param partialTicks partial ticks since last world tick
      * @param armorPieceHasPressure true if the armor piece actually has any pressure
      */
-    void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure);
+    void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure);
 
     /**
      * You can return a {@link IGuiAnimatedStat} here, which the HUD Handler will pick up and render. It also
@@ -139,11 +139,11 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      *
      * @return the default key binding for this upgrade
      */
-    default Optional<KeyBinding> getInitialKeyBinding() {
+    default Optional<KeyMapping> getInitialKeyBinding() {
         return isToggleable() ?
-                Optional.of(new KeyBinding(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID()),
+                Optional.of(new KeyMapping(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID()),
                         KeyConflictContext.IN_GAME, KeyModifier.NONE,
-                        InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, getKeybindCategory())) :
+                        InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, getKeybindCategory())) :
                 Optional.empty();
     }
 
@@ -164,7 +164,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      *
      * @return an optional keybinding name
      */
-    default Optional<KeyBinding> getTriggerKeyBinding() {
+    default Optional<KeyMapping> getTriggerKeyBinding() {
         return Optional.empty();
     }
 
@@ -236,11 +236,11 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
         }
 
         @Override
-        public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+        public void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
         }
 
         @Override
-        public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+        public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
         }
 
         @Override

@@ -19,17 +19,18 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -46,8 +47,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     @DescSynced
     private final SyncedTemperature syncCold = new SyncedTemperature(coldHeatExchanger);
 
-    public TileEntityVortexTube() {
-        super(ModTileEntities.VORTEX_TUBE.get(), 20, 25, 2000, 0);
+    public TileEntityVortexTube(BlockPos pos, BlockState state) {
+        super(ModTileEntities.VORTEX_TUBE.get(), pos, state, PressureTier.TIER_TWO, 2000, 0);
         coldHeatExchanger.setThermalResistance(0.01);
         hotHeatExchanger.setThermalResistance(0.01);
         connectingExchanger.setThermalResistance(100);
@@ -77,17 +78,16 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         // hot side heat exchanger is the default, and handled in TileEntityPneumaticBase
         tag.put("coldHeat", coldHeatExchanger.serializeNBT());
         tag.put("connector", connectingExchanger.serializeNBT());
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         // hot side heat exchanger is the default, and handled in TileEntityPneumaticBase
         coldHeatExchanger.deserializeNBT(tag.getCompound("coldHeat"));
@@ -95,23 +95,21 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!getLevel().isClientSide) {
-            // Only update the cold and connecting side; the hot side is handled in TileEntityPneumaticBase
-            connectingExchanger.tick();
-            coldHeatExchanger.tick();
-            int usedAir = (int) (getPressure() * 10);
-            if (usedAir > 0) {
-                addAir(-usedAir);
-                double generatedHeat = usedAir / 10D;
-                coldHeatExchanger.addHeat(-generatedHeat);
-                hotHeatExchanger.addHeat(generatedHeat);
-            }
-            syncHot.tick();
-            syncCold.tick();
+        // Only update the cold and connecting side; the hot side is handled in TileEntityPneumaticBase
+        connectingExchanger.tick();
+        coldHeatExchanger.tick();
+        int usedAir = (int) (getPressure() * 10);
+        if (usedAir > 0) {
+            addAir(-usedAir);
+            double generatedHeat = usedAir / 10D;
+            coldHeatExchanger.addHeat(-generatedHeat);
+            hotHeatExchanger.addHeat(generatedHeat);
         }
+        syncHot.tick();
+        syncCold.tick();
     }
 
     @Override
@@ -121,11 +119,11 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
 
     @Override
     public TintColor getColorForTintIndex(int tintIndex) {
-        switch (tintIndex) {
-            case 1: return HeatUtil.getColourForTemperature(syncHot.getSyncedTemp());
-            case 2: return HeatUtil.getColourForTemperature(syncCold.getSyncedTemp());
-            default: return HeatUtil.getColourForTemperature(300);
-        }
+        return switch (tintIndex) {
+            case 1 -> HeatUtil.getColourForTemperature(syncHot.getSyncedTemp());
+            case 2 -> HeatUtil.getColourForTemperature(syncCold.getSyncedTemp());
+            default -> HeatUtil.getColourForTemperature(300);
+        };
     }
 
     @Override
@@ -140,7 +138,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public void initHeatExchangersOnPlacement(World world, BlockPos pos) {
+    public void initHeatExchangersOnPlacement(Level world, BlockPos pos) {
         double temp = HeatExchangerLogicAmbient.getAmbientTemperature(world, pos);
         hotHeatExchanger.setTemperature(temp);
         coldHeatExchanger.setTemperature(temp);

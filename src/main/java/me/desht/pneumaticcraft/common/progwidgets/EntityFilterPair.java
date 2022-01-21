@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,13 +43,13 @@ class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
         entityBlacklist = getFilter(widget, false);
     }
 
-    public static <T extends IProgWidget & IEntityProvider> void addErrors(T widget, List<ITextComponent> errors) {
+    public static <T extends IProgWidget & IEntityProvider> void addErrors(T widget, List<Component> errors) {
         EntityFilterPair<T> filter = new EntityFilterPair<>(widget);
         if (!filter.errorWhite.isEmpty()) {
-            errors.add(new StringTextComponent("Invalid whitelist filter: " + filter.errorWhite));
+            errors.add(new TextComponent("Invalid whitelist filter: " + filter.errorWhite));
         }
         if (!filter.errorBlack.isEmpty()) {
-            errors.add(new StringTextComponent("Invalid blacklist filter: " + filter.errorBlack));
+            errors.add(new TextComponent("Invalid blacklist filter: " + filter.errorBlack));
         }
     }
 
@@ -71,7 +71,7 @@ class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
         return entityWhitelist.test(e) && !entityBlacklist.test(e);
     }
 
-    List<Entity> getValidEntities(World world) {
+    List<Entity> getValidEntities(Level world) {
         return getEntitiesInArea(
                 (ProgWidgetArea) widget.getConnectedParameters()[0],
                 (ProgWidgetArea) widget.getConnectedParameters()[widget.getParameters().size()],
@@ -79,7 +79,7 @@ class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
         );
     }
 
-    private List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world) {
+    private List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, Level world) {
         if (whitelistWidget == null) {
             return new ArrayList<>();
         }

@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticScreenBase {
     protected final M module;
@@ -35,7 +35,7 @@ public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticSc
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrixStack);
 
         super.render(matrixStack, mouseX, mouseY, partialTicks);

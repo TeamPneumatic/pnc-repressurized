@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -30,11 +30,11 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
@@ -44,7 +44,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
         super(ModCategoryUid.MEMORY_ESSENCE, MemoryEssenceRecipe.class,
                 new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000).getDisplayName(),
                 guiHelper().createDrawable(Textures.GUI_JEI_MEMORY_ESSENCE, 0, 0, 146, 73),
-                guiHelper().createDrawableIngredient(new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()))
         );
     }
 
@@ -74,14 +74,14 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
         recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
             String tooltipKey = recipe.getTooltipKey(slotIndex);
             if (!tooltipKey.isEmpty()) {
-                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(TextFormatting.GREEN + I18n.get(tooltipKey)));
+                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(ChatFormatting.GREEN + I18n.get(tooltipKey)));
             }
         });
     }
 
     @Override
-    public void draw(MemoryEssenceRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-        FontRenderer fr = Minecraft.getInstance().font;
+    public void draw(MemoryEssenceRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+        Font fr = Minecraft.getInstance().font;
         int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
         String s = "1 XP = " + ratio + " mB";
         int w = fr.width(s);
@@ -102,7 +102,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
         final ItemStack input2;
         final String[] tooltips = new String[] {"", ""};
 
-        public MemoryEssenceRecipe(IItemProvider input1, IItemProvider input2) {
+        public MemoryEssenceRecipe(ItemLike input1, ItemLike input2) {
             this.input1 = new ItemStack(input1);
             this.input2 = input2 == null ? ItemStack.EMPTY : new ItemStack(input2);
         }

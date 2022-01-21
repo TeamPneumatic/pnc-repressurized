@@ -22,26 +22,26 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonPartEntity;
-import net.minecraft.entity.item.EnderCrystalEntity;
-import net.minecraft.entity.projectile.DamagingProjectileEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.EnderDragonPart;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.ShulkerBullet;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -119,7 +119,7 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
+    public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag extraInfo) {
         infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
         super.appendHoverText(stack, world, infoList, extraInfo);
     }
@@ -148,10 +148,10 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
         double dmgMult = getDamageMultiplier(target, ammo);
         if (dmgMult > 0) {
             // note: can't just check for PartEntity (will get ClassNotFoundException on dedicated server)
-            if (target instanceof LivingEntity || target instanceof EnderDragonPartEntity || target instanceof EnderCrystalEntity) {
+            if (target instanceof LivingEntity || target instanceof EnderDragonPart || target instanceof EndCrystal) {
                 target.hurt(getDamageSource(minigun), (float)(ConfigHelper.common().minigun.baseDamage.get() * dmgMult * times));
-            } else if (target instanceof ShulkerBulletEntity || target instanceof DamagingProjectileEntity) {
-                target.remove();
+            } else if (target instanceof ShulkerBullet || target instanceof AbstractHurtingProjectile) {
+                target.discard();
             }
         }
         return times;
@@ -165,14 +165,14 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
      * @param brtr the block raytrace result
      * @return the number of rounds fired
      */
-    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
+    public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
         if (ConfigHelper.common().minigun.blockHitParticles.get()) {
-            World w = minigun.getPlayer().level;
+            Level w = minigun.getPlayer().level;
             BlockState state = w.getBlockState(brtr.getBlockPos());
             Direction face = brtr.getDirection();
-            Vector3d hitVec = brtr.getLocation();
-            IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
-            ((ServerWorld) w).sendParticles(data, hitVec.x, hitVec.y, hitVec.z, 10,
+            Vec3 hitVec = brtr.getLocation();
+            ParticleOptions data = new BlockParticleOption(ParticleTypes.BLOCK, state);
+            ((ServerLevel) w).sendParticles(data, hitVec.x, hitVec.y, hitVec.z, 10,
                     face.getStepX() * 0.2, face.getStepY() * 0.2, face.getStepZ() * 0.2, 0.05);
         }
 

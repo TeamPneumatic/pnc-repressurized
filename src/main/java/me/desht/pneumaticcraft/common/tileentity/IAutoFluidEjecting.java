@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -47,7 +47,7 @@ interface IAutoFluidEjecting {
     }
 
     default int tryEjectLiquid(TileEntityBase te, IFluidHandler handler, Direction dir, int amount) {
-        TileEntity teNeighbour = te.getCachedNeighbor(dir);
+        BlockEntity teNeighbour = te.getCachedNeighbor(dir);
         if (teNeighbour != null) {
             return teNeighbour.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).map(destHandler -> {
                 FluidStack fluidStack = FluidUtil.tryFluidTransfer(destHandler, handler, amount, true);

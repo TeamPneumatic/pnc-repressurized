@@ -23,13 +23,13 @@ import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class EntityCollectorDrone extends EntityBasicDrone {
-    public EntityCollectorDrone(EntityType<? extends EntityDrone> type, World world) {
+    public EntityCollectorDrone(EntityType<? extends EntityDrone> type, Level world) {
         super(type, world);
     }
 
-    public EntityCollectorDrone(World world, PlayerEntity player) {
+    public EntityCollectorDrone(Level world, Player player) {
         super(ModEntities.COLLECTOR_DRONE.get(), world, player);
     }
 

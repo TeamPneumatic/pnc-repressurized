@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.api.heat;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.function.Supplier;
@@ -42,9 +42,9 @@ import java.util.function.Supplier;
  * For general blockstate transitions, datapack recipes are the preferred way to add custom heat behaviours. See
  * {@code data/pneumaticcraft/recipes/block_heat_properties/*.json}
  */
-public abstract class HeatBehaviour<T extends TileEntity> implements INBTSerializable<CompoundNBT> {
+public abstract class HeatBehaviour<T extends BlockEntity> implements INBTSerializable<CompoundTag> {
     private IHeatExchangerLogic connectedHeatLogic;
-    private World world;
+    private Level world;
     private BlockPos pos;
     private T cachedTE;
     private BlockState blockState;
@@ -59,7 +59,7 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
      * @param pos block pos of the owning tile entity
      * @param direction direction of this behaviour (from the tile entity's point of view)
      */
-    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, Level world, BlockPos pos, Direction direction) {
         this.connectedHeatLogic = connectedHeatLogic;
         this.world = world;
         this.pos = pos;
@@ -73,7 +73,7 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
         return connectedHeatLogic;
     }
 
-    public World getWorld() {
+    public Level getWorld() {
         return world;
     }
 
@@ -117,15 +117,15 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
     public abstract void tick();
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = new CompoundNBT();
-        tag.put("BlockPos", NBTUtil.writeBlockPos(pos));
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
+        tag.put("BlockPos", NbtUtils.writeBlockPos(pos));
         return tag;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
-        pos = NBTUtil.readBlockPos(nbt.getCompound("BlockPos"));
+    public void deserializeNBT(CompoundTag nbt) {
+        pos = NbtUtils.readBlockPos(nbt.getCompound("BlockPos"));
     }
 
     @Override

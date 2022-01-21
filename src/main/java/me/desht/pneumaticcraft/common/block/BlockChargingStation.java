@@ -6,25 +6,26 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class BlockChargingStation extends BlockPneumaticCraftCamo {
+public class BlockChargingStation extends BlockPneumaticCraftCamo implements EntityBlockPneumaticCraft {
     public static final BooleanProperty CHARGE_PAD = BooleanProperty.create("charge_pad");
 
     private static final VoxelShape CHARGING_STATION_N = Stream.of(
@@ -46,7 +47,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
             Block.box(4.25, 3.25, 2, 4.75, 8.25, 2.5),
             Block.box(4.25, 3.25, 2.5, 4.75, 3.75, 3),
             Block.box(5, 1, 0, 11, 5, 1)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     private static final VoxelShape CHARGING_STATION_E = VoxelShapeUtils.rotateY(CHARGING_STATION_N, 90);
     private static final VoxelShape CHARGING_STATION_S = VoxelShapeUtils.rotateY(CHARGING_STATION_E, 90);
@@ -69,16 +70,16 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
             Block.box(11.45, 9.2, 1.2, 12.05, 13.8, 1.8),
             Block.box(10.95, 9.2, 1.2, 11.55, 9.8, 1.8),
             Block.box(10.95, 13.2, 1.2, 11.55, 13.8, 1.8)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     private static final VoxelShape CHARGING_PAD_E = VoxelShapeUtils.rotateY(CHARGING_PAD_N, 90);
     private static final VoxelShape CHARGING_PAD_S = VoxelShapeUtils.rotateY(CHARGING_PAD_E, 90);
     private static final VoxelShape CHARGING_PAD_W = VoxelShapeUtils.rotateY(CHARGING_PAD_S, 90);
 
-    private static final VoxelShape CHARGING_STATION_WITH_PAD_N = VoxelShapes.join(CHARGING_STATION_N, CHARGING_PAD_N, IBooleanFunction.OR);
-    private static final VoxelShape CHARGING_STATION_WITH_PAD_E = VoxelShapes.join(CHARGING_STATION_E, CHARGING_PAD_E, IBooleanFunction.OR);
-    private static final VoxelShape CHARGING_STATION_WITH_PAD_S = VoxelShapes.join(CHARGING_STATION_S, CHARGING_PAD_S, IBooleanFunction.OR);
-    private static final VoxelShape CHARGING_STATION_WITH_PAD_W = VoxelShapes.join(CHARGING_STATION_W, CHARGING_PAD_W, IBooleanFunction.OR);
+    private static final VoxelShape CHARGING_STATION_WITH_PAD_N = Shapes.join(CHARGING_STATION_N, CHARGING_PAD_N, BooleanOp.OR);
+    private static final VoxelShape CHARGING_STATION_WITH_PAD_E = Shapes.join(CHARGING_STATION_E, CHARGING_PAD_E, BooleanOp.OR);
+    private static final VoxelShape CHARGING_STATION_WITH_PAD_S = Shapes.join(CHARGING_STATION_S, CHARGING_PAD_S, BooleanOp.OR);
+    private static final VoxelShape CHARGING_STATION_WITH_PAD_W = Shapes.join(CHARGING_STATION_W, CHARGING_PAD_W, BooleanOp.OR);
 
     private static final VoxelShape[] CHARGING_STATION = new VoxelShape[] { CHARGING_STATION_S, CHARGING_STATION_W, CHARGING_STATION_N, CHARGING_STATION_E };
     private static final VoxelShape[] CHARGING_STATION_WITH_PAD = new VoxelShape[] { CHARGING_STATION_WITH_PAD_S, CHARGING_STATION_WITH_PAD_W, CHARGING_STATION_WITH_PAD_N, CHARGING_STATION_WITH_PAD_E };
@@ -89,26 +90,21 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(CHARGE_PAD);
     }
 
     @Override
-    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+    public VoxelShape getUncamouflagedShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         Direction d = state.getValue(directionProperty());
         return state.getValue(CHARGE_PAD) ? CHARGING_STATION_WITH_PAD[d.get2DDataValue()] : CHARGING_STATION[d.get2DDataValue()];
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext ctx) {
         // avoids confusing entities, since the selection shape can extend into the block above, preventing pathfinding above the block
-        return state.getValue(CHARGE_PAD) ? VoxelShapes.block() : getUncamouflagedShape(state, reader, pos, ctx);
-    }
-    
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityChargingStation.class;
+        return state.getValue(CHARGE_PAD) ? Shapes.block() : getUncamouflagedShape(state, reader, pos, ctx);
     }
 
     @Override
@@ -122,9 +118,15 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public int getSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+    public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityChargingStation.class)
                 .map(teCS -> teCS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityChargingStation(pPos, pState);
     }
 
     public static class ItemBlockChargingStation extends BlockItem {
@@ -134,7 +136,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
 
         @Override
         public String getDescriptionId(ItemStack stack) {
-            CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+            CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
             if (tag != null && tag.getBoolean("UpgradeOnly")) {
                 return super.getDescriptionId(stack) + ".upgrade_only";
             } else {

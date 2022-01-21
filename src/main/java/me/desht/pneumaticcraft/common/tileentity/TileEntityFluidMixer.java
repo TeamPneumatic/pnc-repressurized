@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerFluidMixer;
@@ -32,18 +33,19 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -59,7 +61,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
-        IMinWorkingPressure, IRedstoneControl<TileEntityFluidMixer>, INamedContainerProvider,
+        IMinWorkingPressure, IRedstoneControl<TileEntityFluidMixer>, MenuProvider,
         ISerializableTanks, IAutoFluidEjecting
 {
     // Maps a fluid to all of the other fluids it can combine with
@@ -99,65 +101,71 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
 
     private final SmartSyncTank[] tanks = new SmartSyncTank[] { inputTank1, inputTank2, outputTank };
 
-    public TileEntityFluidMixer() {
-        super(ModTileEntities.FLUID_MIXER.get(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.VOLUME_FLUID_MIXER, 4);
+    public TileEntityFluidMixer(BlockPos pos, BlockState state) {
+        super(ModTileEntities.FLUID_MIXER.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_FLUID_MIXER, 4);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         inputTank1.tick();
         inputTank2.tick();
         outputTank.tick();
+    }
 
-        if (!level.isClientSide) {
-            didWork = false;
-            if (searchRecipes) {
-                currentRecipe = findApplicableRecipe();
-                currentRecipeIdSynced = currentRecipe == null ? "" : currentRecipe.getId().toString();
-                requiredPressure = currentRecipe != null ? currentRecipe.getRequiredPressure() : 0f;
-                maxProgress = currentRecipe != null ? currentRecipe.getProcessingTime() * 100 : 0;
-                searchRecipes = false;
+    @Override
+    public void tickClient() {
+        super.tickClient();
+
+        if (didWork && nonNullLevel().random.nextFloat() < 0.1f) {
+            ClientUtils.emitParticles(level, worldPosition, ParticleTypes.RAIN);
+        }
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        didWork = false;
+        if (searchRecipes) {
+            currentRecipe = findApplicableRecipe();
+            currentRecipeIdSynced = currentRecipe == null ? "" : currentRecipe.getId().toString();
+            requiredPressure = currentRecipe != null ? currentRecipe.getRequiredPressure() : 0f;
+            maxProgress = currentRecipe != null ? currentRecipe.getProcessingTime() * 100 : 0;
+            searchRecipes = false;
+        }
+        if (rsController.shouldRun() && currentRecipe != null && getPressure() >= requiredPressure && hasOutputSpace()) {
+            craftingProgress += 100 * (1 + Math.min(getPressure() - requiredPressure, 1.5f));
+            didWork = true;
+            airUsed += 2.5f * getPressure();
+            if (airUsed > 1f) {
+                int a = (int) airUsed;
+                airHandler.addAir(-a);
+                airUsed -= a;
             }
-            if (rsController.shouldRun() && currentRecipe != null && getPressure() >= requiredPressure && hasOutputSpace()) {
-                craftingProgress += 100 * (1 + Math.min(getPressure() - requiredPressure, 1.5f));
-                didWork = true;
-                airUsed += 2.5f * getPressure();
-                if (airUsed > 1f) {
-                    int a = (int) airUsed;
-                    airHandler.addAir(-a);
-                    airUsed -= a;
+            if (craftingProgress >= maxProgress && takeInputIngredients()) {
+                if (!currentRecipe.getOutputFluid().isEmpty()) {
+                    outputTank.fill(currentRecipe.getOutputFluid().copy(), IFluidHandler.FluidAction.EXECUTE);
                 }
-                if (craftingProgress >= maxProgress && takeInputIngredients()) {
-                    if (!currentRecipe.getOutputFluid().isEmpty()) {
-                        outputTank.fill(currentRecipe.getOutputFluid().copy(), IFluidHandler.FluidAction.EXECUTE);
-                    }
-                    if (!currentRecipe.getOutputItem().isEmpty()) {
-                        outputInv.insertItem(0, currentRecipe.getOutputItem().copy(), false);
-                    }
-                    craftingProgress -= maxProgress;
+                if (!currentRecipe.getOutputItem().isEmpty()) {
+                    outputInv.insertItem(0, currentRecipe.getOutputItem().copy(), false);
                 }
-            }
-        } else {
-            if (didWork && level.random.nextFloat() < 0.1f) {
-                ClientUtils.emitParticles(level, worldPosition, ParticleTypes.RAIN);
+                craftingProgress -= maxProgress;
             }
         }
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.put("Items", outputInv.serializeNBT());
-
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         outputInv.deserializeNBT(tag.getCompound("Items"));
     }
@@ -267,12 +275,12 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         return new ContainerFluidMixer(windowId, inv, worldPosition);
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag))
             return;
 
@@ -286,7 +294,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
         }
     }
 
-    private void moveOrDump(PlayerEntity player, int tank, boolean shiftHeld) {
+    private void moveOrDump(Player player, int tank, boolean shiftHeld) {
         FluidStack moved;
         SmartSyncTank inputTank = tank == 1 ? inputTank1 : inputTank2;
         if (shiftHeld) {
@@ -294,8 +302,8 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
         } else {
             moved = FluidUtil.tryFluidTransfer(outputTank, inputTank, inputTank.getFluidAmount(), true);
         }
-        if (!moved.isEmpty() && player instanceof ServerPlayerEntity) {
-            NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BUCKET_FILL, SoundCategory.BLOCKS, worldPosition, 1f, 1f, false), (ServerPlayerEntity) player);
+        if (!moved.isEmpty() && player instanceof ServerPlayer) {
+            NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, worldPosition, 1f, 1f, false), (ServerPlayer) player);
         }
     }
 

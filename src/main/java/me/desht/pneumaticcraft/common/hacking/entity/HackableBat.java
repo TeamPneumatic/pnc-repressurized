@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.BatEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.Explosion;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Explosion;
 
 import java.util.List;
 
@@ -37,30 +37,30 @@ public class HackableBat implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
-        return entity.getClass() == BatEntity.class;
+    public boolean canHack(Entity entity, Player player) {
+        return entity.getClass() == Bat.class;
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.kill"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.killed"));
     }
 
     @Override
-    public int getHackTime(Entity entity, PlayerEntity player) {
+    public int getHackTime(Entity entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
+    public void onHackFinished(Entity entity, Player player) {
         if (!entity.level.isClientSide) {
-            entity.remove();
-            entity.level.explode(null, entity.getX(), entity.getY(), entity.getZ(), 0, Explosion.Mode.NONE);
+            entity.discard();
+            entity.level.explode(null, entity.getX(), entity.getY(), entity.getZ(), 0, Explosion.BlockInteraction.NONE);
         }
     }
 

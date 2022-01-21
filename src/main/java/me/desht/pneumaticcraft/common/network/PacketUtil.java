@@ -20,17 +20,17 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,13 +38,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class PacketUtil {
-    public static void writeGlobalPos(PacketBuffer buf, GlobalPos gPos) {
+    public static void writeGlobalPos(FriendlyByteBuf buf, GlobalPos gPos) {
         buf.writeResourceLocation(gPos.dimension().location());
         buf.writeBlockPos(gPos.pos());
     }
 
-    public static GlobalPos readGlobalPos(PacketBuffer buf) {
-        RegistryKey<World> worldKey = RegistryKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
+    public static GlobalPos readGlobalPos(FriendlyByteBuf buf) {
+        ResourceKey<Level> worldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, buf.readResourceLocation());
         BlockPos pos = buf.readBlockPos();
         return GlobalPos.of(worldKey, pos);
     }
@@ -64,10 +64,10 @@ public class PacketUtil {
      * @return the relevant tile entity, or Optional.empty() if none can be found
      */
     @Nonnull
-    public static <T extends TileEntity> Optional<T> getTE(PlayerEntity player, BlockPos pos, Class<T> cls) {
+    public static <T extends BlockEntity> Optional<T> getTE(Player player, BlockPos pos, Class<T> cls) {
         if (player == null) {
             // client-side: we trust the blockpos the server sends
-            World w = ClientUtils.getClientWorld();
+            Level w = ClientUtils.getClientLevel();
             if (w != null) {
                 return PneumaticCraftUtils.getTileEntityAt(w, pos, cls);
             }
@@ -75,7 +75,7 @@ public class PacketUtil {
             // server-side: don't trust the blockpos the client sent us
             // instead get the TE from the player's open container
             if (player.containerMenu instanceof ContainerPneumaticBase) {
-                TileEntity te = ((ContainerPneumaticBase<?>) player.containerMenu).te;
+                BlockEntity te = ((ContainerPneumaticBase<?>) player.containerMenu).te;
                 if (te != null && cls.isAssignableFrom(te.getClass()) && (pos == null || te.getBlockPos().equals(pos))) {
                     //noinspection unchecked
                     return Optional.of((T) te);
@@ -93,7 +93,7 @@ public class PacketUtil {
      * @return the relevant tile entity, or Optional.empty() if none can be found
      */
     @Nonnull
-    public static <T extends TileEntity> Optional<T> getTE(PlayerEntity player, Class<T> cls) {
+    public static <T extends BlockEntity> Optional<T> getTE(Player player, Class<T> cls) {
         if (player.level.isClientSide) throw new RuntimeException("don't call this method client side!");
         return getTE(player, null, cls);
     }
@@ -103,12 +103,12 @@ public class PacketUtil {
      * @param buf the packet buffer
      * @param state the state to write
      */
-    public static void writeNullableBlockState(PacketBuffer buf, @Nullable BlockState state) {
+    public static void writeNullableBlockState(FriendlyByteBuf buf, @Nullable BlockState state) {
         if (state == null) {
             buf.writeBoolean(false);
         } else {
             buf.writeBoolean(true);
-            buf.writeNbt(NBTUtil.writeBlockState(state));
+            buf.writeNbt(NbtUtils.writeBlockState(state));
         }
     }
 
@@ -118,10 +118,10 @@ public class PacketUtil {
      * @return the blockstate, may be null
      */
     @Nullable
-    public static BlockState readNullableBlockState(PacketBuffer buf) {
+    public static BlockState readNullableBlockState(FriendlyByteBuf buf) {
         if (buf.readBoolean()) {
-            CompoundNBT tag = buf.readNbt();
-            return NBTUtil.readBlockState(Objects.requireNonNull(tag));
+            CompoundTag tag = buf.readNbt();
+            return NbtUtils.readBlockState(Objects.requireNonNull(tag));
         } else {
             return null;
         }

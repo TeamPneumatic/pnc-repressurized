@@ -19,17 +19,19 @@ package me.desht.pneumaticcraft.api.crafting.ingredient;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
+
+import net.minecraft.world.item.crafting.Ingredient.ItemValue;
 
 /**
  * Like a vanilla ingredient, but requires the item must have no NBT whatsoever
@@ -39,11 +41,11 @@ public class NoNBTIngredient extends Ingredient {
     private final ItemStack stack;
 
     public NoNBTIngredient(ItemStack stack) {
-        super(Stream.of(new SingleItemList(stack)));
+        super(Stream.of(new ItemValue(stack)));
         this.stack = stack;
     }
 
-    public NoNBTIngredient(IItemProvider item) {
+    public NoNBTIngredient(ItemLike item) {
         this(new ItemStack(item));
     }
 
@@ -76,7 +78,7 @@ public class NoNBTIngredient extends Ingredient {
         public static final ResourceLocation ID = new ResourceLocation("pneumaticcraft:no_nbt");
 
         @Override
-        public NoNBTIngredient parse(PacketBuffer buffer) {
+        public NoNBTIngredient parse(FriendlyByteBuf buffer) {
             return new NoNBTIngredient(buffer.readItem());
         }
 
@@ -86,7 +88,7 @@ public class NoNBTIngredient extends Ingredient {
         }
 
         @Override
-        public void write(PacketBuffer buffer, NoNBTIngredient ingredient) {
+        public void write(FriendlyByteBuf buffer, NoNBTIngredient ingredient) {
             buffer.writeItem(ingredient.stack);
         }
     }

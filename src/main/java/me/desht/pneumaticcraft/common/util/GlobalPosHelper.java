@@ -19,30 +19,30 @@ package me.desht.pneumaticcraft.common.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.RegistryKey;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class GlobalPosHelper {
-    public static CompoundNBT toNBT(GlobalPos globalPos) {
-        CompoundNBT tag = new CompoundNBT();
-        tag.put("pos", net.minecraft.nbt.NBTUtil.writeBlockPos(globalPos.pos()));
+    public static CompoundTag toNBT(GlobalPos globalPos) {
+        CompoundTag tag = new CompoundTag();
+        tag.put("pos", net.minecraft.nbt.NbtUtils.writeBlockPos(globalPos.pos()));
         tag.putString("dim", globalPos.dimension().location().toString());
         return tag;
     }
 
-    public static GlobalPos fromNBT(CompoundNBT tag) {
-        RegistryKey<World> worldKey = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dim")));
-        return GlobalPos.of(worldKey, NBTUtil.readBlockPos(tag.getCompound("pos")));
+    public static GlobalPos fromNBT(CompoundTag tag) {
+        ResourceKey<Level> worldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dim")));
+        return GlobalPos.of(worldKey, NbtUtils.readBlockPos(tag.getCompound("pos")));
     }
 
     public static JsonElement toJson(GlobalPos pos) {
@@ -58,25 +58,25 @@ public class GlobalPosHelper {
     }
 
     public static GlobalPos fromJson(JsonObject json) {
-        RegistryKey<World> worldKey = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(JSONUtils.getAsString(json, "dimension")));
+        ResourceKey<Level> worldKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(GsonHelper.getAsString(json, "dimension")));
         JsonObject posObj = json.get("pos").getAsJsonObject();
         BlockPos pos = new BlockPos(
-                JSONUtils.getAsInt(posObj, "x"),
-                JSONUtils.getAsInt(posObj, "y"),
-                JSONUtils.getAsInt(posObj, "z")
+                GsonHelper.getAsInt(posObj, "x"),
+                GsonHelper.getAsInt(posObj, "y"),
+                GsonHelper.getAsInt(posObj, "z")
         );
         return GlobalPos.of(worldKey, pos);
     }
 
-    public static ServerWorld getWorldForGlobalPos(GlobalPos pos) {
+    public static ServerLevel getWorldForGlobalPos(GlobalPos pos) {
         return ServerLifecycleHooks.getCurrentServer().getLevel(pos.dimension());
     }
 
-    public static GlobalPos makeGlobalPos(World w, BlockPos pos) {
+    public static GlobalPos makeGlobalPos(Level w, BlockPos pos) {
         return GlobalPos.of(w.dimension(), pos);
     }
 
-    public static boolean isSameWorld(GlobalPos pos, World world) {
+    public static boolean isSameWorld(GlobalPos pos, Level world) {
         return pos.dimension().compareTo(world.dimension()) == 0;
     }
 
@@ -92,8 +92,8 @@ public class GlobalPosHelper {
      * @param globalPos the global pos
      * @return the tile entity, if any
      */
-    public static TileEntity getTileEntity(GlobalPos globalPos) {
-        World world = getWorldForGlobalPos(globalPos);
+    public static BlockEntity getTileEntity(GlobalPos globalPos) {
+        Level world = getWorldForGlobalPos(globalPos);
         if (world != null && world.isAreaLoaded(globalPos.pos(), 1)) {
             return world.getBlockEntity(globalPos.pos());
         }

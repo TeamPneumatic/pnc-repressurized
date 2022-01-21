@@ -20,24 +20,24 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 public class ModuleCharging extends TubeModule {
-    private TileEntity neighbourTE = null;
+    private BlockEntity neighbourTE = null;
 
     public ModuleCharging(ItemTubeModule itemTubeModule) {
         super(itemTubeModule);
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tickServer() {
+        super.tickServer();
 
-        if (pressureTube.getLevel().isClientSide || (pressureTube.getLevel().getGameTime() & 0x7) != 0) return;
+        if (pressureTube.nonNullLevel().isClientSide || (pressureTube.nonNullLevel().getGameTime() & 0x7) != 0) return;
 
         getConnectedInventory().ifPresent(itemHandler -> {
             // times 8 because we only run every 8 ticks
@@ -72,7 +72,7 @@ public class ModuleCharging extends TubeModule {
 
     private LazyOptional<IItemHandler> getConnectedInventory() {
         if (neighbourTE == null || neighbourTE.isRemoved()) {
-            neighbourTE = pressureTube.getLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
+            neighbourTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
         }
         return neighbourTE == null ? LazyOptional.empty() : neighbourTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
     }

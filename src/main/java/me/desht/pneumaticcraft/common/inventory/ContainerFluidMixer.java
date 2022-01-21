@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 public class ContainerFluidMixer extends ContainerPneumaticBase<TileEntityFluidMixer> {
-    public ContainerFluidMixer(int windowId, PlayerInventory inv, BlockPos pos) {
+    public ContainerFluidMixer(int windowId, Inventory inv, BlockPos pos) {
         super(ModContainers.FLUID_MIXER.get(), windowId, inv, pos);
 
         addSlot(new SlotOutput(te.getPrimaryInventory(), 0, 73, 67));
@@ -35,7 +35,7 @@ public class ContainerFluidMixer extends ContainerPneumaticBase<TileEntityFluidM
         addPlayerSlots(inv, 130);
     }
 
-    public ContainerFluidMixer(int windowId, PlayerInventory invPlayer, PacketBuffer extra) {
+    public ContainerFluidMixer(int windowId, Inventory invPlayer, FriendlyByteBuf extra) {
         this(windowId, invPlayer, getTilePos(extra));
     }
 }

@@ -21,53 +21,55 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber {
+public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber, EntityBlockPneumaticCraft {
     BlockPressureChamberWallBase(Properties props) {
         super(props);
     }
 
+    @Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityPressureChamberWall.class;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityPressureChamberWall(pPos, pState);
     }
 
     @Override
-    public void setPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
+    public void setPlacedBy(Level par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
         if (!par1World.isClientSide && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
-            AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayerEntity) par5EntityLiving);
+            AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayer) par5EntityLiving);
         }
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (world.isClientSide) return ActionResultType.PASS;
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+        if (world.isClientSide) return InteractionResult.PASS;
         // forward activation to the pressure chamber valve, which will open the GUI
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(te -> {
             TileEntityPressureChamberValve valve = te.getCore();
             if (valve != null) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getBlockPos());
-                return ActionResultType.CONSUME;
+                NetworkHooks.openGui((ServerPlayer) player, valve, valve.getBlockPos());
+                return InteractionResult.CONSUME;
             }
-            return ActionResultType.FAIL;
-        }).orElse(ActionResultType.FAIL);
+            return InteractionResult.FAIL;
+        }).orElse(InteractionResult.FAIL);
     }
 
     @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class)
                     .ifPresent(TileEntityPressureChamberWall::onBlockBreak);

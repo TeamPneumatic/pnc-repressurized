@@ -27,12 +27,14 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -47,7 +49,7 @@ import java.util.Map;
 
 public class TileEntityRefineryOutput extends TileEntityTickableBase implements
         IRedstoneControl<TileEntityRefineryOutput>, IComparatorSupport, ISerializableTanks,
-        INamedContainerProvider, IHeatExchangingTE {
+        MenuProvider, IHeatExchangingTE {
 
     private TileEntityRefineryController controllerTE = null;
 
@@ -62,13 +64,13 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase implements
     private final LazyOptional<IFluidHandler> fluidCapWrapped = LazyOptional.of(() -> new TankWrapper(outputTank));
     private final RedstoneController<TileEntityRefineryOutput> rsController = new RedstoneController<>(this);
 
-    public TileEntityRefineryOutput() {
-        super(ModTileEntities.REFINERY_OUTPUT.get());
+    public TileEntityRefineryOutput(BlockPos pos, BlockState state) {
+        super(ModTileEntities.REFINERY_OUTPUT.get(), pos, state);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         outputTank.tick();
     }
@@ -103,7 +105,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase implements
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inventory, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
         TileEntityRefineryController controller = getRefineryController();
         return controller == null ? null : new ContainerRefinery(windowId, inventory, controller.getBlockPos());
     }
@@ -112,6 +114,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase implements
         if (controllerTE != null && controllerTE.isRemoved()) controllerTE = null;
 
         if (controllerTE == null) {
+            Level level = nonNullLevel();
             BlockPos checkPos = this.worldPosition;
             while (level.getBlockState(checkPos.below()).getBlock() == ModBlocks.REFINERY_OUTPUT.get()) {
                 checkPos = checkPos.below();
@@ -162,13 +165,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase implements
         return heatExchanger;
     }
 
-    private static class TankWrapper implements IFluidHandler {
-        private final SmartSyncTank wrapped;
-
-        TankWrapper(SmartSyncTank wrapped) {
-            this.wrapped = wrapped;
-        }
-
+    private record TankWrapper(SmartSyncTank wrapped) implements IFluidHandler {
         @Override
         public int getTanks() {
             return wrapped.getTanks();

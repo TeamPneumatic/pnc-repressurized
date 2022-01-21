@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
 
 import java.util.EnumSet;
 
@@ -31,9 +31,9 @@ import java.util.EnumSet;
  */
 public class EntityAINoAIWhenRidingDrone extends Goal {
 
-    private final MobEntity entity;
+    private final Mob entity;
     
-    public EntityAINoAIWhenRidingDrone(MobEntity entity){
+    public EntityAINoAIWhenRidingDrone(Mob entity){
         this.entity = entity;
         setFlags(EnumSet.allOf(Flag.class)); //All bits to block all other AI's
     }

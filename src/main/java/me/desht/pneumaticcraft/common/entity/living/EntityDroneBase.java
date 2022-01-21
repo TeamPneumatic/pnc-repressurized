@@ -17,23 +17,23 @@
 
 package me.desht.pneumaticcraft.common.entity.living;
 
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
-public abstract class EntityDroneBase extends CreatureEntity {
+public abstract class EntityDroneBase extends PathfinderMob {
     public float oldPropRotation;
     public float propRotation;
     public float laserExtension; // How far the laser comes out of the drone. 1F is fully extended
     public float oldLaserExtension;
 
-    public EntityDroneBase(EntityType<? extends CreatureEntity> type, World world) {
+    public EntityDroneBase(EntityType<? extends PathfinderMob> type, Level world) {
         super(type, world);
     }
 
@@ -60,7 +60,7 @@ public abstract class EntityDroneBase extends CreatureEntity {
 
     public abstract  BlockPos getTargetedBlock();
 
-    public abstract ITextComponent getOwnerName();
+    public abstract Component getOwnerName();
 
     public abstract String getLabel();
 

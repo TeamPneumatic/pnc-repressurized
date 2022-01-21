@@ -18,117 +18,117 @@
 package me.desht.pneumaticcraft.common;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import net.minecraft.block.Block;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.item.Item;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ITag;
+import net.minecraft.tags.Tag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class PneumaticCraftTags {
     public static class Blocks extends PneumaticCraftTags {
-        public static final ITag.INamedTag<Block> SLABS = modTag("slabs");
-        public static final ITag.INamedTag<Block> STAIRS = modTag("stairs");
-        public static final ITag.INamedTag<Block> DOORS = modTag("doors");
-        public static final ITag.INamedTag<Block> WALLS = modTag("walls");
-        public static final ITag.INamedTag<Block> PLASTIC_BRICKS = modTag("plastic_bricks");
-        public static final ITag.INamedTag<Block> FLUID_TANKS = modTag("fluid_tanks");
-        public static final ITag.INamedTag<Block> CHESTS = modTag("chests");
-        public static final ITag.INamedTag<Block> REINFORCED_STONE = modTag("reinforced_stone");
-        public static final ITag.INamedTag<Block> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
-        public static final ITag.INamedTag<Block> COMPRESSED_STONE = modTag("compressed_stone");
-        public static final ITag.INamedTag<Block> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
-        public static final ITag.INamedTag<Block> WALL_LAMPS = modTag("wall_lamps");
-        public static final ITag.INamedTag<Block> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
-        public static final ITag.INamedTag<Block> BLOCK_TRACKER_MISC = modTag("block_tracker_misc_blocks");
-        public static final ITag.INamedTag<Block> PROBE_TARGET = modTag("probe_target");
+        public static final Tag.Named<Block> SLABS = modTag("slabs");
+        public static final Tag.Named<Block> STAIRS = modTag("stairs");
+        public static final Tag.Named<Block> DOORS = modTag("doors");
+        public static final Tag.Named<Block> WALLS = modTag("walls");
+        public static final Tag.Named<Block> PLASTIC_BRICKS = modTag("plastic_bricks");
+        public static final Tag.Named<Block> FLUID_TANKS = modTag("fluid_tanks");
+        public static final Tag.Named<Block> CHESTS = modTag("chests");
+        public static final Tag.Named<Block> REINFORCED_STONE = modTag("reinforced_stone");
+        public static final Tag.Named<Block> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
+        public static final Tag.Named<Block> COMPRESSED_STONE = modTag("compressed_stone");
+        public static final Tag.Named<Block> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
+        public static final Tag.Named<Block> WALL_LAMPS = modTag("wall_lamps");
+        public static final Tag.Named<Block> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
+        public static final Tag.Named<Block> BLOCK_TRACKER_MISC = modTag("block_tracker_misc_blocks");
+        public static final Tag.Named<Block> PROBE_TARGET = modTag("probe_target");
 
-        public static final ITag.INamedTag<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
+        public static final Tag.Named<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 
-        public static final ITag.INamedTag<Block> JACKHAMMER_ORES = modTag("jackhammer_ores");
+        public static final Tag.Named<Block> JACKHAMMER_ORES = modTag("jackhammer_ores");
 
-        static ITag.INamedTag<Block> tag(String modid, String name) {
+        static Tag.Named<Block> tag(String modid, String name) {
             return BlockTags.bind(new ResourceLocation(modid, name).toString());
         }
 
-        static ITag.INamedTag<Block> modTag(String name) {
+        static Tag.Named<Block> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
 
-        static ITag.INamedTag<Block> forgeTag(String name) {
+        static Tag.Named<Block> forgeTag(String name) {
             return tag("forge", name);
         }
     }
 
     public static class Items extends PneumaticCraftTags {
-        public static final ITag.INamedTag<Item> SLABS = modTag("slabs");
-        public static final ITag.INamedTag<Item> STAIRS = modTag("stairs");
-        public static final ITag.INamedTag<Item> DOORS = modTag("doors");
-        public static final ITag.INamedTag<Item> WALLS = modTag("walls");
-        public static final ITag.INamedTag<Item> PLASTIC_BRICKS = modTag("plastic_bricks");
-        public static final ITag.INamedTag<Item> WALL_LAMPS = modTag("wall_lamps");
-        public static final ITag.INamedTag<Item> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
-        public static final ITag.INamedTag<Item> FLUID_TANKS = modTag("fluid_tanks");
-        public static final ITag.INamedTag<Item> CHESTS = modTag("chests");
-        public static final ITag.INamedTag<Item> REINFORCED_STONE = modTag("reinforced_stone");
-        public static final ITag.INamedTag<Item> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
-        public static final ITag.INamedTag<Item> COMPRESSED_STONE = modTag("compressed_stone");
-        public static final ITag.INamedTag<Item> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
+        public static final Tag.Named<Item> SLABS = modTag("slabs");
+        public static final Tag.Named<Item> STAIRS = modTag("stairs");
+        public static final Tag.Named<Item> DOORS = modTag("doors");
+        public static final Tag.Named<Item> WALLS = modTag("walls");
+        public static final Tag.Named<Item> PLASTIC_BRICKS = modTag("plastic_bricks");
+        public static final Tag.Named<Item> WALL_LAMPS = modTag("wall_lamps");
+        public static final Tag.Named<Item> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
+        public static final Tag.Named<Item> FLUID_TANKS = modTag("fluid_tanks");
+        public static final Tag.Named<Item> CHESTS = modTag("chests");
+        public static final Tag.Named<Item> REINFORCED_STONE = modTag("reinforced_stone");
+        public static final Tag.Named<Item> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
+        public static final Tag.Named<Item> COMPRESSED_STONE = modTag("compressed_stone");
+        public static final Tag.Named<Item> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
 
-        public static final ITag.INamedTag<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");
-        public static final ITag.INamedTag<Item> BASIC_DRONES = modTag("basic_drones");
-        public static final ITag.INamedTag<Item> PLASTIC_SHEETS = modTag("plastic_sheets");
-        public static final ITag.INamedTag<Item> FLOUR = forgeTag("dusts/flour");
+        public static final Tag.Named<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");
+        public static final Tag.Named<Item> BASIC_DRONES = modTag("basic_drones");
+        public static final Tag.Named<Item> PLASTIC_SHEETS = modTag("plastic_sheets");
+        public static final Tag.Named<Item> FLOUR = forgeTag("dusts/flour");
 
-        public static final ITag.INamedTag<Item> INGOTS_COMPRESSED_IRON = forgeTag("ingots/compressed_iron");
-        public static final ITag.INamedTag<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
+        public static final Tag.Named<Item> INGOTS_COMPRESSED_IRON = forgeTag("ingots/compressed_iron");
+        public static final Tag.Named<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 
-        public static final ITag.INamedTag<Item> CURIO = tag("curios", "curio");
+        public static final Tag.Named<Item> CURIO = tag("curios", "curio");
 
-        public static final ITag.INamedTag<Item> BREAD = forgeTag("bread");
+        public static final Tag.Named<Item> BREAD = forgeTag("bread");
 
-        public static final ITag.INamedTag<Item> WRENCHES = forgeTag("tools/wrench");
+        public static final Tag.Named<Item> WRENCHES = forgeTag("tools/wrench");
 
-        static ITag.INamedTag<Item> tag(String modid, String name) {
+        static Tag.Named<Item> tag(String modid, String name) {
             return ItemTags.bind(new ResourceLocation(modid, name).toString());
         }
 
-        static ITag.INamedTag<Item> modTag(String name) {
+        static Tag.Named<Item> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
 
-        static ITag.INamedTag<Item> forgeTag(String name) {
+        static Tag.Named<Item> forgeTag(String name) {
             return tag("forge", name);
         }
     }
 
     public static class Fluids extends PneumaticCraftTags {
-        public static final ITag.INamedTag<Fluid> CRUDE_OIL = forgeTag("crude_oil");
-        public static final ITag.INamedTag<Fluid> LUBRICANT = forgeTag("lubricant");
-        public static final ITag.INamedTag<Fluid> ETHANOL = forgeTag("ethanol");
-        public static final ITag.INamedTag<Fluid> DIESEL = forgeTag("diesel");
-        public static final ITag.INamedTag<Fluid> KEROSENE = forgeTag("kerosene");
-        public static final ITag.INamedTag<Fluid> GASOLINE = forgeTag("gasoline");
-        public static final ITag.INamedTag<Fluid> LPG = forgeTag("lpg");
-        public static final ITag.INamedTag<Fluid> BIODIESEL = forgeTag("biodiesel");
-        public static final ITag.INamedTag<Fluid> PLANT_OIL = forgeTag("plantoil");
-        public static final ITag.INamedTag<Fluid> EXPERIENCE = forgeTag("experience");
+        public static final Tag.Named<Fluid> CRUDE_OIL = forgeTag("crude_oil");
+        public static final Tag.Named<Fluid> LUBRICANT = forgeTag("lubricant");
+        public static final Tag.Named<Fluid> ETHANOL = forgeTag("ethanol");
+        public static final Tag.Named<Fluid> DIESEL = forgeTag("diesel");
+        public static final Tag.Named<Fluid> KEROSENE = forgeTag("kerosene");
+        public static final Tag.Named<Fluid> GASOLINE = forgeTag("gasoline");
+        public static final Tag.Named<Fluid> LPG = forgeTag("lpg");
+        public static final Tag.Named<Fluid> BIODIESEL = forgeTag("biodiesel");
+        public static final Tag.Named<Fluid> PLANT_OIL = forgeTag("plantoil");
+        public static final Tag.Named<Fluid> EXPERIENCE = forgeTag("experience");
 
-        public static final ITag.INamedTag<Fluid> ETCHING_ACID = modTag("etching_acid");
-        public static final ITag.INamedTag<Fluid> PLASTIC = modTag("plastic");
-        public static final ITag.INamedTag<Fluid> YEAST_CULTURE = modTag("yeast_culture");
+        public static final Tag.Named<Fluid> ETCHING_ACID = modTag("etching_acid");
+        public static final Tag.Named<Fluid> PLASTIC = modTag("plastic");
+        public static final Tag.Named<Fluid> YEAST_CULTURE = modTag("yeast_culture");
 
-        static ITag.INamedTag<Fluid> tag(String modid, String name) {
+        static Tag.Named<Fluid> tag(String modid, String name) {
             return FluidTags.bind(new ResourceLocation(modid, name).toString());
         }
 
-        static ITag.INamedTag<Fluid> modTag(String name) {
+        static Tag.Named<Fluid> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
 
-        public static ITag.INamedTag<Fluid> forgeTag(String name) {
+        public static Tag.Named<Fluid> forgeTag(String name) {
             return tag("forge", name);
         }
     }

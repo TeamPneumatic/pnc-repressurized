@@ -24,8 +24,8 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModVillagers;
 import me.desht.pneumaticcraft.common.util.RandomTradeBuilder;
-import net.minecraft.entity.merchant.villager.VillagerTrades;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -46,7 +46,7 @@ public class VillagerTradesRegistration {
 
     @SubscribeEvent
     public static void registerTrades(VillagerTradesEvent event) {
-        Int2ObjectMap<List<VillagerTrades.ITrade>> trades = event.getTrades();
+        Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
         if (event.getType() == ModVillagers.MECHANIC.get()) {
             if (ConfigHelper.common().villagers.whichTrades.get().shouldAddBlueprint()) {
                 trades.get(1).add(new RandomTradeBuilder(4, 10, 0.05F)

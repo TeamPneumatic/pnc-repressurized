@@ -17,29 +17,34 @@
 
 package me.desht.pneumaticcraft.client.render;
 
-import com.google.common.collect.ImmutableList;
-import net.minecraft.client.renderer.RenderState;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
+import net.minecraft.Util;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.OptionalDouble;
+import java.util.function.Function;
 
 public class ModRenderTypes extends RenderType {
-
-    public ModRenderTypes(String name, VertexFormat format, int p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable pre, Runnable post) {
-        super(name, format, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, pre, post);
+    public ModRenderTypes(String p_173178_, VertexFormat p_173179_, VertexFormat.Mode p_173180_, int p_173181_, boolean p_173182_, boolean p_173183_, Runnable p_173184_, Runnable p_173185_) {
+        super(p_173178_, p_173179_, p_173180_, p_173181_, p_173182_, p_173183_, p_173184_, p_173185_);
     }
 
+//    public ModRenderTypes(String name, VertexFormat format, int p_i225992_3_, int p_i225992_4_, boolean p_i225992_5_, boolean p_i225992_6_, Runnable pre, Runnable post) {
+//        super(name, format, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, pre, post);
+//    }
+
     public static RenderType getTextureRender(ResourceLocation texture) {
-        RenderState.TextureState textureState = new TextureState(texture, false, false);
-        return create("texture", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL11.GL_QUADS, 256,
-                RenderType.State.builder()
+        RenderStateShard.TextureStateShard textureState = new TextureStateShard(texture, false, false);
+        return create("texture", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+                false, false,
+                RenderType.CompositeState.builder()
                         .setTextureState(textureState)
-                        .setLightmapState(RenderState.LIGHTMAP)
+                        .setLightmapState(RenderStateShard.LIGHTMAP)
                         .createCompositeState(false)
         );
     }
@@ -49,12 +54,13 @@ public class ModRenderTypes extends RenderType {
     }
 
     public static RenderType getTextureRenderColored(ResourceLocation texture, boolean disableDepthTest) {
-        RenderState.TextureState textureState = new TextureState(texture, false, false);
-        return create("texture_color", DefaultVertexFormats.POSITION_COLOR_TEX_LIGHTMAP, GL11.GL_QUADS, 256,
-                RenderType.State.builder()
+        RenderStateShard.TextureStateShard textureState = new TextureStateShard(texture, false, false);
+        return create("texture_color", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+                false, false,
+                RenderType.CompositeState.builder()
                         .setTextureState(textureState)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setLightmapState(RenderState.LIGHTMAP)
+                        .setLightmapState(RenderStateShard.LIGHTMAP)
                         .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
                         .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
                         .createCompositeState(false)
@@ -62,35 +68,37 @@ public class ModRenderTypes extends RenderType {
     }
 
     public static RenderType getUntexturedQuad(boolean disableDepthTest) {
-        return create("untextured_quad_" + disableDepthTest, DefaultVertexFormats.POSITION_COLOR_LIGHTMAP, GL11.GL_QUADS, 256,
-                RenderType.State.builder()
-                        .setTextureState(RenderState.NO_TEXTURE)
+        return create("untextured_quad_" + disableDepthTest, DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+                false, false,
+                RenderType.CompositeState.builder()
+                        .setTextureState(RenderStateShard.NO_TEXTURE)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setCullState(NO_CULL)
-                        .setLightmapState(RenderState.LIGHTMAP)
-                        .setShadeModelState(RenderState.SMOOTH_SHADE)
+                        .setLightmapState(RenderStateShard.LIGHTMAP)
                         .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
                         .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
                         .createCompositeState(false)
         );
     }
 
-    private static final VertexFormat POS_COLOR_NORMAL_LIGHTMAP = new VertexFormat(ImmutableList.<VertexFormatElement>builder()
-            .add(DefaultVertexFormats.ELEMENT_POSITION)
-            .add(DefaultVertexFormats.ELEMENT_COLOR)
-            .add(DefaultVertexFormats.ELEMENT_NORMAL)
-            .add(DefaultVertexFormats.ELEMENT_UV2)
-            .add(DefaultVertexFormats.ELEMENT_PADDING)
+    private static final VertexFormat POS_COLOR_NORMAL_LIGHTMAP = new VertexFormat(ImmutableMap.<String,VertexFormatElement>builder()
+            .put("Position", DefaultVertexFormat.ELEMENT_POSITION)
+            .put("Color", DefaultVertexFormat.ELEMENT_COLOR)
+            .put("Normal", DefaultVertexFormat.ELEMENT_NORMAL)
+            .put("UV2", DefaultVertexFormat.ELEMENT_UV2)
+            .put("Padding", DefaultVertexFormat.ELEMENT_PADDING)
             .build()
     );
     public static RenderType getBlockFrame(boolean disableDepthTest) {
         return create("block_frame",
-                POS_COLOR_NORMAL_LIGHTMAP, GL11.GL_QUADS, 256,
-                RenderType.State.builder()
+                POS_COLOR_NORMAL_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+                false, false,
+                RenderType.CompositeState.builder()
                         .setTextureState(NO_TEXTURE)
+                        .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setShadeModelState(SMOOTH_SHADE)
-                        .setDiffuseLightingState(DIFFUSE_LIGHTING)
+//                        .setShadeModelState(SMOOTH_SHADE)
+//                        .setDiffuseLightingState(DIFFUSE_LIGHTING)
                         .setLightmapState(LIGHTMAP)
                         .setCullState(NO_CULL)
                         .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
@@ -100,8 +108,9 @@ public class ModRenderTypes extends RenderType {
     }
 
     public static final RenderType BLOCK_TRACKER = create("block_tracker",
-            DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINES, 256,
-            RenderType.State.builder().setLineState(LineState.DEFAULT_LINE)
+            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256,
+            false, false,
+            RenderType.CompositeState.builder().setLineState(LineStateShard.DEFAULT_LINE)
                     // TODO 1.16 can we use VIEW_OFFSET_Z_LAYERING ?
 //                    .layer(RenderState.PROJECTION_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
@@ -114,10 +123,12 @@ public class ModRenderTypes extends RenderType {
     );
 
     public static final RenderType TARGET_CIRCLE = create("target_circle",
-            DefaultVertexFormats.POSITION_COLOR, GL11.GL_TRIANGLE_STRIP, 65536,
-            RenderType.State.builder()
+            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP, 65536,
+            false, false,
+            RenderType.CompositeState.builder()
 //                    .layer(PROJECTION_LAYERING)
-                    .setShadeModelState(SMOOTH_SHADE)
+//                    .setShadeModelState(SMOOTH_SHADE)
+                    .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(NO_TEXTURE)
                     .setCullState(NO_CULL)
@@ -128,28 +139,35 @@ public class ModRenderTypes extends RenderType {
     );
 
     public static RenderType getLineLoops(double lineWidth) {
-        LineState lineState = new LineState(OptionalDouble.of(lineWidth));
+        LineStateShard lineState = new LineStateShard(OptionalDouble.of(lineWidth));
         return create("line_loops",
-                DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINE_LOOP, 256,
-                RenderType.State.builder()
+                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINE_STRIP, 256,
+                false, false,
+                RenderType.CompositeState.builder()
                         .setLineState(lineState)
-                        .setShadeModelState(RenderState.SMOOTH_SHADE)
-                        .setTextureState(RenderState.NO_TEXTURE)
-                        .setLightmapState(RenderState.NO_LIGHTMAP)
+//                        .setShadeModelState(RenderStateShard.SMOOTH_SHADE)
+                        .setLineState(lineState)
+                        .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                        .setLayeringState(LayeringStateShard.VIEW_OFFSET_Z_LAYERING)
+                        .setTextureState(RenderStateShard.NO_TEXTURE)
+                        .setCullState(RenderStateShard.NO_CULL)
+                        .setLightmapState(RenderStateShard.NO_LIGHTMAP)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                        .setOutputState(OutputStateShard.ITEM_ENTITY_TARGET)
                         .createCompositeState(false)
         );
     }
 
     public static RenderType getLineLoopsTransparent(double lineWidth) {
-        LineState lineState = new LineState(OptionalDouble.of(lineWidth));
+        LineStateShard lineState = new LineStateShard(OptionalDouble.of(lineWidth));
         return create("line_loops",
-                DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINE_LOOP, 256,
-                RenderType.State.builder()
+                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINE_STRIP, 256,
+                false, false,
+                RenderType.CompositeState.builder()
                         .setLineState(lineState)
-                        .setShadeModelState(RenderState.SMOOTH_SHADE)
-                        .setTextureState(RenderState.NO_TEXTURE)
-                        .setLightmapState(RenderState.NO_LIGHTMAP)
+                        .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                        .setTextureState(RenderStateShard.NO_TEXTURE)
+                        .setLightmapState(RenderStateShard.NO_LIGHTMAP)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setDepthTestState(NO_DEPTH_TEST)
                         .setWriteMaskState(COLOR_WRITE)
@@ -158,30 +176,32 @@ public class ModRenderTypes extends RenderType {
         );
     }
 
-    private static final LineState LINE_5 = new LineState(OptionalDouble.of(5.0));
+    private static final LineStateShard LINE_5 = new LineStateShard(OptionalDouble.of(5.0));
     public static RenderType getNavPath(boolean xRay, boolean quads) {
-        DepthTestState d = xRay ? DepthTestState.NO_DEPTH_TEST : DepthTestState.LEQUAL_DEPTH_TEST;
-        WriteMaskState w = xRay ? WriteMaskState.COLOR_WRITE : WriteMaskState.COLOR_DEPTH_WRITE;
+        DepthTestStateShard d = xRay ? DepthTestStateShard.NO_DEPTH_TEST : DepthTestStateShard.LEQUAL_DEPTH_TEST;
+        WriteMaskStateShard w = xRay ? WriteMaskStateShard.COLOR_WRITE : WriteMaskStateShard.COLOR_DEPTH_WRITE;
 
         if (quads) {
             return create("nav_path_quads",
-                    DefaultVertexFormats.POSITION_COLOR, GL11.GL_QUADS, 256,
-                    RenderType.State.builder()
+                    DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,
+                    false, false,
+                    RenderType.CompositeState.builder()
                             .setDepthTestState(d)
                             .setWriteMaskState(w)
-                            .setTextureState(RenderState.NO_TEXTURE)
-                            .setCullState(RenderState.NO_CULL)
+                            .setTextureState(RenderStateShard.NO_TEXTURE)
+                            .setCullState(RenderStateShard.NO_CULL)
                             .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                             .createCompositeState(false)
             );
         } else {
             return create("nav_path_lines",
-                    DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINE_STRIP, 256,
-                    RenderType.State.builder().setLineState(LINE_5)
+                    DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINE_STRIP, 256,
+                    false, false,
+                    RenderType.CompositeState.builder().setLineState(LINE_5)
                             .setDepthTestState(d)
                             .setWriteMaskState(w)
-                            .setTextureState(RenderState.NO_TEXTURE)
-                            .setCullState(RenderState.NO_CULL)
+                            .setTextureState(RenderStateShard.NO_TEXTURE)
+                            .setCullState(RenderStateShard.NO_CULL)
                             .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                             .createCompositeState(false)
             );
@@ -190,8 +210,9 @@ public class ModRenderTypes extends RenderType {
 
     public static RenderType getBlockHilightFace(boolean disableDepthTest, boolean disableWriteMask) {
         return create("block_hilight",
-                DefaultVertexFormats.POSITION_COLOR, GL11.GL_QUADS, 256,
-                RenderType.State.builder()
+                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,
+                false, false,
+                RenderType.CompositeState.builder()
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setTextureState(NO_TEXTURE)
                         .setLightmapState(NO_LIGHTMAP)
@@ -200,32 +221,52 @@ public class ModRenderTypes extends RenderType {
                         .createCompositeState(false));
     }
 
-    private static final LineState LINE_3 = new LineState(OptionalDouble.of(3.0));
+    private static final LineStateShard LINE_3 = new LineStateShard(OptionalDouble.of(3.0));
     public static RenderType getBlockHilightLine(boolean disableDepthTest, boolean disableWriteMask) {
         return create("block_hilight_line",
-                DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINES, 256,
-                RenderType.State.builder().setLineState(LINE_3)
+                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINES, 256,
+                false, false,
+                RenderType.CompositeState.builder().setLineState(LINE_3)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setTextureState(NO_TEXTURE)
-                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : RenderState.LEQUAL_DEPTH_TEST)
+                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : RenderStateShard.LEQUAL_DEPTH_TEST)
                         .setCullState(NO_CULL)
                         .setLightmapState(NO_LIGHTMAP)
-                        .setWriteMaskState(disableWriteMask ? COLOR_WRITE : RenderState.COLOR_DEPTH_WRITE)
+                        .setWriteMaskState(disableWriteMask ? COLOR_WRITE : RenderStateShard.COLOR_DEPTH_WRITE)
                         .createCompositeState(false));
     }
 
 
-    private static final LineState LINE_2 = new LineState(OptionalDouble.of(2.0));
+    private static final LineStateShard LINE_2 = new LineStateShard(OptionalDouble.of(2.0));
     public static final RenderType TRIANGLE_FAN = create("triangle_fan",
-            DefaultVertexFormats.POSITION_COLOR, GL11.GL_TRIANGLE_FAN, 256,
-            RenderType.State.builder()
+            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN, 256,
+            false, false,
+            RenderType.CompositeState.builder()
                     .setLineState(LINE_2)
                     .setTextureState(NO_TEXTURE)
                     .createCompositeState(false)
     );
 
+    private static final Function<ResourceLocation, RenderType> ARMOR_TRANSLUCENT_NO_CULL = Util.memoize((rl) -> {
+        RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
+                .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
+                .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                .setCullState(NO_CULL)
+                .setLightmapState(LIGHTMAP)
+                .setOverlayState(OVERLAY)
+                .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+                .createCompositeState(true);
+        return create("armor_translucent_no_cull", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS,
+                256, true, false,
+                rendertype$compositestate);
+    });
     public static RenderType getArmorTranslucentNoCull(ResourceLocation rl) {
-        RenderType.State state = RenderType.State.builder().setTextureState(new RenderState.TextureState(rl, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setDiffuseLightingState(DIFFUSE_LIGHTING).setAlphaState(DEFAULT_ALPHA).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).setLayeringState(VIEW_OFFSET_Z_LAYERING).createCompositeState(true);
-        return create("armor_translucent_no_cull", DefaultVertexFormats.NEW_ENTITY, GL11.GL_QUADS, 256, true, false, state);
+        return ARMOR_TRANSLUCENT_NO_CULL.apply(rl);
     }
+
+//    public static RenderType getArmorTranslucentNoCull(ResourceLocation rl) {
+//        RenderType.CompositeState state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(rl, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setDiffuseLightingState(DIFFUSE_LIGHTING).setAlphaState(DEFAULT_ALPHA).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).setLayeringState(VIEW_OFFSET_Z_LAYERING).createCompositeState(true);
+//        return create("armor_translucent_no_cull", DefaultVertexFormat.NEW_ENTITY, GL11.GL_QUADS, 256, true, false, state);
+//    }
 }

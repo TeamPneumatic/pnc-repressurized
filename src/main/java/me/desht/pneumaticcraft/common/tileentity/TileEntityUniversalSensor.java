@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
@@ -40,19 +41,19 @@ import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -71,7 +72,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements
         IGUITextFieldSensitive, IMinWorkingPressure, IRangedTE,
-        IRedstoneControl<TileEntityUniversalSensor>, INamedContainerProvider {
+        IRedstoneControl<TileEntityUniversalSensor>, MenuProvider {
 
     private static final List<RedstoneMode<TileEntityUniversalSensor>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("universalSensor.normal", new ItemStack(Items.REDSTONE), te -> true),
@@ -108,12 +109,14 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     public int outOfRange;
     private final RangeManager rangeManager = new RangeManager(this, 0x605050D0);
 
-    public TileEntityUniversalSensor() {
-        super(ModTileEntities.UNIVERSAL_SENSOR.get(), PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
+    public TileEntityUniversalSensor(BlockPos pos, BlockState state) {
+        super(ModTileEntities.UNIVERSAL_SENSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
     }
 
     @Override
-    public void tick() {
+    public void tickCommonPre() {
+        super.tickCommonPre();
+
         oldDishRotation = dishRotation;
         if (isSensorActive) {
             dishSpeed = Math.min(dishSpeed + 0.2F, 10);
@@ -121,49 +124,50 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             dishSpeed = Math.max(dishSpeed - 0.2F, 0);
         }
         dishRotation += dishSpeed;
+    }
 
-        super.tick();
+    @Override
+    public void tickServer() {
+        super.tickServer();
 
-        if (!getLevel().isClientSide) {
-            boolean invertedRedstone = rsController.getCurrentMode() == RS_MODE_INVERTED;
-            tickTimer++;
-            ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
-            if (updateStatus(sensor) == SensorStatus.OK  && sensor != null && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
-                isSensorActive = true;
-                addAir(-sensor.getAirUsage(getLevel(), getBlockPos()));
-                if (sensor instanceof IPollSensorSetting) {
-                    if (tickTimer >= ((IPollSensorSetting) sensor).getPollFrequency(this)) {
-                        try {
-                            int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getLevel(), getBlockPos(), getRange(), sensorGuiText);
-                            if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
-                            if (newRedstoneStrength != redstoneStrength) {
-                                redstoneStrength = newRedstoneStrength;
-                                if (requestPollPullEvent) {
-                                    notifyComputers(redstoneStrength);
-                                }
-                                updateNeighbours();
+        boolean invertedRedstone = rsController.getCurrentMode() == RS_MODE_INVERTED;
+        tickTimer++;
+        ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
+        if (updateStatus(sensor) == SensorStatus.OK  && sensor != null && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
+            isSensorActive = true;
+            addAir(-sensor.getAirUsage(getLevel(), getBlockPos()));
+            if (sensor instanceof IPollSensorSetting) {
+                if (tickTimer >= ((IPollSensorSetting) sensor).getPollFrequency(this)) {
+                    try {
+                        int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getLevel(), getBlockPos(), getRange(), sensorGuiText);
+                        if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
+                        if (newRedstoneStrength != redstoneStrength) {
+                            redstoneStrength = newRedstoneStrength;
+                            if (requestPollPullEvent) {
+                                notifyComputers(redstoneStrength);
                             }
-                            tickTimer = 0;
-                        } catch (Exception e) {
-                            lastSensorExceptionText = e.getMessage() == null ? "" : e.getMessage();
-                        }
-                    }
-                    redstonePulseCounter = 0;
-                } else {
-                    if (redstonePulseCounter > 0) {
-                        redstonePulseCounter--;
-                        if (redstonePulseCounter == 0 && redstoneStrength != (invertedRedstone ? 15 : 0)) {
-                            redstoneStrength = invertedRedstone ? 15 : 0;
                             updateNeighbours();
                         }
+                        tickTimer = 0;
+                    } catch (Exception e) {
+                        lastSensorExceptionText = e.getMessage() == null ? "" : e.getMessage();
                     }
                 }
+                redstonePulseCounter = 0;
             } else {
-                isSensorActive = false;
-                if (redstoneStrength != (invertedRedstone ? 15 : 0)) {
-                    redstoneStrength = invertedRedstone ? 15 : 0;
-                    updateNeighbours();
+                if (redstonePulseCounter > 0) {
+                    redstonePulseCounter--;
+                    if (redstonePulseCounter == 0 && redstoneStrength != (invertedRedstone ? 15 : 0)) {
+                        redstoneStrength = invertedRedstone ? 15 : 0;
+                        updateNeighbours();
+                    }
                 }
+            }
+        } else {
+            isSensorActive = false;
+            if (redstoneStrength != (invertedRedstone ? 15 : 0)) {
+                redstoneStrength = invertedRedstone ? 15 : 0;
+                updateNeighbours();
             }
         }
     }
@@ -203,7 +207,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
     }
 
@@ -259,27 +263,21 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.put("Items", itemHandler.serializeNBT());
         tag.putString("sensorSetting", sensorSetting);
         tag.putFloat("dishSpeed", dishSpeed);
         tag.putString("sensorText", sensorGuiText);
-
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         setSensorSetting(tag.getString("sensorSetting"));
-        if (tag.contains("invertedRedstone")) {
-            // TODO remove in 1.17 - legacy compat
-            rsController.setCurrentMode(tag.getBoolean("invertedRedstone") ? RS_MODE_INVERTED : RS_MODE_NORMAL);
-        }
         dishSpeed = tag.getFloat("dishSpeed");
         sensorGuiText = tag.getString("sensorText");
 
@@ -287,7 +285,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag)) {
             redstoneStrength = 15 - redstoneStrength;
             updateNeighbours();
@@ -373,7 +371,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 lastSensorExceptionText = e.getMessage() == null ? "" : e.getMessage();
             }
         }
-        if (!getLevel().isClientSide) scheduleDescriptionPacket();
+        if (!nonNullLevel().isClientSide) scheduleDescriptionPacket();
     }
 
     @Override
@@ -518,7 +516,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public IFormattableTextComponent getRedstoneTabTitle() {
+    public MutableComponent getRedstoneTabTitle() {
         return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.redstoneEmission");
     }
 
@@ -536,7 +534,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerUniversalSensor(i, playerInventory, getBlockPos());
     }
 

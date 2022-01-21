@@ -20,16 +20,16 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 public class ContainerAssemblyController extends ContainerPneumaticBase<TileEntityAssemblyController> {
-    public ContainerAssemblyController(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerAssemblyController(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerAssemblyController(int i, PlayerInventory playerInventory, BlockPos pos) {
+    public ContainerAssemblyController(int i, Inventory playerInventory, BlockPos pos) {
         super(ModContainers.ASSEMBLY_CONTROLLER.get(), i, playerInventory, pos);
 
         addSlot(new SlotItemSpecific(te.getPrimaryInventory(), stack -> stack.getItem() instanceof ItemAssemblyProgram, 0, 74, 38));

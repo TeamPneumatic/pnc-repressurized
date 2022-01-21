@@ -30,19 +30,19 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHandler> {
     private static GuiItemSearcher searchGui;
 
-    private final PlayerEntity player = Minecraft.getInstance().player;
+    private final Player player = Minecraft.getInstance().player;
 
     public SearchOptions(IGuiScreen screen, SearchClientHandler upgradeHandler) {
         super(screen, upgradeHandler);
@@ -56,8 +56,8 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
         gui.addWidget(new Button(30, 128, 150, 20, xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"),
                 b -> Minecraft.getInstance().setScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.ITEM_SEARCH))));
 
-        if (searchGui != null && !player.getItemBySlot(EquipmentSlotType.HEAD).isEmpty()) {
-            ItemStack helmetStack = ClientUtils.getWornArmor(EquipmentSlotType.HEAD);
+        if (searchGui != null && !player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
+            ItemStack helmetStack = ClientUtils.getWornArmor(EquipmentSlot.HEAD);
             Item newSearchedItem = searchGui.getSearchStack().getItem();
             Item oldSearchedItem = ItemPneumaticArmor.getSearchedItem(helmetStack);
             if (newSearchedItem != oldSearchedItem) {
@@ -68,11 +68,11 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
     }
 
     private void openSearchGui() {
-        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new TextComponent("Search"));
         if (Minecraft.getInstance().screen instanceof GuiItemSearcher) {
             searchGui = (GuiItemSearcher) Minecraft.getInstance().screen;
-            if (!player.getItemBySlot(EquipmentSlotType.HEAD).isEmpty()) {
-                Item searchItem = ItemPneumaticArmor.getSearchedItem(player.getItemBySlot(EquipmentSlotType.HEAD));
+            if (!player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
+                Item searchItem = ItemPneumaticArmor.getSearchedItem(player.getItemBySlot(EquipmentSlot.HEAD));
                 if (searchItem != null) searchGui.setSearchStack(new ItemStack(searchItem));
             }
         }

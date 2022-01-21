@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:ingot_iron_compressed"
+            "items": [
+              "pneumaticcraft:ingot_iron_compressed"
+            ]
           }
         ]
       }

@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetExternalProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -40,7 +40,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
     private final DroneAIManager subAI, mainAI;
     private final Set<BlockPos> traversedPositions = new HashSet<>();
     private int curSlot;
-    private CompoundNBT curProgramTag; //Used to see if changes have been made to the program while running it.
+    private CompoundTag curProgramTag; //Used to see if changes have been made to the program while running it.
 
     public DroneAIExternalProgram(IDroneBase drone, DroneAIManager mainAI, ProgWidgetExternalProgram widget) {
         super(drone, widget);
@@ -67,7 +67,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
     protected boolean isValidPosition(BlockPos pos) {
         if (traversedPositions.add(pos)) {
             curSlot = 0;
-            TileEntity te = drone.world().getBlockEntity(pos);
+            BlockEntity te = drone.world().getBlockEntity(pos);
             return te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
         }
         return false;

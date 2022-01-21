@@ -20,14 +20,16 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.entity.Entity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 abstract class EntityPollSensor implements IPollSensorSetting {
 
@@ -37,18 +39,18 @@ abstract class EntityPollSensor implements IPollSensorSetting {
     }
 
     @Override
-    public int getPollFrequency(TileEntity te) {
+    public int getPollFrequency(BlockEntity te) {
         return 1;
     }
 
     @Override
-    public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        AxisAlignedBB aabb = new AxisAlignedBB(pos.offset(-sensorRange, -sensorRange, -sensorRange), pos.offset(1 + sensorRange, 1 + sensorRange, 1 + sensorRange));
-        return getRedstoneValue(world.getEntitiesOfClass(getEntityTracked(), aabb), textBoxText);
+    public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
+        AABB aabb = new AABB(pos.offset(-sensorRange, -sensorRange, -sensorRange), pos.offset(1 + sensorRange, 1 + sensorRange, 1 + sensorRange));
+        return getRedstoneValue(level.getEntities(EntityTypeTest.forClass(getEntityTracked()), aabb, Entity::isAlive), textBoxText);
     }
 
     protected abstract Class<? extends Entity> getEntityTracked();
 
-    protected abstract int getRedstoneValue(List<Entity> entities, String textBoxText);
+    protected abstract int getRedstoneValue(List<? extends Entity> entities, String textBoxText);
 
 }

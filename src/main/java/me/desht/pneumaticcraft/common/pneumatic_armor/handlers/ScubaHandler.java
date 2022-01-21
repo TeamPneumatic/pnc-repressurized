@@ -28,14 +28,14 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -56,30 +56,30 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     }
 
     @Override
-    public EquipmentSlotType getEquipmentSlot() {
-        return EquipmentSlotType.HEAD;
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.HEAD;
     }
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        PlayerEntity player = commonArmorHandler.getPlayer();
+        Player player = commonArmorHandler.getPlayer();
         if (!player.level.isClientSide && enabled
-                && commonArmorHandler.hasMinPressure(EquipmentSlotType.HEAD)
+                && commonArmorHandler.hasMinPressure(EquipmentSlot.HEAD)
                 && player.getAirSupply() < 150) {
 
-            ItemStack helmetStack = player.getItemBySlot(EquipmentSlotType.HEAD);
+            ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
 
             int baseVol = ((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume();
-            int vol = PressureHelper.getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.VOLUME));
-            float airInHelmet = commonArmorHandler.getArmorPressure(EquipmentSlotType.HEAD) * vol;
+            int vol = PressureHelper.getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.VOLUME));
+            float airInHelmet = commonArmorHandler.getArmorPressure(EquipmentSlot.HEAD) * vol;
             int playerAir = (int) Math.min(300 - player.getAirSupply(), airInHelmet / ConfigHelper.common().armor.scubaMultiplier.get());
             player.setAirSupply(player.getAirSupply() + playerAir);
 
             int airUsed = playerAir * ConfigHelper.common().armor.scubaMultiplier.get();
-            commonArmorHandler.addAir(EquipmentSlotType.HEAD, -airUsed);
+            commonArmorHandler.addAir(EquipmentSlot.HEAD, -airUsed);
 
-            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.blockPosition(), 1f, 1.0f, false), (ServerPlayerEntity) player);
-            Vector3d eyes = player.getEyePosition(1.0f).add(player.getLookAngle().scale(0.5));
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundSource.PLAYERS, player.blockPosition(), 1f, 1.0f, false), (ServerPlayer) player);
+            Vec3 eyes = player.getEyePosition(1.0f).add(player.getLookAngle().scale(0.5));
             NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.level, player.blockPosition());
         }
     }

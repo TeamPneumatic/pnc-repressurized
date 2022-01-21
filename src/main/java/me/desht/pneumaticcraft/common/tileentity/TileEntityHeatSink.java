@@ -22,10 +22,11 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
@@ -33,8 +34,8 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
 
     private double ambientTemp;
 
-    public TileEntityHeatSink() {
-        super(ModTileEntities.HEAT_SINK.get());
+    public TileEntityHeatSink(BlockPos pos, BlockState state) {
+        super(ModTileEntities.HEAT_SINK.get(), pos, state);
 
         heatExchanger.setThermalCapacity(5);
         airExchanger.addConnectedExchanger(heatExchanger);
@@ -47,33 +48,33 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     }
 
     @Override
-    protected void onFirstServerTick() {
-        super.onFirstServerTick();
+    public void onLoad() {
+        super.onLoad();
 
-        ambientTemp = HeatExchangerLogicAmbient.getAmbientTemperature(getLevel(), getBlockPos());
-        airExchanger.setTemperature(ambientTemp);
+        if (!nonNullLevel().isClientSide) {
+            ambientTemp = HeatExchangerLogicAmbient.getAmbientTemperature(getLevel(), getBlockPos());
+            airExchanger.setTemperature(ambientTemp);
+        }
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.put("airExchanger", airExchanger.serializeNBT());
-        return super.save(tag);
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         airExchanger.deserializeNBT(tag.getCompound("airExchanger"));
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!level.isClientSide) {
-            airExchanger.tick();
-            airExchanger.setTemperature(ambientTemp);
-        }
+        airExchanger.tick();
+        airExchanger.setTemperature(ambientTemp);
     }
 
     public void onFannedByAirGrate() {
@@ -83,8 +84,8 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(
+    public AABB getRenderBoundingBox() {
+        return new AABB(
                 getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
                 getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1
         );

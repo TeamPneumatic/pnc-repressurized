@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
@@ -49,35 +50,38 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
-import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.GoalSelector;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.GoalSelector;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -89,7 +93,6 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.*;
 
 import javax.annotation.Nonnull;
@@ -99,7 +102,7 @@ import java.util.*;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class TileEntityProgrammableController extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IDroneBase, ISideConfigurable, INamedContainerProvider {
+        implements IMinWorkingPressure, IDroneBase, ISideConfigurable, MenuProvider {
     private static final int INVENTORY_SIZE = 1;
     private static final String FALLBACK_NAME = "[ProgController]";
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
@@ -135,7 +138,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private final List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
-    private CompoundNBT variablesNBT = null;  // pending variable data to add to ai manager
+    private CompoundTag variablesNBT = null;  // pending variable data to add to ai manager
 
     @DescSynced
     private double targetX, targetY, targetZ;
@@ -164,8 +167,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private final Set<ChunkPos> loadedChunks = new HashSet<>();
 
     private UUID ownerID;
-    private ITextComponent ownerName;
-    private boolean updateNeighbours;
+    private Component ownerName;
+    private boolean shouldUpdateNeighbours;
     // Although this is only used by DroneAILogistics, it is here rather than there so it can persist,
     // for performance reasons; DroneAILogistics is a short-lived object and LogisticsManager is expensive to create
     private LogisticsManager logisticsManager;
@@ -173,8 +176,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @DescSynced
     private int activeWidgetIndex;
 
-    public TileEntityProgrammableController() {
-        super(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), 20, 25, 10000, 4);
+    public TileEntityProgrammableController(BlockPos pos, BlockState state) {
+        super(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), pos, state, PressureTier.TIER_TWO, 10000, 4);
 
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
@@ -198,13 +201,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void tick() {
-        super.tick();
-
-        if (!getLevel().isClientSide && updateNeighbours) {
-            updateNeighbours();
-            updateNeighbours = false;
-        }
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         double speed = BASE_SPEED + speedUpgrades * SPEED_PER_UPGRADE;
         if (PneumaticCraftUtils.distBetweenSq(getBlockPos(), targetX, targetY, targetZ) <= 1 && isIdle) {
@@ -213,49 +211,63 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             curZ = targetZ;
         } else if (PneumaticCraftUtils.distBetweenSq(curX, curY, curZ, targetX, targetY, targetZ) > 0.25) {
             // dist-between check here avoids drone "jitter" when it's very near its target
-            Vector3d vec = new Vector3d(targetX - curX, targetY - curY, targetZ - curZ).normalize().scale(speed);
+            Vec3 vec = new Vec3(targetX - curX, targetY - curY, targetZ - curZ).normalize().scale(speed);
             curX += vec.x;
             curY += vec.y;
             curZ += vec.z;
         }
+    }
 
-        if (!getLevel().isClientSide) {
-            DroneFakePlayer fp = getFakePlayer();
-            for (int i = 0; i < 4; i++) {
-                fp.gameMode.tick();
-            }
-            fp.setPos(curX, curY, curZ);
-            ChunkPos newChunkPos = new ChunkPos((int)curX >> 4, (int)curZ >> 4);
-            if (prevChunkPos == null || !prevChunkPos.equals(newChunkPos)) {
-                handleDynamicChunkloading(prevChunkPos, newChunkPos);
-            }
-            prevChunkPos = newChunkPos;
-            fp.tick();
+    @Override
+    public void tickClient() {
+        super.tickClient();
 
-            if (getPressure() >= getMinWorkingPressure()) {
-                if (!isIdle) {
-                    addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER);
-                    if (chunkloadWorkingChunk3x3) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK3);
-                    else if (chunkloadWorkingChunk) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK);
-                }
-                if (chunkloadSelf) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_SELF);
-                aiManager.onUpdateTasks();
-                maybeChargeHeldItem();
-            }
-
-            if (level.getGameTime() % 20 == 0) {
-                debugger.updateDebuggingPlayers();
+        if ((drone == null || !drone.isAlive()) && nonNullLevel().isLoaded(new BlockPos(curX, curY, curZ))) {
+            drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(nonNullLevel());
+            if (drone != null) {
+                drone.setController(this);
+                drone.setPos(curX, curY, curZ);
+                ClientUtils.spawnEntityClientside(drone);
             }
         } else {
-            if ((drone == null || !drone.isAlive()) && getLevel().isAreaLoaded(new BlockPos(curX, curY, curZ), 1)) {
-                drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(getLevel());
-                if (drone != null) {
-                    drone.setController(this);
-                    drone.setPos(curX, curY, curZ);
-                    ClientUtils.spawnEntityClientside(drone);
-                }
-            }
             drone.setPos(curX, curY, curZ);
+        }
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (shouldUpdateNeighbours) {
+            updateNeighbours();
+            shouldUpdateNeighbours = false;
+        }
+
+        DroneFakePlayer fp = getFakePlayer();
+        for (int i = 0; i < 4; i++) {
+            fp.gameMode.tick();
+        }
+        fp.setPos(curX, curY, curZ);
+        ChunkPos newChunkPos = new ChunkPos((int)curX >> 4, (int)curZ >> 4);
+        if (prevChunkPos == null || !prevChunkPos.equals(newChunkPos)) {
+            handleDynamicChunkloading(prevChunkPos, newChunkPos);
+        }
+        prevChunkPos = newChunkPos;
+        fp.tick();
+
+        if (getPressure() >= getMinWorkingPressure()) {
+            if (!isIdle) {
+                addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER);
+                if (chunkloadWorkingChunk3x3) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK3);
+                else if (chunkloadWorkingChunk) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK);
+            }
+            if (chunkloadSelf) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_SELF);
+            aiManager.onUpdateTasks();
+            maybeChargeHeldItem();
+        }
+
+        if (nonNullLevel().getGameTime() % 20 == 0) {
+            debugger.updateDebuggingPlayers();
         }
     }
 
@@ -273,7 +285,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             ChunkPos cp = iter.next();
             boolean load = shouldLoadChunk(cp);
 //            Log.info("chunkload " + cp + "? " + load);
-            ForgeChunkManager.forceChunk((ServerWorld) level, Names.MOD_ID, worldPosition, cp.x, cp.z, load, false);
+            ForgeChunkManager.forceChunk((ServerLevel) nonNullLevel(), Names.MOD_ID, worldPosition, cp.x, cp.z, load, false);
             if (!load) {
                 iter.remove();
             }
@@ -320,8 +332,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public void setRemoved() {
         super.setRemoved();
 
-        if (level instanceof ServerWorld) {
-            loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerWorld) level, Names.MOD_ID, worldPosition, cp.x, cp.z, false, false));
+        if (level instanceof ServerLevel) {
+            loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerLevel) level, Names.MOD_ID, worldPosition, cp.x, cp.z, false, false));
         }
         MinecraftForge.EVENT_BUS.unregister(this);
         itemHandlerSideConfigurator.invalidateCaps();
@@ -331,7 +343,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public UUID getOwnerUUID() {
         if (ownerID == null) {
             ownerID = UUID.randomUUID();
-            ownerName = new StringTextComponent("[Programmable Controller]");
+            ownerName = new TextComponent("[Programmable Controller]");
             Log.warning(String.format("Programmable controller with owner '%s' has no UUID! Substituting a random UUID (%s).", ownerName, ownerID));
         }
         return ownerID;
@@ -343,7 +355,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (tag.equals("charging")) {
             shouldChargeHeldItem = !shouldChargeHeldItem;
         } else if (tag.equals("chunkload_self")) {
@@ -353,7 +365,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         } else if (tag.equals("chunkload_work_3x3")) {
             chunkloadWorkingChunk3x3 = !chunkloadWorkingChunk3x3;
         } else if (itemHandlerSideConfigurator.handleButtonPress(tag)) {
-            updateNeighbours = true;
+            shouldUpdateNeighbours = true;
         }
         setChanged();
     }
@@ -368,7 +380,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         return invCap;
     }
 
-    public void setOwner(PlayerEntity ownerID) {
+    public void setOwner(Player ownerID) {
         this.ownerID = ownerID.getUUID();
         this.ownerName = ownerID.getName();
         this.ownerNameClient = this.ownerName.getString();
@@ -386,7 +398,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerProgrammableController(i, playerInventory, getBlockPos());
     }
 
@@ -426,15 +438,15 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         tank.setCapacity((getUpgrades(EnumUpgrade.INVENTORY) + 1) * 16000);
         tank.readFromNBT(tag.getCompound("tank"));
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
-        ownerName = tag.contains("ownerName") ? new StringTextComponent(tag.getString("ownerName")) : new StringTextComponent(FALLBACK_NAME);
+        ownerName = tag.contains("ownerName") ? new TextComponent(tag.getString("ownerName")) : new TextComponent(FALLBACK_NAME);
         ownerNameClient = ownerName.getString();
 
         droneItemHandler.setUseableSlots(getUpgrades(EnumUpgrade.INVENTORY) + 1);
@@ -458,12 +470,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.put("Items", inventory.serializeNBT());
 
-        CompoundNBT tankTag = new CompoundNBT();
+        CompoundTag tankTag = new CompoundTag();
         tank.writeToNBT(tankTag);
         tag.put("tank", tankTag);
 
@@ -480,13 +492,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
         tag.putBoolean("chargeHeld", shouldChargeHeldItem);
 
-        if (aiManager != null) tag.put("variables", aiManager.writeToNBT(new CompoundNBT()));
+        if (aiManager != null) tag.put("variables", aiManager.writeToNBT(new CompoundTag()));
 
         tag.putBoolean("chunkload_self", chunkloadSelf);
         tag.putBoolean("chunkload_work", chunkloadWorkingChunk);
         tag.putBoolean("chunkload_work_3x3", chunkloadWorkingChunk3x3);
-
-        return tag;
     }
 
     @Nonnull
@@ -504,8 +514,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    protected void onFirstServerTick() {
-        super.onFirstServerTick();
+    public void onLoad() {
+        super.onLoad();
 
         droneItemHandler.setFakePlayerReady();
 
@@ -517,15 +527,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
         if (chunkloadSelf) {
             ChunkPos cp = new ChunkPos(worldPosition);
-            ForgeChunkManager.forceChunk((ServerWorld) level, Names.MOD_ID, worldPosition, cp.x, cp.z, true, false);
+            ForgeChunkManager.forceChunk((ServerLevel) nonNullLevel(), Names.MOD_ID, worldPosition, cp.x, cp.z, true, false);
             loadedChunks.add(cp);
         }
     }
 
     private static boolean isProgrammableAndValidForDrone(IDroneBase drone, ItemStack programmable) {
-        if (programmable.getItem() instanceof IProgrammable
-                && ((IProgrammable) programmable.getItem()).canProgram(programmable)
-                && ((IProgrammable) programmable.getItem()).usesPieces(programmable)) {
+        if (programmable.getItem() instanceof IProgrammable p && p.canProgram(programmable) && p.usesPieces(programmable)) {
             List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(programmable);
             return widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
         }
@@ -538,12 +546,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         return INFINITE_EXTENT_AABB;
     }
 
     @Override
-    public World world() {
+    public Level world() {
         return getLevel();
     }
 
@@ -558,7 +566,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public Vector3d getDronePos() {
+    public Vec3 getDronePos() {
         if (curX == 0 && curY == 0 && curZ == 0) {
             curX = getBlockPos().getX() + 0.5;
             curY = getBlockPos().getY() + 1.0;
@@ -567,7 +575,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             targetY = curY;
             targetZ = curZ;
         }
-        return new Vector3d(curX, curY, curZ);
+        return new Vec3(curX, curY, curZ);
     }
 
     public BlockPos getTargetPos() {
@@ -620,21 +628,20 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public DroneFakePlayer getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = new DroneFakePlayer((ServerWorld) getLevel(), new GameProfile(getOwnerUUID(), ownerName.getString()), this);
-            fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
+            fakePlayer = new DroneFakePlayer((ServerLevel) nonNullLevel(), new GameProfile(getOwnerUUID(), ownerName.getString()), this);
         }
         return fakePlayer;
     }
 
     @Override
     public boolean isBlockValidPathfindBlock(BlockPos pos) {
-        return !getLevel().getBlockState(pos).getCollisionShape(getLevel(), pos, ISelectionContext.empty()).equals(VoxelShapes.block());
+        return !nonNullLevel().getBlockState(pos).getCollisionShape(nonNullLevel(), pos, CollisionContext.empty()).equals(Shapes.block());
     }
 
     @Override
     public void dropItem(ItemStack stack) {
-        Vector3d pos = getDronePos();
-        getLevel().addFreshEntity(new ItemEntity(getLevel(), pos.x, pos.y, pos.z, stack));
+        Vec3 pos = getDronePos();
+        nonNullLevel().addFreshEntity(new ItemEntity(nonNullLevel(), pos.x, pos.y, pos.z, stack));
     }
 
     @Override
@@ -642,8 +649,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         super.getContentsToDrop(drops);
 
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
-            if (!fakePlayer.inventory.getItem(i).isEmpty()) {
-                drops.add(fakePlayer.inventory.getItem(i).copy());
+            if (!fakePlayer.getInventory().getItem(i).isEmpty()) {
+                drops.add(fakePlayer.getInventory().getItem(i).copy());
             }
         }
     }
@@ -674,7 +681,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean isProgramApplicable(ProgWidgetType widgetType) {
+    public boolean isProgramApplicable(ProgWidgetType<?> widgetType) {
         return !BLACKLISTED_WIDGETS.contains(widgetType.getRegistryName());
     }
 
@@ -694,7 +701,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void setName(ITextComponent name) {
+    public void setName(Component name) {
         if (drone != null) {
             drone.setCustomName(name);
         }
@@ -726,9 +733,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public PlayerEntity getOwner() {
+    public Player getOwner() {
         if (ownerID == null) return null;
-        if (getLevel().isClientSide) return ClientUtils.getClientPlayer();
+        if (nonNullLevel().isClientSide) return ClientUtils.getClientPlayer();
 
         return PneumaticCraftUtils.getPlayerFromId(ownerID);
     }
@@ -743,7 +750,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                     .map(h -> ItemHandlerHelper.insertItem(h, stack, false).isEmpty())
                     .orElse(false);
             if (!inserted) PneumaticCraftUtils.dropItemOnGround(stack, level, worldPosition.above());
-            level.playSound(null, worldPosition, ModSounds.DRONE_DEATH.get(), SoundCategory.BLOCKS, 1f, 1f);
+            nonNullLevel().playSound(null, worldPosition, ModSounds.DRONE_DEATH.get(), SoundSource.BLOCKS, 1f, 1f);
         }
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE,
                 getBlockPos().getX() - 0.5, getBlockPos().getY() + 1, getBlockPos().getZ() - 0.5,
@@ -752,7 +759,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public DroneAIManager getAIManager() {
-        if (!getLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide) {
             if (aiManager == null) {
                 aiManager = new DroneAIManager(this, new ArrayList<>());
                 aiManager.dontStopWhenEndReached();
@@ -781,7 +788,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
+    public void playSound(SoundEvent soundEvent, SoundSource category, float volume, float pitch) {
         // nothing
     }
 
@@ -816,14 +823,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public ITextComponent getDroneName() {
+    public Component getDroneName() {
         return getDisplayName();
     }
 
     @Override
     public void storeTrackerData(ItemStack stack) {
-        CompoundNBT tag = stack.getOrCreateTag();
-        tag.put(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC, NBTUtil.writeBlockPos(getBlockPos()));
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.put(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC, NbtUtils.writeBlockPos(getBlockPos()));
         tag.remove(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
     }
 
@@ -853,14 +860,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             }
         }
         if (dir != null) {
-            TileEntity te = level.getBlockEntity(worldPosition.relative(dir));
+            BlockEntity te = nonNullLevel().getBlockEntity(worldPosition.relative(dir));
             return IOHelper.getInventoryForTE(te, dir.getOpposite());
         }
         return LazyOptional.empty();
     }
 
     private class ProgrammableItemStackHandler extends BaseItemStackHandler {
-        ProgrammableItemStackHandler(TileEntity te) {
+        ProgrammableItemStackHandler(BlockEntity te) {
             super(te, INVENTORY_SIZE);
         }
 

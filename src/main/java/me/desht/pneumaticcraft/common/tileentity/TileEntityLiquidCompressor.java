@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
@@ -27,17 +28,18 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -53,7 +55,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implements
-        IRedstoneControl<TileEntityLiquidCompressor>, ISerializableTanks, INamedContainerProvider {
+        IRedstoneControl<TileEntityLiquidCompressor>, ISerializableTanks, MenuProvider {
     public static final int INVENTORY_SIZE = 2;
 
     private static final int INPUT_SLOT = 0;
@@ -88,12 +90,12 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     @GuiSynced
     public boolean isProducing;
 
-    public TileEntityLiquidCompressor() {
-        this(ModTileEntities.LIQUID_COMPRESSOR.get(), 5, 7, 5000);
+    public TileEntityLiquidCompressor(BlockPos pos, BlockState state) {
+        this(ModTileEntities.LIQUID_COMPRESSOR.get(), pos, state,PressureTier.TIER_ONE, 5000);
     }
 
-    TileEntityLiquidCompressor(TileEntityType type, float dangerPressure, float criticalPressure, int volume) {
-        super(type, dangerPressure, criticalPressure, volume, 4);
+    TileEntityLiquidCompressor(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier, int volume) {
+        super(type, pos, state, tier, volume, 4);
     }
 
     public IFluidTank getTank() {
@@ -101,45 +103,53 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         tank.tick();
+    }
 
-        if (!getLevel().isClientSide) {
-            processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
+    @Override
+    public void tickClient() {
+        super.tickClient();
 
-            isProducing = false;
+        if (isProducing && nonNullLevel().random.nextInt(5) == 0) {
+            ClientUtils.emitParticles(getLevel(), getBlockPos(), ParticleTypes.SMOKE);
+        }
+    }
 
-            airPerTick = getBaseProduction() * burnMultiplier * this.getSpeedMultiplierFromUpgrades() * (getHeatEfficiency() / 100f);
+    @Override
+    public void tickServer() {
+        super.tickServer();
 
-            if (rsController.shouldRun()) {
-                double usageRate = getBaseProduction() * this.getSpeedUsageMultiplierFromUpgrades() * burnMultiplier;
-                if (internalFuelBuffer < usageRate) {
-                    double fuelValue = FuelRegistry.getInstance().getFuelValue(level, tank.getFluid().getFluid()) / 1000D;
-                    if (fuelValue > 0) {
-                        int usedFuel = Math.min(tank.getFluidAmount(), (int) (usageRate / fuelValue) + 1);
-                        tank.drain(usedFuel, IFluidHandler.FluidAction.EXECUTE);
-                        internalFuelBuffer += usedFuel * fuelValue;
-                        burnMultiplier = FuelRegistry.getInstance().getBurnRateMultiplier(level, tank.getFluid().getFluid());
-                    }
-                }
-                if (internalFuelBuffer >= usageRate) {
-                    isProducing = true;
-                    internalFuelBuffer -= usageRate;
+        processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
 
-                    airBuffer += airPerTick;
-                    if (airBuffer >= 1f) {
-                        int toAdd = (int) airBuffer;
-                        addAir(toAdd);
-                        airBuffer -= toAdd;
-                        addHeatForAir(toAdd);
-                    }
+        isProducing = false;
+
+        airPerTick = getBaseProduction() * burnMultiplier * this.getSpeedMultiplierFromUpgrades() * (getHeatEfficiency() / 100f);
+
+        if (rsController.shouldRun()) {
+            double usageRate = getBaseProduction() * this.getSpeedUsageMultiplierFromUpgrades() * burnMultiplier;
+            if (internalFuelBuffer < usageRate) {
+                double fuelValue = FuelRegistry.getInstance().getFuelValue(level, tank.getFluid().getFluid()) / 1000D;
+                if (fuelValue > 0) {
+                    int usedFuel = Math.min(tank.getFluidAmount(), (int) (usageRate / fuelValue) + 1);
+                    tank.drain(usedFuel, IFluidHandler.FluidAction.EXECUTE);
+                    internalFuelBuffer += usedFuel * fuelValue;
+                    burnMultiplier = FuelRegistry.getInstance().getBurnRateMultiplier(level, tank.getFluid().getFluid());
                 }
             }
-        } else {
-            if (isProducing && level.random.nextInt(5) == 0) {
-                ClientUtils.emitParticles(getLevel(), getBlockPos(), ParticleTypes.SMOKE);
+            if (internalFuelBuffer >= usageRate) {
+                isProducing = true;
+                internalFuelBuffer -= usageRate;
+
+                airBuffer += airPerTick;
+                if (airBuffer >= 1f) {
+                    int toAdd = (int) airBuffer;
+                    addAir(toAdd);
+                    airBuffer -= toAdd;
+                    addHeatForAir(toAdd);
+                }
             }
         }
     }
@@ -163,19 +173,17 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.put("Items", itemHandler.serializeNBT());
         tag.putDouble("internalFuelBuffer", internalFuelBuffer);
         tag.putFloat("burnMultiplier", burnMultiplier);
-
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         internalFuelBuffer = tag.getDouble("internalFuelBuffer");
@@ -183,7 +191,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         rsController.parseRedstoneMode(tag);
     }
 
@@ -221,7 +229,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerLiquidCompressor(i, playerInventory, getBlockPos());
     }
 }

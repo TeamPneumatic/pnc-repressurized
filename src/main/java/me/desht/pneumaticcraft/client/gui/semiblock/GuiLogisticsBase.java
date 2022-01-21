@@ -34,15 +34,15 @@ import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
@@ -65,7 +65,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     private WidgetTextFieldNumber minItemsField;
     private WidgetTextFieldNumber minFluidField;
 
-    public GuiLogisticsBase(ContainerLogistics container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiLogisticsBase(ContainerLogistics container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         this.logistics = (L) container.logistics;
@@ -86,35 +86,35 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             fluidSearchGui = null;
         }
 
-        ITextComponent invisibleText = xlate("pneumaticcraft.gui.logistics_frame.invisible");
+        Component invisibleText = xlate("pneumaticcraft.gui.logistics_frame.invisible");
         WidgetCheckBox invisible;
-        addButton(invisible = new WidgetCheckBox(leftPos + imageWidth - 20 - font.width(invisibleText), topPos + 17, 0xFF404040, invisibleText, b -> {
+        addRenderableWidget(invisible = new WidgetCheckBox(leftPos + imageWidth - 20 - font.width(invisibleText), topPos + 17, 0xFF404040, invisibleText, b -> {
             logistics.setSemiblockInvisible(b.checked);
             syncToServer();
         }).setChecked(logistics.isSemiblockInvisible()));
 
         invisible.setTooltipKey("pneumaticcraft.gui.logistics_frame.invisible.tooltip");
 
-        addButton(itemWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 16, 12, 12, StringTextComponent.EMPTY, b -> {
+        addRenderableWidget(itemWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 16, 12, 12, TextComponent.EMPTY, b -> {
             logistics.setItemWhiteList(!logistics.isItemWhiteList());
             updateLabels();
             syncToServer();
         }).setVisible(false).setInvisibleHoverColor(0x80808080));
         itemWhitelist.visible = logistics.supportsBlacklisting();
-        addButton(fluidWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 88, 12, 12, StringTextComponent.EMPTY, b -> {
+        addRenderableWidget(fluidWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 88, 12, 12, TextComponent.EMPTY, b -> {
             logistics.setFluidWhiteList(!logistics.isFluidWhiteList());
             updateLabels();
             syncToServer();
         }).setVisible(false).setInvisibleHoverColor(0x80808080));
         fluidWhitelist.visible = logistics.supportsBlacklisting();
         int xOff = logistics.supportsBlacklisting() ? 13 : 0;
-        addButton(itemLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 18, StringTextComponent.EMPTY) {
+        addRenderableWidget(itemLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 18, TextComponent.EMPTY) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 if (itemWhitelist.visible) itemWhitelist.onClick(mouseX, mouseY);
             }
         });
-        addButton(fluidLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 90, StringTextComponent.EMPTY) {
+        addRenderableWidget(fluidLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 90, TextComponent.EMPTY) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 if (fluidWhitelist.visible) fluidWhitelist.onClick(mouseX, mouseY);
@@ -126,9 +126,9 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         IntStream.range(0, EntityLogisticsFrame.FLUID_FILTER_SLOTS).forEach(i -> {
             FluidStack stack = logistics.getFluidFilter(i);
             PointXY p = getFluidSlotPos(i);
-            fluidWidgets.add(new WidgetFluidStack(p.x, p.y, stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)).setAdjustable());
+            fluidWidgets.add(new WidgetFluidStack(p.x(), p.y(), stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)).setAdjustable());
         });
-        fluidWidgets.forEach(this::addButton);
+        fluidWidgets.forEach(this::addRenderableWidget);
 
         addInfoTab(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft." + logistics.getSemiblockId().getPath()));
         addFilterTab();
@@ -192,8 +192,8 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     }
 
     private void updateLabels() {
-        TextFormatting s1 = logistics.isItemWhiteList() ? TextFormatting.RESET : TextFormatting.STRIKETHROUGH;
-        TextFormatting s2 = logistics.isFluidWhiteList() ? TextFormatting.RESET : TextFormatting.STRIKETHROUGH;
+        ChatFormatting s1 = logistics.isItemWhiteList() ? ChatFormatting.RESET : ChatFormatting.STRIKETHROUGH;
+        ChatFormatting s2 = logistics.isFluidWhiteList() ? ChatFormatting.RESET : ChatFormatting.STRIKETHROUGH;
         itemLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.itemFilters", logistics.getSemiblockId().getPath())).withStyle(s1));
         fluidLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.fluidFilters", logistics.getSemiblockId().getPath())).withStyle(s2));
         itemWhitelist.setRenderedIcon(logistics.isItemWhiteList() ? Textures.GUI_WHITELIST : Textures.GUI_BLACKLIST);
@@ -210,8 +210,8 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             logistics.setFluidFilter(idx, widget.getFluidStack().copy());
             syncToServer();
             return;
-        } else if (inventory.getCarried().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
-            FluidStack f = inventory.getCarried().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+        } else if (menu.getCarried().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
+            FluidStack f = menu.getCarried().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
                     .map(h -> h.getFluidInTank(0)).orElse(FluidStack.EMPTY);
             logistics.setFluidFilter(idx, f.isEmpty() ? FluidStack.EMPTY : new FluidStack(f, 1000));
             widget.setFluid(f.getFluid());
@@ -279,11 +279,11 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     @Override
     protected void slotClicked(Slot slot, int slotId, int clickedButton, ClickType clickType) {
         if (slot instanceof SlotPhantom
-                && minecraft.player.inventory.getCarried().isEmpty()
+                && menu.getCarried().isEmpty()
                 && !slot.hasItem()
                 && (clickedButton == 0 || clickedButton == 1)) {
             editingSlot = slot.getSlotIndex();
-            ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Searcher"));
+            ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new TextComponent("Searcher"));
             if (minecraft.screen instanceof GuiItemSearcher) {
                 itemSearchGui = (GuiItemSearcher) minecraft.screen;
             }

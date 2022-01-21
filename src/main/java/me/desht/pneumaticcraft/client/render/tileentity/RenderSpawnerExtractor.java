@@ -17,40 +17,60 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.fluid.AbstractFluidTER;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fluids.FluidStack;
 
 public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntitySpawnerExtractor> {
-    private static final AxisAlignedBB FLUID_BB = new AxisAlignedBB(6/16D, 0, 6/16D, 10/16D, 1, 10/16D);
+    private static final AABB FLUID_BB = new AABB(6/16D, 0, 6/16D, 10/16D, 1, 10/16D);
 
-    private final ModelRenderer model;
+    private static final String MODEL = "model";
 
-    public RenderSpawnerExtractor(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    private final ModelPart model;
 
-        model = new ModelRenderer(64, 64, 0, 0);
-        model.setPos(0.0F, 24.0F, 0.0F);
-        model.texOffs(23, 57).addBox(-3.0F, -16.25F, -3.0F, 6.0F, 1.0F, 6.0F, -0.01F, false);
-        model.texOffs(23, 57).addBox(-3.0F, -14.75F, -3.0F, 6.0F, 1.0F, 6.0F, -0.01F, true);
-        model.texOffs(44, 57).addBox(-2.5F, -15.5F, -2.5F, 5.0F, 1.0F, 5.0F, -0.01F, false);
-        model.texOffs(15, 46).addBox(-1.0F, -16.0F, -1.0F, 2.0F, 16.0F, 2.0F, 0.0F, false);
+    public RenderSpawnerExtractor(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
+
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.SPAWNER_EXTRACTOR);
+        model = root.getChild(MODEL);
     }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(MODEL, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("model_0", -3.0F, -16.25F, -3.0F, 6, 1, 6, 23, 57)
+                        .addBox("model_1", -3.0F, -14.75F, -3.0F, 6, 1, 6, 23, 57)
+                        .addBox("model_2", -2.5F, -15.5F, -2.5F, 5, 1, 5, 44, 57)
+                        .addBox("model_3", -1.0F, -16.0F, -1.0F, 2, 16, 2, 15, 46)
+                        .mirror(),
+                PartPose.offset(0.0F, 24.0F, 0.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+
     @Override
-    void renderModel(TileEntitySpawnerExtractor te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_SPAWNER_EXTRACTOR));
+    void renderModel(TileEntitySpawnerExtractor te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_SPAWNER_EXTRACTOR));
 
         float extension = te.getProgress() * -0.75f;
 
@@ -59,11 +79,11 @@ public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntity
     }
 
     @Override
-    protected void renderExtras(TileEntitySpawnerExtractor te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+    protected void renderExtras(TileEntitySpawnerExtractor te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.getProgress() > 0f && te.getProgress() < 1f) {
             matrixStack.pushPose();
             matrixStack.translate(0, 13/16D, 0);
-            IVertexBuilder builder = iRenderTypeBuffer.getBuffer(RenderType.entityTranslucentCull(AtlasTexture.LOCATION_BLOCKS));
+            VertexConsumer builder = iRenderTypeBuffer.getBuffer(RenderType.entityTranslucentCull(TextureAtlas.LOCATION_BLOCKS));
             TankRenderInfo info = new TankRenderInfo(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), (int) (1000 * te.getProgress())), 1000, FLUID_BB);
             AbstractFluidTER.renderFluid(builder, info, matrixStack.last().pose(), combinedLightIn, combinedOverlayIn);
             matrixStack.popPose();

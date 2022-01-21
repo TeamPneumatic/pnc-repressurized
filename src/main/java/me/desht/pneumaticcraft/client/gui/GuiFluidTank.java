@@ -21,12 +21,12 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.common.inventory.ContainerFluidTank;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 public class GuiFluidTank extends GuiPneumaticContainerBase<ContainerFluidTank, TileEntityFluidTank> {
-    public GuiFluidTank(ContainerFluidTank container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiFluidTank(ContainerFluidTank container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -34,7 +34,7 @@ public class GuiFluidTank extends GuiPneumaticContainerBase<ContainerFluidTank, 
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
+        addRenderableWidget(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
     }
 
     @Override

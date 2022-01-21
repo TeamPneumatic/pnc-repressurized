@@ -22,13 +22,14 @@ import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nonnull;
 
@@ -46,8 +47,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     protected float speed = 1.0F;
     private BlockPos controllerPos;
 
-    TileEntityAssemblyRobot(TileEntityType type) {
-        super(type);
+    TileEntityAssemblyRobot(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
 
         gotoHomePosition();
         System.arraycopy(targetAngles, 0, angles, 0, targetAngles.length);
@@ -71,8 +72,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         System.arraycopy(angles, 0, oldAngles, 0, angles.length);
 
@@ -190,13 +191,13 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         }
     }
 
-    TileEntity getTileEntityForCurrentDirection() {
+    BlockEntity getTileEntityForCurrentDirection() {
         if (targetDirection == null) {
             return null;
         } else if (targetDirection.secondary == null) {
             return getCachedNeighbor(targetDirection.primary);
         } else {
-            return getLevel().getBlockEntity(targetDirection.offset(getPosition()));
+            return nonNullLevel().getBlockEntity(targetDirection.offset(getPosition()));
         }
     }
 
@@ -208,8 +209,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         for (int i = 0; i < 5; i++) {
             angles[i] = tag.getFloat("angle" + i);
@@ -222,8 +223,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         for (int i = 0; i < 5; i++) {
             tag.putFloat("angle" + i, angles[i]);
@@ -232,20 +233,20 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         tag.putBoolean("slowMode", slowMode);
         tag.putFloat("speed", speed);
         if (targetDirection != null) targetDirection.writeNBT(tag);
-        return tag;
     }
 
     protected abstract boolean canMoveToDiagonalNeighbours();
 
     TargetDirections getPlatformDirection() {
+        Level level = nonNullLevel();
         for (Direction dir : DirectionUtil.HORIZONTALS) {
-            if (getLevel().getBlockEntity(getBlockPos().relative(dir)) instanceof TileEntityAssemblyPlatform)
+            if (level.getBlockEntity(getBlockPos().relative(dir)) instanceof TileEntityAssemblyPlatform)
                 return new TargetDirections(dir);
         }
         if (canMoveToDiagonalNeighbours()) {
             for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
                 for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
-                    if (getLevel().getBlockEntity(getBlockPos().relative(primDir).relative(secDir)) instanceof TileEntityAssemblyPlatform) {
+                    if (level.getBlockEntity(getBlockPos().relative(primDir).relative(secDir)) instanceof TileEntityAssemblyPlatform) {
                         return new TargetDirections(primDir, secDir);
                     }
                 }
@@ -255,8 +256,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(
+    public AABB getRenderBoundingBox() {
+        return new AABB(
                 getBlockPos().getX() - 1, getBlockPos().getY() - 1, getBlockPos().getZ() - 1,
                 getBlockPos().getX() + 2, getBlockPos().getY() + 2, getBlockPos().getZ() + 2
         );
@@ -316,7 +317,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
             return secondary == null ? initial.relative(primary) : initial.relative(primary).relative(secondary);
         }
 
-        static TargetDirections readNBT(CompoundNBT tag) {
+        static TargetDirections readNBT(CompoundTag tag) {
             if (!tag.contains("targetDir1")) return null;
             return new TargetDirections(
                     DirectionUtil.VALUES[tag.getInt("targetDir1")],
@@ -324,7 +325,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
             );
         }
 
-        void writeNBT(CompoundNBT tag) {
+        void writeNBT(CompoundTag tag) {
             tag.putInt("targetDir1", primary.get3DDataValue());
             if (secondary != null) tag.putInt("targetDir2", secondary.get3DDataValue());
         }

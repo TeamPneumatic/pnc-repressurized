@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
@@ -28,10 +28,10 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinate;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -60,17 +60,17 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
                 .addRadioButton(new WidgetRadioButton(guiLeft + 7, guiTop + 100, 0xFF404040,
                                 xlate("pneumaticcraft.gui.progWidget.coordinate.variable"), b -> setUsingVariable(true)),
                         progWidget.isUsingVariable())
-                .build(this::addButton);
+                .build(this::addRenderableWidget);
 
-        gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, StringTextComponent.EMPTY, b -> openGPSSearcher());
+        gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, TextComponent.EMPTY, b -> openGPSSearcher());
         gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
         gpsButton.setTooltipText(xlate("pneumaticcraft.gui.progWidget.coordinate.selectFromGPS"));
         gpsButton.active = !progWidget.isUsingVariable();
-        addButton(gpsButton);
+        addRenderableWidget(gpsButton);
         coordFields = new WidgetTextFieldNumber[3];
         for (int i = 0; i < 3; i++) {
             coordFields[i] = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 50 + 13 * i, 40, font.lineHeight + 1);
-            addButton(coordFields[i]);
+            addRenderableWidget(coordFields[i]);
             coordFields[i].setEditable(gpsButton.active);
         }
         coordFields[0].setValue(progWidget.getRawCoordinate().getX());
@@ -80,7 +80,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 112, 80, font.lineHeight + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
         variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
-        addButton(variableField);
+        addRenderableWidget(variableField);
         variableField.setValue(progWidget.getVariable());
         variableField.setEditable(progWidget.isUsingVariable());
     }
@@ -95,7 +95,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     }
 
     private void openGPSSearcher() {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TextComponent("Inventory Searcher (GPS)"));
         if (minecraft.screen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
@@ -115,7 +115,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         font.draw(matrixStack, "x:", guiLeft + 90, guiTop + 51, 0xFF404040);
         font.draw(matrixStack, "y:", guiLeft + 90, guiTop + 64, 0xFF404040);

@@ -24,10 +24,11 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
@@ -40,14 +41,15 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     public float oldDrillRotation;
     private int drillStep;
 
-    public TileEntityAssemblyDrill() {
-        super(ModTileEntities.ASSEMBLY_DRILL.get());
+    public TileEntityAssemblyDrill(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ASSEMBLY_DRILL.get(), pos, state);
     }
 
     @Override
-    public void tick() {
+    public void tickCommonPre() {
+        super.tickCommonPre();
+
         oldDrillRotation = drillRotation;
-        super.tick();
         if (isDrillOn) {
             drillSpeed = Math.min(drillSpeed + TileEntityConstants.ASSEMBLY_DRILL_ACCELERATION * speed, TileEntityConstants.ASSEMBLY_DRILL_MAX_SPEED);
         } else {
@@ -57,45 +59,43 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
         while (drillRotation >= 360) {
             drillRotation -= 360;
         }
+    }
 
-        if (!getLevel().isClientSide && drillStep > 0) {
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (drillStep > 0) {
             TargetDirections platformDirection = getPlatformDirection();
             if (platformDirection == null) drillStep = 1;
             switch (drillStep) {
-                case 1:
-                case 6:
+                case 1, 6 -> {
                     slowMode = false;
                     gotoHomePosition();
-                    break;
-                case 2:
-                    hoverOverNeighbour(platformDirection);
-                    break;
-                case 3:
-                    isDrillOn = true;
-                    break;
-                case 4:
+                }
+                case 2 -> hoverOverNeighbour(platformDirection);
+                case 3 -> isDrillOn = true;
+                case 4 -> {
                     slowMode = true;
                     gotoNeighbour(platformDirection);
-                    break;
-                case 5:
+                }
+                case 5 -> {
                     hoverOverNeighbour(platformDirection);
                     isDrillOn = false;
-                    TileEntity te = getTileEntityForCurrentDirection();
-                    if (te instanceof TileEntityAssemblyPlatform) {
-                        TileEntityAssemblyPlatform platform = (TileEntityAssemblyPlatform) te;
+                    BlockEntity te = getTileEntityForCurrentDirection();
+                    if (te instanceof TileEntityAssemblyPlatform platform) {
                         ItemStack output = getDrilledOutputForItem(platform.getHeldStack());
                         if (!output.isEmpty()) {
                             platform.setHeldStack(output);
                         }
                     }
-                    break;
+                }
             }
             if (isDoneInternal()) {
                 drillStep++;
                 if (drillStep > 6) drillStep = 0;
             }
         }
-
     }
 
     public void goDrilling() {
@@ -106,17 +106,16 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
         super.save(tag);
         tag.putBoolean("drill", isDrillOn);
         tag.putFloat("drillSpeed", drillSpeed);
         tag.putInt("drillStep", drillStep);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         isDrillOn = tag.getBoolean("drill");
         drillSpeed = tag.getFloat("drillSpeed");

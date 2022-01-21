@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
@@ -29,9 +29,9 @@ import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.client.gui.Font;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyR
         super(ModCategoryUid.ASSEMBLY_CONTROLLER, AssemblyRecipe.class,
                 xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 5, 11, 158, 98),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()))
         );
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 173, 0, 24, 17);
         progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
@@ -82,9 +82,9 @@ public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyR
     }
 
     @Override
-    public void draw(AssemblyRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(AssemblyRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 68, 65);
-        FontRenderer fontRenderer = Minecraft.getInstance().font;
+        Font fontRenderer = Minecraft.getInstance().font;
         fontRenderer.draw(matrixStack, "Required Machines", 5, 15, 0xFF404040);
         fontRenderer.draw(matrixStack, "Prog.", 129, 9, 0xFF404040);
     }

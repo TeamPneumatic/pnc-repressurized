@@ -20,23 +20,21 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.vector.Vector3d;
-
-import javax.annotation.Nullable;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & ISidedWidget*/> extends DroneAIBlockInteraction<W> {
     /**
@@ -55,7 +53,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     @Override
     protected boolean isValidPosition(BlockPos pos) {
         if (drone.world().getBlockState(pos).getMaterial().isReplaceable()) {
-            if (Vector3d.atCenterOf(pos).distanceToSqr(drone.getDronePos()) < 1.2) {
+            if (Vec3.atCenterOf(pos).distanceToSqr(drone.getDronePos()) < 1.2) {
                 // too close - placement could be blocked by the drone
                 return false;
             }
@@ -97,11 +95,13 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
         if (squareDistToBlock < 2 * 2) {
             for (int slot = 0; slot < drone.getInv().getSlots(); slot++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(slot);
-                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack) && worldCache.getBlockState(pos).getMaterial().isReplaceable()) {
-                    BlockItem blockItem = (BlockItem) droneStack.getItem();
-                    BlockItemUseContext ctx = getPlacementContext(pos, pos, droneStack);
+                if (droneStack.getItem() instanceof BlockItem blockItem
+                        && progWidget.isItemValidForFilters(droneStack)
+                        && worldCache.getBlockState(pos).getMaterial().isReplaceable())
+                {
+                    BlockPlaceContext ctx = getPlacementContext(pos, pos, droneStack);
                     if (progWidget.getCachedAreaSet().contains(ctx.getClickedPos())) {
-                        ActionResultType res = blockItem.place(ctx);
+                        InteractionResult res = blockItem.place(ctx);
                         if (res.consumesAction()) {
                             drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_PLACE);
                             if (slot == 0 && drone.getInv().getStackInSlot(slot).isEmpty()) {
@@ -122,26 +122,26 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     private BlockPos findClearSide(BlockPos pos) {
         for (Direction side : DirectionUtil.VALUES) {
             BlockPos pos2 = pos.relative(side);
-            if (drone.world().getBlockState(pos.relative(side)).isPathfindable(drone.world(), pos2, PathType.AIR)) {
+            if (drone.world().getBlockState(pos.relative(side)).isPathfindable(drone.world(), pos2, PathComputationType.AIR)) {
                 return pos2;
             }
         }
         return null;
     }
 
-    private BlockItemUseContext getPlacementContext(BlockPos placerPos, BlockPos targetPos, ItemStack droneStack) {
-        BlockRayTraceResult brtr = drone.world().clip(new RayTraceContext(
-                Vector3d.atCenterOf(placerPos),
-                Vector3d.atCenterOf(targetPos),
-                RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE,
+    private BlockPlaceContext getPlacementContext(BlockPos placerPos, BlockPos targetPos, ItemStack droneStack) {
+        BlockHitResult brtr = drone.world().clip(new ClipContext(
+                Vec3.atCenterOf(placerPos),
+                Vec3.atCenterOf(targetPos),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
                 drone.getFakePlayer()
         ));
-        return new BlockItemUseContext(new DroneBlockItemUseContext(drone.getFakePlayer(), droneStack, brtr));
+        return new BlockPlaceContext(new DroneBlockItemUseContext(drone.getFakePlayer(), droneStack, brtr));
     }
 
-    private static class DroneBlockItemUseContext extends ItemUseContext {
-        protected DroneBlockItemUseContext(@Nullable PlayerEntity droneFakePlayer, ItemStack heldItem, BlockRayTraceResult rayTraceResultIn) {
-            super(droneFakePlayer.level, droneFakePlayer, Hand.MAIN_HAND, heldItem, rayTraceResultIn);
+    private static class DroneBlockItemUseContext extends UseOnContext {
+        protected DroneBlockItemUseContext(Player droneFakePlayer, ItemStack heldItem, BlockHitResult rayTraceResultIn) {
+            super(droneFakePlayer.level, droneFakePlayer, InteractionHand.MAIN_HAND, heldItem, rayTraceResultIn);
         }
     }
 }

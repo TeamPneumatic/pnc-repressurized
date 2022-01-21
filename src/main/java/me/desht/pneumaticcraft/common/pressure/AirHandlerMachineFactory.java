@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.pressure;
 
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
@@ -31,16 +32,16 @@ public class AirHandlerMachineFactory implements IAirHandlerMachineFactory {
 
     @Override
     public IAirHandlerMachine createTierOneAirHandler(int volume) {
-        return createAirHandler(PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, volume);
+        return createAirHandler(PressureTier.TIER_ONE, volume);
     }
 
     @Override
     public IAirHandlerMachine createTierTwoAirHandler(int volume) {
-        return createAirHandler(PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, volume);
+        return createAirHandler(PressureTier.TIER_TWO, volume);
     }
 
     @Override
-    public IAirHandlerMachine createAirHandler(float dangerPressure, float criticalPressure, int volume) {
-        return new MachineAirHandler(dangerPressure, criticalPressure, volume);
+    public IAirHandlerMachine createAirHandler(PressureTier tier, int volume) {
+        return new MachineAirHandler(tier, volume);
     }
 }

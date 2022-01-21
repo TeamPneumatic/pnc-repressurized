@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -28,11 +28,11 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Collections;
@@ -43,7 +43,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     private WidgetButtonExtended errorButton;
     private String prevFilterText = "";
 
-    public GuiSentryTurret(ContainerSentryTurret container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiSentryTurret(ContainerSentryTurret container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -56,17 +56,17 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     public void init() {
         super.init();
 
-        addButton(entityFilter = new WidgetTextField(font, leftPos + 80, topPos + 63, 70, font.lineHeight));
+        addRenderableWidget(entityFilter = new WidgetTextField(font, leftPos + 80, topPos + 63, 70, font.lineHeight));
         entityFilter.setMaxLength(256);
         entityFilter.setFocus(true);
         setFocused(entityFilter);
 
-        addButton(errorButton = new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, StringTextComponent.EMPTY));
+        addRenderableWidget(errorButton = new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, TextComponent.EMPTY));
         errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
     }
 
     @Override
-    public void tick() {
+    public void containerTick() {
         if (firstUpdate) {
             // setting the filter value in the textfield on init() isn't reliable; might not be sync'd in time
             prevFilterText = te.getText(0);
@@ -74,7 +74,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
             entityFilter.setResponder(this::onEntityFilterChanged);
         }
 
-        super.tick();
+        super.containerTick();
 
         errorButton.visible = errorButton.hasTooltip();
     }
@@ -88,7 +88,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
                 prevFilterText = newText;
             }
         } catch (IllegalArgumentException e) {
-            errorButton.setTooltipText(new StringTextComponent(e.getMessage()));
+            errorButton.setTooltipText(new TextComponent(e.getMessage()));
         }
     }
 
@@ -99,7 +99,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         super.renderLabels(matrixStack, x, y);
 
         font.draw(matrixStack, I18n.get("pneumaticcraft.gui.sentryTurret.ammo"), 80, 19, 0x404040);
@@ -126,7 +126,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
         boolean hasAmmo = false;

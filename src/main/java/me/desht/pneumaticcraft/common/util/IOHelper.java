@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.collect.Lists;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -75,19 +75,19 @@ public class IOHelper {
         UP_TO
     }
 
-    public static LazyOptional<IItemHandler> getInventoryForTE(TileEntity te, Direction facing) {
+    public static LazyOptional<IItemHandler> getInventoryForTE(BlockEntity te, Direction facing) {
         return te == null ? LazyOptional.empty() : te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing);
     }
 
-    public static LazyOptional<IItemHandler> getInventoryForTE(TileEntity te) {
+    public static LazyOptional<IItemHandler> getInventoryForTE(BlockEntity te) {
         return getInventoryForTE(te, null);
     }
 
-    public static LazyOptional<IFluidHandler> getFluidHandlerForTE(TileEntity te, Direction facing) {
+    public static LazyOptional<IFluidHandler> getFluidHandlerForTE(BlockEntity te, Direction facing) {
         return te == null ? LazyOptional.empty() : te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing);
     }
 
-    public static LazyOptional<IFluidHandler> getFluidHandlerForTE(TileEntity te) {
+    public static LazyOptional<IFluidHandler> getFluidHandlerForTE(BlockEntity te) {
         return getFluidHandlerForTE(te, null);
     }
 
@@ -147,7 +147,7 @@ public class IOHelper {
     }
 
     @Nonnull
-    public static ItemStack insert(TileEntity tile, ItemStack itemStack, boolean simulate) {
+    public static ItemStack insert(BlockEntity tile, ItemStack itemStack, boolean simulate) {
         for (Direction side : Direction.values()) {
             ItemStack inserted = getInventoryForTE(tile, side)
                     .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack.copy(), simulate))
@@ -158,7 +158,7 @@ public class IOHelper {
     }
 
     @Nonnull
-    public static ItemStack insert(TileEntity tile, ItemStack itemStack, Direction side, boolean simulate) {
+    public static ItemStack insert(BlockEntity tile, ItemStack itemStack, Direction side, boolean simulate) {
         return getInventoryForTE(tile, side).map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate)).orElse(itemStack);
     }
 
@@ -200,7 +200,7 @@ public class IOHelper {
      * @param dropPos position to drop excess items at
      * @param simulate true if only simulating (excess will not be dropped)
      */
-    public static void insertOrDrop(World world, ItemStack stack, IItemHandler handler, Vector3d dropPos, boolean simulate) {
+    public static void insertOrDrop(Level world, ItemStack stack, IItemHandler handler, Vec3 dropPos, boolean simulate) {
         ItemStack remainder = ItemHandlerHelper.insertItem(handler, stack, simulate);
         if (!remainder.isEmpty() && !simulate) {
             ItemEntity item = new ItemEntity(world, dropPos.x(), dropPos.y(), dropPos.z(), remainder);

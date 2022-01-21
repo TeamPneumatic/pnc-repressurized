@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class PlayerHealthSensor implements IPollSensorSetting {
@@ -46,13 +46,13 @@ public class PlayerHealthSensor implements IPollSensorSetting {
     }
 
     @Override
-    public int getPollFrequency(TileEntity te) {
+    public int getPollFrequency(BlockEntity te) {
         return 10;
     }
 
     @Override
-    public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        PlayerEntity player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(textBoxText);
+    public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
+        Player player = Objects.requireNonNull(level.getServer()).getPlayerList().getPlayerByName(textBoxText);
         if (player != null) {
             return (int) (15 * player.getHealth() / player.getMaxHealth());
         } else {

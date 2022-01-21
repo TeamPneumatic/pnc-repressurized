@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.ICustomBlockInteract;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public class DroneAICustomBlockInteract extends DroneAIImExBase<ProgWidgetInventoryBase> {
     private final ICustomBlockInteract blockInteractor;

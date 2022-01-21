@@ -3,22 +3,20 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.BlockDroneInterface;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
-import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -44,11 +42,7 @@ public class ModBlocks {
         return item(block, ModItems.ItemGroups.PNC_CREATIVE_TAB);
     }
 
-    private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final Supplier<Callable<ItemStackTileEntityRenderer>> renderMethod) {
-        return () -> new BlockItem(block.get(), new Item.Properties().tab(ModItems.ItemGroups.PNC_CREATIVE_TAB).setISTER(renderMethod));
-    }
-
-    private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final ItemGroup itemGroup) {
+    private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final CreativeModeTab itemGroup) {
         return () -> new BlockItem(block.get(), new Item.Properties().tab(itemGroup));
     }
 
@@ -191,8 +185,8 @@ public class ModBlocks {
             BlockTagWorkbench::new);
     public static final RegistryObject<BlockDisplayTable> DISPLAY_TABLE = register("display_table",
             BlockDisplayTable::new);
-    public static final RegistryObject<BlockDisplayShelf> DISPLAY_SHELF = register("display_shelf",
-            BlockDisplayShelf::new);
+    public static final RegistryObject<BlockDisplayTable.Shelf> DISPLAY_SHELF = register("display_shelf",
+            BlockDisplayTable.Shelf::new);
     public static final RegistryObject<BlockDroneInterface> DRONE_INTERFACE = register("drone_interface",
             BlockDroneInterface::new);
     public static final RegistryObject<BlockThermalLagging> THERMAL_LAGGING = register("thermal_lagging",
@@ -229,7 +223,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> REINFORCED_BRICK_TILE = register("reinforced_brick_tile",
             () -> new Block(reinforcedStoneProps()));
     public static final RegistryObject<Block> REINFORCED_BRICK_STAIRS = register("reinforced_brick_stairs",
-            () -> new StairsBlock(() -> REINFORCED_BRICKS.get().defaultBlockState(),
+            () -> new StairBlock(() -> REINFORCED_BRICKS.get().defaultBlockState(),
                     reinforcedStoneProps()));
     public static final RegistryObject<Block> REINFORCED_BRICK_SLAB = register("reinforced_brick_slab",
             () -> new SlabBlock(reinforcedStoneProps()));
@@ -247,7 +241,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> COMPRESSED_BRICK_TILE = register("compressed_brick_tile",
             () -> new Block(reinforcedStoneProps()));
     public static final RegistryObject<Block> COMPRESSED_BRICK_STAIRS = register("compressed_brick_stairs",
-            () -> new StairsBlock(() -> COMPRESSED_BRICKS.get().defaultBlockState(),
+            () -> new StairBlock(() -> COMPRESSED_BRICKS.get().defaultBlockState(),
                     reinforcedStoneProps()));
     public static final RegistryObject<Block> COMPRESSED_BRICK_SLAB = register("compressed_brick_slab",
             () -> new SlabBlock(reinforcedStoneProps()));
@@ -260,30 +254,30 @@ public class ModBlocks {
 
     public static final RegistryObject<BlockFluidEtchingAcid> ETCHING_ACID = registerNoItem("etching_acid",
             () -> new BlockFluidEtchingAcid(fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> PLASTIC = registerNoItem("plastic",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.PLASTIC.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> LUBRICANT = registerNoItem("lubricant",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.LUBRICANT.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> OIL = registerNoItem("oil",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.OIL.get(),  fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> DIESEL = registerNoItem("diesel",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.DIESEL.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> KEROSENE = registerNoItem("kerosene",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.KEROSENE.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> GASOLINE = registerNoItem("gasoline",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.GASOLINE.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> LPG = registerNoItem("lpg",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.LPG.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> MEMORY_ESSENCE = registerNoItem("memory_essence",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.MEMORY_ESSENCE.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> YEAST_CULTURE = registerNoItem("yeast_culture",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.YEAST_CULTURE.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> ETHANOL = registerNoItem("ethanol",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.ETHANOL.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> VEGETABLE_OIL = registerNoItem("vegetable_oil",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.VEGETABLE_OIL.get(), fluidProps()));
-    public static final RegistryObject<FlowingFluidBlock> BIODIESEL = registerNoItem("biodiesel",
-            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.BIODIESEL.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> PLASTIC = registerNoItem("plastic",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.PLASTIC.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> LUBRICANT = registerNoItem("lubricant",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LUBRICANT.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> OIL = registerNoItem("oil",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.OIL.get(),  fluidProps()));
+    public static final RegistryObject<LiquidBlock> DIESEL = registerNoItem("diesel",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.DIESEL.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> KEROSENE = registerNoItem("kerosene",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.KEROSENE.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> GASOLINE = registerNoItem("gasoline",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.GASOLINE.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> LPG = registerNoItem("lpg",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.LPG.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> MEMORY_ESSENCE = registerNoItem("memory_essence",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.MEMORY_ESSENCE.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> YEAST_CULTURE = registerNoItem("yeast_culture",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.YEAST_CULTURE.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> ETHANOL = registerNoItem("ethanol",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.ETHANOL.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> VEGETABLE_OIL = registerNoItem("vegetable_oil",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.VEGETABLE_OIL.get(), fluidProps()));
+    public static final RegistryObject<LiquidBlock> BIODIESEL = registerNoItem("biodiesel",
+            () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.BIODIESEL.get(), fluidProps()));
 
 
 

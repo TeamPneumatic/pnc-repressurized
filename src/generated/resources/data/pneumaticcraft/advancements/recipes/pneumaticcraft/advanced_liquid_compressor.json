@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:advanced_pressure_tube"
+            "items": [
+              "pneumaticcraft:advanced_pressure_tube"
+            ]
           }
         ]
       }

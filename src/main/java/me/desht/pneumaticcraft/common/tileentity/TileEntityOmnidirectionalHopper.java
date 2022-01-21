@@ -26,23 +26,23 @@ import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandl
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -62,8 +62,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     @GuiSynced
     private final RedstoneController<TileEntityOmnidirectionalHopper> rsController = new RedstoneController<>(this);
 
-    public TileEntityOmnidirectionalHopper() {
-        super(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get());
+    public TileEntityOmnidirectionalHopper(BlockPos pos, BlockState state) {
+        super(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get(), pos, state);
     }
 
     protected int getInvSize() {
@@ -159,13 +159,12 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
         // Suck in item entities in front of the input
         BlockPos inputPos = worldPosition.relative(inputDir);
-        if (!Block.canSupportCenter(level, inputPos, inputDir.getOpposite())) {
+        if (!Block.canSupportCenter(nonNullLevel(), inputPos, inputDir.getOpposite())) {
             for (Entity e : cachedInputEntities) {
-                if (e.isAlive() && e instanceof ItemEntity) {
-                    ItemEntity entity = (ItemEntity) e;
+                if (e.isAlive() && e instanceof ItemEntity entity) {
                     ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, entity.getItem(), false);
                     if (remainder.isEmpty()) {
-                        entity.remove();
+                        entity.discard();
                         success = true;
                     } else if (remainder.getCount() < entity.getItem().getCount()) {
                         // some but not all were inserted
@@ -185,7 +184,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         for (Entity e : cachedInputEntities) {
             if (!e.isAlive()) continue;
             final int r = remaining;
-            boolean playerArmor = e instanceof PlayerEntity && dir.getAxis().isHorizontal();
+            boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
             int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
             remaining -= imported;
             if (remaining <= 0) return maxItems - remaining;
@@ -227,10 +226,10 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     @Override
     protected void setupInputOutputRegions() {
         // Ensure the input region also contains the hollow part of the hopper itself
-        AxisAlignedBB bowl = BlockOmnidirectionalHopper.INPUT_SHAPES[inputDir.get3DDataValue()].bounds().move(worldPosition);
-        inputAABB = bowl.minmax(new AxisAlignedBB(worldPosition.relative(inputDir)));
+        AABB bowl = BlockOmnidirectionalHopper.INPUT_SHAPES[inputDir.get3DDataValue()].bounds().move(worldPosition);
+        inputAABB = bowl.minmax(new AABB(worldPosition.relative(inputDir)));
         // output zone is a bit simpler
-        outputAABB = new AxisAlignedBB(getBlockPos().relative(getRotation()));
+        outputAABB = new AABB(getBlockPos().relative(getRotation()));
 
         cachedInputEntities.clear();
         cachedOutputEntities.clear();
@@ -238,11 +237,11 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
     @Override
     boolean shouldScanForEntities(Direction dir) {
-        if (Block.canSupportCenter(level, worldPosition.relative(dir), dir.getOpposite())
+        if (Block.canSupportCenter(nonNullLevel(), worldPosition.relative(dir), dir.getOpposite())
                 || dir == getRotation() && getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
             return false;
         }
-        TileEntity te = getCachedNeighbor(dir);
+        BlockEntity te = getCachedNeighbor(dir);
         return te == null || !te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent();
     }
 
@@ -252,17 +251,16 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.put("Items", itemHandler.serializeNBT());
         tag.putBoolean("RoundRobin", roundRobin);
         if (roundRobin) tag.putInt("RRSlot", rrSlot);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         roundRobin = tag.getBoolean("RoundRobin");
@@ -276,12 +274,12 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerOmnidirectionalHopper(i, playerInventory, getBlockPos());
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (tag.equals("rr")) {
             roundRobin = !roundRobin;
             setChanged();
@@ -295,12 +293,8 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         return rsController;
     }
 
-    private static class DropInWorldHandler implements IItemHandler {
-        private final World world;
-        private final BlockPos pos;
-        private final Direction outputDir;
-
-        public DropInWorldHandler(World world, BlockPos pos, Direction outputDir) {
+    private record DropInWorldHandler(Level world, BlockPos pos, Direction outputDir) implements IItemHandler {
+        private DropInWorldHandler(Level world, BlockPos pos, Direction outputDir) {
             this.world = world;
             this.pos = pos.relative(outputDir);
             this.outputDir = outputDir;

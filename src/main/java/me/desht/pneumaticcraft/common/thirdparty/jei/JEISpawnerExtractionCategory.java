@@ -26,9 +26,9 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawner
         super(ModCategoryUid.SPAWNER_EXTRACTION, Recipe.class,
                 xlate("pneumaticcraft.gui.jei.title.spawnerExtraction"),
                 guiHelper().createDrawable(Textures.GUI_JEI_SPAWNER_EXTRACTION, 0, 0, 120, 64),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()))
         );
     }
 

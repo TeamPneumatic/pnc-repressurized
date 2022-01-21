@@ -21,13 +21,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.ICriterionInstance;
-import net.minecraft.advancements.IRequirementsStrategy;
-import net.minecraft.advancements.criterion.EntityPredicate;
-import net.minecraft.advancements.criterion.RecipeUnlockedTrigger;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -51,7 +51,7 @@ public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipe
         return addCriterion(criterion.name, criterion.criterion);
     }
 
-    public T addCriterion(String name, ICriterionInstance criterion) {
+    public T addCriterion(String name, CriterionTriggerInstance criterion) {
         advancementBuilder.addCriterion(name, criterion);
         return (T) this;
     }
@@ -63,17 +63,17 @@ public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipe
 
     protected abstract RecipeResult getResult(ResourceLocation id);
 
-    public void build(Consumer<IFinishedRecipe> consumer, ResourceLocation id) {
+    public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
         if (advancementBuilder.getCriteria().isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + id);
         }
         advancementBuilder.parent(new ResourceLocation("recipes/root"))
-                .addCriterion("has_the_recipe", new RecipeUnlockedTrigger.Instance(EntityPredicate.AndPredicate.ANY, id))
-                .rewards(AdvancementRewards.Builder.recipe(id)).requirements(IRequirementsStrategy.OR);
+                .addCriterion("has_the_recipe", new RecipeUnlockedTrigger.TriggerInstance(EntityPredicate.Composite.ANY, id))
+                .rewards(AdvancementRewards.Builder.recipe(id)).requirements(RequirementsStrategy.OR);
         consumer.accept(getResult(id));
     }
 
-    protected abstract class RecipeResult implements IFinishedRecipe {
+    protected abstract class RecipeResult implements FinishedRecipe {
         private final ResourceLocation id;
         private final ResourceLocation advancementId;
 
@@ -99,7 +99,7 @@ public abstract class PneumaticCraftRecipeBuilder<T extends PneumaticCraftRecipe
 
         @Nonnull
         @Override
-        public IRecipeSerializer<?> getType() {
+        public RecipeSerializer<?> getType() {
             //Note: This may be null if something is screwed up but this method isn't actually used so it shouldn't matter
             // and in fact it will probably be null if only the API is included. But again, as we manually just use
             // the serializer's name this should not effect us

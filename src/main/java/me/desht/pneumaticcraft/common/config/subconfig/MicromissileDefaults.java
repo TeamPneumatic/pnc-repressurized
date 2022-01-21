@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,12 +67,12 @@ public class MicromissileDefaults extends AuxConfigJson {
         return "MicromissileDefaults";
     }
 
-    public void setDefaults(PlayerEntity player, Entry record) {
+    public void setDefaults(Player player, Entry record) {
         record.playerName = player.getName().getString();
         defaults.put(player.getUUID(), record);
     }
 
-    public Entry getDefaults(PlayerEntity player) {
+    public Entry getDefaults(Player player) {
         return defaults.get(player.getUUID());
     }
 
@@ -113,22 +113,22 @@ public class MicromissileDefaults extends AuxConfigJson {
             obj.addProperty("topSpeed", topSpeed);
             obj.addProperty("turnSpeed", turnSpeed);
             obj.addProperty("damage", damage);
-            obj.addProperty("px", p.x);
-            obj.addProperty("py", p.y);
+            obj.addProperty("px", p.x());
+            obj.addProperty("py", p.y());
             obj.addProperty("entityFilter", entityFilter);
             obj.addProperty("playerName", playerName);
             obj.addProperty("fireMode", fireMode.toString());
             return obj;
         }
 
-        public CompoundNBT toNBT() {
-            CompoundNBT tag = new CompoundNBT();
+        public CompoundTag toNBT() {
+            CompoundTag tag = new CompoundTag();
             tag.putFloat(ItemMicromissiles.NBT_TOP_SPEED, topSpeed);
             tag.putFloat(ItemMicromissiles.NBT_TURN_SPEED, turnSpeed);
             tag.putFloat(ItemMicromissiles.NBT_DAMAGE, damage);
             tag.putString(ItemMicromissiles.NBT_FILTER, entityFilter);
-            tag.putInt(ItemMicromissiles.NBT_PX, p.x);
-            tag.putInt(ItemMicromissiles.NBT_PY, p.y);
+            tag.putInt(ItemMicromissiles.NBT_PX, p.x());
+            tag.putInt(ItemMicromissiles.NBT_PY, p.y());
             tag.putString(ItemMicromissiles.NBT_FIRE_MODE, fireMode.toString());
             return tag;
         }

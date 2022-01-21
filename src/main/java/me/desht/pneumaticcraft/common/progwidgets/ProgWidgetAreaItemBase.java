@@ -23,14 +23,14 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ChunkCache;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.ICollisionReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.CollisionGetter;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -44,7 +44,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         implements IAreaProvider, IEntityProvider, IItemFiltering, IVariableWidget {
     private List<BlockPos> areaListCache;
     private Set<BlockPos> areaSetCache;
-    private AxisAlignedBB areaExtents;
+    private AABB areaExtents;
     private Map<String, BlockPos> areaVariableStates;
     protected DroneAIManager aiManager;
     private boolean canCache = true;
@@ -70,7 +70,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
@@ -82,20 +82,20 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         EntityFilterPair.addErrors(this, curInfo);
     }
 
-    public ICollisionReader getChunkCache(World world) {
-        AxisAlignedBB aabb = getAreaExtents();
+    public CollisionGetter getChunkCache(Level world) {
+        AABB aabb = getAreaExtents();
         return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
     }
 
-    public AxisAlignedBB getAreaExtents() {
+    public AABB getAreaExtents() {
         if (areaExtents == null) {
             areaExtents = calculateExtents(getCachedAreaSet());
         }
         return areaExtents;
     }
 
-    private static AxisAlignedBB calculateExtents(Collection<BlockPos> areaSet) {
-        if (areaSet.isEmpty()) return new AxisAlignedBB(BlockPos.ZERO, BlockPos.ZERO);
+    private static AABB calculateExtents(Collection<BlockPos> areaSet) {
+        if (areaSet.isEmpty()) return new AABB(BlockPos.ZERO, BlockPos.ZERO);
 
         int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
         int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
@@ -109,7 +109,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
             maxZ = Math.max(maxZ, pos.getZ());
         }
 
-        return new AxisAlignedBB(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
+        return new AABB(new BlockPos(minX, minY, minZ), new BlockPos(maxX, maxY, maxZ));
     }
 
     public List<BlockPos> getCachedAreaList() {
@@ -222,7 +222,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         return getConnectedParameters()[1] == null && getConnectedParameters()[3] == null;
     }
 
-    public List<Entity> getEntitiesInArea(World world, Predicate<? super Entity> filter) {
+    public List<Entity> getEntitiesInArea(Level world, Predicate<? super Entity> filter) {
         return getEntitiesInArea(
                 (ProgWidgetArea) getConnectedParameters()[0],
                 (ProgWidgetArea) getConnectedParameters()[getParameters().size()],
@@ -231,7 +231,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     }
 
     @Override
-    public List<Entity> getValidEntities(World world) {
+    public List<Entity> getValidEntities(Level world) {
         if (entityFilters == null) {
             entityFilters = new EntityFilterPair<>(this);
         }
@@ -246,7 +246,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         return entityFilters.isEntityValid(entity);
     }
 
-    public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
+    public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, Level world,
                                                   Predicate<? super Entity> whitelistPredicate,
                                                   Predicate<? super Entity> blacklistPredicate) {
         if (whitelistWidget == null) return new ArrayList<>();

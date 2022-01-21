@@ -17,72 +17,63 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import mcp.mobius.waila.api.IEntityAccessor;
+import mcp.mobius.waila.api.EntityAccessor;
 import mcp.mobius.waila.api.IEntityComponentProvider;
-import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
+import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-
-import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class EntityProvider {
 
     public static class Data implements IServerDataProvider<Entity> {
         @Override
-        public void appendServerData(CompoundNBT compoundNBT, ServerPlayerEntity serverPlayerEntity, World world, Entity entity) {
+        public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, Entity entity, boolean b) {
             entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
-                    .ifPresent(h -> compoundNBT.putFloat("Pressure", h.getPressure()));
+                    .ifPresent(h -> compoundTag.putFloat("Pressure", h.getPressure()));
             entity.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                    .ifPresent(h -> compoundNBT.putFloat("Temperature", h.getTemperatureAsInt()));
-            if (entity instanceof ISemiBlock) {
-                ((ISemiBlock) entity).serializeNBT(compoundNBT);
+                    .ifPresent(h -> compoundTag.putFloat("Temperature", h.getTemperatureAsInt()));
+            if (entity instanceof ISemiBlock s) {
+                s.serializeNBT(compoundTag);
             }
         }
     }
 
     public static class Component implements IEntityComponentProvider {
         @Override
-        public void appendHead(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-            tooltip.add(accessor.getEntity().getDisplayName().copy().withStyle(TextFormatting.WHITE));
-        }
+        public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
+            iTooltip.add(entityAccessor.getEntity().getDisplayName().copy().withStyle(ChatFormatting.WHITE));
 
-        @Override
-        public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-            if (accessor.getServerData().contains("Pressure")) {
-                float pressure = accessor.getServerData().getFloat("Pressure");
-                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
+            if (entityAccessor.getServerData().contains("Pressure")) {
+                float pressure = entityAccessor.getServerData().getFloat("Pressure");
+                iTooltip.add(new TranslatableComponent("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
             }
-            if (accessor.getServerData().contains("Temperature")) {
-                tooltip.add(HeatUtil.formatHeatString(accessor.getServerData().getInt("Temperature")));
+            if (entityAccessor.getServerData().contains("Temperature")) {
+                iTooltip.add(HeatUtil.formatHeatString(entityAccessor.getServerData().getInt("Temperature")));
             }
-            if (accessor.getEntity() instanceof ISemiBlock) {
-                ISemiBlock semiBlock = (ISemiBlock) accessor.getEntity();
-                semiBlock.addTooltip(tooltip, accessor.getPlayer(), accessor.getServerData(), accessor.getPlayer().isShiftKeyDown());
+            if (entityAccessor.getEntity() instanceof ISemiBlock semiBlock) {
+                semiBlock.addTooltip(iTooltip::add, entityAccessor.getPlayer(), entityAccessor.getServerData(), entityAccessor.getPlayer().isShiftKeyDown());
                 BlockPos pos = semiBlock.getBlockPos();
-                BlockState state = accessor.getWorld().getBlockState(pos);
-                tooltip.add(state.getBlock().getName().withStyle(TextFormatting.YELLOW));
+                BlockState state = entityAccessor.getLevel().getBlockState(pos);
+                iTooltip.add(state.getBlock().getName().withStyle(ChatFormatting.YELLOW));
             }
-        }
 
-        @Override
-        public void appendTail(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
             String modName = ModNameCache.getModName(Names.MOD_ID);
-            tooltip.add(new StringTextComponent(modName).withStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
+            iTooltip.add(new TextComponent(modName).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
         }
     }
 }

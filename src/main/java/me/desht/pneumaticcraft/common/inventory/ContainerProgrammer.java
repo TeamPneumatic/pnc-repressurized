@@ -24,14 +24,14 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -41,7 +41,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
 
     private final boolean hiRes;
 
-    public ContainerProgrammer(int i, PlayerInventory playerInventory, BlockPos pos) {
+    public ContainerProgrammer(int i, Inventory playerInventory, BlockPos pos) {
         super(ModContainers.PROGRAMMER.get(), i, playerInventory, pos);
 
         // server side doesn't care about slot positioning, so doesn't care about screen res either
@@ -60,7 +60,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         addPlayerSlots(playerInventory, xBase, yBase);
     }
 
-    public ContainerProgrammer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerProgrammer(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }
 
@@ -80,7 +80,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         // puzzle pieces are available
         if (te.getLevel().getGameTime() % 20 == 0) {
             for (Direction d : DirectionUtil.VALUES) {
-                TileEntity neighbor = te.getCachedNeighbor(d);
+                BlockEntity neighbor = te.getCachedNeighbor(d);
                 if (neighbor != null && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).isPresent()) {
                     sendToContainerListeners(new PacketSendNBTPacket(neighbor));
                 }
@@ -90,7 +90,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
 
     @Nonnull
     @Override
-    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int slotIndex) {
+    public ItemStack quickMoveStack(Player par1EntityPlayer, int slotIndex) {
         ItemStack stack = ItemStack.EMPTY;
         Slot srcSlot = slots.get(slotIndex);
 
@@ -120,7 +120,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     }
 
     @Override
-    public void removed(PlayerEntity playerIn) {
+    public void removed(Player playerIn) {
         super.removed(playerIn);
 
         if (playerIn.level.isClientSide) GuiProgrammer.onCloseFromContainer();

@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -64,10 +64,10 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      *
      * @return the vendor name
      */
-    public ITextComponent getVendorName() {
+    public Component getVendorName() {
         // default implementation is just here for backwards compat and will likely go away in MC 1.17+
         // recipe implementations should override this
-        return new StringTextComponent("Amadron");
+        return new TextComponent("Amadron");
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * @param player the player
      * @return true if this player can remove this offer from the system, false otherwise
      */
-    public boolean isRemovableBy(PlayerEntity player) {
+    public boolean isRemovableBy(Player player) {
         return false;
     }
 
@@ -140,7 +140,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * @param player the player to check
      * @return true if the offer is available to the player at the time of use, false otherwise
      */
-    public abstract boolean isUsableByPlayer(PlayerEntity player);
+    public abstract boolean isUsableByPlayer(Player player);
 
     /**
      * Does this offer match the given query string? The input resource, output resource and vendor names are all
@@ -166,7 +166,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * Add some information about where this offer is available, in the case of offers with limited availablity.
      * @param curTip tooltip to add information to
      */
-    public void addAvailabilityData(PlayerEntity player, List<ITextComponent> curTip) {
+    public void addAvailabilityData(Player player, List<Component> curTip) {
     }
 
     public boolean isLocationLimited() {

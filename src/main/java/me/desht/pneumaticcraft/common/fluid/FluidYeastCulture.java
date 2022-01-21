@@ -22,17 +22,17 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Items;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
@@ -55,23 +55,23 @@ public class FluidYeastCulture {
         }
 
         @Override
-        public int getTickDelay(IWorldReader world) {
+        public int getTickDelay(LevelReader world) {
             return 30;
         }
 
         @Override
-        public void tick(World worldIn, BlockPos pos, FluidState state) {
+        public void tick(Level worldIn, BlockPos pos, FluidState state) {
             if (ConfigHelper.common().recipes.inWorldYeastCrafting.get()) {
-                List<ItemEntity> entities = worldIn.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
+                List<ItemEntity> entities = worldIn.getEntitiesOfClass(ItemEntity.class, new AABB(pos), e -> e.getItem().getItem() == Items.SUGAR);
                 if (!entities.isEmpty()) {
                     for (Direction d : DirectionUtil.VALUES) {
                         BlockPos pos1 = pos.relative(d);
                         FluidState fluidState = worldIn.getFluidState(pos1);
                         if (fluidState.isSource() && fluidState.getType() == Fluids.WATER && worldIn.getBlockState(pos1).getBlock() == Blocks.WATER) {
-                            worldIn.setBlock(pos1, ModFluids.YEAST_CULTURE.get().defaultFluidState().createLegacyBlock(), Constants.BlockFlags.DEFAULT);
+                            worldIn.setBlock(pos1, ModFluids.YEAST_CULTURE.get().defaultFluidState().createLegacyBlock(), Block.UPDATE_ALL);
                             entities.get(0).getItem().shrink(1);
                             if (entities.get(0).getItem().isEmpty()) {
-                                entities.get(0).remove();
+                                entities.get(0).discard();
                             }
                             break;
                         }

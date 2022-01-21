@@ -20,17 +20,17 @@ package me.desht.pneumaticcraft.common.variables;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -38,13 +38,13 @@ import java.util.*;
 /**
  * Manages global variables. These are prefixed with '#'.
  */
-public class GlobalVariableManager extends WorldSavedData implements IVariableProvider {
+public class GlobalVariableManager extends SavedData implements IVariableProvider {
     public static final int MAX_VARIABLE_LEN = 64;
 
     private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
     private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager();
 
-    private static ServerWorld overworld;
+    private static ServerLevel overworld;
 
     private final Map<String, BlockPos> globalVars = new HashMap<>();
     private final Map<String, ItemStack> globalItemVars = new HashMap<>();
@@ -55,22 +55,27 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         if (EffectiveSide.get() == LogicalSide.CLIENT) {
             return CLIENT_INSTANCE;
         } else {
-            return getOverworld().getDataStorage().computeIfAbsent(GlobalVariableManager::new, DATA_KEY);
+            return getOverworld().getDataStorage().computeIfAbsent(GlobalVariableManager::load, GlobalVariableManager::new, DATA_KEY);
         }
     }
 
     private GlobalVariableManager() {
-        super(DATA_KEY);
     }
 
-    private static ServerWorld getOverworld() {
+    private static ServerLevel getOverworld() {
         if (overworld == null) {
-            overworld = ServerLifecycleHooks.getCurrentServer().getLevel(World.OVERWORLD);
+            overworld = ServerLifecycleHooks.getCurrentServer().getLevel(Level.OVERWORLD);
             if (overworld == null) {
                 throw new IllegalStateException("Overworld not initialized!");
             }
         }
         return overworld;
+    }
+
+    public static GlobalVariableManager load(CompoundTag tag) {
+        GlobalVariableManager gvm = new GlobalVariableManager();
+        gvm.readFromNBT(tag);
+        return gvm;
     }
 
     public void set(String varName, boolean value) {
@@ -147,32 +152,31 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         return stack == null ? ItemStack.EMPTY : stack;
     }
 
-    @Override
-    public void load(CompoundNBT tag) {
+    private void readFromNBT(CompoundTag tag) {
         globalVars.clear();
-        ListNBT list = tag.getList("globalVars", Constants.NBT.TAG_COMPOUND);
+        ListTag list = tag.getList("globalVars", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
-            CompoundNBT t = list.getCompound(i);
+            CompoundTag t = list.getCompound(i);
             globalVars.put(t.getString("varName"), new BlockPos(t.getInt("x"), t.getInt("y"), t.getInt("z")));
         }
 
         readItemVars(tag, globalItemVars);
     }
 
-    public static void readItemVars(CompoundNBT tag, Map<String, ItemStack> map) {
+    public static void readItemVars(CompoundTag tag, Map<String, ItemStack> map) {
         map.clear();
-        ListNBT list = tag.getList("globalItemVars", Constants.NBT.TAG_COMPOUND);
+        ListTag list = tag.getList("globalItemVars", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
-            CompoundNBT t = list.getCompound(i);
+            CompoundTag t = list.getCompound(i);
             map.put(t.getString("varName"), ItemStack.of(t.getCompound("item")));
         }
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        ListNBT list = new ListNBT();
+    public CompoundTag save(CompoundTag tag) {
+        ListTag list = new ListTag();
         for (Map.Entry<String, BlockPos> entry : globalVars.entrySet()) {
-            CompoundNBT t = new CompoundNBT();
+            CompoundTag t = new CompoundTag();
             t.putString("varName", entry.getKey());
             BlockPos pos = entry.getValue();
             t.putInt("x", pos.getX());
@@ -186,12 +190,12 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         return tag;
     }
 
-    public void writeItemVars(CompoundNBT tag) {
-        ListNBT list = new ListNBT();
+    public void writeItemVars(CompoundTag tag) {
+        ListTag list = new ListTag();
         for (Map.Entry<String, ItemStack> entry : globalItemVars.entrySet()) {
-            CompoundNBT t = new CompoundNBT();
+            CompoundTag t = new CompoundTag();
             t.putString("varName", entry.getKey());
-            CompoundNBT itemTag = new CompoundNBT();
+            CompoundTag itemTag = new CompoundTag();
             entry.getValue().save(itemTag);
             t.put("item", itemTag);
             list.add(t);

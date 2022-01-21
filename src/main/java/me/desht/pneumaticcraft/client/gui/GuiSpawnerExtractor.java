@@ -17,21 +17,21 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerSpawnerExtractor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
 public class GuiSpawnerExtractor extends GuiPneumaticContainerBase<ContainerSpawnerExtractor, TileEntitySpawnerExtractor> {
-    public GuiSpawnerExtractor(ContainerSpawnerExtractor container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiSpawnerExtractor(ContainerSpawnerExtractor container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -48,16 +48,16 @@ public class GuiSpawnerExtractor extends GuiPneumaticContainerBase<ContainerSpaw
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         super.renderLabels(matrixStack, x, y);
 
-        int progress = MathHelper.clamp((int)(te.getProgress() * 100f), 0, 100);
+        int progress = Mth.clamp((int)(te.getProgress() * 100f), 0, 100);
         font.draw(matrixStack, "Progress:", 65, 35, 0x404040);
         font.draw(matrixStack, progress + "%", 80, 47, 0x404040);
     }
 
     @Override
-    protected void addWarnings(List<ITextComponent> curInfo) {
+    protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
 
         if (te.getMode() == TileEntitySpawnerExtractor.Mode.FINISHED) {

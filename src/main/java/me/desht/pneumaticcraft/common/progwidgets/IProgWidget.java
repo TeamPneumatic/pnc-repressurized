@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.IProgWidgetBase;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.DyeColor;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -51,11 +51,11 @@ public interface IProgWidget extends IProgWidgetBase {
 
     int getTextureSize();
 
-    void getTooltip(List<ITextComponent> curTooltip);
+    void getTooltip(List<Component> curTooltip);
 
-    void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets);
+    void addWarnings(List<Component> curInfo, List<IProgWidget> widgets);
 
-    void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets);
+    void addErrors(List<Component> curInfo, List<IProgWidget> widgets);
 
     /**
      * Can this widget connect to a widget above?
@@ -161,9 +161,9 @@ public interface IProgWidget extends IProgWidgetBase {
      *
      * @param tag NBT tag to write to
      */
-    void writeToNBT(CompoundNBT tag);
+    void writeToNBT(CompoundTag tag);
 
-    void readFromNBT(CompoundNBT tag);
+    void readFromNBT(CompoundTag tag);
 
     IProgWidget copy();
 
@@ -177,12 +177,12 @@ public interface IProgWidget extends IProgWidgetBase {
 
     ProgWidgetType<?> getType();
 
-    void readFromPacket(PacketBuffer buf);
+    void readFromPacket(FriendlyByteBuf buf);
 
-    void writeToPacket(PacketBuffer buf);
+    void writeToPacket(FriendlyByteBuf buf);
 
     @Nonnull
-    List<ITextComponent> getExtraStringInfo();
+    List<Component> getExtraStringInfo();
 
     enum WidgetDifficulty {
         EASY("easy", 0),

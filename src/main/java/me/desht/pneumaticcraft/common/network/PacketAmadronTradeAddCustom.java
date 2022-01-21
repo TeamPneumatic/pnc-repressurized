@@ -24,11 +24,11 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -44,13 +44,13 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
         super(offer);
     }
 
-    public PacketAmadronTradeAddCustom(PacketBuffer buffer) {
+    public PacketAmadronTradeAddCustom(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             AmadronPlayerOffer offer = getOffer();
             if (player == null) {
                 handleClientSide(offer);
@@ -61,7 +61,7 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
         ctx.get().setPacketHandled(true);
     }
 
-    private void handleServerSide(ServerPlayerEntity player, AmadronPlayerOffer offer) {
+    private void handleServerSide(ServerPlayer player, AmadronPlayerOffer offer) {
         if (player.containerMenu instanceof ContainerAmadronAddTrade) {
             offer.updatePlayerId();
             if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
@@ -71,9 +71,9 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
                     NetworkHandler.sendToAll(this);
                 }
                 if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
-                    ItemAmadronTablet.openGui(player, Hand.MAIN_HAND);
+                    ItemAmadronTablet.openGui(player, InteractionHand.MAIN_HAND);
                 } else if (player.getOffhandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
-                    ItemAmadronTablet.openGui(player, Hand.OFF_HAND);
+                    ItemAmadronTablet.openGui(player, InteractionHand.OFF_HAND);
                 }
             } else {
                 player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);
@@ -84,7 +84,7 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
     private void handleClientSide(AmadronPlayerOffer offer) {
         if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
             ClientUtils.getClientPlayer().displayClientMessage(
-                    new TranslationTextComponent("pneumaticcraft.message.amadron.playerAddedTrade",
+                    new TranslatableComponent("pneumaticcraft.message.amadron.playerAddedTrade",
                             offer.getVendorName(),
                             offer.getOutput().toString(),
                             offer.getInput().toString()

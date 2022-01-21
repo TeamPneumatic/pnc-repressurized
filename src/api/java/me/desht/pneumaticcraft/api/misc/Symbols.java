@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.misc;
 
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
 
 /**
  * A small collection of handy Unicode symbols
@@ -41,7 +41,7 @@ public class Symbols {
     public static final String TICK_MARK = "\u2714";
     public static final String X_MARK = "\u2717";
 
-    public static IFormattableTextComponent bullet() {
-        return new StringTextComponent(BULLET + " ");
+    public static MutableComponent bullet() {
+        return new TextComponent(BULLET + " ");
     }
 }

@@ -40,9 +40,9 @@ public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetI
         textfield.setElements(guiProgrammer.te.getAllVariables());
         textfield.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         textfield.setValue(progWidget.getVariable());
-        addButton(textfield);
+        addRenderableWidget(textfield);
 
-        addButton(new WidgetLabel(guiLeft + 10, guiTop + 30, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel")));
+        addRenderableWidget(new WidgetLabel(guiLeft + 10, guiTop + 30, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel")));
     }
 
     @Override

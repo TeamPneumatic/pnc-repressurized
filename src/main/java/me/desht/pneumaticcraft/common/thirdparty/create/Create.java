@@ -25,9 +25,9 @@ import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 public class Create implements IThirdParty {
     @Override
@@ -36,17 +36,17 @@ public class Create implements IThirdParty {
                 (ctx, state) -> {
                     // pre
                     if (state.getBlock() instanceof BeltBlock) {
-                        RayTraceResult rtr = RayTraceUtils.getMouseOverServer(ctx.getPlayer(), PneumaticCraftUtils.getPlayerReachDistance(ctx.getPlayer()));
-                        if (rtr instanceof BlockRayTraceResult) {
+                        HitResult rtr = RayTraceUtils.getMouseOverServer(ctx.getPlayer(), PneumaticCraftUtils.getPlayerReachDistance(ctx.getPlayer()));
+                        if (rtr instanceof BlockHitResult) {
                             return BeltSlicer.useWrench(state, ctx.getLevel(), ctx.getClickedPos(), ctx.getPlayer(), ctx.getHand(),
-                                    (BlockRayTraceResult) rtr, new BeltSlicer.Feedback());
+                                    (BlockHitResult) rtr, new BeltSlicer.Feedback());
                         }
                     } else if (state.getBlock() instanceof IWrenchable) {
                         return ctx.getPlayer() != null && ctx.getPlayer().isCrouching() ?
                                 ((IWrenchable) state.getBlock()).onSneakWrenched(state, ctx) :
                                 ((IWrenchable) state.getBlock()).onWrenched(state, ctx);
                     }
-                    return ActionResultType.PASS;
+                    return InteractionResult.PASS;
                 },
                 (ctx, state) -> {
                     // post

@@ -6,32 +6,35 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
@@ -39,33 +42,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.state.properties.BlockStateProperties.*;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
-public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggable {
-//    private static final VoxelShape FLAP1 = Block.box(2, 11, 11, 14, 12, 16);
-//    private static final VoxelShape FLAP2 = Block.box(2, 11, 0, 14, 12, 5);
-//    private static final VoxelShape SHAPE_EW_CLOSED = Stream.of(
-//            Block.box(0, 1, 3, 16, 11, 13),
-//            Block.box(1, 0, 4, 15, 1, 12),
-//            Block.box(0, 12, 7, 2, 14, 9),
-//            Block.box(0, 11, 6, 2, 12, 10),
-//            Block.box(14, 11, 6, 16, 12, 10),
-//            Block.box(0, 14, 7, 8, 16, 9),
-//            Block.box(2, 11, 8, 14, 12, 13),
-//            Block.box(2, 11, 3, 14, 12, 8)
-//    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
-//    private static final VoxelShape SHAPE_EW_OPEN_BASE = Stream.of(
-//            Block.box(0, 1, 3, 16, 11, 13),
-//            Block.box(1, 0, 4, 15, 1, 12),
-//            Block.box(0, 12, 7, 2, 14, 9),
-//            Block.box(0, 11, 6, 2, 12, 10),
-//            Block.box(14, 11, 6, 16, 12, 10),
-//            Block.box(0, 14, 7, 8, 16, 9)
-//    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
-//    private static final VoxelShape SHAPE_EW_OPEN = VoxelShapeUtils.combine(IBooleanFunction.OR, SHAPE_EW_OPEN_BASE, FLAP1, FLAP2);
-//    private static final VoxelShape SHAPE_NS_CLOSED = VoxelShapeUtils.rotateY(SHAPE_EW_CLOSED, 90);
-//    private static final VoxelShape SHAPE_NS_OPEN = VoxelShapeUtils.rotateY(SHAPE_EW_OPEN, 90);
-
+public class BlockVacuumTrap extends BlockPneumaticCraft implements SimpleWaterloggedBlock, EntityBlockPneumaticCraft {
     private static final VoxelShape SHAPE_N_OPEN = Stream.of(
             Block.box(3, 1, 0, 13, 11, 16),
             Block.box(4, 0, 1, 12, 1, 15),
@@ -75,7 +54,7 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
             Block.box(7, 14, 8, 9, 16, 16),
             Block.box(11, 11, 2, 16, 12, 14),
             Block.box(0, 11, 2, 5, 12, 14)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
     private static final VoxelShape SHAPE_E_OPEN = VoxelShapeUtils.rotateY(SHAPE_N_OPEN, 90);
     private static final VoxelShape SHAPE_S_OPEN = VoxelShapeUtils.rotateY(SHAPE_E_OPEN, 90);
     private static final VoxelShape SHAPE_W_OPEN = VoxelShapeUtils.rotateY(SHAPE_S_OPEN, 90);
@@ -90,7 +69,7 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
             Block.box(7, 14, 8, 9, 16, 16),
             Block.box(8, 11, 2, 13, 12, 14),
             Block.box(3, 11, 2, 8, 12, 14)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
     private static final VoxelShape SHAPE_E_CLOSED = VoxelShapeUtils.rotateY(SHAPE_N_CLOSED, 90);
     private static final VoxelShape SHAPE_S_CLOSED = VoxelShapeUtils.rotateY(SHAPE_E_CLOSED, 90);
     private static final VoxelShape SHAPE_W_CLOSED = VoxelShapeUtils.rotateY(SHAPE_S_CLOSED, 90);
@@ -112,7 +91,7 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
 
         builder.add(OPEN, POWERED, NORTH, SOUTH, EAST, WEST, DOWN, WATERLOGGED);
@@ -120,7 +99,7 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
         BlockState state = super.getStateForPlacement(ctx);
         return state == null ? null : state.setValue(WATERLOGGED, fluidState.getType() == Fluids.WATER);
@@ -132,9 +111,9 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (stateIn.getValue(WATERLOGGED)) {
-            worldIn.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
+            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
         }
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
@@ -145,7 +124,7 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
 
         if (state.getValue(OPEN)) {
             return SHAPES_OPEN[state.getValue(directionProperty()).get2DDataValue()];
@@ -154,43 +133,35 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
         } else {
             return super.getShape(state, worldIn, pos, context);
         }
-
-//        Direction.Axis axis = getRotation(state).getAxis();
-//        if (axis == Direction.Axis.Z) {
-//            return state.getValue(OPEN) ? SHAPE_NS_OPEN : SHAPE_NS_CLOSED;
-//        } else if (axis == Direction.Axis.X) {
-//            return state.getValue(OPEN) ? SHAPE_EW_OPEN : SHAPE_EW_CLOSED;
-//        } else {
-//            return super.getShape(state, worldIn, pos, context);
-//        }
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (player.isShiftKeyDown()) {
             boolean open = state.getValue(OPEN);
             world.setBlockAndUpdate(pos, state.setValue(OPEN, !open));
-            world.playSound(player, pos, open ? SoundEvents.IRON_DOOR_OPEN : SoundEvents.IRON_DOOR_CLOSE, SoundCategory.BLOCKS, 1f, 0.5f);
-            return ActionResultType.sidedSuccess(world.isClientSide);
+            world.playSound(player, pos, open ? SoundEvents.IRON_DOOR_OPEN : SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, 1f, 0.5f);
+            return InteractionResult.sidedSuccess(world.isClientSide);
         }
         return super.use(state, world, pos, player, hand, brtr);
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         boolean powered = world.hasNeighborSignal(pos);
         if (powered != state.getValue(POWERED)) {
             if (state.getValue(OPEN) != powered) {
                 state = state.setValue(OPEN, powered);
-                world.playSound(null, pos, powered ? SoundEvents.IRON_DOOR_OPEN : SoundEvents.IRON_DOOR_CLOSE, SoundCategory.BLOCKS, 1f, 0.5f);
+                world.playSound(null, pos, powered ? SoundEvents.IRON_DOOR_OPEN : SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, 1f, 0.5f);
             }
-            world.setBlock(pos, state.setValue(POWERED, powered), Constants.BlockFlags.BLOCK_UPDATE);
+            world.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_ALL);
         }
     }
 
+    @org.jetbrains.annotations.Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityVacuumTrap.class;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityVacuumTrap(pPos, pState);
     }
 
     public static class ItemBlockVacuumTrap extends BlockItem {
@@ -199,15 +170,15 @@ public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggab
         }
 
         @Override
-        public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
             super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
-            CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+            CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
             if (tag != null && tag.contains("Items")) {
                 ItemStackHandler handler = new ItemStackHandler(1);
                 handler.deserializeNBT(tag.getCompound("Items"));
                 if (handler.getStackInSlot(0).getItem() instanceof ItemSpawnerCore) {
-                    tooltip.add(xlate("pneumaticcraft.message.vacuum_trap.coreInstalled").withStyle(TextFormatting.YELLOW));
+                    tooltip.add(xlate("pneumaticcraft.message.vacuum_trap.coreInstalled").withStyle(ChatFormatting.YELLOW));
                 }
             }
         }

@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -34,35 +34,35 @@ import java.util.function.Supplier;
  * Send when the GPS Tool GUI is closed, to update the held GPS tool settings
  */
 public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
-    private final Hand hand;
+    private final InteractionHand hand;
     private final String variable;
     private final int index;
 
-    public PacketChangeGPSToolCoordinate(BlockPos pos, Hand hand, String variable, int index) {
+    public PacketChangeGPSToolCoordinate(BlockPos pos, InteractionHand hand, String variable, int index) {
         super(pos);
         this.hand = hand;
         this.variable = variable;
         this.index = index;
     }
 
-    public PacketChangeGPSToolCoordinate(PacketBuffer buf) {
+    public PacketChangeGPSToolCoordinate(FriendlyByteBuf buf) {
         super(buf);
         variable = buf.readUtf(32767);
         index = buf.readByte();
-        hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+        hand = buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeUtf(variable);
         buf.writeByte(index);
-        buf.writeBoolean(hand == Hand.MAIN_HAND);
+        buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             ItemStack playerStack = player.getItemInHand(hand);
             if (playerStack.getItem() == ModItems.GPS_TOOL.get()) {
                 ItemGPSTool.setVariable(playerStack, variable);

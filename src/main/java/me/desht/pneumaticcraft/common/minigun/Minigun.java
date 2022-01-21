@@ -26,18 +26,22 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
-import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.*;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -67,12 +71,12 @@ public abstract class Minigun {
     private LazyOptional<? extends IAirHandler> airCapability = LazyOptional.empty();
     private int airUsage;
     private ItemStack ammoStack = ItemStack.EMPTY;
-    protected final PlayerEntity player;
-    protected World world;
+    protected final Player player;
+    protected Level world;
     private LivingEntity attackTarget;
     private float idleYaw;
 
-    public Minigun(PlayerEntity player, boolean requiresTarget) {
+    public Minigun(Player player, boolean requiresTarget) {
         this.player = player;
         this.requiresTarget = requiresTarget;
     }
@@ -93,16 +97,16 @@ public abstract class Minigun {
         return ammoStack;
     }
 
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-    public Minigun setWorld(World world) {
+    public Minigun setWorld(Level world) {
         this.world = world;
         return this;
     }
 
-    public World getWorld() {
+    public Level getWorld() {
         return world;
     }
 
@@ -141,8 +145,8 @@ public abstract class Minigun {
      *
      * @return the sound's source
      */
-    public SoundSource getSoundSource() {
-        return SoundSource.of(player);
+    public MovingSoundFocus getSoundSource() {
+        return MovingSoundFocus.of(player);
     }
 
     public float getMinigunSpeed() {
@@ -210,11 +214,11 @@ public abstract class Minigun {
         if (!ammoStack.isEmpty() && ammoStack.getDamageValue() < ammoStack.getMaxDamage() && airCapability.map(h -> h.getPressure() > 0).orElse(true)) {
             setMinigunTriggerTimeOut(10);
             if (!world.isClientSide && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
-                RayTraceResult rtr = null;
+                HitResult rtr = null;
                 ItemGunAmmo ammoItem = (ItemGunAmmo) ammoStack.getItem();
                 if (!requiresTarget) {
                     rtr = RayTraceUtils.getMouseOverServer(player, getRange());
-                    target = rtr instanceof EntityRayTraceResult ? ((EntityRayTraceResult) rtr).getEntity() : null;
+                    target = rtr instanceof EntityHitResult ? ((EntityHitResult) rtr).getEntity() : null;
                 }
                 airCapability.ifPresent(airHandler -> {
                     int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(this, ammoStack));
@@ -229,24 +233,24 @@ public abstract class Minigun {
                     if (getUpgrades(EnumUpgrade.SECURITY) == 0 || !securityProtectedTarget(target)) {
                         roundsUsed = ammoItem.onTargetHit(this, ammoStack, target);
                     }
-                } else if (rtr != null && rtr.getType() == RayTraceResult.Type.BLOCK) {
-                    BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
+                } else if (rtr != null && rtr.getType() == HitResult.Type.BLOCK) {
+                    BlockHitResult brtr = (BlockHitResult) rtr;
                     roundsUsed = ammoItem.onBlockHit(this, ammoStack, brtr);
                 }
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
-                lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayerEntity ? (ServerPlayerEntity) player : null);
+                lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayer ? (ServerPlayer) player : null);
             }
         }
         return lastShotOfAmmo;
     }
 
     private boolean securityProtectedTarget(Entity target) {
-        if (target instanceof TameableEntity) {
-            return ((TameableEntity) target).getOwner() != null;
+        if (target instanceof TamableAnimal) {
+            return ((TamableAnimal) target).getOwner() != null;
         } else if (target instanceof EntityDrone) {
             return ((EntityDrone) target).getOwner().getUUID().equals(getPlayer().getUUID());
         } else {
-            return target instanceof PlayerEntity;
+            return target instanceof Player;
         }
     }
 
@@ -303,7 +307,7 @@ public abstract class Minigun {
             sweepingProgress = 0F;
         } else if (isSweeping()) {
             // sentry turret idly sweeping left to right
-            minigunYaw = clampYaw(idleYaw + MathHelper.sin(sweepingProgress) * 22);
+            minigunYaw = clampYaw(idleYaw + Mth.sin(sweepingProgress) * 22);
             minigunPitch = moveToward(minigunPitch, 0F, MAX_GUN_PITCH_CHANGE, false);
             sweepingProgress += 0.05F;
         }

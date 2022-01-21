@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.curios;
 
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -42,7 +42,7 @@ public class CuriosUtils {
      * @param energyStorage source energy storage
      * @param maxTransfer max amount to transfer per item
      */
-    public static void chargeItems(PlayerEntity player, PneumaticEnergyStorage energyStorage, int maxTransfer) {
+    public static void chargeItems(Player player, PneumaticEnergyStorage energyStorage, int maxTransfer) {
         CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(handler -> handler.getCurios().forEach((id, stackHandler) -> {
             for (int i = 0; i < stackHandler.getSlots() && energyStorage.getEnergyStored() > 0; i++) {
                 ItemStack stack = stackHandler.getStacks().getStackInSlot(i);
@@ -63,7 +63,7 @@ public class CuriosUtils {
      * @param slot slot in the given curios inventory
      * @return stack in that slot
      */
-    public static ItemStack getStack(PlayerEntity player, String invId, int slot) {
+    public static ItemStack getStack(Player player, String invId, int slot) {
         return CuriosApi.getCuriosHelper().getCuriosHandler(player).map(handler -> {
             ICurioStacksHandler h = handler.getCurios().get(invId);
             return h == null ? ItemStack.EMPTY : h.getStacks().getStackInSlot(slot);
@@ -76,7 +76,7 @@ public class CuriosUtils {
      * @param predicate an itemstack matching predicate
      * @return a pair of (inventory id and slot), or null if no match
      */
-    public static Pair<String,Integer> findStack(PlayerEntity player, Predicate<ItemStack> predicate) {
+    public static Pair<String,Integer> findStack(Player player, Predicate<ItemStack> predicate) {
         return CuriosApi.getCuriosHelper().getCuriosHandler(player).map(handler -> {
             for (Map.Entry<String,ICurioStacksHandler> entry : handler.getCurios().entrySet()) {
                 for (int i = 0; i < entry.getValue().getSlots(); i++) {
@@ -89,7 +89,7 @@ public class CuriosUtils {
         }).orElse(NONE);
     }
 
-    public static IItemHandler makeCombinedInvWrapper(@Nonnull PlayerEntity player) {
+    public static IItemHandler makeCombinedInvWrapper(@Nonnull Player player) {
         return CuriosApi.getCuriosHelper().getCuriosHandler(player)
                 .map(handler -> new CombinedInvWrapper(handler.getCurios().values().stream()
                         .map(ICurioStacksHandler::getStacks)

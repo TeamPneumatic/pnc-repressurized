@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -27,14 +27,14 @@ import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachi
 import me.desht.pneumaticcraft.common.tileentity.IAssemblyMachine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -46,7 +46,7 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
 
     private WidgetAnimatedStat statusStat;
 
-    public GuiAssemblyController(ContainerAssemblyController container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiAssemblyController(ContainerAssemblyController container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -57,7 +57,7 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         super.renderLabels(matrixStack, x, y);
         font.draw(matrixStack, "Prog.", 70, 24, 0x404040);
     }
@@ -68,13 +68,13 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
         statusStat.setText(getStatusText());
     }
 
-    private List<ITextComponent> getStatusText() {
-        List<ITextComponent> text = new ArrayList<>();
+    private List<Component> getStatusText() {
+        List<Component> text = new ArrayList<>();
 
         EnumSet<EnumMachine> foundMachines = EnumSet.of(EnumMachine.CONTROLLER);
         for (IAssemblyMachine machine : te.findMachines(EnumMachine.values().length)) {
@@ -82,16 +82,16 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
         }
         for (EnumMachine m : EnumMachine.values()) {
             if (m == EnumMachine.CONTROLLER) continue; // we *are* the controller!
-            IFormattableTextComponent s = foundMachines.contains(m) ?
-                    new StringTextComponent(Symbols.TICK_MARK).withStyle(TextFormatting.DARK_GREEN) :
-                    new StringTextComponent(Symbols.X_MARK).withStyle(TextFormatting.RED);
-            text.add(s.append(" ").append(xlate(m.getTranslationKey()).withStyle(TextFormatting.WHITE)));
+            MutableComponent s = foundMachines.contains(m) ?
+                    new TextComponent(Symbols.TICK_MARK).withStyle(ChatFormatting.DARK_GREEN) :
+                    new TextComponent(Symbols.X_MARK).withStyle(ChatFormatting.RED);
+            text.add(s.append(" ").append(xlate(m.getTranslationKey()).withStyle(ChatFormatting.WHITE)));
         }
         return text;
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> textList) {
+    protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
 
         if (te.curProgram == null) {

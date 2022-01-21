@@ -6,15 +6,21 @@
 
 package me.desht.pneumaticcraft.client.model;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.math.vector.Vector3f;
 
 /**
  * Used in three different places:
@@ -22,99 +28,117 @@ import net.minecraft.util.math.vector.Vector3f;
  * 2. ISTER for the minigun item (RenderItemMinigun)
  * 3. Sentry turrent TER model (RenderSentryTurret)
  */
-public class ModelMinigun {
+public class ModelMinigun extends Model {
     //fields
-    private final ModelRenderer barrel;
-    private final ModelRenderer support1;
-    private final ModelRenderer support2;
-    private final ModelRenderer support3;
-    private final ModelRenderer support4;
-    private final ModelRenderer support5;
-    private final ModelRenderer main;
-    private final ModelRenderer magazine;
-    private final ModelRenderer mount;
-    private final ModelRenderer mount_r1;
-    private final ModelRenderer mount_r2;
-    private final ModelRenderer magazineColor;
+    private final ModelPart barrel;
+    private final ModelPart support1;
+    private final ModelPart support2;
+    private final ModelPart support3;
+    private final ModelPart support4;
+    private final ModelPart support5;
+    private final ModelPart main;
+    private final ModelPart magazine;
+    private final ModelPart mount;
+    private final ModelPart magazineColor;
 
-    public ModelMinigun() {
-        barrel = new ModelRenderer(64, 32, 30, 15);
-        barrel.setPos(0.0F, 20.9667F, -8.0F);
-        barrel.texOffs(0, 3).addBox(-0.5F, 1.4333F, -4.0F, 1.0F, 1.0F, 20.0F, 0.0F, false);
+    private static final String BARREL = "barrel";
+    private static final String SUPPORT1 = "support1";
+    private static final String SUPPORT2 = "support2";
+    private static final String SUPPORT3 = "support3";
+    private static final String SUPPORT4 = "support4";
+    private static final String SUPPORT5 = "support5";
+    private static final String MAIN = "main";
+    private static final String MAGAZINE = "magazine";
+    private static final String MOUNT = "mount";
+    private static final String MOUNT_R1 = "mount_r1";
+    private static final String MOUNT_R2 = "mount_r2";
+    private static final String MAGAZINECOLOR = "magazineColor";
 
-        support1 = new ModelRenderer(64, 32, 0, 0);
-        support1.setPos(0.0F, 21.0F, -6.0F);
-        support1.texOffs(22, 16).addBox(-1.5F, -1.5F, -5.0F, 3.0F, 3.0F, 4.0F, 0.0F, false);
-        support1.texOffs(0, 13).addBox(-1.5F, -1.5F, 0.0F, 3.0F, 3.0F, 1.0F, 0.0F, false);
-        support1.texOffs(0, 13).addBox(-1.5F, -1.5F, 5.0F, 3.0F, 3.0F, 1.0F, 0.0F, false);
-        support1.texOffs(0, 13).addBox(-1.5F, -1.5F, 7.0F, 3.0F, 3.0F, 1.0F, 0.0F, false);
-        support1.texOffs(0, 13).addBox(-1.5F, -1.5F, 13.0F, 3.0F, 3.0F, 1.0F, 0.0F, false);
+    public ModelMinigun(ModelPart root) {
+        super(RenderType::entityCutoutNoCull);
 
-        support2 = new ModelRenderer(64, 32, 0, 4);
-        support2.setPos(0.0F, 21.0F, -6.0F);
-        support2.texOffs(22, 8).addBox(-1.5F, 1.5F, -5.0F, 3.0F, 1.0F, 4.0F, 0.0F, false);
-        support2.texOffs(0, 11).addBox(-1.5F, 1.5F, 0.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
-        support2.texOffs(0, 21).addBox(-1.5F, 1.5F, 5.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
-        support2.texOffs(0, 21).addBox(-1.5F, 1.5F, 7.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
-        support2.texOffs(0, 21).addBox(-1.5F, 1.5F, 13.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
-
-        support3 = new ModelRenderer(64, 32, 0, 6);
-        support3.setPos(0.0F, 21.0F, -6.0F);
-        support3.texOffs(22, 8).addBox(-1.5F, -2.5F, -5.0F, 3.0F, 1.0F, 4.0F, 0.0F, false);
-        support3.texOffs(0, 11).addBox(-1.5F, -2.5F, 0.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
-        support3.texOffs(0, 11).addBox(-1.5F, -2.5F, 5.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
-        support3.texOffs(0, 11).addBox(-1.5F, -2.5F, 7.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
-        support3.texOffs(0, 11).addBox(-1.5F, -2.5F, 13.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
-
-        support4 = new ModelRenderer(64, 32, 0, 8);
-        support4.setPos(0.0F, 21.0F, -6.0F);
-        support4.texOffs(22, 1).addBox(1.5F, -1.5F, -5.0F, 1.0F, 3.0F, 4.0F, 0.0F, false);
-        support4.texOffs(0, 17).addBox(1.5F, -1.5F, 0.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
-        support4.texOffs(4, 17).addBox(1.5F, -1.5F, 5.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
-        support4.texOffs(4, 17).addBox(1.5F, -1.5F, 7.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
-        support4.texOffs(4, 17).addBox(1.5F, -1.5F, 13.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
-
-        support5 = new ModelRenderer(64, 32, 0, 11);
-        support5.setPos(0.0F, 21.0F, -6.0F);
-        support5.texOffs(32, 1).addBox(-2.5F, -1.5F, -5.0F, 1.0F, 3.0F, 4.0F, 0.0F, false);
-        support5.texOffs(0, 17).addBox(-2.5F, -1.5F, 0.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
-        support5.texOffs(0, 17).addBox(-2.5F, -1.5F, 5.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
-        support5.texOffs(4, 17).addBox(-2.5F, -1.5F, 7.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
-        support5.texOffs(4, 17).addBox(-2.5F, -1.5F, 13.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
-
-        main = new ModelRenderer(64, 32, 36, 0);
-        main.setPos(-3.0F, 18.0F, 8.0F);
-        main.texOffs(36, 18).addBox(0.0F, 0.0F, 1.0F, 6.0F, 6.0F, 8.0F, 0.0F, false);
-        main.texOffs(34, 3).addBox(0.5F, 0.5F, 0.0F, 5.0F, 5.0F, 10.0F, 0.0F, false);
-
-        magazine = new ModelRenderer(64, 32, 0, 14);
-        magazine.setPos(3.0F, 22.0F, 9.0F);
-        magazine.texOffs(0, 0).addBox(-8.0F, -2.0F, 2.5F, 5.0F, 6.0F, 5.0F, 0.0F, true);
-
-        mount = new ModelRenderer(64, 32, 0, 23);
-        mount.setPos(-1.0F, 15.0F, 11.0F);
-
-
-        mount_r1 = new ModelRenderer(64, 32, 0, 23);
-        mount_r1.setPos(1.0F, 2.0F, 2.0F);
-        mount.addChild(mount_r1);
-        setRotationAngle(mount_r1, -0.3927F, 0.0F, 0.0F);
-        mount_r1.texOffs(60, 0).addBox(-0.5F, -3.0F, -0.75F, 1.0F, 2.0F, 1.0F, 0.0F, false);
-
-        mount_r2 = new ModelRenderer(64, 32, 0, 23);
-        mount_r2.setPos(1.0F, 2.0F, 2.0F);
-        mount.addChild(mount_r2);
-        setRotationAngle(mount_r2, -0.2618F, 0.0F, 0.0F);
-        mount_r2.texOffs(54, 3).addBox(-1.0F, -5.0F, -1.0F, 2.0F, 1.0F, 3.0F, 0.0F, false);
-        mount_r2.texOffs(56, 18).addBox(-1.0F, -4.0F, 0.0F, 2.0F, 6.0F, 2.0F, 0.0F, false);
-
-        magazineColor = new ModelRenderer(64, 32, 8, 0);
-        magazineColor.setPos(4.3F, 22.5F, 10.0F);
-        magazineColor.texOffs(54, 7).addBox(-9.6F, -2.0F, 2.0F, 1.0F, 2.0F, 4.0F, 0.0F, true);
+        barrel = root.getChild(BARREL);
+        support1 = root.getChild(SUPPORT1);
+        support2 = root.getChild(SUPPORT2);
+        support3 = root.getChild(SUPPORT3);
+        support4 = root.getChild(SUPPORT4);
+        support5 = root.getChild(SUPPORT5);
+        main = root.getChild(MAIN);
+        magazine = root.getChild(MAGAZINE);
+        mount = root.getChild(MOUNT);
+        magazineColor = root.getChild(MAGAZINECOLOR);
     }
 
-    public void renderMinigun(MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay, Minigun minigun, float partialTick, boolean renderMount) {
-        IVertexBuilder builder = buffer.getBuffer(RenderType.entityCutout(Textures.MODEL_DRONE_MINIGUN));
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(BARREL, CubeListBuilder.create().texOffs(30, 15)
+                        .addBox("barrel_0", -0.5F, 1.4333F, -4.0F, 1, 1, 20, 0, 3),
+                PartPose.offset(0.0F, 20.9667F, -8.0F));
+        partdefinition.addOrReplaceChild(SUPPORT1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("support1_0", -1.5F, -1.5F, -5.0F, 3, 3, 4, 22, 16)
+                        .addBox("support1_1", -1.5F, -1.5F, 0.0F, 3, 3, 1, 0, 13)
+                        .addBox("support1_2", -1.5F, -1.5F, 5.0F, 3, 3, 1, 0, 13)
+                        .addBox("support1_3", -1.5F, -1.5F, 7.0F, 3, 3, 1, 0, 13)
+                        .addBox("support1_4", -1.5F, -1.5F, 13.0F, 3, 3, 1, 0, 13),
+                PartPose.offset(0.0F, 21.0F, -6.0F));
+        partdefinition.addOrReplaceChild(SUPPORT2, CubeListBuilder.create().texOffs(0, 4)
+                        .addBox("support2_0", -1.5F, 1.5F, -5.0F, 3, 1, 4, 22, 8)
+                        .addBox("support2_1", -1.5F, 1.5F, 0.0F, 3, 1, 1, 0, 11)
+                        .addBox("support2_2", -1.5F, 1.5F, 5.0F, 3, 1, 1, 0, 21)
+                        .addBox("support2_3", -1.5F, 1.5F, 7.0F, 3, 1, 1, 0, 21)
+                        .addBox("support2_4", -1.5F, 1.5F, 13.0F, 3, 1, 1, 0, 21),
+                PartPose.offset(0.0F, 21.0F, -6.0F));
+        partdefinition.addOrReplaceChild(SUPPORT3, CubeListBuilder.create().texOffs(0, 6)
+                        .addBox("support3_0", -1.5F, -2.5F, -5.0F, 3, 1, 4, 22, 8)
+                        .addBox("support3_1", -1.5F, -2.5F, 0.0F, 3, 1, 1, 0, 11)
+                        .addBox("support3_2", -1.5F, -2.5F, 5.0F, 3, 1, 1, 0, 11)
+                        .addBox("support3_3", -1.5F, -2.5F, 7.0F, 3, 1, 1, 0, 11)
+                        .addBox("support3_4", -1.5F, -2.5F, 13.0F, 3, 1, 1, 0, 11),
+                PartPose.offset(0.0F, 21.0F, -6.0F));
+        partdefinition.addOrReplaceChild(SUPPORT4, CubeListBuilder.create().texOffs(0, 8)
+                        .addBox("support4_0", 1.5F, -1.5F, -5.0F, 1, 3, 4, 22, 1)
+                        .addBox("support4_1", 1.5F, -1.5F, 0.0F, 1, 3, 1, 0, 17)
+                        .addBox("support4_2", 1.5F, -1.5F, 5.0F, 1, 3, 1, 4, 17)
+                        .addBox("support4_3", 1.5F, -1.5F, 7.0F, 1, 3, 1, 4, 17)
+                        .addBox("support4_4", 1.5F, -1.5F, 13.0F, 1, 3, 1, 4, 17),
+                PartPose.offset(0.0F, 21.0F, -6.0F));
+        partdefinition.addOrReplaceChild(SUPPORT5, CubeListBuilder.create().texOffs(0, 11)
+                        .addBox("support5_0", -2.5F, -1.5F, -5.0F, 1, 3, 4, 32, 1)
+                        .addBox("support5_1", -2.5F, -1.5F, 0.0F, 1, 3, 1, 0, 17)
+                        .addBox("support5_2", -2.5F, -1.5F, 5.0F, 1, 3, 1, 0, 17)
+                        .addBox("support5_3", -2.5F, -1.5F, 7.0F, 1, 3, 1, 4, 17)
+                        .addBox("support5_4", -2.5F, -1.5F, 13.0F, 1, 3, 1, 4, 17),
+                PartPose.offset(0.0F, 21.0F, -6.0F));
+        partdefinition.addOrReplaceChild(MAIN, CubeListBuilder.create().texOffs(36, 0)
+                        .addBox("main_0", 0.0F, 0.0F, 1.0F, 6, 6, 8, 36, 18)
+                        .addBox("main_1", 0.5F, 0.5F, 0.0F, 5, 5, 10, 34, 3),
+                PartPose.offset(-3.0F, 18.0F, 8.0F));
+        partdefinition.addOrReplaceChild(MAGAZINE, CubeListBuilder.create().texOffs(0, 14)
+                        .addBox("magazine_0", -8.0F, -2.0F, 2.5F, 5, 6, 5, 0, 0)
+                        .mirror(),
+                PartPose.offset(3.0F, 22.0F, 9.0F));
+        PartDefinition mount = partdefinition.addOrReplaceChild(MOUNT, CubeListBuilder.create().texOffs(0, 23),
+                PartPose.offset(-1.0F, 15.0F, 11.0F));
+        mount.addOrReplaceChild(MOUNT_R1, CubeListBuilder.create().texOffs(0, 23)
+                        .addBox("mount_r1_0", -0.5F, -3.0F, -0.75F, 1, 2, 1, 60, 0),
+                PartPose.offsetAndRotation(1.0F, 2.0F, 2.0F, -0.3927F, 0.0F, 0.0F));
+        mount.addOrReplaceChild(MOUNT_R2, CubeListBuilder.create().texOffs(0, 23)
+                        .addBox("mount_r2_0", -1.0F, -5.0F, -1.0F, 2, 1, 3, 54, 3)
+                        .addBox("mount_r2_1", -1.0F, -4.0F, 0.0F, 2, 6, 2, 56, 18),
+                PartPose.offsetAndRotation(1.0F, 2.0F, 2.0F, -0.2618F, 0.0F, 0.0F));
+        partdefinition.addOrReplaceChild(MAGAZINECOLOR, CubeListBuilder.create().texOffs(8, 0)
+                        .addBox("magazineColor_0", -9.6F, -2.0F, 2.0F, 1, 2, 4, 54, 7)
+                        .mirror(),
+                PartPose.offset(4.3F, 22.5F, 10.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 32);
+    }
+
+
+    public void renderMinigun(PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay, Minigun minigun, float partialTick, boolean renderMount) {
+        VertexConsumer builder = buffer.getBuffer(RenderType.entityCutout(Textures.MODEL_DRONE_MINIGUN));
         matrixStack.pushPose();
 
         if (renderMount) {
@@ -160,9 +184,13 @@ public class ModelMinigun {
         matrixStack.popPose();
     }
 
-    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
         modelRenderer.zRot = z;
+    }
+
+    @Override
+    public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, float pRed, float pGreen, float pBlue, float pAlpha) {
     }
 }

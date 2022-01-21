@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
@@ -31,21 +31,21 @@ import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
@@ -58,19 +58,19 @@ public class RenderBlockTarget {
     private static final int SERVER_REQUEST_INTERVAL = 60; // ticks
     private static final float STAT_SCALE = 0.02F;
 
-    private final World world;
+    private final Level world;
     private final BlockPos pos;
     private final int posHash;
     private final IGuiAnimatedStat stat;
-    private final PlayerEntity player;
+    private final Player player;
     private final BlockTrackerClientHandler blockTracker;
     public int ticksExisted = 0;
     private int hackTime;
-    private TileEntity te;
+    private BlockEntity te;
     private int nEntries;
     private boolean refreshSent = false;
 
-    public RenderBlockTarget(World world, PlayerEntity player, BlockPos pos, TileEntity te,
+    public RenderBlockTarget(Level world, Player player, BlockPos pos, BlockEntity te,
                              BlockTrackerClientHandler blockTracker) {
         this.world = world;
         this.player = player;
@@ -80,15 +80,15 @@ public class RenderBlockTarget {
         this.blockTracker = blockTracker;
 
         BlockState state = world.getBlockState(pos);
-        ItemStack stack = state.getBlock().getPickBlock(state, Minecraft.getInstance().hitResult, world, pos, player);
+        ItemStack stack = state.getBlock().getCloneItemStack(state, Minecraft.getInstance().hitResult, world, pos, player);
 
-        ITextComponent title = stack.isEmpty() ? xlate(world.getBlockState(pos).getBlock().getDescriptionId()) : stack.getHoverName();
+        Component title = stack.isEmpty() ? xlate(world.getBlockState(pos).getBlock().getDescriptionId()) : stack.getHoverName();
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, HUDHandler.getInstance().getStatOverlayColor(), null, false);
         stat.setMinimumContractedDimensions(0, 0);
         stat.setAutoLineWrap(false);
     }
 
-    public void setTileEntity(TileEntity te) {
+    public void setTileEntity(BlockEntity te) {
         this.te = te;
     }
 
@@ -102,7 +102,7 @@ public class RenderBlockTarget {
     }
 
     private List<IBlockTrackEntry> getApplicableEntries() {
-        return world.hasChunkAt(pos) ?
+        return world.isLoaded(pos) ?
                 BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te) :
                 Collections.emptyList();
     }
@@ -133,7 +133,7 @@ public class RenderBlockTarget {
         }
 
         if (!world.isEmptyBlock(pos)) {
-            List<ITextComponent> textList = new ArrayList<>();
+            List<Component> textList = new ArrayList<>();
             if (ticksExisted > 120) {
                 stat.closeStat();
                 if (applicableTrackEntries.stream().anyMatch(entry -> blockTracker.countBlockTrackersOfType(entry) <= entry.spamThreshold())) {
@@ -159,7 +159,7 @@ public class RenderBlockTarget {
         }
     }
 
-    public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+    public void render(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
         matrixStack.pushPose();
 
         double x = pos.getX() + 0.5D;
@@ -186,7 +186,7 @@ public class RenderBlockTarget {
             if (ticksExisted > 120) {
                 if (isPlayerLookingAtTarget()) {
                     // a bit of growing or shrinking to keep the stat on screen and/or of legible size
-                    float mul = getStatSizeMultiplier(MathHelper.sqrt(ClientUtils.getClientPlayer().distanceToSqr(x, y, z)));
+                    float mul = getStatSizeMultiplier(Mth.sqrt((float) ClientUtils.getClientPlayer().distanceToSqr(x, y, z)));
                     matrixStack.scale(mul, mul, mul);
                     stat.renderStat(matrixStack, buffer, partialTicks);
                 }
@@ -213,16 +213,16 @@ public class RenderBlockTarget {
         }
     }
 
-    private void renderBlockHighlight(MatrixStack matrixStack, IRenderTypeBuffer buffer, World world, BlockPos pos, float partialTicks) {
+    private void renderBlockHighlight(PoseStack matrixStack, MultiBufferSource buffer, Level world, BlockPos pos, float partialTicks) {
         BlockState state = world.getBlockState(pos);
         VoxelShape shape = state.getShape(world, pos);
         if (shape.isEmpty()) return;
 
         float progress = ((world.getGameTime() & 0x1f) + partialTicks) / 32f;
-        float cycle = MathHelper.sin((float) (progress * Math.PI));
+        float cycle = Mth.sin((float) (progress * Math.PI));
 
-        float shrink = (shape == VoxelShapes.block() ? 0.05f : 0f) + cycle / 60f;
-        AxisAlignedBB aabb = shape.bounds().deflate(shrink);
+        float shrink = (shape == Shapes.block() ? 0.05f : 0f) + cycle / 60f;
+        AABB aabb = shape.bounds().deflate(shrink);
 
         float alpha = 0.5f;
         if (blockTracker.getFocusedPos() != null) {
@@ -239,7 +239,7 @@ public class RenderBlockTarget {
         return ticksExisted >= 120;
     }
 
-    private void addBlockTrackInfo(List<ITextComponent> textList, List<IBlockTrackEntry> entries) {
+    private void addBlockTrackInfo(List<Component> textList, List<IBlockTrackEntry> entries) {
         entries.forEach(e -> e.addInformation(world, pos, te, isPlayerLookingAtTarget() ? blockTracker.getFocusedFace() : null, textList));
     }
 
@@ -274,7 +274,7 @@ public class RenderBlockTarget {
         stat.setBackgroundColor(color);
     }
 
-    public ITextComponent getTitle() {
+    public Component getTitle() {
         return stat.getTitle();
     }
 }

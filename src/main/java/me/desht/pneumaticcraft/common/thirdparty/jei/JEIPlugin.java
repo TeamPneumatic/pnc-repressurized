@@ -42,12 +42,12 @@ import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -145,7 +145,7 @@ public class JEIPlugin implements IModPlugin {
         String k = ICustomTooltipName.getTranslationKey(stack, false);
         if (I18n.exists(k)) {
             for (String s : StringUtils.splitByWholeSeparator(I18n.get(k), GuiUtils.TRANSLATION_LINE_BREAK)) {
-                registry.addIngredientInfo(stack, VanillaTypes.ITEM, new StringTextComponent(s));
+                registry.addIngredientInfo(stack, VanillaTypes.ITEM, new TextComponent(s));
             }
         }
     }

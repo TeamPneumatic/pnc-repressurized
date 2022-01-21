@@ -19,17 +19,17 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 
 public class ContainerPressureChamberInterface extends ContainerPneumaticBase<TileEntityPressureChamberInterface> {
 
-    public ContainerPressureChamberInterface(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerPressureChamberInterface(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerPressureChamberInterface(int windowId, PlayerInventory playerInventory, BlockPos pos) {
+    public ContainerPressureChamberInterface(int windowId, Inventory playerInventory, BlockPos pos) {
         super(ModContainers.PRESSURE_CHAMBER_INTERFACE.get(), windowId, playerInventory, pos);
 
         // add the transfer slot

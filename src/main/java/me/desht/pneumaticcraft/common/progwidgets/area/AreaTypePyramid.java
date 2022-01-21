@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -63,8 +63,8 @@ public class AreaTypePyramid extends AreaType {
         switch (axis) {
             case X:
                 if (p2.getX() != p1.getX()) {
-                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vector3d(lineVec.x, lineVec.y / lineVec.x, lineVec.z / lineVec.x);
+                    Vec3 lineVec = new Vec3(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vec3(lineVec.x, lineVec.y / lineVec.x, lineVec.z / lineVec.x);
                     double curY = p1.getY() - lineVec.y;
                     int x = p1.getX() + (p2.getX() > p1.getX() ? -1 : 1);
                     double curZ = p1.getZ() - lineVec.z;
@@ -94,8 +94,8 @@ public class AreaTypePyramid extends AreaType {
                 break;
             case Y:
                 if (p2.getY() != p1.getY()) {
-                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vector3d(lineVec.x / lineVec.y, lineVec.y, lineVec.z / lineVec.y);
+                    Vec3 lineVec = new Vec3(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vec3(lineVec.x / lineVec.y, lineVec.y, lineVec.z / lineVec.y);
                     double curX = p1.getX() - lineVec.x;
                     int y = p1.getY() + (p2.getY() > p1.getY() ? -1 : 1);
                     double curZ = p1.getZ() - lineVec.z;
@@ -129,8 +129,8 @@ public class AreaTypePyramid extends AreaType {
                 break;
             case Z:
                 if (p2.getZ() != p1.getZ()) {
-                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vector3d(lineVec.x / lineVec.z, lineVec.y / lineVec.z, lineVec.z);
+                    Vec3 lineVec = new Vec3(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vec3(lineVec.x / lineVec.z, lineVec.y / lineVec.z, lineVec.z);
                     double curX = p1.getX() - lineVec.x;
                     int z = p1.getZ() + (p2.getZ() > p1.getZ() ? -1 : 1);
                     double curY = p1.getY() - lineVec.y;
@@ -170,28 +170,28 @@ public class AreaTypePyramid extends AreaType {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         tag.putByte("axis", (byte) axis.ordinal());
         tag.putByte("pyramidType", (byte) pyramidType.ordinal());
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         axis = EnumAxis.values()[tag.getByte("axis")];
         pyramidType = EnumAreaTypePyramid.values()[tag.getByte("pyramidType")];
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buffer) {
+    public void writeToPacket(FriendlyByteBuf buffer) {
         super.writeToPacket(buffer);
         buffer.writeByte(axis.ordinal());
         buffer.writeByte(pyramidType.ordinal());
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         axis = EnumAxis.values()[buf.readByte()];
         pyramidType = EnumAreaTypePyramid.values()[buf.readByte()];

@@ -37,6 +37,6 @@ public class GuiProgWidgetDig extends GuiProgWidgetDigAndPlace<ProgWidgetDig>{
                 xlate("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool"), b -> progWidget.setRequiresTool(b.checked));
         requiresDiggingTool.setTooltipKey("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool.tooltip");
         requiresDiggingTool.checked = progWidget.requiresTool();
-        addButton(requiresDiggingTool);
+        addRenderableWidget(requiresDiggingTool);
     }
 }

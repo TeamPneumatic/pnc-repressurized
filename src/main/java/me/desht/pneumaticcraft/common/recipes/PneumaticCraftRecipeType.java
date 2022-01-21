@@ -33,18 +33,18 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterf
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IFutureReloadListener;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -54,7 +54,7 @@ import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements IRecipeType<T> {
+public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements RecipeType<T> {
     private static final List<PneumaticCraftRecipeType<? extends PneumaticCraftRecipe>> types = new ArrayList<>();
 
     public static final PneumaticCraftRecipeType<AmadronRecipe> AMADRON_OFFERS
@@ -93,7 +93,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
     }
 
     // TODO: use a Forge registry if/when there is one for recipe types
-    static void registerRecipeTypes(IForgeRegistry<IRecipeSerializer<?>> registry) {
+    static void registerRecipeTypes(IForgeRegistry<RecipeSerializer<?>> registry) {
         types.forEach(type -> Registry.register(Registry.RECIPE_TYPE, type.registryName, type));
     }
 
@@ -128,12 +128,12 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         TileEntityVacuumTrap.clearBlacklistCache();
     }
 
-    public Map<ResourceLocation, T> getRecipes(World world) {
+    public Map<ResourceLocation, T> getRecipes(Level world) {
         if (world == null) {
             // we should pretty much always have a world, but use the overworld as a fallback
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server != null) {
-                world = server.getLevel(World.OVERWORLD);
+                world = server.getLevel(Level.OVERWORLD);
             }
             if (world == null) {
                 // still no world?  oh well
@@ -159,21 +159,21 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         return cachedRecipes;
     }
 
-    public Stream<T> stream(World world) {
+    public Stream<T> stream(Level world) {
         return getRecipes(world).values().stream();
     }
 
-    public T findFirst(World world, Predicate<T> predicate) {
+    public T findFirst(Level world, Predicate<T> predicate) {
         return stream(world).filter(predicate).findFirst().orElse(null);
     }
 
-    public T getRecipe(World world, ResourceLocation recipeId) {
+    public T getRecipe(Level world, ResourceLocation recipeId) {
         return getRecipes(world).get(recipeId);
     }
 
-    public static class CacheReloadListener implements IFutureReloadListener {
+    public static class CacheReloadListener implements PreparableReloadListener {
         @Override
-        public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+        public CompletableFuture<Void> reload(PreparationBarrier stage, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
             return CompletableFuture.runAsync(() -> {
                 clearCachedRecipes();
                 if (ServerLifecycleHooks.getCurrentServer() != null) {

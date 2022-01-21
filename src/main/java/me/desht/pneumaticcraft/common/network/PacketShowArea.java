@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -43,7 +43,7 @@ public class PacketShowArea extends LocationIntPacket {
         this(pos, area.toArray(new BlockPos[0]));
     }
 
-    PacketShowArea(PacketBuffer buffer) {
+    PacketShowArea(FriendlyByteBuf buffer) {
         super(buffer);
         area = new BlockPos[buffer.readInt()];
         for (int i = 0; i < area.length; i++) {
@@ -52,7 +52,7 @@ public class PacketShowArea extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
         buffer.writeInt(area.length);
         Arrays.stream(area).forEach(buffer::writeBlockPos);

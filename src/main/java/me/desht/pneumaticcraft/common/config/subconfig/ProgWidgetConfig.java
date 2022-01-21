@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashSet;
 import java.util.Set;

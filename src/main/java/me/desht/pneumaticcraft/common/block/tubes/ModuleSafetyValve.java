@@ -27,10 +27,10 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!pressureTube.getLevel().isClientSide && pressureTube.getPressure() > getThreshold()) {
+        if (pressureTube.getPressure() > getThreshold()) {
             pressureTube.forceLeak(dir);
         }
     }

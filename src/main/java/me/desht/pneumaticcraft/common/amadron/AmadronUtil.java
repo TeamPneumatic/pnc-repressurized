@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.amadron;
 
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 

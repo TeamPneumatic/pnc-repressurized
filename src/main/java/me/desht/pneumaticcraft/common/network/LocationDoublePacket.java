@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * MineChess
@@ -36,19 +36,19 @@ public abstract class LocationDoublePacket {
         this.z = z;
     }
 
-    LocationDoublePacket(Vector3d v) {
+    LocationDoublePacket(Vec3 v) {
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
     }
 
-    LocationDoublePacket(PacketBuffer buffer) {
+    LocationDoublePacket(FriendlyByteBuf buffer) {
         x = buffer.readDouble();
         y = buffer.readDouble();
         z = buffer.readDouble();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeDouble(x);
         buf.writeDouble(y);
         buf.writeDouble(z);

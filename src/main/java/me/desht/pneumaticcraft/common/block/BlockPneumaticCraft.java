@@ -41,43 +41,48 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.pathfinding.PathType;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.Tag;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.Direction.Axis;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -85,10 +90,11 @@ import java.util.List;
 import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.state.properties.BlockStateProperties.FACING;
-import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
-public abstract class BlockPneumaticCraft extends Block implements IPneumaticWrenchable, IUpgradeAcceptor, IPneumaticCraftProbeable {
+public abstract class BlockPneumaticCraft extends Block
+        implements IPneumaticWrenchable, IUpgradeAcceptor, IPneumaticCraftProbeable {
     static final VoxelShape ALMOST_FULL_SHAPE = Block.box(0.5, 0, 0.5, 15.5, 16, 15.5);
 
     public static final BooleanProperty UP = BooleanProperty.create("up");
@@ -105,65 +111,47 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return getTileEntityClass() != null;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        try {
-            return getTileEntityClass().newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    protected abstract Class<? extends TileEntity> getTileEntityClass();
-
-    @Override
     public String getUpgradeAcceptorTranslationKey() {
         return getDescriptionId();
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         ItemStack heldItem = player.getItemInHand(hand);
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (player.isShiftKeyDown()
-                || !(te instanceof INamedContainerProvider)
+                || !(te instanceof MenuProvider)
                 || isRotatable() && (heldItem.getItem() == ModItems.MANOMETER.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
-                || hand == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getMainHandItem())) {
-            return ActionResultType.PASS;
+                || hand == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getMainHandItem())) {
+            return InteractionResult.PASS;
         } else {
             if (!world.isClientSide) {
                 if (te instanceof TileEntityBase) {
                     if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
-                        world.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                        return ActionResultType.SUCCESS;
+                        world.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
+                        return InteractionResult.SUCCESS;
                     } else if (FluidUtils.tryFluidExtraction(te, null, player, hand)) {
-                        world.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                        return ActionResultType.SUCCESS;
+                        world.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
+                        return InteractionResult.SUCCESS;
                     }
                     // te must be a INamedContainerProvider at this point: see instanceof check above
-                    NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
+                    NetworkHooks.openGui((ServerPlayer) player, (MenuProvider) te, pos);
                 }
             }
 
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
         if (state != null) {
             for (Direction facing : DirectionUtil.VALUES) {
                 if (state.hasProperty(connectionProperty(facing))) {
                     // handle pneumatic connections to neighbouring air handlers
-                    TileEntity te = ctx.getLevel().getBlockEntity(ctx.getClickedPos().relative(facing));
+                    BlockEntity te = ctx.getLevel().getBlockEntity(ctx.getClickedPos().relative(facing));
                     boolean b = te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
                     state = state.setValue(connectionProperty(facing), b);
                 }
@@ -185,10 +173,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof TileEntityBase && stack.hasCustomHoverName()) {
             ((TileEntityBase) te).setCustomName(stack.getHoverName());
         }
@@ -203,7 +191,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     DirectionProperty directionProperty() { return canRotateToTopOrBottom() ? FACING : HORIZONTAL_FACING; }
 
-    protected Direction getRotation(IBlockReader world, BlockPos pos) {
+    protected Direction getRotation(BlockGetter world, BlockPos pos) {
         return getRotation(world.getBlockState(pos));
     }
 
@@ -211,11 +199,11 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         return state.getValue(directionProperty());
     }
 
-    protected void setRotation(World world, BlockPos pos, Direction rotation) {
+    protected void setRotation(Level world, BlockPos pos, Direction rotation) {
         setRotation(world, pos, rotation, world.getBlockState(pos));
     }
 
-    private void setRotation(World world, BlockPos pos, Direction rotation, BlockState state) {
+    private void setRotation(Level world, BlockPos pos, Direction rotation, BlockState state) {
         world.setBlockAndUpdate(pos, state.setValue(directionProperty(), rotation));
     }
 
@@ -228,7 +216,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         if (isRotatable()) {
             builder.add(directionProperty());
         }
@@ -254,9 +242,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
+    public boolean onWrenched(Level world, Player player, BlockPos pos, Direction side, InteractionHand hand) {
         if (player != null && player.isShiftKeyDown()) {
-            TileEntity te = world.getBlockEntity(pos);
+            BlockEntity te = world.getBlockEntity(pos);
             boolean preserve = false;
             if (te instanceof TileEntityBase) {
                 preserve = true;
@@ -283,7 +271,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                         } while (!canRotateToTopOrBottom() && f.getAxis() == Axis.Y);
                         setRotation(world, pos, f);
                     }
-                    TileEntity te = world.getBlockEntity(pos);
+                    BlockEntity te = world.getBlockEntity(pos);
                     if (te instanceof TileEntityBase) ((TileEntityBase) te).onBlockRotated();
                 }
                 return true;
@@ -306,14 +294,14 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
      * @param side the side clicked
      * @return true when the method is overridden, to disable default rotation behaviour
      */
-    protected boolean rotateCustom(World world, BlockPos pos, BlockState state, Direction side) {
+    protected boolean rotateCustom(Level world, BlockPos pos, BlockState state, Direction side) {
         return false;
     }
 
     @Override
-    public void onNeighborChange(BlockState state, IWorldReader world, BlockPos pos, BlockPos tilePos) {
-        if (world instanceof World && !((World) world).isClientSide) {
-            TileEntity te = world.getBlockEntity(pos);
+    public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos tilePos) {
+        if (world instanceof Level && !((Level) world).isClientSide) {
+            BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof TileEntityBase) {
                 ((TileEntityBase) te).onNeighborTileUpdate(tilePos);
             }
@@ -321,9 +309,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         if (!world.isClientSide) {
-            TileEntity te = world.getBlockEntity(pos);
+            BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof TileEntityBase) {
                 ((TileEntityBase) te).onNeighborBlockUpdate(fromPos);
             }
@@ -331,7 +319,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     private int getSavedAir(ItemStack stack) {
-        CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+        CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
             return tag.getInt(NBTKeys.NBT_AIR_AMOUNT);
         } else {
@@ -341,83 +329,73 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, IBlockReader world, List<ITextComponent> curInfo, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
         if (stack.hasTag()) {
             int savedAir = getSavedAir(stack);
             if (savedAir != 0) {
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.air", Integer.toString(savedAir)).withStyle(TextFormatting.GREEN));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.air", Integer.toString(savedAir)).withStyle(ChatFormatting.GREEN));
             }
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IUpgradeAcceptor) {
                 UpgradableItemUtils.addUpgradeInformation(stack, curInfo, flag);
             }
-            CompoundNBT subTag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-            if (subTag != null && subTag.contains(NBTKeys.NBT_SAVED_TANKS, Constants.NBT.TAG_COMPOUND)) {
-                CompoundNBT tag = subTag.getCompound(NBTKeys.NBT_SAVED_TANKS);
+            CompoundTag subTag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
+            if (subTag != null && subTag.contains(NBTKeys.NBT_SAVED_TANKS, Tag.TAG_COMPOUND)) {
+                CompoundTag tag = subTag.getCompound(NBTKeys.NBT_SAVED_TANKS);
                 for (String s : tag.getAllKeys()) {
-                    CompoundNBT tankTag = tag.getCompound(s);
+                    CompoundTag tankTag = tag.getCompound(s);
                     FluidTank tank = new FluidTank(tankTag.getInt("Amount"));
                     tank.readFromNBT(tankTag);
                     FluidStack fluidStack = tank.getFluid();
                     if (!fluidStack.isEmpty()) {
                         curInfo.add(xlate("pneumaticcraft.gui.tooltip.fluid")
                                 .append(fluidStack.getAmount() + "mB ")
-                                .append(fluidStack.getDisplayName()).withStyle(TextFormatting.GREEN));
+                                .append(fluidStack.getDisplayName()).withStyle(ChatFormatting.GREEN));
                     }
                 }
             }
             addExtraInformation(stack, world, curInfo, flag);
         }
-        if (ClientUtils.hasShiftDown() && hasTileEntity(defaultBlockState())) {
-            TileEntity te = createTileEntity(defaultBlockState(), world);
-            if (te instanceof TileEntityPneumaticBase) {
-                float pressure = ((TileEntityPneumaticBase) te).getDangerPressure();
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.maxPressure", pressure).withStyle(TextFormatting.YELLOW));
+        if (ClientUtils.hasShiftDown() && this instanceof EntityBlock eb) {
+            BlockEntity te = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
+            if (te instanceof TileEntityPneumaticBase pneumatic) {
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.maxPressure", pneumatic.getDangerPressure())
+                        .withStyle(ChatFormatting.YELLOW));
             }
         }
     }
 
-    protected void addExtraInformation(ItemStack stack, IBlockReader world, List<ITextComponent> curInfo, ITooltipFlag flag) {
+    protected void addExtraInformation(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
         // override in subclasses
     }
 
-    /**
-     * If this returns true, then comparators facing away from this block will use the value from
-     * getComparatorInputOverride instead of the actual redstone signal strength.
-     */
     @Override
-    public boolean hasAnalogOutputSignal(BlockState state) {
-        Class<? extends TileEntity> teClass = getTileEntityClass();
-        return teClass != null && IComparatorSupport.class.isAssignableFrom(teClass);
+    public boolean hasAnalogOutputSignal(BlockState pState) {
+        return this instanceof IBlockComparatorSupport;
     }
 
-    /**
-     * If hasComparatorInputOverride returns true, the return value from this is used instead of the redstone signal
-     * strength when this block inputs to a comparator.
-     */
     @Override
-    public int getAnalogOutputSignal(BlockState state, World world, BlockPos pos) {
-        TileEntity te = world.getBlockEntity(pos);
-        return te instanceof IComparatorSupport ? ((IComparatorSupport) te).getComparatorValue() : 0;
+    public int getAnalogOutputSignal(BlockState pState, Level pLevel, BlockPos pPos) {
+        return pLevel.getBlockEntity(pPos) instanceof IComparatorSupport comp ? comp.getComparatorValue() : 0;
     }
 
     @Override
     public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
-        if (hasTileEntity(defaultBlockState())) {
-            TileEntity te = createTileEntity(defaultBlockState(), null);
-            if (te instanceof IUpgradeAcceptor) return ((IUpgradeAcceptor) te).getApplicableUpgrades();
+        if (this instanceof EntityBlock eb) {
+            BlockEntity te = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
+            if (te instanceof IUpgradeAcceptor ua) return ua.getApplicableUpgrades();
         }
         return Collections.emptyMap();
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState state) {
-        return BlockRenderType.MODEL;
+    public RenderShape getRenderShape(BlockState state) {
+        return RenderShape.MODEL;
     }
 
     @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
-            TileEntity te = world.getBlockEntity(pos);
+            BlockEntity te = world.getBlockEntity(pos);
             if (te instanceof TileEntityBase) {
                 NonNullList<ItemStack> drops = NonNullList.create();
                 ((TileEntityBase) te).getContentsToDrop(drops);
@@ -427,7 +405,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(handler -> {
                         if (handler.getAir() > 0) {
                             NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, (int) (5 * handler.getPressure()), 1, 1, 1), world, pos);
-                            world.playSound(null, pos, ModSounds.SHORT_HISS.get(), SoundCategory.BLOCKS, 0.3f, 0.8f);
+                            world.playSound(null, pos, ModSounds.SHORT_HISS.get(), SoundSource.BLOCKS, 0.3f, 0.8f);
                         }
                     });
                 }
@@ -438,12 +416,12 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (stateIn.hasProperty(connectionProperty(facing))) {
-            TileEntity ourTE = worldIn.getBlockEntity(currentPos);
+            BlockEntity ourTE = worldIn.getBlockEntity(currentPos);
             if (ourTE != null && ourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing).isPresent()) {
                 // handle pneumatic connections to neighbouring air handlers
-                TileEntity te = worldIn.getBlockEntity(currentPos.relative(facing));
+                BlockEntity te = worldIn.getBlockEntity(currentPos.relative(facing));
                 boolean b = te != null && te.getCapability (PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
                 stateIn = stateIn.setValue(connectionProperty(facing), b);
                 return stateIn;
@@ -452,11 +430,11 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
-    public boolean isPathfindable(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
-        return getCollisionShape(state, worldIn, pos, ISelectionContext.empty()).isEmpty();
+    public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
+        return getCollisionShape(state, worldIn, pos, CollisionContext.empty()).isEmpty();
     }
 
-    static void removeBlockSneakWrenched(World world, BlockPos pos) {
+    static void removeBlockSneakWrenched(Level world, BlockPos pos) {
         if (!world.isClientSide()) {
             world.removeBlock(pos, false);
             // this only gets called server-side, but the client needs to be informed too, to update neighbour states
@@ -465,10 +443,10 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     }
 
     @Override
-    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
-        if (player instanceof ServerPlayerEntity && !(player instanceof FakePlayer)
+    public void playerDestroy(Level worldIn, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
+        if (player instanceof ServerPlayer && !(player instanceof FakePlayer)
                 && te instanceof TileEntityBase && !(((TileEntityBase) te).shouldPreserveStateOnBreak())) {
-            AdvancementTriggers.MACHINE_VANDAL.trigger((ServerPlayerEntity) player);
+            AdvancementTriggers.MACHINE_VANDAL.trigger((ServerPlayer) player);
         }
         super.playerDestroy(worldIn, player, pos, state, te, stack);
     }

@@ -21,13 +21,13 @@ import me.desht.pneumaticcraft.common.progwidgets.ICraftingWidget;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
-import net.minecraftforge.fml.hooks.BasicEventHooks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,12 +44,12 @@ public class DroneAICrafting extends Goal {
 
     @Override
     public boolean canUse() {
-        CraftingInventory craftingGrid = widget.getCraftingGrid();
+        CraftingContainer craftingGrid = widget.getCraftingGrid();
         return widget.getRecipe(drone.world(), craftingGrid).map(recipe -> {
             List<List<ItemStack>> equivalentsList = buildEquivalentsList(craftingGrid);
             if (equivalentsList.isEmpty()) return false;
             int[] equivIndices = new int[9];
-            CraftingInventory craftMatrix = new CraftingInventory(new DummyContainer(), 3, 3);
+            CraftingContainer craftMatrix = new CraftingContainer(new DummyContainer(), 3, 3);
             do {
                 for (int i = 0; i < equivalentsList.size(); i++) {
                     ItemStack stack = equivalentsList.get(i).isEmpty() ? ItemStack.EMPTY : equivalentsList.get(i).get(equivIndices[i]);
@@ -68,12 +68,12 @@ public class DroneAICrafting extends Goal {
      * crafting inventory that is passed.  Each sub-list contains the itemstacks from the drone's inventory
      * which match the crafting grid (either direct item match or via item tag).  The elements of each sub-list are direct
      * references to itemstacks in the drone's inventory; shrinking those stacks (as is done in
-     * {@link #doCrafting(ItemStack, CraftingInventory)} will remove items from the drone.
+     * {@link #doCrafting(ItemStack, CraftingContainer)}  will remove items from the drone.
      *
      * @param craftingGrid the crafting grid, set up from the item filter widgets attached to the crafting widget
      * @return a list of 9 lists of itemstack
      */
-    private List<List<ItemStack>> buildEquivalentsList(CraftingInventory craftingGrid) {
+    private List<List<ItemStack>> buildEquivalentsList(CraftingContainer craftingGrid) {
         List<List<ItemStack>> equivalentsList = new ArrayList<>();
         for (int i = 0; i < craftingGrid.getContainerSize(); i++) {
             equivalentsList.add(new ArrayList<>());
@@ -106,7 +106,7 @@ public class DroneAICrafting extends Goal {
         return false;
     }
 
-    public boolean doCrafting(ItemStack craftedStack, CraftingInventory craftMatrix) {
+    public boolean doCrafting(ItemStack craftedStack, CraftingContainer craftMatrix) {
         for (int i = 0; i < craftMatrix.getContainerSize(); i++) {
             int requiredCount = 0;
             ItemStack stack = craftMatrix.getItem(i);
@@ -120,7 +120,7 @@ public class DroneAICrafting extends Goal {
             }
         }
 
-        BasicEventHooks.firePlayerCraftingEvent(drone.getFakePlayer(), craftedStack, craftMatrix);
+        ForgeEventFactory.firePlayerCraftingEvent(drone.getFakePlayer(), craftedStack, craftMatrix);
 
         for (int i = 0; i < craftMatrix.getContainerSize(); ++i) {
             ItemStack stack = craftMatrix.getItem(i);
@@ -129,7 +129,7 @@ public class DroneAICrafting extends Goal {
                 if (stack.getItem().hasContainerItem(stack)) {
                     ItemStack containerItem = stack.getItem().getContainerItem(stack);
                     if (!containerItem.isEmpty() && containerItem.isDamageableItem() && containerItem.getDamageValue() > containerItem.getMaxDamage()) {
-                        MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(drone.getFakePlayer(), containerItem, Hand.MAIN_HAND));
+                        MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(drone.getFakePlayer(), containerItem, InteractionHand.MAIN_HAND));
                         continue;
                     }
                     IOHelper.insertOrDrop(drone.world(), containerItem, drone.getInv(), drone.getDronePos(), false);

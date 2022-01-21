@@ -22,9 +22,7 @@
           "L": {
             "tag": "pneumaticcraft:upgrade_components"
           },
-          "R": {
-            "item": "mekanism:module_radiation_shielding_unit"
-          }
+          "R": []
         },
         "result": {
           "item": "pneumaticcraft:radiation_shielding_upgrade"

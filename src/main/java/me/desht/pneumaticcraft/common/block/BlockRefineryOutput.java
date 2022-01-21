@@ -2,37 +2,41 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class BlockRefineryOutput extends BlockPneumaticCraft {
+public class BlockRefineryOutput extends BlockPneumaticCraft
+        implements EntityBlockPneumaticCraft, IBlockComparatorSupport
+{
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(0, 0, 0, 16, 1, 16),
             Block.box(13, 11, 14.5, 14.5, 12, 15.5),
@@ -68,7 +72,7 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
             Block.box(14.5, 1, 9.75, 15.5, 8, 10.75),
             Block.box(0.5, 1, 3.5, 2.5, 4, 5.5),
             Block.box(14.5, 11, 1.5, 15.5, 12, 14.5)
-    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return Shapes.join(v1, v2, BooleanOp.OR);}).get();
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
@@ -80,19 +84,14 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityRefineryOutput.class;
-    }
-
-    @Override
     public boolean isRotatable() {
         return true;
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityRefineryOutput.class).map(te -> {
-            // normally, activating any refinery block would open the controller TE's gui, but if we
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+        return world.getBlockEntity(pos, ModTileEntities.REFINERY_OUTPUT.get()).map(te -> {
+            // normally, activating any refinery output block would open the controller TE's gui, but if we
             // activate with a fluid tank in hand (which can actually transfer fluid out),
             // then we must activate the actual refinery output that was clicked
             boolean canTransferFluid = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(player.getItemInHand(hand), 1))
@@ -105,11 +104,11 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
             } else if (!world.isClientSide) {
                 TileEntityRefineryController master = te.getRefineryController();
                 if (master != null) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, master, master.getBlockPos());
+                    NetworkHooks.openGui((ServerPlayer) player, master, master.getBlockPos());
                 }
             }
-            return ActionResultType.SUCCESS;
-        }).orElse(ActionResultType.PASS);
+            return InteractionResult.SUCCESS;
+        }).orElse(InteractionResult.PASS);
     }
 
     private boolean couldTransferFluidOut(IFluidHandler h1, IFluidHandler h2) {
@@ -118,13 +117,13 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         Direction d = state.getValue(directionProperty());
         return SHAPES[d.get2DDataValue()];
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
         int nOutputs = 0;
         int up = 1, down = 1;
         while (worldIn.getBlockState(pos.above(up++)).getBlock() instanceof BlockRefineryOutput) {
@@ -137,17 +136,23 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (!worldIn.isClientSide() && facingState.getBlock() == ModBlocks.REFINERY_OUTPUT.get()) {
             recache(worldIn, currentPos);
         }
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
-    private void recache(IWorld world, BlockPos pos) {
+    private void recache(LevelAccessor world, BlockPos pos) {
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityRefineryOutput.class).ifPresent(te -> {
             TileEntityRefineryController teC = te.getRefineryController();
             if (teC != null) teC.cacheRefineryOutputs();
         });
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityRefineryOutput(pPos, pState);
     }
 }

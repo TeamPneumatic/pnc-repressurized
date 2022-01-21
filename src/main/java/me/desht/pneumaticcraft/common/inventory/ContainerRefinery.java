@@ -19,23 +19,23 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nonnull;
 
 public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefineryController> {
 
-    public ContainerRefinery(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerRefinery(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerRefinery(int i, PlayerInventory playerInventory, BlockPos pos) {
+    public ContainerRefinery(int i, Inventory playerInventory, BlockPos pos) {
         super(ModContainers.REFINERY.get(), i, playerInventory, pos);
 
         TileEntityRefineryController refinery = te;
@@ -50,13 +50,13 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return te.isGuiUseableByPlayer(player);
     }
 
     @Nonnull
     @Override
-    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int slotIndex) {
+    public ItemStack quickMoveStack(Player par1EntityPlayer, int slotIndex) {
         // Refinery itself has no item slots, but this allows shift-clicking items between player's inventory & hotbar
         ItemStack stack = ItemStack.EMPTY;
         Slot srcSlot = slots.get(slotIndex);

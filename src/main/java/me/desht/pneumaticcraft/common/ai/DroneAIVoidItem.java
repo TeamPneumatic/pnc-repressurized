@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.IItemFiltering;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
 
 public class DroneAIVoidItem extends Goal {
     private final IDroneBase drone;
@@ -52,9 +52,9 @@ public class DroneAIVoidItem extends Goal {
             if (!stack.isEmpty() && widget.isItemValidForFilters(stack)) {
                 drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
                 drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_VOID * stack.getCount());
-                if (drone.world() instanceof ServerWorld) {
-                    Vector3d vec = drone.getDronePos();
-                    ((ServerWorld)drone.world()).sendParticles(ParticleTypes.LAVA, vec.x, vec.y, vec.z, 5, 0, 0, 0, 0);
+                if (drone.world() instanceof ServerLevel) {
+                    Vec3 vec = drone.getDronePos();
+                    ((ServerLevel)drone.world()).sendParticles(ParticleTypes.LAVA, vec.x, vec.y, vec.z, 5, 0, 0, 0, 0);
                 }
             }
         }

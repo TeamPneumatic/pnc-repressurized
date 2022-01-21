@@ -20,14 +20,14 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
@@ -43,20 +43,20 @@ public class PacketUpdateSearchItem {
         itemId = item.getRegistryName();
     }
 
-    public PacketUpdateSearchItem(PacketBuffer buffer) {
+    public PacketUpdateSearchItem(FriendlyByteBuf buffer) {
         itemId = buffer.readResourceLocation();
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeResourceLocation(itemId);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = ctx.get().getSender();
+            Player player = ctx.get().getSender();
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().searchHandler, true)) {
-                ItemStack helmetStack = player.getItemBySlot(EquipmentSlotType.HEAD);
+                ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
                 Item searchedItem = ForgeRegistries.ITEMS.getValue(itemId);
                 if (searchedItem != null && searchedItem != Items.AIR) {
                     ItemPneumaticArmor.setSearchedItem(helmetStack, searchedItem);

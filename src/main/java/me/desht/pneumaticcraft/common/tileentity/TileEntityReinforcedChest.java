@@ -21,22 +21,23 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerReinforcedChest;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameterSets;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.LootTable;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
@@ -44,7 +45,7 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityReinforcedChest extends TileEntityBase implements INamedContainerProvider, IComparatorSupport {
+public class TileEntityReinforcedChest extends TileEntityBase implements MenuProvider, IComparatorSupport {
     public static final int CHEST_SIZE = 36;
 
     public static final String NBT_ITEMS = "Items";
@@ -62,8 +63,8 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
-    public TileEntityReinforcedChest() {
-        super(ModTileEntities.REINFORCED_CHEST.get());
+    public TileEntityReinforcedChest(BlockPos pos, BlockState state) {
+        super(ModTileEntities.REINFORCED_CHEST.get(), pos, state);
     }
 
     @Override
@@ -78,7 +79,8 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         if (lootTable != null) {
             tag.putString(NBT_LOOT_TABLE, lootTable.toString());
             if (lootTableSeed != 0L) {
@@ -87,14 +89,13 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
         } else {
             tag.put(NBT_ITEMS, inventory.serializeNBT());
         }
-        return super.save(tag);
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
-        if (tag.contains(NBT_LOOT_TABLE, Constants.NBT.TAG_STRING)) {
+        if (tag.contains(NBT_LOOT_TABLE, Tag.TAG_STRING)) {
             lootTable = new ResourceLocation(tag.getString(NBT_LOOT_TABLE));
             lootTableSeed = tag.getLong(NBT_LOOT_TABLE_SEED);
         } else {
@@ -113,7 +114,7 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
         super.serializeExtraItemData(blockEntityTag, preserveState);
 
         for (int i = 0; i < inventory.getSlots(); i++) {
@@ -126,23 +127,23 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         maybeFillWithLoot(player);
         return new ContainerReinforcedChest(windowId, inv, getBlockPos());
     }
 
-    private void maybeFillWithLoot(PlayerEntity player) {
-        if (lootTable != null && level instanceof ServerWorld) {
+    private void maybeFillWithLoot(Player player) {
+        if (lootTable != null && level instanceof ServerLevel) {
             LootTable table = level.getServer().getLootTables().get(this.lootTable);
             lootTable = null;
-            LootContext.Builder contextBuilder = new LootContext.Builder((ServerWorld)this.level).withOptionalRandomSeed(this.lootTableSeed);
-            contextBuilder.withParameter(LootParameters.ORIGIN, Vector3d.atCenterOf(this.worldPosition));
+            LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel)this.level).withOptionalRandomSeed(this.lootTableSeed);
+            contextBuilder.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition));
             if (player != null) {
                 contextBuilder.withLuck(player.getLuck());
             }
 
             RecipeWrapper invWrapper = new RecipeWrapper(inventory);  // handy forge-provided IInventory->IItemHandlerModifiable adapter
-            LootContext context = contextBuilder.create(LootParameterSets.CHEST);
+            LootContext context = contextBuilder.create(LootContextParamSets.CHEST);
             table.fill(invWrapper, context);
 
             setChanged();

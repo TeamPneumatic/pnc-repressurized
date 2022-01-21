@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.world.entity.EquipmentSlot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +101,7 @@ public class UpgradesDBSetup {
 
         // Pneumatic Armor
         List<Builder> armor = Arrays.asList(new Builder(), new Builder(), new Builder(), new Builder());
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             // upgrades automatically added due to an upgrade handler being registered
             ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot)
                     .forEach(handler -> Arrays.stream(handler.getRequiredUpgrades())
@@ -116,14 +116,14 @@ public class UpgradesDBSetup {
                     .with(EnumUpgrade.THAUMCRAFT, 1);
         }
         // piece-specific upgrades which don't have a specific upgrade handler
-        armor.get(EquipmentSlotType.HEAD.getIndex()).with(EnumUpgrade.RANGE, 5).with(EnumUpgrade.SECURITY, 64);
-        armor.get(EquipmentSlotType.CHEST.getIndex()).with(EnumUpgrade.SECURITY, 1);
-        armor.get(EquipmentSlotType.FEET.getIndex()).with(EnumUpgrade.FLIPPERS, 1);
+        armor.get(EquipmentSlot.HEAD.getIndex()).with(EnumUpgrade.RANGE, 5).with(EnumUpgrade.SECURITY, 64);
+        armor.get(EquipmentSlot.CHEST.getIndex()).with(EnumUpgrade.SECURITY, 1);
+        armor.get(EquipmentSlot.FEET.getIndex()).with(EnumUpgrade.FLIPPERS, 1);
 
-        db.addApplicableUpgrades(ModItems.PNEUMATIC_HELMET.get(), armor.get(EquipmentSlotType.HEAD.getIndex()));
-        db.addApplicableUpgrades(ModItems.PNEUMATIC_CHESTPLATE.get(), armor.get(EquipmentSlotType.CHEST.getIndex()));
-        db.addApplicableUpgrades(ModItems.PNEUMATIC_LEGGINGS.get(), armor.get(EquipmentSlotType.LEGS.getIndex()));
-        db.addApplicableUpgrades(ModItems.PNEUMATIC_BOOTS.get(), armor.get(EquipmentSlotType.FEET.getIndex()));
+        db.addApplicableUpgrades(ModItems.PNEUMATIC_HELMET.get(), armor.get(EquipmentSlot.HEAD.getIndex()));
+        db.addApplicableUpgrades(ModItems.PNEUMATIC_CHESTPLATE.get(), armor.get(EquipmentSlot.CHEST.getIndex()));
+        db.addApplicableUpgrades(ModItems.PNEUMATIC_LEGGINGS.get(), armor.get(EquipmentSlot.LEGS.getIndex()));
+        db.addApplicableUpgrades(ModItems.PNEUMATIC_BOOTS.get(), armor.get(EquipmentSlot.FEET.getIndex()));
     }
 
     private static void initEntities() {

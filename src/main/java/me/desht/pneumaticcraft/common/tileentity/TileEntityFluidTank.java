@@ -30,15 +30,16 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -54,7 +55,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public abstract class TileEntityFluidTank extends TileEntityTickableBase
-        implements ISerializableTanks, INamedContainerProvider, IComparatorSupport {
+        implements ISerializableTanks, MenuProvider, IComparatorSupport {
     private static final int INVENTORY_SIZE = 2;
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
@@ -74,43 +75,46 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
-    TileEntityFluidTank(TileEntityType<?> type, BlockFluidTank.Size tankSize) {
-        super(type, 4);
+    TileEntityFluidTank(BlockEntityType<?> type, BlockPos pos, BlockState state, BlockFluidTank.Size tankSize) {
+        super(type, pos, state, 4);
 
         this.tank = new StackableTank(tankSize.getCapacity());
         this.fluidCap = LazyOptional.of(() -> tank);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         tank.tick();
+    }
 
-        if (!level.isClientSide) {
-            processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
+    @Override
+    public void tickServer() {
+        super.tickServer();
 
-            FluidStack stack = getTank().getFluid();
-            if (!stack.isEmpty()) {
-                Direction dir = stack.getFluid().getAttributes().getDensity() < 0 ? Direction.UP : Direction.DOWN;
-                if (getBlockState().getValue(BlockPneumaticCraft.connectionProperty(dir))) {
-                    BlockState other = level.getBlockState(worldPosition.relative(dir));
-                    if (other.getBlock() instanceof BlockFluidTank && other.getValue(BlockPneumaticCraft.connectionProperty(dir.getOpposite()))) {
-                        TileEntity teOther = getCachedNeighbor(dir);
-                        if (teOther instanceof TileEntityFluidTank) {
-                            FluidUtil.tryFluidTransfer(((TileEntityFluidTank) teOther).getTank(), tank, tank.getCapacity() / 32, true);
-                        }
+        processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
+
+        FluidStack stack = getTank().getFluid();
+        if (!stack.isEmpty()) {
+            Direction dir = stack.getFluid().getAttributes().getDensity() < 0 ? Direction.UP : Direction.DOWN;
+            if (getBlockState().getValue(BlockPneumaticCraft.connectionProperty(dir))) {
+                BlockState other = nonNullLevel().getBlockState(worldPosition.relative(dir));
+                if (other.getBlock() instanceof BlockFluidTank && other.getValue(BlockPneumaticCraft.connectionProperty(dir.getOpposite()))) {
+                    BlockEntity teOther = getCachedNeighbor(dir);
+                    if (teOther instanceof TileEntityFluidTank) {
+                        FluidUtil.tryFluidTransfer(((TileEntityFluidTank) teOther).getTank(), tank, tank.getCapacity() / 32, true);
                     }
                 }
             }
+        }
 
-            Direction ejectDir = getUpgradeCache().getEjectDirection();
-            if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(BlockPneumaticCraft.connectionProperty(ejectDir)))) {
-                IOHelper.getFluidHandlerForTE(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
-                    int amount = BASE_EJECT_RATE << getUpgrades(EnumUpgrade.SPEED);
-                    FluidUtil.tryFluidTransfer(h, tank, amount, true);
-                });
-            }
+        Direction ejectDir = getUpgradeCache().getEjectDirection();
+        if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(BlockPneumaticCraft.connectionProperty(ejectDir)))) {
+            IOHelper.getFluidHandlerForTE(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
+                int amount = BASE_EJECT_RATE << getUpgrades(EnumUpgrade.SPEED);
+                FluidUtil.tryFluidTransfer(h, tank, amount, true);
+            });
         }
     }
 
@@ -146,7 +150,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         return new ContainerFluidTank(windowId, inv, getBlockPos());
     }
 
@@ -158,7 +162,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
                 // no connection? no problem
                 return true;
             }
-            TileEntity teOther = curTank.getCachedNeighbor(dir);
+            BlockEntity teOther = curTank.getCachedNeighbor(dir);
             if (teOther instanceof TileEntityFluidTank) {
                 curTank = (TileEntityFluidTank) teOther;
                 state = curTank.getBlockState();
@@ -194,26 +198,26 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     }
 
     public static class Small extends TileEntityFluidTank {
-        public Small() {
-            super(ModTileEntities.TANK_SMALL.get(), BlockFluidTank.Size.SMALL);
+        public Small(BlockPos pos, BlockState state) {
+            super(ModTileEntities.TANK_SMALL.get(), pos, state, BlockFluidTank.Size.SMALL);
         }
     }
 
     public static class Medium extends TileEntityFluidTank {
-        public Medium() {
-            super(ModTileEntities.TANK_MEDIUM.get(), BlockFluidTank.Size.MEDIUM);
+        public Medium(BlockPos pos, BlockState state) {
+            super(ModTileEntities.TANK_MEDIUM.get(), pos, state, BlockFluidTank.Size.MEDIUM);
         }
     }
 
     public static class Large extends TileEntityFluidTank {
-        public Large() {
-            super(ModTileEntities.TANK_LARGE.get(), BlockFluidTank.Size.LARGE);
+        public Large(BlockPos pos, BlockState state) {
+            super(ModTileEntities.TANK_LARGE.get(), pos, state, BlockFluidTank.Size.LARGE);
         }
     }
 
     public static class Huge extends TileEntityFluidTank {
-        public Huge() {
-            super(ModTileEntities.TANK_HUGE.get(), BlockFluidTank.Size.HUGE);
+        public Huge(BlockPos pos, BlockState state) {
+            super(ModTileEntities.TANK_HUGE.get(), pos, state, BlockFluidTank.Size.HUGE);
         }
     }
 }

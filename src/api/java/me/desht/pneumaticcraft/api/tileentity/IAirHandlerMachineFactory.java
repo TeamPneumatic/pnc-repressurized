@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.tileentity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * Use this interface to get instances of air handlers for your tile entities.  You can then expose those air handler
@@ -47,17 +47,18 @@ public interface IAirHandlerMachineFactory {
     /**
      * Returns a new instance of an IAirHandler. This handler handles everything pressurized air related: air dispersion,
      * blowing up when the pressure gets too high, providing a method for releasing air into the atmosphere...
-     * <strong>provided that the following methods are forwarded to the IAirHandler object:</strong>
+     * <strong>provided that you take the following steps:</strong>
      * <ul>
-     * <li>{@link net.minecraft.tileentity.ITickableTileEntity#tick()}</li>
-     * <li>{@link net.minecraft.tileentity.TileEntity#load(BlockState, CompoundNBT)}</li>
-     * <li>{@link net.minecraft.tileentity.TileEntity#save(CompoundNBT)}</li>
-     * </ul>
+     *     <li>Storing this object in your block entity</li>
+     *     <li>Providing access to it via {@link net.minecraftforge.common.util.LazyOptional} and the {@link me.desht.pneumaticcraft.api.PNCCapabilities#AIR_HANDLER_MACHINE_CAPABILITY} capability</li>
+     *     <li>Loading and saving the air handler in {@link net.minecraft.world.level.block.entity.BlockEntity#load(CompoundTag)}
+     *     and {@link net.minecraft.world.level.block.entity.BlockEntity#saveAdditional(CompoundTag)}</li>
+     *     <li>Ticking the air handler in your block entity's server-side tick implementation (your block entity <strong>must</strong> be ticked)</li>
+     *</ul>
      *
-     * @param dangerPressure   minimum pressure at which this machine can explode (the yellow to red transition)
-     * @param criticalPressure the absolute maximum pressure the machine can take; 7 bar in tier 1 machines, 25 bar in tier 2 machines
-     * @param volume           volume of the machine's internal storage; the pressure (in bar) is the actual amount of air in the machine divided by its volume
+     * @param tier   the pressure tier
+     * @param volume volume of the machine's internal storage; the pressure (in bar) is the actual amount of air in the machine divided by its volume
      * @return the air handler object
      */
-    IAirHandlerMachine createAirHandler(float dangerPressure, float criticalPressure, int volume);
+    IAirHandlerMachine createAirHandler(PressureTier tier, int volume);
 }

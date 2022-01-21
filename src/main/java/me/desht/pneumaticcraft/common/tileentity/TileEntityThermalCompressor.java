@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
@@ -28,16 +29,16 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -47,7 +48,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class TileEntityThermalCompressor extends TileEntityPneumaticBase
-        implements IHeatTinted, IRedstoneControl<TileEntityThermalCompressor>, INamedContainerProvider, IHeatExchangingTE {
+        implements IHeatTinted, IRedstoneControl<TileEntityThermalCompressor>, MenuProvider, IHeatExchangingTE {
     private static final double AIR_GEN_MULTIPLIER = 0.05;  // mL per degree of difference
 
     // track running air generation amounts; won't be added to the air handler until > 1.0
@@ -67,8 +68,8 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     @GuiSynced
     private final RedstoneController<TileEntityThermalCompressor> rsController = new RedstoneController<>(this);
 
-    public TileEntityThermalCompressor() {
-        super(ModTileEntities.THERMAL_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.MAX_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
+    public TileEntityThermalCompressor(BlockPos pos, BlockState state) {
+        super(ModTileEntities.THERMAL_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
 
         IntStream.range(0, heatExchangers.length).forEach(i -> {
             heatExchangers[i] = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
@@ -100,25 +101,23 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickServer() {
+        super.tickServer();
 
-        if (!level.isClientSide) {
-            for (IHeatExchangerLogic heatExchanger : heatExchangers) {
-                heatExchanger.tick();
-            }
+        for (IHeatExchangerLogic heatExchanger : heatExchangers) {
+            heatExchanger.tick();
+        }
 
-            if (rsController.shouldRun()) {
-                connector1.tick();
-                connector2.tick();
+        if (rsController.shouldRun()) {
+            connector1.tick();
+            connector2.tick();
 
-                equaliseHeat(Direction.NORTH, generatePressure(Direction.NORTH));
-                equaliseHeat(Direction.EAST, generatePressure(Direction.EAST));
-            }
+            equaliseHeat(Direction.NORTH, generatePressure(Direction.NORTH));
+            equaliseHeat(Direction.EAST, generatePressure(Direction.EAST));
+        }
 
-            for (int i = 0; i < heatExchangers.length; i++) {
-                syncedTemperatures[i].tick();
-            }
+        for (int i = 0; i < heatExchangers.length; i++) {
+            syncedTemperatures[i].tick();
         }
     }
 
@@ -129,7 +128,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void initHeatExchangersOnPlacement(World world, BlockPos pos) {
+    public void initHeatExchangersOnPlacement(Level world, BlockPos pos) {
         double temp = HeatExchangerLogicAmbient.getAmbientTemperature(world, pos);
         for (IHeatExchangerLogic logic : heatExchangers) {
             logic.setTemperature(temp);
@@ -154,7 +153,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     public double airProduced(Direction side) {
-        if (level.isClientSide) {
+        if (nonNullLevel().isClientSide) {
             // clientside: just for GUI display purposes
             double diff = Math.abs(getHeatExchanger(side).getTemperatureAsInt() - getHeatExchanger(side.getOpposite()).getTemperatureAsInt());
             return diff < 10 ? 0 : diff * AIR_GEN_MULTIPLIER;
@@ -188,19 +187,18 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         for (int i = 0; i < 4; i++) {
             tag.put("side" + i, heatExchangers[i].serializeNBT());
         }
         tag.put("connector1", connector1.serializeNBT());
         tag.put("connector2", connector2.serializeNBT());
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         for (int i = 0; i < 4; i++) {
             heatExchangers[i].deserializeNBT(tag.getCompound("side" + i));
@@ -215,7 +213,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         rsController.parseRedstoneMode(tag);
     }
 
@@ -226,7 +224,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerThermalCompressor(i, playerInventory, getBlockPos());
     }
 

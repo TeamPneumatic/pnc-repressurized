@@ -20,13 +20,13 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.lib.Names;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.monster.EndermanEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.event.entity.living.EntityTeleportEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.EntityTeleportEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -44,27 +44,27 @@ public class HackableEnderman implements IHackableEntity {
     }
 
     @Override
-    public boolean canHack(Entity entity, PlayerEntity player) {
-        return entity instanceof EndermanEntity && canEndermanTeleport((EndermanEntity) entity);
+    public boolean canHack(Entity entity, Player player) {
+        return entity instanceof EnderMan && canEndermanTeleport((EnderMan) entity);
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.result.stopTeleport"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<Component> curInfo, Player player) {
         curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.stopTeleporting"));
     }
 
     @Override
-    public int getHackTime(Entity entity, PlayerEntity player) {
+    public int getHackTime(Entity entity, Player player) {
         return 60;
     }
 
     @Override
-    public void onHackFinished(Entity entity, PlayerEntity player) {
+    public void onHackFinished(Entity entity, Player player) {
         // enderman teleport suppression is handled in onEnderTeleport()
     }
 
@@ -83,7 +83,7 @@ public class HackableEnderman implements IHackableEntity {
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public void onEnderTeleport(EntityTeleportEvent.EnderEntity event) {
             LivingEntity e = event.getEntityLiving();
-            if (e instanceof EndermanEntity && !canEndermanTeleport(e)) {
+            if (e instanceof EnderMan && !canEndermanTeleport(e)) {
                 event.setCanceled(true);
             }
         }

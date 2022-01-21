@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -32,7 +32,7 @@ public class SlotPhantom extends SlotItemHandler implements IPhantomSlot {
     }
 
     @Override
-    public boolean mayPickup(PlayerEntity par1EntityPlayer) {
+    public boolean mayPickup(Player par1EntityPlayer) {
         return false;
     }
 

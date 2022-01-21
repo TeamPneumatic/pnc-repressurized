@@ -20,24 +20,24 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityChargingStation> {
 
-    public ContainerChargingStation(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerChargingStation(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerChargingStation(int i, PlayerInventory inventoryPlayer, BlockPos pos) {
+    public ContainerChargingStation(int i, Inventory inventoryPlayer, BlockPos pos) {
         super(ModContainers.CHARGING_STATION.get(), i, inventoryPlayer, pos);
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 45) {
@@ -55,7 +55,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
 
     @Override
     @Nonnull
-    public ItemStack quickMoveStack(PlayerEntity player, int slot) {
+    public ItemStack quickMoveStack(Player player, int slot) {
         Slot srcSlot = slots.get(slot);
         if (srcSlot == null || !srcSlot.hasItem()) {
             return ItemStack.EMPTY;

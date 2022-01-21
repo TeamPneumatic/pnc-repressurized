@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
@@ -31,11 +31,11 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.apache.commons.lang3.StringUtils;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -73,40 +73,40 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
                 .addRadioButton(varRad = new WidgetRadioButton(guiLeft + 8, guiTop + 34, 0x404040,
                                 xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel")),
                         !useItemFilter)
-                .build(this::addButton);
+                .build(this::addRenderableWidget);
         itemRad.visible = varRad.visible = advancedMode;
 
         // buttons to open item & inv search when in item filter mode
-        addButton(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 55, xlate("pneumaticcraft.gui.progWidget.itemFilter.itemLabel").append(":")));
-        addButton(itemSearchButton = new WidgetButtonExtended(guiLeft + itemLabel.getWidth() + 35, guiTop + 50, 20, 20, StringTextComponent.EMPTY,
+        addRenderableWidget(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 55, xlate("pneumaticcraft.gui.progWidget.itemFilter.itemLabel").append(":")));
+        addRenderableWidget(itemSearchButton = new WidgetButtonExtended(guiLeft + itemLabel.getWidth() + 35, guiTop + 50, 20, 20, TextComponent.EMPTY,
                 b -> openSearcher()).setRenderStacks(new ItemStack(Items.COMPASS)).setTooltipKey("pneumaticcraft.gui.misc.searchItem"));
-        addButton(invSearchButton = new WidgetButtonExtended(itemSearchButton.x + 25, guiTop + 50, 20, 20, StringTextComponent.EMPTY,
+        addRenderableWidget(invSearchButton = new WidgetButtonExtended(itemSearchButton.x + 25, guiTop + 50, 20, 20, TextComponent.EMPTY,
                 b -> openInventorySearcher()).setRenderStacks(new ItemStack(Items.CHEST)).setTooltipKey("pneumaticcraft.gui.misc.searchInventory"));
 
         // variable dropdown when in variable filter mode
-        addButton(variableLabel = new WidgetLabel(guiLeft + 8, guiTop + 53, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel").append(":")));
-        addButton(variableField = new WidgetComboBox(font, guiLeft + 12 + variableLabel.getWidth(), guiTop + 52, 80, font.lineHeight + 1)
+        addRenderableWidget(variableLabel = new WidgetLabel(guiLeft + 8, guiTop + 53, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel").append(":")));
+        addRenderableWidget(variableField = new WidgetComboBox(font, guiLeft + 12 + variableLabel.getWidth(), guiTop + 52, 80, font.lineHeight + 1)
                 .setElements(guiProgrammer.te.getAllVariables()));
         variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         variableField.setValue(progWidget.getVariable());
 
         // checkboxes shown in both modes
-        addButton(checkBoxUseDurability = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
+        addRenderableWidget(checkBoxUseDurability = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> progWidget.useItemDurability = b.checked)
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip")
                 .setChecked(progWidget.useItemDurability)
         );
-        addButton(checkBoxUseNBT = new WidgetCheckBox(guiLeft + 8, guiTop + 108, 0xFF404040,
+        addRenderableWidget(checkBoxUseNBT = new WidgetCheckBox(guiLeft + 8, guiTop + 108, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> progWidget.useNBT = b.checked)
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip")
                 .setChecked(progWidget.useNBT)
         );
-        addButton(checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 8, guiTop + 120, 0xFF404040,
+        addRenderableWidget(checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 8, guiTop + 120, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchModId"), b -> progWidget.useModSimilarity = b.checked)
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchModId.tooltip")
                 .setChecked(progWidget.useModSimilarity)
         );
-        addButton(checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 8, guiTop + 132, 0xFF404040,
+        addRenderableWidget(checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 8, guiTop + 132, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchBlockstate"), b -> progWidget.matchBlock = b.checked)
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchBlockstate.tooltip")
                 .setChecked(progWidget.matchBlock)
@@ -119,7 +119,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     private void openSearcher() {
-        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new TextComponent("Search"));
         if (minecraft.screen instanceof GuiItemSearcher) {
             itemSearchGui = (GuiItemSearcher) minecraft.screen;
             itemSearchGui.setSearchStack(progWidget.getFilter());
@@ -127,7 +127,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     private void openInventorySearcher() {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Search"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TextComponent("Search"));
         if (minecraft.screen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setSearchStack(progWidget.getFilter());
@@ -157,7 +157,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         checkBoxUseDurability.active = varRad.isChecked() || filter.getMaxDamage() > 0 && !checkBoxUseModSimilarity.checked;
         checkBoxUseNBT.active = varRad.isChecked() || !filter.isEmpty() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
         checkBoxUseModSimilarity.active = varRad.isChecked() || !filter.isEmpty() && !checkBoxMatchBlock.checked;
-        TranslationTextComponent msg = xlate("pneumaticcraft.gui.logistics_frame.matchModId");
+        TranslatableComponent msg = xlate("pneumaticcraft.gui.logistics_frame.matchModId");
         String modName = StringUtils.abbreviate(ModNameCache.getModName(filter.getItem()), 22);
         checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg.append(" (" + modName + ")"));
         checkBoxMatchBlock.active = varRad.isChecked() || filter.getItem() instanceof BlockItem && !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked;
@@ -171,13 +171,12 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (itemRad.isChecked()) {
-            minecraft.getTextureManager().bind(getTexture());
+            GuiUtils.bindTexture(getTexture());
             RenderSystem.enableTexture();
-            RenderSystem.color4f(1, 1, 1, 1);
             blit(matrixStack, guiLeft + itemX, guiTop + 51, 186, 0, 18, 18);
             if (!progWidget.getRawFilter().isEmpty()) {
                 GuiUtils.renderItemStack(matrixStack, progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);

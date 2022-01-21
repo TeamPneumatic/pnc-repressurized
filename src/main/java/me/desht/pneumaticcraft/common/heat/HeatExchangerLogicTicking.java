@@ -21,15 +21,15 @@ import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -48,7 +48,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private final BitSet connections = new BitSet(6);
 
     @Override
-    public void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> blockFilter, Direction... validSides) {
+    public void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides) {
         if (ambientTemperature < 0) {
             initializeAmbientTemperature(world, pos);
         }
@@ -95,7 +95,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     }
 
     @Override
-    public void initializeAmbientTemperature(World world, BlockPos pos) {
+    public void initializeAmbientTemperature(Level world, BlockPos pos) {
         ambientTemperature = HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature();
     }
 
@@ -134,12 +134,12 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT tag = new CompoundNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag tag = new CompoundTag();
         tag.putDouble("temperature", temperature);
-        ListNBT tagList = new ListNBT();
+        ListTag tagList = new ListTag();
         for (HeatBehaviour<?> behaviour : behaviours) {
-            CompoundNBT t = behaviour.serializeNBT();
+            CompoundTag t = behaviour.serializeNBT();
             t.putString("id", behaviour.getId().toString());
             tagList.add(t);
         }
@@ -148,13 +148,13 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         temperature = nbt.getDouble("temperature");
         temperatureInt = (int) temperature;
         behaviours.clear();
-        ListNBT tagList = nbt.getList("behaviours", Constants.NBT.TAG_COMPOUND);
+        ListTag tagList = nbt.getList("behaviours", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
-            CompoundNBT t = tagList.getCompound(i);
+            CompoundTag t = tagList.getCompound(i);
             HeatBehaviour<?> behaviour = HeatBehaviourManager.getInstance().createBehaviour(new ResourceLocation(t.getString("id")));
             if (behaviour != null) {
                 behaviour.deserializeNBT(t);
@@ -240,7 +240,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
 
     @Override
     public void addHeat(double amount) {
-        setTemperature(MathHelper.clamp(temperature + amount / getThermalCapacity(), 0, 2273));
+        setTemperature(Mth.clamp(temperature + amount / getThermalCapacity(), 0, 2273));
     }
 
     @Override

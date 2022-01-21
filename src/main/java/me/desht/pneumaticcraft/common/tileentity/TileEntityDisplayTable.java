@@ -19,10 +19,11 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -33,12 +34,12 @@ public class TileEntityDisplayTable extends TileEntityBase implements IComparato
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     public ItemStack displayedStack = ItemStack.EMPTY;
 
-    public TileEntityDisplayTable() {
-        super(ModTileEntities.DISPLAY_TABLE.get());
+    public TileEntityDisplayTable(BlockPos pos, BlockState state) {
+        super(ModTileEntities.DISPLAY_TABLE.get(), pos, state);
     }
 
-    TileEntityDisplayTable(TileEntityType<?> type) {
-        super(type);
+    TileEntityDisplayTable(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
@@ -53,29 +54,28 @@ public class TileEntityDisplayTable extends TileEntityBase implements IComparato
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.put("Items", inventory.serializeNBT());
-
-        return super.save(tag);
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         displayedStack = inventory.getStackInSlot(0);
     }
 
     @Override
-    public void writeToPacket(CompoundNBT tag) {
+    public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
-        tag.put("Item", displayedStack.save(new CompoundNBT()));
+        tag.put("Item", displayedStack.save(new CompoundTag()));
     }
 
     @Override
-    public void readFromPacket(CompoundNBT tag) {
+    public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
         displayedStack = ItemStack.of(tag.getCompound("Item"));
@@ -97,7 +97,7 @@ public class TileEntityDisplayTable extends TileEntityBase implements IComparato
 
             if (slot == 0) {
                 displayedStack = getStackInSlot(0);
-                if (!level.isClientSide) sendDescriptionPacket();
+                if (!nonNullLevel().isClientSide) sendDescriptionPacket();
             }
         }
 

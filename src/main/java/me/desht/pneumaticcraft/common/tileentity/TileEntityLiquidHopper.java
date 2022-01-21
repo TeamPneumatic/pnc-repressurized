@@ -29,20 +29,20 @@ import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.BucketItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.*;
@@ -69,8 +69,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     @GuiSynced
     private final RedstoneController<TileEntityLiquidHopper> rsController = new RedstoneController<>(this);
 
-    public TileEntityLiquidHopper() {
-        super(ModTileEntities.LIQUID_HOPPER.get());
+    public TileEntityLiquidHopper(BlockPos pos, BlockState state) {
+        super(ModTileEntities.LIQUID_HOPPER.get(), pos, state);
     }
 
     @Override
@@ -84,12 +84,17 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         tank.tick();
+    }
 
-        if (!level.isClientSide && getUpgrades(EnumUpgrade.CREATIVE) > 0) {
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (getUpgrades(EnumUpgrade.CREATIVE) > 0) {
             FluidStack fluidStack = tank.getFluid();
             if (!fluidStack.isEmpty() && fluidStack.getAmount() < PneumaticValues.NORMAL_TANK_CAPACITY) {
                 tank.fill(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY), FluidAction.EXECUTE);
@@ -104,7 +109,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         Direction dir = getRotation();
 
         // try to fill any neighbouring fluid-accepting tile entity
-        TileEntity neighbor = getCachedNeighbor(dir);
+        BlockEntity neighbor = getCachedNeighbor(dir);
         if (neighbor != null) {
             return IOHelper.getFluidHandlerForTE(neighbor, dir.getOpposite()).map(fluidHandler -> {
                 int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
@@ -124,8 +129,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
         // try to fill any fluid-handling items in front of the output
         for (Entity e : cachedOutputEntities) {
-            if (e.isAlive() && e instanceof ItemEntity) {
-                ItemEntity entity = (ItemEntity) e;
+            if (e.isAlive() && e instanceof ItemEntity entity) {
                 int maxFill = entity.getItem().getItem() instanceof BucketItem ? 1000 : maxItems * 100;
                 FluidActionResult res = FluidUtil.tryFillContainer(entity.getItem(), tank, maxFill, null, true);
                 if (res.success) {
@@ -138,7 +142,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         // try to pour fluid into the world
         if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(EnumUpgrade.DISPENSER) > 0
                 && tank.getFluidAmount() >= leaveMaterialCount + FluidAttributes.BUCKET_VOLUME) {
-            return FluidUtils.tryPourOutFluid(outputCap, level, getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
+            return FluidUtils.tryPourOutFluid(outputCap, nonNullLevel(), getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
         }
 
         return false;
@@ -146,7 +150,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
     @Override
     protected boolean doImport(int maxItems) {
-        TileEntity inputInv = getCachedNeighbor(inputDir);
+        BlockEntity inputInv = getCachedNeighbor(inputDir);
 
         if (inputInv != null) {
             LazyOptional<IFluidHandler> cap = inputInv.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite());
@@ -174,8 +178,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         }
 
         for (Entity e : cachedInputEntities) {
-            if (e.isAlive() && e instanceof ItemEntity) {
-                ItemEntity entity = (ItemEntity) e;
+            if (e.isAlive() && e instanceof ItemEntity entity) {
                 // special case: buckets can only drain 1000 mB at a time
                 int max = entity.getItem().getItem() instanceof BucketItem ? FluidAttributes.BUCKET_VOLUME : maxItems * 100;
                 FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
@@ -188,7 +191,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
         if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             BlockPos neighborPos = getBlockPos().relative(inputDir);
-            return !FluidUtils.tryPickupFluid(inputCap, level, neighborPos, false, FluidAction.EXECUTE).isEmpty();
+            return !FluidUtils.tryPickupFluid(inputCap, nonNullLevel(), neighborPos, false, FluidAction.EXECUTE).isEmpty();
         }
 
         return false;
@@ -196,8 +199,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
     @Override
     protected void setupInputOutputRegions() {
-        inputAABB = new AxisAlignedBB(worldPosition.relative(inputDir));
-        outputAABB = new AxisAlignedBB(getBlockPos().relative(getRotation()));
+        inputAABB = new AABB(worldPosition.relative(inputDir));
+        outputAABB = new AABB(getBlockPos().relative(getRotation()));
 
         cachedInputEntities.clear();
         cachedOutputEntities.clear();
@@ -205,9 +208,9 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
     @Override
     boolean shouldScanForEntities(Direction dir) {
-        TileEntity te = getCachedNeighbor(dir);
+        BlockEntity te = getCachedNeighbor(dir);
         return (te == null || !te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).isPresent())
-                && !Block.canSupportCenter(level, worldPosition.relative(dir), dir.getOpposite());
+                && !Block.canSupportCenter(nonNullLevel(), worldPosition.relative(dir), dir.getOpposite());
     }
 
     public HopperTank getTank() {
@@ -215,8 +218,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         comparatorValue = -1;
     }
@@ -255,7 +258,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerLiquidHopper(i, playerInventory, getBlockPos());
     }
 

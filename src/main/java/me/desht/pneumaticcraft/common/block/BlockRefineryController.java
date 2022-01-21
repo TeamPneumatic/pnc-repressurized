@@ -4,21 +4,24 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class BlockRefineryController extends BlockPneumaticCraft {
+public class BlockRefineryController extends BlockPneumaticCraft
+        implements EntityBlockPneumaticCraft, IBlockComparatorSupport
+{
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(6, 11, 12.5, 7, 12, 14.5),
             Block.box(14, 10, 0, 16, 13, 2),
@@ -53,7 +56,7 @@ public class BlockRefineryController extends BlockPneumaticCraft {
             Block.box(1.5, 11, 0.5, 14.5, 12, 1.5),
             Block.box(2.5, 10.5, 10.5, 9, 12.5, 12.5),
             Block.box(2.75, 1, 10.75, 8.75, 11, 12.25)
-    ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+    ).reduce((v1, v2) -> {return Shapes.join(v1, v2, BooleanOp.OR);}).get();
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
@@ -65,12 +68,7 @@ public class BlockRefineryController extends BlockPneumaticCraft {
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityRefineryController.class;
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         Direction d = state.getValue(directionProperty());
         return SHAPES[d.get2DDataValue()];
     }
@@ -81,10 +79,16 @@ public class BlockRefineryController extends BlockPneumaticCraft {
     }
 
     @Override
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, world, pos, block, fromPos, isMoving);
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityRefineryController.class)
                 .ifPresent(TileEntityRefineryController::cacheRefineryOutputs);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityRefineryController(pPos, pState);
     }
 }

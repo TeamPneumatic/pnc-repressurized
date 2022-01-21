@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.fluid.*;
-import net.minecraft.fluid.Fluid;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 

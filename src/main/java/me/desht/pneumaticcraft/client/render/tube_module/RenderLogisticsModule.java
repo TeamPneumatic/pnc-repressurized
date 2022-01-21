@@ -1,74 +1,93 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 public class RenderLogisticsModule extends TubeModuleRendererBase<ModuleLogistics> {
-    private final ModelRenderer base2;
-    private final ModelRenderer shape1;
-    private final ModelRenderer shape2;
-    private final ModelRenderer shape3;
-    private final ModelRenderer shape4;
-    private final ModelRenderer notPowered, powered, action, notEnoughAir;
+    private final ModelPart base2;
+    private final ModelPart shape1;
+    private final ModelPart shape2;
+    private final ModelPart shape3;
+    private final ModelPart shape4;
+    private final ModelPart notPowered;
+    private final ModelPart powered;
+    private final ModelPart action;
+    private final ModelPart notEnoughAir;
 
-    public RenderLogisticsModule() {
-        notPowered = new ModelRenderer(64, 64, 24, 8);
-        notPowered.addBox(0F, 0F, 0F, 6F, 2F, 6F);
-        notPowered.setPos(-3F, 13F, 4F);
-        notPowered.mirror = true;
-        setRotation(notPowered, -1.570796F, 0F, 0F);
-        powered = new ModelRenderer(64, 64, 0, 8);
-        powered.addBox(0F, 0F, 0F, 6F, 2F, 6F);
-        powered.setPos(-3F, 13F, 4F);
-        powered.mirror = true;
-        setRotation(powered, -1.570796F, 0F, 0F);
-        action = new ModelRenderer(64, 64, 24, 0);
-        action.addBox(0F, 0F, 0F, 6F, 2F, 6F);
-        action.setPos(-3F, 13F, 4F);
-        action.mirror = true;
-        setRotation(action, -1.570796F, 0F, 0F);
-        notEnoughAir = new ModelRenderer(64, 64, 0, 0);
-        notEnoughAir.addBox(0F, 0F, 0F, 6F, 2F, 6F);
-        notEnoughAir.setPos(-3F, 13F, 4F);
-        notEnoughAir.mirror = true;
-        setRotation(notEnoughAir, -1.570796F, 0F, 0F);
+    private static final String BASE2 = "base2";
+    private static final String SHAPE1 = "shape1";
+    private static final String SHAPE2 = "shape2";
+    private static final String SHAPE3 = "shape3";
+    private static final String SHAPE4 = "shape4";
+    private static final String NOTPOWERED = "notPowered";
+    private static final String POWERED = "powered";
+    private static final String ACTION = "action";
+    private static final String NOTENOUGHAIR = "notEnoughAir";
 
-        base2 = new ModelRenderer(64, 64, 0, 25);
-        base2.addBox(0F, 0F, 0F, 12F, 2F, 12F);
-        base2.setPos(-6F, 10F, 6F);
-        base2.mirror = true;
-        setRotation(base2, -1.570796F, 0F, 0F);
-        shape1 = new ModelRenderer(64, 64, 0, 39);
-        shape1.addBox(0F, 0F, 0F, 1F, 13F, 1F);
-        shape1.setPos(5.5F, 9.5F, 5.5F);
-        shape1.mirror = true;
-        setRotation(shape1, 0F, 0F, 0F);
-        shape2 = new ModelRenderer(64, 64, 4, 39);
-        shape2.addBox(0F, 0F, 0F, 1F, 13F, 1F);
-        shape2.setPos(-6.5F, 9.5F, 5.5F);
-        shape2.mirror = true;
-        setRotation(shape2, 0F, 0F, 0F);
-        shape3 = new ModelRenderer(64, 64, 8, 39);
-        shape3.addBox(0F, 0F, 0F, 11F, 1F, 1F);
-        shape3.setPos(-5.5F, 9.5F, 5.5F);
-        shape3.mirror = true;
-        setRotation(shape3, 0F, 0F, 0F);
-        shape4 = new ModelRenderer(64, 64, 8, 41);
-        shape4.addBox(0F, 0F, 0F, 11F, 1F, 1F);
-        shape4.setPos(-5.5F, 21.5F, 5.5F);
-        shape4.mirror = true;
-        setRotation(shape4, 0F, 0F, 0F);
+    public RenderLogisticsModule(BlockEntityRendererProvider.Context ctx) {
+        ModelPart root = ctx.bakeLayer(PNCModelLayers.LOGISTICS_MODULE);
+        base2 = root.getChild(BASE2);
+        shape1 = root.getChild(SHAPE1);
+        shape2 = root.getChild(SHAPE2);
+        shape3 = root.getChild(SHAPE3);
+        shape4 = root.getChild(SHAPE4);
+        notPowered = root.getChild(NOTPOWERED);
+        powered = root.getChild(POWERED);
+        action = root.getChild(ACTION);
+        notEnoughAir = root.getChild(NOTENOUGHAIR);
+    }
+
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        partdefinition.addOrReplaceChild(BASE2, CubeListBuilder.create().texOffs(0, 25)
+                        .addBox("base2_0", 0F, 0F, 0F, 12F, 2F, 12F),
+                PartPose.offsetAndRotation(-6F, 10F, 6F, -1.570796F, 0F, 0F));
+        partdefinition.addOrReplaceChild(SHAPE1, CubeListBuilder.create().texOffs(0, 39)
+                        .addBox("shape1_0", 0F, 0F, 0F, 1F, 13F, 1F),
+                PartPose.offset(5.5F, 9.5F, 5.5F));
+        partdefinition.addOrReplaceChild(SHAPE2, CubeListBuilder.create().texOffs(4, 39)
+                        .addBox("shape2_0", 0F, 0F, 0F, 1F, 13F, 1F),
+                PartPose.offset(-6.5F, 9.5F, 5.5F));
+        partdefinition.addOrReplaceChild(SHAPE3, CubeListBuilder.create().texOffs(8, 39)
+                        .addBox("shape3_0", 0F, 0F, 0F, 11F, 1F, 1F),
+                PartPose.offset(-5.5F, 9.5F, 5.5F));
+        partdefinition.addOrReplaceChild(SHAPE4, CubeListBuilder.create().texOffs(8, 41)
+                        .addBox("shape4_0", 0F, 0F, 0F, 11F, 1F, 1F),
+                PartPose.offset(-5.5F, 21.5F, 5.5F));
+        partdefinition.addOrReplaceChild(NOTPOWERED, CubeListBuilder.create().texOffs(24, 8)
+                        .addBox("notPowered_0", 0F, 0F, 0F, 6F, 2F, 6F),
+                PartPose.offsetAndRotation(-3F, 13F, 4F, -1.570796F, 0F, 0F));
+        partdefinition.addOrReplaceChild(POWERED, CubeListBuilder.create().texOffs(0, 8)
+                        .addBox("powered_0", 0F, 0F, 0F, 6F, 2F, 6F),
+                PartPose.offsetAndRotation(-3F, 13F, 4F, -1.570796F, 0F, 0F));
+        partdefinition.addOrReplaceChild(ACTION, CubeListBuilder.create().texOffs(24, 0)
+                        .addBox("action_0", 0F, 0F, 0F, 6F, 2F, 6F),
+                PartPose.offsetAndRotation(-3F, 13F, 4F, -1.570796F, 0F, 0F));
+        partdefinition.addOrReplaceChild(NOTENOUGHAIR, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("notEnoughAir_0", 0F, 0F, 0F, 6F, 2F, 6F),
+                PartPose.offsetAndRotation(-3F, 13F, 4F, -1.570796F, 0F, 0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
     @Override
-    protected void renderDynamic(ModuleLogistics module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
-        ModelRenderer base;
+    protected void renderDynamic(ModuleLogistics module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+        ModelPart base;
         if (module.getTicksSinceAction() >= 0) {
             base = action;
         } else if (module.getTicksSinceNotEnoughAir() >= 0) {
@@ -76,11 +95,11 @@ public class RenderLogisticsModule extends TubeModuleRendererBase<ModuleLogistic
         } else {
             base = module.hasPower() ? powered : notPowered;
         }
-        base.render(matrixStack, builder, RenderUtils.FULL_BRIGHT, combinedOverlay, r, g, b, a);
-        base2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        base.render(matrixStack, builder, RenderUtils.FULL_BRIGHT, combinedOverlay, 1f, 1f, 1f, alpha);
+        base2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
 
         // the coloured frame
-        float[] cols = RenderUtils.decomposeColorF(0xFF000000 | DyeColor.byId(module.getColorChannel()).getColorValue());
+        float[] cols = DyeColor.byId(module.getColorChannel()).getTextureDiffuseColors();
         shape1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
         shape2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
         shape3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);

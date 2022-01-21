@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.universal_sensor;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -37,7 +37,7 @@ public interface IEventSensorSetting extends ISensorSetting {
      * @param textboxText any text which was entered in the sensor configuration's textfield
      * @return the redstone strength which should be emitted
      */
-    int emitRedstoneOnEvent(Event event, TileEntity sensor, int range, String textboxText);
+    int emitRedstoneOnEvent(Event event, BlockEntity sensor, int range, String textboxText);
 
     /**
      * How long should an emitted pulse last for?  5 ticks is a suitable value.

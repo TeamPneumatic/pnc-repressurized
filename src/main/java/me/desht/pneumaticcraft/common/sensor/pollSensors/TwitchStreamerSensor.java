@@ -23,11 +23,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -55,17 +55,17 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
     }
 
     @Override
-    public void getAdditionalInfo(List<ITextComponent> info) {
-        info.add(new StringTextComponent("Player Name"));
+    public void getAdditionalInfo(List<Component> info) {
+        info.add(new TextComponent("Player Name"));
     }
 
     @Override
-    public int getPollFrequency(TileEntity te) {
+    public int getPollFrequency(BlockEntity te) {
         return 20;
     }
 
     @Override
-    public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
+    public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
         return TwitchStream.isOnline(textBoxText) ? 15 : 0;
     }
 

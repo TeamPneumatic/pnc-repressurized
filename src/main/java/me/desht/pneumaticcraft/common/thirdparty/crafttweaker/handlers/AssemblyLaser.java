@@ -18,27 +18,27 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
-import com.blamejared.crafttweaker.api.annotations.ZenRegister;
-import com.blamejared.crafttweaker.api.item.IIngredientWithAmount;
+import com.blamejared.crafttweaker.api.action.recipe.ActionAddRecipe;
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
+import com.blamejared.crafttweaker.api.ingredient.IIngredientWithAmount;
 import com.blamejared.crafttweaker.api.item.IItemStack;
-import com.blamejared.crafttweaker.api.managers.IRecipeManager;
-import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
+import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
 
 @Document("mods/PneumaticCraft/AssemblyLaser")
 @ZenRegister
 @ZenCodeType.Name("mods.pneumaticcraft.AssemblyLaser")
-public class AssemblyLaser implements IRecipeManager {
+public class AssemblyLaser implements IRecipeManager<AssemblyRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount input, IItemStack output) {
-        CraftTweakerAPI.apply(new ActionAddRecipe(this,
+        CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new AssemblyRecipeImpl(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                         CTUtils.toStackedIngredient(input),
                         output.getImmutableInternal(),
@@ -47,7 +47,7 @@ public class AssemblyLaser implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<AssemblyRecipe> getRecipeType() {
+    public RecipeType<AssemblyRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.ASSEMBLY_LASER;
     }
 }

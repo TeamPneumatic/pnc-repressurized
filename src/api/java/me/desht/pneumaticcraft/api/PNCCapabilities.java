@@ -23,7 +23,8 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 
 /**
  * Public PneumaticCraft capability objects.
@@ -32,35 +33,25 @@ public class PNCCapabilities {
     /**
      * Basic air handler; use this capability on entities which can be pressurized (drones by default)
      */
-    @SuppressWarnings("FieldMayBeFinal")
-    @CapabilityInject(IAirHandler.class)
-    public static Capability<IAirHandler> AIR_HANDLER_CAPABILITY = null;
+    public static final Capability<IAirHandler> AIR_HANDLER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /**
      * Machine air handler; use this on tile entities which can store air.
      */
-    @SuppressWarnings("FieldMayBeFinal")
-    @CapabilityInject(IAirHandlerMachine.class)
-    public static Capability<IAirHandlerMachine> AIR_HANDLER_MACHINE_CAPABILITY = null;
+    public static final Capability<IAirHandlerMachine> AIR_HANDLER_MACHINE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /**
      * Item air handler; use this on items which can be pressurized.
      */
-    @SuppressWarnings("FieldMayBeFinal")
-    @CapabilityInject(IAirHandlerItem.class)
-    public static Capability<IAirHandlerItem> AIR_HANDLER_ITEM_CAPABILITY = null;
+    public static Capability<IAirHandlerItem> AIR_HANDLER_ITEM_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /**
      * Hacking handler; use this on entities which can be hacked by the Pneumatic Helmet.
      */
-    @SuppressWarnings("FieldMayBeFinal")
-    @CapabilityInject(IHacking.class)
-    public static Capability<IHacking> HACKING_CAPABILITY = null;
+    public static Capability<IHacking> HACKING_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 
     /**
      * Heat exchanger capability
      */
-    @SuppressWarnings("FieldMayBeFinal")
-    @CapabilityInject(IHeatExchangerLogic.class)
-    public static Capability<IHeatExchangerLogic> HEAT_EXCHANGER_CAPABILITY = null;
+    public static Capability<IHeatExchangerLogic> HEAT_EXCHANGER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 }

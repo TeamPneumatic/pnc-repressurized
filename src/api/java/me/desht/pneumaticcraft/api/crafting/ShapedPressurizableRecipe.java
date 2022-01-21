@@ -20,14 +20,14 @@ package me.desht.pneumaticcraft.api.crafting;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
@@ -42,7 +42,7 @@ public class ShapedPressurizableRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         ItemStack newOutput = this.getResultItem().copy();
 
         newOutput.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(outputHandler -> {
@@ -58,7 +58,7 @@ public class ShapedPressurizableRecipe extends ShapedRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return SERIALIZER;
     }
 
@@ -71,13 +71,13 @@ public class ShapedPressurizableRecipe extends ShapedRecipe {
 
         @Nullable
         @Override
-        public ShapedRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public ShapedRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             ShapedRecipe r = super.fromNetwork(recipeId, buffer);
             return new ShapedPressurizableRecipe(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, ShapedRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, ShapedRecipe recipe) {
             super.toNetwork(buffer, recipe);
         }
     }

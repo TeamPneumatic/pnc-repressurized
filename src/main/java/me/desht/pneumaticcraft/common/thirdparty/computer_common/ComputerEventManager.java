@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +38,12 @@ public enum ComputerEventManager {
         senders.add(sender);
     }
 
-    public void sendEvents(TileEntity te, String name, Object... params) {
+    public void sendEvents(BlockEntity te, String name, Object... params) {
         senders.forEach(s -> s.sendEvent(te, name, params));
     }
 
     @FunctionalInterface
     public interface IComputerEventSender {
-        void sendEvent(TileEntity te, String name, Object... params);
+        void sendEvent(BlockEntity te, String name, Object... params);
     }
 }

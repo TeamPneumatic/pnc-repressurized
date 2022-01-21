@@ -17,28 +17,24 @@
 
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
 
 public class RenderProgressBar {
-    public static void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color1, int color2) {
+    public static void render3d(PoseStack matrixStack, MultiBufferSource buffer, double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color1, int color2) {
         Pair<float[], float[]> cols = calcColors(color1, color2, progress);
         float[] f1 = cols.getLeft();
         float[] f2 = cols.getRight();
 
-        double x = MathHelper.lerp(progress / 100D, minX, maxX);
+        double x = Mth.lerp(progress / 100D, minX, maxX);
 
         // draw the bar
         RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
@@ -57,32 +53,32 @@ public class RenderProgressBar {
         });
     }
 
-    public static void render2d(MatrixStack matrixStack, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
+    public static void render2d(PoseStack matrixStack, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
         Pair<float[], float[]> cols = calcColors(color1, color2, progress);
         float[] f1 = cols.getLeft();
         float[] f2 = cols.getRight();
 
-        float x = MathHelper.lerp(progress / 100F, minX, maxX);
+        float x = Mth.lerp(progress / 100F, minX, maxX);
 
         Matrix4f posMat = matrixStack.last().pose();
 
-        RenderSystem.shadeModel(GL11.GL_SMOOTH);
-        BufferBuilder builder = Tessellator.getInstance().getBuilder();
-        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+//        RenderSystem.shadeModel(GL11.GL_SMOOTH);
+        BufferBuilder builder = Tesselator.getInstance().getBuilder();
+        builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         builder.vertex(posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
         builder.vertex(posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
         builder.vertex(posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
         builder.vertex(posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
-        Tessellator.getInstance().end();
+        Tesselator.getInstance().end();
 
         RenderSystem.lineWidth(2.0f);
-        builder.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
+        builder.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         builder.vertex(posMat, minX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
         builder.vertex(posMat, minX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
         builder.vertex(posMat, maxX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
         builder.vertex(posMat, maxX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
-        Tessellator.getInstance().end();
-        RenderSystem.shadeModel(GL11.GL_FLAT);
+        Tesselator.getInstance().end();
+//        RenderSystem.shadeModel(GL11.GL_FLAT);
     }
 
     private static Pair<float[], float[]> calcColors(int color1, int color2, float progress) {
@@ -91,7 +87,7 @@ public class RenderProgressBar {
         if (color1 != color2) {
             f2 = new TintColor(color2, true).getComponents(null);
             for (int i = 0; i < f1.length; i++) {
-                f2[i] = MathHelper.lerp(progress / 100f, f1[i], f2[i]);
+                f2[i] = Mth.lerp(progress / 100f, f1[i], f2[i]);
             }
             return Pair.of(f1, f2);
         } else {

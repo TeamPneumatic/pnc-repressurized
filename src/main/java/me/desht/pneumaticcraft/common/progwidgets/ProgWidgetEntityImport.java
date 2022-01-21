@@ -23,13 +23,13 @@ import me.desht.pneumaticcraft.common.ai.DroneAIEntityImport;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.item.DyeColor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Set;
@@ -44,7 +44,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
@@ -93,7 +93,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public List<Entity> getValidEntities(World world) {
+    public List<Entity> getValidEntities(Level world) {
         if (entityFilters == null) {
             entityFilters = new EntityFilterPair<>(this);
         }

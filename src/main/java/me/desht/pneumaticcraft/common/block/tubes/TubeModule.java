@@ -21,21 +21,21 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 import java.util.Objects;
@@ -139,7 +139,7 @@ public abstract class TubeModule {
         return dir;
     }
 
-    public void readFromNBT(CompoundNBT nbt) {
+    public void readFromNBT(CompoundTag nbt) {
         dir = Direction.from3DDataValue(nbt.getInt("dir"));
         upgraded = nbt.getBoolean("upgraded");
         lowerBound = nbt.getFloat("lowerBound");
@@ -147,7 +147,7 @@ public abstract class TubeModule {
         advancedConfig = !nbt.contains("advancedConfig") || nbt.getBoolean("advancedConfig");
     }
 
-    public CompoundNBT writeToNBT(CompoundNBT nbt) {
+    public CompoundTag writeToNBT(CompoundTag nbt) {
         nbt.putInt("dir", dir.get3DDataValue());
         nbt.putBoolean("upgraded", upgraded);
         nbt.putFloat("lowerBound", lowerBound);
@@ -156,7 +156,15 @@ public abstract class TubeModule {
         return nbt;
     }
 
-    public void update() {
+    protected void tickCommon() {
+    }
+
+    public void tickClient() {
+        tickCommon();
+    }
+
+    public void tickServer() {
+        tickCommon();
     }
 
     public void onNeighborTileUpdate() {
@@ -185,16 +193,16 @@ public abstract class TubeModule {
         pressureTube.sendDescriptionPacket();
     }
 
-    public void addInfo(List<ITextComponent> curInfo) {
+    public void addInfo(List<Component> curInfo) {
         if (upgraded) {
             ItemStack stack = new ItemStack(ModItems.ADVANCED_PCB.get());
-            curInfo.add(stack.getHoverName().copy().append(" installed").withStyle(TextFormatting.GREEN));
+            curInfo.add(stack.getHoverName().copy().append(" installed").withStyle(ChatFormatting.GREEN));
         }
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
             String key = "color.minecraft." + DyeColor.byId(colorChannel);
-            curInfo.add(new TranslationTextComponent("pneumaticcraft.waila.logisticsModule.channel").append(" ")
-                    .append(new TranslationTextComponent(key).withStyle(TextFormatting.YELLOW)));
+            curInfo.add(new TranslatableComponent("pneumaticcraft.waila.logisticsModule.channel").append(" ")
+                    .append(new TranslatableComponent(key).withStyle(ChatFormatting.YELLOW)));
         }
     }
 
@@ -210,7 +218,7 @@ public abstract class TubeModule {
         return upgraded;
     }
 
-    public boolean onActivated(PlayerEntity player, Hand hand) {
+    public boolean onActivated(Player player, InteractionHand hand) {
         if (player.level.isClientSide && hasGui()) {
             GuiTubeModule.openGuiForModule(this);
         }
@@ -231,7 +239,7 @@ public abstract class TubeModule {
         return boundingBoxes[getDirection().get3DDataValue()];
     }
 
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         return null;
     }
 

@@ -17,8 +17,10 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -30,11 +32,9 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChestplateLauncher;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ChestplateLauncherHandler;
-import net.minecraft.client.MainWindow;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.entity.HumanoidArm;
 
 import java.util.Optional;
 
@@ -58,7 +58,7 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     }
 
     @Override
-    public Optional<KeyBinding> getTriggerKeyBinding() {
+    public Optional<KeyMapping> getTriggerKeyBinding() {
         return Optional.of(KeyHandler.getInstance().keybindLauncher);
     }
 
@@ -84,14 +84,14 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(PoseStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
         if (launcherProgress == 0) return;
 
-        MainWindow mw = Minecraft.getInstance().getWindow();
+        Window mw = Minecraft.getInstance().getWindow();
 
         matrixStack.pushPose();
         RenderSystem.disableTexture();
-        if (Minecraft.getInstance().player.getMainArm() == HandSide.LEFT) {
+        if (Minecraft.getInstance().player.getMainArm() == HumanoidArm.LEFT) {
             matrixStack.translate(mw.getGuiScaledWidth() - 30, mw.getGuiScaledHeight() - 30, -90);
             matrixStack.scale(-1, 1, 1);
         } else {

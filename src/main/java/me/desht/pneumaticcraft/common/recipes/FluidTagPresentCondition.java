@@ -18,11 +18,12 @@
 package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.gson.JsonObject;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollectionManager;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 
@@ -48,7 +49,7 @@ public class FluidTagPresentCondition implements ICondition {
 
     @Override
     public boolean test() {
-        ITag<Fluid> tag = TagCollectionManager.getInstance().getFluids().getTag(tagName);
+        Tag<Fluid> tag = SerializationTags.getInstance().getOrEmpty(Registry.FLUID_REGISTRY).getTag(tagName);
         return tag != null && !tag.getValues().isEmpty();
     }
 
@@ -62,7 +63,7 @@ public class FluidTagPresentCondition implements ICondition {
 
         @Override
         public FluidTagPresentCondition read(JsonObject json) {
-            return new FluidTagPresentCondition(new ResourceLocation(JSONUtils.getAsString(json, "tag")));
+            return new FluidTagPresentCondition(new ResourceLocation(GsonHelper.getAsString(json, "tag")));
         }
 
         @Override

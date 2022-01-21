@@ -23,12 +23,12 @@ import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatExtractionTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 
 public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
@@ -44,7 +44,7 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     }
 
     @Override
-    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, Level world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
 
         tracker = HeatExtractionTracker.getInstance(getWorld());
@@ -81,7 +81,7 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     }
 
     void onTransition(BlockPos pos) {
-        getWorld().playSound(null, pos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 0.5f, 2.6F + (getWorld().random.nextFloat() - getWorld().random.nextFloat()) * 0.8F);
+        getWorld().playSound(null, pos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 0.5f, 2.6F + (getWorld().random.nextFloat() - getWorld().random.nextFloat()) * 0.8F);
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE, pos.getX(), pos.getY() + 1, pos.getZ(),
                         0, 0, 0, 8, 1, 0, 1), getWorld(), pos);
     }

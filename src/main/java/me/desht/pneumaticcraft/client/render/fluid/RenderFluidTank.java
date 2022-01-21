@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
@@ -31,20 +31,20 @@ import java.util.Collections;
 import java.util.List;
 
 public class RenderFluidTank extends AbstractFluidTER<TileEntityFluidTank> {
-    private static final AxisAlignedBB BOUNDS_NONE = new AxisAlignedBB(2.01 / 16f, 1.01 / 16f, 2.01 / 16f, 13.99 / 16f, 14.99 / 16f, 13.99 / 16f);
-    private static final AxisAlignedBB BOUNDS_UP = new AxisAlignedBB(2.01 / 16f, 1.01 / 16f, 2.01 / 16f, 13.99 / 16f, 16 / 16f, 13.99 / 16f);
-    private static final AxisAlignedBB BOUNDS_DOWN = new AxisAlignedBB(2.01 / 16f, 0 / 16f, 2.01 / 16f, 13.99 / 16f, 14.99 / 16f, 13.99 / 16f);
-    private static final AxisAlignedBB BOUNDS_BOTH = new AxisAlignedBB(2.01 / 16f, 0 / 16f, 2.01 / 16f, 13.99 / 16f, 16 / 16f, 13.99 / 16f);
+    private static final AABB BOUNDS_NONE = new AABB(2.01 / 16f, 1.01 / 16f, 2.01 / 16f, 13.99 / 16f, 14.99 / 16f, 13.99 / 16f);
+    private static final AABB BOUNDS_UP = new AABB(2.01 / 16f, 1.01 / 16f, 2.01 / 16f, 13.99 / 16f, 16 / 16f, 13.99 / 16f);
+    private static final AABB BOUNDS_DOWN = new AABB(2.01 / 16f, 0 / 16f, 2.01 / 16f, 13.99 / 16f, 14.99 / 16f, 13.99 / 16f);
+    private static final AABB BOUNDS_BOTH = new AABB(2.01 / 16f, 0 / 16f, 2.01 / 16f, 13.99 / 16f, 16 / 16f, 13.99 / 16f);
 
-    public RenderFluidTank(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+    public RenderFluidTank(BlockEntityRendererProvider.Context ctx) {
+        super(ctx);
     }
 
     @Override
     Collection<TankRenderInfo> getTanksToRender(TileEntityFluidTank te) {
         boolean up = te.getBlockState().getValue(BlockPneumaticCraft.UP);
         boolean down = te.getBlockState().getValue(BlockPneumaticCraft.DOWN);
-        AxisAlignedBB bounds;
+        AABB bounds;
         if (up && down)
             bounds = BOUNDS_BOTH;
         else if (up)
@@ -69,7 +69,7 @@ public class RenderFluidTank extends AbstractFluidTER<TileEntityFluidTank> {
         private final boolean up;
         private final boolean down;
 
-        FluidTankRenderInfo(IFluidTank tank, boolean up, boolean down, AxisAlignedBB bounds) {
+        FluidTankRenderInfo(IFluidTank tank, boolean up, boolean down, AABB bounds) {
             super(tank, bounds);
             this.up = up;
             this.down = down;

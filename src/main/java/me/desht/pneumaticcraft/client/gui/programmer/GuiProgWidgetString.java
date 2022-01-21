@@ -48,7 +48,7 @@ public class GuiProgWidgetString<T extends ProgWidgetText> extends GuiProgWidget
         textfield.setValue(progWidget.string);
         textfield.setFocus(true);
         setFocused(textfield);
-        addButton(textfield);
+        addRenderableWidget(textfield);
     }
 
     @Override

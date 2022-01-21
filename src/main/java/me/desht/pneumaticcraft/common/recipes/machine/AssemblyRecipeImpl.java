@@ -22,14 +22,14 @@ import com.google.gson.JsonParseException;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.Validate;
 
@@ -41,6 +41,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
+import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 
 public class AssemblyRecipeImpl extends AssemblyRecipe {
     private final Ingredient input;
@@ -81,29 +83,28 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
     }
 
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
         input.toNetwork(buffer);
         buffer.writeItem(output);
         buffer.writeVarInt(program.ordinal());
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
-        switch (getProgramType()) {
-            case LASER: return ModRecipes.ASSEMBLY_LASER.get();
-            case DRILL: return ModRecipes.ASSEMBLY_DRILL.get();
-            default: throw new IllegalStateException("invalid program type: " + getProgramType());
-        }
+    public RecipeSerializer<?> getSerializer() {
+        return switch (getProgramType()) {
+            case LASER -> ModRecipes.ASSEMBLY_LASER.get();
+            case DRILL -> ModRecipes.ASSEMBLY_DRILL.get();
+            default -> throw new IllegalStateException("invalid program type: " + getProgramType());
+        };
     }
 
     @Override
-    public IRecipeType<?> getType() {
-        switch (getProgramType()) {
-            case DRILL: return PneumaticCraftRecipeType.ASSEMBLY_DRILL;
-            case LASER: return PneumaticCraftRecipeType.ASSEMBLY_LASER;
-            case DRILL_LASER: return PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER;
-        }
-        throw new IllegalStateException("invalid program type: " + getProgramType());
+    public RecipeType<?> getType() {
+        return switch (getProgramType()) {
+            case DRILL -> PneumaticCraftRecipeType.ASSEMBLY_DRILL;
+            case LASER -> PneumaticCraftRecipeType.ASSEMBLY_LASER;
+            case DRILL_LASER -> PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER;
+        };
     }
 
     /**
@@ -132,7 +133,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
         return drillLaser;
     }
 
-    public static class Serializer<T extends AssemblyRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {
+    public static class Serializer<T extends AssemblyRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {
@@ -142,8 +143,8 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
         @Override
         public T fromJson(ResourceLocation recipeId, JsonObject json) {
             Ingredient input = Ingredient.fromJson(json.get("input"));
-            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
-            String program = JSONUtils.getAsString(json, "program").toUpperCase(Locale.ROOT);
+            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
+            String program = GsonHelper.getAsString(json, "program").toUpperCase(Locale.ROOT);
             try {
                 AssemblyProgramType programType = AssemblyProgramType.valueOf(program);
                 Validate.isTrue(programType != AssemblyProgramType.DRILL_LASER, "'drill_laser' may not be used in recipe JSON!");
@@ -155,7 +156,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
         @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             Ingredient input = Ingredient.fromNetwork(buffer);
             ItemStack out = buffer.readItem();
             AssemblyProgramType program = AssemblyProgramType.values()[buffer.readVarInt()];
@@ -163,7 +164,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, T recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
             recipe.write(buffer);
         }
 

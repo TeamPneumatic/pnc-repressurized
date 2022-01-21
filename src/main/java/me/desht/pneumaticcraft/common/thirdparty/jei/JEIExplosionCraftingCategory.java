@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,13 +60,13 @@ public class JEIExplosionCraftingCategory extends AbstractPNCCategory<ExplosionC
     }
 
     @Override
-    public void draw(ExplosionCraftingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(ExplosionCraftingRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         getIcon().draw(matrixStack, 30, 0);
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(ExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> res = new ArrayList<>();
+    public List<Component> getTooltipStrings(ExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
+        List<Component> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
             res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.nei.recipe.explosionCrafting", recipe.getLossRate())));
         }

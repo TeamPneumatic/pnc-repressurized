@@ -23,16 +23,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -102,7 +102,7 @@ public class AmadronTradeResource {
         return new AmadronTradeResource(stack);
     }
 
-    public static AmadronTradeResource fromPacketBuf(PacketBuffer pb) {
+    public static AmadronTradeResource fromPacketBuf(FriendlyByteBuf pb) {
         Type type = pb.readEnum(Type.class);
         switch (type) {
             case ITEM: return new AmadronTradeResource(pb.readItem());
@@ -181,7 +181,7 @@ public class AmadronTradeResource {
                 if (item == null || item == Items.AIR) throw new JsonSyntaxException("unknown item " + rl + "!");
                 ItemStack itemStack = new ItemStack(item, amount);
                 if (obj.has("nbt")) {
-                    itemStack.setTag(JsonToNBT.parseTag(JSONUtils.getAsString(obj, "nbt")));
+                    itemStack.setTag(TagParser.parseTag(GsonHelper.getAsString(obj, "nbt")));
                 }
                 return new AmadronTradeResource(itemStack);
             case FLUID:
@@ -212,14 +212,14 @@ public class AmadronTradeResource {
         return res;
     }
 
-    public void writeToBuf(PacketBuffer pb) {
+    public void writeToBuf(FriendlyByteBuf pb) {
         resource.ifLeft(pStack -> {
                     pb.writeEnum(Type.ITEM);
                     pb.writeItem(pStack);
                 })
                 .ifRight(fluidStack -> {
                     pb.writeEnum(Type.FLUID);
-                    pb.writeNbt(fluidStack.writeToNBT(new CompoundNBT()));
+                    pb.writeNbt(fluidStack.writeToNBT(new CompoundTag()));
                 });
     }
 
@@ -241,15 +241,15 @@ public class AmadronTradeResource {
         return resource.map(ItemStack::getCount, FluidStack::getAmount);
     }
 
-    public CompoundNBT writeToNBT() {
-        CompoundNBT tag = new CompoundNBT();
+    public CompoundTag writeToNBT() {
+        CompoundTag tag = new CompoundTag();
         resource.ifLeft(itemStack -> {
                     tag.putString("type", Type.ITEM.toString());
-                    tag.put("resource", itemStack.save(new CompoundNBT()));
+                    tag.put("resource", itemStack.save(new CompoundTag()));
                 })
                 .ifRight(fluidStack -> {
                     tag.putString("type", Type.FLUID.toString());
-                    tag.put("resource", fluidStack.writeToNBT(new CompoundNBT()));
+                    tag.put("resource", fluidStack.writeToNBT(new CompoundTag()));
                 });
         return tag;
     }

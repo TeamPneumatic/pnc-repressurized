@@ -21,16 +21,16 @@ import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ItemSemiBlock extends Item {
@@ -39,16 +39,16 @@ public class ItemSemiBlock extends Item {
     }
 
     @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         if (context.getLevel().isClientSide) {
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
             return placeSemiblock(context);
         }
     }
 
     @Override
-    public ActionResultType useOn(ItemUseContext context) {
+    public InteractionResult useOn(UseOnContext context) {
         return super.useOn(context);
     }
 
@@ -62,7 +62,7 @@ public class ItemSemiBlock extends Item {
      * @param pos block the entity will be placed at (pass BlockPos.ZERO) if you don't plan to add the entity to the world
      * @return the semiblock entity, not added to the world
      */
-    public EntitySemiblockBase createEntity(World world, ItemStack stack, PlayerEntity player, BlockPos pos) {
+    public EntitySemiblockBase createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
         EntityType<?> type = ForgeRegistries.ENTITIES.getValue(getRegistryName());
 //        Entity e = type.create(world, stack.getTag(), null, player, pos, SpawnReason.NATURAL, false, true);
         if (type != null) {
@@ -76,12 +76,12 @@ public class ItemSemiBlock extends Item {
         return null;
     }
 
-    private ActionResultType placeSemiblock(ItemUseContext context) {
-        World world = context.getLevel();
+    private InteractionResult placeSemiblock(UseOnContext context) {
+        Level world = context.getLevel();
         ItemStack itemstack = context.getItemInHand();
         BlockPos blockpos = context.getClickedPos();
         Direction direction = context.getClickedFace();
-        PlayerEntity player = context.getPlayer();
+        Player player = context.getPlayer();
 
         EntitySemiblockBase eSemi = createEntity(context.getLevel(), itemstack, context.getPlayer(), blockpos);
         if (eSemi != null) {
@@ -89,7 +89,7 @@ public class ItemSemiBlock extends Item {
                 // if the semiblock can't go in the clicked pos, maybe it can go adjacent to it?
                 eSemi.setPos(eSemi.getX() + direction.getStepX(), eSemi.getY() + direction.getStepY(), eSemi.getZ() + direction.getStepZ());
                 if (!eSemi.canPlace(direction)) {
-                    return ActionResultType.FAIL;
+                    return InteractionResult.FAIL;
                 }
             }
 
@@ -98,7 +98,7 @@ public class ItemSemiBlock extends Item {
             }
 
             if (SemiblockTracker.getInstance().getAllSemiblocks(world, eSemi.getBlockPos()).anyMatch(s -> !s.canCoexist(eSemi))) {
-                return ActionResultType.FAIL;
+                return InteractionResult.FAIL;
             }
 
             world.addFreshEntity(eSemi);
@@ -110,6 +110,6 @@ public class ItemSemiBlock extends Item {
         } else {
             Log.warning("can't get entity for semiblock item " + getRegistryName());
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 }

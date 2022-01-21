@@ -21,17 +21,17 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class ContainerEtchingTank extends ContainerPneumaticBase<TileEntityEtchingTank> {
-    public ContainerEtchingTank(int windowId, PlayerInventory playerInv, BlockPos pos) {
+    public ContainerEtchingTank(int windowId, Inventory playerInv, BlockPos pos) {
         super(ModContainers.ETCHING_TANK.get(), windowId, playerInv, pos);
 
         for (int i = 0; i < TileEntityEtchingTank.ETCHING_SLOTS; i++) {
@@ -47,7 +47,7 @@ public class ContainerEtchingTank extends ContainerPneumaticBase<TileEntityEtchi
 
     }
 
-    public ContainerEtchingTank(int windowId, PlayerInventory playerInv, PacketBuffer buffer) {
+    public ContainerEtchingTank(int windowId, Inventory playerInv, FriendlyByteBuf buffer) {
         this(windowId, playerInv, getTilePos(buffer));
     }
 

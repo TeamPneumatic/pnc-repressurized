@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.semiblock;
 
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 /**
  * Represents a semiblock which sits on the side of an actual block, rather than occupying the same space.

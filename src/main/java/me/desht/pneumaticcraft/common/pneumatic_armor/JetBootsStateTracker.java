@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ public class JetBootsStateTracker {
         return serverTracker;
     }
 
-    public static JetBootsStateTracker getTracker(PlayerEntity player) {
+    public static JetBootsStateTracker getTracker(Player player) {
         return player.level.isClientSide ? getClientTracker() : getServerTracker();
     }
 
@@ -55,7 +55,7 @@ public class JetBootsStateTracker {
      * @param active jet boots firing?
      * @param builderMode in builder mode?
      */
-    public void setJetBootsState(PlayerEntity player, boolean enabled, boolean active, boolean builderMode) {
+    public void setJetBootsState(Player player, boolean enabled, boolean active, boolean builderMode) {
         if (!player.level.isClientSide) {
             JetBootsState state = stateMap.computeIfAbsent(player.getUUID(), uuid -> new JetBootsState(false, false, false));
 
@@ -77,7 +77,7 @@ public class JetBootsStateTracker {
         stateMap.put(playerId, state);
     }
 
-    public JetBootsState getJetBootsState(PlayerEntity player) {
+    public JetBootsState getJetBootsState(Player player) {
         return stateMap.getOrDefault(player.getUUID(), new JetBootsState(false, false, false));
     }
 

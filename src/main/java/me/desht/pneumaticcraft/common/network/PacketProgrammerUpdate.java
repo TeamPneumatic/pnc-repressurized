@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,25 +44,25 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
         this.widgets = te.progWidgets;
     }
 
-    public PacketProgrammerUpdate(PacketBuffer buffer) {
+    public PacketProgrammerUpdate(FriendlyByteBuf buffer) {
         super(buffer);
         widgets = readWidgetsFromPacket(buffer);
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
         writeProgWidgetsToPacket(buffer);
     }
 
-    private void writeProgWidgetsToPacket(PacketBuffer buf) {
+    private void writeProgWidgetsToPacket(FriendlyByteBuf buf) {
         buf.writeVarInt(widgets.size());
         for (IProgWidget progWidget : widgets) {
             progWidget.writeToPacket(buf);
         }
     }
 
-    private static List<IProgWidget> readWidgetsFromPacket(PacketBuffer buf) {
+    private static List<IProgWidget> readWidgetsFromPacket(FriendlyByteBuf buf) {
         List<IProgWidget> widgets = new ArrayList<>();
         int nWidgets = buf.readVarInt();
         for (int i = 0; i < nWidgets; i++) {
@@ -85,19 +85,19 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
         ctx.get().setPacketHandled(true);
     }
 
-    private void updateTE(PlayerEntity player) {
+    private void updateTE(Player player) {
         PacketUtil.getTE(player, pos, TileEntityProgrammer.class).ifPresent(te -> te.setProgWidgets(widgets, player));
     }
 
     @Override
-    public PacketBuffer dumpToBuffer() {
-        PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
+    public FriendlyByteBuf dumpToBuffer() {
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         toBytes(buf);
         return buf;
     }
 
     @Override
-    public void handleLargePayload(PlayerEntity player) {
+    public void handleLargePayload(Player player) {
         updateTE(player);
     }
 }

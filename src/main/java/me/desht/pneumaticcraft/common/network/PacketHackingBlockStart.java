@@ -24,11 +24,11 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -41,16 +41,16 @@ public class PacketHackingBlockStart extends LocationIntPacket {
         super(pos);
     }
 
-    public PacketHackingBlockStart(PacketBuffer buffer) {
+    public PacketHackingBlockStart(FriendlyByteBuf buffer) {
         super(buffer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+            ServerPlayer player = ctx.get().getSender();
             if (player == null) {
                 // client
-                PlayerEntity cPlayer = ClientUtils.getClientPlayer();
+                Player cPlayer = ClientUtils.getClientPlayer();
                 CommonArmorHandler.getHandlerForPlayer()
                         .getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler)
                         .setHackedBlockPos(new WorldAndCoord(cPlayer.level, pos));

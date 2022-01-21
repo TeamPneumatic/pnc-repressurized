@@ -17,8 +17,9 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
@@ -30,36 +31,37 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
-import net.minecraft.client.MainWindow;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ICharacterConsumer;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.FormattedCharSink;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, ITooltipProvider {
+public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedStat, ITooltipProvider {
     private static final int MIN_WIDTH_HEIGHT = 17;
     private static final int MAX_VISIBLE_LINES = 12;
     private static final int SCROLLBAR_MARGIN_WIDTH = 20;
@@ -69,12 +71,12 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private StatIcon statIcon;
     private final Screen gui;
     // the text we want to draw
-    private final List<ITextComponent> textComponents = new ArrayList<>();
+    private final List<Component> textComponents = new ArrayList<>();
     // the text which is actually renderered, after having been wrapped to fit the stat's width
-    private final List<IReorderingProcessor> reorderingProcessors = new ArrayList<>();
+    private final List<FormattedCharSequence> reorderingProcessors = new ArrayList<>();
     // for each rendered line, should it be drawn with a drop shadow?
     private final List<Boolean> dropShadows = new ArrayList<>();
-    private final List<Widget> subWidgets = new ArrayList<>();
+    private final List<AbstractWidget> subWidgets = new ArrayList<>();
     private int effectiveY;  // where the widget is actually rendered (if it has a "parent" stat, it will always render below that)
     private int reservedLines = 0; // space at the top where text isn't rendered
     private boolean autoLineWrap = true;
@@ -107,9 +109,9 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private boolean needTextRecalc = true;
     private int foregroundColor = 0xFFFFFFFF;
     private int titleColor = 0xFFFFFF00;
-    private List<ITextComponent> extraTooltipText = new ArrayList<>();
+    private List<Component> extraTooltipText = new ArrayList<>();
 
-    public WidgetAnimatedStat(Screen gui, ITextComponent title, int xPos, int yPos, int backGroundColor,
+    public WidgetAnimatedStat(Screen gui, Component title, int xPos, int yPos, int backGroundColor,
                               IGuiAnimatedStat statAbove, boolean leftSided) {
         super(xPos, yPos, MIN_WIDTH_HEIGHT, MIN_WIDTH_HEIGHT, title);
 
@@ -127,7 +129,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     public WidgetAnimatedStat(Screen gui, int backgroundColor) {
-        this(gui, StringTextComponent.EMPTY, 0, 0, backgroundColor, null, false);
+        this(gui, TextComponent.EMPTY, 0, 0, backgroundColor, null, false);
     }
 
     public WidgetAnimatedStat(Screen gui, int backgroundColor, ItemStack icon) {
@@ -140,16 +142,16 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         statIcon = StatIcon.of(texture);
     }
 
-    public WidgetAnimatedStat(Screen gui, ITextComponent title, StatIcon icon, int xPos, int yPos, int backGroundColor,
+    public WidgetAnimatedStat(Screen gui, Component title, StatIcon icon, int xPos, int yPos, int backGroundColor,
                               IGuiAnimatedStat statAbove, boolean leftSided) {
         this(gui, title, xPos, yPos, backGroundColor, statAbove, leftSided);
         statIcon = icon;
     }
 
-    public WidgetAnimatedStat(Screen gui, ITextComponent title, StatIcon icon, int backGroundColor,
+    public WidgetAnimatedStat(Screen gui, Component title, StatIcon icon, int backGroundColor,
                               IGuiAnimatedStat statAbove, ArmorHUDLayout.LayoutItem layout) {
         this(gui, title, 0, 0, backGroundColor, statAbove, layout.isLeftSided());
-        MainWindow mw = Minecraft.getInstance().getWindow();
+        Window mw = Minecraft.getInstance().getWindow();
         int x = layout.getX() == -1 ? mw.getGuiScaledWidth() - 2 : (int) (mw.getGuiScaledWidth() * layout.getX());
         setBaseX(x);
         setBaseY((int) (mw.getGuiScaledHeight() * layout.getY()));
@@ -157,7 +159,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void setMessage(ITextComponent message) {
+    public void setMessage(Component message) {
         super.setMessage(message);
         needTextRecalc = true;
     }
@@ -167,11 +169,11 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         statAbove = stat;
     }
 
-    public void addSubWidget(Widget widget) {
+    public void addSubWidget(AbstractWidget widget) {
         subWidgets.add(widget);
     }
 
-    public void removeSubWidget(Widget widget) {
+    public void removeSubWidget(AbstractWidget widget) {
         subWidgets.remove(widget);
     }
 
@@ -196,17 +198,17 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public ITextComponent getTitle() {
+    public Component getTitle() {
         return getMessage();
     }
 
     @Override
-    public void setTitle(ITextComponent title) {
+    public void setTitle(Component title) {
         setMessage(title);
     }
 
     @Override
-    public IGuiAnimatedStat setText(List<ITextComponent> text) {
+    public IGuiAnimatedStat setText(List<Component> text) {
         textComponents.clear();
         textComponents.addAll(text);
         needTextRecalc = true;
@@ -214,7 +216,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public IGuiAnimatedStat setText(ITextComponent text) {
+    public IGuiAnimatedStat setText(Component text) {
         textComponents.clear();
         textComponents.add(text);
         needTextRecalc = true;
@@ -222,7 +224,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void appendText(List<ITextComponent> text) {
+    public void appendText(List<Component> text) {
         textComponents.addAll(text);
         needTextRecalc = true;
     }
@@ -281,7 +283,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public void setReservedLines(int reservedLines) {
-        this.reservedLines = MathHelper.clamp(reservedLines, 0, MAX_VISIBLE_LINES - 1);
+        this.reservedLines = Mth.clamp(reservedLines, 0, MAX_VISIBLE_LINES - 1);
         needTextRecalc = true;
     }
 
@@ -289,7 +291,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         reorderingProcessors.clear();
         dropShadows.clear();
 
-        FontRenderer font = Minecraft.getInstance().font;
+        Font font = Minecraft.getInstance().font;
         int titleWidth = font.width(getMessage());
         if (autoLineWrap) {
             int availableWidth = calculateAvailableWidth();
@@ -320,8 +322,8 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
      */
     private int calculateAvailableWidth() {
         int availableWidth;
-        if (gui instanceof ContainerScreen) {
-            ContainerScreen<?> gc = (ContainerScreen<?>) gui;
+        if (gui instanceof AbstractContainerScreen) {
+            AbstractContainerScreen<?> gc = (AbstractContainerScreen<?>) gui;
             availableWidth = Math.min(Math.max(minExpandedWidth, gc.getXSize()), leftSided ? gc.getGuiLeft() : gc.width - (gc.getGuiLeft() + gc.getXSize()));
         } else if (gui instanceof GuiPneumaticScreenBase) {
             GuiPneumaticScreenBase g = (GuiPneumaticScreenBase) gui;
@@ -332,7 +334,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         return availableWidth - 5 - SCROLLBAR_MARGIN_WIDTH;  // leave at least 5 pixel margin from edge of screen
     }
 
-    private boolean needsDropShadow(IReorderingProcessor line) {
+    private boolean needsDropShadow(FormattedCharSequence line) {
         StyleChecker styleChecker = new StyleChecker(foregroundColor);
         line.accept(styleChecker);
         return styleChecker.isLightColor();
@@ -416,7 +418,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void renderStat(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void renderStat(PoseStack matrixStack, int x, int y, float partialTicks) {
         // just delegate to the renderButton() method
         // a separately-named interface method is used to avoid AbstractMethodError problems arising
         // from having a renderButton() method in IGuiAnimatedStat
@@ -437,25 +439,25 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (!this.visible) return;
 
         int baseX = leftSided ? this.x - this.width : this.x;
         this.isHovered = mouseX >= baseX && mouseY >= this.effectiveY && mouseX < baseX + this.width && mouseY < this.effectiveY + this.height;
 
         float zLevel = 0;
-        FontRenderer fontRenderer = Minecraft.getInstance().font;
-        int renderBaseX = (int) MathHelper.lerp(partialTicks, prevX, x);
-        int renderAffectedY = (int) MathHelper.lerp(partialTicks, prevEffectiveY, effectiveY);
-        int renderWidth = (int) MathHelper.lerp(partialTicks, prevWidth, width);
-        int renderHeight = (int) MathHelper.lerp(partialTicks, prevHeight, height);
+        Font fontRenderer = Minecraft.getInstance().font;
+        int renderBaseX = (int) Mth.lerp(partialTicks, prevX, x);
+        int renderAffectedY = (int) Mth.lerp(partialTicks, prevEffectiveY, effectiveY);
+        int renderWidth = (int) Mth.lerp(partialTicks, prevWidth, width);
+        int renderHeight = (int) Mth.lerp(partialTicks, prevHeight, height);
 
         if (leftSided) renderWidth *= -1;
-        AbstractGui.fill(matrixStack, renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
+        GuiComponent.fill(matrixStack, renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(3.0F);
-        BufferBuilder wr = Tessellator.getInstance().getBuilder();
-        wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
+        BufferBuilder wr = Tesselator.getInstance().getBuilder();
+        wr.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
         float[] c2 = bgColorHi.getComponents(null);
         float[] c3 = leftSided ? bgColorHi.getComponents(null) : bgColorLo.getComponents(null);
@@ -464,7 +466,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         wr.vertex(renderBaseX + renderWidth, renderAffectedY, zLevel).color(c2[0], c2[1], c2[2], c2[3]).endVertex();
         wr.vertex(renderBaseX + renderWidth, renderAffectedY + renderHeight, zLevel).color(c3[0], c3[1], c3[2],c3[3]).endVertex();
         wr.vertex(renderBaseX, renderAffectedY + renderHeight, zLevel).color(c4[0], c4[1], c4[2], c4[3]).endVertex();
-        Tessellator.getInstance().end();
+        Tesselator.getInstance().end();
         RenderSystem.enableTexture();
         if (leftSided) renderWidth *= -1;
 
@@ -478,7 +480,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
                 fontRenderer.drawShadow(matrixStack, title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, titleColor);
             }
             for (int i = curScroll; i < reorderingProcessors.size() && i < curScroll + getVisibleLines(); i++) {
-                IReorderingProcessor line = reorderingProcessors.get(i);
+                FormattedCharSequence line = reorderingProcessors.get(i);
                 int renderX = renderBaseX + (leftSided ? -renderWidth + 2 : 18);
                 int renderY = renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset + reservedLines * fontRenderer.lineHeight;
                 if (dropShadows.get(i)) {
@@ -500,14 +502,14 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void renderStat(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+    public void renderStat(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
         // used by the Block Tracker & Entity Tracker armor upgrades
         if (needTextRecalc) recalcText();
 
-        int renderBaseX = (int) MathHelper.lerp(partialTicks, prevX, x);
-        int renderEffectiveY = (int) MathHelper.lerp(partialTicks, prevEffectiveY, effectiveY);
-        int renderWidth = (int) MathHelper.lerp(partialTicks, prevWidth, width);
-        int renderHeight = (int) MathHelper.lerp(partialTicks, prevHeight, height);
+        int renderBaseX = (int) Mth.lerp(partialTicks, prevX, x);
+        int renderEffectiveY = (int) Mth.lerp(partialTicks, prevEffectiveY, effectiveY);
+        int renderWidth = (int) Mth.lerp(partialTicks, prevWidth, width);
+        int renderHeight = (int) Mth.lerp(partialTicks, prevHeight, height);
 
         // quad bg
         int[] cols = RenderUtils.decomposeColor(backGroundColor);
@@ -549,11 +551,11 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             // text title
             String title = getMessage().getString();
             if (!title.isEmpty()) {
-                RenderUtils.renderString3d(TextFormatting.UNDERLINE + title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderEffectiveY + 2, titleColor, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(ChatFormatting.UNDERLINE + title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderEffectiveY + 2, titleColor, matrixStack, buffer, false, true);
             }
             // text lines
             int titleYoffset = title.isEmpty() ? 3 : 12;
-            FontRenderer font = Minecraft.getInstance().font;
+            Font font = Minecraft.getInstance().font;
             for (int i = curScroll; i < textComponents.size() && i < curScroll + getVisibleLines(); i++) {
                 int renderX = renderBaseX + (leftSided ? -renderWidth + 2 : 18);
                 int renderY = renderEffectiveY + (i - curScroll) * lineSpacing + titleYoffset + reservedLines * font.lineHeight;
@@ -588,9 +590,9 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
                     .forEach(IGuiAnimatedStat::closeStat);
             // focus on the first textfield child of this widget, if any
             subWidgets.stream()
-                    .filter(w -> w instanceof TextFieldWidget)
+                    .filter(w -> w instanceof EditBox)
                     .findFirst()
-                    .ifPresent(w -> ((TextFieldWidget) w).setFocus(true));
+                    .ifPresent(w -> ((EditBox) w).setFocus(true));
         }
     }
 
@@ -604,8 +606,8 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isHovered()) {
-            for (Widget widget : subWidgets) {
+        if (isHoveredOrFocused()) {
+            for (AbstractWidget widget : subWidgets) {
                 if (widget.mouseClicked(mouseX - this.x, mouseY - this.effectiveY, button)) {
                     return true;
                 }
@@ -620,8 +622,8 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (isHovered()) {
-            for (Widget widget : subWidgets) {
+        if (isHoveredOrFocused()) {
+            for (AbstractWidget widget : subWidgets) {
                 if (widget.mouseReleased(mouseX - this.x, mouseY - this.effectiveY, button)) {
                     return true;
                 }
@@ -633,9 +635,9 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (isHovered()) {
-            Rectangle2d bounds = getBounds();
-            for (Widget widget : subWidgets) {
+        if (isHoveredOrFocused()) {
+            Rect2i bounds = getBounds();
+            for (AbstractWidget widget : subWidgets) {
                 if (widget.mouseDragged(mouseX - bounds.getX(), mouseY - bounds.getY(), button, dragX, dragY)) {
                     return true;
                 }
@@ -647,8 +649,8 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public boolean mouseScrolled(double x, double y, double dir) {
-        Rectangle2d bounds = getBounds();
-        for (Widget widget : subWidgets) {
+        Rect2i bounds = getBounds();
+        for (AbstractWidget widget : subWidgets) {
             if (widget.isFocused() && widget.mouseScrolled(x - bounds.getX(), y - bounds.getY(), dir)) {
                 return true;
             }
@@ -658,8 +660,8 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        for (Widget widget : subWidgets) {
-            if (widget.keyPressed(keyCode, scanCode, modifiers) || (widget instanceof TextFieldWidget && widget.isFocused()) && keyCode != GLFW.GLFW_KEY_ESCAPE) {
+        for (AbstractWidget widget : subWidgets) {
+            if (widget.keyPressed(keyCode, scanCode, modifiers) || (widget instanceof EditBox && widget.isFocused()) && keyCode != GLFW.GLFW_KEY_ESCAPE) {
                 return true;
             }
         }
@@ -668,7 +670,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        for (Widget widget : subWidgets) {
+        for (AbstractWidget widget : subWidgets) {
             if (widget.charTyped(codePoint, modifiers)) {
                 return true;
             }
@@ -732,28 +734,28 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public Rectangle2d getBounds() {
-        return new Rectangle2d(x - (leftSided ? width : 0), effectiveY, width, height);
+    public Rect2i getBounds() {
+        return new Rect2i(x - (leftSided ? width : 0), effectiveY, width, height);
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<Component> curTooltip, boolean shiftPressed) {
         if (mouseIsHoveringOverIcon(mouseX, mouseY)) {
             curTooltip.add(getMessage());
             curTooltip.addAll(getExtraTooltipText());
         }
 
-        for (Widget widget : subWidgets)
-            if (widget.isHovered() && widget instanceof ITooltipProvider) {
+        for (AbstractWidget widget : subWidgets)
+            if (widget.isHoveredOrFocused() && widget instanceof ITooltipProvider) {
                 ((ITooltipProvider) widget).addTooltip(mouseX, mouseY, curTooltip, shiftPressed);
             }
     }
 
-    public void setExtraTooltipText(List<ITextComponent> extraTooltipText) {
+    public void setExtraTooltipText(List<Component> extraTooltipText) {
         this.extraTooltipText = extraTooltipText;
     }
 
-    private List<ITextComponent> getExtraTooltipText() {
+    private List<Component> getExtraTooltipText() {
         return extraTooltipText;
     }
 
@@ -779,6 +781,10 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         this.statIcon = StatIcon.of(itemStack);
     }
 
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    }
+
     public static class StatIcon {
         public static final StatIcon NONE = StatIcon.of(ItemStack.EMPTY);
 
@@ -792,7 +798,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             return new StatIcon(Either.left(stack));
         }
 
-        public static StatIcon of(IItemProvider item) {
+        public static StatIcon of(ItemLike item) {
             return new StatIcon(Either.left(new ItemStack(item, 1)));
         }
 
@@ -800,8 +806,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             return new StatIcon(Either.right(texture));
         }
 
-        void render(MatrixStack matrixStack, int x, int y, boolean leftSided) {
-            RenderSystem.color4f(1, 1, 1, 1);
+        void render(PoseStack matrixStack, int x, int y, boolean leftSided) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             texture.ifLeft(stack ->  GuiUtils.renderItemStack(matrixStack, stack, x - (leftSided ? 16 : 0), y))
@@ -809,18 +814,18 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             RenderSystem.disableBlend();
         }
 
-        public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, int x, int y) {
+        public void render3d(PoseStack matrixStack, MultiBufferSource buffer, int x, int y) {
             texture.ifLeft(stack -> {
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                IBakedModel ibakedmodel = itemRenderer.getModel(stack, ClientUtils.getClientWorld(), null);
-                itemRenderer.render(stack, ItemCameraTransforms.TransformType.FIXED, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                BakedModel bakedModel = itemRenderer.getModel(stack, ClientUtils.getClientLevel(), null, 0);
+                itemRenderer.render(stack, ItemTransforms.TransformType.FIXED, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, bakedModel);
             }).ifRight(resLoc ->
                     RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(resLoc),
                             (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, RenderUtils.FULL_BRIGHT)));
         }
     }
 
-    private static class StyleChecker implements ICharacterConsumer {
+    private static class StyleChecker implements FormattedCharSink {
         private static final int THRESHOLD = 129;
 
         Style style = Style.EMPTY;

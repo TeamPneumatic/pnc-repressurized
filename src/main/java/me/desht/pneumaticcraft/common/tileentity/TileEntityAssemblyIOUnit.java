@@ -28,12 +28,13 @@ import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -64,65 +65,69 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private byte state = 0;
     private byte tickCounter = 0;
 
-    public TileEntityAssemblyIOUnit() {
-        super(ModTileEntities.ASSEMBLY_IO_UNIT.get());
+    public TileEntityAssemblyIOUnit(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ASSEMBLY_IO_UNIT.get(), pos, state);
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        if (getLevel().isClientSide) {
-            if (!isClawDone()) moveClaw();
-        } else {
-            slowMode = false;
-            switch (state) {
-                case STATE_IDLE:
-                    break;
-                case STATE_SEARCH_SRC:
-                    if (findPickupLocation()) state++;
-                    break;
-                // rise to the right height for target location
-                case 2: // for pickup
-                case 7: // for drop-off
-                case 22: // for reset
-                    if (hoverOverTarget()) state++;
-                    break;
-                // turn and move to target
-                case 3: // for pickup
-                case 8: // for drop-off
-                case 23: // for reset
-                    slowMode = true;
-                    if (gotoTarget()) state++;
-                    break;
-                case 4: // pickup item - need to pick up before closeClaw; claw needs to know item size to 'grab' it!
-                    if (getItemFromCurrentDirection()) state++;
-                    break;
-                case STATE_CLOSECLAW_AFTER_PICKUP:
-                case STATE_RESET_CLOSECLAW_AFTER_PICKUP:
-                    if (closeClaw()) state++;
-                    break;
-                case 6:
-                case 21:
-                    if (findDropOffLocation()) state++;
-                    break;
-                case 9:
-                case 24:
-                    if (openClaw()) state++;
-                    break;
-                case 10: // drop off item
-                case 25:
-                    if (putItemToCurrentDirection()) state++;
-                    break;
-                case 11:
-                case STATE_RESET_GOTO_IDLE:
-                    if (gotoIdlePos()) state = 0;
-                case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
-                    break;
-                default:
-                    System.out.printf("unexpected state: %d%n", state);
-                    state = STATE_MAX;
-                    break;
-            }
+    public void tickClient() {
+        super.tickClient();
+
+        if (!isClawDone()) moveClaw();
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        slowMode = false;
+        switch (state) {
+            case STATE_IDLE:
+                break;
+            case STATE_SEARCH_SRC:
+                if (findPickupLocation()) state++;
+                break;
+            // rise to the right height for target location
+            case 2: // for pickup
+            case 7: // for drop-off
+            case 22: // for reset
+                if (hoverOverTarget()) state++;
+                break;
+            // turn and move to target
+            case 3: // for pickup
+            case 8: // for drop-off
+            case 23: // for reset
+                slowMode = true;
+                if (gotoTarget()) state++;
+                break;
+            case 4: // pickup item - need to pick up before closeClaw; claw needs to know item size to 'grab' it!
+                if (getItemFromCurrentDirection()) state++;
+                break;
+            case STATE_CLOSECLAW_AFTER_PICKUP:
+            case STATE_RESET_CLOSECLAW_AFTER_PICKUP:
+                if (closeClaw()) state++;
+                break;
+            case 6:
+            case 21:
+                if (findDropOffLocation()) state++;
+                break;
+            case 9:
+            case 24:
+                if (openClaw()) state++;
+                break;
+            case 10: // drop off item
+            case 25:
+                if (putItemToCurrentDirection()) state++;
+                break;
+            case 11:
+            case STATE_RESET_GOTO_IDLE:
+                if (gotoIdlePos()) state = 0;
+            case STATE_MAX: // this will be set if we encounter an unknown state; prevents log-spam that would result from default-case
+                break;
+            default:
+                System.out.printf("unexpected state: %d%n", state);
+                state = STATE_MAX;
+                break;
         }
     }
 
@@ -186,7 +191,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
 
     private ItemImportResult findImportInventory() {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
-            TileEntity te = getCachedNeighbor(dir);
+            BlockEntity te = getCachedNeighbor(dir);
             if (te != null) {
                 ItemStack res = searchImportInventory(te);
                 if (!res.isEmpty()) {
@@ -196,7 +201,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         }
         for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
             for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
-                TileEntity te = getLevel().getBlockEntity(getBlockPos().relative(primDir).relative(secDir));
+                BlockEntity te = getLevel().getBlockEntity(getBlockPos().relative(primDir).relative(secDir));
                 if (te != null) {
                     ItemStack res = searchImportInventory(te);
                     if (!res.isEmpty()) {
@@ -208,7 +213,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         return null;
     }
 
-    private ItemStack searchImportInventory(TileEntity te) {
+    private ItemStack searchImportInventory(BlockEntity te) {
         CountedItemStacks counted = IOHelper.getInventoryForTE(te, Direction.UP)
                 .map(CountedItemStacks::new)
                 .orElse(null);
@@ -256,7 +261,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     private boolean getItemFromCurrentDirection() {
-        TileEntity tile = getTileEntityForCurrentDirection();
+        BlockEntity tile = getTileEntityForCurrentDirection();
 
         boolean extracted = false;
 
@@ -312,7 +317,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
 
     private boolean putItemToCurrentDirection() {
         if (isImportUnit()) {
-            TileEntity tile = getTileEntityForCurrentDirection();
+            BlockEntity tile = getTileEntityForCurrentDirection();
             if (tile instanceof TileEntityAssemblyPlatform) {
                 TileEntityAssemblyPlatform plat = (TileEntityAssemblyPlatform) tile;
 
@@ -329,7 +334,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
                 repeatDropOffSearch(); // platform gone; close claw and search new drop-off-location
             }
         } else {
-            TileEntity te = getTileEntityForCurrentDirection();
+            BlockEntity te = getTileEntityForCurrentDirection();
             if (te == null) repeatDropOffSearch(); // inventory gone; close claw and search new drop-off-location
             else {
                 ItemStack currentStack = itemHandler.getStackInSlot(0);
@@ -416,14 +421,14 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private TargetDirections getExportLocationForItem(ItemStack exportedItem) {
         if (!exportedItem.isEmpty()) {
             for (Direction dir : DirectionUtil.HORIZONTALS) {
-                TileEntity te = getLevel().getBlockEntity(getBlockPos().relative(dir));
+                BlockEntity te = getLevel().getBlockEntity(getBlockPos().relative(dir));
                 int slot = getPlacementSlot(exportedItem, te);
                 if (slot >= 0) return new TargetDirections(dir);
             }
             if (canMoveToDiagonalNeighbours()) {
                 for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
                     for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
-                        TileEntity te = getLevel().getBlockEntity(getBlockPos().relative(primDir).relative(secDir));
+                        BlockEntity te = getLevel().getBlockEntity(getBlockPos().relative(primDir).relative(secDir));
                         int slot = getPlacementSlot(exportedItem, te);
                         if (slot >= 0) return new TargetDirections(primDir, secDir);
                     }
@@ -441,7 +446,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
      * @param te where the item is being attempted to insert to (will use the top face for IItemHandler cap.)
      * @return the placement slot, or -1 when the item can't be placed / accessed
      */
-    private static int getPlacementSlot(ItemStack exportedItem, TileEntity te) {
+    private static int getPlacementSlot(ItemStack exportedItem, BlockEntity te) {
         if (te == null || te instanceof TileEntityAssemblyRobot) return -1;
 
         return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).map(handler -> {
@@ -456,8 +461,8 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public void load(BlockState blockState, CompoundNBT tag) {
-        super.load(blockState, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         clawProgress = tag.getFloat("clawProgress");
         shouldClawClose = tag.getBoolean("clawClosing");
@@ -471,13 +476,12 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
         super.save(tag);
         tag.putFloat("clawProgress", clawProgress);
         tag.putBoolean("clawClosing", shouldClawClose);
         tag.putByte("state", state);
         tag.put("Items", itemHandler.serializeNBT());
-        return tag;
     }
 
     @Override

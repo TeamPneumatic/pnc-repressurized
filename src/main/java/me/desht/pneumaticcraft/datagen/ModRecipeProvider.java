@@ -17,22 +17,22 @@ import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.data.*;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ITag;
+import net.minecraft.tags.Tag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.NBTIngredient;
@@ -49,13 +49,21 @@ import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
+import net.minecraft.data.recipes.SingleItemRecipeBuilder;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
+
 public class ModRecipeProvider extends RecipeProvider {
     public ModRecipeProvider(DataGenerator generatorIn) {
         super(generatorIn);
     }
 
     @Override
-    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer) {
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
         shaped(ModItems.AIR_CANISTER.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " T /IRI/IRI",
                 'T', ModBlocks.PRESSURE_TUBE.get(),
@@ -1161,53 +1169,53 @@ public class ModRecipeProvider extends RecipeProvider {
 
         // vanilla stonecutter for bricks etc.
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), ModBlocks.REINFORCED_STONE_SLAB.get(), 2)
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_stone_slab_from_stone_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), ModBlocks.REINFORCED_BRICKS.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_bricks_from_stone_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_SLAB.get(), 2)
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_slab_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_TILE.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_tile_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_STAIRS.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_stairs_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_WALL.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_wall_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_PILLAR.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_brick_pillar_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICK_TILE.get()), ModBlocks.REINFORCED_BRICKS.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_bricks_from_tile_stonecutting"));
 
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), ModBlocks.COMPRESSED_STONE_SLAB.get(), 2)
-                .unlocks("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_stone_slab_from_stone_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), ModBlocks.COMPRESSED_BRICKS.get())
-                .unlocks("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_bricks_from_stone_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_SLAB.get(), 2)
-                .unlocks("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_slab_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_TILE.get())
-                .unlocks("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_tile_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_STAIRS.get())
-                .unlocks("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_stairs_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_WALL.get())
-                .unlocks("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_wall_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICKS.get()), ModBlocks.COMPRESSED_BRICK_PILLAR.get())
-                .unlocks("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_brick_pillar_from_bricks_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_BRICK_TILE.get()), ModBlocks.COMPRESSED_BRICKS.get())
-                .unlocks("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_bricks_from_tile_stonecutting"));
 
         // plastic bricks & wall lamps
@@ -1233,15 +1241,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 .build(consumer, RL("one_probe_crafting"));
 
         // smelting
-        CookingRecipeBuilder.blasting(Ingredient.of(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(),
+        SimpleCookingRecipeBuilder.blasting(Ingredient.of(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(),
                         0.25f, 100)
                 .unlockedBy("has_empty_pcb", has(ModItems.FAILED_PCB.get()))
                 .save(consumer, RL("empty_pcb_from_failed_pcb"));
-        CookingRecipeBuilder.smelting(Ingredient.of(PneumaticCraftTags.Items.PLASTIC_BRICKS), ModItems.PLASTIC.get(),
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(PneumaticCraftTags.Items.PLASTIC_BRICKS), ModItems.PLASTIC.get(),
                         0f, 100)
                 .unlockedBy("has_plastic", has(ModItems.PLASTIC.get()))
                 .save(consumer, RL("plastic_sheet_from_brick"));
-        CookingRecipeBuilder.smelting(Ingredient.of(ModItems.SOURDOUGH.get()), ModItems.SOURDOUGH_BREAD.get(),
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModItems.SOURDOUGH.get()), ModItems.SOURDOUGH_BREAD.get(),
                         0.35f, 100)
                 .unlockedBy("has_dough", has(ModItems.SOURDOUGH.get()))
                 .save(consumer, RL("sourdough_bread"));
@@ -1557,18 +1565,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidIngredient.of(1000, new ResourceLocation("thermal:tree_oil")), 400_000, 1.0f);
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
+    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
         return shapeless(result, 1, required, ingredients);
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
+    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(result, count);
         for (Object v : ingredients) {
-            if (v instanceof ITag<?>) {
+            if (v instanceof Tag<?>) {
                 //noinspection unchecked
-                b.requires((ITag<Item>) v);
-            } else if (v instanceof IItemProvider) {
-                b.requires((IItemProvider) v);
+                b.requires((Tag<Item>) v);
+            } else if (v instanceof ItemLike) {
+                b.requires((ItemLike) v);
             } else if (v instanceof Ingredient) {
                 b.requires((Ingredient) v);
             } else {
@@ -1579,11 +1587,11 @@ public class ModRecipeProvider extends RecipeProvider {
         return b;
     }
 
-    private void buildLogisticsFrameSelfCraft(Item frame, Consumer<IFinishedRecipe> consumer) {
+    private void buildLogisticsFrameSelfCraft(Item frame, Consumer<FinishedRecipe> consumer) {
         shapeless(frame, frame, frame).save(consumer, frame.getRegistryName().toString() + "_self");
     }
 
-    private ShapedRecipeBuilder logisticsFrame(Item result, ITag.INamedTag<Item> dye) {
+    private ShapedRecipeBuilder logisticsFrame(Item result, Tag.Named<Item> dye) {
         return shaped(result, 8, ModItems.LOGISTICS_CORE.get(),
                 "PPP/PDP/PCP",
                 'P', Items.STICK,
@@ -1591,15 +1599,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 'D', dye);
     }
 
-    private ShapedRecipeBuilder networkComponent(Item result, int count, ITag.INamedTag<Item> edge, ITag.INamedTag<Item> dyeCorner) {
+    private ShapedRecipeBuilder networkComponent(Item result, int count, Tag.Named<Item> edge, Tag.Named<Item> dyeCorner) {
         return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
 
-    private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, ITag.INamedTag<Item> dyeCorner) {
+    private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, Tag.Named<Item> dyeCorner) {
         return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder pneumaticTool(T result, Object dye) {
+    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder pneumaticTool(T result, Object dye) {
         return shapedPressure(result, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "IDI/C  /ILI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
@@ -1609,15 +1617,15 @@ public class ModRecipeProvider extends RecipeProvider {
         );
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>, U extends ShapedRecipeBuilder> U genericShaped(U builder, T result, T required, String pattern, Object... keys) {
+    private <T extends ItemLike & IForgeRegistryEntry<?>, U extends ShapedRecipeBuilder> U genericShaped(U builder, T result, T required, String pattern, Object... keys) {
         Arrays.stream(pattern.split("/")).forEach(builder::pattern);
         for (int i = 0; i < keys.length; i += 2) {
             Object v = keys[i + 1];
-            if (v instanceof ITag<?>) {
+            if (v instanceof Tag<?>) {
                 //noinspection unchecked
-                builder.define((Character) keys[i], (ITag<Item>) v);
-            } else if (v instanceof IItemProvider) {
-                builder.define((Character) keys[i], (IItemProvider) v);
+                builder.define((Character) keys[i], (Tag<Item>) v);
+            } else if (v instanceof ItemLike) {
+                builder.define((Character) keys[i], (ItemLike) v);
             } else if (v instanceof Ingredient) {
                 builder.define((Character) keys[i], (Ingredient) v);
             } else {
@@ -1628,23 +1636,23 @@ public class ModRecipeProvider extends RecipeProvider {
         return builder;
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder shapedPressure(T result, T required, String pattern, Object... keys) {
+    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder shapedPressure(T result, T required, String pattern, Object... keys) {
         return genericShaped(ShapedPressurizableRecipeBuilder.shapedRecipe(result), result, required, pattern, keys);
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedNoMirrorRecipeBuilder shapedNoMirror(T result, T required, int count, String pattern, Object... keys) {
+    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedNoMirrorRecipeBuilder shapedNoMirror(T result, T required, int count, String pattern, Object... keys) {
         return genericShaped(ShapedNoMirrorRecipeBuilder.shapedRecipe(result, count), result, required, pattern, keys);
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, int count, T required, String pattern, Object... keys) {
+    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, int count, T required, String pattern, Object... keys) {
         return genericShaped(ShapedRecipeBuilder.shaped(result, count), result, required, pattern, keys);
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, T required, String pattern, Object... keys) {
+    private <T extends ItemLike & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, T required, String pattern, Object... keys) {
         return shaped(result, 1, required, pattern, keys);
     }
 
-    private ShapedRecipeBuilder plasticBrick(DyeColor color, ITag<Item> dyeIngredient) {
+    private ShapedRecipeBuilder plasticBrick(DyeColor color, Tag<Item> dyeIngredient) {
         Item brick = ModBlocks.plasticBrick(color).get().asItem();
         return shaped(brick, 8, ModItems.PLASTIC.get(),
                 "PPP/PDP/PPP",
@@ -1652,7 +1660,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'D', dyeIngredient);
     }
 
-    private ShapedRecipeBuilder wallLamp(DyeColor color, boolean inverted, ITag<Item> dyeIngredient) {
+    private ShapedRecipeBuilder wallLamp(DyeColor color, boolean inverted, Tag<Item> dyeIngredient) {
         Item lamp = ModBlocks.wallLamp(color, inverted).get().asItem();
         return shaped(lamp, 4, ModItems.COMPRESSED_IRON_INGOT.get(),
                 " R /IGI/ D ",
@@ -1683,8 +1691,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', center);
     }
 
-    private CustomRecipeBuilder specialRecipe(SpecialRecipeSerializer<?> recipe) {
-        return CustomRecipeBuilder.special(recipe);
+    private SpecialRecipeBuilder specialRecipe(SimpleRecipeSerializer<?> recipe) {
+        return SpecialRecipeBuilder.special(recipe);
     }
 
     private PressureChamberRecipeBuilder pressureChamber(List<Ingredient> in, float pressure, ItemStack... out) {
@@ -1743,7 +1751,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 .addCriterion(Criteria.has(ModBlocks.LIQUID_COMPRESSOR.get()));
     }
 
-    private void conditionalFuelQuality(Consumer<IFinishedRecipe> consumer, ResourceLocation recipeID, ICondition condition, FluidIngredient fuel, int airPerBucket, float burnRate) {
+    private void conditionalFuelQuality(Consumer<FinishedRecipe> consumer, ResourceLocation recipeID, ICondition condition, FluidIngredient fuel, int airPerBucket, float burnRate) {
         ConditionalRecipe.builder()
                 .addCondition(condition)
                 .addRecipe(c -> fuelQuality(fuel, airPerBucket, burnRate).build(c, recipeID))

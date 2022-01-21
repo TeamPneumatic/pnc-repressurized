@@ -24,27 +24,27 @@ import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public class BlockKeroseneLamp extends BlockPneumaticCraft {
+public class BlockKeroseneLamp extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     private static final VoxelShape SHAPE_NS = Stream.of(
             Block.box(5, 0, 5, 11, 1, 11),
             Block.box(5, 9, 5, 11, 10, 11),
@@ -56,7 +56,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
             Block.box(3.5, 0, 7, 4.5, 10, 9),
             Block.box(6, 10, 6, 10, 11, 10),
             Block.box(5, 1, 5, 11, 9, 11)
-    ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
     private static final VoxelShape SHAPE_EW = VoxelShapeUtils.rotateY(SHAPE_NS, 90);
 
     public static final EnumProperty<Direction> CONNECTED = EnumProperty.create("connected", Direction.class);
@@ -68,29 +68,29 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         return getRotation(state).getAxis() == Direction.Axis.Z ? SHAPE_NS : SHAPE_EW;
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(CONNECTED, LIT);
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
         return state == null ? null : state.setValue(CONNECTED, getConnectedDirection(ctx.getLevel(), ctx.getClickedPos()));
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         return stateIn.setValue(CONNECTED, getConnectedDirection(worldIn, currentPos));
     }
 
-    private Direction getConnectedDirection(IWorld world, BlockPos pos) {
+    private Direction getConnectedDirection(LevelAccessor world, BlockPos pos) {
         Direction connectedDir = Direction.DOWN;
         for (Direction d : DirectionUtil.VALUES) {
             BlockPos neighborPos = pos.relative(d);
@@ -107,14 +107,10 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
         return true;
     }
 
+    @org.jetbrains.annotations.Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityKeroseneLamp.class;
-    }
-
-    @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return state.getValue(LIT) ? 15 : 0;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityKeroseneLamp(pPos, pState);
     }
 
     public static class ItemBlockKeroseneLamp extends BlockItem implements ICustomTooltipName {

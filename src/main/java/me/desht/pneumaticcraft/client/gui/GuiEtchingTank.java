@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.common.inventory.ContainerEtchingTank;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTank, TileEntityEtchingTank> {
     private WidgetTemperature tempWidget;
 
-    public GuiEtchingTank(ContainerEtchingTank container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiEtchingTank(ContainerEtchingTank container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 206;
@@ -47,27 +47,27 @@ public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTa
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(leftPos + 149, topPos + 18, te.getAcidTank()));
+        addRenderableWidget(new WidgetTank(leftPos + 149, topPos + 18, te.getAcidTank()));
 
-        addButton(tempWidget = new WidgetTemperature(leftPos + 134, topPos + 18, TemperatureRange.of(273, 773), 323, 50) {
+        addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 134, topPos + 18, TemperatureRange.of(273, 773), 323, 50) {
             @Override
-            public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
+            public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
 
                 int interval = te.getTickInterval();
                 int processTimeSecs = interval * 5;
-                curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).withStyle(TextFormatting.GREEN));
+                curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).withStyle(ChatFormatting.GREEN));
                 if (getTemperature() > 323) {
                     float usage = (30 - interval) / (5f * interval);
-                    curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)).withStyle(TextFormatting.YELLOW));
+                    curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)).withStyle(ChatFormatting.YELLOW));
                 }
             }
         });
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         tempWidget.setTemperature(te.getHeatExchanger().getTemperatureAsInt());
         tempWidget.autoScaleForTemperature();
@@ -79,7 +79,7 @@ public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTa
     }
 
     @Override
-    protected void addProblems(List<ITextComponent> curInfo) {
+    protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
         if (te.isOutputFull()) {

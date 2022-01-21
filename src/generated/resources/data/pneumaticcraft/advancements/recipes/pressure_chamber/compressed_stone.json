@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:pressure_chamber_valve"
+            "items": [
+              "pneumaticcraft:pressure_chamber_valve"
+            ]
           }
         ]
       }

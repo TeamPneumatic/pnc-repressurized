@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -363,7 +363,7 @@ public abstract class SyncedField<T> {
         }
     }
 
-    static Object fromBytes(PacketBuffer buf, int type) {
+    static Object fromBytes(FriendlyByteBuf buf, int type) {
         switch (type) {
             case 0:
                 return buf.readInt();
@@ -392,7 +392,7 @@ public abstract class SyncedField<T> {
         throw new IllegalArgumentException("Invalid sync type! " + type);
     }
 
-    static void toBytes(PacketBuffer buf, Object value, int type) {
+    static void toBytes(FriendlyByteBuf buf, Object value, int type) {
         switch (type) {
             case 0:
                 buf.writeInt((Integer) value);

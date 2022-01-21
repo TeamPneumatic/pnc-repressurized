@@ -26,14 +26,14 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -116,7 +116,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public void write(PacketBuffer buffer) {
+    public void write(FriendlyByteBuf buffer) {
         operatingTemperature.write(buffer);
         buffer.writeFloat(requiredPressure);
         inputItem.toNetwork(buffer);
@@ -128,12 +128,12 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipes.THERMO_PLANT.get();
     }
 
     @Override
-    public IRecipeType<?> getType() {
+    public RecipeType<?> getType() {
         return PneumaticCraftRecipeType.THERMO_PLANT;
     }
 
@@ -147,7 +147,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         return new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get());
     }
 
-    public static class Serializer<T extends ThermoPlantRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {
+    public static class Serializer<T extends ThermoPlantRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {
         private final IFactory<T> factory;
 
         public Serializer(IFactory<T> factory) {
@@ -174,25 +174,25 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
                     ModCraftingHelper.fluidStackFromJson(json.getAsJsonObject("fluid_output")):
                     FluidStack.EMPTY;
             ItemStack itemOutput = json.has("item_output") ?
-                    ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "item_output")) :
+                    ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "item_output")) :
                     ItemStack.EMPTY;
 
             TemperatureRange range = json.has("temperature") ?
                     TemperatureRange.fromJson(json.getAsJsonObject("temperature")) :
                     TemperatureRange.any();
 
-            float pressure = JSONUtils.getAsFloat(json, "pressure", 0f);
+            float pressure = GsonHelper.getAsFloat(json, "pressure", 0f);
 
-            boolean exothermic = JSONUtils.getAsBoolean(json, "exothermic", false);
+            boolean exothermic = GsonHelper.getAsBoolean(json, "exothermic", false);
 
-            float recipeSpeed = JSONUtils.getAsFloat(json, "speed", 1.0f);
+            float recipeSpeed = GsonHelper.getAsFloat(json, "speed", 1.0f);
 
             return factory.create(recipeId, (FluidIngredient) fluidInput, itemInput, fluidOutput, itemOutput, range, pressure, recipeSpeed, exothermic);
         }
 
         @Nullable
         @Override
-        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             TemperatureRange range = TemperatureRange.read(buffer);
             float pressure = buffer.readFloat();
             Ingredient input = Ingredient.fromNetwork(buffer);
@@ -205,7 +205,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, T recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, T recipe) {
             recipe.write(buffer);
         }
 

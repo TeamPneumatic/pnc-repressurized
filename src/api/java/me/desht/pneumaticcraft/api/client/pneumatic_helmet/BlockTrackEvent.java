@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -32,11 +32,11 @@ import net.minecraftforge.eventbus.api.Event;
 @Cancelable
 public class BlockTrackEvent extends Event {
 
-    public final World world;
+    public final Level world;
     public final BlockPos pos;
-    public final TileEntity te;
+    public final BlockEntity te;
 
-    public BlockTrackEvent(World world, BlockPos pos, TileEntity te) {
+    public BlockTrackEvent(Level world, BlockPos pos, BlockEntity te) {
         this.world = world;
         this.pos = pos;
         this.te = te;

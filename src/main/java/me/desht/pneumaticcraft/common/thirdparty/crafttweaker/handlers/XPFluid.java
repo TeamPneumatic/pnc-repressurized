@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
-import com.blamejared.crafttweaker.api.actions.IRuntimeAction;
-import com.blamejared.crafttweaker.api.annotations.ZenRegister;
+import com.blamejared.crafttweaker.api.action.base.IRuntimeAction;
+import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;

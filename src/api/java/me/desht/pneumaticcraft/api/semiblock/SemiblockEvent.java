@@ -17,23 +17,23 @@
 
 package me.desht.pneumaticcraft.api.semiblock;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.Event;
 
 public class SemiblockEvent extends Event {
-    private final World world;
+    private final Level world;
     private final BlockPos pos;
     private final ISemiBlock semiblock;
 
-    private SemiblockEvent(World world, BlockPos pos, ISemiBlock semiblock) {
+    private SemiblockEvent(Level world, BlockPos pos, ISemiBlock semiblock) {
         this.world = world;
         this.pos = pos;
         this.semiblock = semiblock;
     }
 
-    public World getWorld() {
+    public Level getWorld() {
         return world;
     }
 
@@ -53,7 +53,7 @@ public class SemiblockEvent extends Event {
      * Fired when a semiblock is added to the world.
      */
     public static class PlaceEvent extends SemiblockEvent {
-        public PlaceEvent(World world, BlockPos pos, ISemiBlock semiBlock) {
+        public PlaceEvent(Level world, BlockPos pos, ISemiBlock semiBlock) {
             super(world, pos, semiBlock);
         }
     }
@@ -62,7 +62,7 @@ public class SemiblockEvent extends Event {
      * Fired when a semiblock is removed from the world.
      */
     public static class BreakEvent extends SemiblockEvent {
-        public BreakEvent(World world, BlockPos pos, ISemiBlock semiBlock) {
+        public BreakEvent(Level world, BlockPos pos, ISemiBlock semiBlock) {
             super(world, pos, semiBlock);
         }
     }

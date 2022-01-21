@@ -28,16 +28,16 @@ import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -67,7 +67,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (variable.equals("") && filter == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.error.noFilter"));
@@ -78,7 +78,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+    public void addWarnings(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addWarnings(curInfo, widgets);
         IProgWidget p = getParent();
         int n = 1;
@@ -94,7 +94,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public List<ITextComponent> getExtraStringInfo() {
+    public List<Component> getExtraStringInfo() {
         return Collections.singletonList(varAsTextComponent(variable));
     }
 
@@ -112,31 +112,31 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void getTooltip(List<ITextComponent> curTooltip) {
+    public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
         if (!variable.isEmpty()) {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(": ").append(varAsTextComponent(variable)).withStyle(TextFormatting.AQUA));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(": ").append(varAsTextComponent(variable)).withStyle(ChatFormatting.AQUA));
         } else if (!filter.isEmpty()) {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel").withStyle(TextFormatting.AQUA)
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel").withStyle(ChatFormatting.AQUA)
                     .append(": ").append(filter.getHoverName()));
             if (filter.getItem() == ModItems.TAG_FILTER.get()) {
                 curTooltip.addAll(ItemTagFilter.getConfiguredTagList(filter).stream()
-                        .map(s -> Symbols.bullet().append(new StringTextComponent(s.toString()).withStyle(TextFormatting.YELLOW)))
+                        .map(s -> Symbols.bullet().append(new TextComponent(s.toString()).withStyle(ChatFormatting.YELLOW)))
                         .collect(Collectors.toList()));
             }
         }
         if (useModSimilarity) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchMod", ModNameCache.getModName(filter.getItem()))
-                    .withStyle(TextFormatting.DARK_AQUA));
+                    .withStyle(ChatFormatting.DARK_AQUA));
         } else if (matchBlock) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchBlock")
-                    .withStyle(TextFormatting.DARK_AQUA));
+                    .withStyle(ChatFormatting.DARK_AQUA));
         } else {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useItemDurability ? "useDurability" : "ignoreDurability"))
-                    .withStyle(TextFormatting.DARK_AQUA));
+                    .withStyle(ChatFormatting.DARK_AQUA));
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useNBT ? "useNBT" : "ignoreNBT"))
-                    .withStyle(TextFormatting.DARK_AQUA));
+                    .withStyle(ChatFormatting.DARK_AQUA));
         }
     }
 
@@ -161,7 +161,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (!filter.isEmpty()) {
             filter.save(tag);
@@ -174,7 +174,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         filter = ItemStack.of(tag);
         useItemDurability = filter.getMaxDamage() > 0 && tag.getBoolean("useMetadata");
@@ -185,7 +185,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void writeToPacket(PacketBuffer buf) {
+    public void writeToPacket(FriendlyByteBuf buf) {
         super.writeToPacket(buf);
         buf.writeItem(filter);
         buf.writeBoolean(useItemDurability);
@@ -196,7 +196,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public void readFromPacket(PacketBuffer buf) {
+    public void readFromPacket(FriendlyByteBuf buf) {
         super.readFromPacket(buf);
         filter = buf.readItem();
         useItemDurability = buf.readBoolean();

@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.GlobalPos;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -68,7 +68,7 @@ public interface IDroneRegistry {
      * @return the drone; you can use this to set a custom name for example (defaults to "Amadron Delivery Drone").
      * @throws IllegalArgumentException if the array of ItemStacks is empty or contains more than 36 separate stacks
      */
-    CreatureEntity deliverItemsAmazonStyle(GlobalPos globalPos, ItemStack... deliveredStacks);
+    PathfinderMob deliverItemsAmazonStyle(GlobalPos globalPos, ItemStack... deliveredStacks);
 
     /**
      * The opposite of deliverItemsAmazonStyle. Will retrieve the queried items from an inventory at the specified location.
@@ -77,7 +77,7 @@ public interface IDroneRegistry {
      * @param queriedStacks the stacks to retrieve
      * @return the drone
      */
-    CreatureEntity retrieveItemsAmazonStyle(GlobalPos globalPos, ItemStack... queriedStacks);
+    PathfinderMob retrieveItemsAmazonStyle(GlobalPos globalPos, ItemStack... queriedStacks);
 
     /**
      * Similar to deliverItemsAmazonStyle, but with Fluids. Will spawn in a Drone that will fill an IFluidHandler at the
@@ -89,7 +89,7 @@ public interface IDroneRegistry {
      * @throws IllegalArgumentException if the FluidStack contains more than 576,000 mB of fluid (the maximum a fully
      * upgraded drone can carry)
      */
-    CreatureEntity deliverFluidAmazonStyle(GlobalPos globalPos, FluidStack deliveredFluid);
+    PathfinderMob deliverFluidAmazonStyle(GlobalPos globalPos, FluidStack deliveredFluid);
 
     /**
      * The opposite of deliverFluidAmazonStyle. Will retrieve the queried fluid from an IFluidHandler at the specified location.
@@ -98,5 +98,5 @@ public interface IDroneRegistry {
      * @param queriedFluid the fluid to retrieve
      * @return the drone
      */
-    CreatureEntity retrieveFluidAmazonStyle(GlobalPos globalPos, FluidStack queriedFluid);
+    PathfinderMob retrieveFluidAmazonStyle(GlobalPos globalPos, FluidStack queriedFluid);
 }

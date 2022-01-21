@@ -18,12 +18,14 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityTagWorkbench;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 public class BlockTagWorkbench extends BlockDisplayTable {
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityTagWorkbench.class;
+    public @Nullable BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityTagWorkbench(pPos, pState);
     }
-
 }

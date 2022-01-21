@@ -1,200 +1,155 @@
 package me.desht.pneumaticcraft.client.model.entity.drone;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.util.Mth;
 
 public class ModelDrone extends EntityModel<EntityDroneBase> {
-    private final ModelRenderer done;
-    private final ModelRenderer body;
-    private final ModelRenderer lower_frame_r1;
-    private final ModelRenderer north_west_wing;
-    private final ModelRenderer prop_1;
-    private final ModelRenderer blade3_connection_r1;
-    private final ModelRenderer blade2_connection_r1;
-    private final ModelRenderer blade1_connection_r1;
-    private final ModelRenderer south_west_wing;
-    private final ModelRenderer prop_2;
-    private final ModelRenderer blade6_connection_r1;
-    private final ModelRenderer blade5_connection_r1;
-    private final ModelRenderer blade4_connection_r1;
-    private final ModelRenderer south_east_wing;
-    private final ModelRenderer prop_3;
-    private final ModelRenderer blade9_connection_r1;
-    private final ModelRenderer blade8_connection_r1;
-    private final ModelRenderer blade7_connection_r1;
-    private final ModelRenderer north_east_wing;
-    private final ModelRenderer prop_4;
-    private final ModelRenderer blade12_connection_r1;
-    private final ModelRenderer blade11_connection_r1;
-    private final ModelRenderer blade10_connection_r1;
+    private final ModelPart drone;
+    private final ModelPart prop_1;
+    private final ModelPart prop_2;
+    private final ModelPart prop_3;
+    private final ModelPart prop_4;
 
-    public ModelDrone() {
-        texWidth = 128;
-        texHeight = 128;
+    private static final String DRONE = "drone";
+    private static final String BODY = "body";
+    private static final String LOWER_FRAME_R1 = "lower_frame_r1";
+    private static final String NORTH_WEST_WING = "north_west_wing";
+    private static final String PROP_1 = "prop_1";
+    private static final String BLADE3_CONNECTION_R1 = "blade3_connection_r1";
+    private static final String BLADE2_CONNECTION_R1 = "blade2_connection_r1";
+    private static final String BLADE1_CONNECTION_R1 = "blade1_connection_r1";
+    private static final String SOUTH_WEST_WING = "south_west_wing";
+    private static final String PROP_2 = "prop_2";
+    private static final String BLADE6_CONNECTION_R1 = "blade6_connection_r1";
+    private static final String BLADE5_CONNECTION_R1 = "blade5_connection_r1";
+    private static final String BLADE4_CONNECTION_R1 = "blade4_connection_r1";
+    private static final String SOUTH_EAST_WING = "south_east_wing";
+    private static final String PROP_3 = "prop_3";
+    private static final String BLADE9_CONNECTION_R1 = "blade9_connection_r1";
+    private static final String BLADE8_CONNECTION_R1 = "blade8_connection_r1";
+    private static final String BLADE7_CONNECTION_R1 = "blade7_connection_r1";
+    private static final String NORTH_EAST_WING = "north_east_wing";
+    private static final String PROP_4 = "prop_4";
+    private static final String BLADE12_CONNECTION_R1 = "blade12_connection_r1";
+    private static final String BLADE11_CONNECTION_R1 = "blade11_connection_r1";
+    private static final String BLADE10_CONNECTION_R1 = "blade10_connection_r1";
 
-        done = new ModelRenderer(this);
-        done.setPos(0.0F, 22.5F, 0.0F);
+    public ModelDrone(ModelPart root) {
+        drone = root.getChild(DRONE);
+        prop_1 = root.getChild(PROP_1);
+        prop_2 = root.getChild(PROP_2);
+        prop_3 = root.getChild(PROP_3);
+        prop_4 = root.getChild(PROP_4);
+    }
 
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
 
-        body = new ModelRenderer(this);
-        body.setPos(0.0F, -3.0F, 0.0F);
-        done.addChild(body);
-        body.texOffs(0, 93).addBox(-4.0F, -4.0F, -12.0F, 8.0F, 4.0F, 24.0F, 0.0F, false);
-        body.texOffs(10, 121).addBox(4.0F, -4.0F, 6.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
-        body.texOffs(20, 121).addBox(-6.0F, -4.0F, 6.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
-        body.texOffs(0, 121).addBox(4.0F, -4.0F, -9.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
-        body.texOffs(30, 121).addBox(-6.0F, -4.0F, -9.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
-        body.texOffs(0, 67).addBox(-4.5F, -3.5F, -12.5F, 9.0F, 1.0F, 25.0F, 0.0F, false);
+        PartDefinition drone = partdefinition.addOrReplaceChild(DRONE, CubeListBuilder.create().texOffs(0, 0),
+                PartPose.offset(0.0F, 22.5F, 0.0F));
+        PartDefinition body = drone.addOrReplaceChild(BODY, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("body_0", -4.0F, -4.0F, -12.0F, 8, 4, 24, 0, 93)
+                        .addBox("body_1", 4.0F, -4.0F, 6.0F, 2, 4, 3, 10, 121)
+                        .addBox("body_2", -6.0F, -4.0F, 6.0F, 2, 4, 3, 20, 121)
+                        .addBox("body_3", 4.0F, -4.0F, -9.0F, 2, 4, 3, 0, 121)
+                        .addBox("body_4", -6.0F, -4.0F, -9.0F, 2, 4, 3, 30, 121)
+                        .addBox("body_5", -4.5F, -3.5F, -12.5F, 9, 1, 25, 0, 67),
+                PartPose.offset(0.0F, -3.0F, 0.0F));
+        body.addOrReplaceChild(LOWER_FRAME_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("lower_frame_r1_0", -4.75F, -0.75F, -43.75F, 9, 1, 25, 0, 67),
+                PartPose.offsetAndRotation(-0.25F, -0.75F, -31.25F, -3.1416F, 0.0F, 3.1416F));
+        PartDefinition north_west_wing = drone.addOrReplaceChild(NORTH_WEST_WING, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("north_west_wing_0", -1.0F, -1.0F, -1.0F, 7, 2, 2, 0, 113)
+                        .addBox("north_west_wing_1", 4.5F, 1.0F, -0.5F, 1, 6, 1, 44, 110)
+                        .addBox("north_west_wing_2", 4.5F, -3.0F, -0.5F, 1, 2, 1, 52, 107),
+                PartPose.offsetAndRotation(6.0F, -5.5F, -7.5F, 0.0F, 0.3927F, 0.0F));
+        PartDefinition prop_1 = north_west_wing.addOrReplaceChild(PROP_1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("prop_1_0", -0.5F, -1.5F, -0.5F, 1, 1, 1, 52, 105),
+                PartPose.offset(5.0F, -2.5F, 0.0F));
+        prop_1.addOrReplaceChild(BLADE3_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade3_connection_r1_0", -0.5F, -0.5F, -1.5F, 1, 1, 1, 52, 105)
+                        .addBox("blade3_connection_r1_1", -1.0F, -0.5F, -6.5F, 2, 1, 5, 68, 93),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, 0.1572F, -0.3614F, -0.4215F));
+        prop_1.addOrReplaceChild(BLADE2_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade2_connection_r1_0", -0.5F, -0.5F, -1.5F, 1, 1, 1, 48, 105)
+                        .addBox("blade2_connection_r1_1", -1.0F, -0.5F, -6.5F, 2, 1, 5, 54, 99),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, 2.7761F, -0.7119F, -2.6117F));
+        prop_1.addOrReplaceChild(BLADE1_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade1_connection_r1_0", -0.5F, -0.5F, -1.5F, 1, 1, 1, 44, 105)
+                        .addBox("blade1_connection_r1_1", -1.0F, -0.5F, -6.5F, 2, 1, 5, 40, 93),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, -1.5708F, 1.1781F, -1.5708F));
+        PartDefinition south_west_wing = drone.addOrReplaceChild(SOUTH_WEST_WING, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("south_west_wing_0", -1.0F, -1.0F, -1.0F, 7, 2, 2, 0, 105)
+                        .addBox("south_west_wing_1", 4.5F, 1.0F, -0.5F, 1, 6, 1, 48, 110)
+                        .addBox("south_west_wing_2", 4.5F, -3.0F, -0.5F, 1, 2, 1, 48, 107),
+                PartPose.offsetAndRotation(6.0F, -5.5F, 7.5F, 0.0F, -0.3927F, 0.0F));
+        PartDefinition prop_2 = south_west_wing.addOrReplaceChild(PROP_2, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("prop_2_0", -0.5F, -1.5F, -0.5F, 1, 1, 1, 48, 105),
+                PartPose.offset(5.0F, -2.5F, 0.0F));
+        prop_2.addOrReplaceChild(BLADE6_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade6_connection_r1_0", -0.5F, -0.5F, 0.5F, 1, 1, 1, 48, 105)
+                        .addBox("blade6_connection_r1_1", -1.0F, -0.5F, 1.5F, 2, 1, 5, 68, 99),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, -0.1572F, 0.3614F, -0.4215F));
+        prop_2.addOrReplaceChild(BLADE5_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade5_connection_r1_0", -0.5F, -0.5F, 0.5F, 1, 1, 1, 52, 105)
+                        .addBox("blade5_connection_r1_1", -1.0F, -0.5F, 1.5F, 2, 1, 5, 54, 93),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, -2.7761F, 0.7119F, -2.6117F));
+        prop_2.addOrReplaceChild(BLADE4_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade4_connection_r1_0", -0.5F, -0.5F, 0.5F, 1, 1, 1, 40, 105)
+                        .addBox("blade4_connection_r1_1", -1.0F, -0.5F, 1.5F, 2, 1, 5, 40, 99),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, 1.5708F, -1.1781F, -1.5708F));
+        PartDefinition south_east_wing = drone.addOrReplaceChild(SOUTH_EAST_WING, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("south_east_wing_0", -6.0F, -1.0F, -1.0F, 7, 2, 2, 0, 101)
+                        .addBox("south_east_wing_1", -5.5F, 1.0F, -0.5F, 1, 6, 1, 52, 110)
+                        .addBox("south_east_wing_2", -5.5F, -3.0F, -0.5F, 1, 2, 1, 44, 107),
+                PartPose.offsetAndRotation(-6.0F, -5.5F, 7.5F, 0.0F, 0.3927F, 0.0F));
+        PartDefinition prop_3 = south_east_wing.addOrReplaceChild(PROP_3, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("prop_3_0", -0.5F, -1.5F, -0.5F, 1, 1, 1, 44, 105),
+                PartPose.offset(-5.0F, -2.5F, 0.0F));
+        prop_3.addOrReplaceChild(BLADE9_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade9_connection_r1_0", -0.5F, -0.5F, 0.5F, 1, 1, 1, 40, 105)
+                        .addBox("blade9_connection_r1_1", -1.0F, -0.5F, 1.5F, 2, 1, 5, 68, 93),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, -0.1572F, -0.3614F, 0.4215F));
+        prop_3.addOrReplaceChild(BLADE8_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade8_connection_r1_0", -0.5F, -0.5F, 0.5F, 1, 1, 1, 52, 105)
+                        .addBox("blade8_connection_r1_1", -1.0F, -0.5F, 1.5F, 2, 1, 5, 68, 99),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, -2.7761F, -0.7119F, 2.6117F));
+        prop_3.addOrReplaceChild(BLADE7_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade7_connection_r1_0", -0.5F, -0.5F, 0.5F, 1, 1, 1, 44, 105)
+                        .addBox("blade7_connection_r1_1", -1.0F, -0.5F, 1.5F, 2, 1, 5, 54, 93),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, 1.5708F, 1.1781F, 1.5708F));
+        PartDefinition north_east_wing = drone.addOrReplaceChild(NORTH_EAST_WING, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("north_east_wing_0", -6.0F, -1.0F, -1.0F, 7, 2, 2, 0, 109)
+                        .addBox("north_east_wing_1", -5.5F, 1.0F, -0.5F, 1, 6, 1, 40, 110)
+                        .addBox("north_east_wing_2", -5.5F, -3.0F, -0.5F, 1, 2, 1, 40, 107),
+                PartPose.offsetAndRotation(-6.0F, -5.5F, -7.5F, 0.0F, -0.3927F, 0.0F));
+        PartDefinition prop_4 = north_east_wing.addOrReplaceChild(PROP_4, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("prop_4_0", -0.5F, -1.5F, -0.5F, 1, 1, 1, 40, 105),
+                PartPose.offset(-5.0F, -2.5F, 0.0F));
+        prop_4.addOrReplaceChild(BLADE12_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade12_connection_r1_0", -0.5F, -0.5F, -1.5F, 1, 1, 1, 48, 105)
+                        .addBox("blade12_connection_r1_1", -1.0F, -0.5F, -6.5F, 2, 1, 5, 40, 99),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, 0.1572F, 0.3614F, 0.4215F));
+        prop_4.addOrReplaceChild(BLADE11_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade11_connection_r1_0", -0.5F, -0.5F, -1.5F, 1, 1, 1, 40, 105)
+                        .addBox("blade11_connection_r1_1", -1.0F, -0.5F, -6.5F, 2, 1, 5, 40, 93),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, 2.7761F, 0.7119F, 2.6117F));
+        prop_4.addOrReplaceChild(BLADE10_CONNECTION_R1, CubeListBuilder.create().texOffs(0, 0)
+                        .addBox("blade10_connection_r1_0", -0.5F, -0.5F, -1.5F, 1, 1, 1, 44, 105)
+                        .addBox("blade10_connection_r1_1", -1.0F, -0.5F, -6.5F, 2, 1, 5, 54, 99),
+                PartPose.offsetAndRotation(0.0F, -1.0F, 0.0F, -1.5708F, -1.1781F, 1.5708F));
 
-        lower_frame_r1 = new ModelRenderer(this);
-        lower_frame_r1.setPos(-0.25F, -0.75F, -31.25F);
-        body.addChild(lower_frame_r1);
-        setRotation(lower_frame_r1, -3.1416F, 0.0F, 3.1416F);
-        lower_frame_r1.texOffs(0, 67).addBox(-4.75F, -0.75F, -43.75F, 9.0F, 1.0F, 25.0F, 0.0F, false);
-
-        north_west_wing = new ModelRenderer(this);
-        north_west_wing.setPos(6.0F, -5.5F, -7.5F);
-        done.addChild(north_west_wing);
-        setRotation(north_west_wing, 0.0F, 0.3927F, 0.0F);
-        north_west_wing.texOffs(0, 113).addBox(-1.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
-        north_west_wing.texOffs(44, 110).addBox(4.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
-        north_west_wing.texOffs(52, 107).addBox(4.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
-
-        prop_1 = new ModelRenderer(this);
-        prop_1.setPos(5.0F, -2.5F, 0.0F);
-        north_west_wing.addChild(prop_1);
-        setRotation(prop_1, 0.0F, 0.0F, 0.0F);
-        prop_1.texOffs(52, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-        blade3_connection_r1 = new ModelRenderer(this);
-        blade3_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_1.addChild(blade3_connection_r1);
-        setRotation(blade3_connection_r1, 0.1572F, -0.3614F, -0.4215F);
-        blade3_connection_r1.texOffs(52, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade3_connection_r1.texOffs(68, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        blade2_connection_r1 = new ModelRenderer(this);
-        blade2_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_1.addChild(blade2_connection_r1);
-        setRotation(blade2_connection_r1, 2.7761F, -0.7119F, -2.6117F);
-        blade2_connection_r1.texOffs(48, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade2_connection_r1.texOffs(54, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        blade1_connection_r1 = new ModelRenderer(this);
-        blade1_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_1.addChild(blade1_connection_r1);
-        setRotation(blade1_connection_r1, -1.5708F, 1.1781F, -1.5708F);
-        blade1_connection_r1.texOffs(44, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade1_connection_r1.texOffs(40, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        south_west_wing = new ModelRenderer(this);
-        south_west_wing.setPos(6.0F, -5.5F, 7.5F);
-        done.addChild(south_west_wing);
-        setRotation(south_west_wing, 0.0F, -0.3927F, 0.0F);
-        south_west_wing.texOffs(0, 105).addBox(-1.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
-        south_west_wing.texOffs(48, 110).addBox(4.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
-        south_west_wing.texOffs(48, 107).addBox(4.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
-
-        prop_2 = new ModelRenderer(this);
-        prop_2.setPos(5.0F, -2.5F, 0.0F);
-        south_west_wing.addChild(prop_2);
-        setRotation(prop_2, 0.0F, 0.0F, 0.0F);
-        prop_2.texOffs(48, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-        blade6_connection_r1 = new ModelRenderer(this);
-        blade6_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_2.addChild(blade6_connection_r1);
-        setRotation(blade6_connection_r1, -0.1572F, 0.3614F, -0.4215F);
-        blade6_connection_r1.texOffs(48, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade6_connection_r1.texOffs(68, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        blade5_connection_r1 = new ModelRenderer(this);
-        blade5_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_2.addChild(blade5_connection_r1);
-        setRotation(blade5_connection_r1, -2.7761F, 0.7119F, -2.6117F);
-        blade5_connection_r1.texOffs(52, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade5_connection_r1.texOffs(54, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        blade4_connection_r1 = new ModelRenderer(this);
-        blade4_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_2.addChild(blade4_connection_r1);
-        setRotation(blade4_connection_r1, 1.5708F, -1.1781F, -1.5708F);
-        blade4_connection_r1.texOffs(40, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade4_connection_r1.texOffs(40, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        south_east_wing = new ModelRenderer(this);
-        south_east_wing.setPos(-6.0F, -5.5F, 7.5F);
-        done.addChild(south_east_wing);
-        setRotation(south_east_wing, 0.0F, 0.3927F, 0.0F);
-        south_east_wing.texOffs(0, 101).addBox(-6.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
-        south_east_wing.texOffs(52, 110).addBox(-5.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
-        south_east_wing.texOffs(44, 107).addBox(-5.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
-
-        prop_3 = new ModelRenderer(this);
-        prop_3.setPos(-5.0F, -2.5F, 0.0F);
-        south_east_wing.addChild(prop_3);
-        setRotation(prop_3, 0.0F, 0.0F, 0.0F);
-        prop_3.texOffs(44, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-        blade9_connection_r1 = new ModelRenderer(this);
-        blade9_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_3.addChild(blade9_connection_r1);
-        setRotation(blade9_connection_r1, -0.1572F, -0.3614F, 0.4215F);
-        blade9_connection_r1.texOffs(40, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade9_connection_r1.texOffs(68, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        blade8_connection_r1 = new ModelRenderer(this);
-        blade8_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_3.addChild(blade8_connection_r1);
-        setRotation(blade8_connection_r1, -2.7761F, -0.7119F, 2.6117F);
-        blade8_connection_r1.texOffs(52, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade8_connection_r1.texOffs(68, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        blade7_connection_r1 = new ModelRenderer(this);
-        blade7_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_3.addChild(blade7_connection_r1);
-        setRotation(blade7_connection_r1, 1.5708F, 1.1781F, 1.5708F);
-        blade7_connection_r1.texOffs(44, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade7_connection_r1.texOffs(54, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        north_east_wing = new ModelRenderer(this);
-        north_east_wing.setPos(-6.0F, -5.5F, -7.5F);
-        done.addChild(north_east_wing);
-        setRotation(north_east_wing, 0.0F, -0.3927F, 0.0F);
-        north_east_wing.texOffs(0, 109).addBox(-6.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
-        north_east_wing.texOffs(40, 110).addBox(-5.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
-        north_east_wing.texOffs(40, 107).addBox(-5.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
-
-        prop_4 = new ModelRenderer(this);
-        prop_4.setPos(-5.0F, -2.5F, 0.0F);
-        north_east_wing.addChild(prop_4);
-        setRotation(prop_4, 0.0F, 0.0F, 0.0F);
-        prop_4.texOffs(40, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-
-        blade12_connection_r1 = new ModelRenderer(this);
-        blade12_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_4.addChild(blade12_connection_r1);
-        setRotation(blade12_connection_r1, 0.1572F, 0.3614F, 0.4215F);
-        blade12_connection_r1.texOffs(48, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade12_connection_r1.texOffs(40, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        blade11_connection_r1 = new ModelRenderer(this);
-        blade11_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_4.addChild(blade11_connection_r1);
-        setRotation(blade11_connection_r1, 2.7761F, 0.7119F, 2.6117F);
-        blade11_connection_r1.texOffs(40, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade11_connection_r1.texOffs(40, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
-
-        blade10_connection_r1 = new ModelRenderer(this);
-        blade10_connection_r1.setPos(0.0F, -1.0F, 0.0F);
-        prop_4.addChild(blade10_connection_r1);
-        setRotation(blade10_connection_r1, -1.5708F, -1.1781F, 1.5708F);
-        blade10_connection_r1.texOffs(44, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade10_connection_r1.texOffs(54, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        return LayerDefinition.create(meshdefinition, 128, 128);
     }
 
     @Override
@@ -202,23 +157,16 @@ public class ModelDrone extends EntityModel<EntityDroneBase> {
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
-        done.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+        drone.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
     }
 
     @Override
     public void prepareMobModel(EntityDroneBase drone, float par2, float par3, float partialTicks) {
-        float propRotation = MathHelper.lerp(partialTicks, drone.oldPropRotation, drone.propRotation);
+        float propRotation = Mth.lerp(partialTicks, drone.oldPropRotation, drone.propRotation);
         prop_1.yRot = propRotation;
         prop_2.yRot = propRotation;
         prop_3.yRot = -propRotation;
         prop_4.yRot = -propRotation;
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.xRot = x;
-        model.yRot = y;
-        model.zRot = z;
     }
 }

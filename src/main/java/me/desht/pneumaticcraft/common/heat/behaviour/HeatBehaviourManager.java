@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
@@ -70,7 +70,7 @@ public enum HeatBehaviourManager {
         }
     }
 
-    public int addHeatBehaviours(World world, BlockPos pos, Direction direction, BiPredicate<IWorld, BlockPos> blockFilter, IHeatExchangerLogic logic, List<HeatBehaviour<?>> list) {
+    public int addHeatBehaviours(Level world, BlockPos pos, Direction direction, BiPredicate<LevelAccessor, BlockPos> blockFilter, IHeatExchangerLogic logic, List<HeatBehaviour<?>> list) {
         if (!blockFilter.test(world, pos)) return 0;
         int s = list.size();
         for (Supplier<? extends HeatBehaviour<?>> bSup : behaviourRegistry.values()) {

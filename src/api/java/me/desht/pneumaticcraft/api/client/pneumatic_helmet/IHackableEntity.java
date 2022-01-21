@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -49,7 +49,7 @@ public interface IHackableEntity {
      * @param entity the potential hacking target
      * @param player the player who is looking at the entity
      */
-    boolean canHack(Entity entity, PlayerEntity player);
+    boolean canHack(Entity entity, Player player);
 
     /**
      * Add info that is displayed on the tracker tooltip here. Text like "Hack to explode" can be added.
@@ -58,7 +58,7 @@ public interface IHackableEntity {
      * @param curInfo a text component list to append info to
      * @param player the player who is looking at the entity
      */
-    void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player);
+    void addHackInfo(Entity entity, List<Component> curInfo, Player player);
 
     /**
      * Add info that is being displayed after hacking, as long as 'afterHackTick' is returning true.
@@ -67,7 +67,7 @@ public interface IHackableEntity {
      * @param curInfo a text component list to append info to
      * @param player the player who has hacked the entity
      */
-    void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player);
+    void addPostHackInfo(Entity entity, List<Component> curInfo, Player player);
 
     /**
      * Return the time it takes to hack this entity in ticks. For more powerful hacks, a longer required hacking time
@@ -76,7 +76,7 @@ public interface IHackableEntity {
      * @param entity the potential hack target
      * @param player the player who is looking at the entity
      */
-    int getHackTime(Entity entity, PlayerEntity player);
+    int getHackTime(Entity entity, Player player);
 
     /**
      * Called when a player successfully hacks an entity; basically {@code getHackTime(Entity)} ticks after the
@@ -85,7 +85,7 @@ public interface IHackableEntity {
      * @param entity the hacked entity
      * @param player the player who has hacked the entity
      */
-    void onHackFinished(Entity entity, PlayerEntity player);
+    void onHackFinished(Entity entity, Player player);
 
     /**
      * Called every tick after the hacking finished. Returning true will keep this going (e.g. for endermen, to suppress

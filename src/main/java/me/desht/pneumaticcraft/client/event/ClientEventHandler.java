@@ -17,9 +17,12 @@
 
 package me.desht.pneumaticcraft.client.event;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -36,8 +39,6 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
-import me.desht.pneumaticcraft.common.item.ItemJackHammer;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -48,42 +49,29 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
-import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.BipedRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.FogType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.lwjgl.opengl.GL11;
-
-import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandler {
-//    private static final double MINIGUN_RADIUS = 1.1D;
-    private static final float MINIGUN_TEXT_SIZE = 0.55f;
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
 
     private static float currentScreenRoll = 0F;
@@ -99,11 +87,11 @@ public class ClientEventHandler {
     }
 
     private static void setRenderHead(LivingEntity entity, boolean setRender) {
-        if (entity.getItemBySlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get()
+        if (entity.getItemBySlot(EquipmentSlot.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get()
                 && (ConfigHelper.client().armor.fancyArmorModels.get() || DateEventHandler.isIronManEvent())) {
             EntityRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity);
-            if (renderer instanceof BipedRenderer) {
-                BipedModel<?> modelBiped = ((BipedRenderer<?,?>) renderer).getModel();
+            if (renderer instanceof HumanoidMobRenderer) {
+                HumanoidModel<?> modelBiped = ((HumanoidMobRenderer<?,?>) renderer).getModel();
                 modelBiped.head.visible = setRender;
             }
         }
@@ -135,122 +123,21 @@ public class ClientEventHandler {
 //    }
 
     @SubscribeEvent
-    public static void onGuiOverlay(RenderGameOverlayEvent.Pre event) {
-        // gameSettings.getPointOfView().isFirstPerson(), or some such
-        if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
-            PlayerEntity player = Minecraft.getInstance().player;
-            if (player == null) return;
-            ItemStack stack = player.getMainHandItem();
-            if (stack.getItem() instanceof ItemMinigun) {
-                renderFirstPersonMinigunTraces(event, player, stack);
-            } else if (stack.getItem() instanceof ItemJackHammer) {
-                renderJackHamerOverlay(event, player, stack);
-            }
-        }
-    }
-
-    private static void renderJackHamerOverlay(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
-        long timedelta = player.level.getGameTime() - ItemJackHammer.getLastModeSwitchTime();
-        ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(heldStack);
-        if (digMode != null && (digMode.atLeast(ItemJackHammer.DigMode.MODE_1X2) || timedelta < 30 || player.isCrouching())) {
-            Minecraft mc = Minecraft.getInstance();
-            MatrixStack matrixStack = event.getMatrixStack();
-            int w = event.getWindow().getGuiScaledWidth();
-            int h = event.getWindow().getGuiScaledHeight();
-            mc.getTextureManager().bind(digMode.getGuiIcon());
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            RenderSystem.color4f(1f, 1f, 1f, 0.25f);
-            float scaleFactor = MathHelper.clamp((float) Minecraft.getInstance().getWindow().getGuiScale(), 2, 3);
-            matrixStack.pushPose();
-            matrixStack.translate(w / 2.0, h / 2.0, 0);
-            matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
-            matrixStack.translate(8, -8, 0);
-            AbstractGui.blit(matrixStack, 0, 0, 0, 0, 16, 16, 16, 16);
-            matrixStack.popPose();
-        }
-    }
-
-    private static void renderFirstPersonMinigunTraces(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
-        Minecraft mc = Minecraft.getInstance();
-        Minigun minigun = ((ItemMinigun) heldStack.getItem()).getMinigun(heldStack, player);
-        int w = event.getWindow().getGuiScaledWidth();
-        int h = event.getWindow().getGuiScaledHeight();
-
-        if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-            drawBulletTraces2D(minigun.getAmmoColor() | 0x40000000, w, h);
-        }
-
-        MatrixStack matrixStack = event.getMatrixStack();
-        ItemStack ammo = minigun.getAmmoStack();
-        if (!ammo.isEmpty()) {
-            GuiUtils.renderItemStack(matrixStack, ammo,w / 2 + 16, h / 2 - 7);
-            int remaining = ammo.getMaxDamage() - ammo.getDamageValue();
-            matrixStack.pushPose();
-            matrixStack.translate(w / 2f + 32, h / 2f - 1, 0);
-            matrixStack.scale(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1f);
-            String text = remaining + "/" + ammo.getMaxDamage();
-            mc.font.draw(matrixStack, text, 1, 0, 0);
-            mc.font.draw(matrixStack, text, -1, 0, 0);
-            mc.font.draw(matrixStack, text, 0, 1, 0);
-            mc.font.draw(matrixStack, text, 0, -1, 0);
-            mc.font.draw(matrixStack, text, 0, 0, minigun.getAmmoColor());
-            matrixStack.popPose();
-        }
-        mc.getTextureManager().bind(Textures.MINIGUN_CROSSHAIR);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        RenderSystem.color4f(0.2f, 1.0f, 0.2f, 0.6f);
-        AbstractGui.blit(matrixStack, w / 2 - 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
-        event.setCanceled(true);
-    }
-
-    private static void drawBulletTraces2D(int color, int w, int h) {
-        RenderSystem.pushMatrix();
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_LINE_STIPPLE);
-
-        int x = w / 2;
-        int y = h / 2;
-
-        int[] cols = RenderUtils.decomposeColor(color);
-        Random rand = Minecraft.getInstance().level.random;
-        BufferBuilder bb = Tessellator.getInstance().getBuilder();
-        float f = Minecraft.getInstance().options.mainHand == HandSide.RIGHT ? 0.665F : 0.335F;
-        float endX = w * f;
-        float endY = h * 0.685F;
-        for (int i = 0; i < 5; i++) {
-            int stipple = 0xFFFF & ~(3 << rand.nextInt(16));
-            GL11.glLineStipple(4, (short) stipple);
-            bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-            bb.vertex(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            bb.vertex(endX, endY, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            Tessellator.getInstance().end();
-        }
-        GL11.glDisable(GL11.GL_LINE_STIPPLE);
-        RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
-        RenderSystem.popMatrix();
-    }
-
-    @SubscribeEvent
     public static void renderThirdPersonMinigunTraces(RenderPlayerEvent.Post event) {
         // render everyone else's (and ours, in 3rd person camera) minigun bullet traces
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         if (player == Minecraft.getInstance().player && Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
 
         ItemStack curItem = player.getMainHandItem();
         if (curItem.getItem() == ModItems.MINIGUN.get()) {
             Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
             if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                IVertexBuilder builder = event.getBuffers().getBuffer(RenderType.LINES);
+                VertexConsumer builder = event.getMultiBufferSource().getBuffer(RenderType.LINES);
                 // FIXME: this just doesn't place the start of the line where it should... why?
-                Vector3d startVec = new Vector3d(0, player.getEyeHeight() / 2, 0).add(player.getLookAngle());
-                Vector3d endVec = startVec.add(player.getLookAngle().scale(20));
+                Vec3 startVec = new Vec3(0, player.getEyeHeight() / 2, 0).add(player.getLookAngle());
+                Vec3 endVec = startVec.add(player.getLookAngle().scale(20));
                 int[] cols = RenderUtils.decomposeColor(minigun.getAmmoColor());
-                Matrix4f posMat = event.getMatrixStack().last().pose();
+                Matrix4f posMat = event.getPoseStack().last().pose();
                 for (int i = 0; i < 5; i++) {
                     RenderUtils.posF(builder, posMat, startVec.x, startVec.y, startVec.z)
                             .color(cols[1], cols[2], cols[3], 64)
@@ -265,9 +152,8 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void screenTilt(EntityViewRenderEvent.CameraSetup event) {
-        if (event.getInfo().getEntity() instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) event.getInfo().getEntity();
-            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET) && !player.isOnGround()) {
+        if (event.getCamera().getEntity() instanceof Player player) {
+            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.isOnGround()) {
                 float targetRoll;
                 float div = 50F;
                 JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
@@ -293,7 +179,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void jetBootsEvent(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
-            PlayerEntity player = event.player;
+            Player player = event.player;
             if (player == null || player.level == null || !player.level.isClientSide) return;
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             JetBootsHandler jbHandler = ArmorUpgradeRegistry.getInstance().jetBootsHandler;
@@ -316,7 +202,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         if (!player.isFallFlying()) {
             JetBootsState state = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
             if (state != null && state.shouldRotatePlayer()) {
@@ -326,9 +212,9 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void adjustFOVEvent(FOVUpdateEvent event) {
+    public static void adjustFOVEvent(FOVModifierEvent event) {
         float modifier = 1.0f;
-        for (EquipmentSlotType slot : EquipmentSlotType.values()) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
             ItemStack stack = event.getEntity().getItemBySlot(slot);
             if (stack.getItem() instanceof IFOVModifierItem) {
                 modifier *= ((IFOVModifierItem) stack.getItem()).getFOVModifier(stack, event.getEntity(), slot);
@@ -340,7 +226,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
-        if (event.getInfo().getFluidInCamera().is(FluidTags.WATER) && event.getInfo().getEntity() instanceof PlayerEntity) {
+        if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().getEntity() instanceof Player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().scubaHandler, true)) {
                 event.setDensity(0.02f);
@@ -352,7 +238,7 @@ public class ClientEventHandler {
     private static final int Z_LEVEL = 233;  // should be just above the drawn itemstack
 
     @SubscribeEvent
-    public static void guiContainerForeground(GuiContainerEvent.DrawForeground event) {
+    public static void guiContainerForeground(ContainerScreenEvent.DrawForeground event) {
         // general extra rendering
         if (Minecraft.getInstance().screen instanceof IExtraGuiHandling) {
             ((IExtraGuiHandling) Minecraft.getInstance().screen).drawExtras(event);
@@ -360,9 +246,9 @@ public class ClientEventHandler {
 
         // custom durability bars
         RenderSystem.disableTexture();
-        BufferBuilder bb = Tessellator.getInstance().getBuilder();
-        ContainerScreen<?> container = event.getGuiContainer();
-        MatrixStack matrixStack = event.getMatrixStack();
+        BufferBuilder bb = Tesselator.getInstance().getBuilder();
+        AbstractContainerScreen<?> container = event.getContainerScreen();
+        PoseStack matrixStack = event.getPoseStack();
         for (Slot s : container.getMenu().slots) {
             if (s.getItem().getItem() instanceof ICustomDurabilityBar) {
                 ICustomDurabilityBar custom = (ICustomDurabilityBar) s.getItem().getItem();
@@ -384,11 +270,11 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
-        if (event.getGui() instanceof GuiPneumaticContainerBase || event.getGui() instanceof GuiPneumaticScreenBase) {
-            for (IGuiEventListener l : event.getGui().children()) {
+    public static void onGuiDrawPost(ScreenEvent.DrawScreenEvent.Post event) {
+        if (event.getScreen() instanceof GuiPneumaticContainerBase || event.getScreen() instanceof GuiPneumaticScreenBase) {
+            for (GuiEventListener l : event.getScreen().children()) {
                 if (l instanceof IDrawAfterRender) {
-                    ((IDrawAfterRender) l).renderAfterEverythingElse(event.getMatrixStack(), event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
+                    ((IDrawAfterRender) l).renderAfterEverythingElse(event.getPoseStack(), event.getMouseX(), event.getMouseY(), event.getPartialTicks());
                 }
             }
         }
@@ -397,15 +283,15 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onShiftScroll(InputEvent.MouseScrollEvent event) {
         if (ClientUtils.getClientPlayer().isCrouching()) {
-            if (!tryHand(event, Hand.MAIN_HAND)) tryHand(event, Hand.OFF_HAND);
+            if (!tryHand(event, InteractionHand.MAIN_HAND)) tryHand(event, InteractionHand.OFF_HAND);
         }
     }
 
-    private static boolean tryHand(InputEvent.MouseScrollEvent event, Hand hand) {
+    private static boolean tryHand(InputEvent.MouseScrollEvent event, InteractionHand hand) {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
         if (stack.getItem() instanceof IShiftScrollable) {
-            NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDelta() > 0, Hand.MAIN_HAND));
-            ((IShiftScrollable) stack.getItem()).onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDelta() > 0, Hand.MAIN_HAND);
+            NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDelta() > 0, InteractionHand.MAIN_HAND));
+            ((IShiftScrollable) stack.getItem()).onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDelta() > 0, InteractionHand.MAIN_HAND);
             event.setCanceled(true);
             return true;
         }

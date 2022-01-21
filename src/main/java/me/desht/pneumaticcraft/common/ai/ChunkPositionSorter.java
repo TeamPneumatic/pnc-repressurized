@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;
 
@@ -35,7 +35,7 @@ public class ChunkPositionSorter implements Comparator<BlockPos> {
     }
 
     ChunkPositionSorter(IDroneBase entity, Ordering order) {
-        Vector3d vec = entity.getDronePos();
+        Vec3 vec = entity.getDronePos();
         // work from middle of the block the drone is in (try to minimize inconsistency)
         x = Math.floor(vec.x) + 0.5;
         y = Math.floor(vec.y) + 0.5;

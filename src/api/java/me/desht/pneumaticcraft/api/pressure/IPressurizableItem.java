@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.api.pressure;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Convenience interface; if your item implements this, you can take advantage of PneumaticCraft's built-in item

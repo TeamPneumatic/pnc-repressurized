@@ -30,16 +30,16 @@ import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronStockUpdate;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,7 +158,7 @@ public class EventHandlerAmadron {
             if (server.getTickCount() % 600 == 0) {
                 AmadronOfferManager.getInstance().tryRestockPlayerOffers();
             }
-            World overWorld = server.getLevel(World.OVERWORLD);
+            Level overWorld = server.getLevel(Level.OVERWORLD);
             if (overWorld != null) {
                 AmadronOfferManager.getInstance().checkForFullRebuild(overWorld);
             }

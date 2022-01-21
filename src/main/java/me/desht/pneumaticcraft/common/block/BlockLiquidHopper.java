@@ -27,26 +27,28 @@ import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nullable;
 
-public class BlockLiquidHopper extends BlockOmnidirectionalHopper {
-
+public class BlockLiquidHopper extends BlockOmnidirectionalHopper implements EntityBlockPneumaticCraft {
     public BlockLiquidHopper() {
         super();
     }
 
+    @org.jetbrains.annotations.Nullable
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityLiquidHopper.class;
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityLiquidHopper(pPos, pState);
     }
 
     public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered {
@@ -74,7 +76,7 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper {
 
         @Nullable
         @Override
-        public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
+        public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
             return new FluidItemWrapper(stack, TANK_NAME, PneumaticValues.NORMAL_TANK_CAPACITY);
         }
 

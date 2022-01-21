@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public abstract class PacketAbstractAmadronTrade {
     private final AmadronPlayerOffer offer;
@@ -27,11 +27,11 @@ public abstract class PacketAbstractAmadronTrade {
         this.offer = offer;
     }
 
-    public PacketAbstractAmadronTrade(PacketBuffer buffer) {
+    public PacketAbstractAmadronTrade(FriendlyByteBuf buffer) {
         offer = AmadronPlayerOffer.playerOfferFromBuf(buffer.readResourceLocation(), buffer);
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeResourceLocation(offer.getId());
         offer.write(buf);
     }

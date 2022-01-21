@@ -20,13 +20,13 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 public class PacketDescription extends LocationIntPacket {
     private final boolean fullSync;
     private final List<IndexedField> fields = new ArrayList<>();
-    private final CompoundNBT extraData;
+    private final CompoundTag extraData;
 
     public PacketDescription(IDescSynced te, boolean fullSync) {
         super(te.getPosition());
@@ -53,11 +53,11 @@ public class PacketDescription extends LocationIntPacket {
                 fields.add(new IndexedField(i, SyncedField.getType(descFields.get(i)), descFields.get(i).getValue()));
             }
         }
-        extraData = new CompoundNBT();
+        extraData = new CompoundTag();
         te.writeToPacket(extraData);
     }
 
-    public PacketDescription(PacketBuffer buf) {
+    public PacketDescription(FriendlyByteBuf buf) {
         super(buf);
 
         fullSync = buf.readBoolean();
@@ -71,7 +71,7 @@ public class PacketDescription extends LocationIntPacket {
     }
 
     @Override
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
 
         buf.writeBoolean(fullSync);
@@ -90,8 +90,8 @@ public class PacketDescription extends LocationIntPacket {
     }
 
     public void process() {
-        if (ClientUtils.getClientWorld().isAreaLoaded(pos, 0)) {
-            TileEntity syncable = ClientUtils.getClientTE(pos);
+        if (ClientUtils.getClientLevel().isAreaLoaded(pos, 0)) {
+            BlockEntity syncable = ClientUtils.getClientTE(pos);
             if (syncable instanceof IDescSynced) {
                 IDescSynced descSynced = (IDescSynced) syncable;
                 List<SyncedField<?>> descFields = descSynced.getDescriptionFields();
@@ -112,14 +112,14 @@ public class PacketDescription extends LocationIntPacket {
      * These two methods are only used for initial chunk sending (getUpdateTag() and handleUpdateTag())
      */
 
-    public CompoundNBT writeNBT(CompoundNBT compound) {
-        CompoundNBT subTag = new CompoundNBT();
+    public CompoundTag writeNBT(CompoundTag compound) {
+        CompoundTag subTag = new CompoundTag();
 
         subTag.putInt("Length", fields.size());
-        PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
-        ListNBT list = new ListNBT();
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        ListTag list = new ListTag();
         for (IndexedField field : fields) {
-            CompoundNBT element = new CompoundNBT();
+            CompoundTag element = new CompoundTag();
             element.putByte("Type", field.type);
             buf.clear();
             SyncedField.toBytes(buf, field.value, field.type);
@@ -134,18 +134,18 @@ public class PacketDescription extends LocationIntPacket {
         return compound;
     }
 
-    public PacketDescription(CompoundNBT compound) {
+    public PacketDescription(CompoundTag compound) {
         super(new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z")));
 
         fullSync = true;
-        CompoundNBT subTag = compound.getCompound(Names.MOD_ID);
+        CompoundTag subTag = compound.getCompound(Names.MOD_ID);
         int fieldCount = subTag.getInt("Length");
-        ListNBT list = subTag.getList("Data", Constants.NBT.TAG_COMPOUND);
+        ListTag list = subTag.getList("Data", Tag.TAG_COMPOUND);
         for (int i = 0; i < fieldCount; i++) {
-            CompoundNBT element = list.getCompound(i);
+            CompoundTag element = list.getCompound(i);
             byte type = element.getByte("Type");
             byte[] b = element.getByteArray("Value");
-            fields.add(new IndexedField(i, type, SyncedField.fromBytes(new PacketBuffer(Unpooled.wrappedBuffer(b)), type)));
+            fields.add(new IndexedField(i, type, SyncedField.fromBytes(new FriendlyByteBuf(Unpooled.wrappedBuffer(b)), type)));
         }
         extraData = subTag.getCompound("Extra");
     }

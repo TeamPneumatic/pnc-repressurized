@@ -17,17 +17,17 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
 
 import java.util.List;
 
 public interface IDescSynced {
     List<SyncedField<?>> getDescriptionFields();
 
-    void writeToPacket(CompoundNBT tag);
+    void writeToPacket(CompoundTag tag);
 
-    void readFromPacket(CompoundNBT tag);
+    void readFromPacket(CompoundTag tag);
 
     BlockPos getPosition();
 

@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
-import net.minecraft.util.Direction;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -51,18 +51,18 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
                             .setTooltip(xlate(op.getTranslationKey() + ".hint")),
                     progWidget.getOperator() == op);
         }
-        builder.build(this::addButton);
+        builder.build(this::addRenderableWidget);
 
         for (Direction.Axis axis : Direction.Axis.values()) {
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 100, guiTop + 42 + axis.ordinal() * 12, 0xFF404040,
-                    new StringTextComponent(axis.getName()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
-            addButton(checkBox);
+                    new TextComponent(axis.getName()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
+            addRenderableWidget(checkBox);
             checkBox.setChecked(progWidget.getAxisOptions().shouldCheck(axis));
         }
 
         variableField = new WidgetComboBox(font, guiLeft + 7, guiTop + 100, 80, font.lineHeight + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
-        addButton(variableField);
+        addRenderableWidget(variableField);
         variableField.setValue(progWidget.getVariable());
     }
 

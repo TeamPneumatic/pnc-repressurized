@@ -21,10 +21,10 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -39,17 +39,17 @@ public class PacketMinigunStop {
         this.stack = stack;
     }
 
-    public PacketMinigunStop(PacketBuffer buf) {
+    public PacketMinigunStop(FriendlyByteBuf buf) {
         this.stack = buf.readItem();
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeItem(stack);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = ClientUtils.getClientPlayer();
+            Player player = ClientUtils.getClientPlayer();
             Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
             minigun.setMinigunSpeed(0);
             minigun.setMinigunActivated(false);

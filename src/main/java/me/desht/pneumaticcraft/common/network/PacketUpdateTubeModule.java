@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Direction;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -39,20 +39,20 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
         this.moduleSide = module.getDirection();
     }
 
-    public PacketUpdateTubeModule(PacketBuffer buffer) {
+    public PacketUpdateTubeModule(FriendlyByteBuf buffer) {
         super(buffer);
         this.moduleSide = Direction.from3DDataValue(buffer.readByte());
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
         buffer.writeByte((byte) moduleSide.get3DDataValue());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PlayerEntity player = ctx.get().getSender();
+            Player player = ctx.get().getSender();
             if (player != null) {
                 PneumaticCraftUtils.getTileEntityAt(player.getCommandSenderWorld(), pos, TileEntityPressureTube.class).ifPresent(te -> {
                     TubeModule tm = te.getModule(moduleSide);
@@ -65,6 +65,6 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
         ctx.get().setPacketHandled(true);
     }
 
-    protected abstract void onModuleUpdate(TubeModule module, PlayerEntity player);
+    protected abstract void onModuleUpdate(TubeModule module, Player player);
 
 }

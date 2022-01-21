@@ -17,19 +17,19 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCreativeCompressor,TileEntityCreativeCompressor> {
 
-    public GuiCreativeCompressor(ContainerCreativeCompressor container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiCreativeCompressor(ContainerCreativeCompressor container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -43,10 +43,10 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCr
         super.init();
         int y = height / 2 - 5;
         int x = width / 2;
-        addButton(new WidgetButtonExtended(x - 90, y, 30, 20, "-1").withTag("-1"));
-        addButton(new WidgetButtonExtended(x - 58, y, 30, 20, "-0.1").withTag("-0.1"));
-        addButton(new WidgetButtonExtended(x + 28, y, 30, 20, "+0.1").withTag("+0.1"));
-        addButton(new WidgetButtonExtended(x + 60, y, 30, 20, "+1").withTag("+1"));
+        addRenderableWidget(new WidgetButtonExtended(x - 90, y, 30, 20, "-1").withTag("-1"));
+        addRenderableWidget(new WidgetButtonExtended(x - 58, y, 30, 20, "-0.1").withTag("-0.1"));
+        addRenderableWidget(new WidgetButtonExtended(x + 28, y, 30, 20, "+0.1").withTag("+0.1"));
+        addRenderableWidget(new WidgetButtonExtended(x + 60, y, 30, 20, "+1").withTag("+1"));
     }
 
     @Override
@@ -75,13 +75,13 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCr
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(PoseStack matrixStack, int x, int y) {
         super.renderLabels(matrixStack, x, y);
         drawCenteredString(matrixStack, font, PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar", width / 2 - leftPos, height / 2 - topPos, 0xFFFFFF);
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int i, int j){
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int i, int j){
         renderBackground(matrixStack);
         super.renderBg(matrixStack, partialTicks, i, j);
     }

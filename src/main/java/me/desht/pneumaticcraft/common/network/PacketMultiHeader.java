@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -45,12 +45,12 @@ public class PacketMultiHeader {
         this.className = className;
     }
 
-    PacketMultiHeader(PacketBuffer buffer) {
+    PacketMultiHeader(FriendlyByteBuf buffer) {
         length = buffer.readInt();
         className = buffer.readUtf(32767);
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(length);
         buf.writeUtf(className);
     }
@@ -70,7 +70,7 @@ public class PacketMultiHeader {
         ctx.get().setPacketHandled(true);
     }
 
-    static void receivePayload(PlayerEntity player, byte[] payload) {
+    static void receivePayload(Player player, byte[] payload) {
         UUID id = player == null ? ClientUtils.getClientPlayer().getUUID() : player.getUUID();
         PayloadBuffer buffer = payloadBuffers.get(id);
         if (buffer != null) {
@@ -79,8 +79,8 @@ public class PacketMultiHeader {
             if (buffer.offset > buffer.payload.length) {
                 // we have the complete message
                 try {
-                    Constructor<? extends ILargePayload> ctor = buffer.clazz.getConstructor(PacketBuffer.class);
-                    ILargePayload packet = ctor.newInstance(new PacketBuffer(Unpooled.wrappedBuffer(buffer.payload)));
+                    Constructor<? extends ILargePayload> ctor = buffer.clazz.getConstructor(FriendlyByteBuf.class);
+                    ILargePayload packet = ctor.newInstance(new FriendlyByteBuf(Unpooled.wrappedBuffer(buffer.payload)));
                     packet.handleLargePayload(player);
                     payloadBuffers.remove(id);
                 } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {

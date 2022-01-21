@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.lang.ref.WeakReference;
@@ -41,10 +41,10 @@ public class SmartSyncTank extends PNCFluidTank {
     private boolean pending = false;
 
     private int syncTimer = 0;  // will cause immediate sync to client on initial placement
-    private final WeakReference<TileEntity> owner;
+    private final WeakReference<BlockEntity> owner;
     private final int threshold;
 
-    SmartSyncTank(TileEntity owner, int capacity) {
+    SmartSyncTank(BlockEntity owner, int capacity) {
         super(capacity);
 
         this.owner = new WeakReference<>(owner);
@@ -55,7 +55,7 @@ public class SmartSyncTank extends PNCFluidTank {
      * Call from the holding TE's tick() method on both client and server
      */
     public void tick() {
-        TileEntity te = owner.get();
+        BlockEntity te = owner.get();
         if (te != null) {
             if (te.getLevel().isClientSide) {
                 if (ClientUtils.isGuiOpen(te)) {
@@ -67,7 +67,7 @@ public class SmartSyncTank extends PNCFluidTank {
                     if (delta != 0) {
                         int newAmount = Math.abs(delta) < capacity / 200 ? tgt.getAmount() : currAmount + delta / 20;
                         Fluid newFluid = fluid.isEmpty() ? tgt.getFluid() : fluid.getFluid();
-                        super.setFluid(new FluidStack(newFluid.getFluid(), newAmount));
+                        super.setFluid(new FluidStack(newFluid, newAmount));
                     }
                 }
             } else {

@@ -29,20 +29,20 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -54,10 +54,11 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EntityHeatFrame extends EntitySemiblockBase {
-    private static final DataParameter<Byte> STATUS = EntityDataManager.defineId(EntityHeatFrame.class, DataSerializers.BYTE);
-    private static final DataParameter<Integer> TEMPERATURE = EntityDataManager.defineId(EntityHeatFrame.class, DataSerializers.INT);
+    private static final EntityDataAccessor<Byte> STATUS = SynchedEntityData.defineId(EntityHeatFrame.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> TEMPERATURE = SynchedEntityData.defineId(EntityHeatFrame.class, EntityDataSerializers.INT);
 
     private static final int MIN_COOKING_TEMP = 373;
 
@@ -75,7 +76,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
     private final SyncedTemperature syncedTemperature = new SyncedTemperature(logic);
 
-    public EntityHeatFrame(EntityType<?> entityTypeIn, World worldIn) {
+    public EntityHeatFrame(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
 
         heatCap = LazyOptional.of(() -> logic);
@@ -196,9 +197,9 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     private boolean tryCookSlot(IItemHandler handler, int slot) {
         ItemStack stack = handler.getStackInSlot(slot);
         if (!stack.isEmpty()) {
-            Inventory inv = new Inventory(1);
+            SimpleContainer inv = new SimpleContainer(1);
             inv.setItem(0, stack);
-            return level.getRecipeManager().getRecipeFor(IRecipeType.SMELTING, inv, this.level).map(recipe -> {
+            return level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, inv, this.level).map(recipe -> {
                 ItemStack result = recipe.getResultItem().copy();
                 if (!result.isEmpty()) {
                     ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
@@ -276,7 +277,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT tag) {
+    protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
         logic.deserializeNBT(tag.getCompound("heatExchanger"));
@@ -285,7 +286,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     }
 
     @Override
-    public CompoundNBT serializeNBT(CompoundNBT tag) {
+    public CompoundTag serializeNBT(CompoundTag tag) {
         tag.put("heatExchanger", logic.serializeNBT());
         tag.putInt("cookingProgress", cookingProgress);
         tag.putInt("coolingProgress", coolingProgress);
@@ -294,7 +295,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     }
 
     @Override
-    public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
+    public void addTooltip(Consumer<Component> curInfo, Player player, CompoundTag tag, boolean extended) {
         int cook, cool;
         if (!level.isClientSide) {
             // TOP
@@ -309,8 +310,8 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
         if (getStatus() != COOKING && cook >= 100) cook = 0;
         if (getStatus() != COOLING && cool >= 100) cool = 0;
-        curInfo.add(HeatUtil.formatHeatString(logic.getTemperatureAsInt()));
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooking", cook).withStyle(TextFormatting.GRAY));
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooling", cool).withStyle(TextFormatting.GRAY));
+        curInfo.accept(HeatUtil.formatHeatString(logic.getTemperatureAsInt()));
+        curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooking", cook).withStyle(ChatFormatting.GRAY));
+        curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooling", cool).withStyle(ChatFormatting.GRAY));
     }
 }

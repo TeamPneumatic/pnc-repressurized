@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.capabilities;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
@@ -31,17 +32,17 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
@@ -53,8 +54,7 @@ import java.util.stream.Collectors;
  * which have lower pressure than it does.
  */
 public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMachine, IManoMeasurable {
-    private final float dangerPressure;
-    private final float criticalPressure;
+    private final PressureTier tier;
     private int volumeUpgrades = 0;
     private boolean hasSecurityUpgrade = false;
     private final BitSet connectedFaces = new BitSet(6);
@@ -64,11 +64,10 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private int prevAir;
     private final Map<Direction, LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new EnumMap<>(Direction.class);
 
-    public MachineAirHandler(float dangerPressure, float criticalPressure, int volume) {
+    public MachineAirHandler(PressureTier tier, int volume) {
         super(volume);
 
-        this.dangerPressure = dangerPressure;
-        this.criticalPressure = criticalPressure;
+        this.tier = tier;
         for (Direction dir : DirectionUtil.VALUES) {
             this.neighbourAirHandlers.put(dir, LazyOptional.empty());
         }
@@ -81,12 +80,12 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
     @Override
     public float getDangerPressure() {
-        return dangerPressure;
+        return tier.getDangerPressure();
     }
 
     @Override
     public float getCriticalPressure() {
-        return criticalPressure;
+        return tier.getCriticalPressure();
     }
 
     @Override
@@ -122,8 +121,8 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     @Override
-    public void tick(TileEntity ownerTE) {
-        World world = ownerTE.getLevel();
+    public void tick(BlockEntity ownerTE) {
+        Level world = ownerTE.getLevel();
         Direction actualLeakDir = leakDir;
         if (!world.isClientSide) {
             // server
@@ -132,14 +131,14 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             BlockPos pos = ownerTE.getBlockPos();
             if (hasSecurityUpgrade) {
                 float pressure = getPressure();
-                if (!safetyLeak && pressure >= dangerPressure) {
+                if (!safetyLeak && pressure >= getDangerPressure()) {
                     safetyLeak = true;
-                } else if (safetyLeak && pressure < dangerPressure - 0.2) {
+                } else if (safetyLeak && pressure < getDangerPressure() - 0.2) {
                     safetyLeak = false;
                 }
                 // also cap pressure at critical level (it's still possible for air to added faster than it can vent)
-                if (pressure >= criticalPressure) {
-                    int wanted = (int)(criticalPressure * getVolume());
+                if (pressure >= getCriticalPressure()) {
+                    int wanted = (int)(getCriticalPressure() * getVolume());
                     addAir(wanted - getAir());
                 }
             } else if (world.getServer().getTickCount() > 20) {
@@ -163,7 +162,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         }
     }
 
-    private Direction anyClearDirection(World world, BlockPos pos) {
+    private Direction anyClearDirection(Level world, BlockPos pos) {
         for (Direction d : DirectionUtil.VALUES) {
             if (!Block.canSupportCenter(world, pos.relative(d), d.getOpposite())) return d;
         }
@@ -177,25 +176,25 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         return null;
     }
 
-    private void doOverpressureChecks(TileEntity ownerTE, World world, BlockPos pos) {
+    private void doOverpressureChecks(BlockEntity ownerTE, Level world, BlockPos pos) {
         float p = getPressure();
-        if (getAir() > prevAir && p > dangerPressure) {
-            float range = criticalPressure - dangerPressure;
-            float delta = p - dangerPressure;
+        if (getAir() > prevAir && p > getDangerPressure()) {
+            float range = getCriticalPressure() - getDangerPressure();
+            float delta = p - getDangerPressure();
             float rnd = world.random.nextFloat() * range;
-            if (rnd < delta / 125f || p > criticalPressure) {
-                world.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.Mode.BREAK);
+            if (rnd < delta / 125f || p > getCriticalPressure()) {
+                world.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.BlockInteraction.BREAK);
                 world.destroyBlock(pos, false);
                 // notify client too so block shapes can be properly updated
                 PneumaticRegistry.getInstance().forceClientShapeRecalculation(world, pos);
             } else if (rnd < delta / 25f) {
-                world.playSound(null, ownerTE.getBlockPos(), ModSounds.CREAK.get(), SoundCategory.BLOCKS, 0.7f, 0.6f + world.random.nextFloat() * 0.8f);
+                world.playSound(null, ownerTE.getBlockPos(), ModSounds.CREAK.get(), SoundSource.BLOCKS, 0.7f, 0.6f + world.random.nextFloat() * 0.8f);
             }
         }
     }
 
-    private void handleAirLeak(TileEntity ownerTE, Direction actualLeakDir) {
-        World world = ownerTE.getLevel();
+    private void handleAirLeak(BlockEntity ownerTE, Direction actualLeakDir) {
+        Level world = ownerTE.getLevel();
         BlockPos pos = ownerTE.getBlockPos();
 
         float pressure = getPressure();
@@ -240,11 +239,11 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         return this.leakDir;
     }
 
-    private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(TileEntity ownerTE, Direction dir) {
+    private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(BlockEntity ownerTE, Direction dir) {
         if (!connectedFaces.get(dir.get3DDataValue())) return LazyOptional.empty();
 
         if (!neighbourAirHandlers.get(dir).isPresent()) {
-            TileEntity te1 = ownerTE.getLevel().getBlockEntity(ownerTE.getBlockPos().relative(dir));
+            BlockEntity te1 = ownerTE.getLevel().getBlockEntity(ownerTE.getBlockPos().relative(dir));
             if (te1 != null) {
                 LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
                 if (cap.isPresent()) {
@@ -258,7 +257,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         return neighbourAirHandlers.get(dir);
     }
 
-    private void disperseAir(TileEntity ownerTE) {
+    private void disperseAir(BlockEntity ownerTE) {
         // 1. build a list of all neighbouring and otherwise connected air handlers with a lower pressure than us
         List<IAirHandlerMachine.Connection> neighbours = getConnectedAirHandlers(ownerTE, true);
 
@@ -288,7 +287,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         }
     }
 
-    private List<Connection> getConnectedAirHandlers(TileEntity ownerTE, boolean onlyLowerPressure) {
+    private List<Connection> getConnectedAirHandlers(BlockEntity ownerTE, boolean onlyLowerPressure) {
         List<IAirHandlerMachine.Connection> neighbours = new ArrayList<>();
         for (Direction dir : DirectionUtil.VALUES) {
             if (connectedFaces.get(dir.get3DDataValue())) {
@@ -307,37 +306,37 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
-        CompoundNBT nbt = super.serializeNBT();
+    public CompoundTag serializeNBT() {
+        CompoundTag nbt = super.serializeNBT();
         if (leakDir != null) nbt.putByte("Leaking", (byte) leakDir.get3DDataValue());
         return nbt;
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
         leakDir = nbt.contains("Leaking") ? Direction.from3DDataValue(nbt.getByte("Leaking")) : null;
     }
 
     @Override
-    public List<IAirHandlerMachine.Connection> getConnectedAirHandlers(TileEntity ownerTE) {
+    public List<IAirHandlerMachine.Connection> getConnectedAirHandlers(BlockEntity ownerTE) {
         return getConnectedAirHandlers(ownerTE, false);
     }
 
-    private List<IAirHandlerMachine> addExtraConnectedHandlers(TileEntity ownerTE) {
+    private List<IAirHandlerMachine> addExtraConnectedHandlers(BlockEntity ownerTE) {
         if (ownerTE instanceof IAirListener) {
             return ((IAirListener) ownerTE).addConnectedPneumatics(new ArrayList<>());
         }
         return Collections.emptyList();
     }
 
-    private void onAirDispersion(TileEntity ownerTE, Direction dir, int airDispersed) {
+    private void onAirDispersion(BlockEntity ownerTE, Direction dir, int airDispersed) {
         if (ownerTE instanceof IAirListener) {
             ((IAirListener) ownerTE).onAirDispersion(this, dir, airDispersed);
         }
     }
 
-    private int getMaxDispersion(TileEntity ownerTE, Direction dir) {
+    private int getMaxDispersion(BlockEntity ownerTE, Direction dir) {
         if (ownerTE instanceof IAirListener) {
             return ((IAirListener) ownerTE).getMaxDispersion(this, dir);
         } else {
@@ -346,8 +345,8 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     @Override
-    public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
-        curInfo.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.pressure",
+    public void printManometerMessage(Player player, List<Component> curInfo) {
+        curInfo.add(new TranslatableComponent("pneumaticcraft.gui.tooltip.pressure",
                 PneumaticCraftUtils.roundNumberTo(getPressure(), 1)));
     }
 

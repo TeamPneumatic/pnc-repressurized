@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements IInfluenceDispersing {
@@ -66,7 +66,7 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
         if (neighbourCap == null) {
-            TileEntity neighborTE = pressureTube.getLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
+            BlockEntity neighborTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
             if (neighborTE != null) {
                 neighbourCap = neighborTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
                 if (neighbourCap.isPresent()) neighbourCap.addListener(l -> neighbourCap = null);

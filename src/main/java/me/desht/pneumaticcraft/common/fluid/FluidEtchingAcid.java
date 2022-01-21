@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.block.material.MaterialColor;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 

@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:heat_frame"
+            "items": [
+              "pneumaticcraft:heat_frame"
+            ]
           }
         ]
       }

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 
 public interface ILiquidFiltered {
     boolean isFluidValid(Fluid fluid);

@@ -1,31 +1,31 @@
-package me.desht.pneumaticcraft.client.render.entity;
+package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
+import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelLogisticsFrame;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFrame> {
-    public static final IRenderFactory<EntityLogisticsFrame> FACTORY = RenderLogisticsFrame::new;
+    private final ModelLogisticsFrame model;
 
-    private final ModelLogisticsFrame model = new ModelLogisticsFrame();
+    public RenderLogisticsFrame(EntityRendererProvider.Context ctx) {
+        super(ctx);
 
-    private RenderLogisticsFrame(EntityRendererManager rendererManager) {
-        super(rendererManager);
+        model = new ModelLogisticsFrame(ctx.bakeLayer(PNCModelLayers.LOGISTICS_FRAME));
     }
 
     @Override
-    public void render(EntityLogisticsFrame entity, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+    public void render(EntityLogisticsFrame entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         float alpha = entity.getAlpha() / 255F;
         if (alpha == 0f) return;
 
@@ -63,24 +63,24 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
                 break;
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
         model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 1f, 1f, 1f, alpha);
 
         matrixStackIn.popPose();
     }
 
     @Override
-    public Vector3d getRenderOffset(EntityLogisticsFrame entityIn, float partialTicks) {
+    public Vec3 getRenderOffset(EntityLogisticsFrame entityIn, float partialTicks) {
         VoxelShape shape = entityIn.getBlockState().getShape(entityIn.getWorld(), entityIn.getBlockPos());
         double yOff = (shape.max(Direction.Axis.Y) - shape.min(Direction.Axis.Y)) / 2.0;
         switch (entityIn.getSide()) {
-            case DOWN: return new Vector3d(0, shape.min(Direction.Axis.Y), 0);
-            case UP: return new Vector3d(0, shape.max(Direction.Axis.Y) - 1, 0);
-            case NORTH: return new Vector3d(0, yOff - 0.5, shape.min(Direction.Axis.Z));
-            case SOUTH: return new Vector3d(0, yOff - 0.5, shape.max(Direction.Axis.Z) - 1);
-            case WEST: return new Vector3d(shape.min(Direction.Axis.X), yOff - 0.5, 0);
-            case EAST: return new Vector3d(shape.max(Direction.Axis.X) - 1, yOff - 0.5, 0);
-            default: return Vector3d.ZERO;
+            case DOWN: return new Vec3(0, shape.min(Direction.Axis.Y), 0);
+            case UP: return new Vec3(0, shape.max(Direction.Axis.Y) - 1, 0);
+            case NORTH: return new Vec3(0, yOff - 0.5, shape.min(Direction.Axis.Z));
+            case SOUTH: return new Vec3(0, yOff - 0.5, shape.max(Direction.Axis.Z) - 1);
+            case WEST: return new Vec3(shape.min(Direction.Axis.X), yOff - 0.5, 0);
+            case EAST: return new Vec3(shape.max(Direction.Axis.X) - 1, yOff - 0.5, 0);
+            default: return Vec3.ZERO;
         }
     }
 

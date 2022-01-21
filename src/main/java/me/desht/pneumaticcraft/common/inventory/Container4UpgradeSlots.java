@@ -18,13 +18,13 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.core.BlockPos;
 
 public class Container4UpgradeSlots<T extends TileEntityBase> extends ContainerPneumaticBase<T> {
 
-    public Container4UpgradeSlots(ContainerType type, int i, PlayerInventory playerInventory, BlockPos tilePos) {
+    public Container4UpgradeSlots(MenuType type, int i, Inventory playerInventory, BlockPos tilePos) {
         super(type, i, playerInventory, tilePos);
 
         addUpgradeSlots(48, 29);

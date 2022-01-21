@@ -25,14 +25,14 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.ExperienceOrbEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -60,38 +60,38 @@ public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
     }
 
     @Override
-    public EquipmentSlotType getEquipmentSlot() {
-        return EquipmentSlotType.CHEST;
+    public EquipmentSlot getEquipmentSlot() {
+        return EquipmentSlot.CHEST;
     }
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        PlayerEntity player = commonArmorHandler.getPlayer();
+        Player player = commonArmorHandler.getPlayer();
 
         if (player.level.isClientSide || !enabled
                 || (player.level.getGameTime() & 0x3) != 0
-                || !commonArmorHandler.hasMinPressure(EquipmentSlotType.CHEST))
+                || !commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST))
             return;
 
         int magnetRadius = PneumaticValues.MAGNET_BASE_RANGE
-                + Math.min(commonArmorHandler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.MAGNET), PneumaticValues.MAGNET_MAX_UPGRADES);
+                + Math.min(commonArmorHandler.getUpgradeCount(EquipmentSlot.CHEST, EnumUpgrade.MAGNET), PneumaticValues.MAGNET_MAX_UPGRADES);
         int magnetRadiusSq = magnetRadius * magnetRadius;
 
-        AxisAlignedBB box = new AxisAlignedBB(player.blockPosition()).inflate(magnetRadius);
+        AABB box = new AABB(player.blockPosition()).inflate(magnetRadius);
         List<Entity> itemList = player.getCommandSenderWorld().getEntitiesOfClass(Entity.class, box,
-                e -> (e instanceof ExperienceOrbEntity || e instanceof ItemEntity) && e.isAlive());
+                e -> (e instanceof ExperienceOrb || e instanceof ItemEntity) && e.isAlive());
 
-        Vector3d playerVec = player.position();
+        Vec3 playerVec = player.position();
         for (Entity item : itemList) {
             if (item instanceof ItemEntity && ((ItemEntity) item).hasPickUpDelay()) continue;
 
             if (item.position().distanceToSqr(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
-                if (!commonArmorHandler.hasMinPressure(EquipmentSlotType.CHEST)) break;
+                if (!commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST)) break;
                 item.setPos(player.getX(), player.getY(), player.getZ());
                 if (item instanceof ItemEntity) ((ItemEntity) item).setPickUpDelay(0);
-                commonArmorHandler.addAir(EquipmentSlotType.CHEST, -ConfigHelper.common().armor.magnetAirUsage.get());
+                commonArmorHandler.addAir(EquipmentSlot.CHEST, -ConfigHelper.common().armor.magnetAirUsage.get());
             }
         }
     }

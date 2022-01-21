@@ -22,24 +22,24 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
-public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
+public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable, EntityBlockPneumaticCraft {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
         Block.box(0, 0, 0, 16,  8, 16),
@@ -55,18 +55,13 @@ public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityHeatSink.class;
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext selectionContext) {
         return SHAPES[getRotation(state).get3DDataValue()];
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
         return state == null ? null : state.setValue(directionProperty(), ctx.getClickedFace().getOpposite());
     }
@@ -82,7 +77,7 @@ public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.
     }
 
     @Override
-    public void entityInside(BlockState state, World world, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity)) return;
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityHeatSink.class).ifPresent(te -> {
@@ -95,11 +90,17 @@ public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.
             } else if (temp < 243) { // -30C
                 int durationTicks = (int) ((243 - temp) * 2);
                 int amplifier = (int) ((243 - temp) / 20);
-                ((LivingEntity) entity).addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, durationTicks, amplifier));
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, durationTicks, amplifier));
                 if (temp < 213) { // -60C
                     entity.hurt(DamageSourcePneumaticCraft.FREEZING, 2);
                 }
             }
         });
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityHeatSink(pPos, pState);
     }
 }

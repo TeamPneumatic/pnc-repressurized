@@ -17,20 +17,19 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -47,23 +46,23 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
     private ResourceLocation resLoc;
-    private final List<ITextComponent> tooltipText = new ArrayList<>();
+    private final List<Component> tooltipText = new ArrayList<>();
     private int invisibleHoverColor;
     private boolean thisVisible = true;
     private IconPosition iconPosition = IconPosition.MIDDLE;
     private String tag = null;
     private boolean renderStackSize = false;
 
-    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, Button.IPressable pressable) {
+    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, Component buttonText, Button.OnPress pressable) {
         super(startX, startY, xSize, ySize, buttonText, pressable);
     }
 
-    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, ITextComponent buttonText) {
+    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, Component buttonText) {
         this(startX, startY, xSize, ySize, buttonText, b -> {});
     }
 
-    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, String buttonText, IPressable pressable) {
-        super(startX, startY, xSize, ySize, new StringTextComponent(buttonText), pressable);
+    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, String buttonText, OnPress pressable) {
+        super(startX, startY, xSize, ySize, new TextComponent(buttonText), pressable);
     }
 
     public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, String buttonText) {
@@ -71,7 +70,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     }
 
     public WidgetButtonExtended(int startX, int startY, int xSize, int ySize) {
-        this(startX, startY, xSize, ySize, StringTextComponent.EMPTY, b -> {});
+        this(startX, startY, xSize, ySize, TextComponent.EMPTY, b -> {});
     }
 
     /**
@@ -144,18 +143,18 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return setTooltipText(GuiUtils.xlateAndSplit(key, params));
     }
 
-    public WidgetButtonExtended setTooltipText(ITextComponent tooltip) {
+    public WidgetButtonExtended setTooltipText(Component tooltip) {
         return setTooltipText(Collections.singletonList(tooltip));
     }
 
-    public WidgetButtonExtended setTooltipText(List<ITextComponent> tooltip) {
+    public WidgetButtonExtended setTooltipText(List<Component> tooltip) {
         tooltipText.clear();
         tooltipText.addAll(tooltip);
         return this;
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
+    public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
         curTip.addAll(tooltipText);
     }
 
@@ -163,7 +162,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return !tooltipText.isEmpty();
     }
 
-    public List<ITextComponent> getTooltip() {
+    public List<Component> getTooltip() {
         return tooltipText;
     }
 
@@ -180,20 +179,18 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void renderButton(PoseStack matrixStack, int x, int y, float partialTicks) {
         if (thisVisible) super.renderButton(matrixStack, x, y, partialTicks);
 
         if (visible) {
             if (renderedStacks != null) {
                 int startX = getIconX();
-                RenderHelper.turnBackOn();
                 for (int i = renderedStacks.length - 1; i >= 0; i--) {
                     GuiUtils.renderItemStack(matrixStack, renderedStacks[i], startX + i * iconSpacing, this.y + 2);
                     if (renderStackSize) {
                         GuiUtils.renderItemStackOverlay(matrixStack, Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.y + 2, null);
                     }
                 }
-                RenderHelper.turnOff();
             }
             if (resLoc != null) {
                 RenderSystem.enableBlend();
@@ -202,7 +199,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
                 RenderSystem.disableBlend();
             }
             if (active && !thisVisible && x >= this.x && y >= this.y && x < this.x + width && y < this.y + height) {
-                AbstractGui.fill(matrixStack, this.x, this.y, this.x + width, this.y + height, invisibleHoverColor);
+                GuiComponent.fill(matrixStack, this.x, this.y, this.x + width, this.y + height, invisibleHoverColor);
             }
         }
     }

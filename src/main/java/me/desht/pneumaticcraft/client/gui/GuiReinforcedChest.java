@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.common.inventory.ContainerReinforcedChest;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 
 public class GuiReinforcedChest extends GuiPneumaticContainerBase<ContainerReinforcedChest, TileEntityReinforcedChest> {
-    public GuiReinforcedChest(ContainerReinforcedChest container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiReinforcedChest(ContainerReinforcedChest container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 186;

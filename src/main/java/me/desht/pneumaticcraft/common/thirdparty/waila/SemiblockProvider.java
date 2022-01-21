@@ -17,58 +17,57 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
+import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
-import mcp.mobius.waila.api.IDataAccessor;
-import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
+import mcp.mobius.waila.api.ITooltip;
+import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-
-import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class SemiblockProvider {
 
-    public static class Data implements IServerDataProvider<TileEntity> {
+    public static class Data implements IServerDataProvider<BlockEntity> {
         @Override
-        public void appendServerData(CompoundNBT compoundNBT, ServerPlayerEntity serverPlayerEntity, World world, TileEntity tileEntity) {
-            CompoundNBT tag = new CompoundNBT();
-            SemiblockTracker.getInstance().getAllSemiblocks(world, tileEntity.getBlockPos())
+        public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
+            CompoundTag tag = new CompoundTag();
+            SemiblockTracker.getInstance().getAllSemiblocks(level, blockEntity.getBlockPos())
                     .forEach((semiBlock) -> {
                         NonNullList<ItemStack> drops = semiBlock.getDrops();
                         if (!drops.isEmpty()) {
-                            tag.put(Integer.toString(semiBlock.getTrackingId()), semiBlock.serializeNBT(new CompoundNBT()));
+                            tag.put(Integer.toString(semiBlock.getTrackingId()), semiBlock.serializeNBT(new CompoundTag()));
                         }
                     });
-            compoundNBT.put("semiBlocks", tag);
+            compoundTag.put("semiBlocks", tag);
         }
     }
 
     public static class Component implements IComponentProvider {
         @Override
-        public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
-            CompoundNBT tag = accessor.getServerData().getCompound("semiBlocks");
+        public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
+            CompoundTag tag = blockAccessor.getServerData().getCompound("semiBlocks");
 
             for (String name : tag.getAllKeys()) {
                 try {
                     int entityId = Integer.parseInt(name);
-                    ISemiBlock entity = ISemiBlock.byTrackingId(accessor.getWorld(), entityId);
+                    ISemiBlock entity = ISemiBlock.byTrackingId(blockAccessor.getLevel(), entityId);
                     if (entity instanceof EntitySemiblockBase) {
-                        if (!(entity instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) entity).getSide() == accessor.getSide()) {
-                            ITextComponent title = new StringTextComponent(TextFormatting.YELLOW + "[")
+                        if (!(entity instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) entity).getSide() == blockAccessor.getSide()) {
+                            MutableComponent title = new TextComponent(ChatFormatting.YELLOW + "[")
                                     .append(entity.getDisplayName()).append("]");
-                            tooltip.add(title);
-                            entity.addTooltip(tooltip, accessor.getPlayer(), tag.getCompound(name), accessor.getPlayer().isShiftKeyDown());
+                            iTooltip.add(title);
+                            entity.addTooltip(iTooltip::add, blockAccessor.getPlayer(), tag.getCompound(name), blockAccessor.getPlayer().isShiftKeyDown());
                         }
                     }
                 } catch (NumberFormatException ignored) {

@@ -19,18 +19,18 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerSentryTurret extends ContainerPneumaticBase<TileEntitySentryTurret> {
 
-    public ContainerSentryTurret(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public ContainerSentryTurret(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerSentryTurret(int windowId, PlayerInventory playerInventory, BlockPos pos) {
+    public ContainerSentryTurret(int windowId, Inventory playerInventory, BlockPos pos) {
         super(ModContainers.SENTRY_TURRET.get(), windowId, playerInventory, pos);
 
         // Add the hopper slots.

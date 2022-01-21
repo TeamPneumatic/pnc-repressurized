@@ -18,16 +18,18 @@
 package me.desht.pneumaticcraft;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.hacking.IHacking;
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.amadron.EventHandlerAmadron;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
-import me.desht.pneumaticcraft.common.capabilities.CapabilityHeat;
 import me.desht.pneumaticcraft.common.commands.ModCommands;
 import me.desht.pneumaticcraft.common.config.ConfigHolder;
 import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
@@ -52,27 +54,28 @@ import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.datagen.loot.ModLootFunctions;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.block.Block;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
+import net.minecraft.data.tags.BlockTagsProvider;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.registries.RegistryObject;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
@@ -92,6 +95,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.addListener(this::serverStopping);
         forgeBus.addListener(this::addReloadListeners);
         forgeBus.addListener(this::registerCommands);
+        forgeBus.addListener(this::registerCapabilities);
 
         registerAllDeferredRegistryObjects(modBus);
 
@@ -122,7 +126,7 @@ public class PneumaticCraftRepressurized {
         ModContainers.CONTAINERS.register(modBus);
         ModParticleTypes.PARTICLES.register(modBus);
         ModRecipes.RECIPES.register(modBus);
-        ModDecorators.DECORATORS.register(modBus);
+//        ModDecorators.DECORATORS.register(modBus);
         ModFeatures.FEATURES.register(modBus);
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
@@ -141,7 +145,6 @@ public class PneumaticCraftRepressurized {
         Log.info(Names.MOD_NAME + " is loading!");
 
         ThirdPartyManager.instance().init();
-        registerCapabilities();
         NetworkHandler.init();
         FluidSetup.init();
         ArmorUpgradeRegistry.init();
@@ -176,10 +179,12 @@ public class PneumaticCraftRepressurized {
         });
     }
 
-    private void registerCapabilities() {
-        CapabilityAirHandler.register();
-        CapabilityHeat.register();
-        CapabilityHacking.register();
+    private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.register(IAirHandler.class);
+        event.register(IAirHandlerItem.class);
+        event.register(IAirHandlerMachine.class);
+        event.register(IHeatExchangerLogic.class);
+        event.register(IHacking.class);
     }
 
     private void addReloadListeners(AddReloadListenerEvent event) {
@@ -191,11 +196,11 @@ public class PneumaticCraftRepressurized {
         ModCommands.register(event.getDispatcher());
     }
 
-    private void serverStarted(FMLServerStartedEvent event) {
+    private void serverStarted(ServerStartedEvent event) {
         AuxConfigHandler.postInit();
     }
 
-    private void serverStopping(FMLServerStoppingEvent event) {
+    private void serverStopping(ServerStoppingEvent event) {
         AmadronOfferManager.getInstance().saveAll();
 
         // if we're on single-player, reset is needed here to stop world-specific configs crossing worlds

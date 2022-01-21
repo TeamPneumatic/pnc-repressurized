@@ -17,25 +17,24 @@
 
 package me.desht.pneumaticcraft.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
 
-public class RenderChargingStation extends TileEntityRenderer<TileEntityChargingStation> {
-    public RenderChargingStation(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
+public class RenderChargingStation implements BlockEntityRenderer<TileEntityChargingStation> {
+    public RenderChargingStation(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityChargingStation te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getChargingStackSynced().isEmpty() || !te.getLevel().isAreaLoaded(te.getBlockPos(), 0)) return;
+    public void render(TileEntityChargingStation te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        if (te.getChargingStackSynced().isEmpty() || !te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStackIn.pushPose();
 
@@ -44,8 +43,8 @@ public class RenderChargingStation extends TileEntityRenderer<TileEntityCharging
         matrixStackIn.scale(0.5F, 0.5F, 0.5F);
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        IBakedModel ibakedmodel = itemRenderer.getModel(te.getChargingStackSynced(), te.getLevel(), null);
-        itemRenderer.render(te.getChargingStackSynced(), ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+        BakedModel bakedModel = itemRenderer.getModel(te.getChargingStackSynced(), te.getLevel(), null, 0);
+        itemRenderer.render(te.getChargingStackSynced(), ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
 
         matrixStackIn.popPose();
     }

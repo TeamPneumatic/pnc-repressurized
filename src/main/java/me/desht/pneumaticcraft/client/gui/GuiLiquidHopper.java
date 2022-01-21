@@ -29,13 +29,13 @@ import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,26 +46,26 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
 
-    public GuiLiquidHopper(ContainerLiquidHopper container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiLiquidHopper(ContainerLiquidHopper container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
     @Override
     public void init() {
         super.init();
-        addButton(new WidgetTank(leftPos + 116, topPos + 15, te.getTank()));
+        addRenderableWidget(new WidgetTank(leftPos + 116, topPos + 15, te.getTank()));
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.hopperStatus"), new ItemStack(ModBlocks.LIQUID_HOPPER.get()), 0xFFFFAA00, false);
 
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.setMinimumExpandedDimensions(50, 43);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(20, 20, 20, 20, StringTextComponent.EMPTY).withTag("empty");
+        WidgetButtonExtended button = new WidgetButtonExtended(20, 20, 20, 20, TextComponent.EMPTY).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(45, 20, 20, 20, StringTextComponent.EMPTY).withTag("leave");
+        button = new WidgetButtonExtended(45, 20, 20, 20, TextComponent.EMPTY).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid"));
         optionStat.addSubWidget(button);
@@ -83,8 +83,8 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
         statusStat.setText(getStatus());
         modeButtons[0].active = te.doesLeaveMaterial();
         modeButtons[1].active = !te.doesLeaveMaterial();
@@ -95,8 +95,8 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
         return Textures.GUI_LIQUID_HOPPER;
     }
 
-    private List<ITextComponent> getStatus() {
-        List<ITextComponent> textList = new ArrayList<>();
+    private List<Component> getStatus() {
+        List<Component> textList = new ArrayList<>();
         int itemsPer = te.getMaxItems();
         if (itemsPer > 1) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.hopperStatus.liquidTransferPerTick", itemsPer * 100));

@@ -24,17 +24,17 @@ import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -44,10 +44,10 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
     public final EntityLogisticsFrame logistics;
     private final boolean itemContainer;  // true if GUI opened from held item, false if from in-world entity
 
-    public ContainerLogistics(ContainerType<?> containerType, int i, PlayerInventory playerInventory, int entityId) {
+    public ContainerLogistics(MenuType<?> containerType, int i, Inventory playerInventory, int entityId) {
         super(containerType, i, playerInventory);
 
-        World world = playerInventory.player.level;
+        Level world = playerInventory.player.level;
         if (entityId == -1) {
             // opening container from held item; no in-world entity so fake one up from the held item NBT
             this.logistics = EntityLogisticsFrame.fromItemStack(world, playerInventory.player, getHeldLogisticsFrame(playerInventory.player));
@@ -76,15 +76,15 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
         }
     }
 
-    private ContainerLogistics(ContainerType logisticsFrameRequester, int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    private ContainerLogistics(MenuType logisticsFrameRequester, int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(logisticsFrameRequester, i, playerInventory, buffer.readVarInt());
     }
 
-    private ItemStack getHeldLogisticsFrame(PlayerEntity player) {
+    private ItemStack getHeldLogisticsFrame(Player player) {
         if (player.getMainHandItem().getItem() instanceof ItemLogisticsFrame) {
             return player.getMainHandItem();
-        } else if (player.getItemInHand(Hand.OFF_HAND).getItem() instanceof ItemLogisticsFrame) {
-            return player.getItemInHand(Hand.OFF_HAND);
+        } else if (player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ItemLogisticsFrame) {
+            return player.getItemInHand(InteractionHand.OFF_HAND);
         } else {
             return ItemStack.EMPTY;
         }
@@ -95,7 +95,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         super.handleGUIButtonPress(tag, shiftHeld, player);
         if (logistics != null) {
             logistics.handleGUIButtonPress(tag, shiftHeld, player);
@@ -103,7 +103,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return logistics != null && logistics.isValid();
     }
 
@@ -111,7 +111,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
      * Called when the container is closed. If configuring a logistics frame in-hand, update its NBT now.
      */
     @Override
-    public void removed(PlayerEntity player) {
+    public void removed(Player player) {
         if (itemContainer && logistics != null && !player.getCommandSenderWorld().isClientSide) {
             syncSemiblockItemFromClient(player, null);
         }
@@ -119,7 +119,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
 
     @Nonnull
     @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int slotIndex) {
+    public ItemStack quickMoveStack(Player player, int slotIndex) {
         Slot srcSlot = slots.get(slotIndex);
         if (slotIndex >= playerSlotsStart && srcSlot != null && srcSlot.hasItem()) {
             // shift-click from player inventory into filter
@@ -139,25 +139,25 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
         return ItemStack.EMPTY;
     }
 
-    public static ContainerLogistics createProviderContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public static ContainerLogistics createProviderContainer(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_PROVIDER.get(), i, playerInventory, buffer);
     }
 
-    public static ContainerLogistics createRequesterContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public static ContainerLogistics createRequesterContainer(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), i, playerInventory, buffer);
     }
 
-    public static ContainerLogistics createStorageContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
+    public static ContainerLogistics createStorageContainer(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE.get(), i, playerInventory, buffer);
     }
 
     @Override
-    public void syncSemiblockItemFromClient(PlayerEntity player, PacketBuffer payload) {
+    public void syncSemiblockItemFromClient(Player player, FriendlyByteBuf payload) {
         if (logistics != null) {
             if (payload != null) logistics.readFromBuf(payload);
             ItemStack stack = getHeldLogisticsFrame(player);
             if (!stack.isEmpty()) {
-                CompoundNBT subtag = logistics.serializeNBT(new CompoundNBT());
+                CompoundTag subtag = logistics.serializeNBT(new CompoundTag());
                 stack.getOrCreateTag().put(NBTKeys.ENTITY_TAG, subtag);
             }
         }

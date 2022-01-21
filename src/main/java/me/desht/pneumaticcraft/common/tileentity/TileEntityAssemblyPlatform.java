@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -44,13 +44,14 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     private float speed = 1.0F;
     private BlockPos controllerPos;
 
-    public TileEntityAssemblyPlatform() {
-        super(ModTileEntities.ASSEMBLY_PLATFORM.get());
+    public TileEntityAssemblyPlatform(BlockPos pos, BlockState state) {
+        super(ModTileEntities.ASSEMBLY_PLATFORM.get(), pos, state);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
+
         oldClawProgress = clawProgress;
         if (!shouldClawClose && clawProgress > 0F) {
             clawProgress = Math.max(clawProgress - TileEntityConstants.ASSEMBLY_IO_UNIT_CLAW_SPEED * speed, 0);
@@ -96,18 +97,17 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
+    public void saveAdditional(CompoundTag tag) {
         super.save(tag);
         tag.putBoolean("clawClosing", shouldClawClose);
         tag.putFloat("clawProgress", clawProgress);
         tag.putFloat("speed", speed);
         tag.put("Items", itemHandler.serializeNBT());
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         shouldClawClose = tag.getBoolean("clawClosing");
         clawProgress = tag.getFloat("clawProgress");
@@ -143,7 +143,7 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
 
     private void invalidateSystem() {
         if (controllerPos != null) {
-            TileEntity te = getLevel().getBlockEntity(controllerPos);
+            BlockEntity te = nonNullLevel().getBlockEntity(controllerPos);
             if (te instanceof TileEntityAssemblyController) {
                 ((TileEntityAssemblyController) te).invalidateAssemblySystem();
             }

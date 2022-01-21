@@ -23,13 +23,13 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -42,7 +42,7 @@ public class GuiGPSAreaTool extends GuiGPSTool {
     private final String[] vars = new String[2];
     private int index;
 
-    private GuiGPSAreaTool(ItemStack stack, Hand hand, int index) {
+    private GuiGPSAreaTool(ItemStack stack, InteractionHand hand, int index) {
         super(stack.getHoverName(), hand,
                 ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().level, stack, index),
                 ItemGPSAreaTool.getVariable(stack, index));
@@ -54,7 +54,7 @@ public class GuiGPSAreaTool extends GuiGPSTool {
         }
     }
 
-    public static void showGUI(ItemStack stack, Hand hand, int index) {
+    public static void showGUI(ItemStack stack, InteractionHand hand, int index) {
         Minecraft.getInstance().setScreen(new GuiGPSAreaTool(stack, hand, index));
     }
 
@@ -67,13 +67,13 @@ public class GuiGPSAreaTool extends GuiGPSTool {
 
         int x = xMiddle - CHANGE_AREA_BUTTON_WIDTH / 2;
         int y = yMiddle + 100;
-        addButton(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, xlate("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
+        addRenderableWidget(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, xlate("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
             ItemStack stack = minecraft.player.getItemInHand(hand);
             ProgWidgetArea area = ItemGPSAreaTool.getArea(stack);
             minecraft.setScreen(new GuiProgWidgetAreaTool(area, hand, () -> minecraft.setScreen(new GuiGPSAreaTool(stack, hand, index))));
         }));
 
-        addButton(new Button(xMiddle - P1P2_BUTTON_WIDTH / 2, yMiddle - 45, P1P2_BUTTON_WIDTH, 20, getToggleLabel(),
+        addRenderableWidget(new Button(xMiddle - P1P2_BUTTON_WIDTH / 2, yMiddle - 45, P1P2_BUTTON_WIDTH, 20, getToggleLabel(),
                 this::toggle));
     }
 
@@ -114,8 +114,8 @@ public class GuiGPSAreaTool extends GuiGPSTool {
         }
     }
 
-    private ITextComponent getToggleLabel() {
-        TextFormatting color = index == 0 ? TextFormatting.RED : TextFormatting.GREEN;
-        return new StringTextComponent("P" + (index + 1)).withStyle(color);
+    private Component getToggleLabel() {
+        ChatFormatting color = index == 0 ? ChatFormatting.RED : ChatFormatting.GREEN;
+        return new TextComponent("P" + (index + 1)).withStyle(color);
     }
 }

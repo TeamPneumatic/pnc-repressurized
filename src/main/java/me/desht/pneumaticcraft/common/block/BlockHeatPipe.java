@@ -19,29 +19,29 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatPipe;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IWaterLoggable;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
-import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLoggable {
+public class BlockHeatPipe extends BlockPneumaticCraftCamo implements SimpleWaterloggedBlock, EntityBlockPneumaticCraft {
     private static final VoxelShape CORE = Block.box(4, 4, 4, 12, 12, 12);
     private static final VoxelShape[] SIDES = {
             Block.box(4, 0, 4, 12, 4, 12),
@@ -65,16 +65,11 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
 
         builder.add(CONNECTION_PROPERTIES);
         builder.add(WATERLOGGED);
-    }
-
-    @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return TileEntityHeatPipe.class;
     }
 
     @Override
@@ -84,7 +79,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
         if (state == null) return null;
 
@@ -93,15 +88,15 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (stateIn.getValue(WATERLOGGED)) {
-            worldIn.getLiquidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
+            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
         }
         return stateIn;
     }
 
     @Override
-    public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getUncamouflagedShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         byte idx = 0;
         for (int i = 0; i < 6; i++) {
             if (state.getValue(CONNECTION_PROPERTIES[i])) {
@@ -113,10 +108,16 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
             SHAPE_CACHE[idx] = CORE;
             for (int i = 0; i < 6; i++) {
                 if ((idx & (1 << i)) != 0) {
-                    SHAPE_CACHE[idx] = VoxelShapes.join(SHAPE_CACHE[idx], SIDES[i], IBooleanFunction.OR);
+                    SHAPE_CACHE[idx] = Shapes.join(SHAPE_CACHE[idx], SIDES[i], BooleanOp.OR);
                 }
             }
         }
         return SHAPE_CACHE[idx];
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return new TileEntityHeatPipe(pPos, pState);
     }
 }

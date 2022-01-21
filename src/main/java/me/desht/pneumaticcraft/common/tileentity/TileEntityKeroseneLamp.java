@@ -33,23 +33,28 @@ import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRed
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.LazyOptional;
@@ -67,7 +72,7 @@ import java.util.stream.Collectors;
 import static me.desht.pneumaticcraft.common.block.BlockKeroseneLamp.LIT;
 
 public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
-        IRedstoneControl<TileEntityKeroseneLamp>, ISerializableTanks, INamedContainerProvider {
+        IRedstoneControl<TileEntityKeroseneLamp>, ISerializableTanks, MenuProvider {
 
     private static final List<RedstoneMode<TileEntityKeroseneLamp>> REDSTONE_MODES = ImmutableList.of(
             new ReceivingRedstoneMode<>("standard.always", new ItemStack(Items.GUNPOWDER),
@@ -106,7 +111,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         @Override
         protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
             super.onContentsChanged(prevFluid, prevAmount);
-            if (prevFluid.getFluid() != fluid.getFluid()) {
+            if (prevFluid != fluid.getFluid()) {
                 recalculateFuelQuality();
             }
         }
@@ -125,8 +130,8 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
 
-    public TileEntityKeroseneLamp() {
-        super(ModTileEntities.KEROSENE_LAMP.get());
+    public TileEntityKeroseneLamp(BlockPos pos, BlockState state) {
+        super(ModTileEntities.KEROSENE_LAMP.get(), pos, state);
     }
 
     @Override
@@ -135,27 +140,36 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         tank.tick();
+    }
 
-        if (!getLevel().isClientSide) {
-            if (fuelQuality < 0) recalculateFuelQuality();
-            processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
-            if (getLevel().getGameTime() % 5 == 0) {
-                int effectiveRange = rsController.shouldRun() && fuel > 0 ? targetRange : 0;
-                if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
-                    effectiveRange = (int) (rsController.getCurrentRedstonePower() / 15D * targetRange);
-                }
-                updateRange(Math.min(effectiveRange, tank.getFluidAmount())); //Fade out the lamp when almost empty.
-                updateLights();
-                useFuel();
+    @Override
+    public void tickClient() {
+        super.tickClient();
+
+        final Level level = nonNullLevel();
+        if (getBlockState().getValue(LIT) && level.random.nextInt(10) == 0) {
+            level.addParticle(ParticleTypes.FLAME, getBlockPos().getX() + 0.4 + 0.2 * level.random.nextDouble(), getBlockPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getBlockPos().getZ() + 0.4 + 0.2 * level.random.nextDouble(), 0, 0, 0);
+        }
+    }
+
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        if (fuelQuality < 0) recalculateFuelQuality();
+        processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
+        if (nonNullLevel().getGameTime() % 5 == 0) {
+            int effectiveRange = rsController.shouldRun() && fuel > 0 ? targetRange : 0;
+            if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
+                effectiveRange = (int) (rsController.getCurrentRedstonePower() / 15D * targetRange);
             }
-        } else {
-            if (getBlockState().getValue(LIT) && getLevel().random.nextInt(10) == 0) {
-                getLevel().addParticle(ParticleTypes.FLAME, getBlockPos().getX() + 0.4 + 0.2 * getLevel().random.nextDouble(), getBlockPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getBlockPos().getZ() + 0.4 + 0.2 * getLevel().random.nextDouble(), 0, 0, 0);
-            }
+            updateRange(Math.min(effectiveRange, tank.getFluidAmount())); //Fade out the lamp when almost empty.
+            updateLights();
+            useFuel();
         }
     }
 
@@ -196,13 +210,13 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         super.setRemoved();
         for (BlockPos pos : managingLights) {
             if (isLampLight(pos)) {
-                getLevel().removeBlock(pos, false);
+                nonNullLevel().removeBlock(pos, false);
             }
         }
     }
 
     private boolean isLampLight(BlockPos pos) {
-        return getLevel().getBlockState(pos).getBlock() == ModBlocks.KEROSENE_LAMP_LIGHT.get();
+        return nonNullLevel().getBlockState(pos).getBlock() == ModBlocks.KEROSENE_LAMP_LIGHT.get();
     }
 
     private void updateLights() {
@@ -222,7 +236,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         if (managingLights.contains(pos)) {
             if (isLampLight(pos)) {
                 if (!passesRaytraceTest(pos, lampPos)) {
-                    getLevel().removeBlock(pos, false);
+                    nonNullLevel().removeBlock(pos, false);
                     managingLights.remove(pos);
                 }
             } else {
@@ -257,7 +271,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
                 if (!isLampLight(pos)) {
                     iterator.remove();
                 } else if (PneumaticCraftUtils.distBetween(pos, lampPos) > range) {
-                    getLevel().removeBlock(pos, false);
+                    nonNullLevel().removeBlock(pos, false);
                     iterator.remove();
                 }
             }
@@ -265,8 +279,8 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         boolean wasOn = isOn;
         isOn = range > 0;
         if (isOn != wasOn) {
-            level.getChunkSource().getLightEngine().checkBlock(worldPosition);
-            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LIT, isOn));
+            nonNullLevel().getChunkSource().getLightEngine().checkBlock(worldPosition);
+            nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(LIT, isOn));
         }
     }
 
@@ -276,16 +290,16 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
     private boolean passesRaytraceTest(BlockPos pos, BlockPos lampPos) {
         // must be run on server!
-        RayTraceContext ctx = new RayTraceContext(new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vector3d(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, FakePlayerFactory.getMinecraft((ServerWorld) getLevel()));
-        BlockRayTraceResult rtr = getLevel().clip(ctx);
-        return rtr.getType() == RayTraceResult.Type.BLOCK && rtr.getBlockPos().equals(lampPos);
+        ClipContext ctx = new ClipContext(new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vec3(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, FakePlayerFactory.getMinecraft((ServerLevel) getLevel()));
+        BlockHitResult rtr = nonNullLevel().clip(ctx);
+        return rtr.getType() == HitResult.Type.BLOCK && rtr.getBlockPos().equals(lampPos);
     }
 
     private void tryAddLight(BlockPos pos, BlockPos lampPos) {
         if (!ConfigHelper.common().advanced.disableKeroseneLampFakeAirBlock.get() && PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
-            if (getLevel().isEmptyBlock(pos) && !isLampLight(pos)) {
+            if (nonNullLevel().isEmptyBlock(pos) && !isLampLight(pos)) {
                 if (passesRaytraceTest(pos, lampPos)) {
-                    getLevel().setBlockAndUpdate(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().defaultBlockState());
+                    nonNullLevel().setBlockAndUpdate(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().defaultBlockState());
                     managingLights.add(pos);
                 }
             }
@@ -299,28 +313,27 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
     @Override
     public void onDescUpdate() {
-        getLevel().getChunkSource().getLightEngine().checkBlock(getBlockPos());
+        nonNullLevel().getChunkSource().getLightEngine().checkBlock(getBlockPos());
         super.onDescUpdate();
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
-        tag.put("lights", managingLights.stream().map(NBTUtil::writeBlockPos).collect(Collectors.toCollection(ListNBT::new)));
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.put("lights", managingLights.stream().map(NbtUtils::writeBlockPos).collect(Collectors.toCollection(ListTag::new)));
         tag.putByte("targetRange", (byte) targetRange);
         tag.putByte("range", (byte) range);
         tag.put("Items", inventory.serializeNBT());
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         managingLights.clear();
-        ListNBT lights = tag.getList("lights", 10);
+        ListTag lights = tag.getList("lights", 10);
         for (int i = 0; i < lights.size(); i++) {
-            managingLights.add(NBTUtil.readBlockPos(lights.getCompound(i)));
+            managingLights.add(NbtUtils.readBlockPos(lights.getCompound(i)));
         }
         recalculateFuelQuality();
         targetRange = tag.getByte("targetRange");
@@ -339,12 +352,12 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag))
             return;
 
         try {
-            targetRange = MathHelper.clamp(Integer.parseInt(tag), 1, MAX_RANGE);
+            targetRange = Mth.clamp(Integer.parseInt(tag), 1, MAX_RANGE);
         } catch (IllegalArgumentException ignored) {
         }
     }
@@ -387,7 +400,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
     @Nullable
     @Override
-    public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new ContainerKeroseneLamp(i, playerInventory, getBlockPos());
     }
 }

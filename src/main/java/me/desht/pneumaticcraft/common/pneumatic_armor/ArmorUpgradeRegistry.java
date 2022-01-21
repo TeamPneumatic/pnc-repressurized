@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,11 +34,11 @@ public enum ArmorUpgradeRegistry {
     private final List<List<IArmorUpgradeHandler<?>>> upgradeHandlers;
     private final Map<ResourceLocation, IArmorUpgradeHandler<?>> byID = new HashMap<>();
 
-    public static final EquipmentSlotType[] ARMOR_SLOTS = new EquipmentSlotType[] {
-            EquipmentSlotType.HEAD,
-            EquipmentSlotType.CHEST,
-            EquipmentSlotType.LEGS,
-            EquipmentSlotType.FEET
+    public static final EquipmentSlot[] ARMOR_SLOTS = new EquipmentSlot[] {
+            EquipmentSlot.HEAD,
+            EquipmentSlot.CHEST,
+            EquipmentSlot.LEGS,
+            EquipmentSlot.FEET
     };
 
     public final CoreComponentsHandler coreComponentsHandler;
@@ -114,7 +114,7 @@ public enum ArmorUpgradeRegistry {
         return handler;
     }
 
-    public List<IArmorUpgradeHandler<?>> getHandlersForSlot(EquipmentSlotType slotType) {
+    public List<IArmorUpgradeHandler<?>> getHandlersForSlot(EquipmentSlot slotType) {
         return upgradeHandlers.get(slotType.getIndex());
     }
 

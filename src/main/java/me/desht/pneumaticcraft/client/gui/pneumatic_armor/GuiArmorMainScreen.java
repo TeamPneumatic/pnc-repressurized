@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
@@ -35,16 +35,17 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
-import net.minecraft.client.MainWindow;
+import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +55,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiScreen {
-    private static final TextFormatting[] TITLE_PREFIX = { TextFormatting.AQUA, TextFormatting.UNDERLINE };
+    private static final ChatFormatting[] TITLE_PREFIX = { ChatFormatting.AQUA, ChatFormatting.UNDERLINE };
 
     public static final ItemStack[] ARMOR_STACKS = new ItemStack[]{
             new ItemStack(ModItems.PNEUMATIC_BOOTS.get()),
@@ -72,7 +73,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     private final UpgradeOption nullOptionsPage = new UpgradeOption(new NullOptions(this), RL("null"), new ItemStack(Items.BARRIER));
 
     private GuiArmorMainScreen() {
-        super(new StringTextComponent("Main Screen"));
+        super(new TextComponent("Main Screen"));
     }
 
     public static GuiArmorMainScreen getInstance() {
@@ -82,7 +83,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     public static void initHelmetCoreComponents() {
         if (instance == null) {
             instance = new GuiArmorMainScreen();
-            MainWindow mw = Minecraft.getInstance().getWindow();
+            Window mw = Minecraft.getInstance().getWindow();
             instance.init(Minecraft.getInstance(), mw.getGuiScaledWidth(), mw.getGuiScaledHeight());  // causes init() to be called
 
             for (int i = 1; i < instance.upgradeOptions.size(); i++) {
@@ -101,8 +102,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         xSize = width;
         ySize = height;
 
-        buttons.clear();
-        children.clear();
+        clearWidgets();
         upgradeOptions.clear();
         addPages();
 
@@ -119,7 +119,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
                     upgradeOptions.get(i).page.getPageName(), b -> setPage(idx));
             button.setRenderStacks(upgradeOptions.get(i).icons).setIconPosition(WidgetButtonExtended.IconPosition.RIGHT).setIconSpacing(12);
             if (pageNumber == i) button.active = false;
-            addButton(button);
+            addRenderableWidget(button);
             yPos += 22;
             if (yPos > ySize - 22) {
                 yPos = 5;
@@ -131,7 +131,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         ICheckboxWidget checkBox = PneumaticRegistry.getInstance().getHelmetRegistry()
                 .makeKeybindingCheckBox(getCurrentOptionsPage().upgradeID, 40, 25, 0xFFFFFFFF, null);
         if (getCurrentOptionsPage().page.isToggleable()) {
-            addButton(checkBox.asWidget());
+            addRenderableWidget(checkBox.asWidget());
         }
         getCurrentOptionsPage().page.populateGui(this);
     }
@@ -155,10 +155,10 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     }
 
     private void addPages() {
-        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+        for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             List<IArmorUpgradeHandler<?>> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
             for (int i = 0; i < upgradeHandlers.size(); i++) {
-                if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, i) || slot == EquipmentSlotType.HEAD && i == 0) {
+                if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, i) || slot == EquipmentSlot.HEAD && i == 0) {
                     IArmorUpgradeHandler<?> handler = upgradeHandlers.get(i);
                     if (inInitPhase
                             || ItemPneumaticArmor.isPneumaticArmorPiece(Minecraft.getInstance().player, slot)
@@ -178,13 +178,13 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
         IOptionPage optionPage = getCurrentOptionsPage().page;
         optionPage.renderPre(matrixStack, x, y, partialTicks);
         drawCenteredString(matrixStack, font, getCurrentOptionsPage().page.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
-            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(TextFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
+            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(ChatFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
         super.render(matrixStack, x, y, partialTicks);
         optionPage.renderPost(matrixStack, x, y, partialTicks);
@@ -229,22 +229,22 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     }
 
     @Override
-    public <T extends Widget> T addWidget(T w) {
-        return addButton(w);
+    public <T extends AbstractWidget> T addWidget(T w) {
+        return addRenderableWidget(w);
     }
 
     @Override
     public List<Widget> getWidgetList() {
-        return ImmutableList.copyOf(buttons);
+        return ImmutableList.copyOf(renderables);
     }
 
     @Override
-    public FontRenderer getFontRenderer() {
+    public Font getFontRenderer() {
         return font;
     }
 
     @Override
-    public void setFocusedWidget(Widget w) {
+    public void setFocusedWidget(AbstractWidget w) {
         setFocused(w);
     }
 

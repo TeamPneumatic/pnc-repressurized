@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Set;
 

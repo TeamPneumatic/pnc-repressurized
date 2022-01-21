@@ -17,14 +17,15 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.item.DyeColor;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +37,12 @@ import java.util.function.Supplier;
  */
 public class PacketSpawnIndicatorParticles {
     private final BlockPos pos0;
-    private final int dyeColor;
+    private final DyeColor dyeColor;
     private final List<ByteOffset> offsets = new ArrayList<>();
 
     public PacketSpawnIndicatorParticles(List<BlockPos> posList, DyeColor dyeColor) {
         this.pos0 = posList.get(0);
-        this.dyeColor = dyeColor.getColorValue();
+        this.dyeColor = dyeColor;
         for (int i = 1; i < posList.size(); i++) {
             BlockPos off = posList.get(i).subtract(pos0);
             if (off.getX() >= -128 && off.getX() <= 127 && off.getY() >= -128 && off.getY() <= 127 && off.getZ() >= -128 && off.getZ() <= 127) {
@@ -50,16 +51,16 @@ public class PacketSpawnIndicatorParticles {
         }
     }
 
-    public PacketSpawnIndicatorParticles(PacketBuffer buffer) {
+    public PacketSpawnIndicatorParticles(FriendlyByteBuf buffer) {
         pos0 = buffer.readBlockPos();
         int nOffsets = buffer.readVarInt();
         for (int i = 0; i < nOffsets; i++) {
             offsets.add(new ByteOffset(buffer.readByte(), buffer.readByte(), buffer.readByte()));
         }
-        dyeColor = buffer.readInt();
+        dyeColor = DyeColor.byId(buffer.readVarInt());
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos0);
         buffer.writeVarInt(offsets.size());
         for (ByteOffset offset : offsets) {
@@ -67,16 +68,14 @@ public class PacketSpawnIndicatorParticles {
             buffer.writeByte(offset.y);
             buffer.writeByte(offset.z);
         }
-        buffer.writeInt(dyeColor);
+        buffer.writeVarInt(dyeColor.getId());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            World world = ClientUtils.getClientWorld();
-            int r = (dyeColor >> 16) & 0xFF;
-            int g = (dyeColor >> 8) & 0xFF;
-            int b = dyeColor & 0xFF;
-            IParticleData particle = new RedstoneParticleData(r / 255f, g / 255f, b / 255f, 1f);
+            Level world = ClientUtils.getClientLevel();
+            float[] cols = dyeColor.getTextureDiffuseColors();
+            ParticleOptions particle = new DustParticleOptions(new Vector3f(cols[0] / 255f, cols[1] / 255f, cols[2] / 255f), 1f);
             world.addParticle(particle, pos0.getX() + 0.5, pos0.getY() + 0.5, pos0.getZ() + 0.5, 0, 0, 0);
             for (ByteOffset offset : offsets) {
                 world.addParticle(particle, pos0.getX() + offset.x + 0.5, pos0.getY() + offset.y + 0.5, pos0.getZ() + offset.z + 0.5, 0, 0, 0);

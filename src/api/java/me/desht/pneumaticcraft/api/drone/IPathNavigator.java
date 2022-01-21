@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 public interface IPathNavigator {
     boolean moveToXYZ(double x, double y, double z);

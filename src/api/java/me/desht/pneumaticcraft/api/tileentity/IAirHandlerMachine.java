@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.api.tileentity;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -81,7 +81,7 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
      *
      * @param ownerTE the owning tile entity
      */
-    void tick(TileEntity ownerTE);
+    void tick(BlockEntity ownerTE);
 
     /**
      * Mark a face of the air handler as leaking or otherwise.  When called server-side, changes will be automatically
@@ -107,15 +107,15 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
      * @param ownerTE the owning tile entity
      * @return a list of all connected air handlers
      */
-    List<IAirHandlerMachine.Connection> getConnectedAirHandlers(TileEntity ownerTE);
+    List<IAirHandlerMachine.Connection> getConnectedAirHandlers(BlockEntity ownerTE);
 
-    INBT serializeNBT();
+    Tag serializeNBT();
 
-    void deserializeNBT(CompoundNBT compound);
+    void deserializeNBT(CompoundTag compound);
 
     /**
      * Set the connected faces of this air handler. This should be called on the first server tick, and when
-     * neighbouring blocks change (i.e. via {@link net.minecraft.block.Block#neighborChanged(BlockState, World, BlockPos, Block, BlockPos, boolean)}.
+     * neighbouring blocks change (i.e. via {@link net.minecraft.world.level.block.Block#neighborChanged(BlockState, Level, BlockPos, Block, BlockPos, boolean)})
      * <p>
      * This also invalidates any cached neighbour data.
      *
@@ -151,14 +151,14 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
 
         /**
          * Set the max air which may be dispersed along this connection. You should not normally call this directly;
-         * it is handled by {@link IAirHandlerMachine#tick(TileEntity)}
+         * it is handled by {@link IAirHandlerMachine#tick(BlockEntity)}
          * @param maxDispersion the maximum dispersal allowed
          */
         void setMaxDispersion(int maxDispersion);
 
         /**
          * Get the amount of air has been dispersed along this connection in this tick.  Note that this will be 0 until
-         * calculated during {@link IAirHandlerMachine#tick(TileEntity)}.
+         * calculated during {@link IAirHandlerMachine#tick(BlockEntity)}.
          *
          * @return the air which has been dispersed this tick.
          */
@@ -166,7 +166,7 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
 
         /**
          * Set the air which will be dispersed along this connection in this tick. You should not normally call this
-         * directly; it is handled by {@link IAirHandlerMachine#tick(TileEntity)}.
+         * directly; it is handled by {@link IAirHandlerMachine#tick(BlockEntity)}.
          * @param toDisperse the air which will be dispersed this tick
          */
         void setAirToDisperse(int toDisperse);

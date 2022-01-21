@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -30,19 +30,19 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IFocus;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.item.TooltipFlag.Default;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.text.NumberFormat;
@@ -56,10 +56,10 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     private final IDrawable coldArea;
     private final IDrawable air;
 
-    private static final Rectangle2d INPUT_AREA = new Rectangle2d(65, 44, 18, 18);
-    private static final Rectangle2d COLD_AREA = new Rectangle2d(5, 44, 18, 18);
-    private static final Rectangle2d HOT_AREA = new Rectangle2d(125, 44, 18, 18);
-    private static final Rectangle2d[] OUTPUT_AREAS = new Rectangle2d[] { COLD_AREA, HOT_AREA };
+    private static final Rect2i INPUT_AREA = new Rect2i(65, 44, 18, 18);
+    private static final Rect2i COLD_AREA = new Rect2i(5, 44, 18, 18);
+    private static final Rect2i HOT_AREA = new Rect2i(125, 44, 18, 18);
+    private static final Rect2i[] OUTPUT_AREAS = new Rect2i[] { COLD_AREA, HOT_AREA };
 
     public JEIBlockHeatPropertiesCategory() {
         super(ModCategoryUid.HEAT_PROPERTIES, HeatPropertiesRecipe.class,
@@ -81,7 +81,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         //  (on the other hand the blocks in the recipe don't appear in JEI's display anyway so ¯\_(ツ)_/¯)
         //noinspection UnstableApiUsage
         return BlockHeatProperties.getInstance().getAllEntries(Minecraft.getInstance().level).stream()
-                .filter(r -> r.getBlock() instanceof FlowingFluidBlock || !new ItemStack(r.getBlock()).isEmpty())
+                .filter(r -> r.getBlock() instanceof LiquidBlock || !new ItemStack(r.getBlock()).isEmpty())
                 .sorted(Comparator.comparingInt(HeatPropertiesRecipe::getTemperature)
                         .thenComparing(o -> o.getInputDisplayName().getString()))
                 .collect(ImmutableList.toImmutableList());
@@ -103,10 +103,10 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
 
     private void collectOutputs(BlockState state, List<ItemStack> items, List<FluidStack> fluids) {
         if (state != null) {
-            if (state.getBlock() instanceof FlowingFluidBlock) {
-                int level = state.hasProperty(FlowingFluidBlock.LEVEL) ? state.getValue(FlowingFluidBlock.LEVEL) : 15;
+            if (state.getBlock() instanceof LiquidBlock) {
+                int level = state.hasProperty(LiquidBlock.LEVEL) ? state.getValue(LiquidBlock.LEVEL) : 15;
                 if (level == 0) level = 15;
-                FluidStack stack = new FluidStack(((FlowingFluidBlock) state.getBlock()).getFluid(), 1000 * level / 15);
+                FluidStack stack = new FluidStack(((LiquidBlock) state.getBlock()).getFluid(), 1000 * level / 15);
                 fluids.add(stack);
                 items.add(new ItemStack(Blocks.BARRIER));
             } else {
@@ -121,8 +121,8 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     }
 
     private void setInputIngredient(Block block, IIngredients ingredients) {
-        if (block instanceof FlowingFluidBlock) {
-            FluidStack stack = new FluidStack(((FlowingFluidBlock) block).getFluid(), 1000);
+        if (block instanceof LiquidBlock) {
+            FluidStack stack = new FluidStack(((LiquidBlock) block).getFluid(), 1000);
             ingredients.setInput(VanillaTypes.FLUID, stack);
         } else {
             ingredients.setInput(VanillaTypes.ITEM, new ItemStack(block));
@@ -147,17 +147,17 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     }
 
     @Override
-    public void draw(HeatPropertiesRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-        FontRenderer fontRenderer = Minecraft.getInstance().font;
+    public void draw(HeatPropertiesRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+        Font fontRenderer = Minecraft.getInstance().font;
 
         int h = fontRenderer.lineHeight;
 
-        ITextComponent desc = recipe.getDescriptionKey().isEmpty() ?
-                StringTextComponent.EMPTY :
-                new StringTextComponent(" (" + I18n.get(recipe.getDescriptionKey()) + ")");
+        Component desc = recipe.getDescriptionKey().isEmpty() ?
+                TextComponent.EMPTY :
+                new TextComponent(" (" + I18n.get(recipe.getDescriptionKey()) + ")");
         fontRenderer.draw(matrixStack, recipe.getInputDisplayName().copy().append(desc), 0, 0, 0x4040a0);
 
-        ITextComponent temp = xlate("pneumaticcraft.waila.temperature").append(new StringTextComponent((recipe.getTemperature() - 273) + "°C"));
+        Component temp = xlate("pneumaticcraft.waila.temperature").append(new TextComponent((recipe.getTemperature() - 273) + "°C"));
         fontRenderer.draw(matrixStack, temp, 0, h * 2, 0x404040);
 
         String res = NumberFormat.getNumberInstance(Locale.getDefault()).format(recipe.getThermalResistance());
@@ -203,8 +203,8 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(HeatPropertiesRecipe recipe, double mouseX, double mouseY) {
-        List<ITextComponent> l = new ArrayList<>();
+    public List<Component> getTooltipStrings(HeatPropertiesRecipe recipe, double mouseX, double mouseY) {
+        List<Component> l = new ArrayList<>();
         if (INPUT_AREA.contains((int)mouseX, (int)mouseY)) {
             addTooltip(recipe.getBlock(), l);
         } else if (recipe.getTransformCold() != null && COLD_AREA.contains((int)mouseX, (int)mouseY)) {
@@ -220,22 +220,22 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     }
 
     private IFocus<?> makeFocus(Block block, IFocus.Mode mode) {
-        return block == Blocks.AIR || block instanceof FlowingFluidBlock ?
+        return block == Blocks.AIR || block instanceof LiquidBlock ?
                 null :
                 JEIPlugin.recipeManager.createFocus(mode, new ItemStack(block));
     }
 
-    private void addTooltip(Block block, List<ITextComponent> list) {
+    private void addTooltip(Block block, List<Component> list) {
         ItemStack stack = new ItemStack(block);
         list.add(stack.getHoverName());
-        stack.getItem().appendHoverText(stack, ClientUtils.getClientWorld(), list, ClientUtils.hasShiftDown() ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL);
+        stack.getItem().appendHoverText(stack, ClientUtils.getClientLevel(), list, ClientUtils.hasShiftDown() ? Default.ADVANCED : Default.NORMAL);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            list.add(new StringTextComponent(stack.getItem().getRegistryName().toString()).withStyle(TextFormatting.DARK_GRAY));
+            list.add(new TextComponent(stack.getItem().getRegistryName().toString()).withStyle(ChatFormatting.DARK_GRAY));
         }
-        list.add(new StringTextComponent(ModNameCache.getModName(stack.getItem())).withStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
+        list.add(new TextComponent(ModNameCache.getModName(stack.getItem())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
     }
 
-    private void renderBlock(BlockState state, MatrixStack matrixStack, int x, int y) {
+    private void renderBlock(BlockState state, PoseStack matrixStack, int x, int y) {
         // note: fluid rendering is done by JEI (fluidstacks are registered in the recipe layout)
         if (state != null) {
             if (state.getBlock() == Blocks.AIR) {

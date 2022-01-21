@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCustomBlockInteract;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
-import net.minecraft.block.Block;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.GlobalPos;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
@@ -57,22 +57,22 @@ public enum DroneRegistry implements IDroneRegistry {
     }
 
     @Override
-    public CreatureEntity deliverItemsAmazonStyle(GlobalPos globalPos, ItemStack... deliveredStacks) {
+    public PathfinderMob deliverItemsAmazonStyle(GlobalPos globalPos, ItemStack... deliveredStacks) {
         return ProgrammedDroneUtils.deliverItemsAmazonStyle(globalPos, deliveredStacks);
     }
 
     @Override
-    public CreatureEntity retrieveItemsAmazonStyle(GlobalPos globalPos, ItemStack... queriedStacks) {
+    public PathfinderMob retrieveItemsAmazonStyle(GlobalPos globalPos, ItemStack... queriedStacks) {
         return ProgrammedDroneUtils.retrieveItemsAmazonStyle(globalPos, queriedStacks);
     }
 
     @Override
-    public CreatureEntity deliverFluidAmazonStyle(GlobalPos globalPos, FluidStack deliveredFluid) {
+    public PathfinderMob deliverFluidAmazonStyle(GlobalPos globalPos, FluidStack deliveredFluid) {
         return ProgrammedDroneUtils.deliverFluidAmazonStyle(globalPos, deliveredFluid);
     }
 
     @Override
-    public CreatureEntity retrieveFluidAmazonStyle(GlobalPos globalPos, FluidStack queriedFluid) {
+    public PathfinderMob retrieveFluidAmazonStyle(GlobalPos globalPos, FluidStack queriedFluid) {
         return ProgrammedDroneUtils.retrieveFluidAmazonStyle(globalPos, queriedFluid);
     }
 }

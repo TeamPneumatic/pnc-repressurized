@@ -24,18 +24,18 @@ import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.BlockModelShapes;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.BlockModelShaper;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.RegistryObject;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -47,8 +47,8 @@ public class ModClientEventHandler {
         for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof BlockPneumaticCraftCamo) {
                 for (BlockState state : block.get().getStateDefinition().getPossibleStates()) {
-                    ModelResourceLocation loc = BlockModelShapes.stateToModelLocation(state);
-                    IBakedModel model = event.getModelRegistry().get(loc);
+                    ModelResourceLocation loc = BlockModelShaper.stateToModelLocation(state);
+                    BakedModel model = event.getModelRegistry().get(loc);
                     if (model != null) {
                         event.getModelRegistry().put(loc, new CamoModel(model));
                     }

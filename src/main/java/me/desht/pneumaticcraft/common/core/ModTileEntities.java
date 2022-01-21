@@ -21,146 +21,146 @@ import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.TileEntityDroneInterface;
 import me.desht.pneumaticcraft.common.tileentity.*;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
 public class ModTileEntities {
-    public static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Names.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Names.MOD_ID);
 
-    public static final RegistryObject<TileEntityType<TileEntityPressureTube>> PRESSURE_TUBE
-            = register("pressure_tube", () -> new TileEntityType<>(TileEntityPressureTube::new, ImmutableSet.of(ModBlocks.PRESSURE_TUBE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAdvancedPressureTube>> ADVANCED_PRESSURE_TUBE
-            = register("advanced_pressure_tube", () -> new TileEntityType<>(TileEntityAdvancedPressureTube::new, ImmutableSet.of(ModBlocks.ADVANCED_PRESSURE_TUBE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAirCompressor>> AIR_COMPRESSOR
-            = register("air_compressor", () -> new TileEntityType<>(TileEntityAirCompressor::new, ImmutableSet.of(ModBlocks.AIR_COMPRESSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAdvancedAirCompressor>> ADVANCED_AIR_COMPRESSOR
-            = register("advanced_air_compressor", () -> new TileEntityType<>(TileEntityAdvancedAirCompressor::new, ImmutableSet.of(ModBlocks.ADVANCED_AIR_COMPRESSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAirCannon>> AIR_CANNON
-            = register("air_cannon", () -> new TileEntityType<>(TileEntityAirCannon::new, ImmutableSet.of(ModBlocks.AIR_CANNON.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityPressureChamberWall>> PRESSURE_CHAMBER_WALL
-            = register("pressure_chamber_wall", () -> new TileEntityType<>(TileEntityPressureChamberWall::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_WALL.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityPressureChamberGlass>> PRESSURE_CHAMBER_GLASS
-            = register("pressure_chamber_glass", () -> new TileEntityType<>(TileEntityPressureChamberGlass::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_GLASS.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityPressureChamberValve>> PRESSURE_CHAMBER_VALVE
-            = register("pressure_chamber_valve", () -> new TileEntityType<>(TileEntityPressureChamberValve::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_VALVE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityChargingStation>> CHARGING_STATION
-            = register("charging_station", () -> new TileEntityType<>(TileEntityChargingStation::new, ImmutableSet.of(ModBlocks.CHARGING_STATION.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityElevatorBase>> ELEVATOR_BASE
-            = register("elevator_base", () -> new TileEntityType<>(TileEntityElevatorBase::new, ImmutableSet.of(ModBlocks.ELEVATOR_BASE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityElevatorFrame>> ELEVATOR_FRAME
-            = register("elevator_frame", () -> new TileEntityType<>(TileEntityElevatorFrame::new, ImmutableSet.of(ModBlocks.ELEVATOR_FRAME.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityPressureChamberInterface>> PRESSURE_CHAMBER_INTERFACE
-            = register("pressure_chamber_interface", () -> new TileEntityType<>(TileEntityPressureChamberInterface::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityVacuumPump>> VACUUM_PUMP
-            = register("vacuum_pump", () -> new TileEntityType<>(TileEntityVacuumPump::new, ImmutableSet.of(ModBlocks.VACUUM_PUMP.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityPneumaticDoorBase>> PNEUMATIC_DOOR_BASE
-            = register("pneumatic_door_base", () -> new TileEntityType<>(TileEntityPneumaticDoorBase::new, ImmutableSet.of(ModBlocks.PNEUMATIC_DOOR_BASE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityPneumaticDoor>> PNEUMATIC_DOOR
-            = register("pneumatic_door", () -> new TileEntityType<>(TileEntityPneumaticDoor::new, ImmutableSet.of(ModBlocks.PNEUMATIC_DOOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAssemblyIOUnit>> ASSEMBLY_IO_UNIT
-            = register("assembly_io_unit", () -> new TileEntityType<>(TileEntityAssemblyIOUnit::new, ImmutableSet.of(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.get(), ModBlocks.ASSEMBLY_IO_UNIT_EXPORT.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAssemblyPlatform>> ASSEMBLY_PLATFORM
-            = register("assembly_platform", () -> new TileEntityType<>(TileEntityAssemblyPlatform::new, ImmutableSet.of(ModBlocks.ASSEMBLY_PLATFORM.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAssemblyDrill>> ASSEMBLY_DRILL
-            = register("assembly_drill", () -> new TileEntityType<>(TileEntityAssemblyDrill::new, ImmutableSet.of(ModBlocks.ASSEMBLY_DRILL.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAssemblyLaser>> ASSEMBLY_LASER
-            = register("assembly_laser", () -> new TileEntityType<>(TileEntityAssemblyLaser::new, ImmutableSet.of(ModBlocks.ASSEMBLY_LASER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAssemblyController>> ASSEMBLY_CONTROLLER
-            = register("assembly_controller", () -> new TileEntityType<>(TileEntityAssemblyController::new, ImmutableSet.of(ModBlocks.ASSEMBLY_CONTROLLER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityUVLightBox>> UV_LIGHT_BOX
-            = register("uv_light_box", () -> new TileEntityType<>(TileEntityUVLightBox::new, ImmutableSet.of(ModBlocks.UV_LIGHT_BOX.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntitySecurityStation>> SECURITY_STATION
-            = register("security_station", () -> new TileEntityType<>(TileEntitySecurityStation::new, ImmutableSet.of(ModBlocks.SECURITY_STATION.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityUniversalSensor>> UNIVERSAL_SENSOR
-            = register("universal_sensor", () -> new TileEntityType<>(TileEntityUniversalSensor::new, ImmutableSet.of(ModBlocks.UNIVERSAL_SENSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAerialInterface>> AERIAL_INTERFACE
-            = register("aerial_interface", () -> new TileEntityType<>(TileEntityAerialInterface::new, ImmutableSet.of(ModBlocks.AERIAL_INTERFACE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityElectrostaticCompressor>> ELECTROSTATIC_COMPRESSOR
-            = register("electrostatic_compressor", () -> new TileEntityType<>(TileEntityElectrostaticCompressor::new, ImmutableSet.of(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAphorismTile>> APHORISM_TILE
-            = register("aphorism_tile", () -> new TileEntityType<>(TileEntityAphorismTile::new, ImmutableSet.of(ModBlocks.APHORISM_TILE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityOmnidirectionalHopper>> OMNIDIRECTIONAL_HOPPER
-            = register("omnidirectional_hopper", () -> new TileEntityType<>(TileEntityOmnidirectionalHopper::new, ImmutableSet.of(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityLiquidHopper>> LIQUID_HOPPER
-            = register("liquid_hopper", () -> new TileEntityType<>(TileEntityLiquidHopper::new, ImmutableSet.of(ModBlocks.LIQUID_HOPPER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityElevatorCaller>> ELEVATOR_CALLER
-            = register("elevator_caller", () -> new TileEntityType<>(TileEntityElevatorCaller::new, ImmutableSet.of(ModBlocks.ELEVATOR_CALLER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityProgrammer>> PROGRAMMER
-            = register("programmer", () -> new TileEntityType<>(TileEntityProgrammer::new, ImmutableSet.of(ModBlocks.PROGRAMMER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityCreativeCompressor>> CREATIVE_COMPRESSOR
-            = register("creative_compressor", () -> new TileEntityType<>(TileEntityCreativeCompressor::new, ImmutableSet.of(ModBlocks.CREATIVE_COMPRESSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityLiquidCompressor>> LIQUID_COMPRESSOR
-            = register("liquid_compressor", () -> new TileEntityType<>(TileEntityLiquidCompressor::new, ImmutableSet.of(ModBlocks.LIQUID_COMPRESSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityAdvancedLiquidCompressor>> ADVANCED_LIQUID_COMPRESSOR
-            = register("advanced_liquid_compressor", () -> new TileEntityType<>(TileEntityAdvancedLiquidCompressor::new, ImmutableSet.of(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityDroneRedstoneEmitter>> DRONE_REDSTONE_EMITTER
-            = register("drone_redstone_emitter", () -> new TileEntityType<>(TileEntityDroneRedstoneEmitter::new, ImmutableSet.of(ModBlocks.DRONE_REDSTONE_EMITTER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityCompressedIronBlock>> COMPRESSED_IRON_BLOCK
-            = register("compressed_iron_block", () -> new TileEntityType<>(TileEntityCompressedIronBlock::new, ImmutableSet.of(ModBlocks.COMPRESSED_IRON_BLOCK.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityHeatSink>> HEAT_SINK
-            = register("heat_sink", () -> new TileEntityType<>(TileEntityHeatSink::new, ImmutableSet.of(ModBlocks.HEAT_SINK.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityVortexTube>> VORTEX_TUBE
-            = register("vortex_tube", () -> new TileEntityType<>(TileEntityVortexTube::new, ImmutableSet.of(ModBlocks.VORTEX_TUBE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityProgrammableController>> PROGRAMMABLE_CONTROLLER
-            = register("programmable_controller", () -> new TileEntityType<>(TileEntityProgrammableController::new, ImmutableSet.of(ModBlocks.PROGRAMMABLE_CONTROLLER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityGasLift>> GAS_LIFT
-            = register("gas_lift", () -> new TileEntityType<>(TileEntityGasLift::new, ImmutableSet.of(ModBlocks.GAS_LIFT.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityRefineryController>> REFINERY
-            = register("refinery", () -> new TileEntityType<>(TileEntityRefineryController::new, ImmutableSet.of(ModBlocks.REFINERY.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityRefineryOutput>> REFINERY_OUTPUT
-            = register("refinery_output", () -> new TileEntityType<>(TileEntityRefineryOutput::new, ImmutableSet.of(ModBlocks.REFINERY_OUTPUT.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityThermopneumaticProcessingPlant>> THERMOPNEUMATIC_PROCESSING_PLANT
-            = register("thermopneumatic_processing_plant", () -> new TileEntityType<>(TileEntityThermopneumaticProcessingPlant::new, ImmutableSet.of(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityKeroseneLamp>> KEROSENE_LAMP
-            = register("kerosene_lamp", () -> new TileEntityType<>(TileEntityKeroseneLamp::new, ImmutableSet.of(ModBlocks.KEROSENE_LAMP.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntitySentryTurret>> SENTRY_TURRET
-            = register("sentry_turret", () -> new TileEntityType<>(TileEntitySentryTurret::new, ImmutableSet.of(ModBlocks.SENTRY_TURRET.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityFluxCompressor>> FLUX_COMPRESSOR
-            = register("flux_compressor", () -> new TileEntityType<>(TileEntityFluxCompressor::new, ImmutableSet.of(ModBlocks.FLUX_COMPRESSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityPneumaticDynamo>> PNEUMATIC_DYNAMO
-            = register("pneumatic_dynamo", () -> new TileEntityType<>(TileEntityPneumaticDynamo::new, ImmutableSet.of(ModBlocks.PNEUMATIC_DYNAMO.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityThermalCompressor>> THERMAL_COMPRESSOR
-            = register("thermal_compressor", () -> new TileEntityType<>(TileEntityThermalCompressor::new, ImmutableSet.of(ModBlocks.THERMAL_COMPRESSOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityHeatPipe>> HEAT_PIPE
-            = register("heat_pipe", () -> new TileEntityType<>(TileEntityHeatPipe::new, ImmutableSet.of(ModBlocks.HEAT_PIPE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityEtchingTank>> ETCHING_TANK
-            = register("etching_tank", () -> new TileEntityType<>(TileEntityEtchingTank::new, ImmutableSet.of(ModBlocks.ETCHING_TANK.get()),
+    public static final RegistryObject<BlockEntityType<TileEntityPressureTube>> PRESSURE_TUBE
+            = register("pressure_tube", () -> new BlockEntityType<>(TileEntityPressureTube::new, ImmutableSet.of(ModBlocks.PRESSURE_TUBE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAdvancedPressureTube>> ADVANCED_PRESSURE_TUBE
+            = register("advanced_pressure_tube", () -> new BlockEntityType<>(TileEntityAdvancedPressureTube::new, ImmutableSet.of(ModBlocks.ADVANCED_PRESSURE_TUBE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAirCompressor>> AIR_COMPRESSOR
+            = register("air_compressor", () -> new BlockEntityType<>(TileEntityAirCompressor::new, ImmutableSet.of(ModBlocks.AIR_COMPRESSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAdvancedAirCompressor>> ADVANCED_AIR_COMPRESSOR
+            = register("advanced_air_compressor", () -> new BlockEntityType<>(TileEntityAdvancedAirCompressor::new, ImmutableSet.of(ModBlocks.ADVANCED_AIR_COMPRESSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAirCannon>> AIR_CANNON
+            = register("air_cannon", () -> new BlockEntityType<>(TileEntityAirCannon::new, ImmutableSet.of(ModBlocks.AIR_CANNON.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityPressureChamberWall>> PRESSURE_CHAMBER_WALL
+            = register("pressure_chamber_wall", () -> new BlockEntityType<>(TileEntityPressureChamberWall::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_WALL.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityPressureChamberGlass>> PRESSURE_CHAMBER_GLASS
+            = register("pressure_chamber_glass", () -> new BlockEntityType<>(TileEntityPressureChamberGlass::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_GLASS.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityPressureChamberValve>> PRESSURE_CHAMBER_VALVE
+            = register("pressure_chamber_valve", () -> new BlockEntityType<>(TileEntityPressureChamberValve::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_VALVE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityChargingStation>> CHARGING_STATION
+            = register("charging_station", () -> new BlockEntityType<>(TileEntityChargingStation::new, ImmutableSet.of(ModBlocks.CHARGING_STATION.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityElevatorBase>> ELEVATOR_BASE
+            = register("elevator_base", () -> new BlockEntityType<>(TileEntityElevatorBase::new, ImmutableSet.of(ModBlocks.ELEVATOR_BASE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityElevatorFrame>> ELEVATOR_FRAME
+            = register("elevator_frame", () -> new BlockEntityType<>(TileEntityElevatorFrame::new, ImmutableSet.of(ModBlocks.ELEVATOR_FRAME.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityPressureChamberInterface>> PRESSURE_CHAMBER_INTERFACE
+            = register("pressure_chamber_interface", () -> new BlockEntityType<>(TileEntityPressureChamberInterface::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityVacuumPump>> VACUUM_PUMP
+            = register("vacuum_pump", () -> new BlockEntityType<>(TileEntityVacuumPump::new, ImmutableSet.of(ModBlocks.VACUUM_PUMP.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityPneumaticDoorBase>> PNEUMATIC_DOOR_BASE
+            = register("pneumatic_door_base", () -> new BlockEntityType<>(TileEntityPneumaticDoorBase::new, ImmutableSet.of(ModBlocks.PNEUMATIC_DOOR_BASE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityPneumaticDoor>> PNEUMATIC_DOOR
+            = register("pneumatic_door", () -> new BlockEntityType<>(TileEntityPneumaticDoor::new, ImmutableSet.of(ModBlocks.PNEUMATIC_DOOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAssemblyIOUnit>> ASSEMBLY_IO_UNIT
+            = register("assembly_io_unit", () -> new BlockEntityType<>(TileEntityAssemblyIOUnit::new, ImmutableSet.of(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.get(), ModBlocks.ASSEMBLY_IO_UNIT_EXPORT.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAssemblyPlatform>> ASSEMBLY_PLATFORM
+            = register("assembly_platform", () -> new BlockEntityType<>(TileEntityAssemblyPlatform::new, ImmutableSet.of(ModBlocks.ASSEMBLY_PLATFORM.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAssemblyDrill>> ASSEMBLY_DRILL
+            = register("assembly_drill", () -> new BlockEntityType<>(TileEntityAssemblyDrill::new, ImmutableSet.of(ModBlocks.ASSEMBLY_DRILL.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAssemblyLaser>> ASSEMBLY_LASER
+            = register("assembly_laser", () -> new BlockEntityType<>(TileEntityAssemblyLaser::new, ImmutableSet.of(ModBlocks.ASSEMBLY_LASER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAssemblyController>> ASSEMBLY_CONTROLLER
+            = register("assembly_controller", () -> new BlockEntityType<>(TileEntityAssemblyController::new, ImmutableSet.of(ModBlocks.ASSEMBLY_CONTROLLER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityUVLightBox>> UV_LIGHT_BOX
+            = register("uv_light_box", () -> new BlockEntityType<>(TileEntityUVLightBox::new, ImmutableSet.of(ModBlocks.UV_LIGHT_BOX.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntitySecurityStation>> SECURITY_STATION
+            = register("security_station", () -> new BlockEntityType<>(TileEntitySecurityStation::new, ImmutableSet.of(ModBlocks.SECURITY_STATION.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityUniversalSensor>> UNIVERSAL_SENSOR
+            = register("universal_sensor", () -> new BlockEntityType<>(TileEntityUniversalSensor::new, ImmutableSet.of(ModBlocks.UNIVERSAL_SENSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAerialInterface>> AERIAL_INTERFACE
+            = register("aerial_interface", () -> new BlockEntityType<>(TileEntityAerialInterface::new, ImmutableSet.of(ModBlocks.AERIAL_INTERFACE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityElectrostaticCompressor>> ELECTROSTATIC_COMPRESSOR
+            = register("electrostatic_compressor", () -> new BlockEntityType<>(TileEntityElectrostaticCompressor::new, ImmutableSet.of(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAphorismTile>> APHORISM_TILE
+            = register("aphorism_tile", () -> new BlockEntityType<>(TileEntityAphorismTile::new, ImmutableSet.of(ModBlocks.APHORISM_TILE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityOmnidirectionalHopper>> OMNIDIRECTIONAL_HOPPER
+            = register("omnidirectional_hopper", () -> new BlockEntityType<>(TileEntityOmnidirectionalHopper::new, ImmutableSet.of(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityLiquidHopper>> LIQUID_HOPPER
+            = register("liquid_hopper", () -> new BlockEntityType<>(TileEntityLiquidHopper::new, ImmutableSet.of(ModBlocks.LIQUID_HOPPER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityElevatorCaller>> ELEVATOR_CALLER
+            = register("elevator_caller", () -> new BlockEntityType<>(TileEntityElevatorCaller::new, ImmutableSet.of(ModBlocks.ELEVATOR_CALLER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityProgrammer>> PROGRAMMER
+            = register("programmer", () -> new BlockEntityType<>(TileEntityProgrammer::new, ImmutableSet.of(ModBlocks.PROGRAMMER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityCreativeCompressor>> CREATIVE_COMPRESSOR
+            = register("creative_compressor", () -> new BlockEntityType<>(TileEntityCreativeCompressor::new, ImmutableSet.of(ModBlocks.CREATIVE_COMPRESSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityLiquidCompressor>> LIQUID_COMPRESSOR
+            = register("liquid_compressor", () -> new BlockEntityType<>(TileEntityLiquidCompressor::new, ImmutableSet.of(ModBlocks.LIQUID_COMPRESSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityAdvancedLiquidCompressor>> ADVANCED_LIQUID_COMPRESSOR
+            = register("advanced_liquid_compressor", () -> new BlockEntityType<>(TileEntityAdvancedLiquidCompressor::new, ImmutableSet.of(ModBlocks.ADVANCED_LIQUID_COMPRESSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityDroneRedstoneEmitter>> DRONE_REDSTONE_EMITTER
+            = register("drone_redstone_emitter", () -> new BlockEntityType<>(TileEntityDroneRedstoneEmitter::new, ImmutableSet.of(ModBlocks.DRONE_REDSTONE_EMITTER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityCompressedIronBlock>> COMPRESSED_IRON_BLOCK
+            = register("compressed_iron_block", () -> new BlockEntityType<>(TileEntityCompressedIronBlock::new, ImmutableSet.of(ModBlocks.COMPRESSED_IRON_BLOCK.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityHeatSink>> HEAT_SINK
+            = register("heat_sink", () -> new BlockEntityType<>(TileEntityHeatSink::new, ImmutableSet.of(ModBlocks.HEAT_SINK.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityVortexTube>> VORTEX_TUBE
+            = register("vortex_tube", () -> new BlockEntityType<>(TileEntityVortexTube::new, ImmutableSet.of(ModBlocks.VORTEX_TUBE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityProgrammableController>> PROGRAMMABLE_CONTROLLER
+            = register("programmable_controller", () -> new BlockEntityType<>(TileEntityProgrammableController::new, ImmutableSet.of(ModBlocks.PROGRAMMABLE_CONTROLLER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityGasLift>> GAS_LIFT
+            = register("gas_lift", () -> new BlockEntityType<>(TileEntityGasLift::new, ImmutableSet.of(ModBlocks.GAS_LIFT.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityRefineryController>> REFINERY
+            = register("refinery", () -> new BlockEntityType<>(TileEntityRefineryController::new, ImmutableSet.of(ModBlocks.REFINERY.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityRefineryOutput>> REFINERY_OUTPUT
+            = register("refinery_output", () -> new BlockEntityType<>(TileEntityRefineryOutput::new, ImmutableSet.of(ModBlocks.REFINERY_OUTPUT.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityThermopneumaticProcessingPlant>> THERMOPNEUMATIC_PROCESSING_PLANT
+            = register("thermopneumatic_processing_plant", () -> new BlockEntityType<>(TileEntityThermopneumaticProcessingPlant::new, ImmutableSet.of(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityKeroseneLamp>> KEROSENE_LAMP
+            = register("kerosene_lamp", () -> new BlockEntityType<>(TileEntityKeroseneLamp::new, ImmutableSet.of(ModBlocks.KEROSENE_LAMP.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntitySentryTurret>> SENTRY_TURRET
+            = register("sentry_turret", () -> new BlockEntityType<>(TileEntitySentryTurret::new, ImmutableSet.of(ModBlocks.SENTRY_TURRET.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityFluxCompressor>> FLUX_COMPRESSOR
+            = register("flux_compressor", () -> new BlockEntityType<>(TileEntityFluxCompressor::new, ImmutableSet.of(ModBlocks.FLUX_COMPRESSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityPneumaticDynamo>> PNEUMATIC_DYNAMO
+            = register("pneumatic_dynamo", () -> new BlockEntityType<>(TileEntityPneumaticDynamo::new, ImmutableSet.of(ModBlocks.PNEUMATIC_DYNAMO.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityThermalCompressor>> THERMAL_COMPRESSOR
+            = register("thermal_compressor", () -> new BlockEntityType<>(TileEntityThermalCompressor::new, ImmutableSet.of(ModBlocks.THERMAL_COMPRESSOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityHeatPipe>> HEAT_PIPE
+            = register("heat_pipe", () -> new BlockEntityType<>(TileEntityHeatPipe::new, ImmutableSet.of(ModBlocks.HEAT_PIPE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityEtchingTank>> ETCHING_TANK
+            = register("etching_tank", () -> new BlockEntityType<>(TileEntityEtchingTank::new, ImmutableSet.of(ModBlocks.ETCHING_TANK.get()),
     null));
-    public static final RegistryObject<TileEntityType<TileEntityFluidTank.Small>> TANK_SMALL
-            = register("small_tank", () -> new TileEntityType<>(TileEntityFluidTank.Small::new, ImmutableSet.of(ModBlocks.TANK_SMALL.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityFluidTank.Medium>> TANK_MEDIUM
-            = register("medium_tank", () -> new TileEntityType<>(TileEntityFluidTank.Medium::new, ImmutableSet.of(ModBlocks.TANK_MEDIUM.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityFluidTank.Large>> TANK_LARGE
-            = register("large_tank", () -> new TileEntityType<>(TileEntityFluidTank.Large::new, ImmutableSet.of(ModBlocks.TANK_LARGE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityFluidTank.Huge>> TANK_HUGE
-            = register("huge_tank", () -> new TileEntityType<>(TileEntityFluidTank.Huge::new, ImmutableSet.of(ModBlocks.TANK_HUGE.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityReinforcedChest>> REINFORCED_CHEST
-            = register("reinforced_chest", () -> new TileEntityType<>(TileEntityReinforcedChest::new, ImmutableSet.of(ModBlocks.REINFORCED_CHEST.get()),null));
-    public static final RegistryObject<TileEntityType<TileEntitySmartChest>> SMART_CHEST
-            = register("smart_chest", () -> new TileEntityType<>(TileEntitySmartChest::new, ImmutableSet.of(ModBlocks.SMART_CHEST.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityTagWorkbench>> TAG_WORKBENCH
-            = register("tag_workbench", () -> new TileEntityType<>(TileEntityTagWorkbench::new, ImmutableSet.of(ModBlocks.TAG_WORKBENCH.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityDisplayTable>> DISPLAY_TABLE
-            = register("display_table", () -> new TileEntityType<>(TileEntityDisplayTable::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.DISPLAY_SHELF.get()),
+    public static final RegistryObject<BlockEntityType<TileEntityFluidTank.Small>> TANK_SMALL
+            = register("small_tank", () -> new BlockEntityType<>(TileEntityFluidTank.Small::new, ImmutableSet.of(ModBlocks.TANK_SMALL.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityFluidTank.Medium>> TANK_MEDIUM
+            = register("medium_tank", () -> new BlockEntityType<>(TileEntityFluidTank.Medium::new, ImmutableSet.of(ModBlocks.TANK_MEDIUM.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityFluidTank.Large>> TANK_LARGE
+            = register("large_tank", () -> new BlockEntityType<>(TileEntityFluidTank.Large::new, ImmutableSet.of(ModBlocks.TANK_LARGE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityFluidTank.Huge>> TANK_HUGE
+            = register("huge_tank", () -> new BlockEntityType<>(TileEntityFluidTank.Huge::new, ImmutableSet.of(ModBlocks.TANK_HUGE.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityReinforcedChest>> REINFORCED_CHEST
+            = register("reinforced_chest", () -> new BlockEntityType<>(TileEntityReinforcedChest::new, ImmutableSet.of(ModBlocks.REINFORCED_CHEST.get()),null));
+    public static final RegistryObject<BlockEntityType<TileEntitySmartChest>> SMART_CHEST
+            = register("smart_chest", () -> new BlockEntityType<>(TileEntitySmartChest::new, ImmutableSet.of(ModBlocks.SMART_CHEST.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityTagWorkbench>> TAG_WORKBENCH
+            = register("tag_workbench", () -> new BlockEntityType<>(TileEntityTagWorkbench::new, ImmutableSet.of(ModBlocks.TAG_WORKBENCH.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityDisplayTable>> DISPLAY_TABLE
+            = register("display_table", () -> new BlockEntityType<>(TileEntityDisplayTable::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.DISPLAY_SHELF.get()),
             null));
-    public static final RegistryObject<TileEntityType<TileEntityDroneInterface>> DRONE_INTERFACE
-            = register("drone_interface", () -> new TileEntityType<>(TileEntityDroneInterface::new, ImmutableSet.of(ModBlocks.DRONE_INTERFACE.get()),
+    public static final RegistryObject<BlockEntityType<TileEntityDroneInterface>> DRONE_INTERFACE
+            = register("drone_interface", () -> new BlockEntityType<>(TileEntityDroneInterface::new, ImmutableSet.of(ModBlocks.DRONE_INTERFACE.get()),
         null));
-    public static final RegistryObject<TileEntityType<TileEntityFluidMixer>> FLUID_MIXER
-            = register("fluid_mixer", () -> new TileEntityType<>(TileEntityFluidMixer::new, ImmutableSet.of(ModBlocks.FLUID_MIXER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityVacuumTrap>> VACUUM_TRAP
-            = register("vacuum_trap", () -> new TileEntityType<>(TileEntityVacuumTrap::new, ImmutableSet.of(ModBlocks.VACUUM_TRAP.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntitySpawnerExtractor>> SPAWNER_EXTRACTOR
-            = register("spawner_extractor", () -> new TileEntityType<>(TileEntitySpawnerExtractor::new, ImmutableSet.of(ModBlocks.SPAWNER_EXTRACTOR.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityPressurizedSpawner>> PRESSURIZED_SPAWNER
-            = register("pressurized_spawner", () -> new TileEntityType<>(TileEntityPressurizedSpawner::new, ImmutableSet.of(ModBlocks.PRESSURIZED_SPAWNER.get()), null));
-    public static final RegistryObject<TileEntityType<TileEntityCreativeCompressedIronBlock>> CREATIVE_COMPRESSED_IRON_BLOCK
-            = register("creative_compressed_iron_block", () -> new TileEntityType<>(TileEntityCreativeCompressedIronBlock::new, ImmutableSet.of(ModBlocks.CREATIVE_COMPRESSED_IRON_BLOCK.get()), null));
-    private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
+    public static final RegistryObject<BlockEntityType<TileEntityFluidMixer>> FLUID_MIXER
+            = register("fluid_mixer", () -> new BlockEntityType<>(TileEntityFluidMixer::new, ImmutableSet.of(ModBlocks.FLUID_MIXER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityVacuumTrap>> VACUUM_TRAP
+            = register("vacuum_trap", () -> new BlockEntityType<>(TileEntityVacuumTrap::new, ImmutableSet.of(ModBlocks.VACUUM_TRAP.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntitySpawnerExtractor>> SPAWNER_EXTRACTOR
+            = register("spawner_extractor", () -> new BlockEntityType<>(TileEntitySpawnerExtractor::new, ImmutableSet.of(ModBlocks.SPAWNER_EXTRACTOR.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityPressurizedSpawner>> PRESSURIZED_SPAWNER
+            = register("pressurized_spawner", () -> new BlockEntityType<>(TileEntityPressurizedSpawner::new, ImmutableSet.of(ModBlocks.PRESSURIZED_SPAWNER.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityCreativeCompressedIronBlock>> CREATIVE_COMPRESSED_IRON_BLOCK
+            = register("creative_compressed_iron_block", () -> new BlockEntityType<>(TileEntityCreativeCompressedIronBlock::new, ImmutableSet.of(ModBlocks.CREATIVE_COMPRESSED_IRON_BLOCK.get()), null));
+    private static <T extends BlockEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);
     }
 }

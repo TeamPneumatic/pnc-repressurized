@@ -6,32 +6,29 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.HorizontalFaceBlock;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.DyeColor;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.*;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
-import static net.minecraft.state.properties.BlockStateProperties.LIT;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.LIT;
 
 public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
     private static final VoxelShape SHAPE_UP = Stream.of(
@@ -43,7 +40,7 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
             Block.box(9.35, 2.25, 4.75, 9.85, 3.5, 11.25),
             Block.box(4.75, 2.25, 9.35, 11.25, 3.5, 9.85),
             Block.box(4.75, 2.25, 6.15, 11.25, 3.5, 6.65)
-        ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get();
+        ).reduce((v1, v2) -> {return Shapes.join(v1, v2, BooleanOp.OR);}).get();
     private static final VoxelShape SHAPE_NORTH = VoxelShapeUtils.rotateX(SHAPE_UP, 270);
     private static final VoxelShape SHAPE_DOWN = VoxelShapeUtils.rotateX(SHAPE_NORTH, 270);
     private static final VoxelShape SHAPE_SOUTH = VoxelShapeUtils.rotateX(SHAPE_UP, 90);
@@ -51,11 +48,15 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
     private static final VoxelShape SHAPE_EAST = VoxelShapeUtils.rotateY(SHAPE_NORTH, 90);
     private static final VoxelShape[] SHAPES = { SHAPE_DOWN, SHAPE_UP, SHAPE_NORTH, SHAPE_SOUTH, SHAPE_WEST, SHAPE_EAST };
 
-    private static final int[] DARKENED = new int[DyeColor.values().length];
+    private static final int[] COLORS_ON = new int[DyeColor.values().length];
+    private static final int[] COLORS_OFF = new int[DyeColor.values().length];
+
     static {
         for (DyeColor c : DyeColor.values()) {
-            TintColor tc = new TintColor(c.getColorValue()).darker();
-            DARKENED[c.getId()] = tc.getRGB();
+            float[] cols = c.getTextureDiffuseColors();
+            TintColor tc = new TintColor(cols[0], cols[1], cols[2], 1f);
+            COLORS_ON[c.getId()] = tc.getRGB();
+            COLORS_OFF[c.getId()] = tc.darker().getRGB();
         }
     }
 
@@ -72,33 +73,33 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
 
         builder.add(LIT);
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPES[state.getValue(directionProperty()).get3DDataValue()];
     }
 
     @Override
-    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+    public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, Random rand) {
         if (state.getValue(LIT) && !shouldLight(worldIn, pos)) {
-            worldIn.setBlock(pos, state.cycle(LIT), Constants.BlockFlags.BLOCK_UPDATE);
+            worldIn.setBlock(pos, state.cycle(LIT), Block.UPDATE_CLIENTS);
         }
     }
 
     @Override
-    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
         if (!worldIn.isClientSide) {
             boolean isLit = state.getValue(LIT);
             if (isLit != shouldLight(worldIn, pos)) {
                 if (isLit) {
-                    worldIn.getBlockTicks().scheduleTick(pos, this, 4);
+                    worldIn.scheduleTick(pos, this, 4);
                 } else {
-                    worldIn.setBlock(pos, state.cycle(LIT), Constants.BlockFlags.BLOCK_UPDATE);
+                    worldIn.setBlock(pos, state.cycle(LIT), Block.UPDATE_CLIENTS);
                 }
             }
         }
@@ -106,22 +107,22 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
 
     @Override
     @Nullable
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState()
                 .setValue(directionProperty(), context.getClickedFace())
                 .setValue(LIT, shouldLight(context.getLevel(), context.getClickedPos()));
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         return getRotation(stateIn).getOpposite() == facing && !stateIn.canSurvive(worldIn, currentPos) ?
                 Blocks.AIR.defaultBlockState() :
                 super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
-        return HorizontalFaceBlock.canAttach(worldIn, pos, getRotation(state).getOpposite());
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
+        return FaceAttachedHorizontalDirectionalBlock.canAttach(worldIn, pos, getRotation(state).getOpposite());
     }
 
     @Override
@@ -135,24 +136,19 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
     }
 
     @Override
-    protected Class<? extends TileEntity> getTileEntityClass() {
-        return null;
-    }
-
-    @Override
-    public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
         if (tintIndex == 1 && state != null) {
-            return state.getValue(LIT) ? color.getColorValue() : DARKENED[color.ordinal()];
+            return state.getValue(LIT) ? COLORS_ON[color.getId()] : COLORS_OFF[color.getId()];
         }
         return 0xFFFFFFFF;
     }
 
-    private boolean shouldLight(World world, BlockPos pos) {
+    private boolean shouldLight(Level world, BlockPos pos) {
         return inverted != world.hasNeighborSignal(pos);
     }
 
     private static ToIntFunction<BlockState> getLightValue() {
-        return (state) -> state.getValue(BlockStateProperties.LIT) ? 15 : 0;
+        return (state) -> state.getValue(LIT) ? 15 : 0;
     }
 
     public static class ItemWallLamp extends BlockItem implements ICustomTooltipName {
@@ -162,8 +158,8 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
 
         @Override
         public String getCustomTooltipTranslationKey() {
-            if (getBlock() instanceof BlockWallLamp) {
-                return ((BlockWallLamp) getBlock()).inverted ? "block.pneumaticcraft.wall_lamp_inverted" : "block.pneumaticcraft.wall_lamp";
+            if (getBlock() instanceof BlockWallLamp bwl) {
+                return bwl.inverted ? "block.pneumaticcraft.wall_lamp_inverted" : "block.pneumaticcraft.wall_lamp";
             } else {
                 // shouldn't happen
                 return "block.pneumaticcraft.wall_lamp";

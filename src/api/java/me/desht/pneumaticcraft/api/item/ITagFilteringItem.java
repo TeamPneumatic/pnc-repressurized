@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Implement this on items which can be used to do a match by item tags.  E.g. the Tag Filter item.  Such items can

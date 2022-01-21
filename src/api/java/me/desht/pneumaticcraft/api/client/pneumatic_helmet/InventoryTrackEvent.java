@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
@@ -35,13 +35,13 @@ import net.minecraftforge.items.IItemHandler;
  */
 @Cancelable
 public class InventoryTrackEvent extends Event {
-    private final TileEntity te;
+    private final BlockEntity te;
 
-    public InventoryTrackEvent(TileEntity te) {
+    public InventoryTrackEvent(BlockEntity te) {
         this.te = te;
     }
 
-    public TileEntity getTileEntity() {
+    public BlockEntity getTileEntity() {
         return te;
     }
 

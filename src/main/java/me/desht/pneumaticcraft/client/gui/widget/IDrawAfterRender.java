@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 /**
  * For widgets that need to do some drawing after everything else, to ensure it's on top.
@@ -25,5 +25,5 @@ import com.mojang.blaze3d.matrix.MatrixStack;
  */
 @FunctionalInterface
 public interface IDrawAfterRender {
-    void renderAfterEverythingElse(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick);
+    void renderAfterEverythingElse(PoseStack matrixStack, int mouseX, int mouseY, float partialTick);
 }

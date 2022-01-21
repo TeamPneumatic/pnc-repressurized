@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;

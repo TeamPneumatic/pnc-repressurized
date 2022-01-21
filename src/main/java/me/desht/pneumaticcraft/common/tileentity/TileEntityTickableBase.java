@@ -17,25 +17,41 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Ticking tile entities should either extend this class, or implement ITickable themselves.
  * Note that the superclass, TileEntityBase, contains an implementation of tick() which
  * is used by default.
  */
-public abstract class TileEntityTickableBase extends TileEntityBase implements ITickableTileEntity {
-    public TileEntityTickableBase(TileEntityType type) {
-        this(type, 0);
+public abstract class TileEntityTickableBase extends TileEntityBase {
+    public TileEntityTickableBase(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        this(type, pos, state, 0);
     }
 
-    public TileEntityTickableBase(TileEntityType type, int upgradeSize) {
-        super(type, upgradeSize);
+    public TileEntityTickableBase(BlockEntityType<?> type, BlockPos pos, BlockState state, int upgradeSize) {
+        super(type, pos, state, upgradeSize);
     }
 
-    @Override
-    public void tick() {
-        tickImpl();
+    /**
+     * Called on both server and client, before anything else
+     */
+    public void tickCommonPre() {
+        getUpgradeCache().validate();
+    }
+
+    public void tickClient() {
+    }
+
+    public void tickServer() {
+        defaultServerTick();
+    }
+
+    /**
+     * Called on both server and client, after anything else
+     */
+    public void tickCommonPost() {
     }
 }

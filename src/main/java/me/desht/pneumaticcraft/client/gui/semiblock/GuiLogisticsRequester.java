@@ -27,17 +27,17 @@ import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2PNCAddon;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsRequester> {
     private WidgetCheckBox aeIntegration;
 
-    public GuiLogisticsRequester(ContainerLogistics container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiLogisticsRequester(ContainerLogistics container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 
@@ -48,31 +48,31 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.ghostSlotInteraction.title"), Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
                 .setText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.ghostSlotInteraction"));
 
-        if (AE2Integration.isAvailable() && logistics.getAE2integration().isPlacedOnInterface()) {
-            addAE2Tab();
-        }
+//        if (AE2Integration.isAvailable() && logistics.getAE2integration().isPlacedOnInterface()) {
+//            addAE2Tab();
+//        }
     }
 
 
-    private void addAE2Tab() {
-        Item item = AE2PNCAddon.glassCable();
-        if (item == null) {
-            Log.warning("AE2 cable couldn't be found!");
-            item = ModItems.LOGISTICS_FRAME_REQUESTER.get();
-        }
-        WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.title"),
-                new ItemStack(item), 0xFF00AAFF, false);
-        stat.setText(xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration"));
-        stat.addSubWidget(aeIntegration = new WidgetCheckBox(16, 13, 0xFF000000,
-                xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.enable"))
-                .withTag("ae2")
-        );
-        stat.setReservedLines(2);
-    }
+//    private void addAE2Tab() {
+//        Item item = AE2PNCAddon.glassCable();
+//        if (item == null) {
+//            Log.warning("AE2 cable couldn't be found!");
+//            item = ModItems.LOGISTICS_FRAME_REQUESTER.get();
+//        }
+//        WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.title"),
+//                new ItemStack(item), 0xFF00AAFF, false);
+//        stat.setText(xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration"));
+//        stat.addSubWidget(aeIntegration = new WidgetCheckBox(16, 13, 0xFF000000,
+//                xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.enable"))
+//                .withTag("ae2")
+//        );
+//        stat.setReservedLines(2);
+//    }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void containerTick() {
+        super.containerTick();
 
         if (AE2Integration.isAvailable() && aeIntegration != null) {
             aeIntegration.checked = logistics.isAE2enabled();

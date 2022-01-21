@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -35,26 +36,32 @@ import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.ResourceLocationException;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.ITag;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -72,7 +79,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
-        IMinWorkingPressure, INamedContainerProvider, ISerializableTanks, IRangedTE {
+        IMinWorkingPressure, MenuProvider, ISerializableTanks, IRangedTE {
     static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
     public static final int MEMORY_ESSENCE_AMOUNT = 100;
 
@@ -82,7 +89,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inv);
 
-    private final List<MobEntity> targetEntities = new ArrayList<>();
+    private final List<Mob> targetEntities = new ArrayList<>();
 
     private final RangeManager rangeManager = new RangeManager(this, 0x60600060);
 
@@ -95,78 +102,86 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     @DescSynced
     public Problems problem = Problems.OK;
 
-    public TileEntityVacuumTrap() {
-        super(ModTileEntities.VACUUM_TRAP.get(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.VOLUME_VACUUM_TRAP, 4);
+    public TileEntityVacuumTrap(BlockPos pos, BlockState state) {
+        super(ModTileEntities.VACUUM_TRAP.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_VACUUM_TRAP, 4);
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tickCommonPre() {
+        super.tickCommonPre();
 
         xpTank.tick();
 
         rangeManager.setRange(3 + getUpgrades(EnumUpgrade.RANGE));
+    }
 
-        if (!level.isClientSide) {
-            isCoreLoaded = inv.getStats() != null;
+    @Override
+    public void tickClient() {
+        super.tickClient();
 
-            if (isOpen() && isCoreLoaded && inv.getStats().getUnusedPercentage() > 0 && getPressure() <= getMinWorkingPressure()) {
-                if ((level.getGameTime() & 0xf) == 0) {
-                    scanForEntities();
-                }
-                Vector3d trapVec = Vector3d.atCenterOf(worldPosition);
-                double min = level.getFluidState(worldPosition).getType() == Fluids.WATER ? 2.5 : 1.75;
-                for (MobEntity e : targetEntities) {
-                    if (!e.isAlive() || e.getTags().contains(DEFENDER_TAG)) continue;
-                    // kludge: mobs in water seem a bit flaky about getting close enough so increase the absorb dist a bit
-                    if (e.distanceToSqr(trapVec) <= min) {
-                        absorbEntity(e);
-                        addAir((int) (PneumaticValues.USAGE_VACUUM_TRAP * e.getHealth()));
-                    } else {
-                        e.getNavigation().moveTo(trapVec.x(), trapVec.y(), trapVec.z(), 1.2);
-                    }
-                }
-            }
-            if (!isCoreLoaded)
-                problem = Problems.NO_CORE;
-            else if (inv.getStats().getUnusedPercentage() == 0)
-                problem = Problems.CORE_FULL;
-            else if (!isOpen())
-                problem = Problems.TRAP_CLOSED;
-            else
-                problem = Problems.OK;
-        } else {
-            if (isOpen() && isCoreLoaded && level.random.nextBoolean()) {
-                ClientUtils.emitParticles(level, worldPosition, ParticleTypes.PORTAL);
-            }
+        if (isOpen() && isCoreLoaded && nonNullLevel().random.nextBoolean()) {
+            ClientUtils.emitParticles(level, worldPosition, ParticleTypes.PORTAL);
         }
     }
 
-    private void absorbEntity(MobEntity e) {
+    @Override
+    public void tickServer() {
+        super.tickServer();
+
+        isCoreLoaded = inv.getStats() != null;
+
+        if (isOpen() && isCoreLoaded && inv.getStats().getUnusedPercentage() > 0 && getPressure() <= getMinWorkingPressure()) {
+            if ((nonNullLevel().getGameTime() & 0xf) == 0) {
+                scanForEntities();
+            }
+            Vec3 trapVec = Vec3.atCenterOf(worldPosition);
+            double min = nonNullLevel().getFluidState(worldPosition).getType() == Fluids.WATER ? 2.5 : 1.75;
+            for (Mob e : targetEntities) {
+                if (!e.isAlive() || e.getTags().contains(DEFENDER_TAG)) continue;
+                // kludge: mobs in water seem a bit flaky about getting close enough so increase the absorb dist a bit
+                if (e.distanceToSqr(trapVec) <= min) {
+                    absorbEntity(e);
+                    addAir((int) (PneumaticValues.USAGE_VACUUM_TRAP * e.getHealth()));
+                } else {
+                    e.getNavigation().moveTo(trapVec.x(), trapVec.y(), trapVec.z(), 1.2);
+                }
+            }
+        }
+        if (!isCoreLoaded)
+            problem = Problems.NO_CORE;
+        else if (inv.getStats().getUnusedPercentage() == 0)
+            problem = Problems.CORE_FULL;
+        else if (!isOpen())
+            problem = Problems.TRAP_CLOSED;
+        else
+            problem = Problems.OK;
+    }
+
+    private void absorbEntity(Mob e) {
         int toAdd = 1;
         if (xpTank.getFluid().getAmount() >= MEMORY_ESSENCE_AMOUNT) {
             toAdd += e.level.random.nextInt(3) + 1;
         }
         if (inv.getStats().addAmount(e.getType(), toAdd)) {
-            e.remove();
+            e.discard();
             if (toAdd > 1) xpTank.drain(MEMORY_ESSENCE_AMOUNT, IFluidHandler.FluidAction.EXECUTE);
             inv.getStats().serialize(inv.getStackInSlot(0));
-            e.level.playSound(null, worldPosition, SoundEvents.PORTAL_TRIGGER, SoundCategory.BLOCKS, 1f, 2f);
-            if (level instanceof ServerWorld) {
-                ((ServerWorld) level).sendParticles(ParticleTypes.CLOUD, e.getX(), e.getY() + 0.5, e.getZ(), 5, 0, 1, 0, 0);
+            e.level.playSound(null, worldPosition, SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 1f, 2f);
+            if (level instanceof ServerLevel) {
+                ((ServerLevel) level).sendParticles(ParticleTypes.CLOUD, e.getX(), e.getY() + 0.5, e.getZ(), 5, 0, 1, 0, 0);
             }
         }
     }
 
     private void scanForEntities() {
         targetEntities.clear();
-        targetEntities.addAll(level.getEntitiesOfClass(MobEntity.class, rangeManager.getExtents(), this::isApplicable));
+        targetEntities.addAll(nonNullLevel().getEntitiesOfClass(Mob.class, rangeManager.getExtents(), this::isApplicable));
     }
 
     private boolean isApplicable(LivingEntity e) {
         return e.canChangeDimensions()
                 && !(e instanceof EntityDrone)
-                && !(e instanceof TameableEntity && ((TameableEntity) e).isTame())
+                && !(e instanceof TamableAnimal && ((TamableAnimal) e).isTame())
                 && !isEntityBlacklisted(e.getType());
     }
 
@@ -213,23 +228,22 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         return new ContainerVacuumTrap(windowId, inv, getBlockPos());
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
 
         inv.deserializeNBT(tag.getCompound("Items"));
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
 
         tag.put("Items", inv.serializeNBT());
-        return tag;
     }
 
     @Override
@@ -241,7 +255,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    public void serializeExtraItemData(CompoundTag blockEntityTag, boolean preserveState) {
         super.serializeExtraItemData(blockEntityTag, preserveState);
 
         if (preserveState) {
@@ -260,7 +274,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
+    public AABB getRenderBoundingBox() {
         return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
     }
 
@@ -269,7 +283,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
             for (String id : ConfigHelper.common().general.vacuumTrapBlacklist.get()) {
                 try {
                     if (id.startsWith("#")) {
-                        ITag<EntityType<?>> tag = EntityTypeTags.getAllTags().getTag(new ResourceLocation(id.substring(1)));
+                        Tag<EntityType<?>> tag = EntityTypeTags.getAllTags().getTag(new ResourceLocation(id.substring(1)));
                         if (tag != null) {
                             entityBlacklist.addAll(tag.getValues());
                         } else {

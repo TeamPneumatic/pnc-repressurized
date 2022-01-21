@@ -22,17 +22,19 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+import me.desht.pneumaticcraft.api.misc.IPlayerMatcher.MatcherFactory;
 
 public class DimensionMatcher implements IPlayerMatcher {
     private final Set<ResourceLocation> dimensionIds;
@@ -42,7 +44,7 @@ public class DimensionMatcher implements IPlayerMatcher {
     }
 
     @Override
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeVarInt(dimensionIds.size());
         dimensionIds.forEach(buffer::writeResourceLocation);
     }
@@ -55,15 +57,15 @@ public class DimensionMatcher implements IPlayerMatcher {
     }
 
     @Override
-    public void addDescription(PlayerEntity player, List<ITextComponent> tooltip) {
+    public void addDescription(Player player, List<Component> tooltip) {
         if (!dimensionIds.isEmpty()) {
-            List<ITextComponent> items = dimensionIds.stream().map(id -> new StringTextComponent(id.toString())).collect(Collectors.toList());
+            List<Component> items = dimensionIds.stream().map(id -> new TextComponent(id.toString())).collect(Collectors.toList());
             standardTooltip(player, tooltip, xlate("pneumaticcraft.playerFilter.dimensions"), items);
         }
     }
 
     @Override
-    public boolean test(PlayerEntity playerEntity) {
+    public boolean test(Player playerEntity) {
         return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level.dimension().location());
     }
 
@@ -76,7 +78,7 @@ public class DimensionMatcher implements IPlayerMatcher {
         }
 
         @Override
-        public DimensionMatcher fromBytes(PacketBuffer buffer) {
+        public DimensionMatcher fromBytes(FriendlyByteBuf buffer) {
             int n = buffer.readVarInt();
             Set<ResourceLocation> dimensionIds = new ObjectOpenHashSet<>();
             for (int i = 0; i < n; i++) {

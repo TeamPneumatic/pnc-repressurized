@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiMoveStat;
@@ -32,20 +32,20 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrackerClientHandler> {
 
-    private TextFieldWidget textField;
+    private EditBox textField;
     private WidgetButtonExtended warningButton;
     private int sendTimer = 0;
 
@@ -61,9 +61,9 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
             Minecraft.getInstance().setScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.ENTITY_TRACKER));
         }));
 
-        textField = new TextFieldWidget(gui.getFontRenderer(), 35, 60, 140, 10, StringTextComponent.EMPTY);
+        textField = new EditBox(gui.getFontRenderer(), 35, 60, 140, 10, TextComponent.EMPTY);
         if (Minecraft.getInstance().player != null) {
-            textField.setValue(ItemPneumaticArmor.getEntityFilter(Minecraft.getInstance().player.getItemBySlot(EquipmentSlotType.HEAD)));
+            textField.setValue(ItemPneumaticArmor.getEntityFilter(Minecraft.getInstance().player.getItemBySlot(EquipmentSlot.HEAD)));
         }
         textField.setResponder(s -> {
             if (validateEntityFilter(textField.getValue())) {
@@ -73,7 +73,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
         gui.addWidget(textField);
         gui.setFocusedWidget(textField);
 
-        warningButton = new WidgetButtonExtended(175, 57, 20, 20, StringTextComponent.EMPTY);
+        warningButton = new WidgetButtonExtended(175, 57, 20, 20, TextComponent.EMPTY);
         warningButton.setVisible(false);
         warningButton.visible = false;
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
@@ -83,8 +83,8 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     }
 
     @Override
-    public void renderPost(MatrixStack matrixStack, int x, int y, float partialTicks) {
-        FontRenderer fontRenderer = Minecraft.getInstance().font;
+    public void renderPost(PoseStack matrixStack, int x, int y, float partialTicks) {
+        Font fontRenderer = Minecraft.getInstance().font;
         fontRenderer.draw(matrixStack, I18n.get("pneumaticcraft.gui.entityFilter"), 35, 50, 0xFFFFFFFF);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, Minecraft.getInstance().screen, fontRenderer,
@@ -95,12 +95,12 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     private boolean validateEntityFilter(String filter) {
         try {
             warningButton.visible = false;
-            warningButton.setTooltipText(StringTextComponent.EMPTY);
+            warningButton.setTooltipText(TextComponent.EMPTY);
             new EntityFilter(filter);  // syntax check
             return true;
         } catch (Exception e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).withStyle(TextFormatting.GOLD));
+            warningButton.setTooltipText(new TextComponent(e.getMessage()).withStyle(ChatFormatting.GOLD));
             return false;
         }
     }
@@ -108,9 +108,9 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     @Override
     public void tick() {
         if (sendTimer > 0 && --sendTimer == 0) {
-            CompoundNBT tag = new CompoundNBT();
+            CompoundTag tag = new CompoundTag();
             tag.putString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getValue());
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag, getClientUpgradeHandler().getCommonHandler().getID()));
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, getClientUpgradeHandler().getCommonHandler().getID()));
         }
     }
 
