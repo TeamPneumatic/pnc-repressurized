@@ -1,0 +1,33 @@
+{
+  "parent": "pneumaticcraft:programming_puzzle",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:drone"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.program_drone"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.program_drone.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 50
+  },
+  "criteria": {
+    "0": {
+      "trigger": "pneumaticcraft:program_drone",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

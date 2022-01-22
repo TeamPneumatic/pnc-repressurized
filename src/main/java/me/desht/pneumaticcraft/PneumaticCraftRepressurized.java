@@ -151,7 +151,6 @@ public class PneumaticCraftRepressurized {
         HackManager.addDefaultEntries();
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
-//        VillageStructures.init();
         ModNameCache.init();
         HeatBehaviourManager.getInstance().init();
         PlayerFilter.registerDefaultMatchers();
@@ -189,7 +188,6 @@ public class PneumaticCraftRepressurized {
 
     private void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(PneumaticCraftRecipeType.getCacheReloadListener());
-//        event.addListener(new BlockHeatProperties.ReloadListener());
     }
 
     private void registerCommands(RegisterCommandsEvent event) {
@@ -219,8 +217,7 @@ public class PneumaticCraftRepressurized {
                 generator.addProvider(blockTagsProvider);
                 generator.addProvider(new ModItemTagsProvider(generator, blockTagsProvider, event.getExistingFileHelper()));
                 generator.addProvider(new ModFluidTagsProvider(generator, event.getExistingFileHelper()));
-                // don't do yet... new advancement JSONs appear to cause players to lose existing advancements from the old 
-//                generator.addProvider(new ModAdvancementProvider(generator));
+                generator.addProvider(new ModAdvancementProvider(generator));
             }
         }
     }

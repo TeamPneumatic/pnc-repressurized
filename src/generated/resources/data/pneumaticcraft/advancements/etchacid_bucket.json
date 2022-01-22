@@ -1,0 +1,38 @@
+{
+  "parent": "pneumaticcraft:pressure_chamber",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:etching_acid_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.etchacid_bucket"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.etchacid_bucket.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:etching_acid_bucket"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

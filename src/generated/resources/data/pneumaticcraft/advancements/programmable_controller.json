@@ -1,0 +1,41 @@
+{
+  "parent": "pneumaticcraft:advanced_pressure_tube",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:programmable_controller"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.programmable_controller"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.programmable_controller.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:programmable_controller"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

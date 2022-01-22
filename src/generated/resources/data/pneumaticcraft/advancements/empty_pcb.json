@@ -1,0 +1,38 @@
+{
+  "parent": "pneumaticcraft:etchacid_bucket",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:empty_pcb"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.empty_pcb"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.empty_pcb.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:empty_pcb"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

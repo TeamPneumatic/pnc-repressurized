@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "$(item)Logistics Drones/$ are a special type of $(l:tools/drones)drone/$. They are a lower tier $(thing)Drone/$, since they are not programmable but limited to carrying out $(italic)only/$ logistics tasks."
+      "text": "$(item)Logistics Drones/$ are a special type of $(l:tools/drone)drone/$. They are a lower tier $(thing)Drone/$, since they are not programmable but limited to carrying out $(italic)only/$ logistics tasks."
     },
     {
       "type": "spotlight",

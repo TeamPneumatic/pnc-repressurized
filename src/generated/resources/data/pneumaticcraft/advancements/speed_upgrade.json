@@ -1,0 +1,41 @@
+{
+  "parent": "pneumaticcraft:lubricant_bucket",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:speed_upgrade"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.speed_upgrade"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.speed_upgrade.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 15
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:speed_upgrade"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

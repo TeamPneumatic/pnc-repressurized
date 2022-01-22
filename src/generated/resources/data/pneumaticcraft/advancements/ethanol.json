@@ -1,0 +1,41 @@
+{
+  "parent": "pneumaticcraft:yeast_culture",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:ethanol_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.ethanol"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.ethanol.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:ethanol_bucket"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "parent": "pneumaticcraft:plastic",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:jackhammer"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.jackhammer"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.jackhammer.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 20
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:jackhammer"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

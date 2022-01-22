@@ -1,0 +1,33 @@
+{
+  "parent": "pneumaticcraft:pneumatic_wrench",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pneumatic_wrench"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.pneumatic_wrench_charged"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.pneumatic_wrench_charged.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "criteria": {
+    "0": {
+      "trigger": "pneumaticcraft:charged_wrench",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

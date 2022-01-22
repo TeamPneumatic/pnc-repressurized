@@ -1,0 +1,38 @@
+{
+  "parent": "pneumaticcraft:refinery",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:vortex_tube"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.vortex_tube"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.vortex_tube.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:vortex_tube"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}
