@@ -26,7 +26,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.List;
 import java.util.Objects;
@@ -57,7 +56,7 @@ public class WorldPlayersInServerSensor implements IPollSensorSetting {
     @Override
     public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
         PlayerList playerList = Objects.requireNonNull(level.getServer()).getPlayerList();
-        if (textBoxText.equals("")) {
+        if (textBoxText.isEmpty()) {
             return Math.min(15, playerList.getPlayerCount());
         } else {
             for (String userName : playerList.getPlayerNamesArray()) {

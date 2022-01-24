@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -61,7 +61,7 @@ public class AreaTypeBox extends AreaType {
         switch (boxType) {
             case FILLED:
                 for (int x = minX; x <= maxX; x++) {
-                    for (int y = Math.min(255, maxY); y >= minY && y >= 0; y--) {
+                    for (int y = maxY; y >= minY; y--) {
                         for (int z = minZ; z <= maxZ; z++) {
                             areaAdder.accept(new BlockPos(x, y, z));
                         }
@@ -70,7 +70,7 @@ public class AreaTypeBox extends AreaType {
                 break;
             case FRAME:
                 for (int x = minX; x <= maxX; x++) {
-                    for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+                    for (int y = minY; y <= maxY; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
                             int axisRight = 0;
                             if (x == minX || x == maxX) axisRight++;
@@ -85,7 +85,7 @@ public class AreaTypeBox extends AreaType {
                 break;
             case HOLLOW:
                 for (int x = minX; x <= maxX; x++) {
-                    for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+                    for (int y = minY; y <= maxY; y++) {
                         for (int z = minZ; z <= maxZ; z++) {
                             if (x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ) {
                                 areaAdder.accept(new BlockPos(x, y, z));

@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface IVariableProvider{
-    boolean hasCoordinate(String varName);
-    BlockPos getCoordinate(String varName);
+    Optional<BlockPos> getCoordinate(UUID id, String varName);
 
-    boolean hasStack(String varName);
     @Nonnull
-    ItemStack getStack(String varName);
+    ItemStack getStack(UUID id, String varName);
 }

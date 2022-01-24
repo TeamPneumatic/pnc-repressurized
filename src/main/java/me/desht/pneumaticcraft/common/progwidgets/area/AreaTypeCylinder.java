@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -61,7 +61,7 @@ public class AreaTypeCylinder extends AreaType {
     @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         switch (axis) {
-            case X: {
+            case X -> {
                 double rad = PneumaticCraftUtils.distBetween(p1.getY(), p1.getZ(), p2.getY(), p2.getZ());
                 double radSq = rad * rad;
                 double innerRadius = rad - 1;
@@ -70,7 +70,7 @@ public class AreaTypeCylinder extends AreaType {
                 minZ = (int) (p1.getZ() - rad - 1);
                 maxY = (int) (p1.getY() + rad + 1);
                 maxZ = (int) (p1.getZ() + rad + 1);
-                for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+                for (int y = minY; y <= maxY; y++) {
                     for (int z = minZ; z <= maxZ; z++) {
                         //noinspection SuspiciousNameCombination
                         double centerDistSq = PneumaticCraftUtils.distBetweenSq(p1.getY(), p1.getZ(), y, z);
@@ -87,8 +87,7 @@ public class AreaTypeCylinder extends AreaType {
                     }
                 }
             }
-            break;
-            case Y: {
+            case Y -> {
                 double rad = PneumaticCraftUtils.distBetween(p1.getX(), p1.getZ(), p2.getX(), p2.getZ());
                 double radSq = rad * rad;
                 double innerRadius = rad - 1;
@@ -101,7 +100,7 @@ public class AreaTypeCylinder extends AreaType {
                     for (int z = minZ; z <= maxZ; z++) {
                         double centerDistSq = PneumaticCraftUtils.distBetweenSq(p1.getX(), p1.getZ(), x, z);
                         if (centerDistSq <= radSq) {
-                            for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+                            for (int y = minY; y <= maxY; y++) {
                                 if (centerDistSq >= innerRadiusSq ||
                                         cylinderType == EnumCylinderType.FILLED ||
                                         cylinderType == EnumCylinderType.HOLLOW && (y == minY || y == maxY)) {
@@ -113,8 +112,7 @@ public class AreaTypeCylinder extends AreaType {
                     }
                 }
             }
-            break;
-            case Z: {
+            case Z -> {
                 double rad = PneumaticCraftUtils.distBetween(p1.getX(), p1.getY(), p2.getX(), p2.getY());
                 double radSq = rad * rad;
                 double innerRadius = rad - 1;
@@ -124,7 +122,7 @@ public class AreaTypeCylinder extends AreaType {
                 maxX = (int) (p1.getX() + rad + 1);
                 maxY = (int) (p1.getY() + rad + 1);
                 for (int x = minX; x <= maxX; x++) {
-                    for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+                    for (int y = minY; y <= maxY; y++) {
                         double centerDistSq = PneumaticCraftUtils.distBetweenSq(p1.getX(), p1.getY(), x, y);
                         if (centerDistSq <= radSq) {
                             for (int z = minZ; z <= maxZ; z++) {
@@ -139,9 +137,7 @@ public class AreaTypeCylinder extends AreaType {
                     }
                 }
             }
-            break;
-            default:
-                throw new IllegalArgumentException(axis.toString());
+            default -> throw new IllegalArgumentException(axis.toString());
         }
     }
 
@@ -183,17 +179,10 @@ public class AreaTypeCylinder extends AreaType {
     @Override
     public void convertFromLegacy(LegacyAreaWidgetConverter.EnumOldAreaType oldAreaType, int typeInfo) {
         switch (oldAreaType) {
-            case X_CYLINDER:
-                axis = EnumAxis.X;
-                break;
-            case Y_CYLINDER:
-                axis = EnumAxis.Y;
-                break;
-            case Z_CYLINDER:
-                axis = EnumAxis.Z;
-                break;
-            default:
-                throw new IllegalArgumentException();
+            case X_CYLINDER -> axis = EnumAxis.X;
+            case Y_CYLINDER -> axis = EnumAxis.Y;
+            case Z_CYLINDER -> axis = EnumAxis.Z;
+            default -> throw new IllegalArgumentException();
         }
     }
 }

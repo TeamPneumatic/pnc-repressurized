@@ -20,13 +20,11 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IGotoWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
-
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public class DroneEntityAIGoToLocation extends Goal {
     protected final IDroneBase drone;

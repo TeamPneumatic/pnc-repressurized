@@ -23,14 +23,14 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ChunkCache;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.CollisionGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -152,10 +152,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         while (widget != null) {
             if (!widget.type.isDeterministic()) canCache = false;
             if (aiManager != null) {
-                if (!widget.getCoord1Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
-                if (!widget.getCoord2Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+                initVars(widget);
             }
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
@@ -163,25 +160,33 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         while (widget != null) {
             if (!widget.type.isDeterministic()) canCache = false;
             if (aiManager != null) {
-                if (!widget.getCoord1Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
-                if (!widget.getCoord2Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+                initVars(widget);
             }
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
     }
 
-    private boolean updateVariables() {
-        boolean varChanged = false;
-        for (Map.Entry<String, BlockPos> entry : areaVariableStates.entrySet()) {
-            BlockPos newValue = aiManager.getCoordinate(entry.getKey());
-            if (!newValue.equals(entry.getValue())) {
-                varChanged = true;
-                entry.setValue(newValue);
-            }
+    private void initVars(ProgWidgetArea widget) {
+        for (int i = 0; i < 2; i++) {
+            String varName = widget.getVarName(i);
+            if (!varName.isEmpty())
+                aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), varName)
+                        .ifPresent(pos -> areaVariableStates.put(varName, pos));
         }
-        return varChanged;
+    }
+
+    private boolean updateVariables() {
+        int changed = 0;
+        for (Map.Entry<String, BlockPos> entry : areaVariableStates.entrySet()) {
+            if (aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), entry.getKey()).map(newValue -> {
+                if (!newValue.equals(entry.getValue())) {
+                    entry.setValue(newValue);
+                    return true;
+                }
+                return false;
+            }).orElse(false)) changed++;
+        }
+        return changed > 0;
     }
 
     @Override

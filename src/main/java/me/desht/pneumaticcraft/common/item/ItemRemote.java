@@ -20,8 +20,6 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketNotifyVariablesRemote;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -29,6 +27,7 @@ import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,7 +51,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -66,8 +67,8 @@ public class ItemRemote extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
-        if (!world.isClientSide) {
-            openGui(player, stack, handIn);
+        if (player instanceof ServerPlayer sp) {
+            openGui(sp, stack, handIn);
         }
         return InteractionResultHolder.success(stack);
     }
@@ -78,18 +79,21 @@ public class ItemRemote extends Item {
         Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntitySecurityStation) {
-            if (!world.isClientSide && player.isShiftKeyDown() && isAllowedToEdit(player, remote)) {
-                if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {
-                    GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
-                    setSecurityStationPos(remote, gPos);
-                    player.displayClientMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", GlobalPosHelper.prettyPrint(gPos)), false);
-                    return InteractionResult.SUCCESS;
-                } else {
-                    player.displayClientMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
-                }
+
+        if (te instanceof TileEntitySecurityStation teSS && player instanceof ServerPlayer && player.isCrouching() && isAllowedToEdit(player, remote)) {
+            if (teSS.doesAllowPlayer(player)) {
+                GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
+                setSecurityStationPos(remote, gPos);
+                player.displayClientMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", GlobalPosHelper.prettyPrint(gPos)), false);
+                return InteractionResult.SUCCESS;
+            } else {
+                player.displayClientMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
+                return InteractionResult.FAIL;
             }
+        } else if (player instanceof ServerPlayer sp) {
+            openGui(sp, remote, ctx.getHand());
         }
+
         return InteractionResult.SUCCESS;
     }
 
@@ -109,14 +113,25 @@ public class ItemRemote extends Item {
         }
     }
 
-    private void openGui(Player player, ItemStack remote, InteractionHand hand) {
+    private void openGui(ServerPlayer player, ItemStack remote, InteractionHand hand) {
         if (player.isCrouching()) {
             if (isAllowedToEdit(player, remote)) {
-                NetworkHooks.openGui((ServerPlayer) player, new RemoteEditorContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == InteractionHand.MAIN_HAND));
-                NetworkHandler.sendToPlayer(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (ServerPlayer) player);
+                NetworkHooks.openGui(player, new RemoteEditorContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, true));
             }
         } else {
-            NetworkHooks.openGui((ServerPlayer) player, new RemoteContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == InteractionHand.MAIN_HAND));
+            NetworkHooks.openGui(player, new RemoteContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, false));
+        }
+    }
+
+    private void toBytes(FriendlyByteBuf buf, Player player, InteractionHand hand, boolean syncGlobals) {
+        // see ContainerRemote constructor for corresponding deserialisation
+        buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
+        if (syncGlobals) {
+            Collection<String> variables = GlobalVariableManager.getInstance().getAllActiveVariableNames(player);
+            buf.writeVarInt(variables.size());
+            variables.forEach(buf::writeUtf);
+        } else {
+            buf.writeVarInt(0);
         }
     }
 
@@ -142,7 +157,7 @@ public class ItemRemote extends Item {
     }
 
     private static GlobalPos getSecurityStationPos(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains(NBT_SECURITY_POS) ?
+        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains(NBT_SECURITY_POS) ?
                 GlobalPosHelper.fromNBT(stack.getTag().getCompound(NBT_SECURITY_POS)) : null;
     }
 
@@ -157,7 +172,7 @@ public class ItemRemote extends Item {
             if (gPos != null) {
                 BlockEntity te = GlobalPosHelper.getTileEntity(gPos);
                 if (!(te instanceof TileEntitySecurityStation) && remote.hasTag()) {
-                    remote.getTag().remove(NBT_SECURITY_POS);
+                    Objects.requireNonNull(remote.getTag()).remove(NBT_SECURITY_POS);
                 }
             }
         }

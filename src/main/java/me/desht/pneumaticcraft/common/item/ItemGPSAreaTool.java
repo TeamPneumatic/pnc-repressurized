@@ -25,9 +25,8 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -52,22 +51,21 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ItemGPSAreaTool extends Item implements IPositionProvider {
+public class ItemGPSAreaTool extends Item implements IPositionProvider, IGPSToolSync {
     public ItemGPSAreaTool() {
         super(ModItems.defaultProps());
     }
 
     @Override
     public InteractionResult useOn(UseOnContext ctx) {
-        setGPSPosAndNotify(ctx.getPlayer(), ctx.getClickedPos(), ctx.getHand(), 0);
-        ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+        if (ctx.getPlayer() != null) {
+            setGPSPosAndNotify(ctx.getPlayer(), ctx.getHand(), ctx.getClickedPos(), 0);
+            ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+        }
         return InteractionResult.SUCCESS; // we don't want to use the item.
     }
 
@@ -80,16 +78,17 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         return InteractionResultHolder.success(stack);
     }
 
-
-    public static void setGPSPosAndNotify(Player player, BlockPos pos, InteractionHand hand, int index) {
-        ItemStack stack = player.getItemInHand(hand);
-        setGPSLocation(stack, pos, index);
-        if (!player.level.isClientSide) {
-            player.displayClientMessage(new TextComponent(ChatFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
+    public static void setGPSPosAndNotify(Player player, ItemStack stack, BlockPos pos, int index) {
+        setGPSLocation(player, stack, pos, null, index, true);
+        if (player instanceof ServerPlayer sp) {
+            player.displayClientMessage(new TextComponent(ChatFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
                     .append(getMessageText(player.level, pos, index)), false);
-            if (player instanceof ServerPlayer sp)
-                sp.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
+            sp.connection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
         }
+    }
+
+    public static void setGPSPosAndNotify(Player player, InteractionHand hand, BlockPos pos, int index) {
+        setGPSPosAndNotify(player, player.getItemInHand(hand), pos, index);
     }
 
     private static Component getMessageText(Level worldIn, BlockPos pos, int index) {
@@ -108,115 +107,114 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
 
         if (worldIn != null) {
             ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
-            int nPos = 0;
+            int n = infoList.size();
+            ProgWidgetArea area = getArea(ClientUtils.getClientPlayer(), stack);
             for (int index = 0; index < 2; index++) {
-                BlockPos pos = getGPSLocation(worldIn, stack, index);
-                if (!pos.equals(BlockPos.ZERO)) {
-                    infoList.add(getMessageText(worldIn, pos, index));//.mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
-                    nPos++;
-                }
-                String varName = getVariable(stack, index);
+                final int i = index;
+                getGPSLocation(ClientUtils.getClientPlayer(), stack, index).ifPresent(pos -> infoList.add(getMessageText(worldIn, pos, i)));
+                String varName = area.getVarName(index);
                 if (!varName.isEmpty()) {
                     infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
                 }
             }
-            if (nPos > 0) getArea(stack).addAreaTypeTooltip(infoList);
+            if (infoList.size() - n >= 2) area.addAreaTypeTooltip(infoList);
         }
     }
 
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean heldItem) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide && entity instanceof Player p) {
+            ProgWidgetArea area = getArea(p, stack);
             for (int index = 0; index < 2; index++) {
-                String var = getVariable(stack, index);
-                if (!var.isEmpty()) {
-                    BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
-                    setGPSLocation(stack, pos, index);
+                String varName = area.getVarName(index);
+                if (!varName.isEmpty()) {
+                    BlockPos curPos = area.getPos(index).orElse(PneumaticCraftUtils.invalidPos());
+                    BlockPos pos = GlobalVariableHelper.getPos(entity.getUUID(), varName, PneumaticCraftUtils.invalidPos());
+                    if (!curPos.equals(pos)) {
+                        setGPSLocation(p, stack, pos, area, index, false);
+                    }
                 }
             }
         }
     }
 
     @Nonnull
-    public static ProgWidgetArea getArea(ItemStack stack) {
+    public static ProgWidgetArea getArea(UUID playerId, ItemStack stack) {
         Validate.isTrue(stack.getItem() instanceof ItemGPSAreaTool);
         ProgWidgetArea area = new ProgWidgetArea();
         if (stack.hasTag()) {
-            area.setVariableProvider(GlobalVariableManager.getInstance());  // allows client to read vars for rendering purposes
+            area.setVariableProvider(GlobalVariableHelper.getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
             area.readFromNBT(stack.getTag());
         }
         return area;
     }
 
-    public static BlockPos getGPSLocation(Level world, ItemStack gpsTool, int index) {
-        ProgWidgetArea area = getArea(gpsTool);
+    public static ProgWidgetArea getArea(Player player, ItemStack stack) {
+        return getArea(player.getUUID(), stack);
+    }
 
-        String var = getVariable(gpsTool, index);
-        if (!var.isEmpty() && !world.isClientSide) {
-            BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
-            setGPSLocation(gpsTool, pos, index);
+    public static Optional<BlockPos> getGPSLocation(Player player, ItemStack gpsTool, int index) {
+        Validate.isTrue(index == 0 || index == 1, "index must be 0 or 1!");
+        ProgWidgetArea area = getArea(player, gpsTool);
+        Optional<BlockPos> pos = area.getPos(index);
+
+        // if there's a variable set for this index, use its value instead (and update the stored position)
+        String var = area.getVarName(index);
+        if (!var.isEmpty() && !player.getLevel().isClientSide) {
+            BlockPos newPos = GlobalVariableHelper.getPos(player.getUUID(), var);
+            if (!pos.isPresent() || !pos.get().equals(newPos)) {
+                area.setPos(index, newPos);
+                area.writeToNBT(gpsTool.getOrCreateTag());
+            }
+            return Optional.of(newPos);
         }
 
-        if (index == 0) {
-            return new BlockPos(area.x1, area.y1, area.z1);
-        } else if (index == 1) {
-            return new BlockPos(area.x2, area.y2, area.z2);
-        } else {
-            throw new IllegalArgumentException("index must be 0 or 1!");
+        return pos;
+    }
+
+    private static void setGPSLocation(Player player, ItemStack gpsTool, BlockPos pos, ProgWidgetArea area, int index, boolean updateVar) {
+        if (area == null) area = getArea(player, gpsTool);
+        area.setPos(index, pos);
+        area.writeToNBT(gpsTool.getOrCreateTag());
+
+        if (updateVar) {
+            String varName = area.getVarName(index);
+            if (!varName.isEmpty()) {
+                GlobalVariableHelper.setPos(player.getUUID(), varName, pos);
+            }
         }
     }
 
-    private static void setGPSLocation(ItemStack gpsTool, BlockPos pos, int index) {
-        ProgWidgetArea area = getArea(gpsTool);
-        if (index == 0) {
-            area.setP1(pos);
-        } else if (index == 1) {
-            area.setP2(pos);
-        }
-        NBTUtils.initNBTTagCompound(gpsTool);
-        String var = getVariable(gpsTool, index);
-        if (!var.equals("")) GlobalVariableManager.getInstance().set(var, pos);
-        area.writeToNBT(gpsTool.getTag());
+    public static void setVariable(Player player, ItemStack gpsTool, String variable, int index) {
+        ProgWidgetArea area = getArea(player, gpsTool);
+        area.setVarName(index, variable);
+        area.writeToNBT(gpsTool.getOrCreateTag());
     }
 
-    public static void setVariable(ItemStack gpsTool, String variable, int index) {
-        ProgWidgetArea area = getArea(gpsTool);
-        if (index == 0) {
-            area.setCoord1Variable(variable);
-        } else if (index == 1) {
-            area.setCoord2Variable(variable);
-        }
-        NBTUtils.initNBTTagCompound(gpsTool);
-        area.writeToNBT(gpsTool.getTag());
-    }
-
-    public static String getVariable(ItemStack gpsTool, int index) {
-        ProgWidgetArea area = getArea(gpsTool);
-        return index == 0 ? area.getCoord1Variable() : area.getCoord2Variable();
+    public static String getVariable(Player player, ItemStack gpsTool, int index) {
+        return getArea(player, gpsTool).getVarName(index);
     }
 
     @Override
     public void syncVariables(ServerPlayer player, ItemStack stack) {
-        String v1 = getVariable(stack, 0);
+        ProgWidgetArea area = getArea(player, stack);
+        String v1 = area.getVarName(0);
+        String v2 = area.getVarName(1);
         if (!v1.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v1);
-        String v2 = getVariable(stack, 1);
-        if (!v1.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v2);
+        if (!v2.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v2);
     }
 
     @Override
-    public List<BlockPos> getStoredPositions(Level world, @Nonnull ItemStack stack) {
+    public List<BlockPos> getStoredPositions(UUID playerId, @Nonnull ItemStack stack) {
         Set<BlockPos> posSet = new HashSet<>();
-        getArea(stack).getArea(posSet);
+        getArea(playerId, stack).getArea(posSet);
         return new ArrayList<>(posSet);
     }
 
     @Override
-    public List<BlockPos> getRawStoredPositions(Level world, ItemStack stack) {
-        ProgWidgetArea area = getArea(stack);
-        return ImmutableList.of(
-                new BlockPos(area.x1, area.y1, area.z1),
-                new BlockPos(area.x2, area.y2, area.z2)
-        );
+    public List<BlockPos> getRawStoredPositions(Player player, ItemStack stack) {
+        ProgWidgetArea area = getArea(player, stack);
+        return ImmutableList.of(area.getPos(0).orElse(BlockPos.ZERO), area.getPos(1).orElse(BlockPos.ZERO));
     }
 
     @Override
@@ -229,13 +227,23 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         return false;
     }
 
+    @Override
+    public void syncFromClient(Player player, ItemStack stack, int index, BlockPos pos, String varName) {
+        ItemGPSAreaTool.setVariable(player, stack, varName, index);
+        ItemGPSAreaTool.setGPSPosAndNotify(player, stack, pos, index);
+        if (!varName.isEmpty()) {
+            GlobalVariableHelper.setPos(player.getUUID(), varName, pos);
+        }
+    }
+
     public static class EventHandler {
         @SubscribeEvent
         public static void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                if (!event.getPos().equals(getGPSLocation(event.getWorld(), event.getItemStack(), 1))) {
+                Optional<BlockPos> optPos = getGPSLocation(event.getPlayer(), event.getItemStack(), 1);
+                if (!event.getPos().equals(optPos.orElse(null))) {
                     event.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
-                    setGPSPosAndNotify(event.getPlayer(), event.getPos(), event.getHand(), 1);
+                    setGPSPosAndNotify(event.getPlayer(), event.getHand(), event.getPos(), 1);
                 }
                 event.setCanceled(true);
             }

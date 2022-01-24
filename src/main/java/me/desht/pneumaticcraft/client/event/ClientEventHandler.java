@@ -50,7 +50,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.GameRenderer;
@@ -70,6 +69,8 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandler {
@@ -274,10 +275,15 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onGuiDrawPost(ScreenEvent.DrawScreenEvent.Post event) {
         if (event.getScreen() instanceof GuiPneumaticContainerBase || event.getScreen() instanceof GuiPneumaticScreenBase) {
-            for (GuiEventListener l : event.getScreen().children()) {
-                if (l instanceof IDrawAfterRender) {
-                    ((IDrawAfterRender) l).renderAfterEverythingElse(event.getPoseStack(), event.getMouseX(), event.getMouseY(), event.getPartialTicks());
-                }
+            List<IDrawAfterRender> toDraw = event.getScreen().children().stream()
+                    .filter(l -> l instanceof IDrawAfterRender)
+                    .map(l -> (IDrawAfterRender) l)
+                    .toList();
+            if (!toDraw.isEmpty()) {
+                event.getPoseStack().pushPose();
+                event.getPoseStack().translate(0, 0, 500);
+                toDraw.forEach(d -> d.renderAfterEverythingElse(event.getPoseStack(), event.getMouseX(), event.getMouseY(), event.getPartialTicks()));
+                event.getPoseStack().popPose();
             }
         }
     }

@@ -98,7 +98,7 @@ public class GuiRemoteEditor extends GuiRemote {
         widgetTray.add(new ActionWidgetCheckBox(new WidgetCheckBox(leftPos + 200, topPos + 23, 0xFF404040, xlate("pneumaticcraft.gui.remote.tray.checkbox.name"))));
         widgetTray.add(new ActionWidgetLabel(new WidgetLabelVariable(leftPos + 200, topPos + 38, xlate("pneumaticcraft.gui.remote.tray.label.name"))));
         widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(leftPos + 200, topPos + 53, 50, 20, xlate("pneumaticcraft.gui.remote.tray.button.name"))));
-        widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, leftPos + 200, topPos + 80, 70, font.lineHeight + 1).setFixedOptions()));
+        widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, leftPos + 200, topPos + 80, 70, font.lineHeight + 1).setFixedOptions(true)));
 
         for (ActionWidget<?> actionWidget : widgetTray) {
             addRenderableWidget(actionWidget.getWidget());
@@ -119,7 +119,7 @@ public class GuiRemoteEditor extends GuiRemote {
         snapCheck.checked = ConfigHelper.client().general.guiRemoteGridSnap.get();
         addRenderableWidget(snapCheck);
 
-        addRenderableWidget(new WidgetLabel(leftPos + 234, topPos + 7, xlate("pneumaticcraft.gui.remote.widgetTray").withStyle(ChatFormatting.BOLD)).setAlignment(WidgetLabel.Alignment.CENTRE));
+        addRenderableWidget(new WidgetLabel(leftPos + 234, topPos + 7, xlate("pneumaticcraft.gui.remote.widgetTray").withStyle(ChatFormatting.DARK_BLUE)).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
     }
@@ -148,7 +148,6 @@ public class GuiRemoteEditor extends GuiRemote {
         renderBackground(matrixStack);
         bindGuiTexture();
         blit(matrixStack, leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
-        super.renderBg(matrixStack, partialTicks, x, y);
     }
 
     @Override

@@ -29,9 +29,9 @@ import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinate;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.ItemStack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -51,6 +51,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
 
         if (invSearchGui != null) {
             progWidget.setCoordinate(invSearchGui.getBlockPos());
+            invSearchGui = null;
         }
 
         WidgetRadioButton.Builder.create()
@@ -73,9 +74,10 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
             addRenderableWidget(coordFields[i]);
             coordFields[i].setEditable(gpsButton.active);
         }
-        coordFields[0].setValue(progWidget.getRawCoordinate().getX());
-        coordFields[1].setValue(progWidget.getRawCoordinate().getY());
-        coordFields[2].setValue(progWidget.getRawCoordinate().getZ());
+        BlockPos coord = progWidget.getRawCoordinate().orElse(BlockPos.ZERO);
+        coordFields[0].setValue(coord.getX());
+        coordFields[1].setValue(coord.getY());
+        coordFields[2].setValue(coord.getZ());
 
         variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 112, 80, font.lineHeight + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
@@ -99,10 +101,10 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         if (minecraft.screen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
-            BlockPos area = progWidget.getRawCoordinate();
+            BlockPos coord = progWidget.getRawCoordinate().orElse(BlockPos.ZERO);
             ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
-            ItemGPSTool.setGPSLocation(gpsStack, area);
-            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack) != null ? gpsStack : ItemStack.EMPTY);
+            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gpsStack, coord);
+            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack).isPresent() ? gpsStack : ItemStack.EMPTY);
         }
     }
 

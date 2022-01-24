@@ -3,9 +3,17 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -14,7 +22,11 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 public class BlockUniversalSensor extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     private static final VoxelShape SHAPE = Shapes.join(
@@ -36,6 +48,17 @@ public class BlockUniversalSensor extends BlockPneumaticCraft implements EntityB
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityUniversalSensor.class).ifPresent(teUS -> {
+            if (entity instanceof Player && !(entity instanceof FakePlayer)) {
+                teUS.setPlayerId(entity.getUUID());
+            }
+        });
+
+        super.setPlacedBy(world, pos, state, entity, stack);
     }
 
     @Override
@@ -67,5 +90,15 @@ public class BlockUniversalSensor extends BlockPneumaticCraft implements EntityB
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new TileEntityUniversalSensor(pPos, pState);
+    }
+
+    @Override
+    protected void doOpenGui(ServerPlayer player, BlockEntity te) {
+        NetworkHooks.openGui(player, (MenuProvider) te, buf -> {
+            buf.writeBlockPos(te.getBlockPos());
+            Collection<String> vars = GlobalVariableManager.getInstance().getAllActiveVariableNames(player);
+            buf.writeVarInt(vars.size());
+            vars.forEach(buf::writeUtf);
+        });
     }
 }

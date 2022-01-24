@@ -19,26 +19,29 @@ package me.desht.pneumaticcraft.common.variables;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
+import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.util.thread.EffectiveSide;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
  * Manages global variables. These are prefixed with '#'.
  */
-public class GlobalVariableManager extends SavedData implements IVariableProvider {
+public class GlobalVariableManager extends SavedData {
     public static final int MAX_VARIABLE_LEN = 64;
 
     private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
@@ -78,121 +81,160 @@ public class GlobalVariableManager extends SavedData implements IVariableProvide
         return gvm;
     }
 
-    public void set(String varName, boolean value) {
-        set(varName, value ? 1 : 0);
-    }
-
-    public void set(String varName, int value) {
-        set(varName, value, 0, 0);
-    }
-
-    public void set(String varName, int x, int y, int z) {
-        set(varName, new BlockPos(x, y, z));
-    }
-
-    public void set(String varName, BlockPos pos) {
-        if (!varName.isEmpty()) {
-            globalVars.put(varName, pos);
-            setDirty();
-        }
-    }
-
-    public void set(UUID ownerUUID, String varName, BlockPos coord) {
-        if (!varName.isEmpty()) {
-            playerVars.put(ownerUUID, varName, coord);
-            setDirty();
-        }
-    }
-
-    public void set(String varName, ItemStack item) {
-        if (!varName.isEmpty()) {
-            globalItemVars.put(varName, item);
-            setDirty();
-        }
-    }
-
-    public void set(UUID ownerUUID, String varName, ItemStack item) {
-        if (!varName.isEmpty()) {
-            playerItemVars.put(ownerUUID, varName, item);
-            setDirty();
-        }
-    }
-
-    public boolean getBoolean(String varName) {
-        return getInteger(varName) != 0;
-    }
-
-    public int getInteger(String varName) {
-        return getPos(varName).getX();
-    }
-
-    public boolean hasPos(String varName) {
+    boolean hasPos(String varName) {
         return globalVars.containsKey(varName);
     }
 
-    public boolean hasItem(String varName) {
-        return globalItemVars.containsKey(varName);
+    boolean hasPos(UUID ownerUUID, String varName) {
+        return playerVars.contains(ownerUUID, varName);
     }
 
-    public BlockPos getPos(String varName) {
+    BlockPos getPos(String varName) {
         return globalVars.getOrDefault(varName, BlockPos.ZERO);
     }
 
-    public BlockPos getPos(UUID ownerUUID, String varName) {
+    BlockPos getPos(UUID ownerUUID, String varName) {
         BlockPos pos = playerVars.get(ownerUUID, varName);
         return pos == null ? BlockPos.ZERO : pos;
     }
 
-    public ItemStack getItem(String varName) {
+    void setPos(String varName, BlockPos pos) {
+        if (!varName.isEmpty()) {
+            if (pos == null) {
+                globalVars.remove(varName);
+            } else {
+                globalVars.put(varName, pos);
+            }
+            setDirty();
+        }
+    }
+
+    void setPos(UUID ownerUUID, String varName, BlockPos coord) {
+        if (!varName.isEmpty()) {
+            if (coord == null) {
+                playerVars.remove(ownerUUID, varName);
+            } else {
+                playerVars.put(ownerUUID, varName, coord);
+            }
+            setDirty();
+        }
+    }
+
+    void setStack(String varName, ItemStack item) {
+        if (!varName.isEmpty()) {
+            if (item.isEmpty()) {
+                globalItemVars.remove(varName);
+            } else {
+                globalItemVars.put(varName, item);
+            }
+            setDirty();
+        }
+    }
+
+    void setStack(UUID ownerUUID, String varName, ItemStack item) {
+        if (!varName.isEmpty()) {
+            if (item.isEmpty()) {
+                playerItemVars.remove(ownerUUID, varName);
+            } else {
+                playerItemVars.put(ownerUUID, varName, item);
+            }
+            setDirty();
+        }
+    }
+
+    boolean hasStack(String varName) {
+        return globalItemVars.containsKey(varName);
+    }
+
+    boolean hasStack(UUID ownerUUID, String varName) {
+        return playerItemVars.contains(ownerUUID, varName);
+    }
+
+    ItemStack getStack(String varName) {
         return globalItemVars.getOrDefault(varName, ItemStack.EMPTY);
     }
 
-    private ItemStack getItem(UUID ownerUUID, String varName) {
+    ItemStack getStack(UUID ownerUUID, String varName) {
         ItemStack stack = playerItemVars.get(ownerUUID, varName);
         return stack == null ? ItemStack.EMPTY : stack;
     }
 
     private void readFromNBT(CompoundTag tag) {
         globalVars.clear();
-        ListTag list = tag.getList("globalVars", Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag t = list.getCompound(i);
-            globalVars.put(t.getString("varName"), new BlockPos(t.getInt("x"), t.getInt("y"), t.getInt("z")));
+        globalItemVars.clear();
+        playerVars.clear();
+        playerItemVars.clear();
+
+        globalVars.putAll(readPosList(tag.getList("globalVars", Tag.TAG_COMPOUND)));
+
+        globalItemVars.putAll(readItemList(tag.getList("globalItemVars", Tag.TAG_COMPOUND)));
+
+        CompoundTag playerPos = tag.getCompound("playerVars");
+        for (String id : playerPos.getAllKeys()) {
+            readPosList(playerPos.getList(id, Tag.TAG_COMPOUND)).forEach((k, v) -> playerVars.put(UUID.fromString(id), k, v));
         }
 
-        readItemVars(tag, globalItemVars);
-    }
-
-    public static void readItemVars(CompoundTag tag, Map<String, ItemStack> map) {
-        map.clear();
-        ListTag list = tag.getList("globalItemVars", Tag.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundTag t = list.getCompound(i);
-            map.put(t.getString("varName"), ItemStack.of(t.getCompound("item")));
+        CompoundTag playerItems = tag.getCompound("playerItemVars");
+        for (String id : playerItems.getAllKeys()) {
+            readItemList(playerItems.getList(id, Tag.TAG_COMPOUND)).forEach((k, v) -> playerItemVars.put(UUID.fromString(id), k, v));
         }
     }
 
     @Override
     public CompoundTag save(CompoundTag tag) {
+        tag.put("globalVars", writePosList(globalVars));
+
+        tag.put("globalItemVars", writeItemList(globalItemVars));
+
+        CompoundTag playerPos = new CompoundTag();
+        for (UUID uuid : playerVars.rowKeySet()) {
+            playerPos.put(uuid.toString(), writePosList(playerVars.row(uuid)));
+        }
+        tag.put("playerVars", playerPos);
+
+        CompoundTag playerItems = new CompoundTag();
+        for (UUID uuid : playerItemVars.rowKeySet()) {
+            playerItems.put(uuid.toString(), writeItemList(playerItemVars.row(uuid)));
+        }
+        tag.put("playerItemVars", playerItems);
+
+        return tag;
+    }
+
+    private Map<String,BlockPos> readPosList(ListTag list) {
+        Map<String,BlockPos> map = new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag t = list.getCompound(i);
+            map.put(t.getString("varName"), new BlockPos(t.getInt("x"), t.getInt("y"), t.getInt("z")));
+        }
+        return map;
+    }
+
+    private ListTag writePosList(Map<String,BlockPos> map) {
         ListTag list = new ListTag();
-        for (Map.Entry<String, BlockPos> entry : globalVars.entrySet()) {
+        map.forEach((key, pos) -> {
             CompoundTag t = new CompoundTag();
-            t.putString("varName", entry.getKey());
-            BlockPos pos = entry.getValue();
+            t.putString("varName", key);
             t.putInt("x", pos.getX());
             t.putInt("y", pos.getY());
             t.putInt("z", pos.getZ());
             list.add(t);
-        }
-        tag.put("globalVars", list);
-
-        writeItemVars(tag);
-        return tag;
+        });
+        return list;
     }
 
-    public void writeItemVars(CompoundTag tag) {
+    private Map<String,ItemStack> readItemList(ListTag list) {
+        Map<String,ItemStack> map = new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag t = list.getCompound(i);
+            map.put(t.getString("varName"), ItemStack.of(t.getCompound("item")));
+        }
+        return map;
+    }
+
+    private ListTag writeItemList(Map<String, ItemStack> map) {
         ListTag list = new ListTag();
-        for (Map.Entry<String, ItemStack> entry : globalItemVars.entrySet()) {
+        for (Map.Entry<String, ItemStack> entry : map.entrySet()) {
             CompoundTag t = new CompoundTag();
             t.putString("varName", entry.getKey());
             CompoundTag itemTag = new CompoundTag();
@@ -200,38 +242,26 @@ public class GlobalVariableManager extends SavedData implements IVariableProvide
             t.put("item", itemTag);
             list.add(t);
         }
-        tag.put("globalItemVars", list);
+        return list;
     }
-
-    public String[] getAllActiveVariableNames() {
+    
+    public Collection<String> getAllActiveVariableNames(Player player) {
         Set<String> varNames = new HashSet<>();
-        varNames.addAll(globalVars.keySet());
-        varNames.addAll(globalItemVars.keySet());
-        return varNames.toArray(new String[0]);
+        varNames.addAll(globalVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).toList());
+        varNames.addAll(globalItemVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).toList());
+        if (player != null) {
+            varNames.addAll(playerVars.row(player.getUUID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).toList());
+            varNames.addAll(playerItemVars.row(player.getUUID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).toList());
+        }
+        return varNames;
     }
 
-    @Override
-    public boolean hasCoordinate(String varName) {
-        return globalVars.containsKey(varName);
-    }
-
-    @Override
-    public BlockPos getCoordinate(String varName) {
-        return getPos(varName);
-    }
-
-    @Override
-    public boolean hasStack(String varName) {
-        return globalItemVars.containsKey(varName);
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack getStack(String varName) {
-        return getItem(varName);
-    }
-
-    public ItemStack getStack(UUID ownerUUID, String varName) {
-        return getItem(ownerUUID, varName);
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onServerStarting(ServerAboutToStartEvent event) {
+            // clear reference to the overworld; necessary when using integrated server & changing worlds
+            overworld = null;
+        }
     }
 }

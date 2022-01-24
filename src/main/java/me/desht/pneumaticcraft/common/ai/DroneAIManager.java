@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -73,7 +73,7 @@ public class DroneAIManager implements IVariableProvider {
 
     private Map<String, BlockPos> coordinateVariables = new HashMap<>();
     private Map<String, ItemStack> itemVariables = new HashMap<>();
-    private final Deque<IProgWidget> jumpBackWidgets = new ArrayDeque<>(); // A jump-back stack
+    private final Deque<IProgWidget> jumpBackWidgets = new ArrayDeque<>(); // Used to jump back to a foreach widget.
 
     private static final int MAX_JUMP_STACK_SIZE = 100;
 
@@ -115,11 +115,6 @@ public class DroneAIManager implements IVariableProvider {
     void connectVariables(DroneAIManager subAI) {
         subAI.coordinateVariables = coordinateVariables;
         subAI.itemVariables = itemVariables;
-    }
-
-    public void clearVariables() {
-        coordinateVariables.clear();
-        itemVariables.clear();
     }
 
     public boolean isIdling() {
@@ -172,64 +167,45 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     @Override
-    public boolean hasCoordinate(String varName) {
-        return getCoordinateInternal(varName) != null;
-    }
-
-    @Override
-    public BlockPos getCoordinate(String varName) {
-        BlockPos pos = getCoordinateInternal(varName);
-        return pos != null ? pos : BlockPos.ZERO;
-    }
-
-    private BlockPos getCoordinateInternal(String varName) {
+    public Optional<BlockPos> getCoordinate(UUID id, String varName) {
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.CoordinateVariable.Drone event = new SpecialVariableRetrievalEvent.CoordinateVariable.Drone(drone, varName.substring(1));
             MinecraftForge.EVENT_BUS.post(event);
-            return event.getCoordinate();
-        } else if (varName.startsWith("#")) {
-            return GlobalVariableManager.getInstance().getPos(varName.substring(1));
+            return Optional.ofNullable(event.getCoordinate());
+        } else if (varName.startsWith("%") || varName.startsWith("#")) {
+            return Optional.ofNullable(GlobalVariableHelper.getPos(drone.getOwnerUUID(), varName));
         } else {
-            return coordinateVariables.get(varName);
-        }
-    }
-
-    public void setCoordinate(String varName, BlockPos coord) {
-        if (varName.startsWith("#")) {
-            GlobalVariableManager.getInstance().set(varName.substring(1), coord);
-        } else if (varName.startsWith("%")) {
-            GlobalVariableManager.getInstance().set(drone.getOwnerUUID(), varName, coord);
-        } else if (!varName.startsWith("$")) {
-            coordinateVariables.put(varName, coord);
-            drone.onVariableChanged(varName, true);
+            return Optional.ofNullable(coordinateVariables.get(varName));
         }
     }
 
     @Override
-    public boolean hasStack(String varName) {
-        return !getStack(varName).isEmpty();
-    }
-
-    @Override
-    public ItemStack getStack(String varName) {
+    public ItemStack getStack(UUID id, String varName) {
         ItemStack item;
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.ItemVariable.Drone event = new SpecialVariableRetrievalEvent.ItemVariable.Drone(drone, varName.substring(1));
             MinecraftForge.EVENT_BUS.post(event);
             item = event.getItem();
-        } else if (varName.startsWith("#")) {
-            item = GlobalVariableManager.getInstance().getItem(varName.substring(1));
-        } else if (varName.startsWith("%")) {
-            item = GlobalVariableManager.getInstance().getStack(drone.getOwnerUUID(), varName.substring(1));
+        } else if (varName.startsWith("#") || varName.startsWith("%")) {
+            item = GlobalVariableHelper.getStack(drone.getOwnerUUID(), varName);
         } else {
             item = itemVariables.getOrDefault(varName, ItemStack.EMPTY);
         }
         return item;
     }
 
-    public void setItem(String varName, @Nonnull ItemStack item) {
+    public void setCoordinate(String varName, BlockPos coord) {
+        if (varName.startsWith("%") || varName.startsWith("#")) {
+            GlobalVariableHelper.setPos(drone.getOwnerUUID(), varName, coord);
+        } else if (!varName.startsWith("$")) {
+            coordinateVariables.put(varName, coord);
+            drone.onVariableChanged(varName, true);
+        }
+    }
+
+    public void setStack(String varName, @Nonnull ItemStack item) {
         if (varName.startsWith("#")) {
-            GlobalVariableManager.getInstance().set(varName.substring(1), item);
+            GlobalVariableHelper.setStack(drone.getOwnerUUID(), varName, item);
         } else if (!varName.startsWith("$")) {
             itemVariables.put(varName, item);
             drone.onVariableChanged(varName, false);

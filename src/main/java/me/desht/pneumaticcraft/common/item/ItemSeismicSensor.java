@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.item;
 import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -59,7 +58,7 @@ public class ItemSeismicSensor extends Item {
         Player player = ctx.getPlayer();
         if (!world.isClientSide && player != null) {
             BlockPos.MutableBlockPos searchPos = ctx.getClickedPos().mutable();
-            while (searchPos.getY() > PneumaticCraftUtils.getMinHeight(world)) {
+            while (searchPos.getY() > world.getMinBuildHeight()) {
                 searchPos.move(Direction.DOWN);
                 Fluid fluid = findFluid(world, searchPos);
                 if (fluid != null) {

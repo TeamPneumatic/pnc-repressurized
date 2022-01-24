@@ -133,13 +133,24 @@ public abstract class BlockPneumaticCraft extends Block
                         world.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
                         return InteractionResult.SUCCESS;
                     }
-                    // te must be a INamedContainerProvider at this point: see instanceof check above
-                    NetworkHooks.openGui((ServerPlayer) player, (MenuProvider) te, pos);
+                    // te must be a MenuProvider at this point: see instanceof check above
+                    doOpenGui((ServerPlayer) player, te);
                 }
             }
 
             return InteractionResult.SUCCESS;
         }
+    }
+
+    /**
+     * Default open gui method just sends the TE's blockpos.  Override if more server->client data needs to be
+     * serialised, and handle deserialisation in the corresponding container constructor.
+     *
+     * @param player the server player
+     * @param te the tile entity, which is known to be an INamedContainerProvider
+     */
+    protected void doOpenGui(ServerPlayer player, BlockEntity te) {
+        NetworkHooks.openGui(player, (MenuProvider) te, te.getBlockPos());
     }
 
     @Nullable
@@ -429,6 +440,7 @@ public abstract class BlockPneumaticCraft extends Block
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
+    @Override
     public boolean isPathfindable(BlockState state, BlockGetter worldIn, BlockPos pos, PathComputationType type) {
         return getCollisionShape(state, worldIn, pos, CollisionContext.empty()).isEmpty();
     }

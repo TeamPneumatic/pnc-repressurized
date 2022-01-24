@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.util;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
@@ -27,6 +28,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -54,7 +56,9 @@ public class ProgWidgetRenderer {
      * @param alpha transparerncy
      */
     public static void renderProgWidget2d(PoseStack matrixStack, IProgWidget progWidget, int alpha) {
-        GuiUtils.bindTexture(progWidget.getTexture());
+        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        RenderSystem.setShaderTexture(0, progWidget.getTexture());
+        RenderSystem.setShaderColor(1f, 1f, 1f, alpha / 255f);
         int width = progWidget.getWidth() + (progWidget.getParameters().isEmpty() ? 0 : 10);
         int height = progWidget.getHeight() + (progWidget.hasStepOutput() ? 10 : 0);
         Pair<Float,Float> maxUV = progWidget.getMaxUV();

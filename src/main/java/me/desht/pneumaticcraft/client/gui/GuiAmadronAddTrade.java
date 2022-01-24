@@ -37,18 +37,18 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.lwjgl.glfw.GLFW;
@@ -91,8 +91,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         } else if (fluidGui != null) {
             setFluid(settingSlot, fluidGui.getFilter());
         } else if (gpsSearchGui != null) {
-            positions[settingSlot] = gpsSearchGui.getSearchStack().isEmpty() ?
-                    null : ItemGPSTool.getGPSLocation(gpsSearchGui.getSearchStack());
+            ItemGPSTool.getGPSLocation(gpsSearchGui.getSearchStack()).ifPresent(pos -> positions[settingSlot] = pos);
         }
         openingSubGUI = false;
         searchGui = null;
@@ -260,7 +259,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
             settingSlot = slot;
             ItemStack gps = new ItemStack(ModItems.GPS_TOOL.get());
             GlobalPos gPos = getPosition(slot);
-            if (gPos != null) ItemGPSTool.setGPSLocation(gps, gPos.pos());
+            if (gPos != null) ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gps, gPos.pos());
             gpsSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : ItemStack.EMPTY);
         }
     }

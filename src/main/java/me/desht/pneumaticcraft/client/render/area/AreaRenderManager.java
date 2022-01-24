@@ -106,7 +106,7 @@ public enum AreaRenderManager {
 
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
-        Player player = ClientUtils.getClientPlayer();
+        Player player = Minecraft.getInstance().player;
         if (player != null) {
             if (player.level != world) {
                 world = player.level;
@@ -123,10 +123,10 @@ public enum AreaRenderManager {
         ItemStack curItem = getHeldPositionProvider(player);
         if (curItem.getItem() instanceof ItemGPSAreaTool) {
             // show the raw P1/P2 positions; the area is shown by getHeldPositionProvider()
-            BlockPos p1 = ItemGPSAreaTool.getGPSLocation(player.getCommandSenderWorld(), curItem, 0);
-            BlockPos p2 = ItemGPSAreaTool.getGPSLocation(player.getCommandSenderWorld(), curItem, 1);
-            AreaRenderer.builder().withColor(0x80FF6060).xray().build(p1).render(matrixStack, buffer);
-            AreaRenderer.builder().withColor(0x8060FF60).xray().build(p2).render(matrixStack, buffer);
+            ItemGPSAreaTool.getGPSLocation(player, curItem, 0)
+                    .ifPresent(pos -> AreaRenderer.builder().withColor(0x80FF6060).xray().build(pos).render(matrixStack, buffer));
+            ItemGPSAreaTool.getGPSLocation(player, curItem, 1)
+                    .ifPresent(pos -> AreaRenderer.builder().withColor(0x8060FF60).xray().build(pos).render(matrixStack, buffer));
         }
     }
 
@@ -162,7 +162,7 @@ public enum AreaRenderManager {
                 // Position data has changed: recache stored positions
                 lastItemHashCode = thisHash;
                 IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
-                List<BlockPos> posList = positionProvider.getStoredPositions(player.getCommandSenderWorld(), curItem);
+                List<BlockPos> posList = positionProvider.getStoredPositions(player.getUUID(), curItem);
                 if (posList.size() > MAX_DISPLAYED_POS) {
                     posList.sort(Comparator.comparingDouble(blockPos -> blockPos.distSqr(player.blockPosition())));
                     player.displayClientMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).withStyle(ChatFormatting.GOLD), false);

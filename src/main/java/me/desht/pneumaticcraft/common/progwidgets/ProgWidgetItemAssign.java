@@ -24,11 +24,11 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +77,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     @Override
     public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (variable.equals("")) {
+        if (variable.isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
         }
     }
@@ -94,9 +94,9 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
 
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
-        if (!variable.equals("")) {
+        if (!variable.isEmpty()) {
             ProgWidgetItemFilter filter = (ProgWidgetItemFilter) getConnectedParameters()[0];
-            aiManager.setItem(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
+            aiManager.setStack(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
         }
         return super.getOutputWidget(drone, allWidgets);
     }

@@ -26,6 +26,11 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.recipes.CraftingRecipeCache;
 import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
@@ -33,11 +38,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
@@ -59,17 +59,9 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     @Override
     public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-//        boolean usingVariables = false;
 
         getCraftingGrid(); // to set up usingVariables
 
-//        for (int y = 0; y < 3; y++) {
-//            ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter) getConnectedParameters()[y];
-//            for (int x = 0; x < 3 && itemFilter != null; x++) {
-//                if (!itemFilter.getVariable().equals("")) usingVariables = true;
-//                itemFilter = (ProgWidgetItemFilter) itemFilter.getConnectedParameters()[0];
-//            }
-//        }
         if (!usingVariables && getRecipeResult(ClientUtils.getClientLevel()) == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.crafting.error.noCraftingRecipe"));
         }

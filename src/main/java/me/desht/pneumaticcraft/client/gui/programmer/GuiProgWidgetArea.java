@@ -32,13 +32,14 @@ import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetEnum;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetInteger;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -87,8 +88,8 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         Set<String> variables = guiProgrammer == null ? Collections.emptySet() : guiProgrammer.te.getAllVariables();
         variableField1.setElements(variables);
         variableField2.setElements(variables);
-        variableField1.setValue(progWidget.getCoord1Variable());
-        variableField2.setValue(progWidget.getCoord2Variable());
+        variableField1.setValue(progWidget.getVarName(0));
+        variableField2.setValue(progWidget.getVarName(1));
         if (advancedMode) {
             addRenderableWidget(variableField1);
             addRenderableWidget(variableField2);
@@ -114,36 +115,24 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
         if (invSearchGui != null) {
             // returning from GPS selection GUI; copy the selected blockpos to the progwidget
-            BlockPos searchPos = invSearchGui.getBlockPos();
-            if (pointSearched == 0) {
-                progWidget.x1 = searchPos.getX();
-                progWidget.y1 = searchPos.getY();
-                progWidget.z1 = searchPos.getZ();
-            } else {
-                progWidget.x2 = searchPos.getX();
-                progWidget.y2 = searchPos.getY();
-                progWidget.z2 = searchPos.getZ();
-            }
+            progWidget.setPos(pointSearched, invSearchGui.getBlockPos());
+            invSearchGui = null;
         }
 
         // blockpos labels
-        String l1 = "P1: " + ChatFormatting.DARK_BLUE + formatPos(progWidget.x1, progWidget.y1, progWidget.z1);
+        String l1 = "P1: " + ChatFormatting.DARK_BLUE + formatPos(progWidget.getPos(0).orElse(PneumaticCraftUtils.invalidPos()));
         addLabel(new TextComponent(l1), guiLeft + 8, guiTop + 20);
-        String l2 = "P2: " + ChatFormatting.DARK_BLUE + formatPos(progWidget.x2, progWidget.y2, progWidget.z2);
+        String l2 = "P2: " + ChatFormatting.DARK_BLUE + formatPos(progWidget.getPos(1).orElse(PneumaticCraftUtils.invalidPos()));
         addLabel(new TextComponent(l2), guiLeft + 133, guiTop + 20);
     }
 
-    private String formatPos(int x, int y, int z) {
-        return x == 0 && y == 0 && z == 0 ? "-" : String.format("[ %d, %d, %d ]", x, y, z);
+    private String formatPos(BlockPos pos) {
+        return PneumaticCraftUtils.isValidPos(pos) ? String.format("[ %d, %d, %d ]", pos.getX(), pos.getY(), pos.getZ()) : "-";
     }
 
     private void openInvSearchGUI(int which) {
         ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
-        if (which == 0) {
-            ItemGPSTool.setGPSLocation(gpsStack, new BlockPos(progWidget.x1, progWidget.y1, progWidget.z1));
-        } else {
-            ItemGPSTool.setGPSLocation(gpsStack, new BlockPos(progWidget.x2, progWidget.y2, progWidget.z2));
-        }
+        ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gpsStack, progWidget.getPos(which).orElse(BlockPos.ZERO));
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TextComponent("Inventory Searcher (GPS)"));
         if (minecraft.screen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.screen;
@@ -172,17 +161,15 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
             areaTypeStaticWidgets.add(titleWidget);
             curY += font.lineHeight + 1;
 
-            if (areaTypeWidget instanceof AreaTypeWidgetInteger) {
-                AreaTypeWidgetInteger intWidget = (AreaTypeWidgetInteger) areaTypeWidget;
+            if (areaTypeWidget instanceof AreaTypeWidgetInteger intWidget) {
                 WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.lineHeight + 1).setRange(0, Integer.MAX_VALUE);
                 intField.setValue(intWidget.readAction.get());
                 addRenderableWidget(intField);
                 areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, intField));
 
                 curY += font.lineHeight + 20;
-            } else if (areaTypeWidget instanceof AreaTypeWidgetEnum<?>) {
-                AreaTypeWidgetEnum<?> enumWidget = (AreaTypeWidgetEnum<?>) areaTypeWidget;
-                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 1).setFixedOptions();
+            } else if (areaTypeWidget instanceof AreaTypeWidgetEnum<?> enumWidget) {
+                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 1).setFixedOptions(true);
                 enumCbb.setElements(getEnumNames(enumWidget.enumClass));
                 enumCbb.setValue(enumWidget.readAction.get().toString());
                 addRenderableWidget(enumCbb);
@@ -237,11 +224,10 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
     @Override
     public void removed() {
-        progWidget.setCoord1Variable(variableField1.getValue());
-        progWidget.setCoord2Variable(variableField2.getValue());
+        progWidget.setVarName(0, variableField1.getValue());
+        progWidget.setVarName(1, variableField2.getValue());
         saveWidgets();
 
         super.removed();
     }
-
 }

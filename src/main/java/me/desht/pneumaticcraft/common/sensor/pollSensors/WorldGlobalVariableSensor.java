@@ -20,17 +20,21 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class WorldGlobalVariableSensor implements IPollSensorSetting {
+    protected UUID playerID;
 
     @Override
     public String getSensorPath() {
@@ -54,11 +58,21 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
-        return GlobalVariableManager.getInstance().getBoolean(textBoxText) ? 15 : 0;
+        return GlobalVariableHelper.getBool(playerID, textBoxText) ? 15 : 0;
     }
 
     @Override
     public void getAdditionalInfo(List<Component> info) {
         info.add(new TextComponent("Variable Name"));
+    }
+
+    @Override
+    public void setPlayerContext(UUID playerID) {
+        this.playerID = playerID;
+    }
+
+    @Override
+    public List<String> getTextBoxOptions(Player player) {
+        return player.containerMenu instanceof ContainerUniversalSensor c ? c.getGlobalVars() : null;
     }
 }

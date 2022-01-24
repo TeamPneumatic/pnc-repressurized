@@ -195,11 +195,6 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public boolean isEntityFilter() {
-            return coordinateSensor.isEntityFilter();
-        }
-
-        @Override
         public List<String> getDescription() {
             return coordinateSensor.getDescription();
         }
@@ -252,11 +247,6 @@ public class SensorHandler implements ISensorRegistry {
         @Override
         public RangedInt getTextboxIntRange() {
             return coordinateSensor.getTextboxIntRange();
-        }
-
-        @Override
-        public boolean isEntityFilter() {
-            return coordinateSensor.isEntityFilter();
         }
 
         @Override

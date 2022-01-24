@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -69,7 +69,7 @@ public class AreaTypeSphere extends AreaType{
         maxY = (int) (p1.getY() + radius + 1);
         maxZ = (int) (p1.getZ() + radius + 1);
         for (int x = minX; x <= maxX; x++) {
-            for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
+            for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
                     double centerDistSq = PneumaticCraftUtils.distBetweenSq(p1, x + 0.5, y + 0.5, z + 0.5);
                     if (centerDistSq <= radiusSq && centerDistSq >= innerRadiusSq) { //Only add blocks between a certain radius

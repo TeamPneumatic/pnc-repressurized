@@ -194,7 +194,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private boolean checkGPSSlot() {
         ItemStack gpsStack = itemHandler.getStackInSlot(GPS_SLOT);
         if (gpsStack.getItem() instanceof IPositionProvider && !externalControl) {
-            List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(level, gpsStack);
+            List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(null, gpsStack);
             if (!posList.isEmpty() && posList.get(0) != null) {
                 int destinationX = posList.get(0).getX();
                 int destinationY = posList.get(0).getY();

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -30,13 +30,13 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -126,18 +126,16 @@ public class GuiInventorySearcher extends AbstractContainerScreen<ContainerInven
      * Special case for when the searched item is a position provider
      * @return the selected blockpos, or null if the search item is not a position provider
      */
-    @Nonnull
     public BlockPos getBlockPos() {
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getRawStoredPositions(ClientUtils.getClientLevel(), stack);
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getRawStoredPositions(ClientUtils.getClientPlayer(), stack);
             int posIdx = getPosIdx(stack);
             if (!posList.isEmpty()) {
-                BlockPos pos = posList.get(Math.min(posIdx, posList.size() - 1));
-                return pos == null ? BlockPos.ZERO : pos;
+                return posList.get(Math.min(posIdx, posList.size() - 1));
             }
         }
-        return BlockPos.ZERO;
+        return null;
     }
 
     private int getPosIdx(ItemStack stack) {

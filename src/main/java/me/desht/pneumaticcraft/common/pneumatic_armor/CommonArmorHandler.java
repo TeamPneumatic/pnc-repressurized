@@ -34,8 +34,8 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -122,8 +122,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
             // this will happen when a player changes dimension; they get a new player entity, so the armor
             // handler must be updated to reflect that
-            if (event.getEntity() instanceof Player) {
-                Player player = (Player) event.getEntity();
+            if (event.getEntity() instanceof Player player) {
                 CommonArmorHandler handler = getManagerInstance(player).playerHandlers.get(player.getUUID());
                 if (handler != null) handler.player = player;
             }
@@ -135,7 +134,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         @SubscribeEvent
         public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
             // called client side when client disconnects
-            Player player = ClientUtils.getClientPlayer();
+            Player player = Minecraft.getInstance().player;
             if (player != null) {
                 clearHandlerForPlayer(player);
             }
@@ -288,8 +287,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         // record the number of upgrades of every type
         upgradeMatrix.get(slot.getIndex()).clear();
         for (ItemStack stack : upgradeStacks) {
-            if (stack.getItem() instanceof ItemMachineUpgrade) {
-                ItemMachineUpgrade upgrade = (ItemMachineUpgrade) stack.getItem();
+            if (stack.getItem() instanceof ItemMachineUpgrade upgrade) {
                 upgradeMatrix.get(slot.getIndex()).put(upgrade.getUpgradeType(), stack.getCount() * upgrade.getTier());
             }
         }

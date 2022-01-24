@@ -405,7 +405,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
         if (shouldParseVariablesInTooltips()) {
             for (int i = 0; i < tooltip.size(); i++) {
-                tooltip.set(i, new TextComponent(new TextVariableParser(tooltip.get(i).getString()).parse()));
+                tooltip.set(i, new TextComponent(new TextVariableParser(tooltip.get(i).getString(), ClientUtils.getClientPlayer().getUUID()).parse()));
             }
         }
 

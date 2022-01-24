@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class ContainerAirCannon extends ContainerPneumaticBase<TileEntityAirCann
         // add the gps slot
         addSlot(new SlotItemSpecific(te.getPrimaryInventory(), itemStack -> {
             if (!(itemStack.getItem() instanceof IPositionProvider pp)) return false;
-            List<BlockPos> l = pp.getStoredPositions(te.getLevel(), itemStack);
+            List<BlockPos> l = pp.getStoredPositions(playerInventory.player.getUUID(), itemStack);
             return !l.isEmpty() && l.get(0) != null;
         }, 1, 51, 29));
 

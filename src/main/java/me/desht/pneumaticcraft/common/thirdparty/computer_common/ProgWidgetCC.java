@@ -30,27 +30,23 @@ import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldAreaType;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 import java.util.function.Predicate;
-
-import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
-import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker.RightClickType;
-import me.desht.pneumaticcraft.common.progwidgets.ICondition.Operator;
 
 public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrdered, IGotoWidget, IItemPickupWidget,
         IEntityProvider, ITextWidget, ICondition, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
@@ -175,12 +171,8 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
             throw new IllegalArgumentException("Unknown area type: '" + areaType + "'. Use `getAreaTypes()` to list accepted values.");
         }
         ProgWidgetArea helperWidget = new ProgWidgetArea();
-        helperWidget.x1 = x1;
-        helperWidget.y1 = y1;
-        helperWidget.z1 = z1;
-        helperWidget.x2 = x2;
-        helperWidget.y2 = y2;
-        helperWidget.z2 = z2;
+        helperWidget.setPos(0, new BlockPos(x1, y1, z1));
+        helperWidget.setPos(1, new BlockPos(x2, y2, z2));
         helperWidget.type = LegacyAreaWidgetConverter.convertFromLegacyFormat(type, 0);
         Set<BlockPos> a = new HashSet<>();
         helperWidget.getArea(a);
@@ -249,14 +241,8 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     private ProgWidgetArea getEntityAreaWidget() {
         ProgWidgetArea widget = new ProgWidgetArea();
-        BlockPos minPos = getMinPos();
-        BlockPos maxPos = getMaxPos();
-        widget.x1 = minPos.getX();
-        widget.y1 = minPos.getY();
-        widget.z1 = minPos.getZ();
-        widget.x2 = maxPos.getX();
-        widget.y2 = maxPos.getY();
-        widget.z2 = maxPos.getZ();
+        widget.setPos(0, getMinPos());
+        widget.setPos(1, getMaxPos());
         return widget;
     }
 

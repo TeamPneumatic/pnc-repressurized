@@ -18,17 +18,18 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.util.Mth;
-import com.mojang.math.Matrix4f;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -85,6 +86,7 @@ public class WidgetRadioButton extends AbstractWidget implements ITooltipProvide
     private void drawCircle(PoseStack matrixStack, float x, float y, float radius, int color) {
         BufferBuilder wr = Tesselator.getInstance().getBuilder();
         int[] cols = RenderUtils.decomposeColor(color);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

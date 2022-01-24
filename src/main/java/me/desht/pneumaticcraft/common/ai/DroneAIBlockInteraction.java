@@ -28,23 +28,21 @@ import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.ThreadedSorter;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.core.Direction;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.CollisionGetter;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> extends Goal {
     private static final int MAX_LOOKUPS_PER_SEARCH = 30;
@@ -124,7 +122,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     }
 
     private boolean isYValid(int y) {
-        return order == Ordering.CLOSEST || y == curY;
+        return y < drone.world().getMaxBuildHeight() && y >= drone.world().getMinBuildHeight() && order == Ordering.CLOSEST || y == curY;
     }
 
     public DroneAIBlockInteraction<?> setMaxActions(int maxActions) {

@@ -28,16 +28,16 @@ import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -69,7 +69,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void addErrors(List<Component> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (variable.equals("") && filter == null) {
+        if (variable.isEmpty() && filter == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.error.noFilter"));
         }
         if (matchBlock && !(filter.getItem() instanceof BlockItem) && variable.isEmpty()) {
@@ -100,7 +100,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @Nonnull
     public ItemStack getFilter() {
-        return variable.isEmpty() ? filter : aiManager != null ? aiManager.getStack(variable) : ItemStack.EMPTY;
+        return variable.isEmpty() ? filter : aiManager != null ? aiManager.getStack(aiManager.getDrone().getOwnerUUID(), variable) : ItemStack.EMPTY;
     }
 
     public ItemStack getRawFilter() {

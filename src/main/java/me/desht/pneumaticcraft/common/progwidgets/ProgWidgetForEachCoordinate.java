@@ -24,15 +24,18 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implements IJumpBackWidget, IJump,
         IVariableSetWidget {
@@ -107,8 +110,10 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
-        if (locations.size() > 0 && ai != null
-                && (traversedPositions.size() == 1 || !aiManager.getCoordinate(elementVariable).equals(BlockPos.ZERO))) {
+        // TODO 1.18+ - a test for (0,0,0) isn't so useful any longer, due to world height limit changes
+        //   need an alternative way of specifying "invalid position" (maybe a coordinate operator option to delete variables?)
+        if (!locations.isEmpty() && ai != null
+                && (traversedPositions.size() == 1 || !aiManager.getCoordinate(drone.getOwnerUUID(), elementVariable).orElse(BlockPos.ZERO).equals(BlockPos.ZERO))) {
             BlockPos pos = ai.getCurCoord();
             if (pos != null) {
                 aiManager.setCoordinate(elementVariable, pos);
@@ -122,10 +127,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     @Override
     public List<String> getPossibleJumpLocations() {
         IProgWidget widget = getConnectedParameters()[getParameters().size() - 1];
-        ProgWidgetText textWidget = widget != null ? (ProgWidgetText) widget : null;
-        List<String> locations = new ArrayList<>();
-        if (textWidget != null) locations.add(textWidget.string);
-        return locations;
+        return widget instanceof ProgWidgetText t ? Collections.singletonList(t.string) : Collections.emptyList();
     }
 
     @Override

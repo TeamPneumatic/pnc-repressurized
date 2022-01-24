@@ -1638,7 +1638,7 @@
   "pneumaticcraft.gui.tooltip.etching_tank.acid_usage": "Исп. кислота для травления: ~%s мл/сек",
   "pneumaticcraft.gui.tooltip.etching_tank.process_time": "Время травления: %d сек",
   "pneumaticcraft.gui.tooltip.fluid": "Жидкость: ",
-  "pneumaticcraft.gui.tooltip.gpsTool.variable": "▶ Связанная переменная: \"#%s\"",
+  "pneumaticcraft.gui.tooltip.gpsTool.variable": "▶ Связанная переменная: \"%s\"",
   "pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining": "Боеприпасы: §f%d / %d",
   "pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion": "§oСмажте зельями ваши пули.",
   "pneumaticcraft.gui.tooltip.gunAmmo": "§dТип зелья:",

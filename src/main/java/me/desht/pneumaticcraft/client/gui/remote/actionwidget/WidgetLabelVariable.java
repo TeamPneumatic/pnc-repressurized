@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -30,7 +31,7 @@ public class WidgetLabelVariable extends WidgetLabel {
     public WidgetLabelVariable(int x, int y, Component text) {
         super(x, y, text);
 
-        this.parser = new TextVariableParser(text.getString());
+        this.parser = new TextVariableParser(text.getString(), ClientUtils.getClientPlayer().getUUID());
         this.width = Minecraft.getInstance().font.width(parser.parse());
     }
 

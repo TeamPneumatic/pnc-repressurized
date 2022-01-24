@@ -36,15 +36,15 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -178,12 +178,12 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
         if (mouseButton == 0) {
             areaShowingWidget = areaShowingWidget == widget ? null : programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
         } else if (mouseButton == 1) {
-            if (widget instanceof IAreaProvider) {
+            if (widget instanceof IAreaProvider areaProvider) {
                 getClientUpgradeHandler().getShownArea().clear();
                 int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
                 if (areaShowWidgetId != widgetId) {
                     Set<BlockPos> area = Sets.newHashSet();
-                    ((IAreaProvider) widget).getArea(area);
+                    areaProvider.getArea(area);
                     getClientUpgradeHandler().getShownArea().addAll(area);
                     areaShowWidgetId = widgetId;
                 } else {

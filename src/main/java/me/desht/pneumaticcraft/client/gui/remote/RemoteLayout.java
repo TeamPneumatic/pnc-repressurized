@@ -24,35 +24,26 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class RemoteLayout {
-
     private final List<ActionWidget<?>> actionWidgets = new ArrayList<>();
-    private static final Map<String, Class<? extends ActionWidget<?>>> registeredWidgets = new HashMap<>();
-
-    // FIXME don't need reflection shenanigans here
+    private static final Map<String, Supplier<ActionWidget<?>>> registeredWidgets = new HashMap<>();
 
     static {
-        registerWidget(ActionWidgetCheckBox.class);
-        registerWidget(ActionWidgetLabel.class);
-        registerWidget(ActionWidgetButton.class);
-        registerWidget(ActionWidgetDropdown.class);
+        registerWidget(ActionWidgetCheckBox::new);
+        registerWidget(ActionWidgetLabel::new);
+        registerWidget(ActionWidgetButton::new);
+        registerWidget(ActionWidgetDropdown::new);
     }
 
-    private static void registerWidget(Class<? extends ActionWidget<?>> widgetClass) {
-        try {
-            ActionWidget<?> widget = widgetClass.getDeclaredConstructor().newInstance();
-            registeredWidgets.put(widget.getId(), widgetClass);
-            return;
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        throw new IllegalArgumentException("Widget " + widgetClass + " couldn't be registered");
+    private static void registerWidget(Supplier<ActionWidget<?>> supplier) {
+        ActionWidget<?> widget = supplier.get();
+        registeredWidgets.put(widget.getId(), supplier);
     }
 
     public RemoteLayout(ItemStack remote, int guiLeft, int guiTop) {
@@ -62,13 +53,11 @@ public class RemoteLayout {
             for (int i = 0; i < tagList.size(); i++) {
                 CompoundTag widgetTag = tagList.getCompound(i);
                 String id = widgetTag.getString("id");
-                Class<? extends ActionWidget<?>> clazz = registeredWidgets.get(id);
-                try {
-                    ActionWidget<?> widget = clazz.newInstance();
-                    widget.readFromNBT(widgetTag, guiLeft, guiTop);
-                    actionWidgets.add(widget);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                Supplier<ActionWidget<?>> sup = registeredWidgets.get(id);
+                if (sup != null) {
+                    ActionWidget<?> actionWidget = sup.get();
+                    actionWidget.readFromNBT(widgetTag, guiLeft, guiTop);
+                    actionWidgets.add(actionWidget);
                 }
             }
         }

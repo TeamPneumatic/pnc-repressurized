@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -37,27 +37,38 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
     private final List<String> syncedVars;
     private final BlockPos[] lastValues;
     private final InteractionHand hand;
-    public String[] variables = new String[0];
+    public final String[] variables;
+    private final UUID playerId;
 
     public ContainerRemote(MenuType<? extends ContainerRemote> type, int windowId, Inventory playerInventory, InteractionHand hand) {
         super(type, windowId, playerInventory);
 
         this.hand = hand;
-        syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getItemInHand(hand)));
-        lastValues = new BlockPos[syncedVars.size()];
+        this.variables = new String[0];
+        this.playerId = playerInventory.player.getUUID();
+        this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getItemInHand(hand)));
+        this.lastValues = new BlockPos[syncedVars.size()];
     }
 
     private ContainerRemote(MenuType<ContainerRemote> type, int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(type, windowId, playerInventory, getHandFromBuffer(buffer));
+        super(type, windowId, playerInventory);
+
+        this.hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+
+        this.variables = new String[buffer.readVarInt()];
+        for (int i = 0; i < variables.length; i++) {
+            variables[i] = buffer.readUtf();
+        }
+
+        this.playerId = playerInventory.player.getUUID();
+        this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getItemInHand(hand)));
+        this.lastValues = new BlockPos[syncedVars.size()];
     }
 
     public static ContainerRemote createRemoteContainer(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
@@ -68,11 +79,7 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
         return new ContainerRemote(ModContainers.REMOTE_EDITOR.get(), windowId, playerInventory, buffer);
     }
 
-    private static InteractionHand getHandFromBuffer(FriendlyByteBuf buffer) {
-        return buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
-    }
-
-    private static Set<String> getRelevantVariableNames(@Nonnull ItemStack remote) {
+    private Set<String> getRelevantVariableNames(@Nonnull ItemStack remote) {
         Set<String> variables = new HashSet<>();
         CompoundTag tag = remote.getTag();
         if (tag != null) {
@@ -81,11 +88,12 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
                 CompoundTag widgetTag = tagList.getCompound(i);
                 variables.add(widgetTag.getString("variableName"));
                 variables.add(widgetTag.getString("enableVariable"));
-                TextVariableParser parser = new TextVariableParser(widgetTag.getString("text"));
-                parser.parse();
+                TextVariableParser parser = new TextVariableParser(widgetTag.getString("text"), playerId);
+                parser.parse(); // discover any ${variable} references in the text
                 variables.addAll(parser.getRelevantVariables());
             }
         }
+        variables.remove("");
         return variables;
     }
 
@@ -95,13 +103,13 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
 
         for (int i = 0; i < lastValues.length; i++) {
             String varName = syncedVars.get(i);
-            if (varName.startsWith("#")) varName = varName.substring(1);
-            BlockPos newValue = GlobalVariableManager.getInstance().getPos(varName);
-            if (!newValue.equals(lastValues[i])) {
+            if (varName.isEmpty()) continue;
+            BlockPos newValue = GlobalVariableHelper.getPos(playerId, varName);
+            if (newValue != null && !newValue.equals(lastValues[i])) {
                 lastValues[i] = newValue;
                 for (Object o : containerListeners) {
-                    if (o instanceof ServerPlayer)
-                        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), (ServerPlayer) o);
+                    if (o instanceof ServerPlayer sp)
+                        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), sp);
                 }
             }
         }

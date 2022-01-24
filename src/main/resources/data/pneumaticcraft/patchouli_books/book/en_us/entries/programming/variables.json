@@ -1,7 +1,7 @@
 {
   "name": "Variables",
   "icon": "minecraft:paper",
-  "category": "pneumaticcraft:programming",
+  "category": "programming",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {
@@ -24,18 +24,23 @@
     {
       "type": "text",
       "title": "Types of Variable",
-      "text": "There are three types of variable:$(li)$(thing)Local variables/$: these are stored per-drone and are referenced simply as 'varname'.$(li)$(thing)Global variables/$: as the name suggests, these are global to all drones and can be used for sharing data between drones. They are referenced as '#varname'.$(li)$(thing)Special Variables/$ can be used to retrieve some metadata about the drone and are referenced as '$varname'."
+      "text": "There are three types of variable:$(li)$(thing)Local variables/$: these are stored per-drone and are referenced simply as 'varname'.$(li)$(thing)Global variables/$: these are global to all drones and can be used for sharing data. They are referenced as '#varname' or '%varname' (see following pages).$(li)$(thing)Special Variables/$ can be used to retrieve some metadata about the drone and are referenced as '$varname'."
     },
     {
       "type": "text",
       "anchor": "global",
       "title": "Global Variables",
-      "text": "$(thing)Global variables/$ are prefixed with '#'. Normal variables are unique per $(l:tools/drone)Drone/$; they can't be shared. Global variables, however, $(italic)can/$ be shared. This allows Drones to communicate with each other.$(p)Additionally, $(l:tools/gps_tool)GPS Tools/$ can link to and modify them, the $(l:machines/universal_sensor)Universal Sensor/$ can emit a $(#f00)redstone signal/$ based on them, and the $(l:tools/remote)Remote/$ can display and modify them."
+      "text": "Normal variables are unique per $(l:tools/drone)Drone/$; they can't be shared. $(thing)Global variables/$, however, $(italic)can/$ be shared. This allows Drones to communicate with each other.$(p)Additionally, $(l:tools/gps_tool)GPS Tools/$ can link to and modify them, the $(l:machines/universal_sensor)Universal Sensor/$ can emit a $(#f00)redstone signal/$ based on them, and the $(l:tools/remote)Remote/$ can display and modify them."
     },
     {
       "type": "text",
       "title": "Global Variables (cont.)",
-      "text": "For convenience, $(thing)global variables/$ can be set by using the command $(#800)/setGlobalVariable <varName> <x> <y> <z>/$. This is useful in custom maps or for debugging. Execution of this command is not limited to just Server Ops.$(p)To get the variable state (useful for debugging), use $(#800)/getGlobalVariable <varName>/$. This will get both the coordinate and item value."
+      "text": "$(ttcolor)$(t:Player-global variables were added in PNC:R 3.0.0, MC 1.18.1)There are two types of global variable/$: $(thing)player-global/$ and $(thing)server-global/$.$(li)Player-global variables are prefixed with '#'. These are shared among a player's drones, but private to each player.$(li)Server-global variables are prefixed with '%'. These variables are shared among $(italic)all/$ players on the server.$(p)Note: in earlier versions of the mod only server-global existed, with a prefix of '#'."
+    },
+    {
+      "type": "text",
+      "title": "Variable Commands",
+      "text": "Several commands exist (usable by any player) to manipulate global variales:$(li)/pncr global_var set <varname> <x> <y> <z>$(li)/pncr global_var set <varname> <item-registry-id>$(li)/pncr global_var get <varname>$(li)/pncr global_var list$(li)/pncr global_var delete <varname>"
     },
     {
       "type": "text",
@@ -47,7 +52,7 @@
       "type": "text",
       "anchor": "special",
       "title": "Special Variables (cont.)",
-      "text": "$(li)$(thing)$owner_look/$: a vector representing the owning player's facing on each axis; each value will be -1, 0 or 1.$(li)$(thing)$controller_pos/$: the blockpos of the controlling $(l:programming/programmable_controller)Programmable Controller/$ block, or (0,0,0) if the drone is an actual drone, rather than a Programmable Controller.$(li)$(thing)$deploy_pos/$: the blockpos where this drone was deployed, or the Programmable Controller's blockpos."
+      "text": "$(li)$(thing)$owner_look/$: a vector representing the owning player's facing on each axis; each value will be -1, 0 or 1.$(li)$(thing)$controller_pos/$: the blockpos of the controlling $(l:programming/programmable_controller)Programmable Controller/$ block, or (0,0,0) if the drone is an actual drone, rather than a Programmable Controller."
     },
     {
       "type": "text",
@@ -63,12 +68,12 @@
     {
       "type": "text",
       "title": "Debugging (cont.)",
-      "text": "To interpolate a variable into text displayed by one of the above methods, use the syntax $(thing)${varname}/$.$(p)Note that the special & global variable prefixes still apply here, so to interpolate a drone's position, you would use $(thing)${$drone_pos}/$, and to interpolate a global variable, you would use $(thing)${#globalvarname}/$."
+      "text": "To interpolate a variable into text displayed by one of the above methods, use the syntax $(thing)${varname}/$.$(p)Note that the special & global variable prefixes still apply here, so to interpolate a drone's position, you would use $(thing)${$drone_pos}/$, and to interpolate a global variable, you would use $(thing)${#globalvarname}/$ or $(thing)${%globalvarname}/$."
     },
     {
       "type": "text",
       "title": "Debugging (cont.)",
-      "text": "You can also display only the X, Y or Z component of the coordinate by suffixing the variable name with $(thing).x/$, $(thing).y/$ or $(thing).z/$ respectively. E.g. to show the drone owner's Y coordinate, use $(thing)${$owner_pos.y}/$.$(p)If the variable is an $(thing)item variable/$, a $(thing).id/$ suffix will get the item's registry ID instead of its display name. This is particularly useful for displaying an item on an $(l:machines/aphorism_tile#items)Aphorism Tile/$."
+      "text": "You can also display only the X, Y or Z component of the coordinate by suffixing the variable name with $(thing).x/$, $(thing).y/$ or $(thing).z/$ respectively. E.g. to show the drone owner's Y coordinate, use $(thing)${$owner_pos.y}/$.$(p)If the variable is an $(thing)item variable/$, a $(thing).id/$ suffix will get the item's registry ID instead of its display name (which is the default). This is particularly useful for displaying an item on an $(l:machines/aphorism_tile#items)Aphorism Tile/$."
     }
   ]
 }

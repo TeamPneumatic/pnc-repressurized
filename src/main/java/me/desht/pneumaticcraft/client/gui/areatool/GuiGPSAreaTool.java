@@ -18,18 +18,21 @@
 package me.desht.pneumaticcraft.client.gui.areatool;
 
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -40,17 +43,20 @@ public class GuiGPSAreaTool extends GuiGPSTool {
 
     private final BlockPos[] p1p2Pos = new BlockPos[2];
     private final String[] vars = new String[2];
+    private final boolean[] playerGlobals = new boolean[2];
     private int index;
 
     private GuiGPSAreaTool(ItemStack stack, InteractionHand hand, int index) {
-        super(stack.getHoverName(), hand,
-                ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().level, stack, index),
-                ItemGPSAreaTool.getVariable(stack, index));
+        super(stack.getDisplayName(), hand,
+                ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, index).orElse(ClientUtils.getClientPlayer().blockPosition()),
+                ItemGPSAreaTool.getVariable(Minecraft.getInstance().player, stack, index));
 
         this.index = index;
         for (int i = 0; i <= 1; i++) {
-            p1p2Pos[i] = ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().level, stack, i);
-            vars[i] = ItemGPSAreaTool.getVariable(stack, i);
+            p1p2Pos[i] = ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, i).orElse(ClientUtils.getClientPlayer().blockPosition());
+            vars[i] = ItemGPSAreaTool.getVariable(Minecraft.getInstance().player, stack, i);
+            playerGlobals[i] = !vars[i].startsWith("%");
+            vars[i] = GlobalVariableHelper.stripVarPrefix(vars[i]);
         }
     }
 
@@ -68,13 +74,13 @@ public class GuiGPSAreaTool extends GuiGPSTool {
         int x = xMiddle - CHANGE_AREA_BUTTON_WIDTH / 2;
         int y = yMiddle + 100;
         addRenderableWidget(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, xlate("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
-            ItemStack stack = minecraft.player.getItemInHand(hand);
-            ProgWidgetArea area = ItemGPSAreaTool.getArea(stack);
+            ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
+            ProgWidgetArea area = ItemGPSAreaTool.getArea(ClientUtils.getClientPlayer(), stack);
             minecraft.setScreen(new GuiProgWidgetAreaTool(area, hand, () -> minecraft.setScreen(new GuiGPSAreaTool(stack, hand, index))));
         }));
 
         addRenderableWidget(new Button(xMiddle - P1P2_BUTTON_WIDTH / 2, yMiddle - 45, P1P2_BUTTON_WIDTH, 20, getToggleLabel(),
-                this::toggle));
+                this::toggleP1P2));
     }
 
     @Override
@@ -87,19 +93,29 @@ public class GuiGPSAreaTool extends GuiGPSTool {
         p1p2Pos[index] = new BlockPos(textFields[0].getIntValue(), textFields[1].getIntValue(), textFields[2].getIntValue());
         vars[index] = variableField.getValue();
         for (int i = 0; i <= 1; i++) {
-            if (changed(i)) NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(p1p2Pos[i], hand, vars[i], i));
+            if (changed(i)) {
+                String varName = GlobalVariableHelper.getPrefixedVar(vars[i], playerGlobals[i]);
+                NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(p1p2Pos[i], hand, varName, i));
+            }
         }
     }
 
     private boolean changed(int index) {
-        ItemStack stack = minecraft.player.getItemInHand(hand);
-        BlockPos p = ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().level, stack, index);
-        String var = ItemGPSAreaTool.getVariable(stack, index);
-        return !p.equals(p1p2Pos[index]) || !var.equals(vars[index]);
+        ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
+        BlockPos p = ItemGPSAreaTool.getGPSLocation(ClientUtils.getClientPlayer(), stack, index).orElse(PneumaticCraftUtils.invalidPos());
+        String var = ItemGPSAreaTool.getVariable(ClientUtils.getClientPlayer(), stack, index);
+        String var2 = GlobalVariableHelper.getPrefixedVar(vars[index], playerGlobals[index]);
+        return !p.equals(p1p2Pos[index]) || !var.equals(var2);
     }
 
-    private void toggle(Button b) {
-        ItemStack stack = Minecraft.getInstance().player.getItemInHand(hand);
+    @Override
+    protected void toggleVarType() {
+        playerGlobals[index] = !playerGlobals[index];
+        varTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
+    }
+
+    private void toggleP1P2(Button b) {
+        ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
         if (stack.getItem() instanceof ItemGPSAreaTool) {
             p1p2Pos[index] = new BlockPos(textFields[0].getIntValue(), textFields[1].getIntValue(), textFields[2].getIntValue());
             vars[index] = variableField.getValue();
@@ -111,6 +127,7 @@ public class GuiGPSAreaTool extends GuiGPSTool {
             textFields[1].setValue(p1p2Pos[index].getY());
             textFields[2].setValue(p1p2Pos[index].getZ());
             variableField.setValue(vars[index]);
+            varTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobals[index])));
         }
     }
 

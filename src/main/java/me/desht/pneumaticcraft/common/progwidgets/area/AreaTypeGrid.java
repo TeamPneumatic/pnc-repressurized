@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -44,9 +44,9 @@ public class AreaTypeGrid extends AreaType{
         if (p1.equals(p2) || interval <= 0) {
             areaAdder.accept(p1);
         } else {
-            for (int x = p1.getX(); p1.getX() < p2.getX() ? x <= p2.getX() : x >= p2.getX(); x += (p1.getX() < p2.getX() ? 1 : -1) * interval) {
-                for (int y = p1.getY(); p1.getY() < p2.getY() ? y <= p2.getY() : y >= p2.getY(); y += (p1.getY() < p2.getY() ? 1 : -1) * interval) {
-                    for (int z = p1.getZ(); p1.getZ() < p2.getZ() ? z <= p2.getZ() : z >= p2.getZ(); z += (p1.getZ() < p2.getZ() ? 1 : -1) * interval) {
+            for (int x = minX; x <= maxX; x += interval) {
+                for (int y = minY; y <= maxY; y += interval) {
+                    for (int z = minZ; z <= maxZ; z += interval) {
                         areaAdder.accept(new BlockPos(x, y, z));
                     }
                 }

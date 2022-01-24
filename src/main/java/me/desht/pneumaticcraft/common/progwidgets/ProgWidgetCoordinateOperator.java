@@ -25,14 +25,14 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.item.DyeColor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.Direction.Axis;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -92,9 +92,9 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
             }
         } else if (operator == EnumOperator.MULIPLY_DIVIDE) {
             IProgWidget w = getConnectedParameters()[1];
-            while (w instanceof ProgWidgetCoordinate) {
-                if (!((ProgWidgetCoordinate) w).isUsingVariable()) {
-                    BlockPos pos = ((ProgWidgetCoordinate) w).getCoordinate();
+            while (w instanceof ProgWidgetCoordinate pwc) {
+                if (!pwc.isUsingVariable()) {
+                    BlockPos pos = pwc.getCoordinate().orElse(BlockPos.ZERO);
                     if (axisOptions.shouldCheck(Axis.X) && pos.getX() == 0
                             || axisOptions.shouldCheck(Axis.Y) && pos.getY() == 0
                             || axisOptions.shouldCheck(Axis.Z) && pos.getZ() == 0)
@@ -134,7 +134,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         if (whiteList != null) {
             whiteList = (ProgWidgetCoordinate) whiteList.getConnectedParameters()[0];
             while (whiteList != null) {
-                curPos = getNextPos(curPos, whiteList.getCoordinate(), op, true, axisOptions);
+                curPos = getNextPos(curPos, whiteList.getCoordinate().orElse(BlockPos.ZERO), op, true, axisOptions);
                 whiteList = (ProgWidgetCoordinate) whiteList.getConnectedParameters()[0];
             }
         } else if (blackList != null) {
@@ -142,7 +142,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
             blackList = (ProgWidgetCoordinate) blackList.getConnectedParameters()[0];
         }
         while (blackList != null) {
-            curPos = getNextPos(curPos, blackList.getCoordinate(), op, false, axisOptions);
+            curPos = getNextPos(curPos, blackList.getCoordinate().orElse(BlockPos.ZERO), op, false, axisOptions);
             blackList = (ProgWidgetCoordinate) blackList.getConnectedParameters()[0];
         }
         return curPos;
@@ -279,20 +279,15 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         }
 
         public BlockPos initialValue(ProgWidgetCoordinate whiteList, ProgWidgetCoordinate blackList) {
-            switch (this) {
-                case PLUS_MINUS:
-                    return whiteList != null ?
-                            whiteList.getCoordinate() :
-                            (blackList != null ? BlockPos.ZERO.subtract(blackList.getCoordinate()) : BlockPos.ZERO);
-                case MULIPLY_DIVIDE:
-                    return whiteList != null ? whiteList.getCoordinate() : BlockPos.ZERO;
-                case MAX_MIN:
-                    return whiteList != null ?
-                            whiteList.getCoordinate() :
-                            (blackList != null ? blackList.getCoordinate() : BlockPos.ZERO);
-                default:
-                    throw new IllegalArgumentException("bad value for op?");
-            }
+            return switch (this) {
+                case PLUS_MINUS -> whiteList != null ?
+                        whiteList.getCoordinate().orElse(BlockPos.ZERO) :
+                        (blackList != null ? BlockPos.ZERO.subtract(blackList.getCoordinate().orElse(BlockPos.ZERO)) : BlockPos.ZERO);
+                case MULIPLY_DIVIDE -> whiteList != null ? whiteList.getCoordinate().orElse(BlockPos.ZERO) : BlockPos.ZERO;
+                case MAX_MIN -> whiteList != null ?
+                        whiteList.getCoordinate().orElse(BlockPos.ZERO) :
+                        (blackList != null ? blackList.getCoordinate().orElse(BlockPos.ZERO) : BlockPos.ZERO);
+            };
         }
 
         public BlockPos apply(BlockPos p1, BlockPos p2, boolean isWhiteList) {

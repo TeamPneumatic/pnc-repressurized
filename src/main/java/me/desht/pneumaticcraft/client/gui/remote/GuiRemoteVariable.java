@@ -19,13 +19,16 @@ package me.desht.pneumaticcraft.client.gui.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiRemoteVariable<A extends ActionWidgetVariable<?>> extends GuiRemoteOptionBase<A> {
-
+    private boolean playerGlobal;
+    private WidgetButtonExtended varTypeButton;
     private WidgetComboBox variableField;
 
     public GuiRemoteVariable(A actionWidget, GuiRemoteEditor guiRemote) {
@@ -37,19 +40,31 @@ public class GuiRemoteVariable<A extends ActionWidgetVariable<?>> extends GuiRem
         super.init();
 
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 70);
-        addLabel(new TextComponent("#"), guiLeft + 10, guiTop + 81);
 
-        variableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 80, 152, 10);
-        variableField.setElements(guiRemote.getMenu().variables);
-        variableField.setValue(actionWidget.getVariableName());
+        playerGlobal = actionWidget.getVariableName().isEmpty() || actionWidget.getVariableName().startsWith("#");
+
+        varTypeButton = new WidgetButtonExtended(guiLeft + 10, guiTop + 78, 12, 14, GlobalVariableHelper.getVarPrefix(playerGlobal),
+                b -> togglePlayerGlobal())
+                .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
+        addRenderableWidget(varTypeButton);
+
+        variableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 80, 147, 10);
+        variableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobal));
+        variableField.setValue(GlobalVariableHelper.stripVarPrefix(actionWidget.getVariableName()));
         variableField.setTooltip(xlate("pneumaticcraft.gui.remote.variable.tooltip"));
         addRenderableWidget(variableField);
     }
 
     @Override
     public void removed() {
-        actionWidget.setVariableName(variableField.getValue());
+        actionWidget.setVariableName(GlobalVariableHelper.getPrefixedVar(variableField.getValue(), playerGlobal));
 
         super.removed();
+    }
+
+    private void togglePlayerGlobal() {
+        playerGlobal = !playerGlobal;
+        variableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getMenu().variables, playerGlobal));
+        varTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobal)));
     }
 }

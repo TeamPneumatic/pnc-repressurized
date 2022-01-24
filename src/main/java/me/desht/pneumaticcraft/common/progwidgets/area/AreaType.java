@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -47,6 +47,18 @@ public abstract class AreaType {
         return translationKey;
     }
 
+    /**
+     * Actually add the positions defined by this area to the given blockpos set
+     *  @param areaAdder the adder; call {@code adder.accept(pos)} to add a blockpos
+     * @param p1 the first raw blockpos of the area
+     * @param p2 the second raw blockpos of the area
+     * @param minX min X coord
+     * @param minY min Y coord
+     * @param minZ min Z coord
+     * @param maxX max X coord
+     * @param maxY max Y coord
+     * @param maxZ max Z coord
+     */
     public abstract void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ);
 
     /**

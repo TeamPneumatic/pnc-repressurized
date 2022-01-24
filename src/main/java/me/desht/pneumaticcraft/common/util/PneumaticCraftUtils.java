@@ -66,6 +66,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -78,6 +79,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PneumaticCraftUtils {
+    // an impossible blockpos to indicate invalid positions
+    private static final BlockPos INVALID_POS = new BlockPos(0, Integer.MIN_VALUE, 0);
+
     private static final int MAX_CHAR_PER_LINE = 45;
 
     /**
@@ -589,8 +593,16 @@ public class PneumaticCraftUtils {
         return new BlockPos(e.getX(), e.getY(), e.getZ());
     }
 
-    public static String posToString(BlockPos pos) {
-        return String.format("%d,%d,%d", pos.getX(), pos.getY(), pos.getZ());
+    public static String posToString(@Nullable BlockPos pos) {
+        return isValidPos(pos) ? String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()) : "-";
+    }
+
+    public static boolean isValidPos(@Nullable BlockPos pos) {
+        return pos != null && pos != INVALID_POS;
+    }
+
+    public static BlockPos invalidPos() {
+        return INVALID_POS;
     }
 
     public static <T extends BlockEntity> Optional<T> getTileEntityAt(BlockGetter w, BlockPos pos, Class<T> cls) {

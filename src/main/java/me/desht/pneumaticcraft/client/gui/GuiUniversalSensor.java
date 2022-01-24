@@ -21,9 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -40,11 +38,10 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +59,9 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     private static final int MAX_TEXTFIELD_LENGTH = 256;
 
     private WidgetAnimatedStat sensorInfoStat;
-    private EditBox nameFilterField;
+    private WidgetTextField textField;
+    private WidgetComboBox comboBox;
+
     private int page;
     private int maxPage;
     private static final int MAX_SENSORS_PER_PAGE = 4;
@@ -97,11 +96,16 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         sensorInfoStat = addAnimatedStat(new TextComponent("Sensor Info"), new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
         sensorInfoStat.setForegroundColor(0xFF000000);
 
-        nameFilterField = new EditBox(font, xStart + 70, yStart + 58, 98, 10, TextComponent.EMPTY);
-        nameFilterField.setMaxLength(MAX_TEXTFIELD_LENGTH);
-        nameFilterField.setValue(te.getText(0));
-        nameFilterField.setResponder(s -> sendDelayed(5));
-        addRenderableWidget(nameFilterField);
+        textField = new WidgetTextField(font, xStart + 70, yStart + 58, 98, 10);
+        textField.setMaxLength(MAX_TEXTFIELD_LENGTH);
+        textField.setValue(te.getText(0));
+        addRenderableWidget(textField);
+
+        comboBox = new WidgetComboBox(font, xStart + 70, yStart + 58, 98, 10);
+        comboBox.setMaxLength(MAX_TEXTFIELD_LENGTH);
+        comboBox.setValue(te.getText(0));
+        addRenderableWidget(comboBox);
+        comboBox.setVisible(false);
 
         updateButtons();
     }
@@ -123,10 +127,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
                 curX += 18;
             }
         } else {
-            int xSpace = imageWidth - 96;
+            int xSpace = imageWidth - 92;
             int size = font.width(folders[folders.length - 1]);
             matrixStack.pushPose();
-            matrixStack.translate(92, 24, 0);
+            matrixStack.translate(88, 24, 0);
             if (size > xSpace) {
                 matrixStack.scale((float)xSpace / (float)size, 1, 1);
             }
@@ -143,16 +147,15 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
                 font.draw(matrixStack, line.getVisualOrderText(), 70, 48 + yOff, 0x404040);
                 yOff += font.lineHeight;
             }
-            nameFilterField.y = topPos + 48 + yOff + 2;
+            textField.y = topPos + 48 + yOff + 2;
         }
 
-        if (nameFilterField.visible && sensor != null && sensor.isEntityFilter()) {
+        if (sensor != null && !sensor.getHelpText().isEmpty()) {
             if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-                GuiUtils.showPopupHelpScreen(matrixStack, this, font,
-                        GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
-            } else {
-                String str = I18n.get("pneumaticcraft.gui.entityFilter.holdF1");
-                font.draw(matrixStack, str, (imageWidth - font.width(str)) / 2f, imageHeight + 5, 0x808080);
+                GuiUtils.showPopupHelpScreen(matrixStack, this, font, GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
+            } else if (!sensor.getHelpPromptText().isEmpty()) {
+                Component str = new TranslatableComponent(sensor.getHelpPromptText());
+                font.draw(matrixStack, str, (imageWidth - font.width(str)) / 2f, imageHeight + 5, 0xFFFF00);
             }
         }
     }
@@ -163,8 +166,8 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             minecraft.player.closeContainer();
         }
 
-        return nameFilterField.keyPressed(keyCode, scanCode, modifiers)
-                || nameFilterField.canConsumeInput()
+        return textField.keyPressed(keyCode, scanCode, modifiers)
+                || textField.canConsumeInput()
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -223,7 +226,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             int buttonY = topPos + 40 + i * 22;
             int buttonWidth = 98;
             int buttonHeight = 20;
-            if (te.getSensorSetting().equals("")) {
+            if (te.getSensorSetting().isEmpty()) {
                 Set<EnumUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(buttonText);
                 WidgetButtonExtended button = new WidgetButtonExtended(buttonX, buttonY, buttonWidth, buttonHeight, "").withTag("set:" + buttonID);
                 button.setRenderStacks(requiredUpgrades.stream().map(EnumUpgrade::getItemStack).toArray(ItemStack[]::new));
@@ -238,22 +241,30 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         boolean textboxEnabled = sensor != null && sensor.needsTextBox();
-        nameFilterField.setVisible(textboxEnabled);
+        List<String> textOptions = sensor == null ? null : sensor.getTextBoxOptions(ClientUtils.getClientPlayer());
+        textField.setVisible(textboxEnabled && textOptions == null);
+        comboBox.setVisible(textboxEnabled && textOptions != null);
         if (textboxEnabled) {
-            setFocused(nameFilterField);
-            RangedInt range = sensor.getTextboxIntRange();
-            if (range != null) {
-                nameFilterField.setFilter(s -> validateTextValue(s, range));
-                String max = Integer.toString(range.max());
-                nameFilterField.setMaxLength(max.length() + 1);
-                nameFilterField.setWidth(font.width(max) + 10);
+            if (textOptions == null) {
+                RangedInt range = sensor.getTextboxIntRange();
+                if (range != null) {
+                    textField.setFilter(s -> validateTextValue(s, range));
+                    String max = Integer.toString(range.max());
+                    textField.setMaxLength(max.length() + 1);
+                    textField.setWidth(font.width(max) + 10);
+                } else {
+                    textField.setFilter(Objects::nonNull);
+                    textField.setMaxLength(MAX_TEXTFIELD_LENGTH);
+                    textField.setWidth(98);
+                }
+                textField.changeFocus(true);
             } else {
-                nameFilterField.setFilter(Objects::nonNull);
-                nameFilterField.setMaxLength(MAX_TEXTFIELD_LENGTH);
-                nameFilterField.setWidth(98);
+                comboBox.setElements(textOptions);
+                comboBox.setShouldSort(true);
+                comboBox.setFixedOptions(sensor.strictComboBox());
+                comboBox.setFocus(true);
             }
         }
-        nameFilterField.setFocus(textboxEnabled);
     }
 
     private boolean validateTextValue(String s, RangedInt r) {
@@ -271,7 +282,12 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
     @Override
     protected void doDelayedAction() {
-        te.setText(0, nameFilterField.getValue());
+        if (textField.isVisible()) {
+            te.setText(0, textField.getValue());
+        } else if (comboBox.isVisible()) {
+            te.setText(0, comboBox.getValue());
+        }
+        te.setText(0, textField.getValue());
         NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
     }
 
@@ -279,12 +295,19 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     public void containerTick() {
         super.containerTick();
 
+        if (firstUpdate) {
+            if (textField.isVisible()) {
+                textField.setValue(te.getText(0));
+                textField.setResponder(s -> sendDelayed(5));
+            } else if (comboBox.isVisible()) {
+                comboBox.setValue(te.getText(0));
+                comboBox.setResponder(s -> sendDelayed(5));
+            }
+        }
+
         if (te.getSensorSetting().isEmpty() && ticksExisted++ > 5) {
             ticksExisted = 0;
             updateButtons();
-        }
-        if (!nameFilterField.isFocused()) {
-            nameFilterField.setValue(te.getText(0));
         }
     }
 

@@ -23,14 +23,14 @@ import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.goal.Goal;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -83,7 +83,7 @@ public abstract class ProgWidget implements IProgWidget {
             Set<String> variables = new HashSet<>();
             ((IVariableWidget) this).addVariables(variables);
             for (String variable : variables) {
-                if (!variable.equals("") && !variable.startsWith("#") && !variable.startsWith("$") && !isVariableSetAnywhere(widgets, variable)) {
+                if (!variable.isEmpty() && !variable.startsWith("#") && !variable.startsWith("$") && !isVariableSetAnywhere(widgets, variable)) {
                     curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.warning.variableNeverSet", variable));
                 }
             }
@@ -91,7 +91,7 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     private boolean isVariableSetAnywhere(List<IProgWidget> widgets, String variable) {
-        if (variable.equals("")) return true;
+        if (variable.isEmpty()) return true;
         for (IProgWidget widget : widgets) {
             if (widget instanceof IVariableSetWidget) {
                 Set<String> variables = new HashSet<>();

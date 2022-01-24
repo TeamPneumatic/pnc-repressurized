@@ -45,14 +45,14 @@ import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.material.Fluid;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
@@ -116,7 +116,10 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
 
     @Override
     public void syncGlobalVariable(ServerPlayer player, String varName) {
-        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, GlobalVariableManager.getInstance().getCoordinate(varName)), player);
+        BlockPos pos = GlobalVariableHelper.getPos(player.getUUID(), varName);
+        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, pos), player);
+        // TODO should we sync item variables too?
+        //  right now there isn't really a need for it, so it would just be extra network chatter
     }
 
     @Override

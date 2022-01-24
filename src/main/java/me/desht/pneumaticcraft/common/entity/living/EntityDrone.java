@@ -618,14 +618,13 @@ public class EntityDrone extends EntityDroneBase implements
         aiManager.setCoordinate(varName, pos);
     }
 
-    public BlockPos getVariable(String varName) {
-        return aiManager.getCoordinate(varName);
+    public Optional<BlockPos> getVariable(String varName) {
+        return aiManager.getCoordinate(ownerUUID, varName);
     }
 
     private ResourceLocation getActiveProgramKey() {
         return new ResourceLocation(entityData.get(PROGRAM_KEY));
     }
-
 
     @Override
     public int getActiveWidgetIndex() {
@@ -757,13 +756,10 @@ public class EntityDrone extends EntityDroneBase implements
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
             if (!level.isClientSide) {
-                BlockPos gpsLoc = ItemGPSTool.getGPSLocation(level, stack);
-                if (gpsLoc != null) {
-                    getNavigation().moveTo(gpsLoc.getX(), gpsLoc.getY(), gpsLoc.getZ(), 0.1D);
+                return ItemGPSTool.getGPSLocation(player.getUUID(), stack).map(gpsPos -> {
+                    getNavigation().moveTo(gpsPos.getX(), gpsPos.getY(), gpsPos.getZ(), 0.1D);
                     return InteractionResult.SUCCESS;
-                } else {
-                    return InteractionResult.PASS;
-                }
+                }).orElse(InteractionResult.PASS);
             }
             return InteractionResult.SUCCESS;
         } else if (stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {

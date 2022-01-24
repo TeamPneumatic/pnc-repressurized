@@ -44,6 +44,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -62,11 +63,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -108,6 +105,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @GuiSynced
     public int outOfRange;
     private final RangeManager rangeManager = new RangeManager(this, 0x605050D0);
+    private UUID playerId;
 
     public TileEntityUniversalSensor(BlockPos pos, BlockState state) {
         super(ModTileEntities.UNIVERSAL_SENSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
@@ -133,13 +131,14 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         boolean invertedRedstone = rsController.getCurrentMode() == RS_MODE_INVERTED;
         tickTimer++;
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
-        if (updateStatus(sensor) == SensorStatus.OK  && sensor != null && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
+        if (updateStatus(sensor) == SensorStatus.OK  && getPressure() > getMinWorkingPressure()) {
             isSensorActive = true;
             addAir(-sensor.getAirUsage(getLevel(), getBlockPos()));
-            if (sensor instanceof IPollSensorSetting) {
-                if (tickTimer >= ((IPollSensorSetting) sensor).getPollFrequency(this)) {
+            if (sensor instanceof IPollSensorSetting pollSensor) {
+                if (tickTimer >= pollSensor.getPollFrequency(this)) {
                     try {
-                        int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getLevel(), getBlockPos(), getRange(), sensorGuiText);
+                        pollSensor.setPlayerContext(playerId);
+                        int newRedstoneStrength = pollSensor.getRedstoneValue(getLevel(), getBlockPos(), getRange(), sensorGuiText);
                         if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
                         if (newRedstoneStrength != redstoneStrength) {
                             redstoneStrength = newRedstoneStrength;
@@ -270,6 +269,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         tag.putString("sensorSetting", sensorSetting);
         tag.putFloat("dishSpeed", dishSpeed);
         tag.putString("sensorText", sensorGuiText);
+        if (playerId != null) tag.putString("playerId", playerId.toString());
     }
 
     @Override
@@ -280,7 +280,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         setSensorSetting(tag.getString("sensorSetting"));
         dishSpeed = tag.getFloat("dishSpeed");
         sensorGuiText = tag.getString("sensorText");
-
+        if (tag.contains("playerId", Tag.TAG_STRING)) {
+            playerId = UUID.fromString(tag.getString("playerId"));
+        }
         setupGPSPositions();
     }
 
@@ -306,7 +308,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 int t = Integer.parseInt(tag.split(":")[1]);
                 String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(getSensorSetting());
                 if (t / 10 <= directories.length) { // <= because of the redstone button being 0.
-                    if (getSensorSetting().equals("")) {
+                    if (getSensorSetting().isEmpty()) {
                         setSensorSetting(directories[t / 10 - 1]);
                     } else {
                         setSensorSetting(getSensorSetting() + "/" + directories[t / 10 - 1]);
@@ -346,13 +348,13 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         ItemStack stack = itemHandler.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             int sensorRange = getRange();
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(level, stack);
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(playerId, stack);
             List<BlockPos> gpsPositions = posList.stream()
                     .filter(pos -> pos != null
                             && Math.abs(pos.getX() - getBlockPos().getX()) <= sensorRange
                             && Math.abs(pos.getY() - getBlockPos().getY()) <= sensorRange
                             && Math.abs(pos.getZ() - getBlockPos().getZ()) <= sensorRange)
-                    .collect(Collectors.toList());
+                    .toList();
             positions.addAll(gpsPositions);
             outOfRange = posList.size() - gpsPositions.size();
         }
@@ -467,7 +469,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 requireArgs(args, 4, "slot, x, y, z");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                 if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-                    ItemGPSTool.setGPSLocation(stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
+                    ItemGPSTool.setGPSLocation(null, stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
                     return new Object[]{true};
                 } else {
                     return new Object[]{false};
@@ -481,12 +483,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 requireArgs(args, 1, "upgrade_slot");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                 if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-                    BlockPos pos = ItemGPSTool.getGPSLocation(level, stack);
-                    if (pos != null) {
-                        return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
-                    } else {
-                        return new Object[]{0, 0, 0};
-                    }
+                    return ItemGPSTool.getGPSLocation(stack)
+                            .map(pos -> new Object[]{pos.getX(), pos.getY(), pos.getZ()})
+                            .orElse(new Object[]{0, 0, 0});
                 } else {
                     return null;
                 }
@@ -538,6 +537,10 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         return new ContainerUniversalSensor(i, playerInventory, getBlockPos());
     }
 
+    public void setPlayerId(UUID playerId) {
+        this.playerId = playerId;
+    }
+
     private class UniversalSensorItemHandler extends ItemStackHandler {
         UniversalSensorItemHandler() {
             super(1);
@@ -546,7 +549,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             if (stack.getItem() instanceof IPositionProvider) {
-                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(level, stack);
+                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(playerId, stack);
                 return !l.isEmpty() && l.get(0) != null;
             }
             return false;

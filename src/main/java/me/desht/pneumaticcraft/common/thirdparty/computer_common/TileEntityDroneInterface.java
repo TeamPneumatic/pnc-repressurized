@@ -683,9 +683,10 @@ public class TileEntityDroneInterface extends TileEntityTickableBase
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "<string> var_name");
-                BlockPos var = validateAndGetDrone().getVariable((String) args[0]);
-                messageToDrone(0xFFFFFFFF);
-                return new Object[]{var.getX(), var.getY(), var.getZ()};
+                return validateAndGetDrone().getVariable((String) args[0]).map(var -> {
+                    messageToDrone(0xFFFFFFFF);
+                    return new Object[]{var.getX(), var.getY(), var.getZ()};
+                }).orElse(null);
             }
         });
 

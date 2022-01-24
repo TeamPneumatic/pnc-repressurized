@@ -18,26 +18,40 @@
 package me.desht.pneumaticcraft.common.variables;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
-import net.minecraft.world.item.ItemStack;
+import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class TextVariableParser {
     private final String orig;
-    private final DroneAIManager variableHolder;
+    private final IVariableProvider variableProvider;
     private final Set<String> relevantVariables = new HashSet<>();
+    private final UUID playerID;
 
-    public TextVariableParser(String str) {
-        this(str, null);
+    private static final Map<String, VariableRetriever> RETRIEVERS = new HashMap<>();
+    static {
+        RETRIEVERS.put("pos",  (p, id, varName) -> PneumaticCraftUtils.posToString(p.getCoordinate(id, varName).orElse(BlockPos.ZERO)));
+        RETRIEVERS.put("x",    (p, id, varName) -> Integer.toString(p.getCoordinate(id, varName).orElse(BlockPos.ZERO).getX()));
+        RETRIEVERS.put("y",    (p, id, varName) -> Integer.toString(p.getCoordinate(id, varName).orElse(BlockPos.ZERO).getY()));
+        RETRIEVERS.put("z",    (p, id, varName) -> Integer.toString(p.getCoordinate(id, varName).orElse(BlockPos.ZERO).getZ()));
+        RETRIEVERS.put("item", (p, id, varName) -> stackToStr(p.getStack(id, varName), false));
+        RETRIEVERS.put("id",   (p, id, varName) -> stackToStr(p.getStack(id, varName), true));
     }
 
-    public TextVariableParser(String str, DroneAIManager variableHolder) {
-        orig = str;
-        this.variableHolder = variableHolder;
+    public TextVariableParser(String str, UUID playerID) {
+        this.orig = str;
+        this.variableProvider = GlobalVariableHelper.getVariableProvider();
+        this.playerID = playerID;
+    }
+
+    public TextVariableParser(String str, DroneAIManager droneAIManager) {
+        this.orig = str;
+        this.variableProvider = droneAIManager;
+        this.playerID = droneAIManager.getDrone().getOwnerUUID();
     }
 
     public String parse() {
@@ -59,37 +73,26 @@ public class TextVariableParser {
         return relevantVariables;
     }
 
-    private String getVariableValue(String variable) {
-        String[] f = StringUtils.splitByWholeSeparator(variable, ".");
-        String ext = "";
-        if (f.length > 1) {
-            ext = f[f.length - 1];
-            variable = f.length == 2 ? f[0] : String.join(".", Arrays.copyOf(f, f.length - 1));
-        }
+    private String getVariableValue(String varNameWithExt) {
+        String[] f = StringUtils.splitByWholeSeparator(varNameWithExt, ".", 2);
+        final String varName = f[0];
+        final String ext = f.length == 2 ? f[1] : "pos";
 
-        relevantVariables.add(variable);
+        VariableRetriever handler = RETRIEVERS.get(ext);
+        if (handler == null) return "";
 
-        if (variableHolder == null) {
-            String v1 = variable.startsWith("#") ? variable.substring(1) : variable;
-            GlobalVariableManager gvm = GlobalVariableManager.getInstance();
-            return gvm.hasItem(v1) ? stackToStr(gvm.getItem(v1), ext.equals("id")) : posToStr(gvm.getPos(v1), ext);
-        } else {
-            return variableHolder.hasCoordinate(variable) ?
-                    posToStr(variableHolder.getCoordinate(variable), ext) :
-                    (variableHolder.hasStack(variable) ? stackToStr(variableHolder.getStack(variable), ext.equals("id")) : "");
-        }
+        relevantVariables.add(varName);
+
+        return handler.retrieve(variableProvider, playerID, varName);
     }
 
-    private String stackToStr(ItemStack stack, boolean id) {
-        return id ? stack.getItem().getRegistryName().toString() : stack.getHoverName().getString();
+    private static String stackToStr(ItemStack stack, boolean id) {
+        if (stack.isEmpty()) return "";
+        return id ? stack.getItem().getRegistryName().toString() : stack.getDisplayName().getString();
     }
 
-    private String posToStr(BlockPos pos, String ext) {
-        return switch (ext) {
-            case "x" -> Integer.toString(pos.getX());
-            case "y" -> Integer.toString(pos.getY());
-            case "z" -> Integer.toString(pos.getZ());
-            default -> pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
-        };
+    @FunctionalInterface
+    private interface VariableRetriever {
+        String retrieve(IVariableProvider provider, UUID playerID, String varName);
     }
 }

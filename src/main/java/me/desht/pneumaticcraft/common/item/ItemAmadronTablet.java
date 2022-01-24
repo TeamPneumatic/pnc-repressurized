@@ -56,11 +56,13 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -180,8 +182,9 @@ public class ItemAmadronTablet extends ItemPressurizable
         }
     }
 
+    @NotNull
     @Override
-    public List<BlockPos> getStoredPositions(Level world, @Nonnull ItemStack stack) {
+    public List<BlockPos> getStoredPositions(UUID playerId, @NotNull ItemStack stack) {
         GlobalPos gp1 = getItemProvidingLocation(stack);
         GlobalPos gp2 = getFluidProvidingLocation(stack);
         return Arrays.asList(gp1 == null ? null : gp1.pos(), gp2 == null ? null : gp2.pos());

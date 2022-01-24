@@ -18,12 +18,13 @@
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 
 public abstract class ActionWidget<W extends AbstractWidget> {
     protected W widget;
@@ -85,7 +86,9 @@ public abstract class ActionWidget<W extends AbstractWidget> {
     }
 
     public boolean isEnabled() {
-        return enableVariable.equals("") || GlobalVariableManager.getInstance().getPos(enableVariable).equals(enablingValue);
+        if (enableVariable.isEmpty()) return true;
+        BlockPos pos = GlobalVariableHelper.getPos(ClientUtils.getClientPlayer().getUUID(), enableVariable, BlockPos.ZERO);
+        return pos.equals(enablingValue);
     }
 
     public void setEnablingValue(int x, int y, int z) {

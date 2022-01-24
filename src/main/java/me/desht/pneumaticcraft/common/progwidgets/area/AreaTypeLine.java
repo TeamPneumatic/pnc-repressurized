@@ -49,10 +49,7 @@ public class AreaTypeLine extends AreaType {
             curX += lineVec.x;
             curY += lineVec.y;
             curZ += lineVec.z;
-            if (curY >= 0 && curY < 256) {
-                BlockPos pos = new BlockPos(curX, curY, curZ);
-                areaAdder.accept(pos);
-            }
+            areaAdder.accept(new BlockPos(curX, curY, curZ));
         }
     }
 }

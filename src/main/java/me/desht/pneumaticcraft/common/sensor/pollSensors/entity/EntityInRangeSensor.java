@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
@@ -42,6 +42,16 @@ public class EntityInRangeSensor extends EntityPollSensor {
     @Override
     public boolean isEntityFilter() {
         return true;
+    }
+
+    @Override
+    public String getHelpText() {
+        return "pneumaticcraft.gui.entityFilter.helpText";
+    }
+
+    @Override
+    public String getHelpPromptText() {
+        return "pneumaticcraft.gui.entityFilter.holdF1";
     }
 
     @Override

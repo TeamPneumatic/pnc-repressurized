@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -30,6 +30,6 @@ public class WorldGlobalVariableAnalogSensor extends WorldGlobalVariableSensor {
 
     @Override
     public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
-        return Mth.clamp(GlobalVariableManager.getInstance().getInteger(textBoxText), 0, 15);
+        return Mth.clamp(GlobalVariableHelper.getInt(playerID, textBoxText), 0, 15);
     }
 }

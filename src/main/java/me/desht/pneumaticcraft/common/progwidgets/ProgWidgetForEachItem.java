@@ -24,12 +24,12 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -109,8 +109,8 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
         ItemStack filter = getFilterForIndex(curIndex++);
-        if (locations.size() > 0 && !filter.isEmpty() && (curIndex == 1 || !aiManager.getStack(elementVariable).isEmpty())) {
-            aiManager.setItem(elementVariable, filter);
+        if (locations.size() > 0 && !filter.isEmpty() && (curIndex == 1 || !aiManager.getStack(drone.getOwnerUUID(), elementVariable).isEmpty())) {
+            aiManager.setStack(elementVariable, filter);
             return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
         }
         curIndex = 0;

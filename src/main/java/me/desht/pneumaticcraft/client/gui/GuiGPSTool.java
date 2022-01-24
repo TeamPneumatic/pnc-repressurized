@@ -18,22 +18,22 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -42,13 +42,16 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
 
     protected final WidgetTextFieldNumber[] textFields = new WidgetTextFieldNumber[3];
     protected WidgetTextField variableField;
+    protected WidgetButtonExtended varTypeButton;
     protected final InteractionHand hand;
     private final BlockPos oldGPSLoc;
     private String oldVarName;
+    protected boolean playerGlobal;
 
     protected GuiGPSTool(Component title, InteractionHand hand, BlockPos gpsLoc, String oldVarName) {
         super(title);
-
+        xSize = 183;
+        ySize = 202;
         this.hand = hand;
         this.oldGPSLoc = gpsLoc;
         this.oldVarName = oldVarName;
@@ -75,9 +78,9 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         for (int i = 0; i < 3; i++) {
-            int min = i == 1 ? PneumaticCraftUtils.getMinHeight(ClientUtils.getClientLevel()) : Integer.MIN_VALUE;
+            int min = i == 1 ? ClientUtils.getClientLevel().getMinBuildHeight(): Integer.MIN_VALUE;
             int max = i == 1 ? ClientUtils.getClientLevel().getMaxBuildHeight() : Integer.MAX_VALUE;
-            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 15 + i * 22, TEXTFIELD_WIDTH, font.lineHeight)
+            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 15 + i * 22, TEXTFIELD_WIDTH, font.lineHeight + 2)
                     .setValue(oldText[i])
                     .setRange(min, max)
                     .setAdjustments(1, 10);
@@ -97,12 +100,23 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         }
 
         if (variableField != null) oldVarName = variableField.getValue();
-        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 60, 100, font.lineHeight);
+        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 60, 100, font.lineHeight + 1);
+        playerGlobal = !oldVarName.startsWith("%");
+        oldVarName = GlobalVariableHelper.stripVarPrefix(oldVarName);
         variableField.setValue(oldVarName);
         addRenderableWidget(variableField);
 
-        Component var = xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(" #");
-        addRenderableWidget(new WidgetLabel(variableField.x - 1 - font.width(var), yMiddle + 61, var, 0xc0c0c0));
+        varTypeButton = new WidgetButtonExtended(variableField.x - 13, yMiddle + 58, 12, 14, playerGlobal ? "#" : "%",
+                b -> toggleVarType())
+                .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
+        addRenderableWidget(varTypeButton);
+
+        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(":"), variableField.x, variableField.y - font.lineHeight - 2).setColor(0xFFFFFF);
+    }
+
+    protected void toggleVarType() {
+        playerGlobal = !playerGlobal;
+        varTypeButton.setMessage(new TextComponent(GlobalVariableHelper.getVarPrefix(playerGlobal)));
     }
 
     private void updateTextField(int idx, int amount) {
@@ -131,11 +145,8 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
 
     protected void syncToServer() {
         BlockPos newPos = new BlockPos(textFields[0].getIntValue(), textFields[1].getIntValue(), textFields[2].getIntValue());
-        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(
-                newPos.equals(oldGPSLoc) ? new BlockPos(-1, -1, -1) : newPos,
-                hand, variableField.getValue(), getIndex())
-        );
-
+        String varName = GlobalVariableHelper.getPrefixedVar(variableField.getValue(), playerGlobal);
+        NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(newPos, hand, varName, getIndex()));
     }
 
     protected int getIndex() {

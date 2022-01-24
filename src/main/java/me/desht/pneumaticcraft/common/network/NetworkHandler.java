@@ -146,8 +146,6 @@ public class NetworkHandler {
 				PacketSyncRedstoneModuleToClient::toBytes, PacketSyncRedstoneModuleToClient::new, PacketSyncRedstoneModuleToClient::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketSyncRedstoneModuleToServer.class,
 				PacketSyncRedstoneModuleToServer::toBytes, PacketSyncRedstoneModuleToServer::new, PacketSyncRedstoneModuleToServer::handle, PLAY_TO_SERVER);
-		registerMessage(PacketNotifyVariablesRemote.class,
-				PacketNotifyVariablesRemote::toBytes, PacketNotifyVariablesRemote::new, PacketNotifyVariablesRemote::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketHackingBlockStart.class,
 				PacketHackingBlockStart::toBytes, PacketHackingBlockStart::new, PacketHackingBlockStart::handle);
 		registerMessage(PacketHackingBlockFinish.class,

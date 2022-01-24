@@ -62,7 +62,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
         this.tile = tile;
         textLines = tile.getTextLines();
         tile.needMaxLineWidthRecalc();
-        if (ConfigHelper.client().general.aphorismDrama.get() && placing && textLines.length == 1 && textLines[0].equals("")) {
+        if (ConfigHelper.client().general.aphorismDrama.get() && placing && textLines.length == 1 && textLines[0].isEmpty()) {
             List<String> l = PneumaticCraftUtils.splitString(DramaGenerator.generateDrama(), 20);
             tile.setTextLines(l.toArray(new String[0]));
             textLines = tile.getTextLines();
