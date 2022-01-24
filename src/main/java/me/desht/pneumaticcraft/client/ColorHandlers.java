@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
+import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.tileentity.IHeatTinted;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
@@ -65,8 +65,8 @@ public class ColorHandlers {
                 event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
                     if (blockAccess != null && pos != null) {
                         BlockEntity te = blockAccess.getBlockEntity(pos);
-                        if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
-                            return event.getBlockColors().getColor(((ICamouflageableTE) te).getCamouflage(), te.getLevel(), pos, tintIndex);
+                        if (te instanceof CamouflageableBlockEntity camo && camo.getCamouflage() != null) {
+                            return event.getBlockColors().getColor(camo.getCamouflage(), te.getLevel(), pos, tintIndex);
                         }
                     }
                     return 0xFFFFFFFF;

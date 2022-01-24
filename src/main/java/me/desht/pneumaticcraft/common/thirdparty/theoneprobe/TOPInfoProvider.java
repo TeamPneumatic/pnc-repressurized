@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
+import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -81,8 +81,8 @@ public class TOPInfoProvider {
         if (te instanceof TileEntityPressureTube) {
             handlePressureTube(mode, probeInfo, (TileEntityPressureTube) te, data.getSideHit(), player);
         }
-        if (te instanceof ICamouflageableTE) {
-            handleCamo(mode, probeInfo, ((ICamouflageableTE) te).getCamouflage());
+        if (te instanceof CamouflageableBlockEntity) {
+            handleCamo(mode, probeInfo, ((CamouflageableBlockEntity) te).getCamouflage());
         }
     }
 

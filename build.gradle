@@ -23,8 +23,6 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: "com.jfrog.artifactory"
 
-apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
-
 //adds the build number to the end of the version string if on a build server
 String build_number = System.getenv().BUILD_NUMBER
 if (build_number == null) {

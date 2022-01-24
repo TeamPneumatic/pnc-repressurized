@@ -53,6 +53,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.SpawnerBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -246,10 +247,10 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     private float getTargetSpeed() {
         if (getPressure() > getMinWorkingPressure()) return 0f;
 
-        return PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), SpawnerBlockEntity.class).map(te -> {
+        return nonNullLevel().getBlockEntity(worldPosition.below(), BlockEntityType.MOB_SPAWNER).map(spawner -> {
             int players = 0;
             int matches = 0;
-            Entity e0 = getCachedEntity(te);
+            Entity e0 = getCachedEntity(spawner);
             if (e0 == null) return 0f;
             List<LivingEntity> l = nonNullLevel().getEntitiesOfClass(LivingEntity.class, new AABB(worldPosition).inflate(MAX_ENTITY_RANGE), e -> true);
             for (LivingEntity e : l) {
@@ -261,9 +262,9 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
         }).orElse(0f);
     }
 
-    public Entity getCachedEntity(SpawnerBlockEntity te) {
+    public Entity getCachedEntity(SpawnerBlockEntity spawner) {
         if (this.cachedEntity == null) {
-            this.cachedEntity = EntityType.loadEntityRecursive(te.getSpawner().nextSpawnData.getEntityToSpawn(), this.nonNullLevel(), Function.identity());
+            this.cachedEntity = EntityType.loadEntityRecursive(spawner.getSpawner().nextSpawnData.getEntityToSpawn(), this.nonNullLevel(), Function.identity());
         }
         return this.cachedEntity;
     }

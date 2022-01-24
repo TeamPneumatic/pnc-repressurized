@@ -61,7 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl<TileEntityChargingStation>, ICamouflageableTE, MenuProvider {
+public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl<TileEntityChargingStation>, CamouflageableBlockEntity, MenuProvider {
     private static final List<RedstoneMode<TileEntityChargingStation>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
             new EmittingRedstoneMode<>("chargingStation.idle", Textures.GUI_CHARGE_IDLE, TileEntityChargingStation::isIdle),
@@ -284,14 +284,14 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
-        ICamouflageableTE.writeCamo(tag, camoState);
+        CamouflageableBlockEntity.writeCamo(tag, camoState);
     }
 
     @Override
     public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
-        camoState = ICamouflageableTE.readCamo(tag);
+        camoState = CamouflageableBlockEntity.readCamo(tag);
     }
 
     @Override
@@ -330,7 +330,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        ICamouflageableTE.syncToClient(this);
+        CamouflageableBlockEntity.syncToClient(this);
     }
 
     @Override

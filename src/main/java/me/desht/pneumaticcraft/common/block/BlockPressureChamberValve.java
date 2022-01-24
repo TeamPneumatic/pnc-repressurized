@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -76,7 +77,7 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
             return InteractionResult.PASS;
         }
         if (!world.isClientSide) {
-            return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberValve.class).map(te -> {
+            return world.getBlockEntity(pos, ModTileEntities.PRESSURE_CHAMBER_VALVE.get()).map(te -> {
                 if (te.multiBlockSize > 0) {
                     NetworkHooks.openGui((ServerPlayer) player, te, pos);
                 } else if (te.accessoryValves.size() > 0) {

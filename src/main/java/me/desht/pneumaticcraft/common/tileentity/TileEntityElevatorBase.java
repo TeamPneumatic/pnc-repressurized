@@ -71,7 +71,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         IGUITextFieldSensitive, IRedstoneControl<TileEntityElevatorBase>, IMinWorkingPressure,
-        ICamouflageableTE, MenuProvider
+        CamouflageableBlockEntity, MenuProvider
 {
     private static final List<RedstoneMode<TileEntityElevatorBase>> REDSTONE_LABELS = ImmutableList.of(
             new ReceivingRedstoneMode<>("elevator.redstone", new ItemStack(Items.REDSTONE), te -> true),
@@ -337,7 +337,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
-        camoState = ICamouflageableTE.readCamo(tag);
+        camoState = CamouflageableBlockEntity.readCamo(tag);
         floorHeights = tag.getIntArray("floorHeights");
 
         floorNames.clear();
@@ -352,7 +352,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
-        ICamouflageableTE.writeCamo(tag, camoState);
+        CamouflageableBlockEntity.writeCamo(tag, camoState);
         tag.putIntArray("floorHeights", floorHeights);
 
         ListTag floorNameList = new ListTag();
@@ -672,7 +672,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        ICamouflageableTE.syncToClient(this);
+        CamouflageableBlockEntity.syncToClient(this);
     }
 
     @Override

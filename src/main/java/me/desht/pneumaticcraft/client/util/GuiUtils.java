@@ -136,8 +136,6 @@ public class GuiUtils {
                 Tesselator tessellator = Tesselator.getInstance();
                 BufferBuilder bufferbuilder = tessellator.getBuilder();
                 int barWidth = stack.getItem().getBarWidth(stack);
-//                double health = stack.getItem().getDurabilityForDisplay(stack);
-//                int i = Math.round(13.0F - (float)health * 13.0F);
                 int barColor = stack.getItem().getBarColor(stack);
                 drawUntexturedQuad(matrixStack, bufferbuilder, xPosition + 2, yPosition + 13, 0F, 13, 2, 0, 0, 0, 255);
                 drawUntexturedQuad(matrixStack, bufferbuilder, xPosition + 2, yPosition + 13, 0F, barWidth, 1, barColor >> 16 & 255, barColor >> 8 & 255, barColor & 255, 255);

@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -96,10 +96,9 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             Player player = ctx.get().getSender();
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                PneumaticCraftUtils.getTileEntityAt(player.level, pos, TileEntityPressureTube.class).ifPresent(te -> {
-                    TubeModule tm = te.getModule(Direction.from3DDataValue(side));
-                    if (tm instanceof ModuleRedstone) {
-                        ModuleRedstone mr = (ModuleRedstone) tm;
+                player.level.getBlockEntity(pos, ModTileEntities.PRESSURE_TUBE.get()).ifPresent(tube -> {
+                    TubeModule tm = tube.getModule(Direction.from3DDataValue(side));
+                    if (tm instanceof ModuleRedstone mr) {
                         mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
                         mr.setColorChannel(ourColor);
                         if (input) {

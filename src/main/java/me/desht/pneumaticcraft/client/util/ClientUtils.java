@@ -17,51 +17,51 @@
 
 package me.desht.pneumaticcraft.client.util;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.platform.Window;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import net.minecraft.world.level.block.state.BlockState;
-import com.mojang.blaze3d.platform.Window;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.KeyMapping;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * Miscellaneous client-side utilities.  Used to wrap client-only code in methods safe to call from classes that could
@@ -90,7 +90,7 @@ public class ClientUtils {
 
     @Nonnull
     public static ItemStack getWornArmor(EquipmentSlot slot) {
-        return Minecraft.getInstance().player.getItemBySlot(slot);
+        return getClientPlayer().getItemBySlot(slot);
     }
 
     public static void addDroneToHudHandler(EntityDrone drone, BlockPos pos) {
@@ -124,12 +124,11 @@ public class ClientUtils {
      * @param parentScreen the previously-opened GUI, which will be re-opened
      */
     public static void closeContainerGui(Screen parentScreen) {
-        Minecraft mc = Minecraft.getInstance();
-        mc.setScreen(parentScreen);
+        Minecraft.getInstance().setScreen(parentScreen);
         if (parentScreen instanceof AbstractContainerScreen) {
-            mc.player.containerMenu = ((AbstractContainerScreen<?>) parentScreen).getMenu();
+            getClientPlayer().containerMenu = ((AbstractContainerScreen<?>) parentScreen).getMenu();
         } else if (parentScreen instanceof GuiProgWidgetOptionBase) {
-            mc.player.containerMenu = ((GuiProgWidgetOptionBase<?>) parentScreen).getProgrammerContainer();
+            getClientPlayer().containerMenu = ((GuiProgWidgetOptionBase<?>) parentScreen).getProgrammerContainer();
         }
     }
 
@@ -137,12 +136,14 @@ public class ClientUtils {
      * For use where we can't reference Minecraft directly, e.g. packet handling code.
      * @return the client world
      */
+    @Nonnull
     public static Level getClientLevel() {
-        return Minecraft.getInstance().level;
+        return Objects.requireNonNull(Minecraft.getInstance().level);
     }
 
+    @Nonnull
     public static Player getClientPlayer() {
-        return Minecraft.getInstance().player;
+        return Objects.requireNonNull(Minecraft.getInstance().player);
     }
 
     public static boolean hasShiftDown() {
@@ -153,8 +154,8 @@ public class ClientUtils {
      * Get a TE client-side.  Convenience method for packet handling code, primarily.
      * @return a tile entity or null
      */
-    public static BlockEntity getClientTE(BlockPos pos) {
-        return Minecraft.getInstance().level.getBlockEntity(pos);
+    public static BlockEntity getBlockEntity(BlockPos pos) {
+        return getClientLevel().getBlockEntity(pos);
     }
 
     /**
@@ -200,7 +201,7 @@ public class ClientUtils {
     }
 
     public static int getLightAt(BlockPos pos) {
-        return LevelRenderer.getLightColor(Minecraft.getInstance().level, pos);
+        return LevelRenderer.getLightColor(getClientLevel(), pos);
     }
 
     public static int getStringWidth(String line) {
@@ -218,7 +219,7 @@ public class ClientUtils {
     public static float[] getTextureUV(BlockState state, Direction face) {
         if (state == null) return null;
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        List<BakedQuad> quads = model.getQuads(state, face, Minecraft.getInstance().level.random, EmptyModelData.INSTANCE);
+        List<BakedQuad> quads = model.getQuads(state, face, getClientLevel().random, EmptyModelData.INSTANCE);
         if (!quads.isEmpty()) {
             TextureAtlasSprite sprite = quads.get(0).getSprite();
             return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };
@@ -274,7 +275,7 @@ public class ClientUtils {
             String base = item instanceof BlockItem ? "gui.tooltip.block" : "gui.tooltip.item";
             String k = String.join(".", base, item.getRegistryName().getNamespace(), item.getRegistryName().getPath(), subKey);
             if (I18n.exists(k)) {
-                tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.copy().withStyle(ChatFormatting.GRAY)).collect(Collectors.toList()));
+                tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.copy().withStyle(ChatFormatting.GRAY)).toList());
             }
         }
     }

@@ -3,24 +3,24 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -119,7 +119,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo implements Ent
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityChargingStation.class)
+        return blockAccess.getBlockEntity(pos, ModTileEntities.CHARGING_STATION.get())
                 .map(teCS -> teCS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 
@@ -143,15 +143,5 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo implements Ent
                 return super.getDescriptionId(stack);
             }
         }
-
-//        @Override
-//        public ITextComponent getDisplayName(ItemStack stack) {
-//            CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
-//            if (tag != null && tag.getBoolean("UpgradeOnly")) {
-//                return super.getDisplayName(stack).deepCopy().appendString(" ").append(xlate("pneumaticcraft.gui.tooltip.charging_station.upgradesOnly"));
-//            } else {
-//                return super.getDisplayName(stack);
-//            }
-//        }
     }
 }

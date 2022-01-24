@@ -2,26 +2,26 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
@@ -66,7 +66,7 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft
         Direction dir = getRotation(state);
         VoxelShape main = SHAPES.get(dir.getAxis());
 
-        return PneumaticCraftUtils.getTileEntityAt(worldIn, pos, TileEntityPressureChamberInterface.class).map(teI -> {
+        return worldIn.getBlockEntity(pos, ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get()).map(teI -> {
             if (teI.outputProgress < TileEntityPressureChamberInterface.MAX_PROGRESS) {
                 return Shapes.join(main, DOORS.get(dir), BooleanOp.OR);
             } else if (teI.inputProgress < TileEntityPressureChamberInterface.MAX_PROGRESS) {
@@ -101,7 +101,7 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberInterface.class)
+            world.getBlockEntity(pos, ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get())
                     .ifPresent(TileEntityPressureChamberWall::onBlockBreak);
         }
         super.onRemove(state, world, pos, newState, isMoving);

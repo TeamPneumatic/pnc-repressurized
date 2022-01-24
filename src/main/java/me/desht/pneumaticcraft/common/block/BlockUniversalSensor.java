@@ -1,19 +1,19 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockUniversalSensor extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
@@ -47,14 +47,14 @@ public class BlockUniversalSensor extends BlockPneumaticCraft implements EntityB
 
     @Override
     public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityUniversalSensor.class)
+        return blockAccess.getBlockEntity(pos, ModTileEntities.UNIVERSAL_SENSOR.get())
                 .map(te -> side == Direction.UP ? te.redstoneStrength : 0)
                 .orElse(0);
     }
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityUniversalSensor.class)
+        return blockAccess.getBlockEntity(pos, ModTileEntities.UNIVERSAL_SENSOR.get())
                 .map(te -> te.redstoneStrength).orElse(0);
     }
 

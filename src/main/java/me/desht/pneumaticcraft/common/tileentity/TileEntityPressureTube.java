@@ -58,7 +58,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, ICamouflageableTE {
+public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, CamouflageableBlockEntity {
     @DescSynced
     private final boolean[] sidesClosed = new boolean[6];
     private final EnumMap<Direction,TubeModule> modules = new EnumMap<>(Direction.class);
@@ -103,7 +103,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         super.writeToPacket(tag);
 
         writeModulesToNBT(tag);
-        ICamouflageableTE.writeCamo(tag, camoState);
+        CamouflageableBlockEntity.writeCamo(tag, camoState);
     }
 
     public void writeModulesToNBT(CompoundTag tag) {
@@ -157,7 +157,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         if (hasLevel() && nonNullLevel().isClientSide) {
             rerenderTileEntity();
         }
-        camoState = ICamouflageableTE.readCamo(tag);
+        camoState = CamouflageableBlockEntity.readCamo(tag);
     }
 
     public void updateRenderBoundingBox() {
@@ -360,7 +360,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        ICamouflageableTE.syncToClient(this);
+        CamouflageableBlockEntity.syncToClient(this);
     }
 
     public VoxelShape getCachedTubeShape(VoxelShape blockShape) {

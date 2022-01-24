@@ -31,20 +31,20 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
@@ -56,7 +56,7 @@ import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_EXT
 import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_SPEED_FAST;
 
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements
-        IRedstoneControl<TileEntityPneumaticDoorBase>, IMinWorkingPressure, ICamouflageableTE, MenuProvider {
+        IRedstoneControl<TileEntityPneumaticDoorBase>, IMinWorkingPressure, CamouflageableBlockEntity, MenuProvider {
     private static final List<RedstoneMode<TileEntityPneumaticDoorBase>> REDSTONE_MODES = ImmutableList.of(
             new ReceivingRedstoneMode<>("pneumaticDoor.playerNearby", new ItemStack(Items.OBSERVER),
                     te -> true),
@@ -256,14 +256,14 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
-        ICamouflageableTE.writeCamo(tag, camoState);
+        CamouflageableBlockEntity.writeCamo(tag, camoState);
     }
 
     @Override
     public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
-        camoState = ICamouflageableTE.readCamo(tag);
+        camoState = CamouflageableBlockEntity.readCamo(tag);
     }
 
     @Override
@@ -300,7 +300,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        ICamouflageableTE.syncToClient(this);
+        CamouflageableBlockEntity.syncToClient(this);
     }
 
     @Override

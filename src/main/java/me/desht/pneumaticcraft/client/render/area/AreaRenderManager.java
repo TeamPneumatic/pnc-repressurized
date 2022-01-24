@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
+import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -200,7 +200,7 @@ public enum AreaRenderManager {
         if (lastPlayerPos == null || camoPositionShower == null || player.distanceToSqr(lastPlayerPos.getX(), lastPlayerPos.getY(), lastPlayerPos.getZ()) > 9) {
             lastPlayerPos = player.blockPosition();
             Set<BlockPos> s = getNearbyBlockEntities().stream()
-                    .filter(te -> te instanceof ICamouflageableTE && te.getBlockPos().distSqr(lastPlayerPos) < 144)
+                    .filter(te -> te instanceof CamouflageableBlockEntity && te.getBlockPos().distSqr(lastPlayerPos) < 144)
                     .map(BlockEntity::getBlockPos)
                     .collect(Collectors.toSet());
             camoPositionShower = AreaRenderer.builder().withColor(0x408080FF).withSize(0.75f).xray().drawShapes().build(s);

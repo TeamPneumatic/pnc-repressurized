@@ -96,7 +96,7 @@ public class PacketDescription extends LocationIntPacket {
             if (!ClientUtils.getClientLevel().isLoaded(pos)) {
                 return;
             }
-            blockEntity = ClientUtils.getClientTE(pos);
+            blockEntity = ClientUtils.getBlockEntity(pos);
         }
 
         if (blockEntity instanceof IDescSynced descSynced) {

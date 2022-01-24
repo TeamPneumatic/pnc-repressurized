@@ -52,7 +52,7 @@ public class PacketSendNBTPacket extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            BlockEntity te = ClientUtils.getClientTE(pos);
+            BlockEntity te = ClientUtils.getBlockEntity(pos);
             if (te != null) {
                 try {
                     te.load(tag);

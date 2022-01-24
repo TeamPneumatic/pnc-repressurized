@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
+import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -68,7 +68,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            BlockEntity te = ClientUtils.getClientTE(pos);
+            BlockEntity te = ClientUtils.getBlockEntity(pos);
             if (te != null) {
                 te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, handlerDir).ifPresent(handler -> {
                     handler.setSideLeaking(leakDir);

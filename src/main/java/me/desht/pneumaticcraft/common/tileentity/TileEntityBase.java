@@ -275,7 +275,7 @@ public abstract class TileEntityBase extends BlockEntity
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {
-        return this instanceof ICamouflageableTE;
+        return this instanceof CamouflageableBlockEntity;
     }
 
     /**
@@ -358,14 +358,14 @@ public abstract class TileEntityBase extends BlockEntity
     public void onDescUpdate() {
         if (shouldRerenderChunkOnDescUpdate()) {
             rerenderTileEntity();
-            if (this instanceof ICamouflageableTE) requestModelDataUpdate();
+            if (this instanceof CamouflageableBlockEntity) requestModelDataUpdate();
         }
     }
 
     @Nonnull
     @Override
     public IModelData getModelData() {
-        if (this instanceof ICamouflageableTE c) {
+        if (this instanceof CamouflageableBlockEntity c) {
             return new ModelDataMap.Builder()
                     .withInitial(BlockPneumaticCraftCamo.BLOCK_ACCESS, level)
                     .withInitial(BlockPneumaticCraftCamo.BLOCK_POS, worldPosition)
@@ -560,10 +560,10 @@ public abstract class TileEntityBase extends BlockEntity
             }
         }
 
-        if (this instanceof ICamouflageableTE c) {
+        if (this instanceof CamouflageableBlockEntity c) {
             BlockState camoState = c.getCamouflage();
             if (camoState != null) {
-                drops.add(ICamouflageableTE.getStackForState(camoState));
+                drops.add(CamouflageableBlockEntity.getStackForState(camoState));
             }
         }
     }

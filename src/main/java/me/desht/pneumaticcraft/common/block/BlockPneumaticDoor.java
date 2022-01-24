@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -100,26 +101,49 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft implements EntityBlo
         float xMax = 0.999f;
         float zMax = 0.999f;
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityPneumaticDoor) {
+        if (te instanceof TileEntityPneumaticDoor door) {
             Direction rotation = getRotation(state);
-            TileEntityPneumaticDoor door = (TileEntityPneumaticDoor) te;
             float t = thickness / 16F;
             float rads = (float) Math.toRadians(door.rotationAngle);
             float cosinus = t - Mth.sin(rads) * t;
             float sinus = t - Mth.cos(rads) * t;
             if (door.rightGoing) {
                 switch (rotation) {
-                    case NORTH: zMin = cosinus; xMax = 1 - sinus; break;
-                    case WEST: xMin = cosinus; zMin = sinus; break;
-                    case SOUTH: zMax = 1 - cosinus; xMin = sinus; break;
-                    case EAST: xMax = 1 - cosinus; zMax = 1 - sinus; break;
+                    case NORTH -> {
+                        zMin = cosinus;
+                        xMax = 1 - sinus;
+                    }
+                    case WEST -> {
+                        xMin = cosinus;
+                        zMin = sinus;
+                    }
+                    case SOUTH -> {
+                        zMax = 1 - cosinus;
+                        xMin = sinus;
+                    }
+                    case EAST -> {
+                        xMax = 1 - cosinus;
+                        zMax = 1 - sinus;
+                    }
                 }
             } else {
                 switch (rotation) {
-                    case NORTH: zMin = cosinus; xMin = sinus; break;
-                    case WEST: xMin = 0.001f + cosinus; zMax = 0.999f - sinus; break;
-                    case SOUTH: zMax = 1 - cosinus; xMax = 1 - sinus; break;
-                    case EAST: xMax = 1 - cosinus; zMin = sinus; break;
+                    case NORTH -> {
+                        zMin = cosinus;
+                        xMin = sinus;
+                    }
+                    case WEST -> {
+                        xMin = 0.001f + cosinus;
+                        zMax = 0.999f - sinus;
+                    }
+                    case SOUTH -> {
+                        zMax = 1 - cosinus;
+                        xMax = 1 - sinus;
+                    }
+                    case EAST -> {
+                        xMax = 1 - cosinus;
+                        zMin = sinus;
+                    }
                 }
             }
         }
@@ -141,7 +165,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft implements EntityBlo
         super.setPlacedBy(world, pos, state, par5EntityLiving, par6ItemStack);
 
         world.setBlock(pos.relative(Direction.UP), world.getBlockState(pos).setValue(TOP_DOOR, true), Block.UPDATE_ALL);
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoor.class).ifPresent(teDoor -> {
+        world.getBlockEntity(pos, ModTileEntities.PNEUMATIC_DOOR.get()).ifPresent(teDoor -> {
             BlockPos top = pos.above();
             if (world.getBlockState(top.relative(getRotation(state).getCounterClockWise())).getBlock() == ModBlocks.PNEUMATIC_DOOR_BASE.get()) {
                 teDoor.rightGoing = true;
@@ -149,9 +173,9 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft implements EntityBlo
                 teDoor.rightGoing = false;
             }
             BlockEntity topHalf = world.getBlockEntity(top);
-            if (topHalf instanceof TileEntityPneumaticDoor) {
-                ((TileEntityPneumaticDoor) topHalf).rightGoing = teDoor.rightGoing;
-                ((TileEntityPneumaticDoor) topHalf).color = teDoor.color;
+            if (topHalf instanceof TileEntityPneumaticDoor door) {
+                door.rightGoing = teDoor.rightGoing;
+                door.color = teDoor.color;
             }
         });
     }
@@ -200,8 +224,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft implements EntityBlo
             DyeColor dyeColor =  DyeColor.getColor(player.getItemInHand(hand));
             if (dyeColor != null) {
                 BlockEntity te = world.getBlockEntity(isTopDoor(state) ? pos.below() : pos);
-                if (te instanceof TileEntityPneumaticDoor) {
-                    TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
+                if (te instanceof TileEntityPneumaticDoor teDoor) {
                     if (teDoor.setColor(dyeColor) && ConfigHelper.common().general.useUpDyesWhenColoring.get()) {
                         player.getItemInHand(hand).shrink(1);
                     }
@@ -247,18 +270,12 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft implements EntityBlo
                 return null;
             }
             BlockEntity te1 = world.getBlockEntity(pos.relative(dir.getClockWise()));
-            if (te1 instanceof TileEntityPneumaticDoorBase) {
-                TileEntityPneumaticDoorBase doorBase = (TileEntityPneumaticDoorBase) te1;
-                if (doorBase.getRotation() == dir.getCounterClockWise()) {
-                    return doorBase;
-                }
+            if (te1 instanceof TileEntityPneumaticDoorBase doorBase && doorBase.getRotation() == dir.getCounterClockWise()) {
+                return doorBase;
             }
             BlockEntity te2 = world.getBlockEntity(pos.relative(dir.getCounterClockWise()));
-            if (te2 instanceof TileEntityPneumaticDoorBase) {
-                TileEntityPneumaticDoorBase doorBase = (TileEntityPneumaticDoorBase) te2;
-                if (doorBase.getRotation() == dir.getClockWise()) {
-                    return doorBase;
-                }
+            if (te2 instanceof TileEntityPneumaticDoorBase doorBase && doorBase.getRotation() == dir.getClockWise()) {
+                return doorBase;
             }
             return null;
         }

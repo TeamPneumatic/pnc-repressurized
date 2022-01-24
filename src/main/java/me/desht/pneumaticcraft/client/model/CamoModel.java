@@ -18,22 +18,22 @@
 package me.desht.pneumaticcraft.client.model;
 
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
+import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
@@ -136,8 +136,8 @@ public class CamoModel implements IDynamicBakedModel {
             BlockState state = compose.getBlockState(pos);
             if (state.getBlock() instanceof BlockPneumaticCraftCamo) {
                 BlockEntity te = compose.getBlockEntity(pos);
-                if (te instanceof ICamouflageableTE) {
-                    state = ((ICamouflageableTE) te).getCamouflage();
+                if (te instanceof CamouflageableBlockEntity) {
+                    state = ((CamouflageableBlockEntity) te).getCamouflage();
                 }
             }
             return state == null ? Blocks.AIR.defaultBlockState() : state;

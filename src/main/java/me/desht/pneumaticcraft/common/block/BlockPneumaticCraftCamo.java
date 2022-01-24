@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
+import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -50,10 +50,10 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     @Override
     public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof ICamouflageableTE camo && !player.isCreative()) {
+        if (te instanceof CamouflageableBlockEntity camo && !player.isCreative()) {
             BlockState camoState = camo.getCamouflage();
             if (camoState != null) {
-                ItemStack camoStack = ICamouflageableTE.getStackForState(camoState);
+                ItemStack camoStack = CamouflageableBlockEntity.getStackForState(camoState);
                 camo.setCamouflage(null);
                 world.levelEvent(player, LevelEvent.PARTICLES_DESTROY_BLOCK, pos, getId(camoState));
                 ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
@@ -66,31 +66,31 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext ctx) {
-        ICamouflageableTE camo = getCamoState(reader, pos);
+        CamouflageableBlockEntity camo = getCamoState(reader, pos);
         return camo == null ? getUncamouflagedShape(state, reader, pos, ctx) : camo.getCamouflage().getShape(reader, pos, ctx);
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext ctx) {
-        ICamouflageableTE camo = getCamoState(reader, pos);
+        CamouflageableBlockEntity camo = getCamoState(reader, pos);
         return camo == null ? getUncamouflagedCollisionShape(state, reader, pos, ctx) : camo.getCamouflage().getCollisionShape(reader, pos, ctx);
     }
 
     @Override
     public VoxelShape getInteractionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        ICamouflageableTE camo = getCamoState(worldIn, pos);
+        CamouflageableBlockEntity camo = getCamoState(worldIn, pos);
         return camo == null ? getUncamouflagedRaytraceShape(state, worldIn, pos) : camo.getCamouflage().getVisualShape(worldIn, pos, CollisionContext.empty());
     }
 
     @Override
     public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        ICamouflageableTE camo = getCamoState(worldIn, pos);
+        CamouflageableBlockEntity camo = getCamoState(worldIn, pos);
         return camo == null ? getUncamouflagedRenderShape(state, worldIn, pos) : camo.getCamouflage().getBlockSupportShape(worldIn, pos);
     }
 
     @Override
     public int getLightBlock(BlockState state, BlockGetter world, BlockPos pos) {
-        ICamouflageableTE camo = getCamoState(world, pos);
+        CamouflageableBlockEntity camo = getCamoState(world, pos);
         return camo == null ? super.getLightBlock(state, world, pos) : camo.getCamouflage().getLightBlock(world, pos);
     }
 
@@ -99,10 +99,10 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
         return true;  // prevent blockstate caching side solidity
     }
 
-    private ICamouflageableTE getCamoState(BlockGetter blockAccess, BlockPos pos) {
+    private CamouflageableBlockEntity getCamoState(BlockGetter blockAccess, BlockPos pos) {
         if (blockAccess == null || pos == null) return null;
-        BlockEntity te = blockAccess.getBlockEntity(pos);
-        return te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null ? (ICamouflageableTE) te : null;
+        BlockEntity be = blockAccess.getBlockEntity(pos);
+        return be instanceof CamouflageableBlockEntity camo && camo.getCamouflage() != null ? (CamouflageableBlockEntity) be : null;
     }
 
     /**

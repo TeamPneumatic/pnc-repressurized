@@ -71,7 +71,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     public boolean setColor(DyeColor dyeColor) {
         if (color != dyeColor.getId() && !getBlockState().getValue(BlockPneumaticDoor.TOP_DOOR)) {
             color = (byte) dyeColor.getId();
-            PneumaticCraftUtils.getTileEntityAt(level, getBlockPos(), TileEntityPneumaticDoor.class).ifPresent(topHalf -> {
+            nonNullLevel().getBlockEntity(getBlockPos(), ModTileEntities.PNEUMATIC_DOOR.get()).ifPresent(topHalf -> {
                 topHalf.color = color;
                 if (!nonNullLevel().isClientSide) {
                     setChanged();

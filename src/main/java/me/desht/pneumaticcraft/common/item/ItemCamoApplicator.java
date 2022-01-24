@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
+import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
@@ -93,7 +93,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
             } else {
                 BlockEntity te = level.getBlockEntity(pos);
                 BlockState state = level.getBlockState(pos);
-                if (!(te instanceof ICamouflageableTE)) {
+                if (!(te instanceof CamouflageableBlockEntity)) {
                     // right-click non-camo block: copy its state
                     setCamoState(stack, state);
                     level.playSound(null, ctx.getClickedPos(), ModSounds.CHIRP.get(), SoundSource.PLAYERS, 1f, 2f);
@@ -107,7 +107,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     }
 
                     BlockState newCamo = getCamoState(stack);
-                    BlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
+                    BlockState existingCamo = ((CamouflageableBlockEntity) te).getCamouflage();
 
                     if (existingCamo == newCamo) {
                         level.playSound(null, ctx.getClickedPos(), SoundEvents.COMPARATOR_CLICK, SoundSource.PLAYERS, 1f, 2f);
@@ -116,7 +116,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
 
                     // make sure player has enough of the camo item
                     if (newCamo != null && !player.isCreative()) {
-                        ItemStack camoStack = ICamouflageableTE.getStackForState(newCamo);
+                        ItemStack camoStack = CamouflageableBlockEntity.getStackForState(newCamo);
                         if (!PneumaticCraftUtils.consumeInventoryItem(player.getInventory(), camoStack)) {
                             player.displayClientMessage(new TranslatableComponent("pneumaticcraft.message.camo.notEnoughBlocks")
                                     .append(camoStack.getHoverName())
@@ -129,7 +129,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
 
                     // return existing camo block, if any
                     if (existingCamo != null && !player.isCreative()) {
-                        ItemStack camoStack = ICamouflageableTE.getStackForState(existingCamo);
+                        ItemStack camoStack = CamouflageableBlockEntity.getStackForState(existingCamo);
                         ItemEntity entity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
                         level.addFreshEntity(entity);
                         entity.playerTouch(player);
@@ -137,7 +137,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
 
                     // and apply the new camouflage
                     airHandler.addAir(-PneumaticValues.USAGE_CAMO_APPLICATOR);
-                    ((ICamouflageableTE) te).setCamouflage(newCamo);
+                    ((CamouflageableBlockEntity) te).setCamouflage(newCamo);
                     BlockState particleState = newCamo == null ? existingCamo : newCamo;
                     if (particleState != null) {
                         player.getCommandSenderWorld().levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(particleState));

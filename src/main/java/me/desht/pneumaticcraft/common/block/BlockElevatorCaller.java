@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -123,7 +122,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo implements Enti
         if (block == ModBlocks.ELEVATOR_FRAME.get()) {
             return BlockElevatorFrame.getElevatorBase(world, pos);
         } else if (block == ModBlocks.ELEVATOR_BASE.get()) {
-            return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityElevatorBase.class)
+            return world.getBlockEntity(pos, ModTileEntities.ELEVATOR_BASE.get())
                     .filter(TileEntityElevatorBase::isCoreElevator);
         }
         return Optional.empty();

@@ -27,7 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * Implement this interface in tile entities which should store a camouflaged state.  The corresponding block should
  * be a subclass of {@link me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo}
  */
-public interface ICamouflageableTE {
+public interface CamouflageableBlockEntity {
     /**
      * Get the camouflage state; the blockstate which will be used to render this tile entity's block.
      *

@@ -22,19 +22,19 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.BiPredicate;
 
-public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamouflageableTE, IHeatExchangingTE {
+public class TileEntityHeatPipe extends TileEntityTickableBase implements CamouflageableBlockEntity, IHeatExchangingTE {
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
@@ -94,14 +94,14 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     public void writeToPacket(CompoundTag tag) {
         super.writeToPacket(tag);
 
-        ICamouflageableTE.writeCamo(tag, camoState);
+        CamouflageableBlockEntity.writeCamo(tag, camoState);
     }
 
     @Override
     public void readFromPacket(CompoundTag tag) {
         super.readFromPacket(tag);
 
-        camoState = ICamouflageableTE.readCamo(tag);
+        camoState = CamouflageableBlockEntity.readCamo(tag);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        ICamouflageableTE.syncToClient(this);
+        CamouflageableBlockEntity.syncToClient(this);
     }
 
     @Override

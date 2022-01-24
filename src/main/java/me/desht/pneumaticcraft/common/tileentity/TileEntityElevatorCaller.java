@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityElevatorCaller extends TileEntityTickableBase implements ICamouflageableTE, IRedstoneControl<TileEntityElevatorCaller> {
+public class TileEntityElevatorCaller extends TileEntityTickableBase implements CamouflageableBlockEntity, IRedstoneControl<TileEntityElevatorCaller> {
     private ElevatorButton[] floors = new ElevatorButton[0];
     private int thisFloor;
     private boolean emittingRedstone;
@@ -82,7 +82,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         for (int i = 0; i < floorAmount; i++) {
             floors[i] = new ElevatorButton(tag.getCompound("floor" + i));
         }
-        camoState = ICamouflageableTE.readCamo(tag);
+        camoState = CamouflageableBlockEntity.readCamo(tag);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         for (ElevatorButton floor : floors) {
             tag.put("floor" + floor.floorNumber, floor.writeToNBT(new CompoundTag()));
         }
-        ICamouflageableTE.writeCamo(tag, camoState);
+        CamouflageableBlockEntity.writeCamo(tag, camoState);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        ICamouflageableTE.syncToClient(this);
+        CamouflageableBlockEntity.syncToClient(this);
     }
 
     @Override

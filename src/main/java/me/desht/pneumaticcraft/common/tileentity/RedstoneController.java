@@ -35,6 +35,7 @@ import org.apache.commons.lang3.Validate;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -140,7 +141,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     public void updateRedstonePower() {
         T te = teRef.get();
         if (te != null) {
-            currentRedstonePower = te.getLevel().getBestNeighborSignal(te.getBlockPos());
+            currentRedstonePower = Objects.requireNonNull(te.getLevel()).getBestNeighborSignal(te.getBlockPos());
         }
     }
 

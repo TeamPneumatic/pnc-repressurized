@@ -19,11 +19,10 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.tubes.INetworkedModule;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.FriendlyByteBuf;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -62,10 +61,9 @@ public class PacketTubeModuleColor extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player != null) {
-                PneumaticCraftUtils.getTileEntityAt(player.level, pos, TileEntityPressureTube.class).ifPresent(te -> {
-                    TubeModule module = te.getModule(side);
-                    if (module instanceof INetworkedModule) {
-                        ((INetworkedModule) module).setColorChannel(ourColor);
+                player.level.getBlockEntity(pos, ModTileEntities.PRESSURE_TUBE.get()).ifPresent(tube -> {
+                    if (tube.getModule(side) instanceof INetworkedModule net) {
+                        net.setColorChannel(ourColor);
                     }
                 });
             }

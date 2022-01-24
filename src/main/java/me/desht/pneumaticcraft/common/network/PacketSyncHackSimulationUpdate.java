@@ -111,7 +111,7 @@ public class PacketSyncHackSimulationUpdate extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            BlockEntity te = ClientUtils.getClientTE(pos);
+            BlockEntity te = ClientUtils.getBlockEntity(pos);
             if (te instanceof TileEntitySecurityStation) {
                 ISimulationController controller = ((TileEntitySecurityStation) te).getSimulationController();
                 if (controller != null) {

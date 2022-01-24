@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Arrays;
@@ -59,7 +59,7 @@ public class PacketShowArea extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> AreaRenderManager.getInstance().showArea(area, 0x9000FFFF, ClientUtils.getClientTE(pos)));
+        ctx.get().enqueueWork(() -> AreaRenderManager.getInstance().showArea(area, 0x9000FFFF, ClientUtils.getBlockEntity(pos)));
         ctx.get().setPacketHandled(true);
     }
 }

@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -217,7 +217,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft
     static Optional<TileEntityElevatorBase> getElevatorBase(BlockGetter world, BlockPos pos) {
         // caching the elevator base in the frame TE - this should be safe from a caching point of view,
         // since if the base (or any frame below us) is broken, all frames above it - including us - will also break
-        return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityElevatorFrame.class)
+        return world.getBlockEntity(pos, ModTileEntities.ELEVATOR_FRAME.get())
                 .map(TileEntityElevatorFrame::getElevatorBase);
     }
 
