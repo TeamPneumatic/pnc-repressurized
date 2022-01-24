@@ -85,6 +85,9 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(PneumaticCraftTags.Items.BREAD, ModItems.SOURDOUGH_BREAD);
 
         addItemsToTag(PneumaticCraftTags.Items.WRENCHES, ModItems.PNEUMATIC_WRENCH);
+
+        addItemsToTag(PneumaticCraftTags.Items.GEARS, ModItems.COMPRESSED_IRON_GEAR);
+        addItemsToTag(PneumaticCraftTags.Items.GEARS_COMPRESSED_IRON, ModItems.COMPRESSED_IRON_GEAR);
     }
 
     @SafeVarargs
