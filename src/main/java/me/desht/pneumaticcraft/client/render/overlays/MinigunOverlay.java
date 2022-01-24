@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render.overlays;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.gui.ForgeIngameGui;
 import net.minecraftforge.client.gui.IIngameOverlay;
@@ -86,7 +88,7 @@ public class MinigunOverlay implements IIngameOverlay {
         RenderSystem.enableTexture();
     }
 
-    @Mod.EventBusSubscriber
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class Listener {
         @SubscribeEvent
         public static void crosshairsEvent(RenderGameOverlayEvent.PreLayer event) {
