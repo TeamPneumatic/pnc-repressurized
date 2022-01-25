@@ -42,7 +42,6 @@ public class ImmersiveEngineering implements IThirdParty {
     public void init() {
         MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
         IEHeatHandler.registerHeatHandler();
-        IEIntegration.registerFuels();
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
