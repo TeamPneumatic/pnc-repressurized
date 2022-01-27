@@ -370,6 +370,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         @Override
         protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+
             TileEntityChargingStation teCS = TileEntityChargingStation.this;
 
             ItemStack newStack = getStackInSlot(slot);
