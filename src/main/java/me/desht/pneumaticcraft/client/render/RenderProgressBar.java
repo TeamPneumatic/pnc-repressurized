@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
@@ -46,11 +47,24 @@ public class RenderProgressBar {
         });
 
         // draw the outline
-        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(1.5), (posMat, builder) -> {
-            RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(0, 0, 0, 255).endVertex();
-            RenderUtils.posF(builder, posMat, minX, maxY, zLevel).color(0, 0, 0, 255).endVertex();
-            RenderUtils.posF(builder, posMat, maxX, maxY, zLevel).color(0, 0, 0, 255).endVertex();
-            RenderUtils.posF(builder, posMat, maxX, minY, zLevel).color(0, 0, 0, 255).endVertex();
+        final Matrix3f normal = matrixStack.last().normal();
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoops(1.5), (posMat, builder) -> {
+            RenderUtils.posF(builder, posMat, minX, minY, zLevel)
+                    .color(0, 0, 0, 255)
+                    .normal(normal, 0, 1, 0)
+                    .endVertex();
+            RenderUtils.posF(builder, posMat, minX, maxY, zLevel)
+                    .color(0, 0, 0, 255)
+                    .normal(normal, 1, 0, 0)
+                    .endVertex();
+            RenderUtils.posF(builder, posMat, maxX, maxY, zLevel)
+                    .color(0, 0, 0, 255)
+                    .normal(normal, 0, -1, 0)
+                    .endVertex();
+            RenderUtils.posF(builder, posMat, maxX, minY, zLevel)
+                    .color(0, 0, 0, 255)
+                    .normal(normal, -1, 0, 0)
+                    .endVertex();
         });
     }
 

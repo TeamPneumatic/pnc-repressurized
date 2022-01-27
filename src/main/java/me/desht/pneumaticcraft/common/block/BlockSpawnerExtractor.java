@@ -18,26 +18,26 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SpawnerBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SpawnerBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -110,7 +110,7 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft implements Entity
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySpawnerExtractor.class)
+        world.getBlockEntity(pos, ModTileEntities.SPAWNER_EXTRACTOR.get())
                 .ifPresent(TileEntitySpawnerExtractor::updateMode);
     }
 
@@ -119,7 +119,7 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft implements Entity
         if (!canSurvive(stateIn, worldIn, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         } else {
-            PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, TileEntitySpawnerExtractor.class)
+            worldIn.getBlockEntity(currentPos, ModTileEntities.SPAWNER_EXTRACTOR.get())
                     .ifPresent(TileEntitySpawnerExtractor::updateMode);
             return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
         }

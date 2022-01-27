@@ -17,36 +17,19 @@
 
 package me.desht.pneumaticcraft.common.semiblock;
 
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Objects;
 
 public interface IProvidingInventoryListener {
     void notify(TileEntityAndFace teAndFace);
 
-    class TileEntityAndFace {
-        private final BlockEntity te;
-        private final Direction face;
-
-        public TileEntityAndFace(BlockEntity te, Direction face) {
-            this.te = te;
-            this.face = face;
-        }
-
-        public BlockEntity getTileEntity() {
-            return te;
-        }
-
-        public Direction getFace() {
-            return face;
-        }
-
+    record TileEntityAndFace(BlockEntity te, Direction face) {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof TileEntityAndFace)) return false;
-            TileEntityAndFace tileEntityAndFace = (TileEntityAndFace) o;
+            if (!(o instanceof TileEntityAndFace tileEntityAndFace)) return false;
             return te.equals(tileEntityAndFace.te) &&
                     face == tileEntityAndFace.face;
         }

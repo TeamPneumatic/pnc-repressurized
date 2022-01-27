@@ -64,8 +64,8 @@ public class SemiblockProvider {
                     ISemiBlock entity = ISemiBlock.byTrackingId(blockAccessor.getLevel(), entityId);
                     if (entity instanceof EntitySemiblockBase) {
                         if (!(entity instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) entity).getSide() == blockAccessor.getSide()) {
-                            MutableComponent title = new TextComponent(ChatFormatting.YELLOW + "[")
-                                    .append(entity.getDisplayName()).append("]");
+                            MutableComponent title = new TextComponent("[")
+                                    .append(entity.getDisplayName()).append("]").withStyle(ChatFormatting.YELLOW);
                             iTooltip.add(title);
                             entity.addTooltip(iTooltip::add, blockAccessor.getPlayer(), tag.getCompound(name), blockAccessor.getPlayer().isShiftKeyDown());
                         }

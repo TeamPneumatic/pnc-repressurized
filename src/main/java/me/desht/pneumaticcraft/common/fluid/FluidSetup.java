@@ -44,7 +44,7 @@ public class FluidSetup {
 
         // no magnet'ing PCB's out of etching acid pools
         api.getItemRegistry().registerMagnetSuppressor(
-                e -> e instanceof ItemEntity && ((ItemEntity) e).getItem().getItem() == ModItems.EMPTY_PCB.get()
+                e -> e instanceof ItemEntity ie && ie.getItem().getItem() == ModItems.EMPTY_PCB.get()
                         && e.getCommandSenderWorld().getFluidState(e.blockPosition()).getType() == ModFluids.ETCHING_ACID.get()
         );
 

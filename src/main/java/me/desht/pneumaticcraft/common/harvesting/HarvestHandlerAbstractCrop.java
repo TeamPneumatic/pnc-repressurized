@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.harvesting;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -33,32 +33,32 @@ import java.util.function.Predicate;
 public abstract class HarvestHandlerAbstractCrop extends HarvestHandler {
 
     private final Predicate<BlockState> blockChecker;
-    
-    public HarvestHandlerAbstractCrop(Predicate<BlockState> blockChecker){
+
+    public HarvestHandlerAbstractCrop(Predicate<BlockState> blockChecker) {
         this.blockChecker = blockChecker;
     }
-    
+
     @Override
-    public boolean canHarvest(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone){
+    public boolean canHarvest(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone) {
         return blockChecker.test(state) && isMaxAge(state);
     }
-    
+
     @Override
-    public boolean harvestAndReplant(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone){
+    public boolean harvestAndReplant(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone) {
         harvest(world, chunkCache, pos, state, drone);
         List<ItemEntity> seedItems = world.getEntitiesOfClass(ItemEntity.class, new AABB(pos), entityItem -> isSeed(world, pos, state, entityItem.getItem()));
-        if(!seedItems.isEmpty()){
+        if (!seedItems.isEmpty()) {
             seedItems.get(0).getItem().shrink(1);//Use a seed
             world.setBlockAndUpdate(pos, withMinAge(state)); //And plant it.
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    
+
     protected abstract boolean isSeed(Level world, BlockPos pos, BlockState state, ItemStack stack);
-    
+
     protected abstract boolean isMaxAge(BlockState state);
-    
+
     protected abstract BlockState withMinAge(BlockState state);
 }

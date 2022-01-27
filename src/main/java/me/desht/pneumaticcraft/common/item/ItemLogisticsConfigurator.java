@@ -46,7 +46,7 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
         BlockPos pos = ctx.getClickedPos();
         Direction side = ctx.getClickedFace();
 
-        if (!world.isClientSide
+        if (!world.isClientSide && player != null
                 && stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> h.getPressure() > 0.1).orElseThrow(RuntimeException::new)) {
             Stream<ISemiBlock> semiBlocks = SemiblockTracker.getInstance().getAllSemiblocks(world, pos, side);
 

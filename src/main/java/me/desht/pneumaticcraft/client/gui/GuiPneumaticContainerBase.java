@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRendere
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
@@ -324,7 +325,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     protected boolean shouldAddSideConfigTabs() { return te instanceof ISideConfigurable; }
 
-    protected int getBackgroundTint() { return 0xFFFFFF; }
+    protected int getBackgroundTint() { return 0xFFFFFFFF; }
 
     protected boolean shouldDrawBackground() {
         return true;
@@ -333,7 +334,6 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     @Override
     protected void renderBg(PoseStack matrixStack, float partialTicks, int i, int j) {
         if (shouldDrawBackground()) {
-            GuiUtils.glColorHex(0xFF000000 | getBackgroundTint());
             bindGuiTexture();
             int xStart = (width - imageWidth) / 2;
             int yStart = (height - imageHeight) / 2;
@@ -364,7 +364,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     void bindGuiTexture() {
         ResourceLocation guiTexture = getGuiTexture();
         if (guiTexture != null) {
-            GuiUtils.bindTexture(guiTexture);
+            float[] c = RenderUtils.decomposeColorF(getBackgroundTint());
+            GuiUtils.bindTexture(guiTexture, c[1], c[2], c[3], c[0]);
             RenderSystem.enableTexture();
         }
     }

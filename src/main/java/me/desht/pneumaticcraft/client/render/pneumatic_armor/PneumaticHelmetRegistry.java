@@ -40,8 +40,8 @@ import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
-    private static final PneumaticHelmetRegistry INSTANCE = new PneumaticHelmetRegistry();
+public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
+    INSTANCE;
 
     public final List<Supplier<? extends IEntityTrackEntry>> entityTrackEntries = new ArrayList<>();
 

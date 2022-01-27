@@ -33,7 +33,7 @@ public class CamoProvider {
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
             BlockEntity te = blockAccessor.getBlockEntity();
             if (te instanceof CamouflageableBlockEntity camo && camo.getCamouflage() != null) {
-                net.minecraft.network.chat.Component str = ItemCamoApplicator.getCamoStateDisplayName(((CamouflageableBlockEntity) te).getCamouflage());
+                net.minecraft.network.chat.Component str = ItemCamoApplicator.getCamoStateDisplayName(camo.getCamouflage());
                 iTooltip.add(xlate("pneumaticcraft.waila.camo", str));
             }
         }

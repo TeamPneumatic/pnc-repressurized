@@ -22,13 +22,17 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
 import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -36,6 +40,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -100,6 +105,7 @@ public enum AreaRenderManager {
         maybeRenderDroneDebug(matrixStack, buffer, player);
         maybeRenderAreaTool(matrixStack, buffer, player);
         maybeRenderJackhammer(matrixStack, buffer, player);
+        maybeRenderCoordinateTracker(matrixStack, buffer, player, event.getPartialTick());
 
         matrixStack.popPose();
     }
@@ -115,6 +121,26 @@ public enum AreaRenderManager {
                 if (event.phase == TickEvent.Phase.END) {
                     showHandlers.keySet().removeIf(pos -> PneumaticCraftUtils.distBetweenSq(pos, player.blockPosition()) < 1024 && world.isEmptyBlock(pos));
                 }
+            }
+        }
+    }
+
+    private void maybeRenderCoordinateTracker(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player, float partialTicks) {
+        CoordTrackerHandler handler = ArmorUpgradeRegistry.getInstance().coordTrackerHandler;
+        if (CommonArmorHandler.getHandlerForPlayer().upgradeUsable(handler, true)) {
+            BlockPos pos = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler, CoordTrackClientHandler.class).getTrackedPos();
+            if (pos != null) {
+                float progress = (player.level.getGameTime() % 20 + partialTicks) / 20;
+                float g = progress < 0.5F ? progress + 0.5F : 1.5F - progress;
+                int col = 0xA00000FF | (int)(g * 255) << 8;
+                // TODO scale this based on player distance so it remains visible from far away
+                AreaRenderer.builder().withColor(col).xray().build(pos).render(matrixStack, buffer);
+                matrixStack.pushPose();
+                matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
+                matrixStack.scale(0.02f, 0.02f, 0.02f);
+                RenderUtils.rotateToPlayerFacing(matrixStack);
+                RenderUtils.renderString3d(new TextComponent(PneumaticCraftUtils.posToString(pos)), -50, -50, 0xFFFFFFFF, matrixStack, buffer, true, true);
+                matrixStack.popPose();
             }
         }
     }

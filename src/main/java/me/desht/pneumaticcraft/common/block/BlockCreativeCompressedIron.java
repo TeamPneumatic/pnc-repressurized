@@ -20,16 +20,16 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressedIronBlock;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockCreativeCompressedIron extends BlockPneumaticCraft
@@ -43,7 +43,7 @@ public class BlockCreativeCompressedIron extends BlockPneumaticCraft
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityCreativeCompressedIronBlock.class)
+        world.getBlockEntity(pos, ModTileEntities.CREATIVE_COMPRESSED_IRON_BLOCK.get())
                 .ifPresent(te -> te.setTargetTemperature((int) te.getHeatExchanger().getAmbientTemperature()));
     }
 

@@ -34,9 +34,10 @@ import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -191,12 +192,12 @@ public class RenderBlockTarget {
                     stat.renderStat(matrixStack, buffer, partialTicks);
                 }
             } else if (ticksExisted > 50) {
-                RenderUtils.renderString3d(I18n.get("pneumaticcraft.entityTracker.info.acquiring"), 0, 0, 0xFFD0D0D0, matrixStack, buffer, false, true);
-                RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFFD0D0D0, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(new TranslatableComponent("pneumaticcraft.entityTracker.info.acquiring"), 0, 0, 0xFFD0D0D0, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(new TextComponent((int)targetAcquireProgress + "%"), 37, 24, 0xFFD0D0D0, matrixStack, buffer, false, true);
             } else if (ticksExisted < -30) {
                 matrixStack.scale(1.5F, 1.5F, 1.5F);
                 stat.renderStat(matrixStack, buffer, partialTicks);
-                RenderUtils.renderString3d(I18n.get("pneumaticcraft.blockTracker.info.lostTarget"), 0, -ticksExisted / 2.5f, 0xFFFF0000, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(new TranslatableComponent("pneumaticcraft.blockTracker.info.lostTarget"), 0, -ticksExisted / 2.5f, 0xFFFF0000, matrixStack, buffer, false, true);
             }
         }
 
@@ -230,7 +231,7 @@ public class RenderBlockTarget {
         }
         matrixStack.pushPose();
         matrixStack.translate(-0.5, -0.5, -0.5);
-        RenderType type = RenderUtils.renderFrame(matrixStack, buffer, aabb, 1/64f, 0.25f, 0.75f, 0.75f, alpha, RenderUtils.FULL_BRIGHT, true);
+        RenderType type = RenderUtils.renderFrame(matrixStack, buffer, aabb, 1/64f, 0.25f, 0.75f, 0.75f, alpha, RenderUtils.FULL_BRIGHT);
         RenderUtils.finishBuffer(buffer, type);
         matrixStack.popPose();
     }

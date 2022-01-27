@@ -20,15 +20,15 @@ package me.desht.pneumaticcraft.common.harvesting;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.common.core.ModHarvestHandlers.TreePart;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class HarvestHandlerTree extends HarvestHandler {
             BlockState saplingState = saplingBlock.defaultBlockState();
             if (saplingState.canSurvive(world, pos)) {
                 List<ItemEntity> saplingItems = world.getEntitiesOfClass(ItemEntity.class, new AABB(pos).inflate(SAPLING_PICK_RANGE), entityItem -> entityItem.getItem().getItem() == saplingBlock.asItem());
-                if (!saplingItems.isEmpty()){
+                if (!saplingItems.isEmpty()) {
                     saplingItems.get(0).getItem().shrink(1); // Use a sapling
                     world.setBlockAndUpdate(pos, saplingState);  // And plant it.
                     return true;

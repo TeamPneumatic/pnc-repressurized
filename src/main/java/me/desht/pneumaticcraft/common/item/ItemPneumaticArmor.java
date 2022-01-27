@@ -274,7 +274,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
         if (helmetStack.isEmpty() || !NBTUtils.hasTag(helmetStack, NBT_COORD_TRACKER)) return null;
         CompoundTag tag = NBTUtils.getCompoundTag(helmetStack, NBT_COORD_TRACKER);
         GlobalPos gPos = GlobalPosHelper.fromNBT(tag);
-        if (gPos.pos().getY() < 0 || !GlobalPosHelper.isSameWorld(gPos, world)) {
+        if (world.isOutsideBuildHeight(gPos.pos().getY()) || !GlobalPosHelper.isSameWorld(gPos, world)) {
             return null;
         }
         return gPos.pos();

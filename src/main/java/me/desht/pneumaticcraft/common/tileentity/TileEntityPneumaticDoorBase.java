@@ -222,7 +222,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     private TileEntityPneumaticDoor getDoor() {
-        return PneumaticCraftUtils.getTileEntityAt(getLevel(), getBlockPos().relative(getRotation()).below(), TileEntityPneumaticDoor.class).map(teDoor -> {
+        return nonNullLevel().getBlockEntity(getBlockPos().relative(getRotation()).below(), ModTileEntities.PNEUMATIC_DOOR.get()).map(teDoor -> {
             if (getRotation().getClockWise() == teDoor.getRotation() && !teDoor.rightGoing) {
                 return teDoor;
             } else if (getRotation().getCounterClockWise() == teDoor.getRotation() && teDoor.rightGoing) {

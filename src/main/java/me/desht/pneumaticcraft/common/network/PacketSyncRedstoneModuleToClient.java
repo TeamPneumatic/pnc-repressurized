@@ -19,11 +19,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.network.FriendlyByteBuf;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -37,7 +35,7 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
     private final int outputLevel;
     private final int inputLevel;
     private final int channel;
-    private final byte side;
+    private final Direction side;
 
     public PacketSyncRedstoneModuleToClient(ModuleRedstone module) {
         super(module.getTube().getBlockPos());
@@ -46,13 +44,13 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
         this.outputLevel = module.getRedstoneLevel();
         this.inputLevel = module.getInputLevel();
         this.channel = module.getColorChannel();
-        this.side = (byte) module.getDirection().get3DDataValue();
+        this.side = module.getDirection();
     }
 
     PacketSyncRedstoneModuleToClient(FriendlyByteBuf buffer) {
         super(buffer);
         dir = ModuleRedstone.EnumRedstoneDirection.values()[buffer.readByte()];
-        side = buffer.readByte();
+        side = buffer.readEnum(Direction.class);
         outputLevel = buffer.readByte();
         inputLevel = buffer.readByte();
         channel = buffer.readByte();
@@ -62,7 +60,7 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
     public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
         buf.writeByte(dir.ordinal());
-        buf.writeByte(side);
+        buf.writeEnum(side);
         buf.writeByte(outputLevel);
         buf.writeByte(inputLevel);
         buf.writeByte(channel);
@@ -70,10 +68,8 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() ->
-                PneumaticCraftUtils.getTileEntityAt(ClientUtils.getClientLevel(), pos, TileEntityPressureTube.class).ifPresent(te -> {
-                    TubeModule module = te.getModule(Direction.from3DDataValue(side));
-                    if (module instanceof ModuleRedstone) {
-                        ModuleRedstone mr = (ModuleRedstone) module;
+                ClientUtils.getClientLevel().getBlockEntity(pos, ModTileEntities.PRESSURE_TUBE.get()).ifPresent(te -> {
+                    if (te.getModule(side) instanceof ModuleRedstone mr) {
                         mr.setColorChannel(channel);
                         mr.setRedstoneDirection(dir);
                         mr.setOutputLevel(outputLevel);

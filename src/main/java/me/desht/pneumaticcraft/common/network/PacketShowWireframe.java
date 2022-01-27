@@ -19,9 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -47,9 +46,8 @@ public class PacketShowWireframe extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Entity ent = ctx.get().getSender().level.getEntity(entityId);
-            if (ent instanceof EntityDrone) {
-                ClientUtils.addDroneToHudHandler((EntityDrone) ent, pos);
+            if (ClientUtils.getClientLevel().getEntity(entityId) instanceof EntityDrone drone) {
+                ClientUtils.addDroneToHudHandler(drone, pos);
             }
         });
         ctx.get().setPacketHandled(true);

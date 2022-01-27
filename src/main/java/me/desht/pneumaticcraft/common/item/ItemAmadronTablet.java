@@ -59,10 +59,7 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -88,19 +85,19 @@ public class ItemAmadronTablet extends ItemPressurizable
         BlockPos pos = ctx.getClickedPos();
 
         BlockEntity te = worldIn.getBlockEntity(pos);
-        if (te == null) return InteractionResult.PASS;
+        if (te == null || player == null) return InteractionResult.PASS;
 
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent()) {
             if (!worldIn.isClientSide) {
                 setFluidProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
-                ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+                player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
         } else if (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()) {
             if (!worldIn.isClientSide) {
                 setItemProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
-                ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
+                player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
         } else {
             return InteractionResult.PASS;
@@ -139,7 +136,7 @@ public class ItemAmadronTablet extends ItemPressurizable
     }
 
     public static GlobalPos getItemProvidingLocation(ItemStack tablet) {
-        return tablet.hasTag() && tablet.getTag().contains("itemPos") ?
+        return tablet.hasTag() && Objects.requireNonNull(tablet.getTag()).contains("itemPos") ?
                 GlobalPosHelper.fromNBT(tablet.getTag().getCompound("itemPos")) :
                 null;
     }
@@ -161,7 +158,7 @@ public class ItemAmadronTablet extends ItemPressurizable
     }
 
     public static GlobalPos getFluidProvidingLocation(ItemStack tablet) {
-        return tablet.hasTag() && tablet.getTag().contains("liquidPos") ?
+        return tablet.hasTag() && Objects.requireNonNull(tablet.getTag()).contains("liquidPos") ?
                 GlobalPosHelper.fromNBT(tablet.getTag().getCompound("liquidPos")) :
                 null;
     }
@@ -192,11 +189,11 @@ public class ItemAmadronTablet extends ItemPressurizable
 
     @Override
     public int getRenderColor(int index) {
-        switch (index) {
-            case 0: return 0x90A0490E;  // item
-            case 1: return 0x9000C0C0;  // liquid
-            default: return -1;
-        }
+        return switch (index) {
+            case 0 -> 0x90A0490E;  // item
+            case 1 -> 0x9000C0C0;  // liquid
+            default -> -1;
+        };
     }
 
     public static void openGui(Player playerIn, InteractionHand handIn) {

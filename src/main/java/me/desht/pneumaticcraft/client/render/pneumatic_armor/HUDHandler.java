@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -301,9 +302,9 @@ public enum HUDHandler implements IKeyListener {
 
     public int getStatOverlayColor() {
         // based on the eyepiece color but with the alpha locked to 3/16
-        ItemStack stack = Minecraft.getInstance().player.getItemBySlot(EquipmentSlot.HEAD);
-        int eyepieceColor = stack.getItem() instanceof ItemPneumaticArmor ?
-                ((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack) :
+        ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlot.HEAD);
+        int eyepieceColor = stack.getItem() instanceof ItemPneumaticArmor helmet ?
+                helmet.getEyepieceColor(stack) :
                 GuiArmorColors.SelectorType.EYEPIECE.getDefaultColor();
         return (eyepieceColor & 0x00FFFFFF) | 0x30000000;
     }

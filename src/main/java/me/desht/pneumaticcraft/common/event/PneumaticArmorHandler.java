@@ -35,19 +35,19 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.world.Difficulty;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
@@ -78,8 +78,7 @@ public class PneumaticArmorHandler {
         // so we need to track locally what is targeting whom, and only warn the player if the mob is newly
         // targeting them - otherwise, massive spam.
         int mobId = event.getEntityLiving().getId();
-        if (event.getTarget() instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) event.getTarget();
+        if (event.getTarget() instanceof ServerPlayer player) {
             if (isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
                 if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getId()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
@@ -102,8 +101,7 @@ public class PneumaticArmorHandler {
 
     @SubscribeEvent
     public void onPlayerFall(LivingFallEvent event) {
-        if (event.getDistance() > 3.0F && event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
+        if (event.getDistance() > 3.0F && event.getEntity() instanceof Player player) {
             ItemStack stack = player.getItemBySlot(EquipmentSlot.FEET);
             if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
                 return;
@@ -148,9 +146,7 @@ public class PneumaticArmorHandler {
 
     @SubscribeEvent
     public void onLivingAttack(LivingAttackEvent event) {
-        if (event.getEntityLiving() instanceof Player) {
-            Player player = (Player) event.getEntityLiving();
-
+        if (event.getEntityLiving() instanceof Player player) {
             if (isPneumaticArmorPiece(player, EquipmentSlot.CHEST) && event.getSource().isFire() && !(player.isCreative() || player.isSpectator())) {
                 // security upgrade in chestplate protects from fire
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
@@ -194,8 +190,7 @@ public class PneumaticArmorHandler {
      */
     @SubscribeEvent
     public void onPlayerJump(LivingEvent.LivingJumpEvent event) {
-        if (event.getEntityLiving() instanceof Player) {
-            Player player = (Player) event.getEntityLiving();
+        if (event.getEntityLiving() instanceof Player player) {
             ItemStack stack = player.getItemBySlot(EquipmentSlot.LEGS);
             if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
                 return;
@@ -250,8 +245,7 @@ public class PneumaticArmorHandler {
      */
     @SubscribeEvent
     public void onFarmlandTrample(BlockEvent.FarmlandTrampleEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
+        if (event.getEntity() instanceof Player player) {
             if (isPneumaticArmorPiece(player, EquipmentSlot.FEET)) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.hasMinPressure(EquipmentSlot.FEET) && handler.isArmorReady(EquipmentSlot.FEET)) {
@@ -324,8 +318,7 @@ public class PneumaticArmorHandler {
     @SubscribeEvent
     public void onPlayerTrack(PlayerEvent.StartTracking event) {
         // keep other players up to date with the state of each player's jetboots activity
-        if (event.getPlayer() instanceof ServerPlayer && event.getTarget() instanceof ServerPlayer) {
-            ServerPlayer trackedPlayer = (ServerPlayer) event.getTarget();
+        if (event.getPlayer() instanceof ServerPlayer && event.getTarget() instanceof ServerPlayer trackedPlayer) {
             if (trackedPlayer.getItemBySlot(EquipmentSlot.FEET).getItem() == ModItems.PNEUMATIC_BOOTS.get()) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(trackedPlayer);
                 if (handler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS) > 0) {

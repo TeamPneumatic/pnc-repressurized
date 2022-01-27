@@ -46,9 +46,9 @@ public class WailaRegistration implements IWailaPlugin {
         iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, BlockPneumaticCraft.class);
         iRegistrar.registerComponentProvider(new TubeModuleProvider.Component(), TooltipPosition.BODY, BlockPressureTube.class);
         iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, LivingEntity.class);
-        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.HEAD, EntitySemiblockBase.class);
+//        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.HEAD, EntitySemiblockBase.class);
         iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, EntitySemiblockBase.class);
-        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.TAIL, EntitySemiblockBase.class);
+//        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.TAIL, EntitySemiblockBase.class);
         iRegistrar.registerComponentProvider(new CamoProvider.Component(), TooltipPosition.BODY, BlockPneumaticCraft.class);
     }
 }

@@ -21,6 +21,7 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.datafixers.util.Either;
+import com.mojang.math.Matrix3f;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
@@ -532,16 +533,29 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         });
 
         // line loops border
-        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(5.0f), (posMat, builder) -> {
+        final Matrix3f normal = matrixStack.last().normal();
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoops(5.0f), (posMat, builder) -> {
             int rw = leftSided ? -renderWidth : renderWidth;
             float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
             float[] c2 = bgColorHi.getComponents(null);
             float[] c3 = leftSided ? bgColorHi.getComponents(null) : bgColorLo.getComponents(null);
             float[] c4 = bgColorLo.getComponents(null);
-            builder.vertex(posMat, renderBaseX, renderEffectiveY, 0).color(c1[0], c1[1], c1[2], c1[3]).endVertex();
-            builder.vertex(posMat, renderBaseX + rw, renderEffectiveY, 0).color(c2[0], c2[1], c2[2], c2[3]).endVertex();
-            builder.vertex(posMat, renderBaseX + rw, renderEffectiveY + renderHeight, 0).color(c3[0], c3[1], c3[2],c3[3]).endVertex();
-            builder.vertex(posMat, renderBaseX, renderEffectiveY + renderHeight, 0).color(c4[0], c4[1], c4[2], c4[3]).endVertex();
+            builder.vertex(posMat, renderBaseX, renderEffectiveY, 0)
+                    .color(c1[0], c1[1], c1[2], c1[3])
+                    .normal(normal, 1, 0, 0)
+                    .endVertex();
+            builder.vertex(posMat, renderBaseX + rw, renderEffectiveY, 0)
+                    .color(c2[0], c2[1], c2[2], c2[3])
+                    .normal(normal, 0, 1, 0)
+                    .endVertex();
+            builder.vertex(posMat, renderBaseX + rw, renderEffectiveY + renderHeight, 0)
+                    .color(c3[0], c3[1], c3[2],c3[3])
+                    .normal(normal, -1, 0, 0)
+                    .endVertex();
+            builder.vertex(posMat, renderBaseX, renderEffectiveY + renderHeight, 0)
+                    .color(c4[0], c4[1], c4[2], c4[3])
+                    .normal(normal, 0, -1, 0)
+                    .endVertex();
         });
 
         if (doneExpanding) {
@@ -549,20 +563,22 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             // text title
             String title = getMessage().getString();
             if (!title.isEmpty()) {
-                RenderUtils.renderString3d(ChatFormatting.UNDERLINE + title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderEffectiveY + 2, titleColor, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(new TextComponent(title).withStyle(ChatFormatting.UNDERLINE),
+                        renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderEffectiveY + 2,
+                        titleColor, matrixStack, buffer, false, true);
             }
             // text lines
-            int titleYoffset = title.isEmpty() ? 3 : 12;
+            int titleOffsetY = title.isEmpty() ? 3 : 12;
             Font font = Minecraft.getInstance().font;
             for (int i = curScroll; i < textComponents.size() && i < curScroll + getVisibleLines(); i++) {
                 int renderX = renderBaseX + (leftSided ? -renderWidth + 2 : 18);
-                int renderY = renderEffectiveY + (i - curScroll) * lineSpacing + titleYoffset + reservedLines * font.lineHeight;
+                int renderY = renderEffectiveY + (i - curScroll) * lineSpacing + titleOffsetY + reservedLines * font.lineHeight;
                 font.drawInBatch(reorderingProcessors.get(i), renderX, renderY, foregroundColor, dropShadows.get(i),
                         matrixStack.last().pose(), buffer, true, 0, RenderUtils.FULL_BRIGHT);
             }
 
             matrixStack.pushPose();
-            matrixStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderEffectiveY + (titleYoffset - 10), 0);
+            matrixStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderEffectiveY + (titleOffsetY - 10), 0);
             subWidgets.stream()
                     .filter(widget -> widget instanceof ICanRender3d)
                     .forEach(widget -> ((ICanRender3d) widget).render3d(matrixStack, buffer, partialTicks));
@@ -807,7 +823,8 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         void render(PoseStack matrixStack, int x, int y, boolean leftSided) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            texture.ifLeft(stack ->  GuiUtils.renderItemStack(matrixStack, stack, x - (leftSided ? 16 : 0), y))
+            texture.ifLeft(stack -> Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, x - (leftSided ? 16 : 0), y))
+//            texture.ifLeft(stack ->  GuiUtils.renderItemStack(matrixStack, stack, x - (leftSided ? 16 : 0), y))
                     .ifRight(resLoc -> GuiUtils.drawTexture(matrixStack, resLoc, x - (leftSided ? 16 : 0), y));
             RenderSystem.disableBlend();
         }

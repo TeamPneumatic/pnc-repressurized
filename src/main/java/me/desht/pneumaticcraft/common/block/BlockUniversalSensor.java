@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,7 +51,7 @@ public class BlockUniversalSensor extends BlockPneumaticCraft implements EntityB
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityUniversalSensor.class).ifPresent(teUS -> {
+        world.getBlockEntity(pos, ModTileEntities.UNIVERSAL_SENSOR.get()).ifPresent(teUS -> {
             if (entity instanceof Player && !(entity instanceof FakePlayer)) {
                 teUS.setPlayerId(entity.getUUID());
             }

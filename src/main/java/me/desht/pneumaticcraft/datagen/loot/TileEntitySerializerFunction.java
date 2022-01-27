@@ -85,8 +85,7 @@ public class TileEntitySerializerFunction extends LootItemConditionalFunction {
             ((IRedstoneControl<?>) te).getRedstoneController().serialize(subTag);
         }
 
-        if (te instanceof TileEntityBase) {
-            TileEntityBase teB = (TileEntityBase) te;
+        if (te instanceof TileEntityBase teB) {
             if (teB.shouldPreserveStateOnBreak()) {
                 // upgrades (only when wrenched)
                 TileEntityBase.UpgradeHandler upgradeHandler = teB.getUpgradeHandler();

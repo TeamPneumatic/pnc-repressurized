@@ -29,19 +29,19 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -53,7 +53,6 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class EntityHeatFrame extends EntitySemiblockBase {
@@ -311,7 +310,9 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         if (getStatus() != COOKING && cook >= 100) cook = 0;
         if (getStatus() != COOLING && cool >= 100) cool = 0;
         curInfo.accept(HeatUtil.formatHeatString(logic.getTemperatureAsInt()));
-        curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooking", cook).withStyle(ChatFormatting.GRAY));
-        curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooling", cool).withStyle(ChatFormatting.GRAY));
+        if (cook != 0)
+            curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooking", cook).withStyle(ChatFormatting.GRAY));
+        if (cool != 0)
+            curInfo.accept(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooling", cool).withStyle(ChatFormatting.GRAY));
     }
 }

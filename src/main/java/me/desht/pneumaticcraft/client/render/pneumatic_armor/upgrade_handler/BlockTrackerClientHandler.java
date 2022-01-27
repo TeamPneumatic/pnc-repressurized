@@ -330,6 +330,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     public void reset() {
         blockTypeCountPartial.clear();
         blockTypeCount.clear();
+        blockTargets.clear();
         blockTrackInfo = null;
     }
 

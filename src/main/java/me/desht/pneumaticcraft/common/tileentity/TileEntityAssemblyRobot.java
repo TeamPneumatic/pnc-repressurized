@@ -17,19 +17,20 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nonnull;
 
@@ -66,7 +67,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         super.onNeighborBlockUpdate(fromPos);
 
         if (controllerPos != null) {
-            PneumaticCraftUtils.getTileEntityAt(getLevel(), controllerPos, TileEntityAssemblyController.class)
+            nonNullLevel().getBlockEntity(controllerPos, ModTileEntities.ASSEMBLY_CONTROLLER.get())
                     .ifPresent(TileEntityAssemblyController::invalidateAssemblySystem);
         }
     }

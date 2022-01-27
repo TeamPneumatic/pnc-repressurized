@@ -34,13 +34,7 @@ class Helpers {
         return gui.width == 0 || gui.height == 0 ? null : new GuiProps(gui);
     }
 
-    private static class GuiProps implements IGuiProperties {
-        private final GuiPneumaticScreenBase gui;
-
-        GuiProps(GuiPneumaticScreenBase gui) {
-            this.gui = gui;
-        }
-
+    private record GuiProps(GuiPneumaticScreenBase gui) implements IGuiProperties {
         @Override
         public Class<? extends Screen> getScreenClass() {
             return gui.getClass();

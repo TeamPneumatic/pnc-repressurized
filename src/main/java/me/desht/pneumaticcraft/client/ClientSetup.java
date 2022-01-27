@@ -13,23 +13,22 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiRedstoneModule;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelTransferGadget;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDroneCore;
-import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelCropSupport;
-import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelHeatFrame;
-import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelLogisticsFrame;
-import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelSpawnerAgitator;
-import me.desht.pneumaticcraft.client.render.overlays.JackhammerOverlay;
-import me.desht.pneumaticcraft.client.render.overlays.MinigunOverlay;
-import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
+import me.desht.pneumaticcraft.client.model.entity.semiblocks.*;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
-import me.desht.pneumaticcraft.client.render.entity.*;
+import me.desht.pneumaticcraft.client.render.entity.RenderEntityRing;
+import me.desht.pneumaticcraft.client.render.entity.RenderEntityVortex;
+import me.desht.pneumaticcraft.client.render.entity.RenderMicromissile;
+import me.desht.pneumaticcraft.client.render.entity.RenderTumblingBlock;
 import me.desht.pneumaticcraft.client.render.entity.drone.RenderDrone;
 import me.desht.pneumaticcraft.client.render.entity.semiblock.*;
 import me.desht.pneumaticcraft.client.render.fluid.*;
+import me.desht.pneumaticcraft.client.render.overlays.JackhammerOverlay;
+import me.desht.pneumaticcraft.client.render.overlays.MinigunOverlay;
+import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticArmorLayer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
@@ -49,7 +48,6 @@ import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.LayerDefinitions;
@@ -60,6 +58,7 @@ import net.minecraft.client.renderer.entity.ArmorStandRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -132,11 +131,11 @@ public class ClientSetup {
         }
         for (String skin : event.getSkins()) {
             LivingEntityRenderer<?, ?> render = event.getSkin(skin);
-            if (render != null) addRenderLayer(render, event.getEntityModels());
+            if (render instanceof PlayerRenderer pr) addRenderLayer(pr, event.getEntityModels());
         }
     }
 
-    private static <T extends LivingEntity, M extends EntityModel<T>> void addRenderLayer(LivingEntityRenderer<T, M> render, EntityModelSet models) {
+    private static <T extends LivingEntity, M extends HumanoidModel<T>> void addRenderLayer(LivingEntityRenderer<T, M> render, EntityModelSet models) {
         render.addLayer(new PneumaticArmorLayer<>(render, models));
     }
 

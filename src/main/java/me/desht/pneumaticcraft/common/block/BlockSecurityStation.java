@@ -19,30 +19,31 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.ChatFormatting;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -82,9 +83,9 @@ public class BlockSecurityStation extends BlockPneumaticCraft implements EntityB
      */
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
-        if (entityLiving instanceof Player) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySecurityStation.class)
-                    .ifPresent(te -> te.sharedUsers.add(((Player) entityLiving).getGameProfile()));
+        if (entityLiving instanceof Player p) {
+            world.getBlockEntity(pos, ModTileEntities.SECURITY_STATION.get())
+                    .ifPresent(teSS -> teSS.sharedUsers.add(p.getGameProfile()));
         }
 
         super.setPlacedBy(world, pos, state, entityLiving, iStack);
@@ -102,8 +103,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft implements EntityB
         } else {
             if (!world.isClientSide) {
                 BlockEntity te = world.getBlockEntity(pos);
-                if (te instanceof TileEntitySecurityStation) {
-                    TileEntitySecurityStation teSS = (TileEntitySecurityStation) te;
+                if (te instanceof TileEntitySecurityStation teSS) {
                     if (teSS.isPlayerOnWhiteList(player)) {
                         return super.use(state, world, pos, player, hand, brtr);
                     } else if (!teSS.hasValidNetwork()) {
@@ -135,7 +135,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft implements EntityB
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntitySecurityStation.class)
+        return blockAccess.getBlockEntity(pos, ModTileEntities.SECURITY_STATION.get())
                 .map(teSS -> teSS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 

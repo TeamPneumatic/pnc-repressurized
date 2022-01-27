@@ -24,12 +24,12 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncHackSimulationUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -139,7 +139,7 @@ public class SimulationController implements ISimulationController {
     }
 
     private void maybeWakeAI() {
-        if (!te.getLevel().isClientSide && aiSimulation.isStarted() && te.getLevel().random.nextInt(100) < te.getDetectionChance()) {
+        if (!te.nonNullLevel().isClientSide && aiSimulation.isStarted() && te.nonNullLevel().random.nextInt(100) < te.getDetectionChance()) {
             aiSimulation.wakeUp();
         }
     }
@@ -166,13 +166,13 @@ public class SimulationController implements ISimulationController {
             aiSimulation.tick();
         }
 
-        boolean syncToClient = (te.getLevel().getGameTime() & 0x7) == 0;
+        boolean syncToClient = (te.nonNullLevel().getGameTime() & 0x7) == 0;
         if (!wasDone && aiSimulation.isHackComplete()) {
             // security station wins
             syncToClient = true;
             if (aiSimulation.isAwake()) {
                 // if hack window is closed before AI detects intrustion, hacker gets away with it
-                if (te.getLevel().isClientSide) {
+                if (te.nonNullLevel().isClientSide) {
                     hacker.playSound(SoundEvents.ENDERMAN_DEATH, 1f, 1f);
                 } else {
                     hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackFailed.1").withStyle(ChatFormatting.RED), false);
@@ -185,7 +185,7 @@ public class SimulationController implements ISimulationController {
         } else if (!wasDone && playerSimulation.isHackComplete()) {
             // hacker wins
             syncToClient = true;
-            if (te.getLevel().isClientSide) {
+            if (te.nonNullLevel().isClientSide) {
                 hacker.playSound(SoundEvents.PLAYER_LEVELUP, 1f, 1f);
             } else {
                 hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackSucceeded.1").withStyle(ChatFormatting.GREEN), false);
@@ -195,7 +195,7 @@ public class SimulationController implements ISimulationController {
                 }
             }
         }
-        if (!te.getLevel().isClientSide() && syncToClient) {
+        if (!te.nonNullLevel().isClientSide() && syncToClient) {
             NetworkHandler.sendToPlayer(new PacketSyncHackSimulationUpdate(te), (ServerPlayer) hacker);
         }
     }

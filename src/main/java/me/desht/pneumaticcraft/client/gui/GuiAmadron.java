@@ -31,16 +31,16 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -115,8 +115,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     }
 
     public static void basketUpdated() {
-        if (Minecraft.getInstance().screen instanceof GuiAmadron) {
-            ((GuiAmadron) Minecraft.getInstance().screen).needTooltipUpdate = true;
+        if (Minecraft.getInstance().screen instanceof GuiAmadron g) {
+            g.needTooltipUpdate = true;
         }
     }
 
@@ -133,7 +133,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
 
     @Override
     protected int getBackgroundTint() {
-        return 0x068e2c;
+        return 0xFF068e2c;
     }
 
     @Override
@@ -200,7 +200,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            minecraft.player.closeContainer();
+            ClientUtils.getClientPlayer().closeContainer();
         }
 
         return searchBar.keyPressed(keyCode, scanCode, modifiers)

@@ -17,10 +17,8 @@
 
 package me.desht.pneumaticcraft.client.render;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
@@ -54,7 +52,7 @@ public class ModRenderTypes extends RenderType {
         RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
                 .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
+                .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
                 .setLightmapState(RenderStateShard.LIGHTMAP)
                 .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
                 .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
@@ -77,7 +75,7 @@ public class ModRenderTypes extends RenderType {
                 false, false,
                 RenderType.CompositeState.builder()
                         .setTextureState(RenderStateShard.NO_TEXTURE)
-                        .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
+                        .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
                         .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                         .setCullState(NO_CULL)
                         .setLightmapState(RenderStateShard.LIGHTMAP)
@@ -87,31 +85,18 @@ public class ModRenderTypes extends RenderType {
         );
     }
 
-    private static final VertexFormat POS_COLOR_NORMAL_LIGHTMAP = new VertexFormat(ImmutableMap.<String,VertexFormatElement>builder()
-            .put("Position", DefaultVertexFormat.ELEMENT_POSITION)
-            .put("Color", DefaultVertexFormat.ELEMENT_COLOR)
-            .put("Normal", DefaultVertexFormat.ELEMENT_NORMAL)
-            .put("UV2", DefaultVertexFormat.ELEMENT_UV2)
-            .put("Padding", DefaultVertexFormat.ELEMENT_PADDING)
-            .build()
+    public static final RenderType BLOCK_FRAME = create("block_frame",
+            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,
+            false, false,
+            RenderType.CompositeState.builder()
+                    .setTextureState(NO_TEXTURE)
+                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setDepthTestState(NO_DEPTH_TEST)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)
     );
-    public static RenderType getBlockFrame(boolean disableDepthTest) {
-        return create("block_frame",
-                POS_COLOR_NORMAL_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
-                false, false,
-                RenderType.CompositeState.builder()
-                        .setTextureState(NO_TEXTURE)
-                        .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-//                        .setShadeModelState(SMOOTH_SHADE)
-//                        .setDiffuseLightingState(DIFFUSE_LIGHTING)
-                        .setLightmapState(LIGHTMAP)
-                        .setCullState(NO_CULL)
-                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
-                        .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                        .createCompositeState(false)
-        );
-    }
 
     public static final RenderType BLOCK_TRACKER = create("block_tracker",
             DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256,
@@ -120,7 +105,7 @@ public class ModRenderTypes extends RenderType {
                     // TODO 1.16 can we use VIEW_OFFSET_Z_LAYERING ?
 //                    .layer(RenderState.PROJECTION_LAYERING)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
+                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
                     .setTextureState(NO_TEXTURE)
                     .setCullState(NO_CULL)
                     .setLightmapState(NO_LIGHTMAP)
@@ -133,8 +118,6 @@ public class ModRenderTypes extends RenderType {
             DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.TRIANGLE_STRIP, 65536,
             false, false,
             RenderType.CompositeState.builder()
-//                    .layer(PROJECTION_LAYERING)
-//                    .setShadeModelState(SMOOTH_SHADE)
                     .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setTextureState(NO_TEXTURE)
@@ -145,42 +128,26 @@ public class ModRenderTypes extends RenderType {
                     .createCompositeState(false)
     );
 
-    public static RenderType getLineLoops(double lineWidth) {
+    private static final Function<Double,RenderType> LINE_LOOPS = Util.memoize((lineWidth) -> {
         LineStateShard lineState = new LineStateShard(OptionalDouble.of(lineWidth));
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setLineState(lineState)
+                .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                .setTextureState(RenderStateShard.NO_TEXTURE)
+                .setLightmapState(RenderStateShard.NO_LIGHTMAP)
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                .setDepthTestState(NO_DEPTH_TEST)
+                .setWriteMaskState(COLOR_WRITE)
+                .setCullState(NO_CULL)
+                .createCompositeState(false);
         return create("line_loops",
-                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINE_STRIP, 256,
+                DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.DEBUG_LINE_STRIP, 256,
                 false, false,
-                RenderType.CompositeState.builder()
-                        .setLineState(lineState)
-//                        .setShadeModelState(RenderStateShard.SMOOTH_SHADE)
-                        .setLineState(lineState)
-                        .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-                        .setLayeringState(LayeringStateShard.VIEW_OFFSET_Z_LAYERING)
-                        .setTextureState(RenderStateShard.NO_TEXTURE)
-                        .setCullState(RenderStateShard.NO_CULL)
-                        .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setOutputState(OutputStateShard.ITEM_ENTITY_TARGET)
-                        .createCompositeState(false)
-        );
-    }
+                state);
+    });
 
-    public static RenderType getLineLoopsTransparent(double lineWidth) {
-        LineStateShard lineState = new LineStateShard(OptionalDouble.of(lineWidth));
-        return create("line_loops",
-                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINE_STRIP, 256,
-                false, false,
-                RenderType.CompositeState.builder()
-                        .setLineState(lineState)
-                        .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-                        .setTextureState(RenderStateShard.NO_TEXTURE)
-                        .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setDepthTestState(NO_DEPTH_TEST)
-                        .setWriteMaskState(COLOR_WRITE)
-                        .setCullState(NO_CULL)
-                        .createCompositeState(false)
-        );
+    public static RenderType getLineLoops(double lineWidth) {
+        return LINE_LOOPS.apply(lineWidth);
     }
 
     private static final LineStateShard LINE_5 = new LineStateShard(OptionalDouble.of(5.0));

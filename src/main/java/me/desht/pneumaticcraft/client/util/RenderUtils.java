@@ -28,7 +28,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.BiConsumer;
 
@@ -107,9 +109,9 @@ public class RenderUtils {
         return ((mask & 1 << d1.get3DDataValue()) | (mask & 1 << d2.get3DDataValue())) != 0;
     }
 
-    public static RenderType renderFrame(PoseStack matrixStack, MultiBufferSource buffer, AABB aabb, float fw, float r, float g, float b, float a, int packedLightIn, boolean disableDepthTest, Direction... sides) {
-        RenderType type = ModRenderTypes.getBlockFrame(disableDepthTest);
-        VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getBlockFrame(disableDepthTest));
+    public static RenderType renderFrame(PoseStack matrixStack, MultiBufferSource buffer, AABB aabb, float fw, float r, float g, float b, float a, int packedLightIn, Direction... sides) {
+        RenderType type = ModRenderTypes.BLOCK_FRAME;
+        VertexConsumer builder = buffer.getBuffer(type);
         Matrix4f posMat = matrixStack.last().pose();
         byte mask = 0;
         if (sides.length == 0) {
@@ -287,8 +289,12 @@ public class RenderUtils {
         double size = (1 + 4 * renderProgress) / 16;
         Matrix4f posMat = matrixStackIn.last().pose();
         for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS; i += 25) { // 25 sides is enough to look circular
-            RenderUtils.posF(builder, posMat, 0f, PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size)
+            Vec3 v1 = new Vec3(0, PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size);
+            Vec3 v2 = new Vec3(0, PneumaticCraftUtils.sin[(i + 25) % PneumaticCraftUtils.CIRCLE_POINTS] * size, PneumaticCraftUtils.cos[(i + 25) % PneumaticCraftUtils.CIRCLE_POINTS] * size);
+
+            RenderUtils.posF(builder, posMat, 0f, v1.y(), v1.z())
                     .color(cols[1], cols[2], cols[3], cols[0])
+                    .normal(matrixStackIn.last().normal(), 0f, (float) (v2.y() - v1.y()), (float) (v2.z() - v1.z()))
                     .endVertex();
         }
         matrixStackIn.popPose();
@@ -364,12 +370,7 @@ public class RenderUtils {
         consumer.accept(matrixStack.last().pose(), buffer.getBuffer(type));
     }
 
-    public static void renderString3d(String str, float x, float y, int color, PoseStack matrixStack, MultiBufferSource buffer) {
-        Font fr = Minecraft.getInstance().font;
-        fr.drawInBatch(str, x, y, color, false, matrixStack.last().pose(), buffer, false, 0, FULL_BRIGHT);
-    }
-
-    public static void renderString3d(String str, float x, float y, int color, PoseStack matrixStack, MultiBufferSource buffer, boolean dropShadow, boolean disableDepthTest) {
+    public static void renderString3d(Component str, float x, float y, int color, PoseStack matrixStack, MultiBufferSource buffer, boolean dropShadow, boolean disableDepthTest) {
         Font fr = Minecraft.getInstance().font;
         fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest, 0, FULL_BRIGHT);
     }

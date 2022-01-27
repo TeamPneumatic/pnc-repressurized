@@ -21,11 +21,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -41,59 +40,59 @@ import net.minecraftforge.client.ForgeHooksClient;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class PneumaticArmorLayer<E extends LivingEntity, M extends EntityModel<E>> extends RenderLayer<E, M> {
+public class PneumaticArmorLayer<E extends LivingEntity, M extends HumanoidModel<E>> extends RenderLayer<E, M> {
     private final HumanoidModel<E> modelLeggings;
     private final HumanoidModel<E> modelArmor;
 
     public PneumaticArmorLayer(RenderLayerParent<E, M> entityRendererIn, EntityModelSet models) {
         super(entityRendererIn);
         this.modelLeggings = new HumanoidModel<>(models.bakeLayer(PNCModelLayers.PNEUMATIC_LEGS));
-        this.modelArmor = new HumanoidModel<>(models.bakeLayer(PNCModelLayers.PNEUMATIC_ARMOR));;
+        this.modelArmor = new HumanoidModel<>(models.bakeLayer(PNCModelLayers.PNEUMATIC_ARMOR));
     }
 
     @Override
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, E entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(ClientUtils.getClientPlayer())) {
-            modelArmor.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            modelLeggings.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-            renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.CHEST, packedLightIn, modelArmor);
-            renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.LEGS, packedLightIn, modelLeggings);
-            renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.FEET, packedLightIn, modelArmor);
-            renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.HEAD, packedLightIn, modelArmor);
-        }
+        renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.CHEST, packedLightIn, modelArmor,
+                partialTicks, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.LEGS, packedLightIn, modelLeggings,
+                partialTicks, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.FEET, packedLightIn, modelArmor,
+                partialTicks, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        renderSlot(matrixStackIn, bufferIn, entity, EquipmentSlot.HEAD, packedLightIn, modelArmor,
+                partialTicks, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
     }
 
-    private void renderSlot(PoseStack matrixStack, MultiBufferSource buffer, E entity, EquipmentSlot slot, int light, HumanoidModel<E> model) {
+    private void renderSlot(PoseStack matrixStack, MultiBufferSource buffer, E entity, EquipmentSlot slot, int light, HumanoidModel<E> model, float partialTicks, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         ItemStack stack = entity.getItemBySlot(slot);
-        if (stack.getItem() instanceof ItemPneumaticArmor armor) {
-            if (armor.getSlot() == slot) {
-                model = ForgeHooksClient.getArmorModel(entity, stack, slot, model);
-                this.getParentModel().copyPropertiesTo(model);
-                this.setModelSlotVisible(model, slot);
-                boolean glint = stack.hasFoil();
+        if (stack.getItem() instanceof ItemPneumaticArmor armor && armor.getSlot() == slot) {
+            this.getParentModel().copyPropertiesTo(model);
+            model.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
+            model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            this.setModelSlotVisible(model, slot);
+            Model model1 = ForgeHooksClient.getArmorModel(entity, stack, slot, model);
+            boolean glint = stack.hasFoil();
 
-                // secondary texture layer in all slots
-                float[] secondary = RenderUtils.decomposeColorF(armor.getSecondaryColor(stack));
-                this.doRender(matrixStack, buffer, light, glint, model, secondary[1], secondary[2], secondary[3], slot, ExtraLayer.SECONDARY_COLOR);
+            // secondary texture layer in all slots
+            float[] secondary = RenderUtils.decomposeColorF(armor.getSecondaryColor(stack));
+            this.doRender(matrixStack, buffer, light, glint, model1, secondary[1], secondary[2], secondary[3], slot, ExtraLayer.SECONDARY_COLOR);
 
-                if (slot == EquipmentSlot.CHEST) {
-                    // currently just the chestpiece "core" - untinted
-                    this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, glint, model, 1f, 1f, 1f, slot, ExtraLayer.TRANSLUCENT);
-                }
+            if (slot == EquipmentSlot.CHEST) {
+                // currently just the chestpiece "core" - untinted
+                this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, glint, model1, 1f, 1f, 1f, slot, ExtraLayer.TRANSLUCENT);
+            }
 
-                if (slot == EquipmentSlot.HEAD) {
-                    // eyepiece in head slot only
-                    float[] eyepiece = RenderUtils.decomposeColorF(armor.getEyepieceColor(stack));
-                    this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, false, model, eyepiece[1], eyepiece[2], eyepiece[3], slot, ExtraLayer.EYEPIECE);
-                }
+            if (slot == EquipmentSlot.HEAD) {
+                // eyepiece in head slot only
+                float[] eyepiece = RenderUtils.decomposeColorF(armor.getEyepieceColor(stack));
+                this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, false, model1, eyepiece[1], eyepiece[2], eyepiece[3], slot, ExtraLayer.EYEPIECE);
             }
         }
     }
 
-    private void doRender(PoseStack matrixStack, MultiBufferSource buffer, int light, boolean glint, HumanoidModel<E> model, float r, float g, float b, EquipmentSlot slot, ExtraLayer extraLayer) {
+    private void doRender(PoseStack matrixStack, MultiBufferSource buffer, int light, boolean glint, Model model, float r, float g, float b, EquipmentSlot slot, ExtraLayer extraLayer) {
         ResourceLocation armorResource = extraLayer.getArmorResource(slot);
-        VertexConsumer ivertexbuilder = ItemRenderer.getArmorFoilBuffer(buffer, extraLayer.getRenderType(armorResource), false, glint);
-        model.renderToBuffer(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY, r, g, b, 1.0F);
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(buffer, extraLayer.getRenderType(armorResource), false, glint);
+        model.renderToBuffer(matrixStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, r, g, b, 1.0F);
     }
 
     protected void setModelSlotVisible(HumanoidModel<E> model, EquipmentSlot slotIn) {

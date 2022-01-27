@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSpawnerExtractor;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -140,7 +139,7 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
                 extractSpawnerCore();
             } else if (currentSpeed > 0.1f && nonNullLevel().random.nextInt(defenderChance) == 0) {
                 // spawn defending entities; each entity nearby will slow down the extraction process
-                PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), SpawnerBlockEntity.class).ifPresent(te -> {
+                nonNullLevel().getBlockEntity(worldPosition.below(), BlockEntityType.MOB_SPAWNER).ifPresent(te -> {
                     if (!trySpawnDefender(te)) {
                         spawnFailures++;
                     }
@@ -227,7 +226,7 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     }
 
     private void extractSpawnerCore() {
-        PneumaticCraftUtils.getTileEntityAt(level, worldPosition.below(), SpawnerBlockEntity.class).ifPresent(te -> {
+        nonNullLevel().getBlockEntity(worldPosition.below(), BlockEntityType.MOB_SPAWNER).ifPresent(te -> {
             ItemStack spawnerCore = new ItemStack(ModItems.SPAWNER_CORE.get());
             ISpawnerCoreStats stats = PneumaticRegistry.getInstance().getItemRegistry().getSpawnerCoreStats(spawnerCore);
             Entity e = getCachedEntity(te);

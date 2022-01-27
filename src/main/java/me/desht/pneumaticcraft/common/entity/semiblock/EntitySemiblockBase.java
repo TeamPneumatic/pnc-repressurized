@@ -57,12 +57,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.Collection;
 
 public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, IGUIButtonSensitive {
     private static final EntityDataAccessor<Integer> TIME_SINCE_HIT = SynchedEntityData.defineId(EntitySemiblockBase.class, EntityDataSerializers.INT);
@@ -99,10 +102,12 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         if (!stack.isEmpty()) {
             ItemEntity itemEntity = new ItemEntity(level, getX() + dropOffset.x(), getY() + dropOffset.y(), getZ() + dropOffset.z(), stack);
             itemEntity.setDefaultPickUpDelay();
-            if (captureDrops() != null)
-                captureDrops().add(itemEntity);
-            else
+            Collection<ItemEntity> capture = captureDrops();
+            if (capture != null) {
+                capture.add(itemEntity);
+            } else {
                 level.addFreshEntity(itemEntity);
+            }
         }
     }
 
@@ -111,6 +116,15 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         super.tick();
 
         if (tickCount == 1) {
+            if (!level.isClientSide) {
+                Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
+                if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
+                    MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
+                } else {
+                    Log.error("found existing semiblock at %s, pos=%s, dir=%s", level, blockPos, dir);
+                }
+            }
+
             // can't do this in onAddedToWorld() because querying the blockstate then can cause a deadlock
             // add a small outset so the entity covers the block and becomes interactable
             setBoundingBox(getBlockBounds().move(blockPos));//.grow(0.01));
@@ -127,7 +141,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         }
 
         if (!level.isClientSide && isAlive() && !canStay()) {
-            discard();
+            kill();
         }
 
         Block curBlock = getBlockState().getBlock();
@@ -145,8 +159,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         ClipContext ctx = new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
         BlockHitResult brtr = player.level.clip(ctx);
 
-        if (brtr == null) {
-            // shouldn't happen, but sanity checking...
+        if (brtr.getType() != HitResult.Type.BLOCK) {
             return InteractionResult.PASS;
         }
 
@@ -317,31 +330,46 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public void onAddedToWorld() {
-        super.onAddedToWorld();
+    public void remove(RemovalReason pReason) {
+        super.remove(pReason);
 
         if (!level.isClientSide) {
-            Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
-            if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
-                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
-            } else {
-                Log.error("found existing semiblock at %s, pos=%s, dir=%s", level, blockPos, dir);
-            }
-        }
-    }
-
-    @Override
-    public void onRemovedFromWorld() {
-        super.onRemovedFromWorld();
-
-        if (!level.isClientSide) {
-            Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
+            Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
             SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
             MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
         }
 
-        onBroken();
+        if (pReason.shouldDestroy()) {
+            onBroken();
+        }
     }
+
+//    @Override
+//    public void onAddedToWorld() {
+//        super.onAddedToWorld();
+//
+//        if (!level.isClientSide) {
+//            Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
+//            if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
+//                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
+//            } else {
+//                Log.error("found existing semiblock at %s, pos=%s, dir=%s", level, blockPos, dir);
+//            }
+//        }
+//    }
+
+//    @Override
+//    public void onRemovedFromWorld() {
+//        super.onRemovedFromWorld();
+//
+//        if (!level.isClientSide) {
+//            Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
+//            SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
+//            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
+//        }
+//
+//        onBroken();
+//    }
 
     @Override
     public boolean isNoGravity() {
@@ -355,14 +383,14 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
 
     @Override
     public int getTrackingId() {
-        return isAddedToWorld() ? getId() : -1;
+//        return isAddedToWorld() ? getId() : -1;
+        return isAlive() ? getId() : -1;
     }
 
     @Override
     public boolean canCoexist(ISemiBlock otherSemiblock) {
-        if (this instanceof IDirectionalSemiblock) {
-            return !(otherSemiblock instanceof IDirectionalSemiblock)
-                    || ((IDirectionalSemiblock) this).getSide() != ((IDirectionalSemiblock) otherSemiblock).getSide();
+        if (this instanceof IDirectionalSemiblock d1) {
+            return !(otherSemiblock instanceof IDirectionalSemiblock d2) || d1.getSide() != d2.getSide();
         } else {
             return otherSemiblock instanceof IDirectionalSemiblock;
         }
@@ -372,7 +400,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     public void removeSemiblock(Player player) {
         player.playSound(SoundEvents.ITEM_PICKUP, 1.0f, 1.0f);
         dropOffset = player.position().subtract(this.position()).normalize();
-        this.discard();
+        this.kill();
     }
 
     @Override
@@ -386,7 +414,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
                     && ((Player)source.getEntity()).getAbilities().instabuild;
             if (isCreative || this.getDamageTaken() > MAX_HEALTH) {
                 shouldDropItem = !isCreative;
-                discard();
+                kill();
             }
         }
         return true;

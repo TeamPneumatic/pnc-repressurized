@@ -19,9 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -68,12 +66,13 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo implements E
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoorBase.class).ifPresent(this::updateDoorSide);
+
+        world.getBlockEntity(pos, ModTileEntities.PNEUMATIC_DOOR_BASE.get()).ifPresent(this::updateDoorSide);
     }
 
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoorBase.class).ifPresent(teDoorBase -> {
+        world.getBlockEntity(pos, ModTileEntities.PNEUMATIC_DOOR_BASE.get()).ifPresent(teDoorBase -> {
             updateDoorSide(teDoorBase);
             teDoorBase.onNeighborBlockUpdate(fromPos);
             BlockPos doorPos = pos.relative(teDoorBase.getRotation());
@@ -85,7 +84,7 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo implements E
     }
 
     private void updateDoorSide(TileEntityPneumaticDoorBase doorBase) {
-        PneumaticCraftUtils.getTileEntityAt(doorBase.getLevel(), doorBase.getBlockPos().relative(doorBase.getRotation()), TileEntityPneumaticDoor.class)
+        doorBase.nonNullLevel().getBlockEntity(doorBase.getBlockPos().relative(doorBase.getRotation()), ModTileEntities.PNEUMATIC_DOOR.get())
                 .ifPresent(teDoor -> {
                     if (doorBase.getRotation().getClockWise() == teDoor.getRotation() && teDoor.rightGoing
                             || doorBase.getRotation().getCounterClockWise() == teDoor.getRotation() && !teDoor.rightGoing) {

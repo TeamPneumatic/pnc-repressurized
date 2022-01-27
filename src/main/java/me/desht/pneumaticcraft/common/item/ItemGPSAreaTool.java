@@ -162,7 +162,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider, IGPSTool
         String var = area.getVarName(index);
         if (!var.isEmpty() && !player.getLevel().isClientSide) {
             BlockPos newPos = GlobalVariableHelper.getPos(player.getUUID(), var);
-            if (!pos.isPresent() || !pos.get().equals(newPos)) {
+            if (pos.isEmpty() || !pos.get().equals(newPos)) {
                 area.setPos(index, newPos);
                 area.writeToNBT(gpsTool.getOrCreateTag());
             }

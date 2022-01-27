@@ -41,6 +41,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -174,12 +175,12 @@ public class RenderEntityTarget {
             matrixStack.scale(mul, mul, mul);
             stat.renderStat(matrixStack, buffer, partialTicks);
         } else if (ticksExisted > 50) {
-            RenderUtils.renderString3d("Acquiring Target...", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
-            RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
+            RenderUtils.renderString3d(new TranslatableComponent("pneumaticcraft.entityTracker.info.acquiring"), 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
+            RenderUtils.renderString3d(new TextComponent((int)targetAcquireProgress + "%"), 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
         } else if (ticksExisted < -30) {
             stat.closeStat();
             stat.renderStat(matrixStack, buffer, partialTicks);
-            RenderUtils.renderString3d("Lost Target!", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
+            RenderUtils.renderString3d(new TranslatableComponent("pneumaticcraft.blockTracker.info.lostTarget"), 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
         }
 
         matrixStack.popPose();

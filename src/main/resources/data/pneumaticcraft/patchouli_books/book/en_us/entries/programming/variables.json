@@ -1,7 +1,7 @@
 {
   "name": "Variables",
   "icon": "minecraft:paper",
-  "category": "programming",
+  "category": "pneumaticcraft:programming",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

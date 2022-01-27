@@ -82,6 +82,14 @@ public class PneumaticCraftUtils {
     // an impossible blockpos to indicate invalid positions
     private static final BlockPos INVALID_POS = new BlockPos(0, Integer.MIN_VALUE, 0);
 
+    private static final int[] DYE_COLORS = new int[DyeColor.values().length];
+    static {
+        for (DyeColor color : DyeColor.values()) {
+            float[] rgb = color.getTextureDiffuseColors();
+            DYE_COLORS[color.getId()] = (int) (rgb[0] * 255) << 16 | ((int) (rgb[1] * 255) << 8) | (int) (rgb[2] * 255);
+        }
+    }
+
     private static final int MAX_CHAR_PER_LINE = 45;
 
     /**
@@ -652,16 +660,6 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * In 1.17 this will become non-trivial.  Adding it now to make porting easier in future.
-     *
-     * @param world the world
-     * @return minimum height allowed for this world.
-     */
-    public static int getMinHeight(@SuppressWarnings("unused") Level world) {
-        return 0;
-    }
-
-    /**
      * Check if a given string encodes a valid integer (negative included). Also intended to work for
      * partial strings, so useful for textfield validation.
      *
@@ -712,13 +710,6 @@ public class PneumaticCraftUtils {
         return rl.getNamespace().equals(Names.MOD_ID) ? rl.getPath() : rl.toString();
     }
 
-    private static final int[] DYE_COLORS = new int[DyeColor.values().length];
-    static {
-        for (DyeColor color : DyeColor.values()) {
-            float[] rgb = color.getTextureDiffuseColors();
-            DYE_COLORS[color.getId()] = (int) (rgb[0] * 255) << 16 | ((int) (rgb[1] * 255) << 8) | (int) (rgb[2] * 255);
-        }
-    }
     public static int getDyeColorAsInt(DyeColor dyeColor) {
         return DYE_COLORS[dyeColor.getId()];
     }

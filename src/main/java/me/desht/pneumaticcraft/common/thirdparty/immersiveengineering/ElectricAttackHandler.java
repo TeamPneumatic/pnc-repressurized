@@ -26,10 +26,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -44,20 +44,17 @@ public class ElectricAttackHandler {
     public static void onElectricalAttack(LivingHurtEvent event) {
         if (!event.getSource().getMsgId().equals(Lib.DMG_WireShock)) return;
 
-        if (event.getEntityLiving() instanceof EntityDrone) {
-            EntityDrone drone = (EntityDrone) event.getEntityLiving();
-            float dmg = event.getAmount();
-            int sec = drone.getUpgrades(EnumUpgrade.SECURITY);
-            if (sec > 0) {
+        if (event.getEntityLiving() instanceof EntityDrone drone) {
+            if (drone.getUpgrades(EnumUpgrade.SECURITY) > 0) {
+                float dmg = event.getAmount();
                 drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).addAir((int)(-50 * dmg));
-                event.setAmount(0f);
                 double dy = Math.min(dmg / 4, 0.5);
                 NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, drone.getX(), drone.getY(), drone.getZ(),
                             0, -dy, 0, (int) (dmg), 0, 0, 0), drone);
+                event.setAmount(0f);
                 playLeakSound(drone);
             }
-        } else if (event.getEntityLiving() instanceof Player) {
-            Player player = (Player)event.getEntityLiving();
+        } else if (event.getEntityLiving() instanceof Player player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.getUpgradeCount(EquipmentSlot.CHEST, EnumUpgrade.SECURITY) > 0
                     && handler.getArmorPressure(EquipmentSlot.CHEST) > 0.1

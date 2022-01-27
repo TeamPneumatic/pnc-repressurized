@@ -23,15 +23,12 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -56,8 +53,6 @@ public class EntityProvider {
     public static class Component implements IEntityComponentProvider {
         @Override
         public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
-            iTooltip.add(entityAccessor.getEntity().getDisplayName().copy().withStyle(ChatFormatting.WHITE));
-
             if (entityAccessor.getServerData().contains("Pressure")) {
                 float pressure = entityAccessor.getServerData().getFloat("Pressure");
                 iTooltip.add(new TranslatableComponent("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
@@ -71,9 +66,6 @@ public class EntityProvider {
                 BlockState state = entityAccessor.getLevel().getBlockState(pos);
                 iTooltip.add(state.getBlock().getName().withStyle(ChatFormatting.YELLOW));
             }
-
-            String modName = ModNameCache.getModName(Names.MOD_ID);
-            iTooltip.add(new TextComponent(modName).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));
         }
     }
 }

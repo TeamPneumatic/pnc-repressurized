@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.harvesting;
 
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 import java.util.function.Predicate;
 
@@ -30,27 +30,27 @@ public class HarvestHandlerCropLike extends HarvestHandlerAbstractCrop {
     private final IntegerProperty ageProperty;
     private final int minAge, maxAge;
     private final Predicate<ItemStack> isSeed;
-    
-    public HarvestHandlerCropLike(Predicate<BlockState> blockChecker, IntegerProperty ageProperty, Predicate<ItemStack> isSeed){
+
+    public HarvestHandlerCropLike(Predicate<BlockState> blockChecker, IntegerProperty ageProperty, Predicate<ItemStack> isSeed) {
         super(blockChecker);
         this.ageProperty = ageProperty;
         this.isSeed = isSeed;
         minAge = ageProperty.getPossibleValues().stream().mapToInt(Integer::intValue).min().orElse(0);
         maxAge = ageProperty.getPossibleValues().stream().mapToInt(Integer::intValue).max().orElse(7);
     }
-    
+
     @Override
-    protected boolean isSeed(Level world, BlockPos pos, BlockState state, ItemStack stack){
+    protected boolean isSeed(Level world, BlockPos pos, BlockState state, ItemStack stack) {
         return isSeed.test(stack);
     }
-    
+
     @Override
-    protected boolean isMaxAge(BlockState state){
+    protected boolean isMaxAge(BlockState state) {
         return state.getValue(ageProperty) == maxAge;
     }
-    
+
     @Override
-    protected BlockState withMinAge(BlockState state){
+    protected BlockState withMinAge(BlockState state) {
         return state.setValue(ageProperty, minAge);
     }
 }

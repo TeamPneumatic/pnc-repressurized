@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Direction;
@@ -34,7 +33,7 @@ import java.util.function.Supplier;
  * Sent by client to update server-side settings when redstone module GUI is closed
  */
 public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
-    private final byte side;
+    private final Direction side;
     private final byte op;
     private final byte ourColor;
     private final byte otherColor;
@@ -47,7 +46,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         super(module.getTube().getBlockPos());
 
         this.input = module.getRedstoneDirection() == EnumRedstoneDirection.INPUT;
-        this.side = (byte) module.getDirection().ordinal();
+        this.side = module.getDirection();
         this.op = (byte) module.getOperation().ordinal();
         this.ourColor = (byte) module.getColorChannel();
         this.otherColor = (byte) module.getOtherColor();
@@ -58,7 +57,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
 
     PacketSyncRedstoneModuleToServer(FriendlyByteBuf buffer) {
         super(buffer);
-        side = buffer.readByte();
+        side = buffer.readEnum(Direction.class);
         input = buffer.readBoolean();
         ourColor = buffer.readByte();
         if (input) {
@@ -79,7 +78,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     @Override
     public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
-        buf.writeByte(side);
+        buf.writeEnum(side);
         buf.writeBoolean(input);
         buf.writeByte(ourColor);
         if (input) {
@@ -97,8 +96,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
             Player player = ctx.get().getSender();
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
                 player.level.getBlockEntity(pos, ModTileEntities.PRESSURE_TUBE.get()).ifPresent(tube -> {
-                    TubeModule tm = tube.getModule(Direction.from3DDataValue(side));
-                    if (tm instanceof ModuleRedstone mr) {
+                    if (tube.getModule(side) instanceof ModuleRedstone mr) {
                         mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
                         mr.setColorChannel(ourColor);
                         if (input) {

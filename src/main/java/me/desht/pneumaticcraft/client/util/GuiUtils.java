@@ -90,9 +90,6 @@ public class GuiUtils {
 
             Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
-//            RenderSystem.enableRescaleNormal();
-//            RenderSystem.enableAlphaTest();
-//            RenderSystem.defaultAlphaFunc();
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             matrixStack.translate((float)x, (float)y, 150F);
@@ -111,8 +108,6 @@ public class GuiUtils {
                 Lighting.setupFor3DItems();
             }
 
-//            RenderSystem.disableAlphaTest();
-//            RenderSystem.disableRescaleNormal();
             matrixStack.popPose();
         }
     }
@@ -201,7 +196,9 @@ public class GuiUtils {
         }
         scaledAmount = Math.min(scaledAmount, bounds.getHeight());
 
-        bindTexture(TextureAtlas.LOCATION_BLOCKS);
+        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 

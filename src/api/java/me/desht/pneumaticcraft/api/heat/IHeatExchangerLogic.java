@@ -17,11 +17,12 @@
 
 package me.desht.pneumaticcraft.api.heat;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.Optional;
@@ -30,12 +31,12 @@ import java.util.function.BiPredicate;
 /**
  * Represents a heat exchanger owned by a tile entity. Retrieve instances of this via capability lookup; you
  * can use {@link me.desht.pneumaticcraft.api.PNCCapabilities#HEAT_EXCHANGER_CAPABILITY} or get your own
- * instance with {@code @CapabilityInject}.
+ * instance with {@link net.minecraftforge.common.capabilities.CapabilityManager#get(CapabilityToken)}.
  * <p>
  * If you are implementing a tile entity with a heat exchanger, you should <strong>not</strong> implement this
  * interface yourself; get an instance of it via {@link IHeatRegistry#makeHeatExchangerLogic()}, store it as field
- * in your TE, and provide via capability as described above. Your TE should also call {@link #tick()} and
- * {@link #initializeAsHull(World, BlockPos, BiPredicate, Direction...)} as documented in those methods.
+ * in your TE, and provide it via capability as described above. Your TE should also call {@link #tick()} and
+ * {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)} as documented in those methods.
  * <p>
  * If you want to attach this capability as an <em>adapater</em> to other mods' heat systems, see
  * {@link IHeatExchangerAdapter} and {@link IHeatExchangerAdapter.Simple} which are convenience extensions and
@@ -70,7 +71,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
      * Initialize this heat exchanger's ambient temperature based on the given world & position.  You don't need to call
      * this method if your heat exchanger is a hull exchanger (i.e. provides an {@link IHeatExchangerLogic} object via
      * capability lookup), as hulls are automatically initialized by
-     * {@link IHeatExchangerLogic#initializeAsHull(World, BlockPos, BiPredicate, Direction...)}
+     * {@link IHeatExchangerLogic#initializeAsHull(Level, BlockPos, BiPredicate, Direction...)}
      *
      * @param world the world
      * @param pos the position
@@ -83,7 +84,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
      * an example is the Vortex Tube.
      * <p>
      * You <strong>don't</strong> need to call this method if your TE just has one heat exchanger to
-     * expose to the world; in that case {@link #initializeAsHull(World, BlockPos, BiPredicate, Direction...)} will
+     * expose to the world; in that case {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)} will
      * handle connecting your TE's heat exchanger to neighbouring blocks.
      * <p>
      * You should only call this method on one of the two heat exchangers being connected; a reciprocal connection
@@ -200,7 +201,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
      * Check if this side of the heat exchanger has a thermal connection of any kind to the neighbouring block in the
      * given direction; whether to another heat exchanger, a static heat source like air, or a custom handler such as
      * a furnace or heat frame. The connection data is initialized in
-     * {@link #initializeAsHull(World, BlockPos, BiPredicate, Direction...)}.
+     * {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)}.
      *
      * @param side the side to check
      * @return true if this side has a thermal connection of any kind
@@ -219,9 +220,9 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
      * entity, and in this heat exchanger's list of heat behaviours that it handles.
      * @param pos position of the heat behaviour
      * @param cls required class of the heat behaviour (any heat behaviour which extends this class will match)
-     * @param <T>
-     * @return an optional heat behaviour, or {@code Optional.empty()} the position is invalid or there is no matching
-     * heat behaviour there
+     * @param <T> the heat behaviour type
+     * @return an optional heat behaviour, or {@code Optional.empty()} if the position is invalid or there is no
+     * matching heat behaviour there
      */
     default <T extends HeatBehaviour<?>> Optional<T> getHeatBehaviour(BlockPos pos, Class<T> cls) {
         return Optional.empty();

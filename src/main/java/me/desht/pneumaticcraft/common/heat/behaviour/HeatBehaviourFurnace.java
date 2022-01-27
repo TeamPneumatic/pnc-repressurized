@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.heat.behaviour;
 
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -45,7 +45,7 @@ public class HeatBehaviourFurnace extends HeatBehaviour<AbstractFurnaceBlockEnti
                 if (furnace.litTime == 0) {
                     getWorld().setBlockAndUpdate(getPos(), getBlockState().setValue(AbstractFurnaceBlock.LIT, true));
                 }
-                furnace.litDuration = 200; // oddly named? this is itemBurnTime
+                furnace.litDuration = 200;
                 furnace.litTime += 10;
                 getHeatExchanger().addHeat(-1);
             }

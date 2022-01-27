@@ -21,15 +21,14 @@ import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public enum FuelRegistry implements IFuelRegistry {
     INSTANCE;
@@ -85,13 +84,13 @@ public enum FuelRegistry implements IFuelRegistry {
             res.addAll(recipe.getFuel().getFluidStacks().stream()
                     .map(FluidStack::getFluid)
                     .filter(f -> f.isSource(f.defaultFluidState()))
-                    .collect(Collectors.toList()));
+                    .toList());
         }
 
         // fluids tags added by code
         fuelTags.forEach((tag, entry) -> {
             if (entry.mLperBucket > 0) {
-                List<Fluid> l = tag.getValues().stream().filter(f -> f.isSource(f.defaultFluidState())).collect(Collectors.toList());
+                List<Fluid> l = tag.getValues().stream().filter(f -> f.isSource(f.defaultFluidState())).toList();
                 res.addAll(l);
             }
         });
@@ -126,13 +125,6 @@ public enum FuelRegistry implements IFuelRegistry {
         return MISSING_FUEL_ENTRY;
     }
 
-    private static class FuelRecord {
-        final int mLperBucket;
-        final float burnRateMultiplier;
-
-        private FuelRecord(int mLperBucket, float burnRateMultiplier) {
-            this.mLperBucket = mLperBucket;
-            this.burnRateMultiplier = burnRateMultiplier;
-        }
+    private record FuelRecord(int mLperBucket, float burnRateMultiplier) {
     }
 }
