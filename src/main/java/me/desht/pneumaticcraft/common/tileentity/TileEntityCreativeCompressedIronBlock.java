@@ -77,6 +77,7 @@ public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedI
         try {
             targetTemperature += Integer.parseInt(tag) * (shiftHeld ? 10 : 1);
             targetTemperature = MathHelper.clamp(targetTemperature, 0, 2273);
+            setChanged();
         } catch (IllegalArgumentException ignored) {
         }
     }
