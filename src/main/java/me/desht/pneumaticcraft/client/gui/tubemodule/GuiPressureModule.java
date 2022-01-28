@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.TextComponent;
@@ -132,6 +133,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         }
 
         // the actual graph data
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.enableBlend();
