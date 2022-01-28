@@ -17,22 +17,30 @@
 
 package me.desht.pneumaticcraft.common.entity.living;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class EntityAmadrone extends EntityDrone {
     private static ItemStack amadroneStack = ItemStack.EMPTY;
@@ -55,8 +63,19 @@ public class EntityAmadrone extends EntityDrone {
         EntityAmadrone drone = new EntityAmadrone(ModEntities.AMADRONE.get(), world);
         drone.readFromItemStack(getAmadroneStack());
 
-        int startY = world.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, pos.offset(30, 0, 0)).getY() + 27 + world.random.nextInt(6);
-        drone.setPos(pos.getX() + 27 + world.random.nextInt(6), startY, pos.getZ() + world.random.nextInt(6) - 3);
+        List<Integer> offsets = ConfigHelper.common().amadron.amadroneSpawnLocation.get();
+        if (offsets.size() != 3) {
+            Log.error("invalid offsets for amadron_spawn_location; expecting list of 3 integers! Defaulting to (30, 30, 0)");
+            offsets = ImmutableList.of(30, 30, 0);
+        }
+        int xOff = offsets.get(0);
+        int yOff = offsets.get(1);
+        int zOff = offsets.get(2);
+
+        int startY = ConfigHelper.common().amadron.amadroneSpawnLocationRelativeToGroundLevel.get() ?
+                world.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, pos.offset(xOff, 0, zOff)).getY() + yOff :
+                pos.getY() + yOff;
+        drone.setPos(pos.getX() + xOff, startY, pos.getZ() + zOff);
 
         return drone;
     }
@@ -168,5 +187,12 @@ public class EntityAmadrone extends EntityDrone {
     @Override
     public boolean isTeleportRangeLimited() {
         return false;
+    }
+
+    @Override
+    public void overload(String msgKey, Object... params) {
+        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.CLOUD, getX() - 0.5, getY() - 0.5, getZ() - 0.5, 0, 0.1, 0, 10, 1, 1, 1), this);
+        MinecraftForge.EVENT_BUS.unregister(this);
+        remove();
     }
 }

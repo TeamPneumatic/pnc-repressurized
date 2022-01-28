@@ -21,10 +21,10 @@ import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.Validate;
@@ -50,17 +50,21 @@ public class ProgrammedDroneUtils {
         ProgWidgetInventoryExport inventoryExport = new ProgWidgetInventoryExport();
         inventoryExport.setSides(ISidedWidget.ALL_SIDES);
         builder.add(inventoryExport, ProgWidgetArea.fromPosition(pos));
-        ProgWidgetArea area = ProgWidgetArea.fromPosition(pos);
-        if (drone.isBlockValidPathfindBlock(pos)) {
-            for (int i = 0; i < 5 && drone.isBlockValidPathfindBlock(new BlockPos(area.x1, area.y1, area.z1)); i++) {
-                area.y1 = pos.getY() + i;
+        ProgWidgetArea dropOffArea = null;
+        for (Direction d: DirectionUtil.VALUES) {
+            if (drone.isBlockValidPathfindBlock(pos.relative(d))) {
+                dropOffArea = ProgWidgetArea.fromPosition(pos.relative(d));
             }
-        } else {
-            area.y1 = world.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, pos).getY() + 10;
-            if (!drone.isBlockValidPathfindBlock(new BlockPos(area.x1, area.y1, area.z1)))
-                area.y1 = 260; // Worst case scenario; there are definitely no blocks here.
         }
-        builder.add(new ProgWidgetDropItem(), area);
+        if (dropOffArea == null) {
+            dropOffArea = ProgWidgetArea.fromPosition(pos);
+            for (int i = 2; i < 10 && !drone.isBlockValidPathfindBlock(pos.relative(Direction.UP, i)); i++) {
+                dropOffArea.y1 = pos.getY() + i;
+            }
+            if (!drone.isBlockValidPathfindBlock(new BlockPos(dropOffArea.x1, dropOffArea.y1, dropOffArea.z1)))
+                dropOffArea.y1 = world.getMaxBuildHeight() + 5; // Worst case scenario; there are definitely no blocks here.
+        }
+        builder.add(new ProgWidgetDropItem(), dropOffArea);
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
