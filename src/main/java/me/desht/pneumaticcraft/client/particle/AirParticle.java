@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.BlockPos;
@@ -70,17 +71,17 @@ public class AirParticle extends TextureSheetParticle {
 
         // fades out and gets bigger as it gets older
         setSpriteFromAge(sprite);
-        scale(1.03f);
+        scale(1.1f);
         alpha *= 0.975;
 
-        if (level.random.nextInt(5) == 0) {
-            xd += level.random.nextDouble() * 0.1 - 0.05;
+        if (level.random.nextInt(10) == 0) {
+            xd += level.random.nextDouble() * 0.08 - 0.04;
         }
-        if (level.random.nextInt(5) == 0) {
-            yd += level.random.nextDouble() * 0.1 - 0.05;
+        if (level.random.nextInt(10) == 0) {
+            yd += level.random.nextDouble() * 0.08 - 0.04;
         }
-        if (level.random.nextInt(5) == 0) {
-            yd += level.random.nextDouble() * 0.1 - 0.05;
+        if (level.random.nextInt(10) == 0) {
+            yd += level.random.nextDouble() * 0.08 - 0.04;
         }
     }
 
@@ -110,13 +111,14 @@ public class AirParticle extends TextureSheetParticle {
         public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             // TODO 1.17 how do we do this now?
 //            RenderSystem.alphaFunc(GL11.GL_GREATER, 0.003921569F);
 //            RenderSystem.disableLighting();
 
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
-            textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true, false);
+            RenderSystem.setShader(GameRenderer::getParticleShader);
+//            textureManager.getTexture(TextureAtlas.LOCATION_PARTICLES).setBlurMipmap(true, false);
             bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
         }
 
