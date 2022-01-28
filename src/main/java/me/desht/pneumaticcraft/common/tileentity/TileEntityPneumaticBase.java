@@ -29,11 +29,11 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -94,19 +94,27 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
         super.onUpgradesChanged();
 
         airHandler.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
-        airHandler.setHasSecurityUpgrade(getUpgrades(EnumUpgrade.SECURITY) > 0);
+        handleSecurityUpgrade(airHandler);
 
         airHandlerMap.keySet().forEach(h -> {
             h.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
-            h.setHasSecurityUpgrade(getUpgrades(EnumUpgrade.SECURITY) > 0);
+            handleSecurityUpgrade(h);
         });
+    }
+
+    private void handleSecurityUpgrade(IAirHandlerMachine handler) {
+        if (getUpgrades(EnumUpgrade.SECURITY) > 0) {
+            handler.enableSafetyVenting(p -> p > getDangerPressure(), Direction.UP);
+        } else {
+            handler.disableSafetyVenting();
+        }
     }
 
     @Override
     public void onBlockRotated() {
         super.onBlockRotated();
 
-        // force a resync of where any leak might be coming from
+        // force a recalculation of where any possible leak might be coming from
         initializeHullAirHandlers();
         airHandlerMap.keySet().forEach(h -> h.setSideLeaking(null));
     }
@@ -236,10 +244,6 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
 
     public int getDefaultVolume() {
         return airHandler.getBaseVolume();
-    }
-
-    public void forceLeak(Direction dir) {
-        airHandler.setSideLeaking(dir);
     }
 
     public boolean hasNoConnectedAirHandlers() {

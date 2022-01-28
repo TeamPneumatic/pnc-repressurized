@@ -47,7 +47,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 /**
  * A ticking air handler owned by a tile entity, which disperses air to those neighbouring air handlers
@@ -56,13 +56,15 @@ import java.util.stream.Collectors;
 public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMachine, IManoMeasurable {
     private final PressureTier tier;
     private int volumeUpgrades = 0;
-    private boolean hasSecurityUpgrade = false;
     private final BitSet connectedFaces = new BitSet(6);
     private Direction leakDir = null;
     private Direction prevLeakDir = null;
-    private boolean safetyLeak;
     private int prevAir;
     private final Map<Direction, LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new EnumMap<>(Direction.class);
+    // note: leaks due to security upgrade are tracked separately from leaks due to disconnection
+    private boolean safetyLeaking;
+    private Predicate<Float> securityUpgradePred;
+    private Direction safetyLeakDir;
 
     public MachineAirHandler(PressureTier tier, int volume) {
         super(volume);
@@ -105,8 +107,15 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     @Override
-    public void setHasSecurityUpgrade(boolean hasSecurityUpgrade) {
-        this.hasSecurityUpgrade = hasSecurityUpgrade;
+    public void enableSafetyVenting(Predicate<Float> pressureCheck, Direction dir) {
+        this.safetyLeakDir = dir;
+        this.securityUpgradePred = pressureCheck;
+    }
+
+    @Override
+    public void disableSafetyVenting() {
+        this.safetyLeakDir = null;
+        this.securityUpgradePred = null;
     }
 
     @Override
@@ -122,31 +131,31 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
     @Override
     public void tick(BlockEntity ownerTE) {
-        Level world = ownerTE.getLevel();
+        Level world = Objects.requireNonNull(ownerTE.getLevel());
         Direction actualLeakDir = leakDir;
         if (!world.isClientSide) {
             // server
             disperseAir(ownerTE);
 
             BlockPos pos = ownerTE.getBlockPos();
-            if (hasSecurityUpgrade) {
+            if (safetyLeakDir != null) {
                 float pressure = getPressure();
-                if (!safetyLeak && pressure >= getDangerPressure()) {
-                    safetyLeak = true;
-                } else if (safetyLeak && pressure < getDangerPressure() - 0.2) {
-                    safetyLeak = false;
+                if (!safetyLeaking && securityUpgradePred.test(pressure) /*pressure >= getDangerPressure()*/) {
+                    safetyLeaking = true;
+                } else if (safetyLeaking && !securityUpgradePred.test(pressure + 0.2f) /*pressure < getDangerPressure() - 0.2*/) {
+                    safetyLeaking = false;
                 }
                 // also cap pressure at critical level (it's still possible for air to added faster than it can vent)
                 if (pressure >= getCriticalPressure()) {
                     int wanted = (int)(getCriticalPressure() * getVolume());
                     addAir(wanted - getAir());
                 }
-            } else if (world.getServer().getTickCount() > 20) {
+            } else if (Objects.requireNonNull(world.getServer()).getTickCount() > 20) {
                 // little kludge: no overpressure checks right after server starts up (just to be safe)
                 doOverpressureChecks(ownerTE, world, pos);
             }
 
-            actualLeakDir = safetyLeak ? anyClearDirection(world, pos) : leakDir;
+            actualLeakDir = safetyLeaking ? safetyLeakDir : leakDir;
             if (prevLeakDir != actualLeakDir || actualLeakDir != null && (world.getGameTime() & 0x1f) == 0) {
                 // if leak status changes, sync pressure & leak dir to the client
                 // OR if already leaking, periodically sync pressure & leak dir to the client
@@ -194,7 +203,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     private void handleAirLeak(BlockEntity ownerTE, Direction actualLeakDir) {
-        Level world = ownerTE.getLevel();
+        Level world = Objects.requireNonNull(ownerTE.getLevel());
         BlockPos pos = ownerTE.getBlockPos();
 
         float pressure = getPressure();
@@ -243,7 +252,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         if (!connectedFaces.get(dir.get3DDataValue())) return LazyOptional.empty();
 
         if (!neighbourAirHandlers.get(dir).isPresent()) {
-            BlockEntity te1 = ownerTE.getLevel().getBlockEntity(ownerTE.getBlockPos().relative(dir));
+            BlockEntity te1 = Objects.requireNonNull(ownerTE.getLevel()).getBlockEntity(ownerTE.getBlockPos().relative(dir));
             if (te1 != null) {
                 LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
                 if (cap.isPresent()) {
@@ -301,7 +310,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         neighbours.addAll(addExtraConnectedHandlers(ownerTE).stream()
                 .filter(h -> !onlyLowerPressure || h.getPressure() < getPressure())
                 .map(ConnectedAirHandler::new)
-                .collect(Collectors.toList()));
+                .toList());
         return neighbours;
     }
 

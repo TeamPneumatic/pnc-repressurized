@@ -17,10 +17,13 @@
 
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 
 public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
+    private boolean shouldAddVenting = false;
 
     public ModuleSafetyValve(ItemTubeModule item) {
         super(item);
@@ -29,9 +32,10 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
     @Override
     public void tickServer() {
         super.tickServer();
-
-        if (pressureTube.getPressure() > getThreshold()) {
-            pressureTube.forceLeak(dir);
+        if (shouldAddVenting) {
+            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).orElseThrow(RuntimeException::new)
+                    .enableSafetyVenting(p -> p > getThreshold(), getDirection());
+            shouldAddVenting = false;
         }
     }
 
@@ -42,5 +46,24 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
         // 4.92 instead of 4.9 because if the system is being fed via regulator from a high pressure line,
         // then it will be at 4.9 bar, which would cause safety modules to leak unnecessarily...
         return getTube().getDangerPressure() == PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE ? 19.9f : 4.92f;
+    }
+
+    @Override
+    public void setTube(TileEntityPressureTube tube) {
+        super.setTube(tube);
+
+        // can't add immediately because the tube's world could be null (this is called on world load as well as
+        // when player places module)
+        shouldAddVenting = true;
+    }
+
+    @Override
+    public void onRemoved() {
+        if (!pressureTube.nonNullLevel().isClientSide) {
+            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+                h.disableSafetyVenting();
+                h.setSideLeaking(null);
+            });
+        }
     }
 }

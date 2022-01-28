@@ -28,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * An extended air handler which is used by tile entities.  It supports the concept of connected neighbouring
@@ -69,12 +70,17 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     void setVolumeUpgrades(int newVolumeUpgrades);
 
     /**
-     * Should be called by the owning tile entity when its security upgrades change. A Security Upgrade will cause
-     * the air handler to leak air instead of exploding.
+     * Allow this air handler to vent air when over-pressure.
      *
-     * @param hasSecurityUpgrade true if the holder has one or more security upgrades
+     * @param pressureCheck a predicate to test if venting is required
+     * @param dir direction to leak air in
      */
-    void setHasSecurityUpgrade(boolean hasSecurityUpgrade);
+    void enableSafetyVenting(Predicate<Float> pressureCheck, Direction dir);
+
+    /**
+     * Disallow any safety venting.
+     */
+    void disableSafetyVenting();
 
     /**
      * Must be called every tick by the owning tile entity.
