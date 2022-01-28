@@ -26,21 +26,21 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticleTrail;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathFinder;
-import net.minecraft.world.level.pathfinder.Node;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -146,7 +146,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
     }
 
     private boolean teleportationAllowed(BlockPos pos) {
-        int max = ConfigHelper.common().advanced.maxDroneTeleportRange.get();
+        int max = ConfigHelper.common().drones.maxDroneTeleportRange.get();
         return !droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerThan(droneEntity.getDronePos(), max);
     }
 
@@ -189,8 +189,8 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
             if (!isDone()) {
                 followThePath();
                 if (path != null && !path.isDone()) {
-                    if (ConfigHelper.common().advanced.stuckDroneTeleportTicks.get() > 0 && mob.getDeltaMovement().lengthSqr() < 0.0001) {
-                        if (stuckTicks++ > ConfigHelper.common().advanced.stuckDroneTeleportTicks.get()) {
+                    if (ConfigHelper.common().drones.stuckDroneTeleportTicks.get() > 0 && mob.getDeltaMovement().lengthSqr() < 0.0001) {
+                        if (stuckTicks++ > ConfigHelper.common().drones.stuckDroneTeleportTicks.get()) {
                             Vec3 v = droneEntity.getDronePos();
                             droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.stuckBlock",
                                     new BlockPos(Math.round(v.x), Math.round(v.y), Math.round(v.z)));

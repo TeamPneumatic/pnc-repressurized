@@ -367,7 +367,7 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     public void onUpdateTasks() {
-        if (ConfigHelper.common().advanced.stopDroneAI.get()) return;
+        if (ConfigHelper.common().drones.stopDroneAI.get()) return;
 
         pickupItemsIfMagnet();
 

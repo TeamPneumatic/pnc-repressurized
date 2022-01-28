@@ -25,15 +25,15 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
 import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -125,13 +125,12 @@ public class DroneDebugger {
         // with thanks to @Zorn_Taov for this code, slightly adapted for drone debugger integration by desht...
         @SubscribeEvent
         public static void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
-            if (!ConfigHelper.common().general.droneDebuggerPathParticles.get()
-                    || !(event.getEntityLiving() instanceof EntityDrone)
+            if (!ConfigHelper.common().drones.droneDebuggerPathParticles.get()
+                    || !(event.getEntityLiving() instanceof EntityDrone drone)
                     || event.getEntityLiving().level.isClientSide) {
                 return;
             }
 
-            EntityDrone drone = (EntityDrone) event.getEntityLiving();
             if (drone.getDebugger().debuggingPlayers.isEmpty()) return;
 
             PathNavigation navi = drone.getNavigation();

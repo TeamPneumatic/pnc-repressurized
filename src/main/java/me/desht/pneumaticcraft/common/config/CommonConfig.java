@@ -26,11 +26,9 @@ import java.util.List;
 
 public class CommonConfig {
     public static class General {
-        public ForgeConfigSpec.BooleanValue droneDebuggerPathParticles;
         public ForgeConfigSpec.IntValue oilGenerationChance;
         public ForgeConfigSpec.IntValue surfaceOilGenerationChance;
         public ForgeConfigSpec.BooleanValue enableDungeonLoot;
-        public ForgeConfigSpec.BooleanValue enableDroneSuffocation;
         public ForgeConfigSpec.DoubleValue fuelBucketEfficiency;
         public ForgeConfigSpec.IntValue maxProgrammingArea;
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
@@ -39,9 +37,6 @@ public class CommonConfig {
         public ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
         public ForgeConfigSpec.IntValue minFluidFuelTemperature;
         public ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
-        public ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
-        public ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
-        public ForgeConfigSpec.BooleanValue dronesCanBePickedUp;
     }
     public static class Machines {
         public ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -83,14 +78,10 @@ public class CommonConfig {
         public ForgeConfigSpec.DoubleValue cofhHoldingMultiplier;
     }
     public static class Advanced {
-        public ForgeConfigSpec.IntValue stuckDroneTeleportTicks;
         public ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
         public ForgeConfigSpec.IntValue fluidTankUpdateRate;
         public ForgeConfigSpec.IntValue pressureSyncPrecision;
-        public ForgeConfigSpec.BooleanValue stopDroneAI;
         public ForgeConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
-        public ForgeConfigSpec.IntValue maxDroneChargingStationSearchRange;
-        public ForgeConfigSpec.IntValue maxDroneTeleportRange;
     }
     public static class Micromissiles {
         public ForgeConfigSpec.DoubleValue baseExplosionDamage;
@@ -169,6 +160,18 @@ public class CommonConfig {
         public ForgeConfigSpec.EnumValue<VillagerTradesRegistration.WhichTrades> whichTrades;
     }
 
+    public static class Drones {
+        public ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
+        public ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
+        public ForgeConfigSpec.BooleanValue dronesCanBePickedUp;
+        public ForgeConfigSpec.BooleanValue stopDroneAI;
+        public ForgeConfigSpec.IntValue stuckDroneTeleportTicks;
+        public ForgeConfigSpec.IntValue maxDroneChargingStationSearchRange;
+        public ForgeConfigSpec.IntValue maxDroneTeleportRange;
+        public ForgeConfigSpec.BooleanValue droneDebuggerPathParticles;
+        public ForgeConfigSpec.BooleanValue enableDroneSuffocation;
+    }
+
     public final General general = new General();
     public final Machines machines = new Machines();
     public final Armor armor = new Armor();
@@ -182,6 +185,7 @@ public class CommonConfig {
     public final Logistics logistics = new Logistics();
     public final Jackhammer jackhammer = new Jackhammer();
     public final Villagers villagers = new Villagers();
+    public final Drones drones = new Drones();
 
     CommonConfig(final ForgeConfigSpec.Builder builder) {
         builder.push("General");
@@ -199,10 +203,6 @@ public class CommonConfig {
                 .comment("Enable mod dungeon loot generation")
                 .translation("pneumaticcraft.config.common.general.enable_dungeon_loot")
                 .define("enable_dungeon_loot", true);
-        general.enableDroneSuffocation = builder
-                .comment("Enable Drone Suffocation Damage")
-                .translation("pneumaticcraft.config.common.general.enable_drone_suffocation")
-                .define("enable_drone_suffocation", true);
         general.fuelBucketEfficiency = builder
                 .comment("Efficiency of fuel buckets as furnace fuel (default 0.05 means 1 bucket of LPG smelts 450 items in a vanilla furnace)")
                 .translation("pneumaticcraft.config.common.general.fuel_bucket_efficiency")
@@ -235,22 +235,6 @@ public class CommonConfig {
                 .comment("Should dyes be used up when coloring things (Drones, Logistics Modules, Redstone Modules)?")
                 .translation("pneumaticcraft.config.common.general.use_up_dyes_when_coloring")
                 .define("use_up_dyes_when_coloring", false);
-        general.dronesRenderHeldItem = builder
-                .comment("Drones render their held item (the item in slot 0 of their inventory) ?  Note: this is in common config since if enabled, server needs to sync the item data to the client.")
-                .translation("pneumaticcraft.config.common.general.drones_render_held_item")
-                .define("drones_render_held_item", true);
-        general.dronesCanImportXPOrbs = builder
-                .comment("Are drones allowed to import Experience Orbs and convert them to Memory Essence fluid?")
-                .translation("pneumaticcraft.config.common.general.drones_can_import_xp_orbs")
-                .define("drones_can_import_xp_orbs", true);
-        general.dronesCanBePickedUp = builder
-                .comment("Will Drones automatically get picked up by Boats/Minecarts/etc. if they're close enough?")
-                .translation("pneumaticcraft.config.common.general.drones_can_be_picked_up")
-                .define("drones_can_be_picked_up", false);
-        general.droneDebuggerPathParticles = builder
-                .comment("Show particle trail indicating the currently-debugged drone's planned path")
-                .translation("pneumaticcraft.config.common.general.drone_debugger_path_particles")
-                .define("drone_debugger_path_particles", true);
         general.vacuumTrapBlacklist = builder
                 .comment("Blacklisted entity type ID's or tags (use '#' prefix), which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
                 .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
@@ -390,26 +374,10 @@ public class CommonConfig {
                 .comment("Precision to which pressurizable item air levels are synced to client. Default of 10 is precise enough to show pressure to 1 decimal place, which is what is display in client tooltips & pneumatic armor HUD. Lower values will sync less precisely, reducing server->client network traffic. Values higher than 10 are not recommended (will cause extra network traffic for no benefit).")
                 .translation("pneumaticcraft.config.common.advanced.pressurizable_sync_precision")
                 .defineInRange("pressurizable_sync_precision", 10, 1, 100);
-        advanced.stopDroneAI = builder
-                .comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report any such bugs as a PneumaticCraft: Repressurized issue so it can be investigated.")
-                .translation("pneumaticcraft.config.common.advanced.stop_drone_ai")
-                .define("stop_drone_ai", false);
         advanced.dontUpdateInfiniteWaterSources = builder
                 .comment("Don't remove a water source block when picking up (drones, liquid hoppers, gas lift) if it has at least two water source neighbours. This can reduce lag due to frequent block updates, and can also potentially make water import much faster. Set this to false if you want no-infinite-water rules in a world, or want to limit the speed of water importing to vanilla block update rates.")
                 .translation("pneumaticcraft.config.common.advanced.dont_update_infinite_water_sources")
                 .define("dont_update_infinite_water_sources", true);
-        advanced.maxDroneChargingStationSearchRange = builder
-                .comment("How far will a drone go to find a Charging Station when it's low on air? Note: drones will teleport, possibly across the world to someone else's base, if this range is very large.")
-                .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
-                .defineInRange("max_drone_charging_station_search_range", 80, 16, Integer.MAX_VALUE);
-        advanced.maxDroneTeleportRange = builder
-                .comment("The maximum distance that a Drone may teleport when it can't find a path to its destination. Default value of 0 means no limit. This is primarily intended to limit abuse of teleportation to other players on PvP servers, but may find other uses. Be careful about setting this value very low.")
-                .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
-                .defineInRange("max_drone_teleport_range", 0, 0, Integer.MAX_VALUE);
-        advanced.stuckDroneTeleportTicks = builder
-                .comment("If a Drone has found a path, but gets stuck on a block along that path, it will teleport to its destination after this many ticks of being stuck. Set this to 0 to disable teleporting, which will likely leave the drone waiting there forever (or until it runs out of air). Note that getting stuck on a block is usually the fault of the mod that added the block (especially if the block has a non-full-cube shape), but if you encounter this behaviour, please report it as a PneumaticCraft: Repressurized issue so it can be investigated.")
-                .translation("pneumaticcraft.config.common.advanced.stuck_drone_teleport_ticks")
-                .defineInRange("stuck_drone_teleport_ticks", 20, 0, Integer.MAX_VALUE);
         builder.pop();
 
         builder.push("Micromissile Properties");
@@ -679,6 +647,45 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.villagers.mechanic_trades")
                 .worldRestart()
                 .defineEnum("mechanicTrades", VillagerTradesRegistration.WhichTrades.ALL);
+        builder.pop();
+
+        builder.push("Drones");
+        drones.enableDroneSuffocation = builder
+                .comment("Enable Drone Suffocation Damage")
+                .translation("pneumaticcraft.config.common.general.enable_drone_suffocation")
+                .define("enable_drone_suffocation", true);
+        drones.dronesRenderHeldItem = builder
+                .comment("Drones render their held item (the item in slot 0 of their inventory) ?  Note: this is in common config since if enabled, server needs to sync the item data to the client.")
+                .translation("pneumaticcraft.config.common.general.drones_render_held_item")
+                .define("drones_render_held_item", true);
+        drones.dronesCanImportXPOrbs = builder
+                .comment("Are drones allowed to import Experience Orbs and convert them to Memory Essence fluid?")
+                .translation("pneumaticcraft.config.common.general.drones_can_import_xp_orbs")
+                .define("drones_can_import_xp_orbs", true);
+        drones.dronesCanBePickedUp = builder
+                .comment("Will Drones automatically get picked up by Boats/Minecarts/etc. if they're close enough?")
+                .translation("pneumaticcraft.config.common.general.drones_can_be_picked_up")
+                .define("drones_can_be_picked_up", false);
+        drones.droneDebuggerPathParticles = builder
+                .comment("Show particle trail indicating the currently-debugged drone's planned path")
+                .translation("pneumaticcraft.config.common.general.drone_debugger_path_particles")
+                .define("drone_debugger_path_particles", true);
+        drones.stopDroneAI = builder
+                .comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report any such bugs as a PneumaticCraft: Repressurized issue so it can be investigated.")
+                .translation("pneumaticcraft.config.common.advanced.stop_drone_ai")
+                .define("stop_drone_ai", false);
+        drones.maxDroneChargingStationSearchRange = builder
+                .comment("How far will a drone go to find a Charging Station when it's low on air? Note: drones will teleport, possibly across the world to someone else's base, if this range is very large.")
+                .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
+                .defineInRange("max_drone_charging_station_search_range", 80, 16, Integer.MAX_VALUE);
+        drones.maxDroneTeleportRange = builder
+                .comment("The maximum distance that a Drone may teleport when it can't find a path to its destination. Default value of 0 means no limit. This is primarily intended to limit abuse of teleportation to other players on PvP servers, but may find other uses. Be careful about setting this value very low.")
+                .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
+                .defineInRange("max_drone_teleport_range", 0, 0, Integer.MAX_VALUE);
+        drones.stuckDroneTeleportTicks = builder
+                .comment("If a Drone has found a path, but gets stuck on a block along that path, it will teleport to its destination after this many ticks of being stuck. Set this to 0 to disable teleporting, which will likely leave the drone waiting there forever (or until it runs out of air). Note that getting stuck on a block is usually the fault of the mod that added the block (especially if the block has a non-full-cube shape), but if you encounter this behaviour, please report it as a PneumaticCraft: Repressurized issue so it can be investigated.")
+                .translation("pneumaticcraft.config.common.advanced.stuck_drone_teleport_ticks")
+                .defineInRange("stuck_drone_teleport_ticks", 20, 0, Integer.MAX_VALUE);
         builder.pop();
     }
 }

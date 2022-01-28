@@ -596,7 +596,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return ConfigHelper.common().general.dronesRenderHeldItem.get() ? entityData.get(HELD_ITEM) : ItemStack.EMPTY;
+        return ConfigHelper.common().drones.dronesRenderHeldItem.get() ? entityData.get(HELD_ITEM) : ItemStack.EMPTY;
     }
 
     @Override
@@ -922,7 +922,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public boolean startRiding(Entity entity, boolean force) {
-        return ConfigHelper.common().general.dronesCanBePickedUp.get() && super.startRiding(entity, force);
+        return ConfigHelper.common().drones.dronesCanBePickedUp.get() && super.startRiding(entity, force);
     }
 
     protected BasicAirHandler getAirHandler() {
@@ -1113,7 +1113,7 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
         if (source == DamageSource.IN_WALL) {
-            return suffocationCounter > 0 || !ConfigHelper.common().general.enableDroneSuffocation.get();
+            return suffocationCounter > 0 || !ConfigHelper.common().drones.enableDroneSuffocation.get();
         }
         if (RadiationSourceCheck.INSTANCE.isRadiation(source)) {
             return true;
@@ -1314,7 +1314,7 @@ public class EntityDrone extends EntityDroneBase implements
             for (Entity e : getCarryingEntities()) {
                 e.stopRiding();
                 double y = e.getY();
-                if (ConfigHelper.common().general.dronesCanBePickedUp.get() && (e instanceof AbstractMinecart || e instanceof Boat)) {
+                if (ConfigHelper.common().drones.dronesCanBePickedUp.get() && (e instanceof AbstractMinecart || e instanceof Boat)) {
                     // little kludge to prevent the dropped minecart/boat immediately picking up the drone
                     y -= 2;
                     BlockPos pos = PneumaticCraftUtils.getPosForEntity(e);
@@ -1563,7 +1563,7 @@ public class EntityDrone extends EntityDroneBase implements
         public void copyItemToFakePlayer(int slot) {
             super.copyItemToFakePlayer(slot);
 
-            if (isFakePlayerReady() && slot == getFakePlayer().getInventory().selected && ConfigHelper.common().general.dronesRenderHeldItem.get()) {
+            if (isFakePlayerReady() && slot == getFakePlayer().getInventory().selected && ConfigHelper.common().drones.dronesRenderHeldItem.get()) {
                 entityData.set(HELD_ITEM, getStackInSlot(slot));
             }
         }

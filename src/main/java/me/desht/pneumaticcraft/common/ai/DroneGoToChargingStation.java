@@ -53,8 +53,8 @@ public class DroneGoToChargingStation extends Goal {
         List<TileEntityChargingStation> validChargingStations = new ArrayList<>();
         drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
             if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE) {
-                int maxDistSq = ConfigHelper.common().advanced.maxDroneChargingStationSearchRange.get()
-                        * ConfigHelper.common().advanced.maxDroneChargingStationSearchRange.get();
+                int maxDistSq = ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get()
+                        * ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get();
                 for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
                     if (station.getLevel() == drone.level && drone.distanceToSqr(Vec3.atCenterOf(station.getBlockPos())) <= maxDistSq) {
                         if (DroneClaimManager.getInstance(drone.level).isClaimed(station.getBlockPos())) {
