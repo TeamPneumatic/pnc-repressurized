@@ -11,6 +11,20 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 
+## 2.15.2-??? (unreleased)
+
+### Updates
+* Amadrone spawn-in location is now adjustable in config (`pneumaticcraft-common.toml`)
+  * See `amadrone_spawn_location` and `amadrone_spawn_location_relative_to_ground_level` settings
+  * May be useful in stoneblock-style worlds, where Amadrones can have trouble finding a place to spawn with default settings
+* PneumaticCraft Diesel & Biodiesel are no longer registered (in code) with Immersive Engineering as generator fuels
+  *  IE is moving away from code-based registration, since this can now be done with datapacks
+* Compressed Iron Gears are now item-tagged as `forge:gears` and `forge:gears/compressed_iron`
+
+### Fixes
+* Radiation Shielding now works with Mekanism 10.1.x (and this mod now requires 10.1.x - won't work anymore with 10.0.x)
+* Fixed a few machines (Charging Station, Creative Compressor & Creative Compressed Iron Block) sometimes not persisting their data across world reloads
+
 ## 2.15.1-297 (19th Jan 2022)
 
 ### Updates
