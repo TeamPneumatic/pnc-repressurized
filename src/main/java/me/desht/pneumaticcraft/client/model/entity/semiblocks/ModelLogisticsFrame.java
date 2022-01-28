@@ -38,8 +38,8 @@ public class ModelLogisticsFrame extends EntityModel<EntityLogisticsFrame> {
 
 	@Override
 	public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
-		frame.render(matrixStack, buffer, packedLight, packedOverlay);
-		face.render(matrixStack, buffer, packedLight, packedOverlay);
+		frame.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+		face.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
 	}
 
 	public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

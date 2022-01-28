@@ -63,7 +63,7 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
                 break;
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityTranslucent(getTextureLocation(entity)));
         model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 1f, 1f, 1f, alpha);
 
         matrixStackIn.popPose();
