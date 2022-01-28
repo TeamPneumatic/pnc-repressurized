@@ -198,12 +198,13 @@ public enum AreaRenderManager {
                 for (int i = 0; i < n; i++) {
                     int renderColor = positionProvider.getRenderColor(i);
                     if (posList.get(i) != null && renderColor != 0) {
-                        Set<BlockPos> positionsForColor = colorsToPositions.get(renderColor);
-                        if (positionsForColor == null) {
-                            positionsForColor = new HashSet<>();
-                            colorsToPositions.put(renderColor, positionsForColor);
-                        }
-                        positionsForColor.add(posList.get(i));
+                        colorsToPositions.computeIfAbsent(renderColor, k -> new HashSet<>()).add(posList.get(i));
+//                        Set<BlockPos> positionsForColor = colorsToPositions.get(renderColor);
+//                        if (positionsForColor == null) {
+//                            positionsForColor = new HashSet<>();
+//                            colorsToPositions.put(renderColor, positionsForColor);
+//                        }
+//                        positionsForColor.add(posList.get(i));
                     }
                 }
                 cachedPositionProviderShowers = new ArrayList<>(colorsToPositions.size());

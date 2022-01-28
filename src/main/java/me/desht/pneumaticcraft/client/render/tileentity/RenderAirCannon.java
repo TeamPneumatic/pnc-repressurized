@@ -9,10 +9,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -57,16 +54,16 @@ public class RenderAirCannon extends AbstractTileModelRenderer<TileEntityAirCann
                         .mirror(),
                 PartPose.offset(2.5F, 15.0F, -3.0F));
         partdefinition.addOrReplaceChild(AXIS, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("axis_0", -1.0F, 0.0F, -0.5F, 8, 2, 2, 44, 4)
+                        .addBox("axis_0", -1.0F, 0.0F, -0.5F, 8, 2, 2, new CubeDeformation(-0.2F), 44, 4)
                         .mirror(),
                 PartPose.offset(-3.0F, 15.5F, -2.0F));
         partdefinition.addOrReplaceChild(CANNON, CubeListBuilder.create().texOffs(0, 0)
                         .addBox("cannon_0", -1.0F, 0.0F, -1.0F, 4, 4, 4, 0, 8)
                         .addBox("cannon_1", -0.5F, -2.0F, -0.5F, 3, 2, 3, 24, 8)
-                        .addBox("cannon_2", -1.0F, -3.75F, -0.5F, 1, 2, 3, 36, 8)
-                        .addBox("cannon_3", 2.0F, -3.75F, -0.5F, 1, 2, 3, 44, 8)
-                        .addBox("cannon_4", -1.0F, -3.75F, -1.0F, 4, 2, 1, 44, 13)
-                        .addBox("cannon_5", -1.0F, -3.75F, 2.0F, 4, 2, 1, 34, 13)
+                        .addBox("cannon_2", -1.0F, -3.75F, -0.5F, 1, 2, 3, new CubeDeformation(-0.2F), 36, 8)
+                        .addBox("cannon_3", 2.0F, -3.75F, -0.5F, 1, 2, 3, new CubeDeformation(-0.2F), 44, 8)
+                        .addBox("cannon_4", -1.0F, -3.75F, -1.0F, 4, 2, 1, new CubeDeformation(-0.2F), 44, 13)
+                        .addBox("cannon_5", -1.0F, -3.75F, 2.0F, 4, 2, 1, new CubeDeformation(-0.2F), 34, 13)
                         .mirror(),
                 PartPose.offset(-1.0F, 15.0F, -2.5F));
 

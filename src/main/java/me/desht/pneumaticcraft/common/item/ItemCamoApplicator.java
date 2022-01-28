@@ -93,7 +93,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
             } else {
                 BlockEntity te = level.getBlockEntity(pos);
                 BlockState state = level.getBlockState(pos);
-                if (!(te instanceof CamouflageableBlockEntity)) {
+                if (!(te instanceof CamouflageableBlockEntity camoTE)) {
                     // right-click non-camo block: copy its state
                     setCamoState(stack, state);
                     level.playSound(null, ctx.getClickedPos(), ModSounds.CHIRP.get(), SoundSource.PLAYERS, 1f, 2f);
@@ -107,7 +107,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     }
 
                     BlockState newCamo = getCamoState(stack);
-                    BlockState existingCamo = ((CamouflageableBlockEntity) te).getCamouflage();
+                    BlockState existingCamo = camoTE.getCamouflage();
 
                     if (existingCamo == newCamo) {
                         level.playSound(null, ctx.getClickedPos(), SoundEvents.COMPARATOR_CLICK, SoundSource.PLAYERS, 1f, 2f);
@@ -137,7 +137,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
 
                     // and apply the new camouflage
                     airHandler.addAir(-PneumaticValues.USAGE_CAMO_APPLICATOR);
-                    ((CamouflageableBlockEntity) te).setCamouflage(newCamo);
+                    camoTE.setCamouflage(newCamo);
                     BlockState particleState = newCamo == null ? existingCamo : newCamo;
                     if (particleState != null) {
                         player.getCommandSenderWorld().levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(particleState));

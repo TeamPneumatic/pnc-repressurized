@@ -149,7 +149,7 @@ public class PressureGaugeRenderer2D {
         float[] color = RED;
 
         Matrix4f posMat = matrixStack.last().pose();
-        builder.vertex(posMat, xPos, yPos, 0f).color(0.5f, 0.5f, 0.2f, color[3]).endVertex();
+        builder.vertex(posMat, xPos, yPos, 0f).color(0.5f, 0.5f, 0.1f, 1f).endVertex();
 
         int explodeBoundary = GAUGE_POINTS - (int) ((dangerPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         int workingBoundary = GAUGE_POINTS - (int) ((minWorkingPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);

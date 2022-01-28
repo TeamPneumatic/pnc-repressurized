@@ -21,9 +21,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -87,14 +87,14 @@ public class AreaRenderer {
     }
 
     private void addVertices(VertexConsumer wr, Matrix4f posMat, BlockPos pos, int[] cols) {
-        Level world = Minecraft.getInstance().level;
-        BlockState state = world.getBlockState(pos);
+        Level level = ClientUtils.getClientLevel();
+        BlockState state = level.getBlockState(pos);
         boolean xray = disableDepthTest || disableWriteMask;
         if (!xray && !state.getMaterial().isReplaceable()) return;
         if (drawShapes) {
-            VoxelShape shape = state.getBlock() instanceof BlockPneumaticCraftCamo ?
-                    ((BlockPneumaticCraftCamo) state.getBlock()).getUncamouflagedShape(state, world, pos, CollisionContext.empty()) :
-                    state.getShape(world, pos, CollisionContext.empty());
+            VoxelShape shape = state.getBlock() instanceof BlockPneumaticCraftCamo c ?
+                    c.getUncamouflagedShape(state, level, pos, CollisionContext.empty()) :
+                    state.getShape(level, pos, CollisionContext.empty());
             shape.forAllBoxes((x1d, y1d, z1d, x2d, y2d, z2d) -> {
                 float x1 = (float) x1d;
                 float x2 = (float) x2d;

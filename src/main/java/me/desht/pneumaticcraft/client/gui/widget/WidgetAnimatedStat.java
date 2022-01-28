@@ -512,7 +512,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
         // quad bg
         int[] cols = RenderUtils.decomposeColor(backGroundColor);
-        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH, (posMat, builder) -> {
             int rw = leftSided ? -renderWidth : renderWidth;
             builder.vertex(posMat, (float)renderBaseX, (float)renderEffectiveY + renderHeight, 0.0F)
                     .color(cols[1], cols[2], cols[3], cols[0])

@@ -95,8 +95,7 @@ public class RenderNavigator {
                         .endVertex();
             }
         } else {
-//            VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, true));
-            VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getUntexturedQuad(xRayEnabled));
+            VertexConsumer builder = buffer.getBuffer(xRayEnabled ? ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH : ModRenderTypes.UNTEXTURED_QUAD);
             if (hasDestinationPath) {
                 if (alphaValue > 0.2F) alphaValue -= 0.005F;
             } else {

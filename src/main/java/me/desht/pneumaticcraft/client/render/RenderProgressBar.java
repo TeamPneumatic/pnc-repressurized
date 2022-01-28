@@ -39,7 +39,7 @@ public class RenderProgressBar {
         double x = Mth.lerp(progress / 100D, minX, maxX);
 
         // draw the bar
-        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH, (posMat, builder) -> {
             RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
             RenderUtils.posF(builder, posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
             RenderUtils.posF(builder, posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();

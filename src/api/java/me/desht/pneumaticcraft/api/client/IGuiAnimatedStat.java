@@ -21,9 +21,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -78,7 +78,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, GuiEventListener {
 
     /**
      * Appends some more text to the existing text in this stat.  This method will split overlong lines, same as
-     * {@link #setText(ITextComponent)}
+     * {@link #setText(Component)}
      *
      * @param text a list of text components
      */

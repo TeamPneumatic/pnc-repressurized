@@ -25,10 +25,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -70,14 +67,14 @@ public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAss
                         .mirror(),
                 PartPose.offset(-3.5F, 22.0F, -3.5F));
         partdefinition.addOrReplaceChild(BASETURN2, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("baseTurn2_0", -2.0F, -0.5F, 0.5F, 2, 6, 3, 0, 30)
+                        .addBox("baseTurn2_0", -2.0F, -0.5F, 0.5F, 2, 6, 3, new CubeDeformation(0.2F), 0, 30)
                         .addBox("baseTurn2_1", -2.0F, 3.75F, -2.0F, 2, 2, 8, 0, 10)
-                        .addBox("baseTurn2_2", 4.0F, -0.5F, 0.5F, 2, 6, 3, 10, 30)
+                        .addBox("baseTurn2_2", 4.0F, -0.5F, 0.5F, 2, 6, 3, new CubeDeformation(0.2F), 10, 30)
                         .addBox("baseTurn2_3", 4.0F, 3.75F, -2.0F, 2, 2, 8, 0, 20)
                         .mirror(),
                 PartPose.offset(-2.0F, 17.0F, -2.0F));
         partdefinition.addOrReplaceChild(ARMBASE, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("armBase_0", 2.0F, 0.0F, 1.0F, 2, 2, 5, 0, 49)
+                        .addBox("armBase_0", 2.0F, 0.0F, 1.0F, 2, 2, 5, new CubeDeformation(0.3F), 0, 49)
                         .addBox("armBase_1", 1.5F, -0.5F, -0.5F, 3, 3, 3, 0, 43)
                         .addBox("armBase_2", 1.5F, -0.5F, 5.5F, 3, 3, 3, 12, 43)
                         .addBox("armBase_3", -1.5F, 0.0F, 0.0F, 9, 2, 2, 0, 39)
@@ -85,8 +82,8 @@ public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAss
                 PartPose.offset(-3.0F, 17.0F, -1.0F));
         partdefinition.addOrReplaceChild(ARMMIDDLE, CubeListBuilder.create().texOffs(0, 0)
                         .addBox("armMiddle_0", 0.0F, 2.0F, 0.0F, 2, 13, 2, 28, 10)
-                        .addBox("armMiddle_1", 0.0F, 0.0F, 0.0F, 2, 2, 2, 12, 24)
-                        .addBox("armMiddle_2", 0.0F, 15.0F, 0.0F, 2, 2, 2, 0, 24)
+                        .addBox("armMiddle_1", 0.0F, 0.0F, 0.0F, 2, 2, 2, new CubeDeformation(0.3F), 12, 24)
+                        .addBox("armMiddle_2", 0.0F, 15.0F, 0.0F, 2, 2, 2, new CubeDeformation(0.3F), 0, 24)
                         .addBox("armMiddle_3", -0.5F, 15.0F, 0.0F, 3, 2, 2, 14, 52)
                         .addBox("armMiddle_4", 4.0F, 0.5F, 0.5F, 1, 7, 1, 60, 38)
                         .addBox("armMiddle_5", 2.0F, 6.5F, 0.5F, 2, 1, 1, 54, 38)
@@ -95,7 +92,7 @@ public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAss
         partdefinition.addOrReplaceChild(LASERBASE, CubeListBuilder.create().texOffs(0, 0)
                         .addBox("laserBase_0", 2.5F, -1.5F, -1.0F, 3, 6, 6, 46, 15)
                         .addBox("laserBase_1", 3.5F, -0.5F, -0.5F, 3, 6, 5, 48, 27)
-                        .addBox("laserBase_2", 2.0F, 0.5F, 0.5F, 2, 1, 1, 48, 38),
+                        .addBox("laserBase_2", 2.0F, 0.5F, 0.5F, 2, 1, 1, new CubeDeformation(0.3F), 48, 38),
                 PartPose.offset(-4.0F, 2.0F, 5.0F));
         partdefinition.addOrReplaceChild(LASER, CubeListBuilder.create().texOffs(0, 0)
                         .addBox("laser_0", -0.5F, -21.5F, 1.0F, 1, 1, 27, 8, 36)
@@ -104,7 +101,6 @@ public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAss
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
-
 
     @Override
     public void renderModel(TileEntityAssemblyLaser te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {

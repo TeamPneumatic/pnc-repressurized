@@ -7,7 +7,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(thing)Pressure Chamber/$ is a multi-block structure used to compress various materials into other materials. Due to its large air storage capacity, it can also serve as a useful \"battery\".$(p)The following rules for multiblock construction apply:$(p)$(li)The overall multiblock must be a hollow 3x3x3, 4x4x4 or 5x5x5 structure."
+      "text": "The $(thing)Pressure Chamber/$ is a multi-block structure used to compress various materials into other materials. Due to its large air storage capacity, it can also serve as a useful \"battery\".$(p)The following rules for multiblock construction apply:$(li)The overall multiblock must be a hollow 3x3x3, 4x4x4 or 5x5x5 structure."
     },
     {
       "type": "text",
@@ -39,7 +39,7 @@
     },
     {
       "type": "text",
-      "text": "Input-mode Interfaces will only accept items which are ingredients for a Pressure Chamber recipe.  Output-mode Interfaces will (by default) only export crafted items, but there is a button in the GUI to allow export of $(i)all/$ items if you need to.$(p)$(italic)Note that this behaviour has changed since 1.12.2 days and is much more user-friendly now./$"
+      "text": "Input-mode Interfaces will only accept items which are ingredients for a Pressure Chamber recipe.  Output-mode Interfaces will (by default) only export crafted items, but there is a button in the GUI to allow export of $(italic)all/$ items if you need to.$(p)$(italic)Note that this behaviour has changed since 1.12.2 days and is much more user-friendly now./$"
     },
     {
       "type": "text",
@@ -47,7 +47,7 @@
     },
     {
       "type": "text",
-      "text": "$(bold)Tips/$$(p)$(li)When compressing $(item)Iron/$, compress $(item)Block of Iron/$, since it will use only 1/9th of the air to move items in & out of the chamber.$(li)If you need to pressurize a large chamber quickly, extra valves can be helpful (assuming you have sufficient compressors to produce the necessary air)."
+      "text": "$(bold)Tips/$$(li)When compressing $(item)Iron/$, compress $(item)Block of Iron/$, since it will use only 1/9th of the air to move items in & out of the chamber.$(li)If you need to pressurize a large chamber quickly, extra valves can be helpful (assuming you have sufficient compressors to produce the necessary air)."
     },
     {
       "type": "crafting",

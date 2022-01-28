@@ -67,6 +67,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
             pressureSetpoint += Float.parseFloat(tag);
             if (pressureSetpoint > 30) pressureSetpoint = 30;
             if (pressureSetpoint < -1) pressureSetpoint = -1;
+            setChanged();
         } catch (IllegalArgumentException ignored) {
         }
     }

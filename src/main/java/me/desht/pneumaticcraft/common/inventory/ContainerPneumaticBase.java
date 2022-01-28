@@ -179,7 +179,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends AbstractCo
         ItemStack copyOfSrcStack = srcStack.copy();
 
         if (slot < playerSlotsStart) {
-            if (!moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
+            if (!moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, true))
                 return ItemStack.EMPTY;
         } else {
             if (!moveItemStackTo(srcStack, 0, playerSlotsStart, false))

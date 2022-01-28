@@ -20,17 +20,18 @@ package me.desht.pneumaticcraft.common.recipes.special;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.item.ItemDrone;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -54,7 +55,7 @@ public class DroneColorCrafting extends ShapelessRecipe {
         DyeColor dye = null;
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
-            if (stack.getItem() == ModItems.DRONE.get()) {
+            if (stack.getItem() instanceof ItemDrone) {
                 if (!drone.isEmpty()) return null;
                 drone = stack.copy();
             } else if (dye == null) {

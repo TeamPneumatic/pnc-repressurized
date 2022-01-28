@@ -25,14 +25,12 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
-
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class GuiRegistry implements IClientRegistry {
 
@@ -53,11 +51,6 @@ public class GuiRegistry implements IClientRegistry {
     @Override
     public IGuiAnimatedStat getAnimatedStat(Screen gui, ItemStack iconStack, int backgroundColor) {
         return new WidgetAnimatedStat(gui, backgroundColor, iconStack);
-    }
-
-    @Override
-    public IGuiAnimatedStat getAnimatedStat(Screen gui, String iconTexture, int backgroundColor) {
-        return new WidgetAnimatedStat(gui, backgroundColor, RL(iconTexture));
     }
 
     @Override

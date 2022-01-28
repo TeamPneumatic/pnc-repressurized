@@ -120,8 +120,8 @@ public class HackManager {
                         || !entry.getValue().canHack(entry.getKey(), player) && !isInDisplayCooldown(entry.getValue(), entry.getKey())
         );
 
-        if (entity instanceof IHackableEntity && ((IHackableEntity) entity).canHack(entity, player))
-            return (IHackableEntity) entity;
+        if (entity instanceof IHackableEntity h && h.canHack(entity, player))
+            return h;
 
         IHackableEntity hackable = getInstance(player.getCommandSenderWorld()).trackedHackableEntities.get(entity);
         if (hackable == null) {

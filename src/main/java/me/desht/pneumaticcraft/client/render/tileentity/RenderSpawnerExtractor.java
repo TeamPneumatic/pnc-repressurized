@@ -27,10 +27,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -57,9 +54,9 @@ public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntity
         PartDefinition partdefinition = meshdefinition.getRoot();
 
         partdefinition.addOrReplaceChild(MODEL, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("model_0", -3.0F, -16.25F, -3.0F, 6, 1, 6, 23, 57)
-                        .addBox("model_1", -3.0F, -14.75F, -3.0F, 6, 1, 6, 23, 57)
-                        .addBox("model_2", -2.5F, -15.5F, -2.5F, 5, 1, 5, 44, 57)
+                        .addBox("model_0", -3.0F, -16.25F, -3.0F, 6, 1, 6, new CubeDeformation(-0.01F), 23, 57)
+                        .addBox("model_1", -3.0F, -14.75F, -3.0F, 6, 1, 6, new CubeDeformation(-0.01F), 23, 57)
+                        .addBox("model_2", -2.5F, -15.5F, -2.5F, 5, 1, 5, new CubeDeformation(-0.01F), 44, 57)
                         .addBox("model_3", -1.0F, -16.0F, -1.0F, 2, 16, 2, 15, 46)
                         .mirror(),
                 PartPose.offset(0.0F, 24.0F, 0.0F));

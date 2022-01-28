@@ -28,10 +28,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -91,14 +88,14 @@ public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAs
                         .mirror(),
                 PartPose.offset(-3.5F, 22.0F, -3.5F));
         partdefinition.addOrReplaceChild(BASETURN2, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("baseTurn2_0", -2.0F, -0.5F, 0.5F, 2, 6, 3, 0, 30)
+                        .addBox("baseTurn2_0", -2.0F, -0.5F, 0.5F, 2, 6, 3, new CubeDeformation(0.2F), 0, 30)
                         .addBox("baseTurn2_1", -2.0F, 3.75F, -2.0F, 2, 2, 8, 0, 10)
-                        .addBox("baseTurn2_2", 4.0F, -0.5F, 0.5F, 2, 6, 3, 10, 30)
+                        .addBox("baseTurn2_2", 4.0F, -0.5F, 0.5F, 2, 6, 3, new CubeDeformation(0.2F), 10, 30)
                         .addBox("baseTurn2_3", 4.0F, 3.75F, -2.0F, 2, 2, 8, 0, 20)
                         .mirror(),
                 PartPose.offset(-2.0F, 17.0F, -2.0F));
         partdefinition.addOrReplaceChild(ARMBASE, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("armBase_0", 2.0F, 0.0F, 1.0F, 2, 2, 5, 0, 49)
+                        .addBox("armBase_0", 2.0F, 0.0F, 1.0F, 2, 2, 5, new CubeDeformation(0.3F), 0, 49)
                         .addBox("armBase_1", 1.5F, -0.5F, -0.5F, 3, 3, 3, 0, 43)
                         .addBox("armBase_2", 1.5F, -0.5F, 5.5F, 3, 3, 3, 12, 43)
                         .addBox("armBase_3", -1.5F, 0.0F, 0.0F, 9, 2, 2, 0, 39)
@@ -106,8 +103,8 @@ public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAs
                 PartPose.offset(-3.0F, 17.0F, -1.0F));
         partdefinition.addOrReplaceChild(ARMMIDDLE, CubeListBuilder.create().texOffs(0, 0)
                         .addBox("armMiddle_0", 0.0F, 2.0F, 0.0F, 2, 13, 2, 20, 10)
-                        .addBox("armMiddle_1", 0.0F, 0.0F, 0.0F, 2, 2, 2, 12, 24)
-                        .addBox("armMiddle_2", 0.0F, 15.0F, 0.0F, 2, 2, 2, 0, 24)
+                        .addBox("armMiddle_1", 0.0F, 0.0F, 0.0F, 2, 2, 2, new CubeDeformation(0.3F), 12, 24)
+                        .addBox("armMiddle_2", 0.0F, 15.0F, 0.0F, 2, 2, 2, new CubeDeformation(0.3F), 0, 24)
                         .addBox("armMiddle_3", -0.5F, 15.0F, 0.0F, 3, 2, 2, 14, 52)
                         .mirror(),
                 PartPose.offset(-4.0F, 2.0F, 5.0F));
@@ -120,23 +117,22 @@ public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAs
                         .mirror(),
                 PartPose.offset(-0.5F, 2.5F, 4.0F));
         partdefinition.addOrReplaceChild(CLAWTURN, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("clawTurn_0", 0.0F, -0.5F, 0.0F, 4, 3, 1, 54, 12)
+                        .addBox("clawTurn_0", 0.0F, -0.5F, 0.0F, 4, 3, 1, new CubeDeformation(0.1F), 54, 12)
                         .mirror(),
                 PartPose.offset(-2.0F, 2.0F, 3.0F));
         partdefinition.addOrReplaceChild(CLAW1, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("claw1_0", -0.1F, -0.5F, -1.35F, 1, 3, 2, 52, 21)
+                        .addBox("claw1_0", -0.1F, -0.5F, -1.35F, 1, 3, 2, new CubeDeformation(-0.1F), 52, 21)
                         .addBox("claw1_1", 0.25F, 0.0F, -1.35F, 1, 2, 2, 58, 21)
                         .mirror(),
                 PartPose.offset(0.0F, 2.0F, 2.25F));
         partdefinition.addOrReplaceChild(CLAW2, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("claw2_0", 0.1F, -0.5F, -1.35F, 1, 3, 2, 52, 16)
+                        .addBox("claw2_0", 0.1F, -0.5F, -1.35F, 1, 3, 2, new CubeDeformation(-0.1F), 52, 16)
                         .addBox("claw2_1", -0.25F, 0.0F, -1.35F, 1, 2, 2, 58, 16)
                         .mirror(),
                 PartPose.offset(-1.0F, 2.0F, 2.25F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
-
 
     @Override
     void renderModel(TileEntityAssemblyIOUnit te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {

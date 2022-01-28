@@ -35,21 +35,20 @@ public class ModRenderTypes extends RenderType {
 
     private static final Function<ResourceLocation,RenderType> TEXTURE_RENDER = Util.memoize((rl) -> {
         RenderStateShard.TextureStateShard textureState = new TextureStateShard(rl, false, false);
-        RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setTextureState(textureState)
                 .setLightmapState(RenderStateShard.LIGHTMAP)
-                .setShaderState(RenderStateShard.RENDERTYPE_CUTOUT_SHADER)
+                .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
                 .createCompositeState(false);
-        return create("texture", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
-                false, false, rendertype$compositestate);
+        return create("texture", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS,
+                256, false, false, state);
     });
-
     public static RenderType getTextureRender(ResourceLocation texture) {
         return TEXTURE_RENDER.apply(texture);
     }
 
     private static final BiFunction<ResourceLocation, Boolean, RenderType> TEXTURE_RENDER_COLORED = Util.memoize((rl, disableDepthTest) -> {
-        RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                 .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
@@ -58,32 +57,40 @@ public class ModRenderTypes extends RenderType {
                 .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
                 .createCompositeState(false);
         return create("texture_color", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS,
-                256, false, false,
-                rendertype$compositestate);
+                256, false, false, state);
     });
-
     public static RenderType getTextureRenderColored(ResourceLocation texture) {
         return getTextureRenderColored(texture, false);
     }
-
     public static RenderType getTextureRenderColored(ResourceLocation texture, boolean disableDepthTest) {
         return TEXTURE_RENDER_COLORED.apply(texture, disableDepthTest);
     }
 
-    public static RenderType getUntexturedQuad(boolean disableDepthTest) {
-        return create("untextured_quad_" + disableDepthTest, DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
-                false, false,
-                RenderType.CompositeState.builder()
-                        .setTextureState(RenderStateShard.NO_TEXTURE)
-                        .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setCullState(NO_CULL)
-                        .setLightmapState(RenderStateShard.LIGHTMAP)
-                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
-                        .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                        .createCompositeState(false)
-        );
-    }
+    public static RenderType UNTEXTURED_QUAD_NO_DEPTH = create("untextured_quad_no_depth", DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+            false, false,
+            RenderType.CompositeState.builder()
+                    .setTextureState(RenderStateShard.NO_TEXTURE)
+                    .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setDepthTestState(NO_DEPTH_TEST)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)
+    );
+
+    public static final RenderType UNTEXTURED_QUAD = create("untextured_quad", DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
+            false, false,
+            RenderType.CompositeState.builder()
+                    .setTextureState(RenderStateShard.NO_TEXTURE)
+                    .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setLightmapState(RenderStateShard.LIGHTMAP)
+                    .setDepthTestState(LEQUAL_DEPTH_TEST)
+                    .setWriteMaskState(COLOR_DEPTH_WRITE)
+                    .createCompositeState(false)
+    );
 
     public static final RenderType BLOCK_FRAME = create("block_frame",
             DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,
@@ -101,9 +108,8 @@ public class ModRenderTypes extends RenderType {
     public static final RenderType BLOCK_TRACKER = create("block_tracker",
             DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256,
             false, false,
-            RenderType.CompositeState.builder().setLineState(LineStateShard.DEFAULT_LINE)
-                    // TODO 1.16 can we use VIEW_OFFSET_Z_LAYERING ?
-//                    .layer(RenderState.PROJECTION_LAYERING)
+            RenderType.CompositeState.builder()
+                    .setLineState(LineStateShard.DEFAULT_LINE)
                     .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
                     .setTextureState(NO_TEXTURE)
@@ -145,89 +151,57 @@ public class ModRenderTypes extends RenderType {
                 false, false,
                 state);
     });
-
     public static RenderType getLineLoops(double lineWidth) {
         return LINE_LOOPS.apply(lineWidth);
     }
 
-    private static final LineStateShard LINE_5 = new LineStateShard(OptionalDouble.of(5.0));
-    public static RenderType getNavPath(boolean xRay, boolean quads) {
-        DepthTestStateShard d = xRay ? DepthTestStateShard.NO_DEPTH_TEST : DepthTestStateShard.LEQUAL_DEPTH_TEST;
-        WriteMaskStateShard w = xRay ? WriteMaskStateShard.COLOR_WRITE : WriteMaskStateShard.COLOR_DEPTH_WRITE;
-
-        if (quads) {
-            return create("nav_path_quads",
-                    DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,
-                    false, false,
-                    RenderType.CompositeState.builder()
-                            .setDepthTestState(d)
-                            .setWriteMaskState(w)
-                            .setTextureState(RenderStateShard.NO_TEXTURE)
-                            .setCullState(RenderStateShard.NO_CULL)
-                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                            .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-                            .createCompositeState(false)
-            );
-        } else {
-            return create("nav_path_lines",
-                    DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINE_STRIP, 256,
-                    false, false,
-                    RenderType.CompositeState.builder().setLineState(LINE_5)
-                            .setDepthTestState(d)
-                            .setWriteMaskState(w)
-                            .setTextureState(RenderStateShard.NO_TEXTURE)
-                            .setCullState(RenderStateShard.NO_CULL)
-                            .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                            .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-                            .createCompositeState(false)
-            );
-        }
-    }
-
-    public static RenderType getBlockHilightFace(boolean disableDepthTest, boolean disableWriteMask) {
-        return create("block_hilight",
+    private final static BiFunction<Boolean,Boolean,RenderType> BLOCK_HILIGHT_FACE = Util.memoize((disableDepthTest, disableWriteMask) -> {
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                .setTextureState(NO_TEXTURE)
+                .setLightmapState(NO_LIGHTMAP)
+                .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
+                .setWriteMaskState(disableWriteMask ? COLOR_WRITE : COLOR_DEPTH_WRITE)
+                .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
+                .createCompositeState(false);
+        return create("nav_path_lines",
                 DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,
-                false, false,
-                RenderType.CompositeState.builder()
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setTextureState(NO_TEXTURE)
-                        .setLightmapState(NO_LIGHTMAP)
-                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
-                        .setWriteMaskState(disableWriteMask ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                        .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
-                        .createCompositeState(false));
+                false, false, state);
+    });
+    public static RenderType getBlockHilightFace(boolean disableDepthTest, boolean disableWriteMask) {
+        return BLOCK_HILIGHT_FACE.apply(disableDepthTest, disableWriteMask);
     }
 
-    private static final LineStateShard LINE_3 = new LineStateShard(OptionalDouble.of(3.0));
-    public static RenderType getBlockHilightLine(boolean disableDepthTest, boolean disableWriteMask) {
+    private final static BiFunction<Boolean,Boolean,RenderType> BLOCK_HILIGHT_LINE = Util.memoize((disableDepthTest, disableWriteMask) -> {
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                .setTextureState(NO_TEXTURE)
+                .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : RenderStateShard.LEQUAL_DEPTH_TEST)
+                .setCullState(NO_CULL)
+                .setLightmapState(NO_LIGHTMAP)
+                .setWriteMaskState(disableWriteMask ? COLOR_WRITE : RenderStateShard.COLOR_DEPTH_WRITE)
+                .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                .createCompositeState(false);
         return create("block_hilight_line",
                 DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINES, 256,
-                false, false,
-                RenderType.CompositeState.builder().setLineState(LINE_3)
-                        .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                        .setTextureState(NO_TEXTURE)
-                        .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : RenderStateShard.LEQUAL_DEPTH_TEST)
-                        .setCullState(NO_CULL)
-                        .setLightmapState(NO_LIGHTMAP)
-                        .setWriteMaskState(disableWriteMask ? COLOR_WRITE : RenderStateShard.COLOR_DEPTH_WRITE)
-                        .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-                        .createCompositeState(false));
+                false, false, state);
+    });
+    public static RenderType getBlockHilightLine(boolean disableDepthTest, boolean disableWriteMask) {
+        return BLOCK_HILIGHT_LINE.apply(disableDepthTest, disableWriteMask);
     }
 
-
-    private static final LineStateShard LINE_2 = new LineStateShard(OptionalDouble.of(2.0));
     public static final RenderType TRIANGLE_FAN = create("triangle_fan",
             DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN, 256,
             false, false,
             RenderType.CompositeState.builder()
-                    .setLineState(LINE_2)
+                    .setLineState(new LineStateShard(OptionalDouble.of(2.0)))
                     .setTextureState(NO_TEXTURE)
-                    .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
+                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
                     .createCompositeState(false)
     );
 
     private static final Function<ResourceLocation, RenderType> ARMOR_TRANSLUCENT_NO_CULL = Util.memoize((rl) -> {
-        RenderType.CompositeState rendertype$compositestate = RenderType.CompositeState.builder()
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                 .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
                 .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
@@ -238,14 +212,9 @@ public class ModRenderTypes extends RenderType {
                 .createCompositeState(true);
         return create("armor_translucent_no_cull", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS,
                 256, true, false,
-                rendertype$compositestate);
+                state);
     });
     public static RenderType getArmorTranslucentNoCull(ResourceLocation rl) {
         return ARMOR_TRANSLUCENT_NO_CULL.apply(rl);
     }
-
-//    public static RenderType getArmorTranslucentNoCull(ResourceLocation rl) {
-//        RenderType.CompositeState state = RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(rl, false, false)).setTransparencyState(TRANSLUCENT_TRANSPARENCY).setDiffuseLightingState(DIFFUSE_LIGHTING).setAlphaState(DEFAULT_ALPHA).setCullState(NO_CULL).setLightmapState(LIGHTMAP).setOverlayState(OVERLAY).setLayeringState(VIEW_OFFSET_Z_LAYERING).createCompositeState(true);
-//        return create("armor_translucent_no_cull", DefaultVertexFormat.NEW_ENTITY, GL11.GL_QUADS, 256, true, false, state);
-//    }
 }

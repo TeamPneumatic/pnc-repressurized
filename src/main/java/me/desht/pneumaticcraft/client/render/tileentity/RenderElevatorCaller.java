@@ -50,7 +50,7 @@ public class RenderElevatorCaller implements BlockEntityRenderer<TileEntityEleva
 
         for (TileEntityElevatorCaller.ElevatorButton button : te.getFloors()) {
             // button background
-            VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.getUntexturedQuad(false));
+            VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.UNTEXTURED_QUAD);
             builder.vertex(posMat, button.posX + 0.5F, button.posY + 0.5F, Z_OFFSET)
                     .color(button.red, button.green, button.blue, 0.1F)
                     .uv2(0x00F000A0)

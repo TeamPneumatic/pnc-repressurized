@@ -10,41 +10,11 @@
     },
     {
       "type": "text",
-      "text": "To write a program to a $(l:tools/drone)Drone/$, you must either have the $(thing)Puzzle Pieces/$ in your inventory, or place them in an inventory adjacent to the $(item)Programmer/$ (on any side).$(p)If you're in Creative Mode, then programming is completely free: no pieces required."
+      "text": "To write a program to a $(l:tools/drone)Drone/$, you must either have the $(thing)Puzzle Pieces/$ in your inventory, or place them in an inventory adjacent to the $(item)Programmer/$ (on any side).$(p)If you're in Creative Mode, then programming is completely free; no pieces required."
     },
     {
       "type": "crafting",
-      "recipe": "pneumaticcraft:programming_puzzle",
-      "recipe2": "pneumaticcraft:programming_puzzle_v2"
-    },
-    {
-      "type": "crafting",
-      "recipe": "pneumaticcraft:programming_puzzle_v3",
-      "recipe2": "pneumaticcraft:programming_puzzle_v4"
-    },
-    {
-      "type": "crafting",
-      "recipe": "pneumaticcraft:programming_puzzle_v5",
-      "recipe2": "pneumaticcraft:programming_puzzle_v6"
-    },
-    {
-      "type": "crafting",
-      "recipe": "pneumaticcraft:programming_puzzle_v7",
-      "recipe2": "pneumaticcraft:programming_puzzle_v8"
-    },
-    {
-      "type": "crafting",
-      "recipe": "pneumaticcraft:programming_puzzle_v9",
-      "recipe2": "pneumaticcraft:programming_puzzle_v10"
-    },
-    {
-      "type": "crafting",
-      "recipe": "pneumaticcraft:programming_puzzle_v11",
-      "recipe2": "pneumaticcraft:programming_puzzle_v12"
-    },
-    {
-      "type": "crafting",
-      "recipe": "pneumaticcraft:programming_puzzle_v13"
+      "recipe": "pneumaticcraft:programming_puzzle"
     }
   ]
 }

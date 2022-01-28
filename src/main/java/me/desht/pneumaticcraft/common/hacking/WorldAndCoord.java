@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.hacking;
 
-import net.minecraft.world.level.block.Block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 
 public class WorldAndCoord {
     public final BlockGetter world;
@@ -41,8 +41,7 @@ public class WorldAndCoord {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof WorldAndCoord) {
-            WorldAndCoord wac = (WorldAndCoord) o;
+        if (o instanceof WorldAndCoord wac) {
             return wac.world == world && wac.pos.equals(pos);
         } else {
             return false;

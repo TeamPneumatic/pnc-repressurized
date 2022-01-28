@@ -28,10 +28,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -65,19 +62,18 @@ public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntity
         PartDefinition partdefinition = meshdefinition.getRoot();
 
         partdefinition.addOrReplaceChild(CLAW1, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("claw1_0", -0.5F, 0.0F, 0.1F, 3, 1, 1, 0, 12)
+                        .addBox("claw1_0", -0.5F, 0.0F, 0.1F, 3, 1, 1, new CubeDeformation(-0.1F), 0, 12)
                         .addBox("claw1_1", -0.5F, 0.0F, 0.6F, 3, 1, 1, 8, 14)
                         .mirror(),
                 PartPose.offset(-1.0F, 17.0F, 0.0F));
         partdefinition.addOrReplaceChild(CLAW2, CubeListBuilder.create().texOffs(0, 0)
-                        .addBox("claw2_0", -0.5F, 0.0F, -0.1F, 3, 1, 1, 0, 14)
+                        .addBox("claw2_0", -0.5F, 0.0F, -0.1F, 3, 1, 1, new CubeDeformation(-0.1F), 0, 14)
                         .addBox("claw2_1", -0.5F, 0.0F, -0.6F, 3, 1, 1, 8, 12)
                         .mirror(),
                 PartPose.offset(-1.0F, 17.0F, -1.0F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
-
 
     @Override
     public void renderModel(TileEntityAssemblyPlatform te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {

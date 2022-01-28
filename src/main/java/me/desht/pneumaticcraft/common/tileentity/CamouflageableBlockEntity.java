@@ -21,6 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 /**
@@ -66,12 +67,11 @@ public interface CamouflageableBlockEntity {
     }
 
     static BlockState readCamo(CompoundTag tag) {
-        return tag.contains("camoState", Tag.TAG_COMPOUND) ? NbtUtils.readBlockState(tag.getCompound("camoState")) : null;
+        BlockState state = tag.contains("camoState", Tag.TAG_COMPOUND) ? NbtUtils.readBlockState(tag.getCompound("camoState")) : null;
+        return state != null && state.getBlock() == Blocks.AIR ? null : state;
     }
 
     static void writeCamo(CompoundTag tag, BlockState state) {
-        if (state != null) {
-            tag.put("camoState", NbtUtils.writeBlockState(state));
-        }
+        tag.put("camoState", NbtUtils.writeBlockState(state == null ? Blocks.AIR.defaultBlockState() : state));
     }
 }

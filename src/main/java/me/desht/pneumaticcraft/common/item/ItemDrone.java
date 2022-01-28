@@ -20,12 +20,14 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
@@ -40,6 +42,7 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
@@ -52,9 +55,12 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
-public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor {
+import static me.desht.pneumaticcraft.common.entity.living.EntityDrone.NBT_DRONE_COLOR;
+
+public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor, ColorHandlers.ITintableItem {
     private final BiFunction<Level, Player, EntityDrone> droneCreator;
     private final boolean programmable;
 
@@ -149,5 +155,14 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     @Override
     public MenuProvider getContainerProvider(TileEntityChargingStation te) {
         return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_DRONE.get());
+    }
+
+    @Override
+    public int getTintColor(ItemStack stack, int tintIndex) {
+        if (tintIndex == 1 && stack.hasTag()) {
+            int dyeID = Objects.requireNonNull(stack.getTag()).getInt(NBT_DRONE_COLOR);
+            return PneumaticCraftUtils.getDyeColorAsInt(DyeColor.byId(dyeID));
+        }
+        return -1;
     }
 }
