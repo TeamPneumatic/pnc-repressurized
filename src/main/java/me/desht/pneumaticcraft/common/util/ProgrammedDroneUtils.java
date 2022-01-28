@@ -25,7 +25,6 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.Validate;
@@ -67,25 +66,30 @@ public class ProgrammedDroneUtils {
     private static ProgWidgetArea makeDropArea(BlockPos deliveryPos, EntityAmadrone drone) {
         // this is just a suitable place to drop items at if for any reason they can't be delivered
         // (inventory full, missing, etc.)
-        ProgWidgetArea area = ProgWidgetArea.fromPosition(deliveryPos);
         if (drone.isBlockValidPathfindBlock(deliveryPos)) {
-            // probably means the inventory is no longer there - drop as close as possible, moving upward
-            BlockPos.MutableBlockPos pos1 = deliveryPos.mutable();
-            for (int i = 0; i < 5 && drone.isBlockValidPathfindBlock(pos1); i++) {
-                pos1.move(Direction.UP);
-            }
-            area.setPos(0, pos1.immutable());
-        } else {
-            // otherwise, try to drop 10 blocks above the ground height
-            BlockPos pos1 = new BlockPos(deliveryPos.getX(), drone.level.getHeight(Heightmap.Types.WORLD_SURFACE, deliveryPos.getX(), deliveryPos.getZ()) + 10, deliveryPos.getZ());
-            if (drone.isBlockValidPathfindBlock(pos1)) {
-                area.setPos(0, pos1);
-            } else {
-                // worst case scenario, go to world height and drop there
-                area.setPos(0, new BlockPos(pos1.getX(), drone.level.getHeight() + 1, pos1.getZ()));
+            // probably means the inventory is no longer there - just drop there
+            return ProgWidgetArea.fromPosition(deliveryPos);
+        }
+        // otherwise drop adjacent to the delivery pos if possible
+        ProgWidgetArea dropOffArea = null;
+        for (Direction d: DirectionUtil.VALUES) {
+            if (drone.isBlockValidPathfindBlock(deliveryPos.relative(d))) {
+                dropOffArea = ProgWidgetArea.fromPosition(deliveryPos.relative(d));
             }
         }
-        return area;
+        if (dropOffArea == null) {
+            // still no? scan up 10 blocks from the delivery pos
+            dropOffArea = ProgWidgetArea.fromPosition(deliveryPos);
+            for (int i = 2; i < 10 && !drone.isBlockValidPathfindBlock(deliveryPos.relative(Direction.UP, i)); i++) {
+                dropOffArea.setPos(0, dropOffArea.getPos(0).orElseThrow().above());
+            }
+            BlockPos pos1 = dropOffArea.getPos(0).orElseThrow();
+            if (!drone.isBlockValidPathfindBlock(pos1)) {
+                // Worst case scenario; there are definitely no blocks here.
+                dropOffArea.setPos(0, new BlockPos(pos1.getZ(), drone.world().getMaxBuildHeight() + 5, pos1.getZ()));
+            }
+        }
+        return dropOffArea;
     }
 
     public static PathfinderMob deliverFluidAmazonStyle(GlobalPos gPos, FluidStack deliveredFluid) {

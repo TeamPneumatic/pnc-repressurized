@@ -132,6 +132,8 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue notifyOfTradeAddition;
         public ForgeConfigSpec.BooleanValue notifyOfTradeRemoval;
         public ForgeConfigSpec.BooleanValue notifyOfDealMade;
+        public ForgeConfigSpec.ConfigValue<List<Integer>> amadroneSpawnLocation;
+        public ForgeConfigSpec.BooleanValue amadroneSpawnLocationRelativeToGroundLevel;
     }
 
     public static class Heat {
@@ -577,6 +579,14 @@ public class CommonConfig {
                 .comment("Broadcast a notification when a custom Amadron trade is made")
                 .translation("pneumaticcraft.config.common.amadron.notify_of_deal_made")
                 .define("notify_of_deal_made", true);
+        amadron.amadroneSpawnLocation = builder
+                .comment("Amadrone spawn location, relative to the delivery/pickup position. This is a X/Y/Z triple. See also 'amadrone_spawn_location_relative_to_ground_level' for how the drone's Y position is calculated.")
+                .translation("pneumaticcraft.config.common.amadron.amadrone_spawn_location")
+                .define("amadrone_spawn_location", Lists.newArrayList(30, 30, 0));
+        amadron.amadroneSpawnLocationRelativeToGroundLevel = builder
+                .comment("Affects Amadrone Y spawning position: when true, the Y position is relative to ground level at the calculated X/Z position. When false, it is relative to the delivery/pickup position.")
+                .translation("pneumaticcraft.config.common.amadron.amadrone_spawn_location_relative_to_ground_level")
+                .define("amadrone_spawn_location_relative_to_ground_level", true);
         builder.pop();
 
         builder.push("Heat");
