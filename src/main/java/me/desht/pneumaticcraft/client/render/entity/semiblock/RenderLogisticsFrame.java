@@ -63,7 +63,7 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
                 break;
         }
 
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
+        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityTranslucent(getTextureLocation(entity)));
         model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 1f, 1f, 1f, alpha);
 
         matrixStackIn.popPose();
@@ -73,15 +73,14 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
     public Vec3 getRenderOffset(EntityLogisticsFrame entityIn, float partialTicks) {
         VoxelShape shape = entityIn.getBlockState().getShape(entityIn.getWorld(), entityIn.getBlockPos());
         double yOff = (shape.max(Direction.Axis.Y) - shape.min(Direction.Axis.Y)) / 2.0;
-        switch (entityIn.getSide()) {
-            case DOWN: return new Vec3(0, shape.min(Direction.Axis.Y), 0);
-            case UP: return new Vec3(0, shape.max(Direction.Axis.Y) - 1, 0);
-            case NORTH: return new Vec3(0, yOff - 0.5, shape.min(Direction.Axis.Z));
-            case SOUTH: return new Vec3(0, yOff - 0.5, shape.max(Direction.Axis.Z) - 1);
-            case WEST: return new Vec3(shape.min(Direction.Axis.X), yOff - 0.5, 0);
-            case EAST: return new Vec3(shape.max(Direction.Axis.X) - 1, yOff - 0.5, 0);
-            default: return Vec3.ZERO;
-        }
+        return switch (entityIn.getSide()) {
+            case DOWN -> new Vec3(0, shape.min(Direction.Axis.Y), 0);
+            case UP -> new Vec3(0, shape.max(Direction.Axis.Y) - 1, 0);
+            case NORTH -> new Vec3(0, yOff - 0.5, shape.min(Direction.Axis.Z));
+            case SOUTH -> new Vec3(0, yOff - 0.5, shape.max(Direction.Axis.Z) - 1);
+            case WEST -> new Vec3(shape.min(Direction.Axis.X), yOff - 0.5, 0);
+            case EAST -> new Vec3(shape.max(Direction.Axis.X) - 1, yOff - 0.5, 0);
+        };
     }
 
     @Override
