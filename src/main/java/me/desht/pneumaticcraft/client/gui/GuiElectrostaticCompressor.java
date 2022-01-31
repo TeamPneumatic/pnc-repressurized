@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -26,17 +27,17 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompress
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor.MAX_ELECTROSTATIC_GRID_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<ContainerElectrostaticCompressor,TileEntityElectrostaticCompressor> {
@@ -74,9 +75,9 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     @Override
     public void containerTick() {
         if (firstUpdate || ClientUtils.getClientLevel().getGameTime() % 20 == 0) {
-            Set<BlockPos> positions = new HashSet<>();
-            Set<TileEntityElectrostaticCompressor> compressors = new HashSet<>();
+            Set<BlockPos> positions = new ObjectOpenHashSet<>(MAX_ELECTROSTATIC_GRID_SIZE);
             positions.add(te.getBlockPos());
+            Set<TileEntityElectrostaticCompressor> compressors = new ObjectOpenHashSet<>(20);
             te.getElectrostaticGrid(positions, compressors, te.getBlockPos());
             connectedCompressors = compressors.size();
         }

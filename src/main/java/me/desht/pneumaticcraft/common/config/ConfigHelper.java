@@ -50,8 +50,4 @@ public class ConfigHelper {
     public static void setShowEnchantGlint(boolean show) {
         ConfigHolder.client.armor.showEnchantGlint.set(show);
     }
-
-    public static int getOilLakeChance() {
-        return ConfigHolder.common.general.oilGenerationChance.get();
-    }
 }

@@ -18,7 +18,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.BlockElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -28,47 +30,41 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ObjectHolder;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
-        implements IRedstoneControl<TileEntityElectrostaticCompressor>, MenuProvider {
-
-    @SuppressWarnings("FieldMayBeFinal")
-    @ObjectHolder("chisel:ironpane")
-    private static Block CHISELED_BARS = null;
-
+        implements IRedstoneControl<TileEntityElectrostaticCompressor>, MenuProvider
+{
     private static final List<RedstoneMode<TileEntityElectrostaticCompressor>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
             new EmittingRedstoneMode<>("electrostaticCompressor.struckByLightning", Textures.JEI_EXPLOSION, te -> te.struckByLightningCooldown > 0)
     );
-    private static final int MAX_ELECTROSTATIC_GRID_SIZE = 500;
+    public static final int MAX_ELECTROSTATIC_GRID_SIZE = 500;
     private static final int MAX_BARS_ABOVE = 10;
 
     @GuiSynced
@@ -136,15 +132,14 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
                 BlockPos hitPos = new BlockPos(x, y, z);
                 BlockState state = level.getBlockState(hitPos);
                 if (state.getBlock() instanceof BlockElectrostaticCompressor || state.getBlock() == Blocks.IRON_BARS) {
-                    Set<BlockPos> gridSet = new HashSet<>();
-                    Set<TileEntityElectrostaticCompressor> compressorSet = new HashSet<>();
+                    Set<BlockPos> gridSet = new ObjectOpenHashSet<>(MAX_ELECTROSTATIC_GRID_SIZE);
+                    Set<TileEntityElectrostaticCompressor> compressorSet = new ObjectOpenHashSet<>(20);
                     getElectrostaticGrid(gridSet, compressorSet, hitPos);
                     LightningBolt bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
                     bolt.setPos(x, y, z);
                     level.addFreshEntity(bolt);
                     for (TileEntityElectrostaticCompressor compressor : compressorSet) {
-                        compressor.addAir(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / compressorSet.size());
-                        compressor.onStruckByLightning();
+                        compressor.onStruckByLightning(compressor, compressorSet.size());
                     }
                     AABB box = new AABB(getBlockPos()).inflate(16, 16, 16);
                     for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, box, EntitySelector.ENTITY_STILL_ALIVE)) {
@@ -167,12 +162,14 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
         return dir != Direction.UP;
     }
 
-    public void onStruckByLightning() {
+    private void onStruckByLightning(TileEntityElectrostaticCompressor compressor, int divisor) {
+        compressor.addAir(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / divisor);
         struckByLightningCooldown = 10;
-        if (getPressure() > PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR) {
-            int maxRedirection = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * ironBarsBeneath;
-            int tooMuchAir = (int) ((getPressure() - PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR) * airHandler.getVolume());
-            addAir(-Math.min(maxRedirection, tooMuchAir));
+        float excessPressure = compressor.getPressure() - compressor.getDangerPressure();
+        if (excessPressure > 0f) {
+            int maxRedirection = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * compressor.ironBarsBeneath;
+            int excessAir = (int) (excessPressure * compressor.airHandler.getVolume());
+            compressor.addAir(-Math.min(maxRedirection, excessAir));
         }
     }
 
@@ -196,7 +193,8 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     public void getElectrostaticGrid(Set<BlockPos> grid, Set<TileEntityElectrostaticCompressor> compressors, BlockPos pos) {
         Deque<BlockPos> pendingPos = new ArrayDeque<>(Collections.singleton(pos));
         grid.add(pos);
-        PneumaticCraftUtils.getTileEntityAt(level, pos, TileEntityElectrostaticCompressor.class).ifPresent(compressors::add);
+        nonNullLevel().getBlockEntity(pos, ModTileEntities.ELECTROSTATIC_COMPRESSOR.get())
+                .ifPresent(compressors::add);
 
         while (!pendingPos.isEmpty()) {
             BlockPos checkingPos = pendingPos.pop();
@@ -206,7 +204,8 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
                 if ((isValidGridBlock(block) || block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get())
                         && grid.size() < MAX_ELECTROSTATIC_GRID_SIZE && grid.add(newPos)) {
                     if (block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get()) {
-                        PneumaticCraftUtils.getTileEntityAt(level, newPos, TileEntityElectrostaticCompressor.class).ifPresent(compressors::add);
+                        nonNullLevel().getBlockEntity(newPos, ModTileEntities.ELECTROSTATIC_COMPRESSOR.get())
+                                .ifPresent(compressors::add);
                     }
                     pendingPos.push(newPos);
                 }
@@ -215,7 +214,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     }
 
     private static boolean isValidGridBlock(Block block) {
-        return block == Blocks.IRON_BARS || block == CHISELED_BARS;
+        return PneumaticCraftTags.Blocks.ELECTROSTATIC_GRID.contains(block);
     }
 
     @Nullable

@@ -91,6 +91,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         tag(Tags.Blocks.ORES);
         tag(BlockTags.LOGS);
         tag(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
+        tag(PneumaticCraftTags.Blocks.ELECTROSTATIC_GRID).add(Blocks.IRON_BARS);
 
         ModBlocks.BLOCKS.getEntries().forEach(ro -> {
             Block block = ro.get();

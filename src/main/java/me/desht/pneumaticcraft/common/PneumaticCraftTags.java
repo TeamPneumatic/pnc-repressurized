@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.item.Item;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 
 public class PneumaticCraftTags {
     public static class Blocks extends PneumaticCraftTags {
@@ -44,10 +44,10 @@ public class PneumaticCraftTags {
         public static final Tag.Named<Block> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
         public static final Tag.Named<Block> BLOCK_TRACKER_MISC = modTag("block_tracker_misc_blocks");
         public static final Tag.Named<Block> PROBE_TARGET = modTag("probe_target");
+        public static final Tag.Named<Block> JACKHAMMER_ORES = modTag("jackhammer_ores");
+        public static final Tag.Named<Block> ELECTROSTATIC_GRID = modTag("electrostatic_grid");
 
         public static final Tag.Named<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
-
-        public static final Tag.Named<Block> JACKHAMMER_ORES = modTag("jackhammer_ores");
 
         static Tag.Named<Block> tag(String modid, String name) {
             return BlockTags.bind(new ResourceLocation(modid, name).toString());

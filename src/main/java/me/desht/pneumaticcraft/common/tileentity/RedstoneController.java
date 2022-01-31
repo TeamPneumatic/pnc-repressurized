@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -114,12 +113,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     }
 
     public void deserialize(CompoundTag tag) {
-        if (tag.contains(NBTKeys.NBT_REDSTONE_MODE, Tag.TAG_BYTE)) {
-            // TODO remove in 1.17 - legacy compat
-            currentMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
-        } else {
-            currentMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
-        }
+        currentMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     /**

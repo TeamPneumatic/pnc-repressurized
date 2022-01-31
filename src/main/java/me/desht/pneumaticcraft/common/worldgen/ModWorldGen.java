@@ -56,13 +56,13 @@ public class ModWorldGen {
         );
 
         OIL_LAKE_SURFACE = registerPlacedFeature(Names.MOD_ID + ":lake_oil_surface", ModFeatures.OIL_LAKE.get().configured(configuration),
-                RarityFilter.onAverageOnceEvery(200),
+                RarityFilter.onAverageOnceEvery(ConfigHelper.common().worldgen.surfaceOilLakeFrequency.get()),
                 InSquarePlacement.spread(),
                 PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
                 BiomeFilter.biome()
         );
         OIL_LAKE_UNDERGROUND = registerPlacedFeature(Names.MOD_ID + ":lake_oil_underground", ModFeatures.OIL_LAKE.get().configured(configuration),
-                RarityFilter.onAverageOnceEvery(9),
+                RarityFilter.onAverageOnceEvery(ConfigHelper.common().worldgen.undergroundOilLakeFrequency.get()),
                 InSquarePlacement.spread(),
                 HeightRangePlacement.of(UniformHeight.of(VerticalAnchor.absolute(0), VerticalAnchor.top())),
                 EnvironmentScanPlacement.scanningFor(Direction.DOWN, BlockPredicate.allOf(
@@ -76,14 +76,15 @@ public class ModWorldGen {
     }
 
     private static <C extends FeatureConfiguration, F extends Feature<C>> PlacedFeature registerPlacedFeature(String registryName,
-                                                                                                              ConfiguredFeature<C, F> feature, PlacementModifier... placementModifiers) {
+                                                                                                              ConfiguredFeature<C, F> feature,
+                                                                                                              PlacementModifier... placementModifiers) {
         PlacedFeature placed = BuiltinRegistries.register(BuiltinRegistries.CONFIGURED_FEATURE, new ResourceLocation(registryName), feature)
                 .placed(placementModifiers);
         return PlacementUtils.register(registryName, placed);
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {
-        if (!isBiomeBlacklisted(event.getName()) && !ConfigHelper.common().general.oilWorldGenCategoryBlacklist.get().contains(event.getCategory().getName())) {
+        if (!isBiomeBlacklisted(event.getName()) && !ConfigHelper.common().worldgen.oilWorldGenCategoryBlacklist.get().contains(event.getCategory().getName())) {
             event.getGeneration().addFeature(GenerationStep.Decoration.LAKES, OIL_LAKE_SURFACE);
             event.getGeneration().addFeature(GenerationStep.Decoration.LAKES, OIL_LAKE_UNDERGROUND);
         }
@@ -96,14 +97,14 @@ public class ModWorldGen {
 
     static boolean isBiomeBlacklisted(ResourceLocation biomeName) {
         if (biomeMatcher == null) {
-            biomeMatcher = new WildcardedRLMatcher(ConfigHelper.common().general.oilWorldGenBlacklist.get());
+            biomeMatcher = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenBlacklist.get());
         }
         return biomeMatcher.test(biomeName);
     }
 
     static boolean isDimensionBlacklisted(WorldGenLevel level) {
         if (dimensionMatcher == null) {
-            dimensionMatcher = new WildcardedRLMatcher(ConfigHelper.common().general.oilWorldGenDimensionBlacklist.get());
+            dimensionMatcher = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenDimensionBlacklist.get());
         }
         return dimensionMatcher.test(level.getLevel().dimension().getRegistryName());
     }

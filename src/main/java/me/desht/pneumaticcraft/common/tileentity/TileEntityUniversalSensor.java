@@ -217,8 +217,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             if (newRedstoneStrength != 0) redstonePulseCounter = ((IEventSensorSetting) sensor).getRedstonePulseLength();
             if (rsController.getCurrentMode() == RS_MODE_INVERTED) newRedstoneStrength = 15 - newRedstoneStrength;
             if (redstonePulseCounter > 0 && ThirdPartyManager.instance().isModTypeLoaded(ThirdPartyManager.ModType.COMPUTER)) {
-                if (event instanceof PlayerInteractEvent) {
-                    PlayerInteractEvent e = (PlayerInteractEvent) event;
+                if (event instanceof PlayerInteractEvent e) {
                     notifyComputers(newRedstoneStrength, e.getPos().getX(), e.getPos().getY(), e.getPos().getZ());
                 } else {
                     notifyComputers(newRedstoneStrength);
@@ -346,9 +345,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         outOfRange = 0;
 
         ItemStack stack = itemHandler.getStackInSlot(0);
-        if (stack.getItem() instanceof IPositionProvider) {
+        if (stack.getItem() instanceof IPositionProvider p) {
             int sensorRange = getRange();
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(playerId, stack);
+            List<BlockPos> posList = p.getStoredPositions(playerId, stack);
             List<BlockPos> gpsPositions = posList.stream()
                     .filter(pos -> pos != null
                             && Math.abs(pos.getX() - getBlockPos().getX()) <= sensorRange
@@ -548,8 +547,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
 
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            if (stack.getItem() instanceof IPositionProvider) {
-                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(playerId, stack);
+            if (stack.getItem() instanceof IPositionProvider p) {
+                List<BlockPos> l = p.getStoredPositions(playerId, stack);
                 return !l.isEmpty() && l.get(0) != null;
             }
             return false;

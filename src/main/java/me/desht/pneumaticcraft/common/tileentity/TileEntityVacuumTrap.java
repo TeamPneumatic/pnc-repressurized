@@ -280,7 +280,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
 
     private static boolean isEntityBlacklisted(EntityType<?> type) {
         if (needBlacklistRebuild) {
-            for (String id : ConfigHelper.common().general.vacuumTrapBlacklist.get()) {
+            for (String id : ConfigHelper.common().machines.vacuumTrapBlacklist.get()) {
                 try {
                     if (id.startsWith("#")) {
                         Tag<EntityType<?>> tag = EntityTypeTags.getAllTags().getTag(new ResourceLocation(id.substring(1)));

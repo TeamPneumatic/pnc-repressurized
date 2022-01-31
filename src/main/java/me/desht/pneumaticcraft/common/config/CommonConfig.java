@@ -26,17 +26,18 @@ import java.util.List;
 
 public class CommonConfig {
     public static class General {
-        public ForgeConfigSpec.IntValue oilGenerationChance;
-        public ForgeConfigSpec.IntValue surfaceOilGenerationChance;
         public ForgeConfigSpec.BooleanValue enableDungeonLoot;
         public ForgeConfigSpec.DoubleValue fuelBucketEfficiency;
         public ForgeConfigSpec.IntValue maxProgrammingArea;
+        public ForgeConfigSpec.IntValue minFluidFuelTemperature;
+        public ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
+    }
+    public static class Worldgen {
+        public ForgeConfigSpec.IntValue undergroundOilLakeFrequency;
+        public ForgeConfigSpec.IntValue surfaceOilLakeFrequency;
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenCategoryBlacklist;
         public ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenDimensionBlacklist;
-        public ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
-        public ForgeConfigSpec.IntValue minFluidFuelTemperature;
-        public ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
     }
     public static class Machines {
         public ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -60,6 +61,7 @@ public class CommonConfig {
         public ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluids;
         public ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluidTags;
         public ForgeConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
+        public ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
     }
     public static class Armor {
         public ForgeConfigSpec.IntValue jetBootsAirUsage;
@@ -72,9 +74,9 @@ public class CommonConfig {
     }
     public static class Integration {
         public ForgeConfigSpec.DoubleValue mekThermalEfficiencyFactor;
+        public ForgeConfigSpec.DoubleValue mekThermalResistanceFactor;
         public ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerRF;
         public ForgeConfigSpec.IntValue ieExternalHeaterRFperTick;
-        public ForgeConfigSpec.DoubleValue mekThermalResistanceFactor;
         public ForgeConfigSpec.DoubleValue cofhHoldingMultiplier;
     }
     public static class Advanced {
@@ -123,7 +125,6 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue inWorldPlasticSolidification;
         public ForgeConfigSpec.BooleanValue inWorldYeastCrafting;
     }
-
     public static class Amadron {
         public ForgeConfigSpec.IntValue numPeriodicOffers;
         public ForgeConfigSpec.IntValue numVillagerOffers;
@@ -135,7 +136,6 @@ public class CommonConfig {
         public ForgeConfigSpec.ConfigValue<List<Integer>> amadroneSpawnLocation;
         public ForgeConfigSpec.BooleanValue amadroneSpawnLocationRelativeToGroundLevel;
     }
-
     public static class Heat {
         public ForgeConfigSpec.BooleanValue addDefaultFluidEntries;
         public ForgeConfigSpec.DoubleValue blockThermalResistance;
@@ -145,23 +145,19 @@ public class CommonConfig {
         public ForgeConfigSpec.DoubleValue ambientTemperatureHeightModifier;
         public ForgeConfigSpec.DoubleValue airThermalResistance;
     }
-
     public static class Logistics {
         public ForgeConfigSpec.DoubleValue itemTransportCost;
         public ForgeConfigSpec.DoubleValue fluidTransportCost;
         public ForgeConfigSpec.DoubleValue minPressure;
     }
-
     public static class Jackhammer {
         public ForgeConfigSpec.IntValue baseAirUsage;
         public ForgeConfigSpec.IntValue maxVeinMinerRange;
     }
-
     public static class Villagers {
         public ForgeConfigSpec.BooleanValue addMechanicHouse;
         public ForgeConfigSpec.EnumValue<VillagerTradesRegistration.WhichTrades> whichTrades;
     }
-
     public static class Drones {
         public ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
         public ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
@@ -175,6 +171,7 @@ public class CommonConfig {
     }
 
     public final General general = new General();
+    public final Worldgen worldgen = new Worldgen();
     public final Machines machines = new Machines();
     public final Armor armor = new Armor();
     public final Advanced advanced = new Advanced();
@@ -191,16 +188,6 @@ public class CommonConfig {
 
     CommonConfig(final ForgeConfigSpec.Builder builder) {
         builder.push("General");
-        general.oilGenerationChance = builder
-                .worldRestart()
-                .comment("Chance per chunk as a percentage to generate an Oil Lake. Set to 0 for no oil lakes. See also 'surface_oil_generation_chance'.")
-                .translation("pneumaticcraft.config.common.general.oilGenerationChance")
-                .defineInRange("oil_generation_chance", 15, 0, 100);
-        general.surfaceOilGenerationChance = builder
-                .worldRestart()
-                .comment("When an Oil Lake would be generated at the surface (see 'oil_generation_chance'), percentage chance that this will actually generate a lake. Set to 0 for no surface oil lakes, and fewer lakes overall. Higher values don't guarantee surface oil lakes, but make them more likely, as well as making oil lakes more likely overall. It is recommended to adjust this value in conjunction with 'oil_generation_chance'.")
-                .translation("pneumaticcraft.config.common.general.surfaceOilGenerationChance")
-                .defineInRange("surface_oil_generation_chance", 25, 0, 100);
         general.enableDungeonLoot = builder
                 .comment("Enable mod dungeon loot generation")
                 .translation("pneumaticcraft.config.common.general.enable_dungeon_loot")
@@ -213,21 +200,6 @@ public class CommonConfig {
                 .comment("Maximum number of blocks in the area defined in an Area Programming Puzzle Piece")
                 .translation("pneumaticcraft.config.common.general.max_programming_area")
                 .defineInRange("max_programming_area", 250000, 1, Integer.MAX_VALUE);
-        general.oilWorldGenBlacklist = builder
-                .worldRestart()
-                .comment("Oil worldgen blacklist by biome: add biome IDs to this list if you don't want oil lake worldgen to happen there.  This works in conjunction with 'oil_world_gen_category_blacklist' - if a biome matches either, then no oil lakes will generate there. You can wildcard this; e.g 'modid:*' blacklists ALL biomes of namespace 'modid'.")
-                .translation("pneumaticcraft.config.common.general.oil_world_gen_blacklist")
-                .define("oil_world_gen_blacklist", Lists.newArrayList("minecraft:soul_sand_valley", "minecraft:crimson_forest", "minecraft:warped_forest", "minecraft:nether_wastes", "minecraft:the_void", "minecraft:the_end", "minecraft:small_end_islands", "minecraft:end_midlands", "minecraft:end_highlands", "minecraft:end_barrens"));
-        general.oilWorldGenCategoryBlacklist = builder
-                .worldRestart()
-                .comment("Oil worldgen blacklist by biome category: add biome categories to this list if you don't want oil lake worldgen to happen there. Accepted categories are: beach, desert, extreme_hills, forest, icy, jungle, mesa, mushroom, nether, none, ocean, plains, river, savanna, swamp, taiga, the_end.  This works in conjunction with 'oil_world_gen_blacklist' - if a biome matches either, then no oil lakes will generate there.")
-                .translation("pneumaticcraft.config.common.general.oil_world_gen_category_blacklist")
-                .define("oil_world_gen_category_blacklist", Lists.newArrayList("none"));
-        general.oilWorldGenDimensionBlacklist = builder
-                .worldRestart()
-                .comment("Oil worldgen blacklist by dimension ID: add dimension ID's to this list if you don't want oil lake worldgen to happen there. You can wildcard this; e.g 'modid:*' blacklists ALL dimensions of namespace 'modid'.")
-                .translation("pneumaticcraft.config.common.general.oil_world_gen_dimension_blacklist")
-                .define("oil_world_gen_dimension_blacklist", Lists.newArrayList());
         general.minFluidFuelTemperature = builder
                 .worldRestart()
                 .comment("Fluids at least as hot as this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")
@@ -237,10 +209,34 @@ public class CommonConfig {
                 .comment("Should dyes be used up when coloring things (Drones, Logistics Modules, Redstone Modules)?")
                 .translation("pneumaticcraft.config.common.general.use_up_dyes_when_coloring")
                 .define("use_up_dyes_when_coloring", false);
-        general.vacuumTrapBlacklist = builder
-                .comment("Blacklisted entity type ID's or tags (use '#' prefix), which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
-                .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
-                .define("vacuum_trap_blacklist", Lists.newArrayList());
+        builder.pop();
+
+        builder.push("Worldgen");
+        worldgen.undergroundOilLakeFrequency = builder
+                .worldRestart()
+                .comment("Average frequency in chunks for underground oil lakes; higher values mean rarer lakes. Use one of the blacklist settings to disable lakes entirely. See also 'surface_oil_generation_chance'.")
+                .translation("pneumaticcraft.config.common.general.undergroundOilLakeFrequency")
+                .defineInRange("underground_oil_lake_frequency", 6, 1, Integer.MAX_VALUE);
+        worldgen.surfaceOilLakeFrequency = builder
+                .worldRestart()
+                .comment("Average frequency in chunks for surface oil lakes; higher values mean rarer lakes. Use one of the blacklist settings to disable lakes entirely. See also 'underground_oil_generation_chance'.")
+                .translation("pneumaticcraft.config.common.general.surfaceOilLakeFrequency")
+                .defineInRange("surface_oil_lake_frequency", 25, 1, Integer.MAX_VALUE);
+        worldgen.oilWorldGenBlacklist = builder
+                .worldRestart()
+                .comment("Oil worldgen blacklist by biome: add biome IDs to this list if you don't want oil lake worldgen to happen there.  This works in conjunction with 'oil_world_gen_category_blacklist' - if a biome matches either, then no oil lakes will generate there. You can wildcard this; e.g 'modid:*' blacklists ALL biomes of namespace 'modid'.")
+                .translation("pneumaticcraft.config.common.general.oil_world_gen_blacklist")
+                .define("oil_world_gen_blacklist", Lists.newArrayList("minecraft:soul_sand_valley", "minecraft:crimson_forest", "minecraft:warped_forest", "minecraft:nether_wastes", "minecraft:the_void", "minecraft:the_end", "minecraft:small_end_islands", "minecraft:end_midlands", "minecraft:end_highlands", "minecraft:end_barrens"));
+        worldgen.oilWorldGenCategoryBlacklist = builder
+                .worldRestart()
+                .comment("Oil worldgen blacklist by biome category: add biome categories to this list if you don't want oil lake worldgen to happen there. Accepted categories are: beach, desert, extreme_hills, forest, icy, jungle, mesa, mushroom, nether, none, ocean, plains, river, savanna, swamp, taiga, the_end.  This works in conjunction with 'oil_world_gen_blacklist' - if a biome matches either, then no oil lakes will generate there.")
+                .translation("pneumaticcraft.config.common.general.oil_world_gen_category_blacklist")
+                .define("oil_world_gen_category_blacklist", Lists.newArrayList("none"));
+        worldgen.oilWorldGenDimensionBlacklist = builder
+                .worldRestart()
+                .comment("Oil worldgen blacklist by dimension ID: add dimension ID's to this list if you don't want oil lake worldgen to happen there. You can wildcard this; e.g 'modid:*' blacklists ALL dimensions of namespace 'modid'.")
+                .translation("pneumaticcraft.config.common.general.oil_world_gen_dimension_blacklist")
+                .define("oil_world_gen_dimension_blacklist", Lists.newArrayList());
         builder.pop();
 
         builder.push("Machine Properties");
@@ -330,6 +326,10 @@ public class CommonConfig {
                 .comment("Blacklist items from being allowed in the Pressure Chamber disenchanting system. This is a starts-with string match, so you can match by mod, or individual item names as you need. Blacklisted by default are Quark Ancient Tomes, and all Tetra items; both can lead to enchantment duping as they have special enchantment mechanics.")
                 .translation("pneumaticcraft.config.common.machines.disenchanting_blacklist")
                 .define("disenchanting_blacklist", Lists.newArrayList("quark:ancient_tome", "tetra:"));
+        machines.vacuumTrapBlacklist = builder
+                .comment("Blacklisted entity type ID's or tags (use '#' prefix), which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
+                .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
+                .define("vacuum_trap_blacklist", Lists.newArrayList());
         builder.pop();
 
         builder.push("Pneumatic Armor");
