@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.api.wrench;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import java.util.function.BiConsumer;
@@ -64,7 +64,7 @@ public interface IWrenchRegistry {
      * Register a third-party behaviour for when blocks from another mod are wrenched with the Pneumatic Wrench.
      * <p>
      * The return
-     * value from <code>behaviourPre</code> is also returned by {@link Item#onItemUseFirst(ItemStack, ItemUseContext)}
+     * value from <code>behaviourPre</code> is also returned by {@link Item#onItemUseFirst(ItemStack, UseOnContext)}
      * when the Pneumatic Wrench is used. Any return value other than PASS will suppress the default Pneumatic Wrench
      * behaviour (including air usage); returning CONSUME will also suppress the Pneumatic Wrench's sound effect.
      *<p>

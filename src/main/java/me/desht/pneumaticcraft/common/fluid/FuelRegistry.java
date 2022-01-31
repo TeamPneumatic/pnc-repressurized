@@ -20,12 +20,10 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import org.apache.commons.lang3.Validate;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,21 +41,6 @@ public enum FuelRegistry implements IFuelRegistry {
 
     public static FuelRegistry getInstance() {
         return INSTANCE;
-    }
-
-    @Override
-    public void registerFuel(Tag<Fluid> fluidTag, int mLPerBucket, float burnRateMultiplier) {
-        Validate.notNull(fluidTag);
-        Validate.isTrue(mLPerBucket >= 0, "mlPerBucket can't be < 0!");
-        Validate.isTrue(burnRateMultiplier > 0f, "burnRate can't be <= 0!");
-
-        if (fuelTags.containsKey(fluidTag)) {
-            Log.info("Overriding liquid fuel tag entry %s with a fuel value of %d (previous value %d)",
-                    fluidTag, mLPerBucket, fuelTags.get(fluidTag).mLperBucket);
-        }
-        fuelTags.put(fluidTag, new FuelRecord(mLPerBucket, burnRateMultiplier));
-        Log.info("Registering liquid fuel tag entry '%s': %d mL air/bucket, burn rate %f",
-                fluidTag, mLPerBucket, burnRateMultiplier);
     }
 
     // non-API!

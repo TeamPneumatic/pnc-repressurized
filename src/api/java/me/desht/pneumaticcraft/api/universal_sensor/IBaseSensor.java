@@ -61,7 +61,7 @@ public interface IBaseSensor {
     /**
      * If a textbox is to be displayed (see {@link #needsTextBox()}), is this textbox for an entity filter?
      * @return true if this is an entity filter, false otherwise
-     * @deprecated use {@link #getHelpText()}
+     * @deprecated don't override this; use {@link #getHelpText()}
      */
     @Deprecated
     default boolean isEntityFilter() {

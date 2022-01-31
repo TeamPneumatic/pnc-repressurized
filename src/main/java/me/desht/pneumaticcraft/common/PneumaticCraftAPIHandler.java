@@ -52,13 +52,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
-/**
- * With this class you can register your entities to give more info in the tooltip of the Entity Tracker.
- */
 public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCraftInterface {
     private final static PneumaticCraftAPIHandler INSTANCE = new PneumaticCraftAPIHandler();
 
@@ -92,21 +88,9 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
-    public int getProtectingSecurityStations(Player player, BlockPos pos, boolean showRangeLines) {
-        Validate.isTrue(!player.getCommandSenderWorld().isClientSide, "This method can only be called from the server side!");
-        return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
-    }
-
-    @Override
     public int getProtectingSecurityStations(Player player, BlockPos pos) {
         Validate.isTrue(!player.getCommandSenderWorld().isClientSide, "This method can only be called from the server side!");
         return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
-    }
-
-    @Override
-    @Deprecated
-    public void registerXPFluid(Fluid fluid, int liquidToPointRatio) {
-        XPFluidManager.getInstance().registerXPFluid(fluid, liquidToPointRatio);
     }
 
     @Override
@@ -150,11 +134,6 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     @Override
     public IWrenchRegistry getWrenchRegistry() {
         return ModdedWrenchUtils.getInstance();
-    }
-
-    @Override
-    public ResourceLocation RL(String path) {
-        return PneumaticRegistry.RL(path);
     }
 
     @Override

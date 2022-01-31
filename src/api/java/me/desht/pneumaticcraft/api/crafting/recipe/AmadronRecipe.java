@@ -19,10 +19,9 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -64,22 +63,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      *
      * @return the vendor name
      */
-    public Component getVendorName() {
-        // default implementation is just here for backwards compat and will likely go away in MC 1.17+
-        // recipe implementations should override this
-        return new TextComponent("Amadron");
-    }
-
-    /**
-     * Get the offer's vendor name.
-     *
-     * @return the vendor name
-     * @deprecated don't use this; use {@link #getVendorName()}
-     */
-    @Deprecated
-    public String getVendor() {
-        return "Amadron";
-    }
+    public abstract Component getVendorName();
 
     /**
      * Is this a static offer, always displayed on the Amadron tablet?  Or periodic, shuffled in at random once per

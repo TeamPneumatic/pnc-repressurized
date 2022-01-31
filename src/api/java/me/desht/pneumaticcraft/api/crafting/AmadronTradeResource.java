@@ -23,16 +23,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -69,20 +69,6 @@ public class AmadronTradeResource {
     }
 
     /**
-     * Get the type of this resource. Here for historical reasons; there are better alternatives - see
-     * {@link #accept(Consumer, Consumer)} and {@link #apply(Function, Function)} for general purpose methods to call on
-     * a trade resource. This method will be removed in 1.17+.
-     *
-     * @return the resource type
-     * @deprecated don't use this; this class is designed to be type-agnostic
-     */
-    @Deprecated
-    public Type getType() {
-        // TODO 1.17 remove this method
-        return resource.map(item -> Type.ITEM, fluidStack -> Type.FLUID);
-    }
-
-    /**
      * Checks if these two resources are equivalent: same resource, but don't check amounts.
      * @param other the trade resource to compare
      * @return true if the two are equivalent, false if not
@@ -104,11 +90,10 @@ public class AmadronTradeResource {
 
     public static AmadronTradeResource fromPacketBuf(FriendlyByteBuf pb) {
         Type type = pb.readEnum(Type.class);
-        switch (type) {
-            case ITEM: return new AmadronTradeResource(pb.readItem());
-            case FLUID: return new AmadronTradeResource(FluidStack.loadFluidStackFromNBT(pb.readNbt()));
-        }
-        throw new IllegalStateException("bad trade resource type: " + type);
+        return switch (type) {
+            case ITEM -> new AmadronTradeResource(pb.readItem());
+            case FLUID -> new AmadronTradeResource(FluidStack.loadFluidStackFromNBT(pb.readNbt()));
+        };
     }
 
     public ItemStack getItem() {
@@ -176,7 +161,7 @@ public class AmadronTradeResource {
         ResourceLocation rl = new ResourceLocation(obj.get("id").getAsString());
         int amount = obj.get("amount").getAsInt();
         switch (type) {
-            case ITEM:
+            case ITEM -> {
                 Item item = ForgeRegistries.ITEMS.getValue(rl);
                 if (item == null || item == Items.AIR) throw new JsonSyntaxException("unknown item " + rl + "!");
                 ItemStack itemStack = new ItemStack(item, amount);
@@ -184,13 +169,14 @@ public class AmadronTradeResource {
                     itemStack.setTag(TagParser.parseTag(GsonHelper.getAsString(obj, "nbt")));
                 }
                 return new AmadronTradeResource(itemStack);
-            case FLUID:
+            }
+            case FLUID -> {
                 Fluid fluid = ForgeRegistries.FLUIDS.getValue(rl);
                 if (fluid == null || fluid == Fluids.EMPTY) throw new JsonSyntaxException("unknown fluid " + rl + "!");
                 FluidStack fluidStack = new FluidStack(fluid, amount);
                 return new AmadronTradeResource(fluidStack);
-            default:
-                throw new JsonSyntaxException("amadron offer " + rl + " : invalid type!");
+            }
+            default -> throw new JsonSyntaxException("amadron offer " + rl + " : invalid type!");
         }
     }
 
@@ -202,7 +188,7 @@ public class AmadronTradeResource {
             res.addProperty("id", name == null ? "" : name.toString());
             res.addProperty("amount", item.getCount());
             if (item.hasTag()) {
-                res.addProperty("nbt", item.getTag().toString()); //NBTToJsonConverter.getObject(item.getTag()));
+                res.addProperty("nbt", Objects.requireNonNull(item.getTag()).toString()); //NBTToJsonConverter.getObject(item.getTag()));
             }
         }).ifRight(fluid -> {
             res.addProperty("type", Type.FLUID.name());
@@ -257,8 +243,7 @@ public class AmadronTradeResource {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AmadronTradeResource)) return false;
-        AmadronTradeResource that = (AmadronTradeResource) o;
+        if (!(o instanceof AmadronTradeResource that)) return false;
         return resource.map(
                 itemStack -> ItemStack.matches(itemStack, that.getItem()),
                 fluidStack -> fluidStack.isFluidStackIdentical(that.getFluid())
