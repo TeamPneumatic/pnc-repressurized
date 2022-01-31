@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.util.upgrade;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -129,17 +129,17 @@ public class UpgradesDBSetup {
     private static void initEntities() {
         ApplicableUpgradesDB db = ApplicableUpgradesDB.getInstance();
 
-        db.addApplicableUpgrades(ModEntities.DRONE.get(), DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModEntities.HARVESTING_DRONE.get(), BASIC_DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModEntities.GUARD_DRONE.get(), GUARD_DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModEntities.COLLECTOR_DRONE.get(), COLLECTOR_DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModEntities.LOGISTICS_DRONE.get(), LOGISTICS_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntityTypes.DRONE.get(), DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntityTypes.HARVESTING_DRONE.get(), BASIC_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntityTypes.GUARD_DRONE.get(), GUARD_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntityTypes.COLLECTOR_DRONE.get(), COLLECTOR_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntityTypes.LOGISTICS_DRONE.get(), LOGISTICS_DRONE_UPGRADES);
     }
 
     private static void initTileEntities() {
         ApplicableUpgradesDB db = ApplicableUpgradesDB.getInstance();
 
-        db.addApplicableUpgrades(ModTileEntities.AIR_CANNON.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.AIR_CANNON.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.RANGE, 8)
@@ -148,133 +148,133 @@ public class UpgradesDBSetup {
                 .with(EnumUpgrade.BLOCK_TRACKER, 1)
                 .with(EnumUpgrade.DISPENSER, 1)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.AIR_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.AIR_COMPRESSOR.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.ADVANCED_AIR_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.ADVANCED_AIR_COMPRESSOR.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.ASSEMBLY_CONTROLLER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.ASSEMBLY_CONTROLLER.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.CHARGING_STATION.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.CHARGING_STATION.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.ELEVATOR_BASE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.ELEVATOR_BASE.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10)
                 .with(EnumUpgrade.CHARGING, 4));
-        db.addApplicableUpgrades(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.PNEUMATIC_DOOR_BASE.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10)
                 .with(EnumUpgrade.RANGE, 8));
-        db.addApplicableUpgrades(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 10)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.PRESSURE_CHAMBER_VALVE.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME));
-        db.addApplicableUpgrades(ModTileEntities.VACUUM_PUMP.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.VACUUM_PUMP.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.UV_LIGHT_BOX.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.UV_LIGHT_BOX.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.DISPENSER, 1)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.SECURITY_STATION.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.SECURITY_STATION.get(), new Builder()
                 .with(EnumUpgrade.ENTITY_TRACKER, 12)
                 .with(EnumUpgrade.SECURITY, 64)
                 .with(EnumUpgrade.RANGE, 14));
-        db.addApplicableUpgrades(ModTileEntities.AERIAL_INTERFACE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.AERIAL_INTERFACE.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.ELECTROSTATIC_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME));
-        db.addApplicableUpgrades(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.OMNIDIRECTIONAL_HOPPER.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 11)
                 .with(EnumUpgrade.CREATIVE, 1)
                 .with(EnumUpgrade.ENTITY_TRACKER, 1)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.LIQUID_HOPPER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.LIQUID_HOPPER.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 11)
                 .with(EnumUpgrade.CREATIVE, 1)
                 .with(EnumUpgrade.ENTITY_TRACKER, 1)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.LIQUID_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.LIQUID_COMPRESSOR.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.ADVANCED_LIQUID_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.ADVANCED_LIQUID_COMPRESSOR.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.PROGRAMMABLE_CONTROLLER.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.MAGNET, 6)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10)
                 .with(EnumUpgrade.INVENTORY, 35));
-        db.addApplicableUpgrades(ModTileEntities.GAS_LIFT.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.GAS_LIFT.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.SENTRY_TURRET.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.SENTRY_TURRET.get(), new Builder()
                 .with(EnumUpgrade.RANGE, 16));
-        db.addApplicableUpgrades(ModTileEntities.FLUX_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.FLUX_COMPRESSOR.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.PNEUMATIC_DYNAMO.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.PNEUMATIC_DYNAMO.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10));
-        db.addApplicableUpgrades(ModTileEntities.THERMAL_COMPRESSOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.THERMAL_COMPRESSOR.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME));
-        db.addApplicableUpgrades(ModTileEntities.TANK_SMALL.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.TANK_SMALL.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 7)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.TANK_MEDIUM.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.TANK_MEDIUM.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 7)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.TANK_LARGE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.TANK_LARGE.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 7)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.TANK_HUGE.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.TANK_HUGE.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 7)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.SMART_CHEST.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.SMART_CHEST.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 9)
                 .with(EnumUpgrade.DISPENSER, 1)
                 .with(EnumUpgrade.MAGNET, 1)
                 .with(EnumUpgrade.RANGE, 4));
-        db.addApplicableUpgrades(ModTileEntities.FLUID_MIXER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.FLUID_MIXER.get(), new Builder()
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.DISPENSER, 1));
-        db.addApplicableUpgrades(ModTileEntities.VACUUM_TRAP.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.VACUUM_TRAP.get(), new Builder()
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.RANGE, 6)
                 .with(EnumUpgrade.SECURITY, 1));
-        db.addApplicableUpgrades(ModTileEntities.SPAWNER_EXTRACTOR.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.SPAWNER_EXTRACTOR.get(), new Builder()
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME));
-        db.addApplicableUpgrades(ModTileEntities.PRESSURIZED_SPAWNER.get(), new Builder()
+        db.addApplicableUpgrades(ModBlockEntities.PRESSURIZED_SPAWNER.get(), new Builder()
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.RANGE, 6)
                 .with(EnumUpgrade.SPEED, 10)
@@ -284,7 +284,7 @@ public class UpgradesDBSetup {
         Builder sensorBuilder = new Builder();
         SensorHandler.getInstance().getUniversalSensorUpgrades().forEach(upgrade -> sensorBuilder.with(upgrade, 1));
         sensorBuilder.with(EnumUpgrade.RANGE, 64).with(EnumUpgrade.SECURITY, 1).with(EnumUpgrade.VOLUME, MAX_VOLUME);
-        db.addApplicableUpgrades(ModTileEntities.UNIVERSAL_SENSOR.get(), sensorBuilder);
+        db.addApplicableUpgrades(ModBlockEntities.UNIVERSAL_SENSOR.get(), sensorBuilder);
     }
 
     static class Builder {

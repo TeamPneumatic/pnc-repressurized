@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -35,7 +35,7 @@ public class TileEntityDisplayTable extends TileEntityBase implements IComparato
     public ItemStack displayedStack = ItemStack.EMPTY;
 
     public TileEntityDisplayTable(BlockPos pos, BlockState state) {
-        super(ModTileEntities.DISPLAY_TABLE.get(), pos, state);
+        super(ModBlockEntities.DISPLAY_TABLE.get(), pos, state);
     }
 
     TileEntityDisplayTable(BlockEntityType<?> type, BlockPos pos, BlockState state) {

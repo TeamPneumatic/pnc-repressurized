@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -65,7 +65,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase implements
     private final RedstoneController<TileEntityRefineryOutput> rsController = new RedstoneController<>(this);
 
     public TileEntityRefineryOutput(BlockPos pos, BlockState state) {
-        super(ModTileEntities.REFINERY_OUTPUT.get(), pos, state);
+        super(ModBlockEntities.REFINERY_OUTPUT.get(), pos, state);
     }
 
     @Override

@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.IInfluenceDispersing;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -70,7 +70,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     private int pendingCacheShapeClear = 0;
 
     public TileEntityPressureTube(BlockPos pos, BlockState state) {
-        this(ModTileEntities.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
+        this(ModBlockEntities.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
     }
 
     TileEntityPressureTube(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier, int volumePressureTube, int upgradeSlots) {

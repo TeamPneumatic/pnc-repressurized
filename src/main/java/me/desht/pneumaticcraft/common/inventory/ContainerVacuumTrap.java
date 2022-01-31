@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -35,7 +35,7 @@ public class ContainerVacuumTrap extends ContainerPneumaticBase<TileEntityVacuum
     }
 
     public ContainerVacuumTrap(int windowId, Inventory invPlayer, BlockPos pos) {
-        super(ModContainers.VACUUM_TRAP.get(), windowId, invPlayer, pos);
+        super(ModMenuTypes.VACUUM_TRAP.get(), windowId, invPlayer, pos);
 
         addSlot(new SlotSpawnerCore(te.getPrimaryInventory(), 0, 62, 38));
 

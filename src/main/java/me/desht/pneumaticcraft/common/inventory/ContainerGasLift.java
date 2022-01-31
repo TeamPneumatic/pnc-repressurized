@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerGasLift extends ContainerPneumaticBase<TileEntityGasLift> {
@@ -31,7 +31,7 @@ public class ContainerGasLift extends ContainerPneumaticBase<TileEntityGasLift> 
     }
 
     public ContainerGasLift(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.GAS_LIFT.get(), i, playerInventory, pos);
+        super(ModMenuTypes.GAS_LIFT.get(), i, playerInventory, pos);
 
         addUpgradeSlots(11, 29);
 

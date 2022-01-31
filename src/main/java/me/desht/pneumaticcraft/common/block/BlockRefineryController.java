@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
@@ -82,7 +82,7 @@ public class BlockRefineryController extends BlockPneumaticCraft
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, world, pos, block, fromPos, isMoving);
 
-        world.getBlockEntity(pos, ModTileEntities.REFINERY.get())
+        world.getBlockEntity(pos, ModBlockEntities.REFINERY.get())
                 .ifPresent(TileEntityRefineryController::cacheRefineryOutputs);
     }
 

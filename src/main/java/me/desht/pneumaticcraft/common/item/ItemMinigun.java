@@ -25,8 +25,8 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -284,7 +284,7 @@ public class ItemMinigun extends ItemPressurizable implements
 
     @Override
     public MenuProvider getContainerProvider(TileEntityChargingStation te) {
-        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_MINIGUN.get());
+        return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_MINIGUN.get());
     }
 
     @Override

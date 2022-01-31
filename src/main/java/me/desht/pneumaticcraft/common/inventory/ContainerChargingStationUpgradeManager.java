@@ -18,15 +18,15 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
@@ -50,23 +50,23 @@ public class ContainerChargingStationUpgradeManager extends ContainerPneumaticBa
     }
 
     public static ContainerChargingStationUpgradeManager createMinigunContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
-        return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_MINIGUN.get(), windowId, inv, data);
+        return new ContainerChargingStationUpgradeManager(ModMenuTypes.CHARGING_MINIGUN.get(), windowId, inv, data);
     }
 
     public static ContainerChargingStationUpgradeManager createDroneContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
-        return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_DRONE.get(), windowId, inv, data);
+        return new ContainerChargingStationUpgradeManager(ModMenuTypes.CHARGING_DRONE.get(), windowId, inv, data);
     }
 
     public static ContainerChargingStationUpgradeManager createArmorContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
-        return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_ARMOR.get(), windowId, inv, data);
+        return new ContainerChargingStationUpgradeManager(ModMenuTypes.CHARGING_ARMOR.get(), windowId, inv, data);
     }
 
     public static ContainerChargingStationUpgradeManager createJackhammerContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
-        return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_JACKHAMMER.get(), windowId, inv, data);
+        return new ContainerChargingStationUpgradeManager(ModMenuTypes.CHARGING_JACKHAMMER.get(), windowId, inv, data);
     }
 
     public static ContainerChargingStationUpgradeManager createAmadronContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
-        return new ContainerChargingStationUpgradeManager(ModContainers.CHARGING_AMADRON.get(), windowId, inv, data);
+        return new ContainerChargingStationUpgradeManager(ModMenuTypes.CHARGING_AMADRON.get(), windowId, inv, data);
     }
 
     private class UpgradeSlot extends SlotItemHandler {

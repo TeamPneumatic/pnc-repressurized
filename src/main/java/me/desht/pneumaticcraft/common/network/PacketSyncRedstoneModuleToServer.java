@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -95,7 +95,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             Player player = ctx.get().getSender();
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                player.level.getBlockEntity(pos, ModTileEntities.PRESSURE_TUBE.get()).ifPresent(tube -> {
+                player.level.getBlockEntity(pos, ModBlockEntities.PRESSURE_TUBE.get()).ifPresent(tube -> {
                     if (tube.getModule(side) instanceof ModuleRedstone mr) {
                         mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
                         mr.setColorChannel(ourColor);

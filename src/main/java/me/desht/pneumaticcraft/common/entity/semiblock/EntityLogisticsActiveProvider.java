@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -49,7 +49,7 @@ public class EntityLogisticsActiveProvider extends EntityLogisticsFrame implemen
 
     @Override
     protected MenuType<?> getContainerType() {
-        return ModContainers.LOGISTICS_FRAME_PROVIDER.get();
+        return ModMenuTypes.LOGISTICS_FRAME_PROVIDER.get();
     }
 
     @Override

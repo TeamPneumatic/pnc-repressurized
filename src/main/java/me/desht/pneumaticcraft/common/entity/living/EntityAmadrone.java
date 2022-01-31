@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -60,7 +60,7 @@ public class EntityAmadrone extends EntityDrone {
     }
 
     public static EntityAmadrone makeAmadrone(Level world, BlockPos pos) {
-        EntityAmadrone drone = new EntityAmadrone(ModEntities.AMADRONE.get(), world);
+        EntityAmadrone drone = new EntityAmadrone(ModEntityTypes.AMADRONE.get(), world);
         drone.readFromItemStack(getAmadroneStack());
 
         List<Integer> offsets = ConfigHelper.common().amadron.amadroneSpawnLocation.get();

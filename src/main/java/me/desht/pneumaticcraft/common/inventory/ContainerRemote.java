@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
@@ -72,11 +72,11 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public static ContainerRemote createRemoteContainer(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new ContainerRemote(ModContainers.REMOTE.get(), windowId, playerInventory, buffer);
+        return new ContainerRemote(ModMenuTypes.REMOTE.get(), windowId, playerInventory, buffer);
     }
 
     public static ContainerRemote createRemoteEditorContainer(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new ContainerRemote(ModContainers.REMOTE_EDITOR.get(), windowId, playerInventory, buffer);
+        return new ContainerRemote(ModMenuTypes.REMOTE_EDITOR.get(), windowId, playerInventory, buffer);
     }
 
     private Set<String> getRelevantVariableNames(@Nonnull ItemStack remote) {

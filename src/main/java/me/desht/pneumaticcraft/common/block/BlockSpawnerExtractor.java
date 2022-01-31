@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -110,7 +110,7 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft implements Entity
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        world.getBlockEntity(pos, ModTileEntities.SPAWNER_EXTRACTOR.get())
+        world.getBlockEntity(pos, ModBlockEntities.SPAWNER_EXTRACTOR.get())
                 .ifPresent(TileEntitySpawnerExtractor::updateMode);
     }
 
@@ -119,7 +119,7 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft implements Entity
         if (!canSurvive(stateIn, worldIn, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         } else {
-            worldIn.getBlockEntity(currentPos, ModTileEntities.SPAWNER_EXTRACTOR.get())
+            worldIn.getBlockEntity(currentPos, ModBlockEntities.SPAWNER_EXTRACTOR.get())
                     .ifPresent(TileEntitySpawnerExtractor::updateMode);
             return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
         }

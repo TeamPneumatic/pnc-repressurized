@@ -22,23 +22,23 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModContainers;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -67,7 +67,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public TileEntityPneumaticDynamo(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PNEUMATIC_DYNAMO.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
+        super(ModBlockEntities.PNEUMATIC_DYNAMO.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);
     }
 
     public int getEfficiency() {
@@ -184,7 +184,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-        return new ContainerEnergy<TileEntityPneumaticDynamo>(ModContainers.PNEUMATIC_DYNAMO.get(), windowId, playerInventory, getBlockPos());
+        return new ContainerEnergy<TileEntityPneumaticDynamo>(ModMenuTypes.PNEUMATIC_DYNAMO.get(), windowId, playerInventory, getBlockPos());
     }
 
     @Nullable

@@ -17,18 +17,18 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
 import me.desht.pneumaticcraft.common.hacking.secstation.SimulationController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -43,7 +43,7 @@ public class ContainerSecurityStationHacking extends ContainerPneumaticBase<Tile
     }
 
     public ContainerSecurityStationHacking(int windowId, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.SECURITY_STATION_HACKING.get(), windowId, playerInventory, pos);
+        super(ModMenuTypes.SECURITY_STATION_HACKING.get(), windowId, playerInventory, pos);
 
         //add the network slots
         for (int i = 0; i < TileEntitySecurityStation.INV_ROWS; i++) {

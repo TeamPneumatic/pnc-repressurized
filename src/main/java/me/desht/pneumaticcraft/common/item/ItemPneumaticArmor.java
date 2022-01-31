@@ -31,8 +31,8 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
@@ -353,7 +353,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     @Override
     public MenuProvider getContainerProvider(TileEntityChargingStation te) {
-        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_ARMOR.get());
+        return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_ARMOR.get());
     }
 
     @Override

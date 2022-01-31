@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 
 public class ContainerKeroseneLamp extends ContainerPneumaticBase<TileEntityKeroseneLamp> {
 
@@ -31,7 +31,7 @@ public class ContainerKeroseneLamp extends ContainerPneumaticBase<TileEntityKero
     }
 
     public ContainerKeroseneLamp(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.KEROSENE_LAMP.get(), i, playerInventory, pos);
+        super(ModMenuTypes.KEROSENE_LAMP.get(), i, playerInventory, pos);
 
         addSlot(new SlotFluidContainer(te.getPrimaryInventory(), 0, 132, 22));
         addSlot(new SlotOutput(te.getPrimaryInventory(), 1, 132, 55));

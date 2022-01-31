@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
@@ -74,7 +74,7 @@ public class EntityMicromissile extends ThrowableProjectile {
     }
 
     public EntityMicromissile(Level worldIn, LivingEntity thrower, ItemStack iStack) {
-        super(ModEntities.MICROMISSILE.get(), thrower, worldIn);
+        super(ModEntityTypes.MICROMISSILE.get(), thrower, worldIn);
 
         if (iStack.hasTag()) {
             CompoundTag tag = Objects.requireNonNull(iStack.getTag());

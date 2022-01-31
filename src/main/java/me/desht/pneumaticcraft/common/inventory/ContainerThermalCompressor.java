@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerThermalCompressor extends ContainerPneumaticBase<TileEntityThermalCompressor> {
 
@@ -30,7 +30,7 @@ public class ContainerThermalCompressor extends ContainerPneumaticBase<TileEntit
     }
 
     public ContainerThermalCompressor(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.THERMAL_COMPRESSOR.get(), i, playerInventory, pos);
+        super(ModMenuTypes.THERMAL_COMPRESSOR.get(), i, playerInventory, pos);
 
         addUpgradeSlots(12, 29);
         addPlayerSlots(playerInventory, 84);

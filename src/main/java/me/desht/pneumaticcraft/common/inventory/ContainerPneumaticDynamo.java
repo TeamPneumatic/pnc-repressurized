@@ -17,18 +17,18 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDynamo;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerPneumaticDynamo extends ContainerEnergy<TileEntityPneumaticDynamo> {
     public ContainerPneumaticDynamo(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        super(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getTilePos(buffer));
+        super(ModMenuTypes.PNEUMATIC_DYNAMO.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerPneumaticDynamo(int i, Inventory playerInventory, BlockPos tilePos) {
-        super(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, tilePos);
+        super(ModMenuTypes.PNEUMATIC_DYNAMO.get(), i, playerInventory, tilePos);
     }
 }

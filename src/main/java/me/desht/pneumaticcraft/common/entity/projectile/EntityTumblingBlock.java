@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.entity.projectile;
 import com.mojang.authlib.GameProfile;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.Packet;
@@ -73,7 +73,7 @@ public class EntityTumblingBlock extends ThrowableProjectile {
     }
 
     public EntityTumblingBlock(Level worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
-        super(ModEntities.TUMBLING_BLOCK.get(), worldIn);
+        super(ModEntityTypes.TUMBLING_BLOCK.get(), worldIn);
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 
         setOwner(thrower);

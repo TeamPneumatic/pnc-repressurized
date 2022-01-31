@@ -22,9 +22,9 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -131,7 +131,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
 
     public TileEntityKeroseneLamp(BlockPos pos, BlockState state) {
-        super(ModTileEntities.KEROSENE_LAMP.get(), pos, state);
+        super(ModBlockEntities.KEROSENE_LAMP.get(), pos, state);
     }
 
     @Override

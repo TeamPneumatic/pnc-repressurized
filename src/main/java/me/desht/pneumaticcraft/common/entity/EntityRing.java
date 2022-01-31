@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.util.Mth;
@@ -41,7 +41,7 @@ public class EntityRing extends Entity {
     }
 
     public EntityRing(Level par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
-        super(ModEntities.RING.get(), par1World);
+        super(ModEntityTypes.RING.get(), par1World);
 
         setPos(startX, startY, startZ);
         xOld = startX;

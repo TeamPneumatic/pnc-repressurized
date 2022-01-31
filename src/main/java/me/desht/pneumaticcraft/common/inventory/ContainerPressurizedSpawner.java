@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerPressurizedSpawner extends ContainerPneumaticBase<TileEntityPressurizedSpawner> {
     public ContainerPressurizedSpawner(int windowId, Inventory invPlayer, FriendlyByteBuf buffer) {
@@ -29,7 +29,7 @@ public class ContainerPressurizedSpawner extends ContainerPneumaticBase<TileEnti
     }
 
     public ContainerPressurizedSpawner(int windowId, Inventory invPlayer, BlockPos pos) {
-        super(ModContainers.PRESSURIZED_SPAWNER.get(), windowId, invPlayer, pos);
+        super(ModMenuTypes.PRESSURIZED_SPAWNER.get(), windowId, invPlayer, pos);
 
         addSlot(new ContainerVacuumTrap.SlotSpawnerCore(te.getPrimaryInventory(), 0, 62, 38));
 

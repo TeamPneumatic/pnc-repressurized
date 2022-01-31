@@ -17,17 +17,17 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
@@ -41,7 +41,7 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
     }
 
     public ContainerMinigunMagazine(int windowId, Inventory playerInventory, InteractionHand hand) {
-        super(ModContainers.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
+        super(ModMenuTypes.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
         this.hand = hand;
 
         ItemMinigun minigun = (ItemMinigun) playerInventory.player.getItemInHand(hand).getItem();

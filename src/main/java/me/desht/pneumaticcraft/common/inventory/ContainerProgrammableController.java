@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.SyncedField;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.items.SlotItemHandler;
@@ -34,7 +34,7 @@ public class ContainerProgrammableController extends ContainerPneumaticBase<Tile
     }
 
     public ContainerProgrammableController(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.PROGRAMMABLE_CONTROLLER.get(), i, playerInventory, pos);
+        super(ModMenuTypes.PROGRAMMABLE_CONTROLLER.get(), i, playerInventory, pos);
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 89, 36));
 

@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowArea;
@@ -68,7 +68,7 @@ public class TileEntityDroneInterface extends TileEntityTickableBase
     private int droneId; // track drone ID client-side
 
     public TileEntityDroneInterface(BlockPos pos, BlockState state) {
-        super(ModTileEntities.DRONE_INTERFACE.get(), pos, state);
+        super(ModBlockEntities.DRONE_INTERFACE.get(), pos, state);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class TileEntityDroneInterface extends TileEntityTickableBase
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
-                EntityDrone drone = ModEntities.DRONE.get().create(nonNullLevel());
+                EntityDrone drone = ModEntityTypes.DRONE.get().create(nonNullLevel());
                 for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
                     IProgWidget widget = IProgWidget.create(type);
                     if (widget.canBeRunByComputers(drone, getWidget())) {

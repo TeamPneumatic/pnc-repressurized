@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerSpawnerExtractor extends ContainerPneumaticBase<TileEntitySpawnerExtractor> {
     public ContainerSpawnerExtractor(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
@@ -29,7 +29,7 @@ public class ContainerSpawnerExtractor extends ContainerPneumaticBase<TileEntity
     }
 
     public ContainerSpawnerExtractor(int windowId, Inventory inv, BlockPos pos) {
-        super(ModContainers.SPAWNER_EXTRACTOR.get(), windowId, inv, pos);
+        super(ModMenuTypes.SPAWNER_EXTRACTOR.get(), windowId, inv, pos);
 
         addUpgradeSlots(23, 29);
 

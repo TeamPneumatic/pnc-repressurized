@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -70,7 +70,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
     public int cursorX = -1, cursorY = -1; // stored in client TE only to remember last editor cursor pos
 
     public TileEntityAphorismTile(BlockPos pos, BlockState state) {
-        super(ModTileEntities.APHORISM_TILE.get(), pos, state);
+        super(ModBlockEntities.APHORISM_TILE.get(), pos, state);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
@@ -51,7 +51,7 @@ public class BlockUniversalSensor extends BlockPneumaticCraft implements EntityB
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        world.getBlockEntity(pos, ModTileEntities.UNIVERSAL_SENSOR.get()).ifPresent(teUS -> {
+        world.getBlockEntity(pos, ModBlockEntities.UNIVERSAL_SENSOR.get()).ifPresent(teUS -> {
             if (entity instanceof Player && !(entity instanceof FakePlayer)) {
                 teUS.setPlayerId(entity.getUUID());
             }
@@ -69,14 +69,14 @@ public class BlockUniversalSensor extends BlockPneumaticCraft implements EntityB
 
     @Override
     public int getDirectSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModTileEntities.UNIVERSAL_SENSOR.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntities.UNIVERSAL_SENSOR.get())
                 .map(te -> side == Direction.UP ? te.redstoneStrength : 0)
                 .orElse(0);
     }
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModTileEntities.UNIVERSAL_SENSOR.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntities.UNIVERSAL_SENSOR.get())
                 .map(te -> te.redstoneStrength).orElse(0);
     }
 

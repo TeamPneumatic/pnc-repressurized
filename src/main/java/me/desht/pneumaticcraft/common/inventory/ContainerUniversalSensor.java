@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -32,7 +32,7 @@ public class ContainerUniversalSensor extends ContainerPneumaticBase<TileEntityU
     private final List<String> globalVars;
 
     public ContainerUniversalSensor(int windowId, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.UNIVERSAL_SENSOR.get(), windowId, playerInventory, pos);
+        super(ModMenuTypes.UNIVERSAL_SENSOR.get(), windowId, playerInventory, pos);
 
         globalVars = Collections.emptyList();
 
@@ -40,7 +40,7 @@ public class ContainerUniversalSensor extends ContainerPneumaticBase<TileEntityU
     }
 
     public ContainerUniversalSensor(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
-        super(ModContainers.UNIVERSAL_SENSOR.get(), windowId, playerInventory, buffer.readBlockPos());
+        super(ModMenuTypes.UNIVERSAL_SENSOR.get(), windowId, playerInventory, buffer.readBlockPos());
 
         int nVars = buffer.readVarInt();
         ImmutableList.Builder<String> b = ImmutableList.builder();

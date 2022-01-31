@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -86,7 +86,7 @@ public class BlockSentryTurret extends BlockPneumaticCraft implements EntityBloc
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        world.getBlockEntity(pos, ModTileEntities.SENTRY_TURRET.get())
+        world.getBlockEntity(pos, ModBlockEntities.SENTRY_TURRET.get())
                 .ifPresent(te -> te.setIdleYaw(entity.getViewYRot(0f)));
     }
 

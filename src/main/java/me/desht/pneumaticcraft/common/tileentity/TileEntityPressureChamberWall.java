@@ -18,17 +18,17 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class TileEntityPressureChamberWall extends TileEntityTickableBase
     private int valveZ;
 
     public TileEntityPressureChamberWall(BlockPos pos, BlockState state) {
-        this(ModTileEntities.PRESSURE_CHAMBER_WALL.get(), pos, state, 0);
+        this(ModBlockEntities.PRESSURE_CHAMBER_WALL.get(), pos, state, 0);
     }
 
     TileEntityPressureChamberWall(BlockEntityType<?> type, BlockPos pos, BlockState state, int upgradeSize) {

@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import net.minecraft.world.inventory.MenuType;
 
 public class ItemLogisticsFramePassiveProvider extends ItemLogisticsFrame {
 
     @Override
     protected MenuType<?> getContainerType() {
-        return ModContainers.LOGISTICS_FRAME_PROVIDER.get();
+        return ModMenuTypes.LOGISTICS_FRAME_PROVIDER.get();
     }
 }

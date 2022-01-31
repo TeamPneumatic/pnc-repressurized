@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
@@ -120,7 +120,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private ISimulationController simulationController = null;
 
     public TileEntitySecurityStation(BlockPos pos, BlockState state) {
-        super(ModTileEntities.SECURITY_STATION.get(), pos, state, 4);
+        super(ModBlockEntities.SECURITY_STATION.get(), pos, state, 4);
     }
 
     @Override

@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 
 public class ContainerEtchingTank extends ContainerPneumaticBase<TileEntityEtchingTank> {
     public ContainerEtchingTank(int windowId, Inventory playerInv, BlockPos pos) {
-        super(ModContainers.ETCHING_TANK.get(), windowId, playerInv, pos);
+        super(ModMenuTypes.ETCHING_TANK.get(), windowId, playerInv, pos);
 
         for (int i = 0; i < TileEntityEtchingTank.ETCHING_SLOTS; i++) {
             int x = 8 + 18 * (i % 5);

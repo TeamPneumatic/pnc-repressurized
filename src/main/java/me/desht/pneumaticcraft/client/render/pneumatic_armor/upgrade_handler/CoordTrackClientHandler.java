@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.EntityPathNavigateDrone;
 import me.desht.pneumaticcraft.common.config.ClientConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -177,7 +177,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
 
     public static Path getDronePath(Player player, BlockPos pos) {
         Level world = player.level;
-        EntityDrone drone = new EntityDrone(ModEntities.DRONE.get(), world);
+        EntityDrone drone = new EntityDrone(ModEntityTypes.DRONE.get(), world);
         drone.setPos(player.getX(), player.getY(), player.getZ());
         return new EntityPathNavigateDrone(drone, world).createPath(pos, 0);
     }

@@ -24,9 +24,9 @@ import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
@@ -118,7 +118,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     public int lightAbove;
 
     public TileEntityElevatorBase(BlockPos pos, BlockState state) {
-        super(ModTileEntities.ELEVATOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_ELEVATOR, 4);
+        super(ModBlockEntities.ELEVATOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_ELEVATOR, 4);
     }
 
     @Override

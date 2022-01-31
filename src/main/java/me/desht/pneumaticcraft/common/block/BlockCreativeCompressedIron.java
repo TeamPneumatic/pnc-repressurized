@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressedIronBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,7 +43,7 @@ public class BlockCreativeCompressedIron extends BlockPneumaticCraft
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entity, stack);
 
-        world.getBlockEntity(pos, ModTileEntities.CREATIVE_COMPRESSED_IRON_BLOCK.get())
+        world.getBlockEntity(pos, ModBlockEntities.CREATIVE_COMPRESSED_IRON_BLOCK.get())
                 .ifPresent(te -> te.setTargetTemperature((int) te.getHeatExchanger().getAmbientTemperature()));
     }
 

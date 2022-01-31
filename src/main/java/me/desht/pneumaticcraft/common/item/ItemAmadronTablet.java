@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
@@ -222,6 +222,6 @@ public class ItemAmadronTablet extends ItemPressurizable
 
     @Override
     public MenuProvider getContainerProvider(TileEntityChargingStation te) {
-        return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_AMADRON.get());
+        return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_AMADRON.get());
     }
 }

@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileEntityOmnidirectionalHopper> {
@@ -31,7 +31,7 @@ public class ContainerOmnidirectionalHopper extends ContainerPneumaticBase<TileE
     }
 
     public ContainerOmnidirectionalHopper(int windowId, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.OMNIDIRECTIONAL_HOPPER.get(), windowId, playerInventory, pos);
+        super(ModMenuTypes.OMNIDIRECTIONAL_HOPPER.get(), windowId, playerInventory, pos);
 
         addUpgradeSlots(23, 29);
 

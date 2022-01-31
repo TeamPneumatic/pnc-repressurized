@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -37,7 +37,7 @@ public class ContainerUVLightBox extends ContainerPneumaticBase<TileEntityUVLigh
     }
 
     public ContainerUVLightBox(int windowId, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.UV_LIGHT_BOX.get(), windowId, playerInventory, pos);
+        super(ModMenuTypes.UV_LIGHT_BOX.get(), windowId, playerInventory, pos);
 
         addSlot(new SlotPCB(te.getPrimaryInventory(), 0, 11, 22));
         addSlot(new SlotOutput(te.getOutputInventory(), 0, 49, 22));

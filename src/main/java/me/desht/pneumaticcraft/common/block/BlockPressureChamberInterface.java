@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
@@ -66,7 +66,7 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft
         Direction dir = getRotation(state);
         VoxelShape main = SHAPES.get(dir.getAxis());
 
-        return worldIn.getBlockEntity(pos, ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get()).map(teI -> {
+        return worldIn.getBlockEntity(pos, ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get()).map(teI -> {
             if (teI.outputProgress < TileEntityPressureChamberInterface.MAX_PROGRESS) {
                 return Shapes.join(main, DOORS.get(dir), BooleanOp.OR);
             } else if (teI.inputProgress < TileEntityPressureChamberInterface.MAX_PROGRESS) {
@@ -101,7 +101,7 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
-            world.getBlockEntity(pos, ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get())
+            world.getBlockEntity(pos, ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get())
                     .ifPresent(TileEntityPressureChamberWall::onBlockBreak);
         }
         super.onRemove(state, world, pos, newState, isMoving);

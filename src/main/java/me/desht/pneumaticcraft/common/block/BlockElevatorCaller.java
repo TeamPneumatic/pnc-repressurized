@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -122,7 +122,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo implements Enti
         if (block == ModBlocks.ELEVATOR_FRAME.get()) {
             return BlockElevatorFrame.getElevatorBase(world, pos);
         } else if (block == ModBlocks.ELEVATOR_BASE.get()) {
-            return world.getBlockEntity(pos, ModTileEntities.ELEVATOR_BASE.get())
+            return world.getBlockEntity(pos, ModBlockEntities.ELEVATOR_BASE.get())
                     .filter(TileEntityElevatorBase::isCoreElevator);
         }
         return Optional.empty();
@@ -140,7 +140,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo implements Enti
 
     @Override
     public int getSignal(BlockState state, BlockGetter pLevel, BlockPos pos, Direction side) {
-        return pLevel.getBlockEntity(pos, ModTileEntities.ELEVATOR_CALLER.get())
+        return pLevel.getBlockEntity(pos, ModBlockEntities.ELEVATOR_CALLER.get())
                 .map(teEc -> teEc.getEmittingRedstone() ? 15 : 0)
                 .orElse(0);
     }

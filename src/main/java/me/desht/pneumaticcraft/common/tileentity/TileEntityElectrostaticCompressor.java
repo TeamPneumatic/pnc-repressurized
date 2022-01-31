@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.block.BlockElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
@@ -76,7 +76,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     private int struckByLightningCooldown; // for redstone emission purposes
 
     public TileEntityElectrostaticCompressor(BlockPos pos, BlockState state) {
-        super(ModTileEntities.ELECTROSTATIC_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
+        super(ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     public void getElectrostaticGrid(Set<BlockPos> grid, Set<TileEntityElectrostaticCompressor> compressors, BlockPos pos) {
         Deque<BlockPos> pendingPos = new ArrayDeque<>(Collections.singleton(pos));
         grid.add(pos);
-        nonNullLevel().getBlockEntity(pos, ModTileEntities.ELECTROSTATIC_COMPRESSOR.get())
+        nonNullLevel().getBlockEntity(pos, ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get())
                 .ifPresent(compressors::add);
 
         while (!pendingPos.isEmpty()) {
@@ -204,7 +204,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
                 if ((isValidGridBlock(block) || block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get())
                         && grid.size() < MAX_ELECTROSTATIC_GRID_SIZE && grid.add(newPos)) {
                     if (block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get()) {
-                        nonNullLevel().getBlockEntity(newPos, ModTileEntities.ELECTROSTATIC_COMPRESSOR.get())
+                        nonNullLevel().getBlockEntity(newPos, ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get())
                                 .ifPresent(compressors::add);
                     }
                     pendingPos.push(newPos);

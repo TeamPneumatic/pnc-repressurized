@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -26,7 +26,7 @@ import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityDroneRedstoneEmitter extends TileEntityTickableBase {
     public TileEntityDroneRedstoneEmitter(BlockPos pos, BlockState state) {
-        super(ModTileEntities.DRONE_REDSTONE_EMITTER.get(), pos, state);
+        super(ModBlockEntities.DRONE_REDSTONE_EMITTER.get(), pos, state);
     }
 
     @Override

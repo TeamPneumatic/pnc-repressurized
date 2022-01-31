@@ -25,17 +25,17 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.SearchClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.chat.TextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -68,7 +68,7 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
     }
 
     private void openSearchGui() {
-        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new TextComponent("Search"));
+        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), new TextComponent("Search"));
         if (Minecraft.getInstance().screen instanceof GuiItemSearcher) {
             searchGui = (GuiItemSearcher) Minecraft.getInstance().screen;
             if (!player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {

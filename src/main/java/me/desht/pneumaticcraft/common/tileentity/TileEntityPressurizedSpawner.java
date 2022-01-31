@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -69,7 +69,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
     private final RangeManager rangeManager = new RangeManager(this, 0x60400040).withCustomExtents(this::buildCustomExtents);
 
     public TileEntityPressurizedSpawner(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PRESSURIZED_SPAWNER.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PRESSURIZED_SPAWNER, 4);
+        super(ModBlockEntities.PRESSURIZED_SPAWNER.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_PRESSURIZED_SPAWNER, 4);
     }
 
     @Override

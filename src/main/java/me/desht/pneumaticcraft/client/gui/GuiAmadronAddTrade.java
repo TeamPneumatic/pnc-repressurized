@@ -24,8 +24,8 @@ import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
@@ -221,7 +221,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
     private void openItemSearchGui(int slot) {
         openingSubGUI = true;
-        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(),
+        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(),
                 new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.itemSearch"));
         if (minecraft.screen instanceof GuiItemSearcher) {
             settingSlot = slot;
@@ -232,7 +232,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
     private void openInventorySearchGui(int slot) {
         openingSubGUI = true;
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(),
+        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(),
                 new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
         if (minecraft.screen instanceof GuiInventorySearcher) {
             settingSlot = slot;
@@ -251,7 +251,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
     private void openGPSGui(int slot) {
         openingSubGUI = true;
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(),
+        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(),
                 new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.gpsSearch"));
         if (minecraft.screen instanceof GuiInventorySearcher) {
             gpsSearchGui = (GuiInventorySearcher) minecraft.screen;

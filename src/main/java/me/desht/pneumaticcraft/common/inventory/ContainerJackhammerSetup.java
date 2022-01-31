@@ -17,18 +17,18 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer.DigMode;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
@@ -43,7 +43,7 @@ public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityB
     }
 
     public ContainerJackhammerSetup(int windowId, Inventory invPlayer, InteractionHand hand) {
-        super(ModContainers.JACKHAMMER_SETUP.get(), windowId, invPlayer);
+        super(ModMenuTypes.JACKHAMMER_SETUP.get(), windowId, invPlayer);
         this.hand = hand;
 
         drillBitHandler = ItemJackHammer.getDrillBitHandler(invPlayer.player.getItemInHand(hand));

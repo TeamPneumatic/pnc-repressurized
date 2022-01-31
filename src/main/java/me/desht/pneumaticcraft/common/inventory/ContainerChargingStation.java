@@ -18,15 +18,15 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
@@ -38,7 +38,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
     }
 
     public ContainerChargingStation(int i, Inventory inventoryPlayer, BlockPos pos) {
-        super(ModContainers.CHARGING_STATION.get(), i, inventoryPlayer, pos);
+        super(ModMenuTypes.CHARGING_STATION.get(), i, inventoryPlayer, pos);
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 45) {
             @Override

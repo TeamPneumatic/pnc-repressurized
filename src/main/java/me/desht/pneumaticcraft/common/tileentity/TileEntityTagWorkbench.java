@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerTagWorkbench;
 import me.desht.pneumaticcraft.common.item.ItemTagFilter;
 import net.minecraft.core.BlockPos;
@@ -51,7 +51,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements Me
     public int outputItemId;
 
     public TileEntityTagWorkbench(BlockPos pos, BlockState state) {
-        super(ModTileEntities.TAG_WORKBENCH.get(), pos, state);
+        super(ModBlockEntities.TAG_WORKBENCH.get(), pos, state);
     }
 
     @Override

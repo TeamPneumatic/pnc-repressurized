@@ -22,10 +22,10 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.XPFluidManager;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -136,7 +136,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public GameProfile gameProfileClient;  // for rendering
 
     public TileEntityAerialInterface(BlockPos pos, BlockState state) {
-        super(ModTileEntities.AERIAL_INTERFACE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
+        super(ModBlockEntities.AERIAL_INTERFACE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
 
         PlayerMainInvHandler playerMainInvHandler = new PlayerMainInvHandler();
         PlayerArmorInvHandler playerArmorInvHandler = new PlayerArmorInvHandler();

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -67,7 +67,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         super.onNeighborBlockUpdate(fromPos);
 
         if (controllerPos != null) {
-            nonNullLevel().getBlockEntity(controllerPos, ModTileEntities.ASSEMBLY_CONTROLLER.get())
+            nonNullLevel().getBlockEntity(controllerPos, ModBlockEntities.ASSEMBLY_CONTROLLER.get())
                     .ifPresent(TileEntityAssemblyController::invalidateAssemblySystem);
         }
     }

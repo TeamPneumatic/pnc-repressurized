@@ -21,7 +21,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.RenderMinigunTracers;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
@@ -90,7 +90,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     private float idleYaw;
 
     public TileEntitySentryTurret(BlockPos pos, BlockState state) {
-        super(ModTileEntities.SENTRY_TURRET.get(), pos, state, 4);
+        super(ModBlockEntities.SENTRY_TURRET.get(), pos, state, 4);
     }
 
     @Override

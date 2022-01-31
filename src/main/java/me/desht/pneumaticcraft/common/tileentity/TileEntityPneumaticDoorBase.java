@@ -21,8 +21,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
@@ -97,7 +97,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     private int rangeSq;
 
     public TileEntityPneumaticDoorBase(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
+        super(ModBlockEntities.PNEUMATIC_DOOR_BASE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     private TileEntityPneumaticDoor getDoor() {
-        return nonNullLevel().getBlockEntity(getBlockPos().relative(getRotation()).below(), ModTileEntities.PNEUMATIC_DOOR.get()).map(teDoor -> {
+        return nonNullLevel().getBlockEntity(getBlockPos().relative(getRotation()).below(), ModBlockEntities.PNEUMATIC_DOOR.get()).map(teDoor -> {
             if (getRotation().getClockWise() == teDoor.getRotation() && !teDoor.rightGoing) {
                 return teDoor;
             } else if (getRotation().getCounterClockWise() == teDoor.getRotation() && teDoor.rightGoing) {

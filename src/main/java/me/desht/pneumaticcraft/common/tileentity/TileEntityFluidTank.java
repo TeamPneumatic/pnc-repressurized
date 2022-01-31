@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockFluidTank;
 import me.desht.pneumaticcraft.common.block.BlockFluidTank.ItemBlockFluidTank;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerFluidTank;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -199,25 +199,25 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
 
     public static class Small extends TileEntityFluidTank {
         public Small(BlockPos pos, BlockState state) {
-            super(ModTileEntities.TANK_SMALL.get(), pos, state, BlockFluidTank.Size.SMALL);
+            super(ModBlockEntities.TANK_SMALL.get(), pos, state, BlockFluidTank.Size.SMALL);
         }
     }
 
     public static class Medium extends TileEntityFluidTank {
         public Medium(BlockPos pos, BlockState state) {
-            super(ModTileEntities.TANK_MEDIUM.get(), pos, state, BlockFluidTank.Size.MEDIUM);
+            super(ModBlockEntities.TANK_MEDIUM.get(), pos, state, BlockFluidTank.Size.MEDIUM);
         }
     }
 
     public static class Large extends TileEntityFluidTank {
         public Large(BlockPos pos, BlockState state) {
-            super(ModTileEntities.TANK_LARGE.get(), pos, state, BlockFluidTank.Size.LARGE);
+            super(ModBlockEntities.TANK_LARGE.get(), pos, state, BlockFluidTank.Size.LARGE);
         }
     }
 
     public static class Huge extends TileEntityFluidTank {
         public Huge(BlockPos pos, BlockState state) {
-            super(ModTileEntities.TANK_HUGE.get(), pos, state, BlockFluidTank.Size.HUGE);
+            super(ModBlockEntities.TANK_HUGE.get(), pos, state, BlockFluidTank.Size.HUGE);
         }
     }
 }

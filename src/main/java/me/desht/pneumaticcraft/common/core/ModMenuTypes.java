@@ -27,8 +27,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModContainers {
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Names.MOD_ID);
+public class ModMenuTypes {
+    public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.CONTAINERS, Names.MOD_ID);
 
     public static final RegistryObject<MenuType<ContainerAdvancedAirCompressor>> ADVANCED_AIR_COMPRESSOR
             = register("advanced_air_compressor", ContainerAdvancedAirCompressor::new);
@@ -147,6 +147,6 @@ public class ModContainers {
 
     private static <C extends AbstractContainerMenu, T extends MenuType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked
-        return CONTAINERS.register(name, () -> (T) IForgeMenuType.create(f));
+        return MENU_TYPES.register(name, () -> (T) IForgeMenuType.create(f));
     }
 }

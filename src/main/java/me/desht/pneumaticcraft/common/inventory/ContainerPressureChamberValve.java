@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerPressureChamberValve extends ContainerPneumaticBase<TileEntityPressureChamberValve> {
 
@@ -30,7 +30,7 @@ public class ContainerPressureChamberValve extends ContainerPneumaticBase<TileEn
     }
 
     public ContainerPressureChamberValve(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.PRESSURE_CHAMBER_VALVE.get(), i, playerInventory, pos);
+        super(ModMenuTypes.PRESSURE_CHAMBER_VALVE.get(), i, playerInventory, pos);
 
         addUpgradeSlots(48, 29);
 

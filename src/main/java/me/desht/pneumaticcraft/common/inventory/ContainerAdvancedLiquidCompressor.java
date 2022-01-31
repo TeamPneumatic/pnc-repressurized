@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerAdvancedLiquidCompressor extends ContainerLiquidCompressor {
 
@@ -29,7 +29,7 @@ public class ContainerAdvancedLiquidCompressor extends ContainerLiquidCompressor
     }
 
     public ContainerAdvancedLiquidCompressor(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.ADVANCED_LIQUID_COMPRESSOR.get(), i, playerInventory, pos);
+        super(ModMenuTypes.ADVANCED_LIQUID_COMPRESSOR.get(), i, playerInventory, pos);
     }
 
     @Override

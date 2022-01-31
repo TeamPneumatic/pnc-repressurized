@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -115,7 +115,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     private double airUsage;
 
     public TileEntityThermopneumaticProcessingPlant(BlockPos pos, BlockState state) {
-        super(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), pos, state, PressureTier.TIER_ONE, 3000, 4);
+        super(ModBlockEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), pos, state, PressureTier.TIER_ONE, 3000, 4);
         heatExchanger.setThermalResistance(10);
     }
 

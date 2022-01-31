@@ -17,18 +17,18 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerAerialInterface extends ContainerEnergy<TileEntityAerialInterface> {
     public ContainerAerialInterface(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        super(ModContainers.AERIAL_INTERFACE.get(), i, playerInventory, getTilePos(buffer));
+        super(ModMenuTypes.AERIAL_INTERFACE.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerAerialInterface(int i, Inventory playerInventory, BlockPos tilePos) {
-        super(ModContainers.AERIAL_INTERFACE.get(), i, playerInventory, tilePos);
+        super(ModMenuTypes.AERIAL_INTERFACE.get(), i, playerInventory, tilePos);
     }
 }

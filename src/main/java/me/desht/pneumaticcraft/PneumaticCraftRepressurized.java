@@ -121,9 +121,9 @@ public class PneumaticCraftRepressurized {
         ModItems.ITEMS.register(modBus);
         ModFluids.FLUIDS.register(modBus);
         ModSounds.SOUNDS.register(modBus);
-        ModTileEntities.TILE_ENTITIES.register(modBus);
-        ModEntities.ENTITIES.register(modBus);
-        ModContainers.CONTAINERS.register(modBus);
+        ModBlockEntities.BLOCK_ENTITIES.register(modBus);
+        ModEntityTypes.ENTITY_TYPES.register(modBus);
+        ModMenuTypes.MENU_TYPES.register(modBus);
         ModParticleTypes.PARTICLES.register(modBus);
         ModRecipes.RECIPES.register(modBus);
 //        ModDecorators.DECORATORS.register(modBus);

@@ -21,16 +21,16 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -48,7 +48,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private final SyncedTemperature syncCold = new SyncedTemperature(coldHeatExchanger);
 
     public TileEntityVortexTube(BlockPos pos, BlockState state) {
-        super(ModTileEntities.VORTEX_TUBE.get(), pos, state, PressureTier.TIER_TWO, 2000, 0);
+        super(ModBlockEntities.VORTEX_TUBE.get(), pos, state, PressureTier.TIER_TWO, 2000, 0);
         coldHeatExchanger.setThermalResistance(0.01);
         hotHeatExchanger.setThermalResistance(0.01);
         connectingExchanger.setThermalResistance(100);

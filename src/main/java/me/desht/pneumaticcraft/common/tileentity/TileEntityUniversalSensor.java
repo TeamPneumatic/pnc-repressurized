@@ -25,8 +25,8 @@ import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.GuiUniversalSensor;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -108,7 +108,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     private UUID playerId;
 
     public TileEntityUniversalSensor(BlockPos pos, BlockState state) {
-        super(ModTileEntities.UNIVERSAL_SENSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
+        super(ModBlockEntities.UNIVERSAL_SENSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
     }
 
     @Override

@@ -18,15 +18,15 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.NonNullList;
 
 public class ContainerItemSearcher extends AbstractContainerMenu {
     private static final int SEARCH_ROWS = 6;
@@ -38,7 +38,7 @@ public class ContainerItemSearcher extends AbstractContainerMenu {
 
     @SuppressWarnings("unused")
     public ContainerItemSearcher(int windowId, Inventory inv, FriendlyByteBuf data) {
-        super(ModContainers.ITEM_SEARCHER.get(), windowId);
+        super(ModMenuTypes.ITEM_SEARCHER.get(), windowId);
     }
 
     public void init(GuiItemSearcher gui) {

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
@@ -34,7 +34,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     private final RedstoneController<TileEntityElevatorCaller> rsController = new RedstoneController<>(this);
 
     public TileEntityElevatorCaller(BlockPos pos, BlockState state) {
-        super(ModTileEntities.ELEVATOR_CALLER.get(), pos, state);
+        super(ModBlockEntities.ELEVATOR_CALLER.get(), pos, state);
     }
 
     public void setEmittingRedstone(boolean emittingRedstone) {

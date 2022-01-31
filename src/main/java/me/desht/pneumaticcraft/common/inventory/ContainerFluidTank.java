@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerFluidTank extends ContainerPneumaticBase<TileEntityFluidTank> {
     public ContainerFluidTank(int windowId, Inventory inv, FriendlyByteBuf extraData) {
@@ -29,7 +29,7 @@ public class ContainerFluidTank extends ContainerPneumaticBase<TileEntityFluidTa
     }
 
     public ContainerFluidTank(int windowId, Inventory inv, BlockPos pos) {
-        super(ModContainers.FLUID_TANK.get(), windowId, inv, pos);
+        super(ModMenuTypes.FLUID_TANK.get(), windowId, inv, pos);
 
         addSlot(new SlotFluidContainer(te.getPrimaryInventory(), 0, 132, 22));
         addSlot(new SlotOutput(te.getPrimaryInventory(), 1, 132, 55));

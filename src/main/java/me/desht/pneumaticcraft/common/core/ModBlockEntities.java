@@ -28,8 +28,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-public class ModTileEntities {
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Names.MOD_ID);
+public class ModBlockEntities {
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, Names.MOD_ID);
 
     public static final RegistryObject<BlockEntityType<TileEntityPressureTube>> PRESSURE_TUBE
             = register("pressure_tube", () -> new BlockEntityType<>(TileEntityPressureTube::new, ImmutableSet.of(ModBlocks.PRESSURE_TUBE.get()), null));
@@ -161,6 +161,6 @@ public class ModTileEntities {
     public static final RegistryObject<BlockEntityType<TileEntityCreativeCompressedIronBlock>> CREATIVE_COMPRESSED_IRON_BLOCK
             = register("creative_compressed_iron_block", () -> new BlockEntityType<>(TileEntityCreativeCompressedIronBlock::new, ImmutableSet.of(ModBlocks.CREATIVE_COMPRESSED_IRON_BLOCK.get()), null));
     private static <T extends BlockEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
-        return TILE_ENTITIES.register(name, sup);
+        return BLOCK_ENTITIES.register(name, sup);
     }
 }

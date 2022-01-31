@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
@@ -199,7 +199,7 @@ public class ItemRemote extends Item {
         }
 
         protected MenuType<? extends ContainerRemote> getType() {
-            return ModContainers.REMOTE.get();
+            return ModMenuTypes.REMOTE.get();
         }
     }
 
@@ -210,7 +210,7 @@ public class ItemRemote extends Item {
 
         @Override
         protected MenuType<? extends ContainerRemote> getType() {
-            return ModContainers.REMOTE_EDITOR.get();
+            return ModMenuTypes.REMOTE_EDITOR.get();
         }
     }
 }

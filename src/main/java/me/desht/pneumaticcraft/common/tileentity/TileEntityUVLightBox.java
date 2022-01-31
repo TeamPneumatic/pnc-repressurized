@@ -21,8 +21,8 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
@@ -97,7 +97,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     public int ticksExisted;
 
     public TileEntityUVLightBox(BlockPos pos, BlockState state) {
-        super(ModTileEntities.UV_LIGHT_BOX.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
+        super(ModBlockEntities.UV_LIGHT_BOX.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_UV_LIGHTBOX, 4);
     }
 
     @Override

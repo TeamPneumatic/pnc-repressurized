@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -84,7 +84,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft implements EntityB
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
         if (entityLiving instanceof Player p) {
-            world.getBlockEntity(pos, ModTileEntities.SECURITY_STATION.get())
+            world.getBlockEntity(pos, ModBlockEntities.SECURITY_STATION.get())
                     .ifPresent(teSS -> teSS.sharedUsers.add(p.getGameProfile()));
         }
 
@@ -135,7 +135,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft implements EntityB
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModTileEntities.SECURITY_STATION.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntities.SECURITY_STATION.get())
                 .map(teSS -> teSS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 

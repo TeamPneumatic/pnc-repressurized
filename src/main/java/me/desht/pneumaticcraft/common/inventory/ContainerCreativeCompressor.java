@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerCreativeCompressor extends ContainerPneumaticBase<TileEntityCreativeCompressor> {
     public ContainerCreativeCompressor(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
@@ -29,7 +29,7 @@ public class ContainerCreativeCompressor extends ContainerPneumaticBase<TileEnti
     }
 
     public ContainerCreativeCompressor(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.CREATIVE_COMPRESSOR.get(), i, playerInventory, pos);
+        super(ModMenuTypes.CREATIVE_COMPRESSOR.get(), i, playerInventory, pos);
     }
 
     // phenomenal cosmic power... itty-bitty container implementation

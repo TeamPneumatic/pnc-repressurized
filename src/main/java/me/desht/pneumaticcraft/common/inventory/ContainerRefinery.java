@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nonnull;
 
@@ -36,7 +36,7 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
     }
 
     public ContainerRefinery(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.REFINERY.get(), i, playerInventory, pos);
+        super(ModMenuTypes.REFINERY.get(), i, playerInventory, pos);
 
         TileEntityRefineryController refinery = te;
         refinery.onNeighborTileUpdate(null);

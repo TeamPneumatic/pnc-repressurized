@@ -27,8 +27,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.item.ItemRemote;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -125,7 +125,7 @@ public class GuiRemoteEditor extends GuiRemote {
     }
 
     private void doImport() {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
+        ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), new TranslatableComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
         if (minecraft.screen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setStackPredicate(s -> s.getItem() == ModItems.REMOTE.get());

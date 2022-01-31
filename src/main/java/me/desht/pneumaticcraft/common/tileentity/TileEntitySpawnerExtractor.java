@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSpawnerExtractor;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -88,7 +88,7 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     private int spawnFailures;
 
     public TileEntitySpawnerExtractor(BlockPos pos, BlockState state) {
-        super(ModTileEntities.SPAWNER_EXTRACTOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_SPAWNER_EXTRACTOR, 4);
+        super(ModBlockEntities.SPAWNER_EXTRACTOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_SPAWNER_EXTRACTOR, 4);
     }
 
     @Override

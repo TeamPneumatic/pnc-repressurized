@@ -26,8 +26,8 @@ import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
@@ -110,7 +110,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public ContainerAmadron(int windowId, Inventory invPlayer, InteractionHand hand) {
-        super(ModContainers.AMADRON.get(), windowId, invPlayer);
+        super(ModMenuTypes.AMADRON.get(), windowId, invPlayer);
 
         this.hand = hand;
 

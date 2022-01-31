@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerAdvancedAirCompressor extends ContainerAirCompressor {
 
@@ -29,7 +29,7 @@ public class ContainerAdvancedAirCompressor extends ContainerAirCompressor {
     }
 
     public ContainerAdvancedAirCompressor(int windowId, Inventory invPlayer, BlockPos tePos) {
-        super(ModContainers.ADVANCED_AIR_COMPRESSOR.get(), windowId, invPlayer, tePos);
+        super(ModMenuTypes.ADVANCED_AIR_COMPRESSOR.get(), windowId, invPlayer, tePos);
     }
 
     @Override

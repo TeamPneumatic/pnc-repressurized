@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,7 +34,7 @@ public class ContainerAirCannon extends ContainerPneumaticBase<TileEntityAirCann
     }
 
     public ContainerAirCannon(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.AIR_CANNON.get(), i, playerInventory, pos);
+        super(ModMenuTypes.AIR_CANNON.get(), i, playerInventory, pos);
 
         addUpgradeSlots(8, 29);
 

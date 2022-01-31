@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -84,7 +84,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     private final EnumMap<Direction,Integer> pushSlots = new EnumMap<>(Direction.class);
 
     public TileEntitySmartChest(BlockPos pos, BlockState state) {
-        super(ModTileEntities.SMART_CHEST.get(), pos, state, 4);
+        super(ModBlockEntities.SMART_CHEST.get(), pos, state, 4);
     }
 
     @Override

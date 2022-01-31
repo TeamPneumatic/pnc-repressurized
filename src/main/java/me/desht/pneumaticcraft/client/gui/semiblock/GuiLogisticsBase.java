@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
@@ -34,15 +34,15 @@ import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
@@ -283,7 +283,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
                 && !slot.hasItem()
                 && (clickedButton == 0 || clickedButton == 1)) {
             editingSlot = slot.getSlotIndex();
-            ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new TextComponent("Searcher"));
+            ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), new TextComponent("Searcher"));
             if (minecraft.screen instanceof GuiItemSearcher) {
                 itemSearchGui = (GuiItemSearcher) minecraft.screen;
             }

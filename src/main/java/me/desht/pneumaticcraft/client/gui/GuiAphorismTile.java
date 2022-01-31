@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAphorismTileUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
@@ -110,7 +110,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
     }
 
     private void openItemSelector() {
-        ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new TextComponent("Searcher"));
+        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), new TextComponent("Searcher"));
         if (minecraft.screen instanceof GuiItemSearcher) {
             itemSearchGui = (GuiItemSearcher) minecraft.screen;
         }

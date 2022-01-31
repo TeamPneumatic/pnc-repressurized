@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -42,7 +42,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     public int color = DyeColor.WHITE.getId();
 
     public TileEntityPneumaticDoor(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PNEUMATIC_DOOR.get(), pos, state);
+        super(ModBlockEntities.PNEUMATIC_DOOR.get(), pos, state);
     }
 
     public void setRotationAngle(float rotationAngle) {
@@ -71,7 +71,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     public boolean setColor(DyeColor dyeColor) {
         if (color != dyeColor.getId() && !getBlockState().getValue(BlockPneumaticDoor.TOP_DOOR)) {
             color = (byte) dyeColor.getId();
-            nonNullLevel().getBlockEntity(getBlockPos(), ModTileEntities.PNEUMATIC_DOOR.get()).ifPresent(topHalf -> {
+            nonNullLevel().getBlockEntity(getBlockPos(), ModBlockEntities.PNEUMATIC_DOOR.get()).ifPresent(topHalf -> {
                 topHalf.color = color;
                 if (!nonNullLevel().isClientSide) {
                     setChanged();

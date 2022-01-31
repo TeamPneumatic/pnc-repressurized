@@ -33,10 +33,10 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
@@ -177,7 +177,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private int activeWidgetIndex;
 
     public TileEntityProgrammableController(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), pos, state, PressureTier.TIER_TWO, 10000, 4);
+        super(ModBlockEntities.PROGRAMMABLE_CONTROLLER.get(), pos, state, PressureTier.TIER_TWO, 10000, 4);
 
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
@@ -223,7 +223,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         super.tickClient();
 
         if ((drone == null || !drone.isAlive()) && nonNullLevel().isLoaded(new BlockPos(curX, curY, curZ))) {
-            drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(nonNullLevel());
+            drone = ModEntityTypes.PROGRAMMABLE_CONTROLLER.get().create(nonNullLevel());
             if (drone != null) {
                 drone.setController(this);
                 drone.setPos(curX, curY, curZ);

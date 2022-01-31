@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -41,7 +41,7 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements Camouf
     private BlockState camoState;
 
     public TileEntityHeatPipe(BlockPos pos, BlockState state) {
-        super(ModTileEntities.HEAT_PIPE.get(), pos, state);
+        super(ModBlockEntities.HEAT_PIPE.get(), pos, state);
     }
 
     @Override

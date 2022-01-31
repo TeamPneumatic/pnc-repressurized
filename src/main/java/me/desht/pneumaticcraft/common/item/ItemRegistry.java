@@ -33,7 +33,6 @@ import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public enum ItemRegistry implements IItemRegistry {
     INSTANCE;
@@ -74,7 +73,7 @@ public enum ItemRegistry implements IItemRegistry {
                 tempList.add(Symbols.BULLET + " " + I18n.get(acceptor.getUpgradeAcceptorTranslationKey()));
             }
             Collections.sort(tempList);
-            tooltip.addAll(tempList.stream().map(TextComponent::new).collect(Collectors.toList()));
+            tooltip.addAll(tempList.stream().map(TextComponent::new).toList());
         }
     }
 

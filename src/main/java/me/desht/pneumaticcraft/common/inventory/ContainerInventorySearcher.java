@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
-import net.minecraft.world.entity.player.Player;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
 
 public class ContainerInventorySearcher extends AbstractContainerMenu {
     public ContainerInventorySearcher(int windowId, Inventory inv, FriendlyByteBuf data) {
-        super(ModContainers.INVENTORY_SEARCHER.get(), windowId);
+        super(ModMenuTypes.INVENTORY_SEARCHER.get(), windowId);
 
         // Add the player's inventory slots to the container
         for (int row = 0; row < 3; ++row) {

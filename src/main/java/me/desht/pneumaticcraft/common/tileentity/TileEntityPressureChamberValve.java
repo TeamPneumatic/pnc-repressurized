@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -121,7 +121,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     private int savedMultiblockSize = 0;
 
     public TileEntityPressureChamberValve(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
+        super(ModBlockEntities.PRESSURE_CHAMBER_VALVE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
         accessoryValves = new ArrayList<>();
         nbtValveList = new ArrayList<>();
     }

@@ -17,17 +17,17 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -39,7 +39,7 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     private final ItemStackHandler inv = new ItemStackHandler(2);
 
     ContainerAmadronAddTrade(int windowId, Inventory playerInventory) {
-        super(ModContainers.AMADRON_ADD_TRADE.get(), windowId, playerInventory);
+        super(ModMenuTypes.AMADRON_ADD_TRADE.get(), windowId, playerInventory);
 
         addSlot(new SlotPhantomUnstackable(inv, INPUT_SLOT, 37, 90));
         addSlot(new SlotPhantomUnstackable(inv, OUTPUT_SLOT, 126, 90));

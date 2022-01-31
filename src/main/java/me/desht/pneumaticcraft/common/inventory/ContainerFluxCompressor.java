@@ -17,18 +17,18 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluxCompressor;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerFluxCompressor extends ContainerEnergy<TileEntityFluxCompressor> {
     public ContainerFluxCompressor(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        super(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
+        super(ModMenuTypes.FLUX_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerFluxCompressor(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, pos);
+        super(ModMenuTypes.FLUX_COMPRESSOR.get(), i, playerInventory, pos);
     }
 }

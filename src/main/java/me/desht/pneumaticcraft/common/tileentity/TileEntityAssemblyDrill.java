@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
@@ -42,7 +42,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     private int drillStep;
 
     public TileEntityAssemblyDrill(BlockPos pos, BlockState state) {
-        super(ModTileEntities.ASSEMBLY_DRILL.get(), pos, state);
+        super(ModBlockEntities.ASSEMBLY_DRILL.get(), pos, state);
     }
 
     @Override

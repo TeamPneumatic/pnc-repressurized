@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -102,7 +102,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     }
 
     public TileEntityPressureChamberInterface(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), pos, state, 4);
+        super(ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get(), pos, state, 4);
     }
 
     public static void clearCachedItems() {

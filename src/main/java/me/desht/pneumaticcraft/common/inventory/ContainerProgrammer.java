@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -47,7 +47,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
     private final boolean hiRes;
 
     public ContainerProgrammer(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.PROGRAMMER.get(), i, playerInventory, pos);
+        super(ModMenuTypes.PROGRAMMER.get(), i, playerInventory, pos);
 
         // server side doesn't care about slot positioning, so doesn't care about screen res either
         this.hiRes = playerInventory.player.level.isClientSide && ClientUtils.isScreenHiRes();

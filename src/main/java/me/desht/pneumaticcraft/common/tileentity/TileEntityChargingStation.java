@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -96,7 +96,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public boolean upgradeOnly = false;
 
     public TileEntityChargingStation(BlockPos pos, BlockState state) {
-        super(ModTileEntities.CHARGING_STATION.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_CHARGING_STATION, 4);
+        super(ModBlockEntities.CHARGING_STATION.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_CHARGING_STATION, 4);
     }
 
     @Nonnull

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.tubes.INetworkedModule;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -61,7 +61,7 @@ public class PacketTubeModuleColor extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player != null) {
-                player.level.getBlockEntity(pos, ModTileEntities.PRESSURE_TUBE.get()).ifPresent(tube -> {
+                player.level.getBlockEntity(pos, ModBlockEntities.PRESSURE_TUBE.get()).ifPresent(tube -> {
                     if (tube.getModule(side) instanceof INetworkedModule net) {
                         net.setColorChannel(ourColor);
                     }

@@ -39,7 +39,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
@@ -252,7 +252,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public EntityDrone(Level world, Player player) {
-        this(ModEntities.DRONE.get(), world, player);
+        this(ModEntityTypes.DRONE.get(), world, player);
     }
 
     @SubscribeEvent

@@ -17,19 +17,18 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.FakePlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +49,7 @@ public class BlockAerialInterface extends BlockPneumaticCraft implements IBlockC
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        world.getBlockEntity(pos, ModTileEntities.AERIAL_INTERFACE.get()).ifPresent(teAI -> {
+        world.getBlockEntity(pos, ModBlockEntities.AERIAL_INTERFACE.get()).ifPresent(teAI -> {
             if (entity instanceof Player && !(entity instanceof FakePlayer)) {
                 teAI.setPlayerId(entity.getUUID());
             }
@@ -66,7 +65,7 @@ public class BlockAerialInterface extends BlockPneumaticCraft implements IBlockC
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModTileEntities.AERIAL_INTERFACE.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntities.AERIAL_INTERFACE.get())
                 .map(teAI -> teAI.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 

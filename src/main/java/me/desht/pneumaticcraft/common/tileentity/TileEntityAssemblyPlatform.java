@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -45,7 +45,7 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     private BlockPos controllerPos;
 
     public TileEntityAssemblyPlatform(BlockPos pos, BlockState state) {
-        super(ModTileEntities.ASSEMBLY_PLATFORM.get(), pos, state);
+        super(ModBlockEntities.ASSEMBLY_PLATFORM.get(), pos, state);
     }
 
     @Override

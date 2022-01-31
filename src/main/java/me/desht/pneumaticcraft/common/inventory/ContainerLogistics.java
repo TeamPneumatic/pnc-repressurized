@@ -18,22 +18,22 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -140,15 +140,15 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
     }
 
     public static ContainerLogistics createProviderContainer(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_PROVIDER.get(), i, playerInventory, buffer);
+        return new ContainerLogistics(ModMenuTypes.LOGISTICS_FRAME_PROVIDER.get(), i, playerInventory, buffer);
     }
 
     public static ContainerLogistics createRequesterContainer(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), i, playerInventory, buffer);
+        return new ContainerLogistics(ModMenuTypes.LOGISTICS_FRAME_REQUESTER.get(), i, playerInventory, buffer);
     }
 
     public static ContainerLogistics createStorageContainer(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE.get(), i, playerInventory, buffer);
+        return new ContainerLogistics(ModMenuTypes.LOGISTICS_FRAME_STORAGE.get(), i, playerInventory, buffer);
     }
 
     @Override

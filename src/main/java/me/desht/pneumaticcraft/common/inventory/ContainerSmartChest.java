@@ -17,18 +17,18 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerSmartChest extends ContainerPneumaticBase<TileEntitySmartChest> {
     public static final int N_COLS = 12;
 
     public ContainerSmartChest(int windowId, Inventory inv, BlockPos pos) {
-        super(ModContainers.SMART_CHEST.get(), windowId, inv, pos);
+        super(ModMenuTypes.SMART_CHEST.get(), windowId, inv, pos);
 
         for (int i = 0; i < TileEntitySmartChest.CHEST_SIZE; i++) {
             addSlot(new SlotItemHandler(te.getPrimaryInventory(), i, 8 + (i % N_COLS) * 18, 18 + (i / N_COLS) * 18));

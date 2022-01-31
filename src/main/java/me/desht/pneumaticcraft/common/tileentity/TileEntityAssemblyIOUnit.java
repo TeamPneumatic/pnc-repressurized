@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -66,7 +66,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private byte tickCounter = 0;
 
     public TileEntityAssemblyIOUnit(BlockPos pos, BlockState state) {
-        super(ModTileEntities.ASSEMBLY_IO_UNIT.get(), pos, state);
+        super(ModBlockEntities.ASSEMBLY_IO_UNIT.get(), pos, state);
     }
 
     @Override

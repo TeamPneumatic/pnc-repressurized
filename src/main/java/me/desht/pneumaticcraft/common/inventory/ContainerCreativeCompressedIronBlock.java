@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressedIronBlock;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerCreativeCompressedIronBlock extends ContainerPneumaticBase<TileEntityCreativeCompressedIronBlock> {
     public ContainerCreativeCompressedIronBlock(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
@@ -29,6 +29,6 @@ public class ContainerCreativeCompressedIronBlock extends ContainerPneumaticBase
     }
 
     public ContainerCreativeCompressedIronBlock(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.CREATIVE_COMPRESSED_IRON_BLOCK.get(), i, playerInventory, pos);
+        super(ModMenuTypes.CREATIVE_COMPRESSED_IRON_BLOCK.get(), i, playerInventory, pos);
     }
 }

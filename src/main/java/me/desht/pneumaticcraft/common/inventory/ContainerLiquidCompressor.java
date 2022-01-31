@@ -17,21 +17,21 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 
 public class ContainerLiquidCompressor extends ContainerPneumaticBase<TileEntityLiquidCompressor> {
 
     public ContainerLiquidCompressor(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(ModContainers.LIQUID_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
+        this(ModMenuTypes.LIQUID_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
     }
 
     public ContainerLiquidCompressor(int i, Inventory playerInventory, BlockPos tePos) {
-        this(ModContainers.LIQUID_COMPRESSOR.get(), i, playerInventory, tePos);
+        this(ModMenuTypes.LIQUID_COMPRESSOR.get(), i, playerInventory, tePos);
     }
 
     ContainerLiquidCompressor(MenuType type, int i, Inventory playerInventory, BlockPos pos) {

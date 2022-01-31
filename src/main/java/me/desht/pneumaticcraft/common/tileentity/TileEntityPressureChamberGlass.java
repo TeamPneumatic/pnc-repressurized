@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
@@ -61,7 +61,7 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
     };
 
     public TileEntityPressureChamberGlass(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PRESSURE_CHAMBER_GLASS.get(), pos, state,0);
+        super(ModBlockEntities.PRESSURE_CHAMBER_GLASS.get(), pos, state,0);
     }
 
     @Nonnull

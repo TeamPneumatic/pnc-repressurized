@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -165,7 +165,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft implements EntityBlo
         super.setPlacedBy(world, pos, state, par5EntityLiving, par6ItemStack);
 
         world.setBlock(pos.relative(Direction.UP), world.getBlockState(pos).setValue(TOP_DOOR, true), Block.UPDATE_ALL);
-        world.getBlockEntity(pos, ModTileEntities.PNEUMATIC_DOOR.get()).ifPresent(teDoor -> {
+        world.getBlockEntity(pos, ModBlockEntities.PNEUMATIC_DOOR.get()).ifPresent(teDoor -> {
             BlockPos top = pos.above();
             if (world.getBlockState(top.relative(getRotation(state).getCounterClockWise())).getBlock() == ModBlocks.PNEUMATIC_DOOR_BASE.get()) {
                 teDoor.rightGoing = true;

@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerReinforcedChest extends ContainerPneumaticBase<TileEntityReinforcedChest> {
     public ContainerReinforcedChest(int windowId, Inventory invPlayer, BlockPos pos) {
-        super(ModContainers.REINFORCED_CHEST.get(), windowId, invPlayer, pos);
+        super(ModMenuTypes.REINFORCED_CHEST.get(), windowId, invPlayer, pos);
 
         for (int i = 0; i < TileEntityReinforcedChest.CHEST_SIZE; i++) {
             addSlot(new SlotItemHandler(te.getPrimaryInventory(), i, 8 + (i % 9) * 18, 18 + (i / 9) * 18));

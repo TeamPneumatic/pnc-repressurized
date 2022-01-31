@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerElevator extends ContainerPneumaticBase<TileEntityElevatorBase> {
 
@@ -30,7 +30,7 @@ public class ContainerElevator extends ContainerPneumaticBase<TileEntityElevator
     }
 
     public ContainerElevator(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.ELEVATOR.get(), i, playerInventory, pos);
+        super(ModMenuTypes.ELEVATOR.get(), i, playerInventory, pos);
 
         addUpgradeSlots(23, 29);
 

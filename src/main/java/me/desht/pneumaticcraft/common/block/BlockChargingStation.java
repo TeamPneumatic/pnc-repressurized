@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
@@ -119,7 +119,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo implements Ent
 
     @Override
     public int getSignal(BlockState blockState, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return blockAccess.getBlockEntity(pos, ModTileEntities.CHARGING_STATION.get())
+        return blockAccess.getBlockEntity(pos, ModBlockEntities.CHARGING_STATION.get())
                 .map(teCS -> teCS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 

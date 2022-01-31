@@ -22,7 +22,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -136,7 +136,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private static final int GPS_SLOT = 1;
 
     public TileEntityAirCannon(BlockPos pos, BlockState state) {
-        super(ModTileEntities.AIR_CANNON.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_AIR_CANNON, 4);
+        super(ModBlockEntities.AIR_CANNON.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_AIR_CANNON, 4);
     }
 
     @Override

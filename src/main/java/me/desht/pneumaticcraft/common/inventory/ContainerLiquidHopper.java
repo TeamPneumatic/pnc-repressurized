@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
 
 public class ContainerLiquidHopper extends ContainerPneumaticBase<TileEntityLiquidHopper> {
 
@@ -30,7 +30,7 @@ public class ContainerLiquidHopper extends ContainerPneumaticBase<TileEntityLiqu
     }
 
     public ContainerLiquidHopper(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.LIQUID_HOPPER.get(), i, playerInventory, pos);
+        super(ModMenuTypes.LIQUID_HOPPER.get(), i, playerInventory, pos);
 
         addUpgradeSlots(48, 29);
 

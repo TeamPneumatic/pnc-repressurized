@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
@@ -91,7 +91,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     private int historyIndex;
 
     public TileEntityProgrammer(BlockPos pos, BlockState state) {
-        super(ModTileEntities.PROGRAMMER.get(), pos, state);
+        super(ModBlockEntities.PROGRAMMER.get(), pos, state);
 
         saveToHistory();
     }

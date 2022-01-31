@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.core.BlockPos;
@@ -38,7 +38,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     private float pressureSetpoint;
 
     public TileEntityCreativeCompressor(BlockPos pos, BlockState state) {
-        super(ModTileEntities.CREATIVE_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, 50000, 0);
+        super(ModBlockEntities.CREATIVE_COMPRESSOR.get(), pos, state, PressureTier.TIER_TWO, 50000, 0);
     }
 
     @Override

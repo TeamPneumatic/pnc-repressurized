@@ -17,18 +17,18 @@
 
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.common.core.ModEntities;
+import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
     }
 
     public EntityHarvestingDrone(Level world, Player player) {
-        super(ModEntities.HARVESTING_DRONE.get(), world, player);
+        super(ModEntityTypes.HARVESTING_DRONE.get(), world, player);
     }
 
     @Override

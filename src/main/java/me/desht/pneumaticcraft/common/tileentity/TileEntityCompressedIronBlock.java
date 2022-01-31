@@ -20,15 +20,14 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -41,7 +40,7 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     protected final SyncedTemperature syncedTemperature = new SyncedTemperature(heatExchanger);
 
     public TileEntityCompressedIronBlock(BlockPos pos, BlockState state) {
-        this(ModTileEntities.COMPRESSED_IRON_BLOCK.get(), pos, state);
+        this(ModBlockEntities.COMPRESSED_IRON_BLOCK.get(), pos, state);
     }
 
     TileEntityCompressedIronBlock(BlockEntityType<?> type, BlockPos pos, BlockState state) {

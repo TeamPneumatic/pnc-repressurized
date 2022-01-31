@@ -18,13 +18,13 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.client.gui.GuiSecurityStationInventory;
-import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.Predicate;
@@ -36,7 +36,7 @@ public class ContainerSecurityStationMain extends ContainerPneumaticBase<TileEnt
     }
 
     public ContainerSecurityStationMain(int windowId, Inventory playerInventory, BlockPos pos) {
-        super(ModContainers.SECURITY_STATION_MAIN.get(), windowId, playerInventory, pos);
+        super(ModMenuTypes.SECURITY_STATION_MAIN.get(), windowId, playerInventory, pos);
 
         //add the network slots
         for (int i = 0; i < TileEntitySecurityStation.INV_ROWS; i++) {

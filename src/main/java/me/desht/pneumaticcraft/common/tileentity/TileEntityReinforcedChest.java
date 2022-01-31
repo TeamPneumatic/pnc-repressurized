@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerReinforcedChest;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import net.minecraft.core.BlockPos;
@@ -64,7 +64,7 @@ public class TileEntityReinforcedChest extends TileEntityBase implements MenuPro
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
     public TileEntityReinforcedChest(BlockPos pos, BlockState state) {
-        super(ModTileEntities.REINFORCED_CHEST.get(), pos, state);
+        super(ModBlockEntities.REINFORCED_CHEST.get(), pos, state);
     }
 
     @Override

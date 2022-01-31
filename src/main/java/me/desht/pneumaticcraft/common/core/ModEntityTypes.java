@@ -26,8 +26,8 @@ import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
 import me.desht.pneumaticcraft.common.entity.semiblock.*;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -37,55 +37,55 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-public class ModEntities {
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Names.MOD_ID);
+public class ModEntityTypes {
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITIES, Names.MOD_ID);
 
     public static final RegistryObject<EntityType<EntityDrone>> DRONE
-            = register("drone", ModEntities::drone);
+            = register("drone", ModEntityTypes::drone);
     public static final RegistryObject<EntityType<EntityLogisticsDrone>> LOGISTICS_DRONE
-            = register("logistics_drone", ModEntities::logisticsDrone);
+            = register("logistics_drone", ModEntityTypes::logisticsDrone);
     public static final RegistryObject<EntityType<EntityHarvestingDrone>> HARVESTING_DRONE
-            = register("harvesting_drone", ModEntities::harvestingDrone);
+            = register("harvesting_drone", ModEntityTypes::harvestingDrone);
     public static final RegistryObject<EntityType<EntityGuardDrone>> GUARD_DRONE
-            = register("guard_drone", ModEntities::guardDrone);
+            = register("guard_drone", ModEntityTypes::guardDrone);
     public static final RegistryObject<EntityType<EntityCollectorDrone>> COLLECTOR_DRONE
-            = register("collector_drone", ModEntities::collectorDrone);
+            = register("collector_drone", ModEntityTypes::collectorDrone);
 
     public static final RegistryObject<EntityType<EntityAmadrone>> AMADRONE
-            = register("amadrone", ModEntities::amadrone);
+            = register("amadrone", ModEntityTypes::amadrone);
     public static final RegistryObject<EntityType<EntityProgrammableController>> PROGRAMMABLE_CONTROLLER
-            = register("programmable_controller", ModEntities::programmableController);
+            = register("programmable_controller", ModEntityTypes::programmableController);
 
     public static final RegistryObject<EntityType<EntityVortex>> VORTEX
-            = register("vortex", ModEntities::vortex);
+            = register("vortex", ModEntityTypes::vortex);
     public static final RegistryObject<EntityType<EntityMicromissile>> MICROMISSILE
-            = register("micromissile", ModEntities::micromissile);
+            = register("micromissile", ModEntityTypes::micromissile);
     public static final RegistryObject<EntityType<EntityTumblingBlock>> TUMBLING_BLOCK
-            = register("tumbling_block", ModEntities::tumblingBlock);
+            = register("tumbling_block", ModEntityTypes::tumblingBlock);
     public static final RegistryObject<EntityType<EntityRing>> RING
-            = register("ring", ModEntities::ring);
+            = register("ring", ModEntityTypes::ring);
 
     public static final RegistryObject<EntityType<EntityCropSupport>> CROP_SUPPORT
-            = register("crop_support", ModEntities::cropSupport);
+            = register("crop_support", ModEntityTypes::cropSupport);
     public static final RegistryObject<EntityType<EntitySpawnerAgitator>> SPAWNER_AGITATOR
-            = register("spawner_agitator", ModEntities::spawnerAgitator);
+            = register("spawner_agitator", ModEntityTypes::spawnerAgitator);
     public static final RegistryObject<EntityType<EntityHeatFrame>> HEAT_FRAME
-            = register("heat_frame", ModEntities::heatFrame);
+            = register("heat_frame", ModEntityTypes::heatFrame);
     public static final RegistryObject<EntityType<EntityTransferGadget>> TRANSFER_GADGET
-            = register("transfer_gadget", ModEntities::transferGadget);
+            = register("transfer_gadget", ModEntityTypes::transferGadget);
     public static final RegistryObject<EntityType<EntityLogisticsActiveProvider>> LOGISTICS_FRAME_ACTIVE_PROVIDER
-            = register("logistics_frame_active_provider", ModEntities::activeProvider);
+            = register("logistics_frame_active_provider", ModEntityTypes::activeProvider);
     public static final RegistryObject<EntityType<EntityLogisticsPassiveProvider>> LOGISTICS_FRAME_PASSIVE_PROVIDER
-            = register("logistics_frame_passive_provider", ModEntities::passiveProvider);
+            = register("logistics_frame_passive_provider", ModEntityTypes::passiveProvider);
     public static final RegistryObject<EntityType<EntityLogisticsStorage>> LOGISTICS_FRAME_STORAGE
-            = register("logistics_frame_storage", ModEntities::storage);
+            = register("logistics_frame_storage", ModEntityTypes::storage);
     public static final RegistryObject<EntityType<EntityLogisticsDefaultStorage>> LOGISTICS_FRAME_DEFAULT_STORAGE
-            = register("logistics_frame_default_storage", ModEntities::defaultStorage);
+            = register("logistics_frame_default_storage", ModEntityTypes::defaultStorage);
     public static final RegistryObject<EntityType<EntityLogisticsRequester>> LOGISTICS_FRAME_REQUESTER
-            = register("logistics_frame_requester", ModEntities::requester);
+            = register("logistics_frame_requester", ModEntityTypes::requester);
 
     private static <E extends Entity> RegistryObject<EntityType<E>> register(final String name, final Supplier<EntityType.Builder<E>> sup) {
-        return ENTITIES.register(name, () -> sup.get().build(name));
+        return ENTITY_TYPES.register(name, () -> sup.get().build(name));
     }
 
     private static EntityType.Builder<EntityVortex> vortex() {
@@ -94,7 +94,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(3)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.VORTEX.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.VORTEX.get().create(world))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -103,7 +103,7 @@ public class ModEntities {
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
-                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.DRONE.get().create(world)))
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.DRONE.get().create(world)))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -112,7 +112,7 @@ public class ModEntities {
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
-                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.AMADRONE.get().create(world)))
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.AMADRONE.get().create(world)))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -121,7 +121,7 @@ public class ModEntities {
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
-                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.LOGISTICS_DRONE.get().create(world)))
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.LOGISTICS_DRONE.get().create(world)))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -130,7 +130,7 @@ public class ModEntities {
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
-                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.HARVESTING_DRONE.get().create(world)))
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.HARVESTING_DRONE.get().create(world)))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -139,7 +139,7 @@ public class ModEntities {
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
-                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.GUARD_DRONE.get().create(world)))
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.GUARD_DRONE.get().create(world)))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -148,7 +148,7 @@ public class ModEntities {
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
-                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.COLLECTOR_DRONE.get().create(world)))
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.COLLECTOR_DRONE.get().create(world)))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -157,7 +157,7 @@ public class ModEntities {
                 .sized(0.35f, 0.175f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
-                .setCustomClientFactory(((spawnEntity, world) -> ModEntities.PROGRAMMABLE_CONTROLLER.get().create(world)))
+                .setCustomClientFactory(((spawnEntity, world) -> ModEntityTypes.PROGRAMMABLE_CONTROLLER.get().create(world)))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -167,7 +167,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(20)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.MICROMISSILE.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.MICROMISSILE.get().create(world))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -177,7 +177,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(20)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.TUMBLING_BLOCK.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.TUMBLING_BLOCK.get().create(world))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -187,7 +187,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(20)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.RING.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.RING.get().create(world))
                 .setShouldReceiveVelocityUpdates(true);
     }
 
@@ -197,7 +197,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.CROP_SUPPORT.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.CROP_SUPPORT.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -207,7 +207,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.SPAWNER_AGITATOR.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.SPAWNER_AGITATOR.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -217,7 +217,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.HEAT_FRAME.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.HEAT_FRAME.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -227,7 +227,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.TRANSFER_GADGET.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.TRANSFER_GADGET.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -237,7 +237,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_ACTIVE_PROVIDER.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.LOGISTICS_FRAME_ACTIVE_PROVIDER.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -247,7 +247,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_PASSIVE_PROVIDER.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.LOGISTICS_FRAME_PASSIVE_PROVIDER.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -257,7 +257,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_STORAGE.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.LOGISTICS_FRAME_STORAGE.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -267,7 +267,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_DEFAULT_STORAGE.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.LOGISTICS_FRAME_DEFAULT_STORAGE.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -277,7 +277,7 @@ public class ModEntities {
                 .fireImmune()
                 .setTrackingRange(3)
                 .setUpdateInterval(Integer.MAX_VALUE)
-                .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_REQUESTER.get().create(world))
+                .setCustomClientFactory((spawnEntity, world) -> ModEntityTypes.LOGISTICS_FRAME_REQUESTER.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
     }
 
@@ -285,13 +285,13 @@ public class ModEntities {
     public static class Listener {
         @SubscribeEvent
         public static void registerGlobalAttributes(EntityAttributeCreationEvent event) {
-            event.put(ModEntities.DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntities.AMADRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntities.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntities.GUARD_DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntities.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntities.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntities.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntityTypes.DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntityTypes.AMADRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntityTypes.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntityTypes.GUARD_DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntityTypes.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntityTypes.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntityTypes.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().build());
         }
     }
 }
