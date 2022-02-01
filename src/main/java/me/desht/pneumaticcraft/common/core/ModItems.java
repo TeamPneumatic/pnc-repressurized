@@ -147,15 +147,15 @@ public class ModItems {
     public static final RegistryObject<ItemDrillBit> NETHERITE_DRILL_BIT = register(DrillBitType.NETHERITE);
 
     public static final RegistryObject<ItemDrone> DRONE = register("drone",
-            () -> new ItemDrone(EntityDrone::new, true));
+            () -> new ItemDrone(EntityDrone::new, true, DyeColor.WHITE));
     public static final RegistryObject<ItemDrone> LOGISTICS_DRONE = register("logistics_drone",
-            () -> new ItemDrone(EntityLogisticsDrone::new, false));
+            () -> new ItemDrone(EntityLogisticsDrone::new, false, DyeColor.RED));
     public static final RegistryObject<ItemDrone> HARVESTING_DRONE = register("harvesting_drone",
-            () -> new ItemDrone(EntityHarvestingDrone::new, false));
+            () -> new ItemDrone(EntityHarvestingDrone::new, false, DyeColor.GREEN));
     public static final RegistryObject<ItemDrone> GUARD_DRONE = register("guard_drone",
-            () -> new ItemDrone(EntityGuardDrone::new, false));
+            () -> new ItemDrone(EntityGuardDrone::new, false, DyeColor.BLUE));
     public static final RegistryObject<ItemDrone> COLLECTOR_DRONE = register("collector_drone",
-            () -> new ItemDrone(EntityCollectorDrone::new, false));
+            () -> new ItemDrone(EntityCollectorDrone::new, false, DyeColor.YELLOW));
 
     public static final RegistryObject<ItemLogisticsFrameRequester> LOGISTICS_FRAME_REQUESTER = register("logistics_frame_requester",
             ItemLogisticsFrameRequester::new);

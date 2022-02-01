@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -36,6 +37,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
@@ -52,16 +54,21 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
-public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor {
+import static me.desht.pneumaticcraft.common.entity.living.EntityDrone.NBT_DRONE_COLOR;
+
+public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor, ColorHandlers.ITintableItem {
     private final BiFunction<World, PlayerEntity, EntityDrone> droneCreator;
     private final boolean programmable;
+    private final DyeColor defaultColor;
 
-    public ItemDrone(BiFunction<World, PlayerEntity, EntityDrone> droneCreator, boolean programmable) {
+    public ItemDrone(BiFunction<World, PlayerEntity, EntityDrone> droneCreator, boolean programmable, DyeColor defaultColor) {
         super((int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
         this.droneCreator = droneCreator;
         this.programmable = programmable;
+        this.defaultColor = defaultColor;
     }
 
     @Override
@@ -102,6 +109,12 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
                 );
             }
         }
+    }
+
+    public DyeColor getDroneColor(ItemStack stack) {
+        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains(NBT_DRONE_COLOR) ?
+                DyeColor.byId(stack.getTag().getInt(NBT_DRONE_COLOR)) :
+                defaultColor;
     }
 
     public void spawnDrone(PlayerEntity player, World world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
@@ -149,5 +162,10 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     @Override
     public INamedContainerProvider getContainerProvider(TileEntityChargingStation te) {
         return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_DRONE.get());
+    }
+
+    @Override
+    public int getTintColor(ItemStack stack, int tintIndex) {
+        return tintIndex == 1 ? getDroneColor(stack).getColorValue() : -1;
     }
 }
