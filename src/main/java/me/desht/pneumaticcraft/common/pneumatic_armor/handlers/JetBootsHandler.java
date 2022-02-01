@@ -32,21 +32,21 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.IntTag;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Supplier;
 
@@ -54,7 +54,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.JetBootsLocalState> {
     public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
-    public static final int STABLIZERS_LEVEL = 4;  // tier needed for flight stabilizers
+    public static final int STABILIZERS_LEVEL = 4;  // tier needed for flight stabilizers
 
     @Override
     public ResourceLocation getID() {
@@ -113,7 +113,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 // and bring player to complete halt if flight stabilizers and not actively moving forward/sideways
                 boolean reallyHovering = !jbLocal.isSmartHover() || jbLocal.isHovering();
                 boolean stopped = jbLocal.isFlightStabilizers()
-                        && jetbootsCount >= STABLIZERS_LEVEL
+                        && jetbootsCount >= STABILIZERS_LEVEL
                         && PneumaticCraftUtils.epsilonEquals(player.zza, 0f)
                         && PneumaticCraftUtils.epsilonEquals(player.xxa, 0f);
                 double xMotion = stopped ? 0 : player.getDeltaMovement().x;
@@ -189,18 +189,14 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         Player player = commonArmorHandler.getPlayer();
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
         switch (tagName) {
-            case ItemPneumaticArmor.NBT_BUILDER_MODE:
-                JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(((ByteTag) inbt).getAsByte() == 1);
-                break;
-            case ItemPneumaticArmor.NBT_JET_BOOTS_POWER:
-                jbLocal.jetBootsPower = Mth.clamp(((IntTag) inbt).getAsInt() / 100f, 0f, 1f);
-                break;
-            case ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS:
-                jbLocal.flightStabilizers = ((ByteTag) inbt).getAsByte() == 1;
-                break;
-            case ItemPneumaticArmor.NBT_SMART_HOVER:
-                jbLocal.smartHover = ((ByteTag) inbt).getAsByte() == 1;
-                break;
+            case ItemPneumaticArmor.NBT_BUILDER_MODE ->
+                    JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(((ByteTag) inbt).getAsByte() == 1);
+            case ItemPneumaticArmor.NBT_JET_BOOTS_POWER ->
+                    jbLocal.jetBootsPower = Mth.clamp(((IntTag) inbt).getAsInt() / 100f, 0f, 1f);
+            case ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS ->
+                    jbLocal.flightStabilizers = ((ByteTag) inbt).getAsByte() == 1;
+            case ItemPneumaticArmor.NBT_SMART_HOVER ->
+                    jbLocal.smartHover = ((ByteTag) inbt).getAsByte() == 1;
         }
     }
 

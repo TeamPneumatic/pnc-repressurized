@@ -298,7 +298,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft implements EntityBlo
                 CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
                 if (tag != null && tag.contains("color", Tag.TAG_INT)) {
                     int color = tag.getInt("color");
-                    return PneumaticCraftUtils.getDyeColorAsInt(DyeColor.byId(color));
+                    return PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(color));
                 }
             }
             return 0xFFFFFFFF;

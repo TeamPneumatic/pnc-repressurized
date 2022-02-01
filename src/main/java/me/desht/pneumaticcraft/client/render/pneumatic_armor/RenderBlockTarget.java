@@ -187,7 +187,7 @@ public class RenderBlockTarget {
             if (ticksExisted > 120) {
                 if (isPlayerLookingAtTarget()) {
                     // a bit of growing or shrinking to keep the stat on screen and/or of legible size
-                    float mul = getStatSizeMultiplier(Mth.sqrt((float) ClientUtils.getClientPlayer().distanceToSqr(x, y, z)));
+                    float mul = ClientUtils.getStatSizeMultiplier(Mth.sqrt((float) ClientUtils.getClientPlayer().distanceToSqr(x, y, z)));
                     matrixStack.scale(mul, mul, mul);
                     stat.renderStat(matrixStack, buffer, partialTicks);
                 }
@@ -202,16 +202,6 @@ public class RenderBlockTarget {
         }
 
         matrixStack.popPose();
-    }
-
-    private float getStatSizeMultiplier(double dist) {
-        if (dist < 4) {
-            return Math.max(0.3f, (float) (dist / 4));
-        } else if (dist < 10) {
-            return 1f;
-        } else {
-            return (float) (dist / 10);
-        }
     }
 
     private void renderBlockHighlight(PoseStack matrixStack, MultiBufferSource buffer, Level world, BlockPos pos, float partialTicks) {

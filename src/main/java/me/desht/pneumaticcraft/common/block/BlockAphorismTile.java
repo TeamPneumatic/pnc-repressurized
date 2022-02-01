@@ -239,9 +239,9 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
         if (world != null && pos != null) {
             return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).map(teAt -> switch (tintIndex) {
                 case 0 -> // border
-                        PneumaticCraftUtils.getDyeColorAsInt(DyeColor.byId(teAt.getBorderColor()));
+                        PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(teAt.getBorderColor()));
                 case 1 -> // background
-                        ColorHandlers.desaturate(PneumaticCraftUtils.getDyeColorAsInt(DyeColor.byId(teAt.getBackgroundColor())));
+                        ColorHandlers.desaturate(PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(teAt.getBackgroundColor())));
                 default -> 0xFFFFFFFF;
             }).orElse(0xFFFFFFFF);
         }
@@ -271,9 +271,9 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
         public int getTintColor(ItemStack stack, int tintIndex) {
             return switch (tintIndex) {
                 case 0 -> // border
-                        PneumaticCraftUtils.getDyeColorAsInt(DyeColor.byId(getColor(stack, NBT_BORDER_COLOR, DyeColor.BLUE)));
+                        PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(getColor(stack, NBT_BORDER_COLOR, DyeColor.BLUE)));
                 case 1 -> // background
-                        ColorHandlers.desaturate(PneumaticCraftUtils.getDyeColorAsInt(DyeColor.byId(getColor(stack, NBT_BACKGROUND_COLOR, DyeColor.WHITE))));
+                        ColorHandlers.desaturate(PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(getColor(stack, NBT_BACKGROUND_COLOR, DyeColor.WHITE))));
                 default -> 0xFFFFFF;
             };
         }

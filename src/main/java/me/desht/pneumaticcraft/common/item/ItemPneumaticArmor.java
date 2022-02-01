@@ -73,6 +73,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -165,11 +166,11 @@ public class ItemPneumaticArmor extends ArmorItem implements
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         if (slot == EquipmentSlot.HEAD && worldIn != null) {
-            addHelmetInformation(stack, worldIn, tooltip, flagIn);
+            addHelmetInformation(stack, worldIn, tooltip);
         }
     }
 
-    private void addHelmetInformation(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    private void addHelmetInformation(ItemStack stack, Level worldIn, List<Component> tooltip) {
         if (OneProbeCrafting.isOneProbeEnabled(stack)) {
             tooltip.add(xlate("gui.tooltip.item.pneumaticcraft.pneumatic_helmet.one_probe").withStyle(ChatFormatting.BLUE));
         }
@@ -322,7 +323,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     public static IDroneBase getDebuggedDrone() {
         ItemStack helmet = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get() && helmet.hasTag()) {
-            CompoundTag tag = helmet.getTag();
+            CompoundTag tag = Objects.requireNonNull(helmet.getTag());
             if (tag.contains(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE)) {
                 int id = tag.getInt(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
                 if (id > 0) {
@@ -375,12 +376,12 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
-        switch (tintIndex) {
-            case 0: return getColor(stack);
-            case 1: return getSecondaryColor(stack);
-            case 2: return stack.getItem() == ModItems.PNEUMATIC_HELMET.get() ? getEyepieceColor(stack) : 0xFFFFFFFF;
-            default: return 0xFFFFFFFF;
-        }
+        return switch (tintIndex) {
+            case 0 -> getColor(stack);
+            case 1 -> getSecondaryColor(stack);
+            case 2 -> stack.getItem() == ModItems.PNEUMATIC_HELMET.get() ? getEyepieceColor(stack) : 0xFFFFFFFF;
+            default -> 0xFFFFFFFF;
+        };
     }
 
     @Override

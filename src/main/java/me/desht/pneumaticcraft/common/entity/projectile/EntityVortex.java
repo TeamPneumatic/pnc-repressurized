@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.WebBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -62,6 +63,13 @@ public class EntityVortex extends ThrowableProjectile {
                 handleVortexCollision(getOnPos());
             } else if (vortexBreakable(level.getBlockState(blockPosition()).getBlock())) {
                 handleVortexCollision(blockPosition());
+            } else {
+                Vec3 m = getDeltaMovement().scale(0.5);
+                Vec3 p = position().add(m.x(), m.y(), m.z());
+                BlockPos pos1 = new BlockPos(p.x(), p.y(), p.z());
+                if (!pos1.equals(blockPosition()) && vortexBreakable(level.getBlockState(pos1).getBlock())) {
+                    handleVortexCollision(pos1);
+                }
             }
         }
 

@@ -37,11 +37,11 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 
 import java.util.Optional;
 
@@ -68,7 +68,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(checkBoxBuilderMode.asWidget());
         checkBoxStabilizers = registry.makeKeybindingCheckBox(RL("jet_boots.module.flight_stabilizers"), 5, 65, 0xFFFFFFFF,
-                b -> setFlag(ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, JetBootsHandler.STABLIZERS_LEVEL, b))
+                b -> setFlag(ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, JetBootsHandler.STABILIZERS_LEVEL, b))
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(checkBoxStabilizers.asWidget());
         ICheckboxWidget hoverControl = registry.makeKeybindingCheckBox(RL("jet_boots.module.smart_hover"), 5, 85, 0xFFFFFFFF,
@@ -110,7 +110,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
 
         int nUpgrades = CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS);
         checkBoxBuilderMode.asWidget().active = nUpgrades >= JetBootsHandler.BUILDER_MODE_LEVEL;
-        checkBoxStabilizers.asWidget().active = nUpgrades >= JetBootsHandler.STABLIZERS_LEVEL;
+        checkBoxStabilizers.asWidget().active = nUpgrades >= JetBootsHandler.STABILIZERS_LEVEL;
     }
 
     @Override

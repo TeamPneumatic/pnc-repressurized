@@ -22,13 +22,13 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -38,6 +38,8 @@ import static net.minecraft.util.Mth.lerp;
 
 public class RenderUtils {
     public static final int FULL_BRIGHT = 0x00F000F0;
+    private static final float FULL_CIRCLE = (float)(Math.PI * 2);
+    private static final float STEP = FULL_CIRCLE / 25f;
 
     /**
      * Decompose a 32-bit color into ARGB 8-bit int values
@@ -288,9 +290,9 @@ public class RenderUtils {
         int[] cols = RenderUtils.decomposeColor(0xFF000000 | color);
         double size = (1 + 4 * renderProgress) / 16;
         Matrix4f posMat = matrixStackIn.last().pose();
-        for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS; i += 25) { // 25 sides is enough to look circular
-            Vec3 v1 = new Vec3(0, PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size);
-            Vec3 v2 = new Vec3(0, PneumaticCraftUtils.sin[(i + 25) % PneumaticCraftUtils.CIRCLE_POINTS] * size, PneumaticCraftUtils.cos[(i + 25) % PneumaticCraftUtils.CIRCLE_POINTS] * size);
+        for (float i = 0; i < FULL_CIRCLE; i += STEP) {
+            Vec3 v1 = new Vec3(0, Mth.sin(i) * size, Mth.cos(i) * size);
+            Vec3 v2 = new Vec3(0, Mth.sin(i + STEP) * size, Mth.cos(i + STEP) * size);
 
             RenderUtils.posF(builder, posMat, 0f, v1.y(), v1.z())
                     .color(cols[1], cols[2], cols[3], cols[0])

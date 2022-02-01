@@ -23,7 +23,6 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -42,6 +41,8 @@ public class RenderTargetCircle {
     private static final float[] DEFAULT = { 0f, 1f, 0f };
 
     private static final double MAX_ROTATION = 8.0D;
+    private static final float QUARTER_CIRCLE = (float)(Math.PI / 2);
+    private static final float STEP = QUARTER_CIRCLE / 15f;
 
     private double oldRotationAngle;
     private double rotationAngle = 0;
@@ -78,14 +79,13 @@ public class RenderTargetCircle {
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) renderRotationAngle));
 
         for (int pass = 0; pass < 2; pass++) {
-            int quarterCircle = PneumaticCraftUtils.CIRCLE_POINTS / 4;
             RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
-                for (int i = 0; i < quarterCircle; i++) {
-                    RenderUtils.posF(builder, posMat,PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0)
+                for (float i = 0; i < QUARTER_CIRCLE; i += STEP) {
+                    RenderUtils.posF(builder, posMat,Mth.cos(i) * size, Mth.sin(i) * size, 0)
                             .color(cols[0], cols[1], cols[2], alpha)
                             .uv2(RenderUtils.FULL_BRIGHT)
                             .endVertex();
-                    RenderUtils.posF(builder, posMat,PneumaticCraftUtils.cos[i] * (size + 0.1F), PneumaticCraftUtils.sin[i] * (size + 0.1F), 0)
+                    RenderUtils.posF(builder, posMat,Mth.cos(i) * (size + 0.1F), Mth.sin(i) * (size + 0.1F), 0)
                             .color(cols[0], cols[1], cols[2], alpha)
                             .uv2(RenderUtils.FULL_BRIGHT)
                             .endVertex();
@@ -95,18 +95,18 @@ public class RenderTargetCircle {
             if (renderAsTagged) {
                 final Matrix3f normal = matrixStack.last().normal();
                 RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoops(3.0), (posMat, builder) -> {
-                    for (int i = 0; i < quarterCircle; i++) {
-                        Vec3 v1 = new Vec3(PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size, 0);
-                        Vec3 v2 = new Vec3(PneumaticCraftUtils.sin[(i + 1) % quarterCircle] * size, PneumaticCraftUtils.cos[(i + 1) % quarterCircle] * size, 0);
-                        RenderUtils.posF(builder, posMat, v2.x(), v2.y(), 0)
+                    for (float i = 0; i < QUARTER_CIRCLE; i += STEP) {
+                        Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
+                        Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
+                        RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
                                 .color(255, 0, 0, 255)
                                 .normal(normal, (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
                                 .endVertex();
                     }
-                    for (int i = quarterCircle - 1; i >= 0; i--) {
-                        Vec3 v1 = new Vec3(PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size, 0);
-                        Vec3 v2 = new Vec3(PneumaticCraftUtils.sin[(i + 1) % quarterCircle] * size, PneumaticCraftUtils.cos[(i + 1) % quarterCircle] * size, 0);
-                        RenderUtils.posF(builder, posMat, v2.x(), v2.y(), 0)
+                    for (float i = QUARTER_CIRCLE - STEP; i >= 0f; i -= STEP) {
+                        Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
+                        Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
+                        RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
                                 .color(255, 0, 0, 255)
                                 .normal(normal, (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
                                 .endVertex();

@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.CoreCom
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -50,6 +51,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.LOW_PRESSURE;
 
 public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<CoreComponentsHandler> {
     private static final int MAX_BARS = 40;
@@ -127,7 +130,9 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
         if (!ItemPneumaticArmor.isPneumaticArmorPiece(handler.getPlayer(), slot))
             return NO_ARMOR;
         float pressure = handler.getArmorPressure(slot);
-        if (showPressureNumerically) {
+        if (pressure <= LOW_PRESSURE && ClientUtils.getClientLevel().getGameTime() % 20 < 5) {
+            return TextComponent.EMPTY;  // blinking pressure warning
+        } else if (showPressureNumerically) {
             return new TextComponent(String.format("%4.1f", Math.max(0f, pressure))).withStyle(getColourForPressure(pressure));
         } else {
             return new TextComponent(getBarStr(pressure));

@@ -67,7 +67,7 @@ public enum AreaRenderManager {
     private static final int MAX_DISPLAYED_POS = 15000;
 
     private final Map<BlockPos, AreaRenderer> showHandlers = new HashMap<>();
-    private Level world;
+    private Level level;
     private DroneDebugClientHandler droneDebugger;
 
     private List<AreaRenderer> cachedPositionProviderShowers;
@@ -84,7 +84,7 @@ public enum AreaRenderManager {
     @SubscribeEvent
     public void renderWorldLastEvent(RenderLevelLastEvent event) {
         Minecraft mc = Minecraft.getInstance();
-        Player player = mc.player;
+        Player player = ClientUtils.getClientPlayer();
 
         MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
         PoseStack matrixStack = event.getPoseStack();
@@ -114,12 +114,12 @@ public enum AreaRenderManager {
     public void tickEnd(TickEvent.ClientTickEvent event) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
-            if (player.level != world) {
-                world = player.level;
+            if (player.level != level) {
+                level = player.level;
                 showHandlers.clear();
             } else {
                 if (event.phase == TickEvent.Phase.END) {
-                    showHandlers.keySet().removeIf(pos -> PneumaticCraftUtils.distBetweenSq(pos, player.blockPosition()) < 1024 && world.isEmptyBlock(pos));
+                    showHandlers.keySet().removeIf(pos -> PneumaticCraftUtils.distBetweenSq(pos, player.blockPosition()) < 1024 && level.isEmptyBlock(pos));
                 }
             }
         }
@@ -133,13 +133,15 @@ public enum AreaRenderManager {
                 float progress = (player.level.getGameTime() % 20 + partialTicks) / 20;
                 float g = progress < 0.5F ? progress + 0.5F : 1.5F - progress;
                 int col = 0xA00000FF | (int)(g * 255) << 8;
-                // TODO scale this based on player distance so it remains visible from far away
-                AreaRenderer.builder().withColor(col).xray().build(pos).render(matrixStack, buffer);
+                Vec3 targetVec = Vec3.atCenterOf(pos);
+                float size = ClientUtils.calculateViewScaling(targetVec);
+                float textSize = size * 0.02f;
+                AreaRenderer.builder().withColor(col).xray().withSize(size / 2f).build(pos).render(matrixStack, buffer);
                 matrixStack.pushPose();
-                matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
-                matrixStack.scale(0.02f, 0.02f, 0.02f);
+                matrixStack.translate(targetVec.x(), targetVec.y(), targetVec.z());
+                matrixStack.scale(textSize, textSize, textSize);
                 RenderUtils.rotateToPlayerFacing(matrixStack);
-                RenderUtils.renderString3d(new TextComponent(PneumaticCraftUtils.posToString(pos)), -50, -50, 0xFFFFFFFF, matrixStack, buffer, true, true);
+                RenderUtils.renderString3d(new TextComponent(PneumaticCraftUtils.posToString(pos)), 0, 0, 0xFFFFFFFF, matrixStack, buffer, true, true);
                 matrixStack.popPose();
             }
         }
@@ -182,12 +184,11 @@ public enum AreaRenderManager {
 
     private void maybeRenderPositionProvider(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
         ItemStack curItem = getHeldPositionProvider(player);
-        if (curItem.getItem() instanceof IPositionProvider && curItem.hasTag()) {
-            int thisHash = curItem.getTag().hashCode();
+        if (curItem.getItem() instanceof IPositionProvider positionProvider && curItem.hasTag()) {
+            int thisHash = Objects.requireNonNull(curItem.getTag()).hashCode();
             if (thisHash != lastItemHashCode) {
                 // Position data has changed: recache stored positions
                 lastItemHashCode = thisHash;
-                IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
                 List<BlockPos> posList = positionProvider.getStoredPositions(player.getUUID(), curItem);
                 if (posList.size() > MAX_DISPLAYED_POS) {
                     posList.sort(Comparator.comparingDouble(blockPos -> blockPos.distSqr(player.blockPosition())));
@@ -199,12 +200,6 @@ public enum AreaRenderManager {
                     int renderColor = positionProvider.getRenderColor(i);
                     if (posList.get(i) != null && renderColor != 0) {
                         colorsToPositions.computeIfAbsent(renderColor, k -> new HashSet<>()).add(posList.get(i));
-//                        Set<BlockPos> positionsForColor = colorsToPositions.get(renderColor);
-//                        if (positionsForColor == null) {
-//                            positionsForColor = new HashSet<>();
-//                            colorsToPositions.put(renderColor, positionsForColor);
-//                        }
-//                        positionsForColor.add(posList.get(i));
                     }
                 }
                 cachedPositionProviderShowers = new ArrayList<>(colorsToPositions.size());
@@ -250,7 +245,7 @@ public enum AreaRenderManager {
     }
 
     private void maybeRenderJackhammer(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
-        if (world == null
+        if (level == null
                 || !(player.getMainHandItem().getItem() instanceof ItemJackHammer)
                 || !((Minecraft.getInstance().hitResult) instanceof BlockHitResult)) {
             return;
@@ -259,16 +254,16 @@ public enum AreaRenderManager {
         if (digMode == ItemJackHammer.DigMode.MODE_1X1) return;
 
         BlockHitResult brtr = (BlockHitResult) Minecraft.getInstance().hitResult;
-        if (!world.isAreaLoaded(brtr.getBlockPos(), 1) || world.getBlockState(brtr.getBlockPos()).isAir()) return;
+        if (!level.isLoaded(brtr.getBlockPos()) || level.getBlockState(brtr.getBlockPos()).isAir()) return;
 
         if (!lastJackhammerDetails.matches(brtr.getBlockPos(), brtr.getDirection(), digMode)) {
-            BlockState state = world.getBlockState(brtr.getBlockPos());
-            Set<BlockPos> posSet = world.getBlockEntity(brtr.getBlockPos()) == null && !(state.getBlock() instanceof LiquidBlock) ?
-                    ItemJackHammer.getBreakPositions(world, brtr.getBlockPos(), brtr.getDirection(), player.getDirection(), digMode) :
+            BlockState state = level.getBlockState(brtr.getBlockPos());
+            Set<BlockPos> posSet = level.getBlockEntity(brtr.getBlockPos()) == null && !(state.getBlock() instanceof LiquidBlock) ?
+                    ItemJackHammer.getBreakPositions(level, brtr.getBlockPos(), brtr.getDirection(), player.getDirection(), digMode) :
                     Collections.emptySet();
             if (!posSet.isEmpty()) posSet.add(brtr.getBlockPos());
             AreaRenderer.Builder b = AreaRenderer.builder().withColor(0x20FFFFFF).withSize(1.01f).disableWriteMask();
-            if (state.getShape(world, brtr.getBlockPos()) != (Shapes.block())) b = b.drawShapes();
+            if (state.getShape(level, brtr.getBlockPos()) != (Shapes.block())) b = b.drawShapes();
             jackhammerPositionShower = b.build(posSet);
             lastJackhammerDetails = new LastJackhammerDetails(brtr.getBlockPos(), brtr.getDirection(), digMode);
         }
@@ -310,16 +305,8 @@ public enum AreaRenderManager {
     /**
      * Used to determine when the jackhammer preview area needs to be recalculated.
      */
-    private static class LastJackhammerDetails {
-        private final BlockPos pos;
-        private final Direction face;
-        private final ItemJackHammer.DigMode digMode;
-
-        private LastJackhammerDetails(BlockPos pos, Direction face, ItemJackHammer.DigMode digMode) {
-            this.pos = pos;
-            this.face = face;
-            this.digMode = digMode;
-        }
+    private record LastJackhammerDetails(BlockPos pos, Direction face,
+                                         ItemJackHammer.DigMode digMode) {
 
         private boolean matches(BlockPos pos, Direction face, ItemJackHammer.DigMode digMode) {
             return face == this.face && digMode == this.digMode && pos.equals(this.pos);

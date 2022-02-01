@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -77,10 +77,11 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
                 default -> { //4-103
                     isLaserOn = true;
                     slowMode = false;
-                    targetAngles[EnumAngles.BASE.getIndex()] = 100F - (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE;
-                    targetAngles[EnumAngles.MIDDLE.getIndex()] = -10F + (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE;
+                    float progress = ((laserStep - 4) / 100f) * 3.1415927f * 2;
+                    targetAngles[EnumAngles.BASE.getIndex()] = 100F - Mth.sin(progress) * ITEM_SIZE;
+                    targetAngles[EnumAngles.MIDDLE.getIndex()] = -10F + Mth.sin(progress) * ITEM_SIZE;
                     targetAngles[EnumAngles.TAIL.getIndex()] = 0F;
-                    targetAngles[EnumAngles.TURN.getIndex()] += (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE * 0.03D;
+                    targetAngles[EnumAngles.TURN.getIndex()] += Mth.sin(progress) * ITEM_SIZE * 0.03D;
                 }
             }
             if (isDoneInternal() || laserStep >= 4 && laserStep <= 103) {

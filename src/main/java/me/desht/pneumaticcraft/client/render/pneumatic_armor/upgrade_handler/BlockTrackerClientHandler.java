@@ -39,7 +39,6 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
@@ -172,7 +171,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
      * Advance the scan position but be clever about it; we never need to scan blocks behind the player
      */
     private void nextScanPos(BlockPos.MutableBlockPos pos, Player player, int range) {
-        Direction dir = PneumaticCraftUtils.getDirectionFacing(player, true);
+        Vec3 look = player.getLookAngle();
+        Direction dir = Direction.getNearest(look.x(), look.y(), look.z());
         switch (dir) {
             case UP:
                 if (++xOff > range) {

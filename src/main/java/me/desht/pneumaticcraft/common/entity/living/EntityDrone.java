@@ -1317,7 +1317,7 @@ public class EntityDrone extends EntityDroneBase implements
                 if (ConfigHelper.common().drones.dronesCanBePickedUp.get() && (e instanceof AbstractMinecart || e instanceof Boat)) {
                     // little kludge to prevent the dropped minecart/boat immediately picking up the drone
                     y -= 2;
-                    BlockPos pos = PneumaticCraftUtils.getPosForEntity(e);
+                    BlockPos pos = e.blockPosition();
                     if (level.getBlockState(pos).isRedstoneConductor(level, pos)) {
                         y++;
                     }

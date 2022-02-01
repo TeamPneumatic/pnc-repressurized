@@ -30,13 +30,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -76,11 +76,12 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class PneumaticCraftUtils {
     // an impossible blockpos to indicate invalid positions
     private static final BlockPos INVALID_POS = new BlockPos(0, Integer.MIN_VALUE, 0);
+
+    private static final int MAX_CHAR_PER_LINE = 45;
 
     private static final int[] DYE_COLORS = new int[DyeColor.values().length];
     static {
@@ -90,70 +91,11 @@ public class PneumaticCraftUtils {
         }
     }
 
-    private static final int MAX_CHAR_PER_LINE = 45;
-
-    /**
-     * Returns the EnumFacing of the given entity.
-     *
-     * @param entity the entity
-     * @param includeUpAndDown false when UP/DOWN should not be included.
-     * @return the entity's facing direction
-     */
-    public static Direction getDirectionFacing(LivingEntity entity, boolean includeUpAndDown) {
-        double yaw = entity.getYRot();
-        while (yaw < 0)
-            yaw += 360;
-        yaw = yaw % 360;
-        if (includeUpAndDown) {
-            if (entity.getXRot() > 45) return Direction.DOWN;
-            else if (entity.getXRot() < -45) return Direction.UP;
-        }
-        if (yaw < 45) return Direction.SOUTH;
-        else if (yaw < 135) return Direction.WEST;
-        else if (yaw < 225) return Direction.NORTH;
-        else if (yaw < 315) return Direction.EAST;
-        else return Direction.SOUTH;
-    }
-
-    /**
-     * Get a yaw angle from an EnumFacing
-     *
-     * @param facing the facing direction
-     * @return the yaw angle
-     */
-    public static int getYawFromFacing(Direction facing) {
-        return switch (facing) {
-            case NORTH -> 180;
-            case WEST -> 90;
-            case EAST -> -90;
-            default ->  // SOUTH
-                    0;
-        };
-    }
-
-    public static final double[] sin;
-    public static final double[] cos;
-    public static final int CIRCLE_POINTS = 500;
-
-    /*
-     * Initializes the sin,cos and tan variables, so that they can be used without having to calculate them every time (render tick).
-     */
-    static {
-        sin = new double[CIRCLE_POINTS];
-        cos = new double[CIRCLE_POINTS];
-
-        for (int i = 0; i < CIRCLE_POINTS; i++) {
-            double angle = 2 * Math.PI * i / CIRCLE_POINTS;
-            sin[i] = Math.sin(angle);
-            cos[i] = Math.cos(angle);
-        }
-    }
-
-    public static List<Component> splitStringComponent(String text) {
+    public static List<? extends Component> splitStringComponent(String text) {
         return asStringComponent(splitString(text, MAX_CHAR_PER_LINE));
     }
 
-    public static List<Component> splitStringComponent(String text, int maxCharPerLine) {
+    public static List<? extends Component> splitStringComponent(String text, int maxCharPerLine) {
         return asStringComponent(splitString(text, maxCharPerLine));
     }
 
@@ -201,8 +143,8 @@ public class PneumaticCraftUtils {
         return splitString(text, MAX_CHAR_PER_LINE);
     }
 
-    public static List<Component> asStringComponent(List<String> l) {
-        return l.stream().map(TextComponent::new).collect(Collectors.toList());
+    public static List<? extends Component> asStringComponent(List<String> l) {
+        return l.stream().map(TextComponent::new).toList();
     }
 
     /**
@@ -401,8 +343,8 @@ public class PneumaticCraftUtils {
             return mod1.equals(mod2);
         }
 
-        if (filterStack.getItem() instanceof ITagFilteringItem) {
-            return ((ITagFilteringItem) filterStack.getItem()).matchTags(filterStack, stack.getItem());
+        if (filterStack.getItem() instanceof ITagFilteringItem f) {
+            return f.matchTags(filterStack, stack.getItem());
         }
 
         if (filterStack.getItem() != stack.getItem()) return false;
@@ -429,7 +371,7 @@ public class PneumaticCraftUtils {
         ItemEntity entityItem = new ItemEntity(world, x + dX, y + dY, z + dZ, stack.copy());
 
         if (stack.hasTag()) {
-            entityItem.getItem().setTag(stack.getTag().copy());
+            entityItem.getItem().setTag(Objects.requireNonNull(stack.getTag()).copy());
         }
 
         float factor = 0.05F;
@@ -442,7 +384,7 @@ public class PneumaticCraftUtils {
         ItemEntity entityItem = new ItemEntity(world, x, y, z, stack.copy());
 
         if (stack.hasTag()) {
-            entityItem.getItem().setTag(stack.getTag().copy());
+            entityItem.getItem().setTag(Objects.requireNonNull(stack.getTag()).copy());
         }
         entityItem.setDeltaMovement(0, 0, 0);
         world.addFreshEntity(entityItem);
@@ -471,6 +413,7 @@ public class PneumaticCraftUtils {
      * @param newState the blockstate to change the position to
      * @return true if the block could be placed, false otherwise
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean tryPlaceBlock(Level w, BlockPos pos, Player player, Direction face, BlockState newState) {
         BlockSnapshot snapshot = BlockSnapshot.create(w.dimension(), w, pos);
         if (!ForgeEventFactory.onBlockPlace(player, snapshot, face)) {
@@ -597,10 +540,6 @@ public class PneumaticCraftUtils {
         copyItemHandler(source, dest, source.getSlots());
     }
 
-    public static BlockPos getPosForEntity(Entity e) {
-        return new BlockPos(e.getX(), e.getY(), e.getZ());
-    }
-
     public static String posToString(@Nullable BlockPos pos) {
         return isValidPos(pos) ? String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()) : "-";
     }
@@ -710,11 +649,36 @@ public class PneumaticCraftUtils {
         return rl.getNamespace().equals(Names.MOD_ID) ? rl.getPath() : rl.toString();
     }
 
-    public static int getDyeColorAsInt(DyeColor dyeColor) {
+    /**
+     * Convert a DyeColor to packed RGB integer (top 8 bits - alpha - are 0)
+     * @param dyeColor the dye color
+     * @return packed RGB integer
+     */
+    public static int getDyeColorAsRGB(DyeColor dyeColor) {
         return DYE_COLORS[dyeColor.getId()];
     }
 
+    /**
+     * Get the name of the block at the given position
+     * @param level the level
+     * @param pos the blockpos
+     * @return the block name, empty if the given position isn't currently loaded
+     */
     public static Component getBlockNameAt(Level level, BlockPos pos) {
         return level.isLoaded(pos) ? new TranslatableComponent(level.getBlockState(pos).getBlock().getDescriptionId()) : TextComponent.EMPTY.plainCopy();
+    }
+
+    public static CompoundTag copyNBTWithout(@Nonnull CompoundTag nbt, @Nonnull String skip) {
+        CompoundTag newNBT = new CompoundTag();
+
+        for (String key : nbt.getAllKeys()) {
+            if (!skip.equals(key)) {
+                Tag subTag = nbt.get(key);
+                if (subTag != null) {
+                    newNBT.put(key, subTag.copy());
+                }
+            }
+        }
+        return newNBT.isEmpty() ? new CompoundTag() : newNBT;
     }
 }

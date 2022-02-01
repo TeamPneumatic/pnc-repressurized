@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -80,7 +81,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, Vanis
     }
 
     static boolean shouldShowPressureDurability(ItemStack stack) {
-                return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(airHandler -> airHandler.getPressure() < airHandler.maxPressure())
                 .orElse(false);
     }
@@ -147,13 +148,13 @@ public class ItemPressurizable extends Item implements IPressurizableItem, Vanis
     public static CompoundTag roundedPressure(ItemStack stack) {
         CompoundTag tag = stack.getTag();
 
-        if (stack.getItem() instanceof IPressurizableItem && tag != null && tag.contains(AirHandlerItemStack.AIR_NBT_KEY)) {
+        if (stack.getItem() instanceof IPressurizableItem p && tag != null && tag.contains(AirHandlerItemStack.AIR_NBT_KEY)) {
             // Using a capability here *should* work but it seems to fail under some odd circumstances which I haven't been
             // able to reproduce. Hence the direct-access code above via the internal-use IPressurizableItem interface.
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
-            CompoundTag tag2 = tag.copy();
-            int volume = ((IPressurizableItem) stack.getItem()).getEffectiveVolume(stack);
-            int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+            int air = tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+            CompoundTag tag2 = PneumaticCraftUtils.copyNBTWithout(tag, AirHandlerItemStack.AIR_NBT_KEY);
+            int volume = p.getEffectiveVolume(stack);
             tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / ConfigHelper.common().advanced.pressureSyncPrecision.get()));
             return tag2;
         } else {

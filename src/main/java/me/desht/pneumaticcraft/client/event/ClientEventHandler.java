@@ -231,7 +231,7 @@ public class ClientEventHandler {
         if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().getEntity() instanceof Player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().scubaHandler, true)) {
-                event.setDensity(0.02f);
+                event.setDensity(350f);
                 event.setCanceled(true);
             }
         }

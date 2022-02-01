@@ -161,7 +161,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     public int getTintColor(ItemStack stack, int tintIndex) {
         if (tintIndex == 1 && stack.hasTag()) {
             int dyeID = Objects.requireNonNull(stack.getTag()).getInt(NBT_DRONE_COLOR);
-            return PneumaticCraftUtils.getDyeColorAsInt(DyeColor.byId(dyeID));
+            return PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(dyeID));
         }
         return -1;
     }

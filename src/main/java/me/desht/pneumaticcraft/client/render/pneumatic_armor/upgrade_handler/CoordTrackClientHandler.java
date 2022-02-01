@@ -143,7 +143,6 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
         navigator = null;
     }
 
-
     public EnumNavigationResult navigateToSurface(Player player) {
         Level world = player.level;
         BlockPos navigatingPos = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, player.blockPosition());

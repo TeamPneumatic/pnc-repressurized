@@ -55,6 +55,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.lwjgl.glfw.GLFW;
 
@@ -294,4 +295,32 @@ public class ClientUtils {
         return Minecraft.getInstance().options.getCameraType().isFirstPerson();
     }
 
+    /**
+     * Determine how much to scale a graphic for the target position, based on player's distance and angle (dot product
+     * of look vector and offset to pos)
+     * @param targetPos the position being viewed
+     * @return a scaling factor
+     */
+    public static float calculateViewScaling(Vec3 targetPos) {
+        Player player = ClientUtils.getClientPlayer();
+        Vec3 vec1 = targetPos.subtract(player.position());
+        double angle = player.getLookAngle().dot(vec1.normalize());
+        float size = 1f;
+        if (angle >= 0.8) {
+            double dist = Math.max(0.0001, Math.sqrt(player.distanceToSqr(targetPos)));
+            double s = 0.8 - (1 / dist);
+            size = size * (float)((angle - s) * dist);
+        }
+        return size;
+    }
+
+    public static float getStatSizeMultiplier(double dist) {
+        if (dist < 4) {
+            return Math.max(0.3f, (float) (dist / 4));
+        } else if (dist < 10) {
+            return 1f;
+        } else {
+            return (float) (dist / 10);
+        }
+    }
 }
