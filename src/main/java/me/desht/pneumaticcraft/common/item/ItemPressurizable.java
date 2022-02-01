@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.enchantment.IVanishable;
 import net.minecraft.item.Item;
@@ -151,9 +152,9 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
             // Using a capability here *should* work but it seems to fail under some odd circumstances which I haven't been
             // able to reproduce. Hence the direct-access code above via the internal-use IPressurizableItem interface.
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
-            CompoundNBT tag2 = tag.copy();
+            int air = tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+            CompoundNBT tag2 = PneumaticCraftUtils.copyNBTWithout(tag, AirHandlerItemStack.AIR_NBT_KEY);
             int volume = ((IPressurizableItem) stack.getItem()).getEffectiveVolume(stack);
-            int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
             tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / ConfigHelper.common().advanced.pressureSyncPrecision.get()));
             return tag2;
         } else {

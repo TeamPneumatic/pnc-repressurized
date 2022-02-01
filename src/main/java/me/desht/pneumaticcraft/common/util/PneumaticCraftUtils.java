@@ -40,6 +40,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
@@ -701,5 +703,19 @@ public class PneumaticCraftUtils {
      */
     public static String modDefaultedString(ResourceLocation rl) {
         return rl.getNamespace().equals(Names.MOD_ID) ? rl.getPath() : rl.toString();
+    }
+
+    public static CompoundNBT copyNBTWithout(@Nonnull CompoundNBT nbt, @Nonnull String skip) {
+        CompoundNBT newNBT = new CompoundNBT();
+
+        for (String key : nbt.getAllKeys()) {
+            if (!skip.equals(key)) {
+                INBT subTag = nbt.get(key);
+                if (subTag != null) {
+                    newNBT.put(key, subTag.copy());
+                }
+            }
+        }
+        return newNBT.isEmpty() ? new CompoundNBT() : newNBT;
     }
 }
