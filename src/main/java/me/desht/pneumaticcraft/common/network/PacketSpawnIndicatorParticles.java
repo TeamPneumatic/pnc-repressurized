@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.network;
 
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -75,7 +75,7 @@ public class PacketSpawnIndicatorParticles {
         ctx.get().enqueueWork(() -> {
             Level world = ClientUtils.getClientLevel();
             float[] cols = dyeColor.getTextureDiffuseColors();
-            ParticleOptions particle = new DustParticleOptions(new Vector3f(cols[0] / 255f, cols[1] / 255f, cols[2] / 255f), 1f);
+            ParticleOptions particle = new DustParticleOptions(new Vector3f(cols[0], cols[1], cols[2]), 1f);
             world.addParticle(particle, pos0.getX() + 0.5, pos0.getY() + 0.5, pos0.getZ() + 0.5, 0, 0, 0);
             for (ByteOffset offset : offsets) {
                 world.addParticle(particle, pos0.getX() + offset.x + 0.5, pos0.getY() + offset.y + 0.5, pos0.getZ() + offset.z + 0.5, 0, 0, 0);
