@@ -53,3 +53,9 @@ jobs:
         with:
           name: dist
           path: build/libs/
+      - name: Discord notification
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }}.'
