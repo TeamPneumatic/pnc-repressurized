@@ -28,20 +28,16 @@ import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
-
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.RegistryObject;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Names.MOD_ID);
@@ -212,32 +208,31 @@ public class ModItems {
     public static final RegistryObject<ItemTubeModule> REDSTONE_MODULE = register("redstone_module",
             () -> new ItemTubeModule(ModuleRedstone::new));
 
-    public static final RegistryObject<ItemBucketPneumaticCraft> OIL_BUCKET = registerBucket("oil_bucket",
+    public static final RegistryObject<BucketItem> OIL_BUCKET = registerBucket("oil_bucket",
             ModFluids.OIL);
-    public static final RegistryObject<ItemBucketPneumaticCraft> ETCHING_ACID_BUCKET = registerBucket("etching_acid_bucket",
+    public static final RegistryObject<BucketItem> ETCHING_ACID_BUCKET = registerBucket("etching_acid_bucket",
             ModFluids.ETCHING_ACID);
-    public static final RegistryObject<ItemBucketPneumaticCraft> PLASTIC_BUCKET = register("plastic_bucket", FluidPlastic.Bucket::new);
-//    public static final RegistryObject<ItemBucketPneumaticCraft> PLASTIC_BUCKET = registerBucket("plastic_bucket",
-//            ModFluids.PLASTIC);
-    public static final RegistryObject<ItemBucketPneumaticCraft> DIESEL_BUCKET = registerBucket("diesel_bucket",
+    public static final RegistryObject<BucketItem> PLASTIC_BUCKET = register("plastic_bucket",
+            () -> new FluidPlastic.Bucket(ModItems.filledBucketProps()));
+    public static final RegistryObject<BucketItem> DIESEL_BUCKET = registerBucket("diesel_bucket",
             ModFluids.DIESEL);
-    public static final RegistryObject<ItemBucketPneumaticCraft> KEROSENE_BUCKET = registerBucket("kerosene_bucket",
+    public static final RegistryObject<BucketItem> KEROSENE_BUCKET = registerBucket("kerosene_bucket",
             ModFluids.KEROSENE);
-    public static final RegistryObject<ItemBucketPneumaticCraft> GASOLINE_BUCKET = registerBucket("gasoline_bucket",
+    public static final RegistryObject<BucketItem> GASOLINE_BUCKET = registerBucket("gasoline_bucket",
             ModFluids.GASOLINE);
-    public static final RegistryObject<ItemBucketPneumaticCraft> LPG_BUCKET = registerBucket("lpg_bucket",
+    public static final RegistryObject<BucketItem> LPG_BUCKET = registerBucket("lpg_bucket",
             ModFluids.LPG);
-    public static final RegistryObject<ItemBucketPneumaticCraft> LUBRICANT_BUCKET = registerBucket("lubricant_bucket",
+    public static final RegistryObject<BucketItem> LUBRICANT_BUCKET = registerBucket("lubricant_bucket",
             ModFluids.LUBRICANT);
-    public static final RegistryObject<ItemBucketPneumaticCraft> MEMORY_ESSENCE_BUCKET = registerBucket("memory_essence_bucket",
+    public static final RegistryObject<BucketItem> MEMORY_ESSENCE_BUCKET = registerBucket("memory_essence_bucket",
             ModFluids.MEMORY_ESSENCE);
-    public static final RegistryObject<ItemBucketPneumaticCraft> YEAST_CULTURE_BUCKET = registerBucket("yeast_culture_bucket",
+    public static final RegistryObject<BucketItem> YEAST_CULTURE_BUCKET = registerBucket("yeast_culture_bucket",
             ModFluids.YEAST_CULTURE);
-    public static final RegistryObject<ItemBucketPneumaticCraft> ETHANOL_BUCKET = registerBucket("ethanol_bucket",
+    public static final RegistryObject<BucketItem> ETHANOL_BUCKET = registerBucket("ethanol_bucket",
             ModFluids.ETHANOL);
-    public static final RegistryObject<ItemBucketPneumaticCraft> VEGETABLE_OIL_BUCKET = registerBucket("vegetable_oil_bucket",
+    public static final RegistryObject<BucketItem> VEGETABLE_OIL_BUCKET = registerBucket("vegetable_oil_bucket",
             ModFluids.VEGETABLE_OIL);
-    public static final RegistryObject<ItemBucketPneumaticCraft> BIODIESEL_BUCKET = registerBucket("biodiesel_bucket",
+    public static final RegistryObject<BucketItem> BIODIESEL_BUCKET = registerBucket("biodiesel_bucket",
             ModFluids.BIODIESEL);
 
     static {
@@ -256,7 +251,7 @@ public class ModItems {
         return defaultProps().stacksTo(1);
     }
 
-    public static Item.Properties bucketProps() {
+    public static Item.Properties filledBucketProps() {
         return defaultProps().stacksTo(1).craftRemainder(Items.BUCKET);
     }
 
@@ -280,8 +275,8 @@ public class ModItems {
         return register(name, () -> new Item(ModItems.defaultProps()));
     }
 
-    private static RegistryObject<ItemBucketPneumaticCraft> registerBucket(String name, Supplier<? extends Fluid> sup) {
-        return register(name, () -> new ItemBucketPneumaticCraft(sup));
+    private static RegistryObject<BucketItem> registerBucket(String name, Supplier<? extends Fluid> sup) {
+        return register(name, () -> new BucketItem(sup, ModItems.filledBucketProps()));
     }
 
     private static RegistryObject<Item> registerFood(final String name, FoodProperties food) {

@@ -22,10 +22,11 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
-import me.desht.pneumaticcraft.common.item.ItemBucketPneumaticCraft;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -73,9 +74,9 @@ public abstract class FluidPlastic {
         }
     }
 
-    public static class Bucket extends ItemBucketPneumaticCraft implements ICustomTooltipName {
-        public Bucket() {
-            super(ModFluids.PLASTIC);
+    public static class Bucket extends BucketItem implements ICustomTooltipName {
+        public Bucket(Item.Properties props) {
+            super(ModFluids.PLASTIC, props);
         }
 
         @Override
