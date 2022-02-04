@@ -185,14 +185,14 @@ public class EntityFilter implements Predicate<Entity> {
         }
 
         private static boolean testShearable(Entity entity, String val) {
-            return entity instanceof IForgeShearable
-                    && ((IForgeShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
+            return entity instanceof IForgeShearable s
+                    && s.isShearable(new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
         }
 
         private static boolean testBreedable(Entity entity, String val) {
-            return entity instanceof Animal && (((Animal) entity).getAge() == 0 ?
-                    val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no")
+            return entity instanceof Animal a &&
+                    (a.getAge() == 0 ? val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no")
             );
         }
 
@@ -300,16 +300,8 @@ public class EntityFilter implements Predicate<Entity> {
         }
     }
 
-    private static class ModifierEntry implements Predicate<Entity> {
-        final Modifier modifier;
-        final String value;
-        final boolean sense;
-
-        private ModifierEntry(Modifier modifier, String value, boolean sense) {
-            this.modifier = modifier;
-            this.value = value;
-            this.sense = sense;
-        }
+    private record ModifierEntry(Modifier modifier, String value,
+                                 boolean sense) implements Predicate<Entity> {
 
         @Override
         public boolean test(Entity e) {
@@ -340,28 +332,10 @@ public class EntityFilter implements Predicate<Entity> {
         for (int i = 0, is = wildcard.length(); i < is; i++) {
             char c = wildcard.charAt(i);
             switch (c) {
-                case '*':
-                    s.append(".*");
-                    break;
-                case '?':
-                    s.append(".");
-                    break;
-                case '(':
-                case ')':
-                case '[':
-                case ']':
-                case '$':
-                case '^':
-                case '.':
-                case '{':
-                case '}':
-                case '|':
-                case '\\':
-                    s.append("\\").append(c);
-                    break;
-                default:
-                    s.append(c);
-                    break;
+                case '*' -> s.append(".*");
+                case '?' -> s.append(".");
+                case '(', ')', '[', ']', '$', '^', '.', '{', '}', '|', '\\' -> s.append("\\").append(c);
+                default -> s.append(c);
             }
         }
         s.append('$');
