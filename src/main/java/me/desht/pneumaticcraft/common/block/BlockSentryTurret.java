@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 
 public class BlockSentryTurret extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     private final VoxelShape BOUNDS = Stream.of(
-            Block.box(3, 8, 3, 13, 16, 13),
+            Block.box(4, 8, 4, 12, 14, 12),
             Block.box(3, 1, 3, 13, 5, 13),
             Block.box(7, 6, 7, 9, 8, 9),
             Block.box(6, 5, 6, 10, 6, 10),
