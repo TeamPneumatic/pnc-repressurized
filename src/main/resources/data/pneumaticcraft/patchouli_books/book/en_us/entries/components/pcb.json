@@ -18,9 +18,9 @@
       "text": "This method is the only one available initially, and is somewhat slow without extra automation and heating infrastructure: you can develop a $(item)PCB/$ chemically by putting it in a $(l:manufacturing/uv_light_box)UV Light Box/$ and then putting the exposed $(item)Empty PCB/$ in an $(l:manufacturing/etching_tank)Etching Tank/$ to turn it into an $(item)Unassembled PCB/$."
     },
     {
-      "type": "smelting",
+      "type": "blasting",
       "title": "Recycling Failed PCB's",
-      "recipe": "pneumaticcraft:empty_pcb",
+      "recipe": "pneumaticcraft:empty_pcb_from_failed_pcb",
       "text": "The etching process has a chance of failure if the $(item)Empty PCB/$ was not 100% exposed in the $(l:manufacturing/uv_light_box)UV Light Box/$; you can recycle $(item)Failed PCB's/$ in a $(item)Blast Furnace/$."
     },
     {

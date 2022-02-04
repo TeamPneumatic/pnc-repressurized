@@ -11,8 +11,7 @@
     {
       "type": "crafting",
       "text": "Creating an Advanced PCB",
-      "recipe": "pneumaticcraft:advanced_pcb",
-      "recipe2": "pneumaticcraft:advanced_pcb_v2"
+      "recipe": "pneumaticcraft:advanced_pcb"
     }
   ]
 }
