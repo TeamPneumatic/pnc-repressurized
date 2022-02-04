@@ -11,19 +11,28 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 
-## 2.15.2-??? (unreleased)
+## 2.15.2-303 (4th Feb 2022)
 
 ### Updates
 * Amadrone spawn-in location is now adjustable in config (`pneumaticcraft-common.toml`)
   * See `amadrone_spawn_location` and `amadrone_spawn_location_relative_to_ground_level` settings
   * May be useful in stoneblock-style worlds, where Amadrones can have trouble finding a place to spawn with default settings
 * PneumaticCraft Diesel & Biodiesel are no longer registered (in code) with Immersive Engineering as generator fuels
-  *  IE is moving away from code-based registration, since this can now be done with datapacks
+  *  IE is moving away from code-based registration, since this is better done with datapacks
 * Compressed Iron Gears are now item-tagged as `forge:gears` and `forge:gears/compressed_iron`
+* Basic drones can now also be dyed via crafting recipe, same as standard Drones can be
+  * Dyeing in entity form (right-clicking drone with dye) also still works
+  * All drones now also show their dye color when in item form
+  * All basic drones now have a default dye color matching their main body (logistics = red, guard = blue, harvester = green, collector = yellow)
 
 ### Fixes
-* Radiation Shielding now works with Mekanism 10.1.x (and this mod now requires 10.1.x - won't work anymore with 10.0.x)
-* Fixed a few machines (Charging Station, Creative Compressor & Creative Compressed Iron Block) sometimes not persisting their data across world reloads
+* Logistics Frames marked as invisible now fade in & out as they used to
+* Fixed Universal Sensors getting entity filters mixed up when multiple sensors use an "Entities In Range" sensor setting
+* Fixed Radiation Shielding Upgrades not protecting against Mekanism radiation (was built against Mek 10.0.x API)
+  * PNC:R now *requires* Mekanism 10.1.x (assuming it's installed) - it will no longer work with Mekanism 10.0.x
+* Fixed a few machines (Charging Station, Creative Compressor & Creative Compressed Iron Block) not always persisting their data across world reloads
+* Hopefully fix a CME causing player kicks when drones are deployed under certain circumstances (possibly related to carried equipment?)
+  * I could not reproduce this one myself, so hard to know for sure if it's fixed, but some extra-defensive coding has been added
 
 ## 2.15.1-297 (19th Jan 2022)
 
