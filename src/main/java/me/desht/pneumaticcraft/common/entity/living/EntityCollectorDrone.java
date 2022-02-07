@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -54,7 +54,7 @@ public class EntityCollectorDrone extends EntityBasicDrone {
         BlockPos invPos = clickPos;
 
         List<IProgWidget> params = new ArrayList<>();
-        int rangeUpgrades = UpgradableItemUtils.getUpgrades(droneStack, EnumUpgrade.RANGE);
+        int rangeUpgrades = UpgradableItemUtils.getUpgrades(droneStack, ModUpgrades.RANGE.get());
         params.add(ProgWidgetArea.fromPosition(pos, 16 + rangeUpgrades * 2));
         LazyOptional<IItemHandler> itemCap = IOHelper.getInventoryForTE(level.getBlockEntity(clickPos), facing);
         if (itemCap.isPresent()) {

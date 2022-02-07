@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.heat.behaviour;
 
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.Fluid;
 
 public abstract class HeatBehaviourLiquid extends HeatBehaviour<BlockEntity> {
     public Fluid getFluid() {

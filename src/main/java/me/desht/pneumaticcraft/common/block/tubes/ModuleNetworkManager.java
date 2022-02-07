@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.*;
 

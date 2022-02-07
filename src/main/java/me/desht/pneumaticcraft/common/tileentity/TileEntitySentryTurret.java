@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.render.RenderMinigunTracers;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
@@ -294,7 +294,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     }
 
     private void recalculateRange() {
-        range = 16 + Math.min(16, getUpgrades(EnumUpgrade.RANGE));
+        range = 16 + Math.min(16, getUpgrades(ModUpgrades.RANGE.get()));
         ItemStack ammoStack = getMinigun().getAmmoStack();
         if (ammoStack.getItem() instanceof ItemGunAmmo ammo) {
             range *= ammo.getRangeMultiplier(ammoStack);

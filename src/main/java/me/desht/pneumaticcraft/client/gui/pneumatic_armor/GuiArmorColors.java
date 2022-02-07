@@ -68,7 +68,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     public GuiArmorColors() {
         super(new TextComponent("Colors"));
 
-        Player player = Minecraft.getInstance().player;
+        Player player = ClientUtils.getClientPlayer();
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack stack = player.getItemBySlot(slot);
             int idx = slot.getIndex();
@@ -132,7 +132,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     }
 
     private void saveChanges() {
-        Minecraft.getInstance().player.playSound(ModSounds.HUD_INIT_COMPLETE.get(), 1f, 1f);
+        ClientUtils.getClientPlayer().playSound(ModSounds.HUD_INIT_COMPLETE.get(), 1f, 1f);
         NetworkHandler.sendToServer(new PacketUpdateArmorColors());
         needSave = false;
     }
@@ -158,7 +158,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     }
 
     private void updateClientSideArmor(EquipmentSlot slot) {
-        Player player = Minecraft.getInstance().player;
+        Player player = ClientUtils.getClientPlayer();
         ItemStack stack = player.getItemBySlot(slot);
         if (stack.getItem() instanceof ItemPneumaticArmor) {
             ((ItemPneumaticArmor) stack.getItem()).setColor(stack, colors[slot.getIndex()][SelectorType.PRIMARY.ordinal()]);
@@ -204,7 +204,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
         double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
         int scale = (int) (Minecraft.getInstance().getWindow().getScreenHeight() / (scaleFactor * 3));
         InventoryScreen.renderEntityInInventory(width * 2 / 3, height * 3 / 4, scale, width * 2 / 3f - x, height / 4f - y,
-                Minecraft.getInstance().player);
+                ClientUtils.getClientPlayer());
     }
 
     @Override
@@ -319,7 +319,7 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
             visible = selectorType.showButton(slot) && ItemPneumaticArmor.isPneumaticArmorPiece(ClientUtils.getClientPlayer(), slot);
 
             if (selectorType == SelectorType.PRIMARY) {
-                setRenderStacks(Minecraft.getInstance().player.getItemBySlot(slot));
+                setRenderStacks(ClientUtils.getClientPlayer().getItemBySlot(slot));
                 setIconPosition(IconPosition.LEFT);
             }
         }

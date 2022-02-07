@@ -7,32 +7,30 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.NoNBTIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.data.*;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.recipes.*;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.NBTIngredient;
@@ -48,14 +46,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.data.recipes.ShapelessRecipeBuilder;
-import net.minecraft.data.recipes.SimpleCookingRecipeBuilder;
-import net.minecraft.data.recipes.SingleItemRecipeBuilder;
-import net.minecraft.data.recipes.SpecialRecipeBuilder;
 
 public class ModRecipeProvider extends RecipeProvider {
     public ModRecipeProvider(DataGenerator generatorIn) {
@@ -299,7 +289,7 @@ public class ModRecipeProvider extends RecipeProvider {
                         shaped(ModBlocks.DRONE_INTERFACE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                                 " U /MP /III",
                                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                                'U', EnumUpgrade.RANGE.getItem(),
+                                'U', ModUpgrades.RANGE.get().getItem(),
                                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                                 'M', ccModem)
                                 ::save)
@@ -958,36 +948,36 @@ public class ModRecipeProvider extends RecipeProvider {
         pneumaticTool(ModItems.VORTEX_CANNON.get(), Tags.Items.DYES_YELLOW).save(consumer);
 
         // standard upgrade patterns (4 x lapis, 4 x edge item, 1 x center item)
-        standardUpgrade(EnumUpgrade.ARMOR, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, Tags.Items.GEMS_DIAMOND).save(consumer);
-        standardUpgrade(EnumUpgrade.BLOCK_TRACKER, Items.FERMENTED_SPIDER_EYE, ModBlocks.PRESSURE_CHAMBER_WALL.get()).save(consumer);
-        standardUpgrade(EnumUpgrade.CHARGING, ModItems.CHARGING_MODULE.get(), ModBlocks.PRESSURE_TUBE.get()).save(consumer);
-        standardUpgrade(EnumUpgrade.COORDINATE_TRACKER, ModItems.GPS_TOOL.get(), Tags.Items.DUSTS_REDSTONE).save(consumer);
-        standardUpgrade(EnumUpgrade.DISPENSER, Blocks.DISPENSER, Tags.Items.GEMS_QUARTZ).save(consumer);
-        standardUpgrade(EnumUpgrade.ENTITY_TRACKER, Items.FERMENTED_SPIDER_EYE, Tags.Items.BONES).save(consumer);
-        standardUpgrade(EnumUpgrade.FLIPPERS, Items.BLACK_WOOL, PneumaticCraftTags.Items.PLASTIC_SHEETS).save(consumer);
-        standardUpgrade(EnumUpgrade.INVENTORY, Tags.Items.CHESTS_WOODEN, ItemTags.PLANKS).save(consumer);
-        standardUpgrade(EnumUpgrade.ITEM_LIFE, Items.CLOCK, Items.APPLE).save(consumer);
-        standardUpgrade(EnumUpgrade.MAGNET, PneumaticCraftTags.Items.PLASTIC_SHEETS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
-        standardUpgrade(EnumUpgrade.MINIGUN, ModItems.MINIGUN.get(), Tags.Items.GUNPOWDER).save(consumer);
-        standardUpgrade(EnumUpgrade.RANGE, Items.BOW, ItemTags.ARROWS).save(consumer);
-        standardUpgrade(EnumUpgrade.SEARCH, Items.GOLDEN_CARROT, Items.ENDER_EYE).save(consumer);
-        standardUpgrade(EnumUpgrade.SECURITY, ModItems.SAFETY_TUBE_MODULE.get(), Tags.Items.OBSIDIAN).save(consumer);
-        standardUpgrade(EnumUpgrade.SPEED, FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), Items.SUGAR).save(consumer);
-        standardUpgrade(EnumUpgrade.SPEED, 2, FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), ModItems.GLYCEROL.get()).save(consumer, RL("speed_upgrade_from_glycerol"));
-        standardUpgrade(EnumUpgrade.STANDBY, ItemTags.BEDS, Items.REDSTONE_TORCH).save(consumer);
-        standardUpgrade(EnumUpgrade.VOLUME, ModItems.AIR_CANISTER.get(), PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
+        standardUpgrade(ModUpgrades.ARMOR.get(), PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, Tags.Items.GEMS_DIAMOND).save(consumer);
+        standardUpgrade(ModUpgrades.BLOCK_TRACKER.get(), Items.FERMENTED_SPIDER_EYE, ModBlocks.PRESSURE_CHAMBER_WALL.get()).save(consumer);
+        standardUpgrade(ModUpgrades.CHARGING.get(), ModItems.CHARGING_MODULE.get(), ModBlocks.PRESSURE_TUBE.get()).save(consumer);
+        standardUpgrade(ModUpgrades.COORDINATE_TRACKER.get(), ModItems.GPS_TOOL.get(), Tags.Items.DUSTS_REDSTONE).save(consumer);
+        standardUpgrade(ModUpgrades.DISPENSER.get(), Blocks.DISPENSER, Tags.Items.GEMS_QUARTZ).save(consumer);
+        standardUpgrade(ModUpgrades.ENTITY_TRACKER.get(), Items.FERMENTED_SPIDER_EYE, Tags.Items.BONES).save(consumer);
+        standardUpgrade(ModUpgrades.FLIPPERS.get(), Items.BLACK_WOOL, PneumaticCraftTags.Items.PLASTIC_SHEETS).save(consumer);
+        standardUpgrade(ModUpgrades.INVENTORY.get(), Tags.Items.CHESTS_WOODEN, ItemTags.PLANKS).save(consumer);
+        standardUpgrade(ModUpgrades.ITEM_LIFE.get(), Items.CLOCK, Items.APPLE).save(consumer);
+        standardUpgrade(ModUpgrades.MAGNET.get(), PneumaticCraftTags.Items.PLASTIC_SHEETS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
+        standardUpgrade(ModUpgrades.MINIGUN.get(), ModItems.MINIGUN.get(), Tags.Items.GUNPOWDER).save(consumer);
+        standardUpgrade(ModUpgrades.RANGE.get(), Items.BOW, ItemTags.ARROWS).save(consumer);
+        standardUpgrade(ModUpgrades.SEARCH.get(), Items.GOLDEN_CARROT, Items.ENDER_EYE).save(consumer);
+        standardUpgrade(ModUpgrades.SECURITY.get(), ModItems.SAFETY_TUBE_MODULE.get(), Tags.Items.OBSIDIAN).save(consumer);
+        standardUpgrade(ModUpgrades.SPEED.get(), FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), Items.SUGAR).save(consumer);
+        standardUpgrade(ModUpgrades.SPEED.get(), 2, FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), ModItems.GLYCEROL.get()).save(consumer, RL("speed_upgrade_from_glycerol"));
+        standardUpgrade(ModUpgrades.STANDBY.get(), ItemTags.BEDS, Items.REDSTONE_TORCH).save(consumer);
+        standardUpgrade(ModUpgrades.VOLUME.get(), ModItems.AIR_CANISTER.get(), PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
 
         // non-standard upgrade patterns
         ItemStack nightVisionPotion = new ItemStack(Items.POTION);
         PotionUtils.setPotion(nightVisionPotion, Potions.LONG_NIGHT_VISION);
-        shaped(EnumUpgrade.NIGHT_VISION.getItem(), ModItems.PNEUMATIC_HELMET.get(),
+        shaped(ModUpgrades.NIGHT_VISION.get().getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LNL/GNG/LNL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
                 'G', ModBlocks.PRESSURE_CHAMBER_GLASS.get(),
                 'N', IngredientNBTWrapper.fromItemStack(nightVisionPotion)
         ).save(consumer);
 
-        shaped(EnumUpgrade.SCUBA.getItem(), ModItems.PNEUMATIC_HELMET.get(),
+        shaped(ModUpgrades.SCUBA.get().getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LTL/PRP/LPL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
@@ -995,47 +985,47 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
         ).save(consumer);
 
-        shaped(EnumUpgrade.JET_BOOTS.getItem(1), ModItems.PNEUMATIC_BOOTS.get(),
+        shaped(ModUpgrades.JET_BOOTS.get().getItem(1), ModItems.PNEUMATIC_BOOTS.get(),
                 "LTL/VCV/LTL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
                 'V', ModItems.VORTEX_CANNON.get(),
                 'C', ModBlocks.ADVANCED_AIR_COMPRESSOR.get(),
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
         ).save(consumer);
-        shaped(EnumUpgrade.JET_BOOTS.getItem(2), ModItems.PNEUMATIC_BOOTS.get(),
+        shaped(ModUpgrades.JET_BOOTS.get().getItem(2), ModItems.PNEUMATIC_BOOTS.get(),
                 "FFF/VUV/CFC",
                 'F', Items.FEATHER,
                 'V', ModItems.VORTEX_CANNON.get(),
                 'C', ModItems.PNEUMATIC_CYLINDER.get(),
-                'U', EnumUpgrade.JET_BOOTS.getItem(1)
+                'U', ModUpgrades.JET_BOOTS.get().getItem(1)
         ).save(consumer);
-        shaped(EnumUpgrade.JET_BOOTS.getItem(3), ModItems.PNEUMATIC_BOOTS.get(),
+        shaped(ModUpgrades.JET_BOOTS.get().getItem(3), ModItems.PNEUMATIC_BOOTS.get(),
                 "TBT/VUV/TBT",
                 'T', Items.GHAST_TEAR,
                 'B', Items.BLAZE_ROD,
                 'V', ModItems.VORTEX_CANNON.get(),
-                'U', EnumUpgrade.JET_BOOTS.getItem(2)
+                'U', ModUpgrades.JET_BOOTS.get().getItem(2)
         ).save(consumer);
         ItemStack slowFallPotion = new ItemStack(Items.POTION);
         PotionUtils.setPotion(slowFallPotion, Potions.LONG_SLOW_FALLING);
-        shaped(EnumUpgrade.JET_BOOTS.getItem(4), ModItems.PNEUMATIC_BOOTS.get(),
+        shaped(ModUpgrades.JET_BOOTS.get().getItem(4), ModItems.PNEUMATIC_BOOTS.get(),
                 "MNM/VUV/P P",
                 'N', Items.NETHER_STAR,
                 'M', Items.PHANTOM_MEMBRANE,
                 'V', ModItems.VORTEX_CANNON.get(),
                 'P', IngredientNBTWrapper.fromItemStack(slowFallPotion),
-                'U', EnumUpgrade.JET_BOOTS.getItem(3)
+                'U', ModUpgrades.JET_BOOTS.get().getItem(3)
         ).save(consumer);
-        shaped(EnumUpgrade.JET_BOOTS.getItem(5), ModItems.PNEUMATIC_BOOTS.get(),
+        shaped(ModUpgrades.JET_BOOTS.get().getItem(5), ModItems.PNEUMATIC_BOOTS.get(),
                 "RER/VUV/RDR",
                 'R', Items.END_ROD,
                 'E', Items.ELYTRA,
                 'V', ModItems.VORTEX_CANNON.get(),
                 'D', Items.DRAGON_BREATH,
-                'U', EnumUpgrade.JET_BOOTS.getItem(4)
+                'U', ModUpgrades.JET_BOOTS.get().getItem(4)
         ).save(consumer);
 
-        shaped(EnumUpgrade.JUMPING.getItem(1), ModItems.PNEUMATIC_LEGGINGS.get(),
+        shaped(ModUpgrades.JUMPING.get().getItem(1), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "LCL/VTV/LPL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
                 'P', Blocks.PISTON,
@@ -1043,27 +1033,27 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get(),
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
-        shaped(EnumUpgrade.JUMPING.getItem(2), ModItems.PNEUMATIC_LEGGINGS.get(),
+        shaped(ModUpgrades.JUMPING.get().getItem(2), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/SUS",
-                'U', EnumUpgrade.JUMPING.getItem(1),
+                'U', ModUpgrades.JUMPING.get().getItem(1),
                 'S', Blocks.SLIME_BLOCK,
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
         ItemStack jumpBoostPotion1 = new ItemStack(Items.POTION);
         PotionUtils.setPotion(jumpBoostPotion1, Potions.LEAPING);
-        shaped(EnumUpgrade.JUMPING.getItem(3), ModItems.PNEUMATIC_LEGGINGS.get(),
+        shaped(ModUpgrades.JUMPING.get().getItem(3), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/JUJ/ J ",
-                'U', EnumUpgrade.JUMPING.getItem(2),
+                'U', ModUpgrades.JUMPING.get().getItem(2),
                 'J', IngredientNBTWrapper.fromItemStack(jumpBoostPotion1),
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
         ItemStack jumpBoostPotion2 = new ItemStack(Items.POTION);
         PotionUtils.setPotion(jumpBoostPotion2, Potions.STRONG_LEAPING);
-        shaped(EnumUpgrade.JUMPING.getItem(4), ModItems.PNEUMATIC_LEGGINGS.get(),
+        shaped(ModUpgrades.JUMPING.get().getItem(4), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/JUJ/ J ",
-                'U', EnumUpgrade.JUMPING.getItem(3),
+                'U', ModUpgrades.JUMPING.get().getItem(3),
                 'J', IngredientNBTWrapper.fromItemStack(jumpBoostPotion2),
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
@@ -1073,7 +1063,7 @@ public class ModRecipeProvider extends RecipeProvider {
         ConditionalRecipe.builder()
                 .addCondition(new ModLoadedCondition(ModIds.MEKANISM))
                 .addRecipe(
-                        shaped(EnumUpgrade.RADIATION_SHIELDING.getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                        shaped(ModUpgrades.RADIATION_SHIELDING.get().getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                                 "LIL/IRI/LIL",
                                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
@@ -1679,11 +1669,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 '2', item2);
     }
 
-    private ShapedRecipeBuilder standardUpgrade(EnumUpgrade what, Object center, Object edge) {
+    private ShapedRecipeBuilder standardUpgrade(PNCUpgrade what, Object center, Object edge) {
         return standardUpgrade(what, 1, center, edge);
     }
 
-    private ShapedRecipeBuilder standardUpgrade(EnumUpgrade what, int count, Object center, Object edge) {
+    private ShapedRecipeBuilder standardUpgrade(PNCUpgrade what, int count, Object center, Object edge) {
         return shaped(what.getItem(), count, Items.LAPIS_LAZULI,
                 "LXL/XCX/LXL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,

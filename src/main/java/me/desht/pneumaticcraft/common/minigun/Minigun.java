@@ -17,11 +17,12 @@
 
 package me.desht.pneumaticcraft.common.minigun;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -222,15 +223,15 @@ public abstract class Minigun {
                 }
                 airCapability.ifPresent(airHandler -> {
                     int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(this, ammoStack));
-                    usage += getUpgrades(EnumUpgrade.RANGE);
-                    if (getUpgrades(EnumUpgrade.SPEED) > 0) {
-                        usage *= getUpgrades(EnumUpgrade.SPEED) + 1;
+                    usage += getUpgrades(ModUpgrades.RANGE.get());
+                    if (getUpgrades(ModUpgrades.SPEED.get()) > 0) {
+                        usage *= getUpgrades(ModUpgrades.SPEED.get()) + 1;
                     }
                     airHandler.addAir(-usage);
                 });
                 int roundsUsed = 1;
                 if (target != null) {
-                    if (getUpgrades(EnumUpgrade.SECURITY) == 0 || !securityProtectedTarget(target)) {
+                    if (getUpgrades(ModUpgrades.SECURITY.get()) == 0 || !securityProtectedTarget(target)) {
                         roundsUsed = ammoItem.onTargetHit(this, ammoStack, target);
                     }
                 } else if (rtr != null && rtr.getType() == HitResult.Type.BLOCK) {
@@ -271,7 +272,7 @@ public abstract class Minigun {
             if (getMinigunSpeed() == 0) {
                 playSound(ModSounds.HUD_INIT.get(), 3, 0.9F);
             }
-            float speedBonus = getUpgrades(EnumUpgrade.SPEED) * 0.0033F;
+            float speedBonus = getUpgrades(ModUpgrades.SPEED.get()) * 0.0033F;
             float lastSpeed = getMinigunSpeed();
             setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01F + speedBonus, MAX_GUN_SPEED));
             if (!world.isClientSide && getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED) {
@@ -323,13 +324,13 @@ public abstract class Minigun {
         return yaw ? clampYaw(val) : val;
     }
 
-    public int getUpgrades(EnumUpgrade upgrade) {
+    public int getUpgrades(PNCUpgrade upgrade) {
         return 0;
     }
 
     public double getRange() {
         double mul = getAmmoStack().getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack) : 1;
-        return (ConfigHelper.common().minigun.baseRange.get() + 5 * getUpgrades(EnumUpgrade.RANGE)) * mul;
+        return (ConfigHelper.common().minigun.baseRange.get() + 5 * getUpgrades(ModUpgrades.RANGE.get())) * mul;
     }
 
     public boolean dispenserWeightedPercentage(int basePct) {
@@ -337,7 +338,7 @@ public abstract class Minigun {
     }
 
     public boolean dispenserWeightedPercentage(int basePct, float dispenserWeight) {
-        return getWorld().random.nextInt(100) < basePct * (1 + getUpgrades(EnumUpgrade.DISPENSER) * dispenserWeight);
+        return getWorld().random.nextInt(100) < basePct * (1 + getUpgrades(ModUpgrades.DISPENSER.get()) * dispenserWeight);
     }
 
     public static float clampYaw(float yaw) {

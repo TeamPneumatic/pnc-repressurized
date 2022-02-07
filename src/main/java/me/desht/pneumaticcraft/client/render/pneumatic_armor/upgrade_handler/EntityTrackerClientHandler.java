@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.EntityTrackOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -33,6 +32,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
@@ -75,7 +75,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
-        int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.RANGE);
+        int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get());
         Player player = armorHandler.getPlayer();
 
         if ((Minecraft.getInstance().level.getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler)) {
@@ -169,7 +169,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItemStack());
+            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(ModUpgrades.ENTITY_TRACKER.get().getItemStack());
             entityTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon,
                     HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
             entityTrackInfo.setMinimumContractedDimensions(0, 0);

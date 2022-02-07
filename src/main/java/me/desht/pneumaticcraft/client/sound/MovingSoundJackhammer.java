@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.client.sound;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -17,20 +17,20 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.EntityBlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.NonNullList;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -63,7 +63,7 @@ public class BlockDroneInterface extends BlockPneumaticCraft implements EntityBl
     }
 
     @Override
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
         return Collections.emptyMap();
     }
 

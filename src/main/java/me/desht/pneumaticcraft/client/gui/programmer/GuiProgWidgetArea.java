@@ -137,7 +137,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         if (minecraft.screen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
-            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack) != null ? gpsStack : ItemStack.EMPTY);
+            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack).isPresent() ? gpsStack : ItemStack.EMPTY);
         }
         pointSearched = which;
     }

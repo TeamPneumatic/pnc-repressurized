@@ -23,11 +23,9 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class TubeModuleClientRegistry {
     private static final Map<ResourceLocation, ModuleRendererFactory<?>> MODEL_FACTORY

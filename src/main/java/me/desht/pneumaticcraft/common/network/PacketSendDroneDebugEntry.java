@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Received on: CLIENT

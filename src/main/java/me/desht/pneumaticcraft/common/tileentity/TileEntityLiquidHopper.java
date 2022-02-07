@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockLiquidHopper;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -94,7 +94,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     public void tickServer() {
         super.tickServer();
 
-        if (getUpgrades(EnumUpgrade.CREATIVE) > 0) {
+        if (getUpgrades(ModUpgrades.CREATIVE.get()) > 0) {
             FluidStack fluidStack = tank.getFluid();
             if (!fluidStack.isEmpty() && fluidStack.getAmount() < PneumaticValues.NORMAL_TANK_CAPACITY) {
                 tank.fill(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY), FluidAction.EXECUTE);
@@ -116,7 +116,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
                 FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
                 return !transferred.isEmpty();
             }).orElse(false);
-        } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
+        } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             for (Entity e : cachedOutputEntities) {
                 if (!e.isAlive()) continue;
                 FluidStack transferred = e.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getRotation().getOpposite()).map(h -> {
@@ -140,7 +140,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         }
 
         // try to pour fluid into the world
-        if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(EnumUpgrade.DISPENSER) > 0
+        if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(ModUpgrades.DISPENSER.get()) > 0
                 && tank.getFluidAmount() >= leaveMaterialCount + FluidAttributes.BUCKET_VOLUME) {
             return FluidUtils.tryPourOutFluid(outputCap, nonNullLevel(), getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
         }
@@ -167,7 +167,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
                     return false;
                 }).orElse(false);
             }
-        } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
+        } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             for (Entity e : cachedInputEntities) {
                 if (!e.isAlive()) continue;
                 FluidStack transferred = e.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite())
@@ -189,7 +189,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
             }
         }
 
-        if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
             BlockPos neighborPos = getBlockPos().relative(inputDir);
             return !FluidUtils.tryPickupFluid(inputCap, nonNullLevel(), neighborPos, false, FluidAction.EXECUTE).isEmpty();
         }

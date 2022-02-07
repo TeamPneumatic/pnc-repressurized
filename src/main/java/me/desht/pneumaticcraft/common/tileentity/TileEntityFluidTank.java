@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockFluidTank;
 import me.desht.pneumaticcraft.common.block.BlockFluidTank.ItemBlockFluidTank;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerFluidTank;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -112,7 +112,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
         Direction ejectDir = getUpgradeCache().getEjectDirection();
         if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(BlockPneumaticCraft.connectionProperty(ejectDir)))) {
             IOHelper.getFluidHandlerForTE(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
-                int amount = BASE_EJECT_RATE << getUpgrades(EnumUpgrade.SPEED);
+                int amount = BASE_EJECT_RATE << getUpgrades(ModUpgrades.SPEED.get());
                 FluidUtil.tryFluidTransfer(h, tank, amount, true);
             });
         }

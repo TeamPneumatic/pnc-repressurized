@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.GuiUniversalSensor;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -181,7 +182,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
             if (sensor.needsGPSTool() && getPrimaryInventory().getStackInSlot(0).isEmpty()) {
                 sensorStatus = SensorStatus.MISSING_GPS;
             } else {
-                for (EnumUpgrade upgrade: sensor.getRequiredUpgrades()) {
+                for (PNCUpgrade upgrade: sensor.getRequiredUpgrades()) {
                     if (getUpgrades(upgrade) == 0) {
                         sensorStatus = SensorStatus.MISSING_UPGRADE;
                         break;
@@ -322,12 +323,12 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        rangeManager.setRange(getUpgrades(EnumUpgrade.RANGE) + BASE_RANGE);
+        rangeManager.setRange(getUpgrades(ModUpgrades.RANGE.get()) + BASE_RANGE);
         setupGPSPositions();
     }
 
-    public boolean areGivenUpgradesInserted(Set<EnumUpgrade> requiredUpgrades) {
-        for (EnumUpgrade upgrade : requiredUpgrades) {
+    public boolean areGivenUpgradesInserted(Set<PNCUpgrade> requiredUpgrades) {
+        for (PNCUpgrade upgrade : requiredUpgrades) {
             if (getUpgrades(upgrade) == 0) {
                 return false;
             }

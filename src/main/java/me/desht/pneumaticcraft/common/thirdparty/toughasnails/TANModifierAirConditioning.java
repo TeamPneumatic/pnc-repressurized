@@ -34,7 +34,7 @@ public class TANModifierAirConditioning /*implements ITemperatureModifier*/ {
 //                || handler.getArmorPressure(EquipmentSlotType.CHEST) < 0.1) {
 //            return initialTemperature;
 //        }
-//        int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, IItemRegistry.EnumUpgrade.AIR_CONDITIONING, 4);
+//        int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, IItemRegistry.ModUpgrades.AIR_CONDITIONING.get(), 4);
 //        if (upgrades == 0) {
 //            return initialTemperature;
 //        }

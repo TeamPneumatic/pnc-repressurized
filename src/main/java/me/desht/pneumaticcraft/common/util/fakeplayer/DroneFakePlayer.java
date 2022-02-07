@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.common.util.FakePlayer;
 
 public class DroneFakePlayer extends FakePlayer {

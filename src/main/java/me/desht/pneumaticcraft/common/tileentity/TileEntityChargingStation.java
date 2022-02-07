@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -179,7 +179,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             });
         }
 
-        if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
             List<Entity> entitiesOnPad = nonNullLevel().getEntitiesOfClass(Entity.class, new AABB(getBlockPos().above()));
             for (Entity entity : entitiesOnPad) {
                 if (entity instanceof ItemEntity ie) {
@@ -308,7 +308,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
         if (level != null && !level.isClientSide) {
             BlockState state = level.getBlockState(worldPosition);
-            level.setBlockAndUpdate(worldPosition, state.setValue(BlockChargingStation.CHARGE_PAD, getUpgrades(EnumUpgrade.DISPENSER) > 0));
+            level.setBlockAndUpdate(worldPosition, state.setValue(BlockChargingStation.CHARGE_PAD, getUpgrades(ModUpgrades.DISPENSER.get()) > 0));
         }
     }
 

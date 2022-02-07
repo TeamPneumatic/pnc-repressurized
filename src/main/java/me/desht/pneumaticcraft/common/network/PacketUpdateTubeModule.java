@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;

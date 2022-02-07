@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Marker interface to indicate this message might have a payload larger than

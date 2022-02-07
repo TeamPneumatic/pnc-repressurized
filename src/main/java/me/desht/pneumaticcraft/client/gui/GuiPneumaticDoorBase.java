@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.datagen.loot;
 
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.core.Registry;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

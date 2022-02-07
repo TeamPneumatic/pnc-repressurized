@@ -18,17 +18,17 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
@@ -37,21 +37,21 @@ import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.PushPullMode;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.Direction;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
@@ -97,8 +97,8 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         if (AreaRenderManager.getInstance().isShowing(te)) {
             AreaRenderManager.getInstance().removeHandlers(te);
         } else {
-            if (te.getUpgrades(EnumUpgrade.MAGNET) > 0) {
-                int range = te.getUpgrades(EnumUpgrade.RANGE) + 1;
+            if (te.getUpgrades(ModUpgrades.MAGNET.get()) > 0) {
+                int range = te.getUpgrades(ModUpgrades.RANGE.get()) + 1;
                 Set<BlockPos> posSet = new HashSet<>();
                 for (RelativeFace face : RelativeFace.values()) {
                     if (te.getPushPullMode(face) == PushPullMode.PULL) {
@@ -122,7 +122,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         text.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.smartChestStatus.tickInterval", te.getTickRate()));
         statusStat.setText(text);
 
-        if (te.getUpgrades(EnumUpgrade.MAGNET) > 0) {
+        if (te.getUpgrades(ModUpgrades.MAGNET.get()) > 0) {
             showRangeButton.setVisible(true);
             if (AreaRenderManager.getInstance().isShowing(te)) {
                 showRangeButton.setMessage(new TextComponent("R").withStyle(ChatFormatting.AQUA));

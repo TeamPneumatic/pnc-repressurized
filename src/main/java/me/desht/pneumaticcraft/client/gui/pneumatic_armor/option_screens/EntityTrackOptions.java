@@ -31,14 +31,14 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.entity.EquipmentSlot;
 import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;

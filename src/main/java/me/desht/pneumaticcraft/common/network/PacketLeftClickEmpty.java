@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.ILeftClickableItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;

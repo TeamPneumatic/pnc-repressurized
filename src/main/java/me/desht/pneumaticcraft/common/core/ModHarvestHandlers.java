@@ -20,19 +20,14 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.harvesting.*;
-import net.minecraft.world.item.Items;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.*;
 
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
-
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CocoaBlock;
-import net.minecraft.world.level.block.NetherWartBlock;
-import net.minecraft.world.level.block.SweetBerryBushBlock;
-import net.minecraft.world.level.block.state.BlockState;
 
 public class ModHarvestHandlers {
     public static final DeferredRegister<HarvestHandler> HARVEST_HANDLERS_DEFERRED = DeferredRegister.create(HarvestHandler.class, Names.MOD_ID);

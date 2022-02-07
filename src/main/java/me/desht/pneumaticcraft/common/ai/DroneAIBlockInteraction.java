@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnIndicatorParticles;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -292,7 +292,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 if (player.distanceToSqr(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < DRONE_DEBUG_PARTICLE_RANGE_SQ) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)
-                            && handler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0) {
+                            && handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.DISPENSER.get()) > 0) {
                         NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), player);
                     }
                 }

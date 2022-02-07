@@ -17,12 +17,13 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import net.minecraft.world.entity.EquipmentSlot;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -33,12 +34,12 @@ public class AirConHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[] { EnumUpgrade.AIR_CONDITIONING };
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[] { ModUpgrades.AIR_CONDITIONING.get() };
     }
 
     @Override
-    public int getMaxInstallableUpgrades(EnumUpgrade upgrade) {
+    public int getMaxInstallableUpgrades(PNCUpgrade upgrade) {
         return 4;
     }
 

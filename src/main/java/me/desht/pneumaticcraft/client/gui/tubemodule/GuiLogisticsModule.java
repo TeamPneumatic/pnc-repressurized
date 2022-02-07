@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketTubeModuleColor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

@@ -17,18 +17,19 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
@@ -49,8 +50,8 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[] { EnumUpgrade.SPEED };
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[] { ModUpgrades.SPEED.get() };
     }
 
     @Override
@@ -75,7 +76,7 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
             if (player.zza > 0) {
                 JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
                 if (!player.isOnGround() && jbState.isEnabled() && jbState.isBuilderMode()) {
-                    player.moveRelative(commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS) / 250f, FORWARD);
+                    player.moveRelative(commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()) / 250f, FORWARD);
                 }
                 if (player.isOnGround() && !player.isInWater()) {
                     player.moveRelative((float) speedBoost, FORWARD);
@@ -95,7 +96,7 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
 
     public double getSpeedBoostFromLegs(ICommonArmorHandler commonArmorHandler) {
         if (commonArmorHandler.upgradeUsable(ArmorUpgradeRegistry.getInstance().runSpeedHandler, true)) {
-            int speedUpgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.LEGS, EnumUpgrade.SPEED);
+            int speedUpgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.SPEED.get());
             Player player = commonArmorHandler.getPlayer();
             ItemStack armorStack = player.getItemBySlot(EquipmentSlot.LEGS);
             float speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_SPEED_BOOST, 100, 0, 100) / 100f;

@@ -17,13 +17,14 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -143,7 +144,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     }
 
     @Override
-    public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
+    public Map<PNCUpgrade,Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 

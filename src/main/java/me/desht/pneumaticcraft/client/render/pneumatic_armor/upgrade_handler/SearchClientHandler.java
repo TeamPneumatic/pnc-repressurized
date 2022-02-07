@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.SearchOptions;
@@ -33,6 +32,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -82,7 +82,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
 
         if ((ticksExisted & 0xf) == 0) {
             // count up all items in tracked inventories, and cull any inventories with no matching items
-            int blockSearchCount = trackInventoryCounts(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.RANGE));
+            int blockSearchCount = trackInventoryCounts(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()));
 
             searchedItems.entrySet().removeIf(e -> !e.getKey().isAlive());
 
@@ -228,7 +228,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (searchInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.SEARCH.getItemStack());
+            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(ModUpgrades.SEARCH.get().getItemStack());
             searchInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.armor.gui.search.searchingFor"), icon,
                     HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.itemSearchStat);
             searchInfo.setMinimumContractedDimensions(0, 0);

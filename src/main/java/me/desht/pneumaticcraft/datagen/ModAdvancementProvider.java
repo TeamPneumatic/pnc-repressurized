@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.datagen;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.advancements.CustomTrigger;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
@@ -144,7 +144,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
         Advancement lubricant = itemAdvancement("lubricant_bucket", FrameType.TASK, ModItems.LUBRICANT_BUCKET.get())
                 .parent(tpp)
                 .save(t, id("lubricant_bucket"));
-        itemAdvancement("speed_upgrade", FrameType.TASK, EnumUpgrade.SPEED.getItem())
+        itemAdvancement("speed_upgrade", FrameType.TASK, ModUpgrades.SPEED.get().getItem())
                 .parent(lubricant)
                 .rewards(experience(15))
                 .save(t, id("speed_upgrade"));
@@ -229,18 +229,18 @@ public class ModAdvancementProvider extends AdvancementProvider {
                 .parent(pcb)
                 .rewards(experience(20))
                 .save(t, id("pneumatic_armor"));
-        Advancement jetBoots = customAdvancement(AdvancementTriggers.FLIGHT, "flight", FrameType.CHALLENGE, EnumUpgrade.JET_BOOTS.getItem())
+        Advancement jetBoots = customAdvancement(AdvancementTriggers.FLIGHT, "flight", FrameType.CHALLENGE, ModUpgrades.JET_BOOTS.get().getItem())
                 .parent(armor)
                 .rewards(experience(50))
                 .save(t, id("flight"));
         customAdvancement(AdvancementTriggers.FLY_INTO_WALL, "fly_into_wall", FrameType.TASK, Blocks.BRICKS)
                 .parent(jetBoots)
                 .save(t, id("fly_into_wall"));
-        customAdvancement(AdvancementTriggers.BLOCK_HACK, "block_hack", FrameType.TASK, EnumUpgrade.BLOCK_TRACKER.getItem())
+        customAdvancement(AdvancementTriggers.BLOCK_HACK, "block_hack", FrameType.TASK, ModUpgrades.BLOCK_TRACKER.get().getItem())
                 .parent(armor)
                 .rewards(experience(10))
                 .save(t, id("block_hack"));
-        customAdvancement(AdvancementTriggers.ENTITY_HACK, "entity_hack", FrameType.TASK, EnumUpgrade.ENTITY_TRACKER.getItem())
+        customAdvancement(AdvancementTriggers.ENTITY_HACK, "entity_hack", FrameType.TASK, ModUpgrades.ENTITY_TRACKER.get().getItem())
                 .parent(armor)
                 .rewards(experience(10))
                 .save(t, id("entity_hack"));

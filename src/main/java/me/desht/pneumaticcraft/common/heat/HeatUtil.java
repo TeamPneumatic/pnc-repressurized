@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
-import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Collection;
 import java.util.Locale;

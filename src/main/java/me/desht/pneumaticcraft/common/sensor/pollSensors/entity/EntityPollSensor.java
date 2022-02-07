@@ -18,24 +18,24 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 abstract class EntityPollSensor implements IPollSensorSetting {
 
     @Override
-    public Set<EnumUpgrade> getRequiredUpgrades() {
-        return ImmutableSet.of(EnumUpgrade.ENTITY_TRACKER);
+    public Set<PNCUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(ModUpgrades.ENTITY_TRACKER.get());
     }
 
     @Override

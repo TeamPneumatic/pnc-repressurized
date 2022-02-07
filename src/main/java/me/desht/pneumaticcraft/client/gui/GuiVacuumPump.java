@@ -19,21 +19,21 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
 
@@ -92,12 +92,12 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
                 String.format("%,d", vacuumHandler.getAir())));
 
         int volume = inputAirHandler.getVolume();
-        int upgrades = te.getUpgrades(EnumUpgrade.VOLUME);
+        int upgrades = te.getUpgrades(ModUpgrades.VOLUME.get());
         pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.baseVolume",
                 String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
         if (volume > inputAirHandler.getBaseVolume()) {
             pressureStatText.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
-                    .append(EnumUpgrade.VOLUME.getItemStack().getHoverName())
+                    .append(ModUpgrades.VOLUME.get().getItemStack().getHoverName())
             );
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }

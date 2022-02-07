@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;

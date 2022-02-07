@@ -17,17 +17,17 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class DroneAIAttackEntity extends MeleeAttackGoal {
     private final EntityDrone attacker;
@@ -45,7 +45,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
                 rangeMult = ((ItemGunAmmo) stack.getItem()).getRangeMultiplier(stack);
             }
         }
-        rangedAttackRange = (16 + Math.min(16, attacker.getUpgrades(EnumUpgrade.RANGE))) * rangeMult;
+        rangedAttackRange = (16 + Math.min(16, attacker.getUpgrades(ModUpgrades.RANGE.get()))) * rangeMult;
     }
 
     @Override

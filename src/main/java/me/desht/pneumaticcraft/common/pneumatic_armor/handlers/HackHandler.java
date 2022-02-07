@@ -19,11 +19,12 @@ package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
@@ -48,8 +49,8 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[] { EnumUpgrade.SECURITY};
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[] { ModUpgrades.SECURITY.get() };
     }
 
     @Override

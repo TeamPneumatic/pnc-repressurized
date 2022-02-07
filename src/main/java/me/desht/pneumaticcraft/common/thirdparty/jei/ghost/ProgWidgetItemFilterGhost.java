@@ -25,8 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
-
 public class ProgWidgetItemFilterGhost implements IGhostIngredientHandler<GuiProgWidgetItemFilter> {
     @Override
     public <I> List<Target<I>> getTargets(GuiProgWidgetItemFilter gui, I ingredient, boolean doStart) {

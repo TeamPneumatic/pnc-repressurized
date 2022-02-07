@@ -25,11 +25,11 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.sounds.SoundSource;
 
 public class MovingSoundMinigun extends AbstractTickableSoundInstance {
     private final Entity entity;

@@ -21,10 +21,10 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class MovingSoundAirLeak extends AbstractTickableSoundInstance {
     private final BlockEntity te;

@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.item;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerJackhammerSetup;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -137,7 +138,7 @@ public class ItemJackHammer extends ItemPressurizable
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         DrillBitType bitType = getDrillBit(stack);
-        int speed = bitType == DrillBitType.NONE ? 0 : UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.SPEED);
+        int speed = bitType == DrillBitType.NONE ? 0 : UpgradableItemUtils.getUpgrades(stack, ModUpgrades.SPEED.get());
         return getAir(stack) > 0f ? bitType.getBaseEfficiency() * SPEED_MULT[speed] : 1;
     }
 
@@ -164,7 +165,7 @@ public class ItemJackHammer extends ItemPressurizable
     @Override
     public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
         if (entityLiving instanceof Player && ((Player) entityLiving).isCreative()) return true;
-        int speed = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.SPEED);
+        int speed = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.SPEED.get());
         stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new)
                 .addAir(-PneumaticValues.USAGE_JACKHAMMER * speed);
         return true;
@@ -186,7 +187,7 @@ public class ItemJackHammer extends ItemPressurizable
                 itemstack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
                     DigMode digMode = ItemJackHammer.getDigMode(itemstack);
 
-                    List<Integer> upgrades = UpgradableItemUtils.getUpgradeList(itemstack, EnumUpgrade.SPEED, EnumUpgrade.MAGNET);
+                    List<Integer> upgrades = UpgradableItemUtils.getUpgradeList(itemstack, ModUpgrades.SPEED.get(), ModUpgrades.MAGNET.get());
                     int speed = upgrades.get(0);
                     boolean magnet = upgrades.get(1) > 0 && digMode.isVeinMining();
 
@@ -352,7 +353,7 @@ public class ItemJackHammer extends ItemPressurizable
     }
 
     @Override
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 

@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -40,15 +40,11 @@ public class ProgWidgetDroneConditionUpgrades extends ProgWidgetDroneCondition i
 
     @Override
     protected int getCount(IDroneBase drone, IProgWidget widget) {
-        int count = 0;
-
-        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-            if (drone.getUpgrades(upgrade) > 0) {
-                if (((IItemFiltering) widget).isItemValidForFilters(upgrade.getItemStack())) {
-                    count += drone.getUpgrades(upgrade);
-                }
-            }
-        }
+        int count = ModUpgrades.UPGRADES.get().getValues().stream()
+                .filter(upgrade -> drone.getUpgrades(upgrade) > 0)
+                .filter(upgrade -> widget instanceof IItemFiltering f && f.isItemValidForFilters(upgrade.getItemStack()))
+                .mapToInt(drone::getUpgrades)
+                .sum();
 
         maybeRecordMeasuredVal(drone, count);
         return count;

@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.common.entity.semiblock.EntitySpawnerAgitator;
 import me.desht.pneumaticcraft.common.hacking.block.HackableMobSpawner;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;

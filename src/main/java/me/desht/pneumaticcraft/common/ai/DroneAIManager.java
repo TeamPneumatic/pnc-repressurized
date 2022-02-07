@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
@@ -349,7 +349,7 @@ public class DroneAIManager implements IVariableProvider {
     }
     
     private void pickupItemsIfMagnet() {
-        int magnetUpgrades = drone.getUpgrades(EnumUpgrade.MAGNET);
+        int magnetUpgrades = drone.getUpgrades(ModUpgrades.MAGNET.get());
         // drone must also have an active program
         if (magnetUpgrades > 0 && !drone.getProgWidgets().isEmpty()) {
             int range = Math.min(6, 1 + magnetUpgrades);

@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.core.BlockPos;
 
 import java.util.Collections;
 import java.util.HashSet;

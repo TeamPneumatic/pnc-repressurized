@@ -18,11 +18,12 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Set;
 
@@ -34,8 +35,8 @@ public class WorldRainingSensor implements IPollSensorSetting {
     }
 
     @Override
-    public Set<EnumUpgrade> getRequiredUpgrades() {
-        return ImmutableSet.of(EnumUpgrade.DISPENSER);
+    public Set<PNCUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(ModUpgrades.DISPENSER.get());
     }
 
     @Override

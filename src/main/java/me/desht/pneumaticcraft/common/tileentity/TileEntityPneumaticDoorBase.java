@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
@@ -162,7 +162,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        rangeSq = IntMath.pow(TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(EnumUpgrade.RANGE), 2);
+        rangeSq = IntMath.pow(TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(ModUpgrades.RANGE.get()), 2);
     }
 
     private boolean shouldOpen() {

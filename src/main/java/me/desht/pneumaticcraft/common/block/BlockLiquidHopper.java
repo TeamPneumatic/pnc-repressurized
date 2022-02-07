@@ -17,21 +17,21 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -82,7 +82,7 @@ public class BlockLiquidHopper extends BlockOmnidirectionalHopper implements Ent
 
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
-            int n = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.CREATIVE);
+            int n = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.CREATIVE.get());
             return n > 0 ? 0xFFDB46CF : 0xFF2b2727;
         }
 

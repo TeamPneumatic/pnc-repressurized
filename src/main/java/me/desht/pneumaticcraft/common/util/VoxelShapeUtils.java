@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.HashSet;
 import java.util.Set;

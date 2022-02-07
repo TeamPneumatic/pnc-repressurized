@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 
 public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
 

@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
@@ -211,7 +211,7 @@ public class ItemAmadronTablet extends ItemPressurizable
     }
 
     @Override
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 

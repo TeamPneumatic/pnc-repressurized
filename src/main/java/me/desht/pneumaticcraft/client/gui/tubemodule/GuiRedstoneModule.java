@@ -29,11 +29,11 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.ArrayList;
 import java.util.List;

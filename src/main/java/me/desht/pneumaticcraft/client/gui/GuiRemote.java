@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 
 public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEntityBase> {
 

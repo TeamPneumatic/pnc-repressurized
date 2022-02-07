@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
@@ -61,7 +61,7 @@ public class DroneGoToChargingStation extends Goal {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", station.getBlockPos());
                         } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.notEnoughPressure", station.getBlockPos());
-                        } else if (station.getUpgrades(EnumUpgrade.DISPENSER) == 0) {
+                        } else if (station.getUpgrades(ModUpgrades.DISPENSER.get()) == 0) {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.noDispenserUpgrades", station.getBlockPos());
                         } else {
                             validChargingStations.add(station);
@@ -95,7 +95,7 @@ public class DroneGoToChargingStation extends Goal {
      */
     @Override
     public boolean canContinueToUse() {
-        if (curCharger.getUpgrades(EnumUpgrade.DISPENSER) == 0 || curCharger.isRemoved()) {
+        if (curCharger.getUpgrades(ModUpgrades.DISPENSER.get()) == 0 || curCharger.isRemoved()) {
             isExecuting = false;
             return false;
         } else if (!drone.getPathNavigator().isGoingToTeleport() && (drone.getNavigation().getPath() == null || drone.getNavigation().getPath().isDone())) {

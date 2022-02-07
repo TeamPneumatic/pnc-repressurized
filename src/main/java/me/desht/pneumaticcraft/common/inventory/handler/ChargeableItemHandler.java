@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory.handler;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -59,12 +59,12 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
 
     private boolean isUnique(int slot, ItemStack stack) {
         for (int i = 0; i < getSlots(); i++) {
-            if (i != slot && EnumUpgrade.from(stack) == EnumUpgrade.from(getStackInSlot(i))) return false;
+            if (i != slot && PNCUpgrade.from(stack) == PNCUpgrade.from(getStackInSlot(i))) return false;
         }
         return true;
     }
 
     private boolean isApplicable(ItemStack stack) {
-        return ApplicableUpgradesDB.getInstance().getMaxUpgrades(getChargingStack().getItem(), EnumUpgrade.from(stack)) > 0;
+        return ApplicableUpgradesDB.getInstance().getMaxUpgrades(getChargingStack().getItem(), PNCUpgrade.from(stack)) > 0;
     }
 }

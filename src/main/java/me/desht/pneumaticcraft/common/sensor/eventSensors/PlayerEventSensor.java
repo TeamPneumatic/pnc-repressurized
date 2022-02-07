@@ -18,8 +18,9 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -35,16 +36,19 @@ abstract class PlayerEventSensor implements IEventSensorSetting {
     }
 
     @Override
-    public Set<EnumUpgrade> getRequiredUpgrades() {
-        return ImmutableSet.of(EnumUpgrade.ENTITY_TRACKER);
+    public Set<PNCUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(ModUpgrades.ENTITY_TRACKER.get());
     }
 
     @Override
     public int emitRedstoneOnEvent(Event event, BlockEntity sensor, int range, String textboxText) {
-        if (event instanceof PlayerEvent) {
-            Player player = ((PlayerEvent) event).getPlayer();
-            if (Math.abs(player.getX() - sensor.getBlockPos().getX() + 0.5D) < range + 0.5D && Math.abs(player.getY() - sensor.getBlockPos().getY() + 0.5D) < range + 0.5D && Math.abs(player.getZ() - sensor.getBlockPos().getZ() + 0.5D) < range + 0.5D) {
-                return emitRedstoneOnEvent((PlayerEvent) event, sensor, range);
+        if (event instanceof PlayerEvent playerEvent) {
+            Player player = playerEvent.getPlayer();
+            if (Math.abs(player.getX() - sensor.getBlockPos().getX() + 0.5D) < range + 0.5D
+                    && Math.abs(player.getY() - sensor.getBlockPos().getY() + 0.5D) < range + 0.5D
+                    && Math.abs(player.getZ() - sensor.getBlockPos().getZ() + 0.5D) < range + 0.5D)
+            {
+                return emitRedstoneOnEvent(playerEvent, sensor, range);
             }
         }
         return 0;

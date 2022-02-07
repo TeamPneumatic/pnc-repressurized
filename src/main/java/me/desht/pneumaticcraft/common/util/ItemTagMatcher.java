@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.collect.Sets;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.Set;

@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatExtractionTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.Direction;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 

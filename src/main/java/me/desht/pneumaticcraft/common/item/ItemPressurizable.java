@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.core.NonNullList;
@@ -119,7 +119,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, Vanis
 
     @Override
     public int getVolumeUpgrades(ItemStack stack) {
-        return UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.VOLUME);
+        return UpgradableItemUtils.getUpgrades(stack, ModUpgrades.VOLUME.get());
     }
 
     @Override

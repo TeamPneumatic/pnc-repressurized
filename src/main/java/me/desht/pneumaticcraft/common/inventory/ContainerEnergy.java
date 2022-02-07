@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.network.SyncedField;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 

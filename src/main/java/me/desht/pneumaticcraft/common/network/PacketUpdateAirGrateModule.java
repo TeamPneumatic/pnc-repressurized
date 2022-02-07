@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Received on: SERVER

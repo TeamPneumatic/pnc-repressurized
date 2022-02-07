@@ -29,8 +29,6 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.Collections;
 import java.util.List;
 
-import mezz.jei.api.gui.handlers.IGhostIngredientHandler.Target;
-
 public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronAddTrade> {
 
     @Override

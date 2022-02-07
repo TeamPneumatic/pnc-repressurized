@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.widget.*;
@@ -120,9 +120,9 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
         String[] folders = te.getSensorSetting().split("/");
         if (folders.length == 1 && !folders[0].isEmpty()) {
-            Set<EnumUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
+            Set<PNCUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
             int curX = 92;
-            for (EnumUpgrade upgrade : requiredUpgrades) {
+            for (PNCUpgrade upgrade : requiredUpgrades) {
                 GuiUtils.renderItemStack(matrixStack, upgrade.getItemStack(), curX, 20);
                 curX += 18;
             }
@@ -163,7 +163,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            minecraft.player.closeContainer();
+            ClientUtils.getClientPlayer().closeContainer();
         }
 
         return textField.keyPressed(keyCode, scanCode, modifiers)
@@ -227,9 +227,9 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             int buttonWidth = 98;
             int buttonHeight = 20;
             if (te.getSensorSetting().isEmpty()) {
-                Set<EnumUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(buttonText);
+                Set<PNCUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(buttonText);
                 WidgetButtonExtended button = new WidgetButtonExtended(buttonX, buttonY, buttonWidth, buttonHeight, "").withTag("set:" + buttonID);
-                button.setRenderStacks(requiredUpgrades.stream().map(EnumUpgrade::getItemStack).toArray(ItemStack[]::new));
+                button.setRenderStacks(requiredUpgrades.stream().map(PNCUpgrade::getItemStack).toArray(ItemStack[]::new));
                 button.active = (te.sensorStatus == SensorStatus.OK || te.sensorStatus == SensorStatus.NO_SENSOR)
                         && te.areGivenUpgradesInserted(requiredUpgrades);
                 addButtonLocal(button);
@@ -293,8 +293,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
     @Override
     public void containerTick() {
-        super.containerTick();
-
         if (firstUpdate) {
             if (textField.isVisible()) {
                 textField.setValue(te.getText(0));
@@ -304,6 +302,8 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
                 comboBox.setResponder(s -> sendDelayed(5));
             }
         }
+
+        super.containerTick();
 
         if (te.getSensorSetting().isEmpty() && ticksExisted++ > 5) {
             ticksExisted = 0;

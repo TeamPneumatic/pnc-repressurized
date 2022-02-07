@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 
 import java.util.ArrayList;
 import java.util.HashMap;

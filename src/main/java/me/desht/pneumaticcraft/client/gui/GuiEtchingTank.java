@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.common.inventory.ContainerEtchingTank;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
 

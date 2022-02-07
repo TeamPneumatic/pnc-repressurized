@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

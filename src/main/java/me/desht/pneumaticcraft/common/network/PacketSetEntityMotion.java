@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
 

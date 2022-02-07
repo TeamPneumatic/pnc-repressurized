@@ -18,34 +18,35 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.NullOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
-import com.mojang.blaze3d.platform.Window;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,14 +162,14 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
                 if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, i) || slot == EquipmentSlot.HEAD && i == 0) {
                     IArmorUpgradeHandler<?> handler = upgradeHandlers.get(i);
                     if (inInitPhase
-                            || ItemPneumaticArmor.isPneumaticArmorPiece(Minecraft.getInstance().player, slot)
+                            || ItemPneumaticArmor.isPneumaticArmorPiece(ClientUtils.getClientPlayer(), slot)
                             || handler instanceof CoreComponentsHandler) {
                         IArmorUpgradeClientHandler<?> clientHandler = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler.getID());
                         IOptionPage optionPage = clientHandler.getGuiOptionsPage(this);
                         if (optionPage != null) {
                             List<ItemStack> stacks = new ArrayList<>();
                             stacks.add(ARMOR_STACKS[handler.getEquipmentSlot().getIndex()]);
-                            Arrays.stream(handler.getRequiredUpgrades()).map(EnumUpgrade::getItemStack).forEach(stacks::add);
+                            Arrays.stream(handler.getRequiredUpgrades()).map(PNCUpgrade::getItemStack).forEach(stacks::add);
                             upgradeOptions.add(new UpgradeOption(optionPage, handler.getID(), stacks.toArray(new ItemStack[0])));
                         }
                     }
@@ -253,15 +254,8 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         return false;
     }
 
-    private static class UpgradeOption {
-        private final IOptionPage page;
-        private final ResourceLocation upgradeID;
-        private final ItemStack[] icons;
-
-        UpgradeOption(IOptionPage page, ResourceLocation upgradeID, ItemStack... icons) {
-            this.page = page;
-            this.upgradeID = upgradeID;
-            this.icons = icons;
-        }
+    private record UpgradeOption(IOptionPage page,
+                                 ResourceLocation upgradeID,
+                                 ItemStack... icons) {
     }
 }

@@ -17,9 +17,11 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
@@ -29,17 +31,15 @@ import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import com.mojang.blaze3d.platform.Window;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
-import com.mojang.math.Matrix4f;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.phys.Vec3;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;

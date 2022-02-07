@@ -55,7 +55,7 @@ public abstract class ActionWidget<W extends AbstractWidget> {
 
     public ActionWidget<?> copy() {
         try {
-            ActionWidget<?> widget = this.getClass().newInstance();
+            ActionWidget<?> widget = this.getClass().getDeclaredConstructor().newInstance();
             widget.readFromNBT(this.toNBT(0, 0), 0, 0);
             return widget;
         } catch (Exception e) {

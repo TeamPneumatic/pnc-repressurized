@@ -57,13 +57,13 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
 
     @Override
     public void containerTick() {
-        super.containerTick();
-
         if (firstUpdate) {
             // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
             slider.setValue(te.getTargetRange());
             slider.updateSlider();
         }
+
+        super.containerTick();
 
         rangeLabel.setMessage(xlate("pneumaticcraft.message.misc.range", te.getRange()));
     }

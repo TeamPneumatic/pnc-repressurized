@@ -21,6 +21,8 @@ import me.desht.pneumaticcraft.api.item.*;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.resources.language.I18n;
@@ -29,22 +31,38 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public enum ItemRegistry implements IItemRegistry {
     INSTANCE;
 
     private final List<Item> inventoryItemBlacklist = new ArrayList<>();
     public final List<IInventoryItem> inventoryItems = new ArrayList<>();
-    private final Map<EnumUpgrade, List<IUpgradeAcceptor>> upgradeToAcceptors = new EnumMap<>(EnumUpgrade.class);
+    private final Map<PNCUpgrade, List<IUpgradeAcceptor>> upgradeToAcceptors = new ConcurrentHashMap<>();
     private final List<IMagnetSuppressor> magnetSuppressors = new ArrayList<>();
     private final List<ItemVolumeModifier> volumeModifiers = new ArrayList<>();
 
     public static ItemRegistry getInstance() {
         return INSTANCE;
+    }
+
+    public void registerAllPNCUpgradeAcceptors() {
+        for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
+            if (block.get() instanceof IUpgradeAcceptor a) {
+                registerUpgradeAcceptor(a);
+            }
+        }
+        for (RegistryObject<Item> item : ModItems.ITEMS.getEntries()) {
+            if (item.get() instanceof IUpgradeAcceptor a) {
+                registerUpgradeAcceptor(a);
+            }
+        }
     }
 
     @Override
@@ -55,9 +73,9 @@ public enum ItemRegistry implements IItemRegistry {
 
     @Override
     public void registerUpgradeAcceptor(@Nonnull IUpgradeAcceptor upgradeAcceptor) {
-        Map<EnumUpgrade,Integer> applicableUpgrades = upgradeAcceptor.getApplicableUpgrades();
+        Map<PNCUpgrade,Integer> applicableUpgrades = upgradeAcceptor.getApplicableUpgrades();
         if (applicableUpgrades != null) {
-            for (EnumUpgrade applicableUpgrade : applicableUpgrades.keySet()) {
+            for (PNCUpgrade applicableUpgrade : applicableUpgrades.keySet()) {
                 List<IUpgradeAcceptor> acceptors = upgradeToAcceptors.computeIfAbsent(applicableUpgrade, k -> new ArrayList<>());
                 acceptors.add(upgradeAcceptor);
             }
@@ -65,7 +83,12 @@ public enum ItemRegistry implements IItemRegistry {
     }
 
     @Override
-    public void addTooltip(EnumUpgrade upgrade, List<Component> tooltip) {
+    public Item makeUpgradeItem(RegistryObject<PNCUpgrade> upgrade, int tier) {
+        return new ItemUpgrade(upgrade, tier);
+    }
+
+    @Override
+    public void addTooltip(PNCUpgrade upgrade, List<Component> tooltip) {
         List<IUpgradeAcceptor> acceptors = upgradeToAcceptors.get(upgrade);
         if (acceptors != null) {
             List<String> tempList = new ArrayList<>(acceptors.size());

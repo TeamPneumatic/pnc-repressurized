@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -33,8 +33,8 @@ public class CoreComponentsHandler extends BaseArmorUpgradeHandler<IArmorExtensi
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[0];
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[0];
     }
 
     @Override

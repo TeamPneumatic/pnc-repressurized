@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
@@ -127,7 +127,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
                 didWork = true;
             }
         }
-        if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
             tryEject();
         }
         checkStateUpdates(stack, didWork);
@@ -298,7 +298,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     @Override
     public Light provideLight() {
         if (light == null && areLightsOn) {
-            int radius = Math.max(8, 4 + getUpgrades(EnumUpgrade.SPEED));
+            int radius = Math.max(8, 4 + getUpgrades(ModUpgrades.SPEED.get()));
             light = Light.builder().pos(pos()).color(0.2f, 0.0f, 1.0f).radius(radius).build();
         } else if (!areLightsOn) {
             light = null;

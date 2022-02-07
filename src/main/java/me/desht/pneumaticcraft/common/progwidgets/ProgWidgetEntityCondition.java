@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 

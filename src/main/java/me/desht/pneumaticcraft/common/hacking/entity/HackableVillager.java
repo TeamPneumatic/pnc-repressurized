@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Villager;
@@ -26,8 +28,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 
 import java.util.List;
 

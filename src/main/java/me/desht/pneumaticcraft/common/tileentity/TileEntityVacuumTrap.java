@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -27,6 +26,7 @@ import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumTrap;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreItemHandler;
@@ -112,7 +112,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
 
         xpTank.tick();
 
-        rangeManager.setRange(3 + getUpgrades(EnumUpgrade.RANGE));
+        rangeManager.setRange(3 + getUpgrades(ModUpgrades.RANGE.get()));
     }
 
     @Override

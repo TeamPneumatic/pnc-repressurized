@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 
 public class DroneAIEntityExport<W extends ProgWidgetAreaItemBase> extends DroneAIBlockInteraction<W> {
     public DroneAIEntityExport(IDroneBase drone, W progWidget) {

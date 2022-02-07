@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;

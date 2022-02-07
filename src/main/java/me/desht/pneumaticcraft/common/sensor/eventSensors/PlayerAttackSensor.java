@@ -35,9 +35,6 @@ public class PlayerAttackSensor extends PlayerEventSensor {
 
     @Override
     public int emitRedstoneOnEvent(PlayerEvent event, BlockEntity sensor, int range) {
-        if (event instanceof AttackEntityEvent) {
-            return 15;
-        }
-        return 0;
+        return event instanceof AttackEntityEvent ? 15 : 0;
     }
 }

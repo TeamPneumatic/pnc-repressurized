@@ -19,8 +19,9 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -40,8 +41,8 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
     }
 
     @Override
-    public Set<EnumUpgrade> getRequiredUpgrades() {
-        return ImmutableSet.of(EnumUpgrade.DISPENSER);
+    public Set<PNCUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(ModUpgrades.DISPENSER.get());
     }
 
     @Override

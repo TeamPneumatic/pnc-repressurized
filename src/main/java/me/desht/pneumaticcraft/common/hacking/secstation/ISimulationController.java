@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 
 public interface ISimulationController {
     /**

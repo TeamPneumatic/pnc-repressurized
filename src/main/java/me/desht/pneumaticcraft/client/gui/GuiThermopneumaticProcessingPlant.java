@@ -31,12 +31,12 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant.TPProblem;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;

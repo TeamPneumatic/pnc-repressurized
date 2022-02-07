@@ -20,13 +20,14 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -207,7 +208,7 @@ public abstract class TileEntityBase extends BlockEntity
                 if (logic != null) logic.tick();
             }
 
-            if (this instanceof IAutoFluidEjecting ejector && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+            if (this instanceof IAutoFluidEjecting ejector && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
                 ejector.autoExportFluid(this);
             }
 
@@ -387,7 +388,7 @@ public abstract class TileEntityBase extends BlockEntity
         return state.getBlock() instanceof BlockPneumaticCraft b ? b.getRotation(state) : Direction.NORTH;
     }
 
-    public int getUpgrades(EnumUpgrade upgrade) {
+    public int getUpgrades(PNCUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
     }
 
@@ -482,7 +483,7 @@ public abstract class TileEntityBase extends BlockEntity
     }
 
     @Override
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 
@@ -597,8 +598,8 @@ public abstract class TileEntityBase extends BlockEntity
      */
     @Override
     public void onUpgradesChanged() {
-        actualSpeedMult = (float) Math.pow(ConfigHelper.common().machines.speedUpgradeSpeedMultiplier.get(), Math.min(10, getUpgrades(EnumUpgrade.SPEED)));
-        actualUsageMult = (float) Math.pow(ConfigHelper.common().machines.speedUpgradeUsageMultiplier.get(), Math.min(10, getUpgrades(EnumUpgrade.SPEED)));
+        actualSpeedMult = (float) Math.pow(ConfigHelper.common().machines.speedUpgradeSpeedMultiplier.get(), Math.min(10, getUpgrades(ModUpgrades.SPEED.get())));
+        actualUsageMult = (float) Math.pow(ConfigHelper.common().machines.speedUpgradeUsageMultiplier.get(), Math.min(10, getUpgrades(ModUpgrades.SPEED.get())));
     }
 
     public UpgradeCache getUpgradeCache() {
@@ -649,20 +650,20 @@ public abstract class TileEntityBase extends BlockEntity
 
         @Override
         protected int getStackLimit(int slot, @Nonnull ItemStack stack) {
-            EnumUpgrade upgrade = EnumUpgrade.from(stack);
+            PNCUpgrade upgrade = PNCUpgrade.from(stack);
             if (upgrade == null) return 0;
             return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te, upgrade);
         }
 
         private boolean isUnique(int slot, ItemStack stack) {
             for (int i = 0; i < getSlots(); i++) {
-                if (i != slot && EnumUpgrade.from(stack) == EnumUpgrade.from(getStackInSlot(i))) return false;
+                if (i != slot && PNCUpgrade.from(stack) == PNCUpgrade.from(getStackInSlot(i))) return false;
             }
             return true;
         }
 
         private boolean isApplicable(ItemStack stack) {
-            EnumUpgrade upgrade = EnumUpgrade.from(stack);
+            PNCUpgrade upgrade = PNCUpgrade.from(stack);
             return ApplicableUpgradesDB.getInstance().getMaxUpgrades(TileEntityBase.this, upgrade) > 0;
         }
 
@@ -670,7 +671,7 @@ public abstract class TileEntityBase extends BlockEntity
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
 
-            upgradeCache.invalidate();
+            upgradeCache.invalidateCache();
         }
     }
 }

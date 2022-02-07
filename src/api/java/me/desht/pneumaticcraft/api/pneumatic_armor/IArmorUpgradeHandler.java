@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -65,7 +65,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      *
      * @return an array of required upgrades
      */
-    EnumUpgrade[] getRequiredUpgrades();
+    PNCUpgrade[] getRequiredUpgrades();
 
     /**
      * Get the maximum number of the given upgrade which may be installed.
@@ -73,7 +73,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      * @param upgrade an upgrade
      * @return the maximum installable amount of this upgrade
      */
-    default int getMaxInstallableUpgrades(EnumUpgrade upgrade) {
+    default int getMaxInstallableUpgrades(PNCUpgrade upgrade) {
         return 1;
     }
 

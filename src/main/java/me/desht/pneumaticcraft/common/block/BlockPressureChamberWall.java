@@ -20,13 +20,13 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 import java.util.Locale;
 

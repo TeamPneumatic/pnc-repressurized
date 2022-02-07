@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -87,10 +87,10 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         int notExported = maxItems;
         if (inv.isPresent()) {
             notExported = inv.map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
-        } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
+        } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             notExported = tryEntityExport(maxItems, outputDir.getOpposite());
         }
-        if (notExported == maxItems && ConfigHelper.common().machines.omniHopperDispenser.get() && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (notExported == maxItems && ConfigHelper.common().machines.omniHopperDispenser.get() && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
             notExported = exportToInventory(new DropInWorldHandler(getLevel(), getBlockPos(), outputDir), maxItems);
         }
         return notExported < maxItems;
@@ -153,7 +153,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         if (cap.isPresent()) {
             int imported = cap.map(otherHandler -> importFromInventory(otherHandler, maxItems, false)).orElse(0);
             return imported > 0;
-        } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0 && tryEntityImport(maxItems) > 0) {
+        } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0 && tryEntityImport(maxItems) > 0) {
             return true;
         }
 
@@ -238,7 +238,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     @Override
     boolean shouldScanForEntities(Direction dir) {
         if (Block.canSupportCenter(nonNullLevel(), worldPosition.relative(dir), dir.getOpposite())
-                || dir == getRotation() && getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
+                || dir == getRotation() && getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) == 0) {
             return false;
         }
         BlockEntity te = getCachedNeighbor(dir);
@@ -247,7 +247,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
     @Override
     public int getItemTransferInterval() {
-        return 8 / (1 << getUpgrades(EnumUpgrade.SPEED));
+        return 8 / (1 << getUpgrades(ModUpgrades.SPEED.get()));
     }
 
     @Override

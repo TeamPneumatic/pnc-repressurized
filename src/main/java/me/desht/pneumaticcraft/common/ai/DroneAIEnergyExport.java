@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 

@@ -24,7 +24,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.BlockTrackOptions;
@@ -36,6 +35,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
@@ -83,7 +83,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
-        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.RANGE), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
         long now = System.nanoTime();
@@ -342,7 +342,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItemStack());
+            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(ModUpgrades.BLOCK_TRACKER.get().getItemStack());
             blockTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.blockTracker.info.trackedBlocks"),
                     icon, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
             blockTrackInfo.setMinimumContractedDimensions(0, 0);

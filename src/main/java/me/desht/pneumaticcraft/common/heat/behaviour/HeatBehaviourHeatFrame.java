@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityHeatFrame;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicTicking;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

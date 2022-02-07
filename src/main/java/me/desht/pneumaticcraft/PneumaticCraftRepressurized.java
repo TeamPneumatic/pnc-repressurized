@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
@@ -40,6 +40,7 @@ import me.desht.pneumaticcraft.common.fluid.FluidSetup;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
@@ -56,8 +57,6 @@ import me.desht.pneumaticcraft.datagen.loot.ModLootFunctions;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -75,7 +74,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.registries.RegistryObject;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
@@ -126,7 +124,6 @@ public class PneumaticCraftRepressurized {
         ModMenuTypes.MENU_TYPES.register(modBus);
         ModParticleTypes.PARTICLES.register(modBus);
         ModRecipes.RECIPES.register(modBus);
-//        ModDecorators.DECORATORS.register(modBus);
         ModFeatures.FEATURES.register(modBus);
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
@@ -135,6 +132,7 @@ public class PneumaticCraftRepressurized {
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);
         ModHoeHandlers.HOE_HANDLERS_DEFERRED.register(modBus);
         ModProgWidgets.PROG_WIDGETS_DEFERRED.register(modBus);
+        ModUpgrades.UPGRADES_DEFERRED.register(modBus);
     }
 
     private void modConstructSetup(FMLConstructModEvent event) {
@@ -154,6 +152,7 @@ public class PneumaticCraftRepressurized {
         ModNameCache.init();
         HeatBehaviourManager.getInstance().init();
         PlayerFilter.registerDefaultMatchers();
+        ItemRegistry.getInstance().registerAllPNCUpgradeAcceptors();
 
         event.enqueueWork(() -> {
             ModWorldGen.registerConfiguredFeatures();
@@ -164,17 +163,6 @@ public class PneumaticCraftRepressurized {
             DispenserBlock.registerBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
 
             ThirdPartyManager.instance().postInit();
-
-            for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
-                if (block.get() instanceof IUpgradeAcceptor) {
-                    PneumaticRegistry.getInstance().getItemRegistry().registerUpgradeAcceptor((IUpgradeAcceptor) block.get());
-                }
-            }
-            for (RegistryObject<Item> item : ModItems.ITEMS.getEntries()) {
-                if (item.get() instanceof IUpgradeAcceptor) {
-                    PneumaticRegistry.getInstance().getItemRegistry().registerUpgradeAcceptor((IUpgradeAcceptor) item.get());
-                }
-            }
         });
     }
 
@@ -184,6 +172,7 @@ public class PneumaticCraftRepressurized {
         event.register(IAirHandlerMachine.class);
         event.register(IHeatExchangerLogic.class);
         event.register(IHacking.class);
+        event.register(IUpgradeItem.class);
     }
 
     private void addReloadListeners(AddReloadListenerEvent event) {

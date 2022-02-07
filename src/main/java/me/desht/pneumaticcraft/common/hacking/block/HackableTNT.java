@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import net.minecraft.world.entity.item.PrimedTnt;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 

@@ -19,9 +19,10 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.tubes.*;
+import me.desht.pneumaticcraft.common.core.ModUpgrades.BuiltinUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.*;
 import me.desht.pneumaticcraft.common.fluid.FluidPlastic;
 import me.desht.pneumaticcraft.common.item.*;
@@ -236,12 +237,35 @@ public class ModItems {
             ModFluids.BIODIESEL);
 
     static {
-        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-            register(upgrade);
-        }
+        // no values assigned; items can be retrieved via PNCUpgrade methods
+        registerUpgrade(ModUpgrades.VOLUME, BuiltinUpgrade.VOLUME);
+        registerUpgrade(ModUpgrades.DISPENSER, BuiltinUpgrade.DISPENSER);
+        registerUpgrade(ModUpgrades.ITEM_LIFE, BuiltinUpgrade.ITEM_LIFE);
+        registerUpgrade(ModUpgrades.ENTITY_TRACKER, BuiltinUpgrade.ENTITY_TRACKER);
+        registerUpgrade(ModUpgrades.BLOCK_TRACKER, BuiltinUpgrade.BLOCK_TRACKER);
+        registerUpgrade(ModUpgrades.SPEED, BuiltinUpgrade.SPEED);
+        registerUpgrade(ModUpgrades.SEARCH, BuiltinUpgrade.SEARCH);
+        registerUpgrade(ModUpgrades.COORDINATE_TRACKER, BuiltinUpgrade.COORDINATE_TRACKER);
+        registerUpgrade(ModUpgrades.RANGE, BuiltinUpgrade.RANGE);
+        registerUpgrade(ModUpgrades.SECURITY, BuiltinUpgrade.SECURITY);
+        registerUpgrade(ModUpgrades.MAGNET, BuiltinUpgrade.MAGNET);
+        registerUpgrade(ModUpgrades.THAUMCRAFT, BuiltinUpgrade.THAUMCRAFT);
+        registerUpgrade(ModUpgrades.CHARGING, BuiltinUpgrade.CHARGING);
+        registerUpgrade(ModUpgrades.ARMOR, BuiltinUpgrade.ARMOR);
+        registerUpgrade(ModUpgrades.JET_BOOTS, BuiltinUpgrade.JET_BOOTS);
+        registerUpgrade(ModUpgrades.NIGHT_VISION, BuiltinUpgrade.NIGHT_VISION);
+        registerUpgrade(ModUpgrades.SCUBA, BuiltinUpgrade.SCUBA);
+        registerUpgrade(ModUpgrades.CREATIVE, BuiltinUpgrade.CREATIVE);
+        registerUpgrade(ModUpgrades.AIR_CONDITIONING, BuiltinUpgrade.AIR_CONDITIONING);
+        registerUpgrade(ModUpgrades.INVENTORY, BuiltinUpgrade.INVENTORY);
+        registerUpgrade(ModUpgrades.JUMPING, BuiltinUpgrade.JUMPING);
+        registerUpgrade(ModUpgrades.FLIPPERS, BuiltinUpgrade.FLIPPERS);
+        registerUpgrade(ModUpgrades.STANDBY, BuiltinUpgrade.STANDBY);
+        registerUpgrade(ModUpgrades.MINIGUN, BuiltinUpgrade.MINIGUN);
+        registerUpgrade(ModUpgrades.RADIATION_SHIELDING, BuiltinUpgrade.RADIATION_SHIELDING);
     }
 
-   /* -----------------------*/
+    /* -----------------------*/
 
     public static Item.Properties defaultProps() {
         return new Item.Properties().tab(ItemGroups.PNC_CREATIVE_TAB);
@@ -283,9 +307,13 @@ public class ModItems {
         return register(name, () -> new Item(defaultProps().food(food)));
     }
 
-    private static void register(EnumUpgrade upgrade) {
-        IntStream.range(1, upgrade.getMaxTier() + 1).forEach(
-                tier -> register(upgrade.getItemName(tier), () -> new ItemMachineUpgrade(upgrade, tier))
+    private static void registerUpgrade(RegistryObject<PNCUpgrade> upgrade, BuiltinUpgrade upgradeDetails) {
+        IntStream.range(1, upgradeDetails.getMaxTier() + 1).forEach(
+                tier -> {
+                    String baseName = upgradeDetails.getName() + "_upgrade";
+                    String itemName = upgradeDetails.getMaxTier() > 1 ? baseName + "_" + tier : baseName;
+                    register(itemName, () -> new ItemUpgrade(upgrade, tier));
+                }
         );
     }
 

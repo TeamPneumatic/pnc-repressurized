@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.common.inventory.ContainerFluidTank;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 public class GuiFluidTank extends GuiPneumaticContainerBase<ContainerFluidTank, TileEntityFluidTank> {
     public GuiFluidTank(ContainerFluidTank container, Inventory inv, Component displayString) {

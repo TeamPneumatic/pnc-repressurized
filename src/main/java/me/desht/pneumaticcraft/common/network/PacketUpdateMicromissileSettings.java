@@ -23,13 +23,13 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Objects;

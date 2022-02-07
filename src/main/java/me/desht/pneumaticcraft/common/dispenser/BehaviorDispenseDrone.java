@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.dispenser;
 
 import me.desht.pneumaticcraft.common.item.ItemDrone;
-import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
-import net.minecraft.core.BlockSource;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.BlockSource;
+import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.DispenserBlock;
 
 public class BehaviorDispenseDrone extends DefaultDispenseItemBehavior {
     @Override

@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.common.core.ModHarvestHandlers;
 import me.desht.pneumaticcraft.common.core.ModHoeHandlers;
 import me.desht.pneumaticcraft.common.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 import java.util.Optional;

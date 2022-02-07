@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.ArrayList;
 import java.util.Collections;

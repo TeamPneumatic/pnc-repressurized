@@ -17,21 +17,22 @@
 
 package me.desht.pneumaticcraft.common.util.upgrade;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
+import me.desht.pneumaticcraft.api.item.IUpgradeItem;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.item.ItemUpgrade;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.Arrays;
-
 public class UpgradeCache {
-    private final byte[] upgradeCount = new byte[EnumUpgrade.values().length];
+    private byte[] countCache;  // indexed by upgrade's internal (numeric) registry ID
     private final IUpgradeHolder holder;
-    private boolean isValid = false;
     private Direction ejectDirection;
 
     public UpgradeCache(IUpgradeHolder holder) {
@@ -42,53 +43,68 @@ public class UpgradeCache {
      * Mark the upgrade cache as invalid.  The next query for an upgrade will force a cache rebuild from the upgrade
      * inventory.
      */
-    public void invalidate() {
-        isValid = false;
+    public void invalidateCache() {
+        countCache = null;
     }
 
-    public int getUpgrades(EnumUpgrade type) {
-        validate();
-        return upgradeCount[type.ordinal()];
+    public int getUpgrades(PNCUpgrade type) {
+        validateCache();
+        return countCache[type.getCacheId()];
     }
 
     public Direction getEjectDirection() {
         return ejectDirection;
     }
 
-    public void validate() {
-        if (isValid) return;
+    public void validateCache() {
+        if (countCache != null) return;
 
+        countCache = new byte[largestID()];
         IItemHandler handler = holder.getUpgradeHandler();
 
-        Arrays.fill(upgradeCount, (byte)0);
         ejectDirection = null;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
-            if (stack.getItem() instanceof ItemMachineUpgrade) {
-                ItemMachineUpgrade upgrade = ItemMachineUpgrade.of(stack);
-                EnumUpgrade type = upgrade.getUpgradeType();
-                if (upgradeCount[type.ordinal()] != 0) {
-                    Log.warning("found upgrade " + type + " in multiple slots! Ignoring.");
+            if (stack.getItem() instanceof IUpgradeItem upgradeItem) {
+                PNCUpgrade upgradeType = upgradeItem.getUpgradeType();
+                if (countCache[upgradeType.getCacheId()] != 0) {
+                    Log.warning("found upgrade " + upgradeType + " in multiple slots! Ignoring.");
                     continue;
                 }
-                upgradeCount[type.ordinal()] = (byte)(stack.getCount() * upgrade.getTier());
-                handleExtraData(stack, type);
+                countCache[upgradeType.getCacheId()] = (byte)(stack.getCount() * upgradeItem.getUpgradeTier());
+                handleExtraData(stack, upgradeType);
             } else if (!stack.isEmpty()) {
                 throw new IllegalStateException("found non-upgrade item in an upgrade handler! " + stack);
             }
         }
-        isValid = true;
         holder.onUpgradesChanged();
     }
 
-    private void handleExtraData(ItemStack stack, EnumUpgrade type) {
-        if (type == EnumUpgrade.DISPENSER && stack.hasTag()) {
-            ejectDirection = Direction.byName(NBTUtils.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
+    public CompoundTag toNBT() {
+        IItemHandler handler = holder.getUpgradeHandler();
+        CompoundTag tag = new CompoundTag();
+        for (int i = 0; i < handler.getSlots(); i++) {
+            ItemStack stack = handler.getStackInSlot(i);
+            if (stack.getItem() instanceof IUpgradeItem upgradeItem) {
+                String key = PneumaticCraftUtils.modDefaultedString(upgradeItem.getUpgradeType().getRegistryName());
+                int count = upgradeItem.getUpgradeTier() * stack.getCount();
+                tag.put(key, IntTag.valueOf(count));
+            }
         }
+        return tag;
     }
 
-    public ByteArrayTag toNBT() {
-        validate();
-        return new ByteArrayTag(upgradeCount);
+    private int largestID() {
+        int max = 0;
+        for (PNCUpgrade upgrade : ModUpgrades.UPGRADES.get().getValues()) {
+            max = Math.max(max, upgrade.getCacheId());
+        }
+        return max;
+    }
+
+    private void handleExtraData(ItemStack stack, PNCUpgrade type) {
+        if (type == ModUpgrades.DISPENSER.get() && stack.hasTag()) {
+            ejectDirection = Direction.byName(NBTUtils.getString(stack, ItemUpgrade.NBT_DIRECTION));
+        }
     }
 }

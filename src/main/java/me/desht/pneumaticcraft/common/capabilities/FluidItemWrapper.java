@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -33,8 +33,6 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
-
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class FluidItemWrapper implements ICapabilityProvider {
     private ItemStack stack;

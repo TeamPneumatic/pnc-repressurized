@@ -20,13 +20,9 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
@@ -98,7 +94,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 {
     private static final List<RedstoneMode<TileEntitySecurityStation>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
-            new EmittingRedstoneMode<>("securityStation.hacked", EnumUpgrade.SECURITY.getItemStack(), TileEntitySecurityStation::isHacked),
+            new EmittingRedstoneMode<>("securityStation.hacked", ModUpgrades.SECURITY.get().getItemStack(), TileEntitySecurityStation::isHacked),
             new EmittingRedstoneMode<>("securityStation.doneRebooting", new ItemStack(ModBlocks.SECURITY_STATION.get()), te -> te.getRebootTime() <= 0)
     );
 
@@ -167,7 +163,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             updateNeighbours();
         }
 
-        rangeManager.setRange(Math.min(2 + getUpgrades(EnumUpgrade.RANGE), TileEntityConstants.SECURITY_STATION_MAX_RANGE));
+        rangeManager.setRange(Math.min(2 + getUpgrades(ModUpgrades.RANGE.get()), TileEntityConstants.SECURITY_STATION_MAX_RANGE));
     }
 
     public void rebootStation() {
@@ -562,12 +558,12 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     public int getDetectionChance() {
-        double n = 1.0 - Math.pow(0.7, getUpgrades(EnumUpgrade.ENTITY_TRACKER) + 1);
+        double n = 1.0 - Math.pow(0.7, getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) + 1);
         return Mth.clamp((int)(n * 100), 0, 100);
     }
 
     public int getSecurityLevel() {
-        return Math.min(64, 1 + getUpgrades(EnumUpgrade.SECURITY));
+        return Math.min(64, 1 + getUpgrades(ModUpgrades.SECURITY.get()));
     }
 
     @Override

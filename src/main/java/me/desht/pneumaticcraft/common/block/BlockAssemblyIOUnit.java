@@ -18,20 +18,18 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
-
-import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class BlockAssemblyIOUnit extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
     private static final VoxelShape SHAPE = Stream.of(

@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
@@ -38,10 +38,7 @@ import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
@@ -292,8 +289,8 @@ public class EntityDrone extends EntityDroneBase implements
                 TileEntityProgrammer.updatePuzzleConnections(progWidgets);
             }
             setDroneColor(stackTag.getInt(NBT_DRONE_COLOR));
-            fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.INVENTORY)));
-            droneItemHandler.setUseableSlots(1 + getUpgrades(EnumUpgrade.INVENTORY));
+            fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
+            droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
             if (stackTag.contains("Tank")) {
                 fluidTank.readFromNBT(stackTag.getCompound("Tank"));
             }
@@ -377,7 +374,7 @@ public class EntityDrone extends EntityDroneBase implements
         buffer.writeLong(ownerUUID.getMostSignificantBits());
         buffer.writeLong(ownerUUID.getLeastSignificantBits());
         buffer.writeComponent(ownerName);
-        buffer.writeVarInt(getUpgrades(EnumUpgrade.SECURITY));
+        buffer.writeVarInt(getUpgrades(ModUpgrades.SECURITY.get()));
     }
 
     @Override
@@ -518,20 +515,20 @@ public class EntityDrone extends EntityDroneBase implements
         if (!level.isClientSide) {
             MinecraftForge.EVENT_BUS.register(this);
 
-            double newDroneSpeed = 0.15f + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.015f;
-            if (getUpgrades(EnumUpgrade.ARMOR) > 6) {
-                newDroneSpeed -= 0.01f * (getUpgrades(EnumUpgrade.ARMOR) - 6);
+            double newDroneSpeed = 0.15f + Math.min(10, getUpgrades(ModUpgrades.SPEED.get())) * 0.015f;
+            if (getUpgrades(ModUpgrades.ARMOR.get()) > 6) {
+                newDroneSpeed -= 0.01f * (getUpgrades(ModUpgrades.ARMOR.get()) - 6);
             }
             setDroneSpeed(newDroneSpeed);
 
-            healingInterval = getUpgrades(EnumUpgrade.ITEM_LIFE) > 0 ? 100 / getUpgrades(EnumUpgrade.ITEM_LIFE) : 0;
+            healingInterval = getUpgrades(ModUpgrades.ITEM_LIFE.get()) > 0 ? 100 / getUpgrades(ModUpgrades.ITEM_LIFE.get()) : 0;
 
-            securityUpgradeCount = getUpgrades(EnumUpgrade.SECURITY);
+            securityUpgradeCount = getUpgrades(ModUpgrades.SECURITY.get());
             setPathfindingMalus(BlockPathTypes.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
 
-            energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+            energy.setCapacity(100000 + 100000 * getUpgrades(ModUpgrades.VOLUME.get()));
 
-            setHasMinigun(getUpgrades(EnumUpgrade.MINIGUN) > 0);
+            setHasMinigun(getUpgrades(ModUpgrades.MINIGUN.get()) > 0);
 
             droneItemHandler.setFakePlayerReady();
 
@@ -927,7 +924,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     protected BasicAirHandler getAirHandler() {
         if (airHandler == null) {
-            int vol = PressureHelper.getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(EnumUpgrade.VOLUME));
+            int vol = PressureHelper.getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(ModUpgrades.VOLUME.get()));
             ItemStack stack = new ItemStack(getDroneItem());
             EnchantmentHelper.setEnchantments(stackEnchants, stack);
             vol = ItemRegistry.getInstance().getModifiedVolume(stack, vol);
@@ -1006,18 +1003,18 @@ public class EntityDrone extends EntityDroneBase implements
         aiManager.readFromNBT(tag.getCompound("variables"));
         standby = tag.getBoolean("standby");
         upgradeInventory.deserializeNBT(tag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
-        upgradeCache.invalidate();
+        upgradeCache.invalidateCache();
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
 
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("Inventory"));
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
-        droneItemHandler.setUseableSlots(1 + getUpgrades(EnumUpgrade.INVENTORY));
+        droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
 
-        fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.INVENTORY)));
+        fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
         fluidTank.readFromNBT(tag);
 
-        energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+        energy.setCapacity(100000 + 100000 * getUpgrades(ModUpgrades.VOLUME.get()));
 
         if (tag.contains("owner")) ownerName = new TextComponent(tag.getString("owner"));
         if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
@@ -1061,7 +1058,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public int getUpgrades(EnumUpgrade upgrade) {
+    public int getUpgrades(PNCUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
     }
 
@@ -1099,7 +1096,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public int getArmorValue() {
-        return getUpgrades(EnumUpgrade.ARMOR);
+        return getUpgrades(ModUpgrades.ARMOR.get());
     }
 
     @Override
@@ -1443,7 +1440,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void onUpgradesChanged() {
-        energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+        energy.setCapacity(100000 + 100000 * getUpgrades(ModUpgrades.VOLUME.get()));
     }
 
     @Override

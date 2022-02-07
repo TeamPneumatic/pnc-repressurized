@@ -25,9 +25,9 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;

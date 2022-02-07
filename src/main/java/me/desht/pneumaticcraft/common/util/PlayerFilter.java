@@ -24,10 +24,10 @@ import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.common.amadron.BiomeMatcher;
 import me.desht.pneumaticcraft.common.amadron.DimensionMatcher;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;

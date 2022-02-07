@@ -26,9 +26,9 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.Collection;

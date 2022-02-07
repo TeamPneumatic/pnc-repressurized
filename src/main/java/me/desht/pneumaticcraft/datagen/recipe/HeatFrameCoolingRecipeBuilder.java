@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

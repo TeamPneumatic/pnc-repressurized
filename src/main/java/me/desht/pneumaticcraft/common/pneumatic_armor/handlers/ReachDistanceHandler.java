@@ -17,15 +17,16 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EquipmentSlot;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeMod;
 
 import java.util.UUID;
@@ -44,8 +45,8 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[] { EnumUpgrade.RANGE };
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[] { ModUpgrades.RANGE.get() };
     }
 
     @Override

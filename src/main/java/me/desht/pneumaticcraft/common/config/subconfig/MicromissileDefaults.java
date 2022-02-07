@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;

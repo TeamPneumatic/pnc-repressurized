@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.ITickableWidget;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -38,6 +38,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -241,7 +242,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    protected boolean isUpgradeAvailable(EnumUpgrade upgrade) {
+    protected boolean isUpgradeAvailable(PNCUpgrade upgrade) {
         return true;
     }
 
@@ -452,14 +453,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             addPressureStatInfo(pressureText);
             pressureStat.setText(pressureText);
         }
-        if (problemTab != null && ((Minecraft.getInstance().level.getGameTime() & 0x7) == 0 || firstUpdate)) {
+        if (problemTab != null && ((ClientUtils.getClientLevel().getGameTime() & 0x7) == 0 || firstUpdate)) {
             handleProblemsTab();
         }
-        if (redstoneTab != null && te instanceof IRedstoneControl) {
-            redstoneTab.setExtraTooltipText(Collections.singletonList(((IRedstoneControl<?>) te).getRedstoneController().getDescription()));
-            int rsMode = ((IRedstoneControl<?>) te).getRedstoneMode();
+        if (redstoneTab != null && te instanceof IRedstoneControl rc) {
+            redstoneTab.setExtraTooltipText(Collections.singletonList(rc.getRedstoneController().getDescription()));
             for (int i = 0; i < redstoneButtons.size(); i++) {
-                redstoneButtons.get(i).active = i != rsMode;
+                redstoneButtons.get(i).active = i != rc.getRedstoneMode();
             }
         }
 
@@ -494,7 +494,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
             float curPressure = airHandler.getPressure();
             int volume = airHandler.getVolume();
-            int upgrades = te.getUpgrades(EnumUpgrade.VOLUME);
+            int upgrades = te.getUpgrades(ModUpgrades.VOLUME.get());
             airHandler.setVolumeUpgrades(upgrades);
             addPressureInfo(pressureStatText, curPressure, volume, airHandler.getBaseVolume(), upgrades);
         });
@@ -507,7 +507,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         text.add(xlate("pneumaticcraft.gui.tooltip.baseVolume", String.format("%,d", baseVolume)));
         if (volume > baseVolume) {
             text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " " + upgrades + " x ")
-                    .append(EnumUpgrade.VOLUME.getItemStack().getHoverName())
+                    .append(ModUpgrades.VOLUME.get().getItemStack().getHoverName())
             );
             addExtraVolumeModifierInfo(text);
             text.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));

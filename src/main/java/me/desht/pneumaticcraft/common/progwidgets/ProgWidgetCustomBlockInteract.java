@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAICustomBlockInteract;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;

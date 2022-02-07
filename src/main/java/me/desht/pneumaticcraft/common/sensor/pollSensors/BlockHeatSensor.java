@@ -20,9 +20,10 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -46,8 +47,8 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
     }
 
     @Override
-    public Set<EnumUpgrade> getRequiredUpgrades() {
-        return ImmutableSet.of(EnumUpgrade.BLOCK_TRACKER);
+    public Set<PNCUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(ModUpgrades.BLOCK_TRACKER.get());
     }
 
     @Override

@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;

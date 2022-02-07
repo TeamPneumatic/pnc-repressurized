@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.UUID;

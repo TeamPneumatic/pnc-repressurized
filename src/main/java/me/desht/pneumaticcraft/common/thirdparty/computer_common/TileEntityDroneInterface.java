@@ -19,11 +19,12 @@ package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowArea;
@@ -35,6 +36,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -640,7 +642,8 @@ public class TileEntityDroneInterface extends TileEntityTickableBase
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "<string> upgrade_name");
-                EnumUpgrade upgrade = EnumUpgrade.valueOf(((String) args[0]).toUpperCase(Locale.ROOT));
+                PNCUpgrade upgrade = ModUpgrades.UPGRADES.get().getValue(PneumaticCraftUtils.modDefaultedRL((String) args[0]));
+                Validate.isTrue(upgrade != null, "unknown upgrade: '" + args[0] + "'");
                 return new Object[]{(double) validateAndGetDrone().getUpgrades(upgrade)};
             }
         });

@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.FluidTagsProvider;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.tags.Tag;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Arrays;

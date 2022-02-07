@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
 
 import java.util.List;
 

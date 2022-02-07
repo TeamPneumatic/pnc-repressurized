@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 

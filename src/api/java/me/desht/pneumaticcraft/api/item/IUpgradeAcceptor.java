@@ -33,7 +33,7 @@ public interface IUpgradeAcceptor {
      *
      * @return a map of the accepted upgrades and their maximum count
      */
-    Map<EnumUpgrade, Integer> getApplicableUpgrades();
+    Map<PNCUpgrade, Integer> getApplicableUpgrades();
 
     /**
      * Get a translation key for this upgrade acceptor. This is used to display the acceptor in relevant upgrades'

@@ -21,7 +21,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.CoordinateTrackerOptions;
@@ -34,6 +33,7 @@ import me.desht.pneumaticcraft.common.config.ClientConfig;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -199,7 +199,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                 return;
             }
             CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-            if (commonArmorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.COORDINATE_TRACKER) == 0) return;
+            if (commonArmorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.COORDINATE_TRACKER.get()) == 0) return;
 
             CoordTrackClientHandler handler = ArmorUpgradeClientRegistry.getInstance()
                     .getClientHandler(ArmorUpgradeRegistry.getInstance().coordTrackerHandler, CoordTrackClientHandler.class);

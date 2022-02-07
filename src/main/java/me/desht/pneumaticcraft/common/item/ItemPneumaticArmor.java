@@ -21,9 +21,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
@@ -147,7 +148,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     @Override
     public int getVolumeUpgrades(ItemStack stack) {
-        return UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.VOLUME);
+        return UpgradableItemUtils.getUpgrades(stack, ModUpgrades.VOLUME.get());
     }
 
     @Override
@@ -196,7 +197,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     }
 
     @Override
-    public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 
@@ -219,7 +220,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
 //                .build(super.getAttributeModifiers(equipmentSlot, stack));
 
         if (equipmentSlot == this.slot) {
-            int upgrades = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.ARMOR);
+            int upgrades = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.ARMOR.get());
             multimap.put(Attributes.ARMOR, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor modifier boost", (double) upgrades / 2d, AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", upgrades, AttributeModifier.Operation.ADDITION));
         }
@@ -417,7 +418,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     /*------- Thaumcraft -------- */
 
 //    private boolean hasThaumcraftUpgradeAndPressure(ItemStack stack) {
-//        return getPressure(stack) > 0F && UpgradableItemUtils.getUpgrades(EnumUpgrade.THAUMCRAFT, stack) > 0;
+//        return getPressure(stack) > 0F && UpgradableItemUtils.getUpgrades(ModUpgrades.THAUMCRAFT.get(), stack) > 0;
 //    }
 //
 //    @Override

@@ -35,9 +35,6 @@ public class PlayerItemPickupSensor extends PlayerEventSensor {
 
     @Override
     public int emitRedstoneOnEvent(PlayerEvent event, BlockEntity sensor, int range) {
-        if (event instanceof EntityItemPickupEvent) {
-            return 15;
-        }
-        return 0;
+        return event instanceof EntityItemPickupEvent ? 15 : 0;
     }
 }

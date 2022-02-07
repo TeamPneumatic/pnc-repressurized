@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.util;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDebugBlock;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.world.level.Level;
 
 public class BlockIndicator {

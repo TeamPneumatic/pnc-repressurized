@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
 
 import java.util.function.Consumer;
 

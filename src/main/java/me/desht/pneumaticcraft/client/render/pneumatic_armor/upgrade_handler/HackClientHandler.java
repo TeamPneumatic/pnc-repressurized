@@ -21,12 +21,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.HackOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -92,7 +92,7 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
 
     public static boolean enabledForPlayer(Player player) {
         return ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)
-                && CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.SECURITY) > 0;
+                && CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.SECURITY.get()) > 0;
     }
 
     public static void addKeybindTooltip(List<Component> curInfo) {

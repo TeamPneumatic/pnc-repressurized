@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;

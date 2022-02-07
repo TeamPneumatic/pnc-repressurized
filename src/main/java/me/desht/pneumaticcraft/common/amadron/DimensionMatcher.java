@@ -22,19 +22,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-
-import me.desht.pneumaticcraft.api.misc.IPlayerMatcher.MatcherFactory;
 
 public class DimensionMatcher implements IPlayerMatcher {
     private final Set<ResourceLocation> dimensionIds;

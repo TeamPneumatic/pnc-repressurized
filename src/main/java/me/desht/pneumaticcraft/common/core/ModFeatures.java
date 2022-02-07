@@ -19,9 +19,8 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.worldgen.OilLakeFeature;
-import net.minecraft.world.level.levelgen.feature.LakeFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.BlockStateConfiguration;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.LakeFeature;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;

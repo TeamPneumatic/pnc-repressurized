@@ -24,13 +24,13 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition.Operator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.Direction.Axis;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Arrays;
 import java.util.Collections;

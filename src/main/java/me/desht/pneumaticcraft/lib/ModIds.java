@@ -33,18 +33,18 @@ public class ModIds {
     public static final String CRAFTTWEAKER = "crafttweaker";
     public static final String GAMESTAGES = "gamestages";
     public static final String CREATE = "create";
+    public static final String THAUMCRAFT = "thaumcraft";
+    public static final String TOUGH_AS_NAILS = "toughasnails";
 
     // the mods we have integrated with in the past but not in 1.16
-//    public static final String BUILDCRAFT = "buildcraftcore";
-//    public static final String INDUSTRIALCRAFT = "ic2";
-//    public static final String INDUSTRIALFOREGOING = "industrialforegoing";
-//    public static final String IGWMOD = "igwmod";
-//    public static final String THAUMCRAFT = "thaumcraft";
+    //    public static final String BUILDCRAFT = "buildcraftcore";
+    //    public static final String INDUSTRIALCRAFT = "ic2";
+    //    public static final String INDUSTRIALFOREGOING = "industrialforegoing";
+    //    public static final String IGWMOD = "igwmod";
 //    public static final String FORESTRY = "forestry";
 //    public static final String OPEN_BLOCKS = "openblocks";
 //    public static final String OPEN_COMPUTERS = "opencomputers";
 //    public static final String EIO = "enderio";
 //    public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
 //    public static final String BAUBLES = "baubles";
-//    public static final String TOUGH_AS_NAILS = "toughasnails";
 }

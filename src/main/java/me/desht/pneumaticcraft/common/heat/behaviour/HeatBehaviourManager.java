@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;

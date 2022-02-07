@@ -18,8 +18,9 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -36,8 +37,8 @@ public class PlayerHealthSensor implements IPollSensorSetting {
     }
 
     @Override
-    public Set<EnumUpgrade> getRequiredUpgrades() {
-        return ImmutableSet.of(EnumUpgrade.ENTITY_TRACKER);
+    public Set<PNCUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(ModUpgrades.ENTITY_TRACKER.get());
     }
 
     @Override

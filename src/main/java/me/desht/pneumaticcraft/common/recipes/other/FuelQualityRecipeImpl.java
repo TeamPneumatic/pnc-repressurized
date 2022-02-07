@@ -22,13 +22,13 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import net.minecraft.world.level.material.Fluid;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.Validate;
 

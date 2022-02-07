@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.recipes;
 
 import com.google.gson.JsonObject;
 import net.minecraft.core.Registry;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.SerializationTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.IConditionSerializer;
 

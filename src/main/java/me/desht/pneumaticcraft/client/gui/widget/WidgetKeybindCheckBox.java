@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -34,16 +35,15 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.KeyMapping;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyBindingMap;

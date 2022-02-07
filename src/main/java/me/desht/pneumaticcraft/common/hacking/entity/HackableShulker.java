@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.common.util.Reflections;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 
 import java.util.List;
 

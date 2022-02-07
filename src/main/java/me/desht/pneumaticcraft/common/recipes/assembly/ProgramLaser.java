@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import java.util.Collection;

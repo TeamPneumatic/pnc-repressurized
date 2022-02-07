@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.debug;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class DroneDebugEntry {
     private final int progWidgetId;

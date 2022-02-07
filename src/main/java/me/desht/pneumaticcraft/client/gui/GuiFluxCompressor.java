@@ -27,11 +27,11 @@ import me.desht.pneumaticcraft.common.inventory.ContainerFluxCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluxCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.energy.CapabilityEnergy;
 
 import java.util.ArrayList;

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
@@ -29,8 +29,9 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.ItemUpgrade;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
@@ -65,7 +66,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
     private final int[] ticksSinceEquip = new int[4];
     private final List<LazyOptional<IAirHandlerItem>> airHandlers = new ArrayList<>();
-    private final List<EnumMap<EnumUpgrade, Integer>> upgradeMatrix = new ArrayList<>();
+    private final List<Map<PNCUpgrade, Integer>> upgradeMatrix = new ArrayList<>();
     private final int[] startupTimes = new int[4];
     private final IArmorExtensionData[][] extensionData = new IArmorExtensionData[4][];
 
@@ -77,7 +78,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             List<IArmorUpgradeHandler<?>> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
             upgradeRenderersInserted[slot.getIndex()] = new boolean[upgradeHandlers.size()];
             upgradeRenderersEnabled[slot.getIndex()] = new boolean[upgradeHandlers.size()];
-            upgradeMatrix.add(new EnumMap<>(EnumUpgrade.class));
+            upgradeMatrix.add(new HashMap<>());
             airHandlers.add(LazyOptional.empty());
             extensionData[slot.getIndex()] = new IArmorExtensionData[upgradeHandlers.size()];
             for (IArmorUpgradeHandler<?> handler : upgradeHandlers) {
@@ -241,18 +242,18 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
         if (slot == EquipmentSlot.FEET && player.level.isClientSide && player.isInWater() && player.zza > 0) {
             // doing this client-side only appears to be effective
-            if (isArmorReady(EquipmentSlot.FEET) && getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.FLIPPERS) > 0) {
+            if (isArmorReady(EquipmentSlot.FEET) && getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.FLIPPERS.get()) > 0) {
                 player.moveRelative(player.isOnGround() ? ConfigHelper.common().armor.flippersSpeedBoostGround.get().floatValue() : ConfigHelper.common().armor.flippersSpeedBoostFloating.get().floatValue(), FORWARD);
             }
         }
 
-        if (!player.level.isClientSide && getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE) > 0) {
+        if (!player.level.isClientSide && getUpgradeCount(slot, ModUpgrades.ITEM_LIFE.get()) > 0) {
             tryRepairArmor(slot);
         }
     }
 
     private void tryRepairArmor(EquipmentSlot slot) {
-        int upgrades = getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE, PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
+        int upgrades = getUpgradeCount(slot, ModUpgrades.ITEM_LIFE.get(), PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
         int interval = 120 - (20 * upgrades);
         int airUsage = ConfigHelper.common().armor.repairAirUsage.get() * upgrades;
 
@@ -287,8 +288,8 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         // record the number of upgrades of every type
         upgradeMatrix.get(slot.getIndex()).clear();
         for (ItemStack stack : upgradeStacks) {
-            if (stack.getItem() instanceof ItemMachineUpgrade upgrade) {
-                upgradeMatrix.get(slot.getIndex()).put(upgrade.getUpgradeType(), stack.getCount() * upgrade.getTier());
+            if (stack.getItem() instanceof ItemUpgrade upgrade) {
+                upgradeMatrix.get(slot.getIndex()).put(upgrade.getUpgradeType(), stack.getCount() * upgrade.getUpgradeTier());
             }
         }
         startupTimes[slot.getIndex()] = (int) (ConfigHelper.common().armor.armorStartupTime.get() * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
@@ -306,11 +307,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     @Override
-    public int getUpgradeCount(EquipmentSlot slot, EnumUpgrade upgrade) {
+    public int getUpgradeCount(EquipmentSlot slot, PNCUpgrade upgrade) {
         return upgradeMatrix.get(slot.getIndex()).getOrDefault(upgrade, 0);
     }
 
-    public int getUpgradeCount(EquipmentSlot slot, EnumUpgrade upgrade, int max) {
+    public int getUpgradeCount(EquipmentSlot slot, PNCUpgrade upgrade, int max) {
         return Math.min(max, getUpgradeCount(slot, upgrade));
     }
 
@@ -333,10 +334,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     private boolean isModuleEnabled(ItemStack[] helmetStacks, IArmorUpgradeHandler<?> handler) {
-        for (EnumUpgrade requiredUpgrade : handler.getRequiredUpgrades()) {
+        for (PNCUpgrade requiredUpgrade : handler.getRequiredUpgrades()) {
             boolean found = false;
             for (ItemStack stack : helmetStacks) {
-                if (EnumUpgrade.from(stack) == requiredUpgrade) {
+                if (PNCUpgrade.from(stack) == requiredUpgrade) {
                     found = true;
                     break;
                 }
@@ -348,7 +349,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     @Override
     public int getSpeedFromUpgrades(EquipmentSlot slot) {
-        return 1 + getUpgradeCount(slot, EnumUpgrade.SPEED);
+        return 1 + getUpgradeCount(slot, ModUpgrades.SPEED.get());
     }
 
     public int getStartupTime(EquipmentSlot slot) {

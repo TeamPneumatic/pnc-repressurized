@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 
 import java.util.List;
 

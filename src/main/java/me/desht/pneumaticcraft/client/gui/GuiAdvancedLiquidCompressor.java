@@ -24,9 +24,9 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
 

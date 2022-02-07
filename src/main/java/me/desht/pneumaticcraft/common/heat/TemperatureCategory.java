@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 
 public enum TemperatureCategory implements StringRepresentable {
     SUPER_COLD(0, "super_cold"),

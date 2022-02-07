@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.Collections;
 import java.util.List;

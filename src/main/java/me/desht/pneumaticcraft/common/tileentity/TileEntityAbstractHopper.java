@@ -17,21 +17,21 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.EntitySelector;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public abstract class TileEntityAbstractHopper<T extends BlockEntity & IRedstone
         super.onLoad();
 
         if (!nonNullLevel().isClientSide) {
-            isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
+            isCreative = getUpgrades(ModUpgrades.CREATIVE.get()) > 0;
             setupInputOutputRegions();
         }
     }
@@ -125,7 +125,7 @@ public abstract class TileEntityAbstractHopper<T extends BlockEntity & IRedstone
     }
 
     public int getMaxItems() {
-        int upgrades = getUpgrades(EnumUpgrade.SPEED);
+        int upgrades = getUpgrades(ModUpgrades.SPEED.get());
         if (upgrades > 3) {
             return Math.min(1 << (upgrades - 3), 256);
         } else {
@@ -134,7 +134,7 @@ public abstract class TileEntityAbstractHopper<T extends BlockEntity & IRedstone
     }
 
     public int getItemTransferInterval() {
-        return BASE_TICK_RATE / (1 << getUpgrades(EnumUpgrade.SPEED));
+        return BASE_TICK_RATE / (1 << getUpgrades(ModUpgrades.SPEED.get()));
     }
 
     protected abstract void setupInputOutputRegions();
@@ -190,7 +190,7 @@ public abstract class TileEntityAbstractHopper<T extends BlockEntity & IRedstone
         super.onUpgradesChanged();
 
         if (level != null && !level.isClientSide) {
-            isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
+            isCreative = getUpgrades(ModUpgrades.CREATIVE.get()) > 0;
         }
     }
 

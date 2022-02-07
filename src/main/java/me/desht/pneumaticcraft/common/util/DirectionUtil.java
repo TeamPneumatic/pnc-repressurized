@@ -18,10 +18,9 @@
 package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.*;
 
 import static net.minecraft.core.Direction.*;
-
-import net.minecraft.core.Direction.Axis;
 
 /**
  * rotateAround() disappeared from Direction in 1.15

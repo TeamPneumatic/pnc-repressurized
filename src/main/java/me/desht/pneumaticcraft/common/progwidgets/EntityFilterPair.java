@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;

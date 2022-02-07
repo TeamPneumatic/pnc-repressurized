@@ -17,13 +17,14 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
@@ -62,8 +63,8 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[] { EnumUpgrade.JET_BOOTS };
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[] { ModUpgrades.JET_BOOTS.get() };
     }
 
     @Override
@@ -83,7 +84,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        int jetbootsCount = commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS);
+        int jetbootsCount = commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get());
         if (jetbootsCount == 0) return;
 
         int jetbootsAirUsage = 0;

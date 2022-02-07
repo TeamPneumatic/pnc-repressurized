@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeM
 import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

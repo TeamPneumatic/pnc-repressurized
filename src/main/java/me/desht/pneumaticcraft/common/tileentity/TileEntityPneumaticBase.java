@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
@@ -93,17 +93,17 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        airHandler.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
+        airHandler.setVolumeUpgrades(getUpgrades(ModUpgrades.VOLUME.get()));
         handleSecurityUpgrade(airHandler);
 
         airHandlerMap.keySet().forEach(h -> {
-            h.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
+            h.setVolumeUpgrades(getUpgrades(ModUpgrades.VOLUME.get()));
             handleSecurityUpgrade(h);
         });
     }
 
     private void handleSecurityUpgrade(IAirHandlerMachine handler) {
-        if (getUpgrades(EnumUpgrade.SECURITY) > 0) {
+        if (getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
             handler.enableSafetyVenting(p -> p > getDangerPressure(), Direction.UP);
         } else {
             handler.disableSafetyVenting();
@@ -140,7 +140,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
         super.load(tag);
 
         airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
-        airHandler.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
+        airHandler.setVolumeUpgrades(getUpgrades(ModUpgrades.VOLUME.get()));
         if (tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
             // when restoring from item NBT
             airHandler.addAir(tag.getInt(NBTKeys.NBT_AIR_AMOUNT));

@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 

@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCreativeCompressor,TileEntityCreativeCompressor> {
 

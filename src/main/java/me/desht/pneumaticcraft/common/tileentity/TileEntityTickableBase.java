@@ -39,7 +39,7 @@ public abstract class TileEntityTickableBase extends TileEntityBase {
      * Called on both server and client, before anything else
      */
     public void tickCommonPre() {
-        getUpgradeCache().validate();
+        getUpgradeCache().validateCache();
     }
 
     public void tickClient() {

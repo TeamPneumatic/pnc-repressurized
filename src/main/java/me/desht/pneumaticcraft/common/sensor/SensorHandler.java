@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.sensor;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
@@ -111,8 +111,8 @@ public class SensorHandler implements ISensorRegistry {
         return null;
     }
 
-    public Set<EnumUpgrade> getUniversalSensorUpgrades() {
-        Set<EnumUpgrade> upgrades = new HashSet<>();
+    public Set<PNCUpgrade> getUniversalSensorUpgrades() {
+        Set<PNCUpgrade> upgrades = new HashSet<>();
         for (ISensorSetting sensor : sensors.values()) {
             upgrades.addAll(sensor.getRequiredUpgrades());
         }
@@ -139,9 +139,9 @@ public class SensorHandler implements ISensorRegistry {
     }
 
     private String getUpgradePrefix(ISensorSetting sensor) {
-        List<EnumUpgrade> upgrades = new ArrayList<>(sensor.getRequiredUpgrades());
+        List<PNCUpgrade> upgrades = new ArrayList<>(sensor.getRequiredUpgrades());
 
-        upgrades.sort(Comparator.comparing(upgrade -> I18n.get(upgrade.getName())));
+        upgrades.sort(Comparator.comparing(upgrade -> I18n.get(upgrade.getItem().getDescriptionId())));
 
         StringBuilder ret = new StringBuilder();
         for (int i = 0; i < upgrades.size(); i++) {
@@ -151,7 +151,7 @@ public class SensorHandler implements ISensorRegistry {
         return ret.toString();
     }
 
-    public Set<EnumUpgrade> getRequiredStacksFromText(String path) {
+    public Set<PNCUpgrade> getRequiredStacksFromText(String path) {
         List<ISensorSetting> sensors = getSensorsFromPath(path);
         return sensors.isEmpty() ? Collections.emptySet() : sensors.get(0).getRequiredUpgrades();
     }
@@ -217,7 +217,7 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public Set<EnumUpgrade> getRequiredUpgrades() {
+        public Set<PNCUpgrade> getRequiredUpgrades() {
             return ImmutableSet.copyOf(coordinateSensor.getRequiredUpgrades());
         }
 
@@ -279,7 +279,7 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        public Set<EnumUpgrade> getRequiredUpgrades() {
+        public Set<PNCUpgrade> getRequiredUpgrades() {
             return ImmutableSet.copyOf(coordinateSensor.getRequiredUpgrades());
         }
 

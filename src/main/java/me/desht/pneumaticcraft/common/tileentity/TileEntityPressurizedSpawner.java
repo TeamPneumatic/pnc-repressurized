@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -76,7 +76,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
     public void tickCommonPre() {
         super.tickCommonPre();
 
-        rangeManager.setRange(2 + getUpgrades(EnumUpgrade.RANGE));
+        rangeManager.setRange(2 + getUpgrades(ModUpgrades.RANGE.get()));
         if (counter < 0) counter = getSpawnInterval();
     }
 
@@ -152,7 +152,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
         return (int)(BASE_SPAWN_INTERVAL / getSpeedMultiplierFromUpgrades());
     }
 
-    public int getAirUsage() { return PneumaticValues.USAGE_PRESSURIZED_SPAWNER * (getUpgrades(EnumUpgrade.SPEED) + 1); }
+    public int getAirUsage() { return PneumaticValues.USAGE_PRESSURIZED_SPAWNER * (getUpgrades(ModUpgrades.SPEED.get()) + 1); }
 
     @Override
     public IItemHandler getPrimaryInventory() {

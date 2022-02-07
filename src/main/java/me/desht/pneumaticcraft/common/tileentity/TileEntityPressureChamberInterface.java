@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -200,7 +200,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             int count = stack.getCount();
             ItemStack leftoverStack = IOHelper.insert(te, stack.copy(), facing.getOpposite(), false);
             stack.shrink(count - leftoverStack.getCount());
-        } else if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        } else if (getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
             BlockPos pos = getBlockPos().relative(getRotation());
             PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, getLevel(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             inventory.setStackInSlot(0, ItemStack.EMPTY);

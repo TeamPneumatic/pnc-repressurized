@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.ISignEditWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.SignBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
     public DroneAIEditSign(IDroneBase drone, ProgWidgetAreaItemBase widget) {

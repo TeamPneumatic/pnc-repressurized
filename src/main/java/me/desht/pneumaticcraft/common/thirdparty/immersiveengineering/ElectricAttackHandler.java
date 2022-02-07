@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
 import blusunrize.immersiveengineering.api.Lib;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -45,7 +45,7 @@ public class ElectricAttackHandler {
         if (!event.getSource().getMsgId().equals(Lib.DMG_WireShock)) return;
 
         if (event.getEntityLiving() instanceof EntityDrone drone) {
-            if (drone.getUpgrades(EnumUpgrade.SECURITY) > 0) {
+            if (drone.getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
                 float dmg = event.getAmount();
                 drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).addAir((int)(-50 * dmg));
                 double dy = Math.min(dmg / 4, 0.5);
@@ -56,7 +56,7 @@ public class ElectricAttackHandler {
             }
         } else if (event.getEntityLiving() instanceof Player player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.getUpgradeCount(EquipmentSlot.CHEST, EnumUpgrade.SECURITY) > 0
+            if (handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.SECURITY.get()) > 0
                     && handler.getArmorPressure(EquipmentSlot.CHEST) > 0.1
                     && handler.isArmorReady(EquipmentSlot.CHEST)) {
                 handler.addAir(EquipmentSlot.CHEST, (int)(-150 * event.getAmount()));

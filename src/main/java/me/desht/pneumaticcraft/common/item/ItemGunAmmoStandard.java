@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.resources.language.I18n;
@@ -89,8 +89,8 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
 
     @Override
     public float getAirUsageMultiplier(Minigun minigun, ItemStack ammoStack) {
-        if (minigun.getUpgrades(EnumUpgrade.DISPENSER) > 0 && !getPotion(ammoStack).isEmpty()) {
-            return minigun.getUpgrades(EnumUpgrade.DISPENSER) + 1f;
+        if (minigun.getUpgrades(ModUpgrades.DISPENSER.get()) > 0 && !getPotion(ammoStack).isEmpty()) {
+            return minigun.getUpgrades(ModUpgrades.DISPENSER.get()) + 1f;
         } else {
             return 1f;
         }
@@ -146,7 +146,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
         ItemStack potion = getPotion(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             Player shooter = minigun.getPlayer();
-            int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(EnumUpgrade.DISPENSER) * 2;
+            int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(ModUpgrades.DISPENSER.get()) * 2;
             if (shooter.level.random.nextInt(100) < chance) {
                 ThrownPotion entityPotion = new ThrownPotion(shooter.level, shooter);
                 entityPotion.setItem(potion);

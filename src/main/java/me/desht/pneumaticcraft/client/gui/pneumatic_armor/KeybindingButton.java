@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.client.Minecraft;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
 

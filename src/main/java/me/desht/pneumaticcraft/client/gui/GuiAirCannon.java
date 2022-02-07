@@ -17,21 +17,21 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +111,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         if (te.hasNoConnectedAirHandlers()) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.airLeak"));
         }
-        if (menu.slots.get(5).getItem().isEmpty() && te.getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
+        if (menu.slots.get(5).getItem().isEmpty() && te.getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) == 0) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.air_cannon.no_items"));
         }
         if (!te.hasCoordinate()) {

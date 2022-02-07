@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -125,7 +125,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft implements EntityB
     private int getPlayerHackLevel(Player player) {
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
         return handler.isArmorReady(EquipmentSlot.HEAD) && handler.getArmorPressure(EquipmentSlot.HEAD) > 0f ?
-                handler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.SECURITY) : 0;
+                handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.SECURITY.get()) : 0;
     }
 
     @Override

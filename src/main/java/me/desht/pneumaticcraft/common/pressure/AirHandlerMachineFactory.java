@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 
 public class AirHandlerMachineFactory implements IAirHandlerMachineFactory {
     private static final AirHandlerMachineFactory INSTANCE = new AirHandlerMachineFactory();

@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 
 import java.util.function.BiPredicate;
 

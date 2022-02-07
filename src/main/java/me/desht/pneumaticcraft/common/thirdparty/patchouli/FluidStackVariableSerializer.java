@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import com.google.gson.JsonElement;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import vazkii.patchouli.api.IVariableSerializer;

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -30,10 +30,10 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 

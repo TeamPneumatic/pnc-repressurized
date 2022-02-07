@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -27,6 +26,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
@@ -138,7 +138,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 handleRedstoneControl();
             }
             speedMultiplier = syncedSpeedMult = getSpeedMultiplierFromUpgrades();
-            chargingUpgrades = getUpgrades(EnumUpgrade.CHARGING);  // sync'd to client to adjust elevator speed as appropriate
+            chargingUpgrades = getUpgrades(ModUpgrades.CHARGING.get());  // sync'd to client to adjust elevator speed as appropriate
         } else {
             speedMultiplier = (float) (syncedSpeedMult * PacketServerTickTime.tickTimeMultiplier);
             if (prevCamoState != camoState) {

@@ -18,16 +18,17 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -38,12 +39,12 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[] { EnumUpgrade.CHARGING };
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[] { ModUpgrades.CHARGING.get() };
     }
 
     @Override
-    public int getMaxInstallableUpgrades(EnumUpgrade upgrade) {
+    public int getMaxInstallableUpgrades(PNCUpgrade upgrade) {
         return PneumaticValues.ARMOR_CHARGING_MAX_UPGRADES;
     }
 
@@ -64,7 +65,7 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
                 || player.level.getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
             return;
 
-        int upgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.CHEST, EnumUpgrade.CHARGING);
+        int upgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.CHARGING.get());
         int airAmount = upgrades * 100 + 100;
 
         for (EquipmentSlot slot : EquipmentSlot.values()) {

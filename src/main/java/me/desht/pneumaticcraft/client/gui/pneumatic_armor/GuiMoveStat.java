@@ -209,10 +209,6 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         helpText.set(3, xlate("pneumaticcraft.armor.moveStat.expand" + (movedStat.isLeftSided() ? "Left" : "Right")));
     }
 
-    private String getDir(boolean left) {
-        return ChatFormatting.YELLOW + (left ? "Left" : "Right") + ChatFormatting.RESET;
-    }
-
     private void save() {
         Window sr = minecraft.getWindow();
         ArmorHUDLayout.INSTANCE.updateLayout(layoutItem,

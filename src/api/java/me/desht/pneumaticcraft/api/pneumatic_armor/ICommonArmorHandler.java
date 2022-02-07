@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.pneumatic_armor;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
 
@@ -39,7 +39,7 @@ public interface ICommonArmorHandler {
      * @param upgrade the upgrade to query
      * @return the number of upgrades installed
      */
-    int getUpgradeCount(EquipmentSlot slot, EnumUpgrade upgrade);
+    int getUpgradeCount(EquipmentSlot slot, PNCUpgrade upgrade);
 
     /**
      * Convenience method to get the speed boost for the given armor piece, which is 1 + {number_of_speed_upgrades}

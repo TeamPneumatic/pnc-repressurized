@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStandby;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 /**
@@ -44,7 +44,7 @@ abstract class EntityBasicDrone extends EntityDrone {
     }
 
     void maybeAddStandbyInstruction(DroneProgramBuilder builder, ItemStack droneStack) {
-        if (UpgradableItemUtils.getUpgrades(droneStack, EnumUpgrade.STANDBY) > 0) {
+        if (UpgradableItemUtils.getUpgrades(droneStack, ModUpgrades.STANDBY.get()) > 0) {
             builder.add(new ProgWidgetStandby());
         }
     }

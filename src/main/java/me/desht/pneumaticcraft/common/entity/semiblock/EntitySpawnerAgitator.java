@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 
 public class EntitySpawnerAgitator extends EntitySemiblockBase {
     public EntitySpawnerAgitator(EntityType<?> entityTypeIn, Level worldIn) {

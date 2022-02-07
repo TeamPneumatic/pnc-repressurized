@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -140,7 +140,7 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
      */
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         int times = 1;
-        int nSpeed = minigun.getUpgrades(EnumUpgrade.SPEED);
+        int nSpeed = minigun.getUpgrades(ModUpgrades.SPEED.get());
         for (int i = 0; i < nSpeed; i++) {
             if (minigun.getWorld().random.nextInt(100) < 20) times++;
         }

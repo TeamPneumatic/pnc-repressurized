@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiMoveStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -30,6 +29,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.JetBootsClientHandler;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
@@ -93,7 +93,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
 
     private void setFlag(String flagName, int minTier, ICheckboxWidget cb) {
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-        if (commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS) >= minTier) {
+        if (commonArmorHandler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()) >= minTier) {
             CompoundTag tag = new CompoundTag();
             tag.putBoolean(flagName, cb.isChecked());
             JetBootsHandler upgradeHandler = getClientUpgradeHandler().getCommonHandler();
@@ -108,7 +108,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
     public void tick() {
         super.tick();
 
-        int nUpgrades = CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS);
+        int nUpgrades = CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get());
         checkBoxBuilderMode.asWidget().active = nUpgrades >= JetBootsHandler.BUILDER_MODE_LEVEL;
         checkBoxStabilizers.asWidget().active = nUpgrades >= JetBootsHandler.STABILIZERS_LEVEL;
     }

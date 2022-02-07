@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Mth;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 import java.util.List;
 

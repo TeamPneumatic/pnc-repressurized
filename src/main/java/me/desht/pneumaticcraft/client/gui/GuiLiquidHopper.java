@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -25,17 +25,18 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,8 +74,8 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     }
 
     @Override
-    protected boolean isUpgradeAvailable(EnumUpgrade upgrade) {
-        return upgrade != EnumUpgrade.DISPENSER || ConfigHelper.common().machines.liquidHopperDispenser.get();
+    protected boolean isUpgradeAvailable(PNCUpgrade upgrade) {
+        return upgrade != ModUpgrades.DISPENSER.get() || ConfigHelper.common().machines.liquidHopperDispenser.get();
     }
 
     @Override

@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -149,14 +149,14 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             gpsSlotChanged = false;
         }
 
-        int curRangeUpgrades = Math.min(8, getUpgrades(EnumUpgrade.RANGE));
+        int curRangeUpgrades = Math.min(8, getUpgrades(ModUpgrades.RANGE.get()));
         if (curRangeUpgrades != oldRangeUpgrades) {
             oldRangeUpgrades = curRangeUpgrades;
             if (!externalControl) destUpdateNeeded = true;
         }
 
-        boolean isDispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
-        boolean isEntityTrackerUpgradeInserted = getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0;
+        boolean isDispenserUpgradeInserted = getUpgrades(ModUpgrades.DISPENSER.get()) > 0;
+        boolean isEntityTrackerUpgradeInserted = getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0;
         if (dispenserUpgradeInserted != isDispenserUpgradeInserted || entityUpgradeInserted != isEntityTrackerUpgradeInserted) {
             dispenserUpgradeInserted = isDispenserUpgradeInserted;
             entityUpgradeInserted = isEntityTrackerUpgradeInserted;
@@ -307,10 +307,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         double payloadFrictionY = 0.98D; // this value will differ when a dispenser upgrade is inserted.
         double payloadFrictionX = 0.98D;
         double payloadGravity = 0.04D;
-        if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
+        if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             payloadFrictionX = 0.91D;
             payloadGravity = 0.08D;
-        } else if (getUpgrades(EnumUpgrade.DISPENSER) > 0 && !itemHandler.getStackInSlot(CANNON_SLOT).isEmpty()) {
+        } else if (getUpgrades(ModUpgrades.DISPENSER.get()) > 0 && !itemHandler.getStackInSlot(CANNON_SLOT).isEmpty()) {
             Item item = itemHandler.getStackInSlot(CANNON_SLOT).getItem();
             if (item == Items.POTION || item == Items.EXPERIENCE_BOTTLE || item == Items.EGG || item == Items.SNOWBALL) {// EntityThrowable
                 payloadFrictionY = 0.99D;
@@ -541,7 +541,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag)) {
-            if (rsController.getCurrentMode() == 2 && getUpgrades(EnumUpgrade.BLOCK_TRACKER) == 0) {
+            if (rsController.getCurrentMode() == 2 && getUpgrades(ModUpgrades.BLOCK_TRACKER.get()) == 0) {
                 rsController.setCurrentMode(0);
             }
             return;
@@ -603,7 +603,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                 }
                 if (launchedEntity instanceof ItemEntity) {
                     itemHandler.setStackInSlot(CANNON_SLOT, ItemStack.EMPTY);
-                    if (getUpgrades(EnumUpgrade.BLOCK_TRACKER) > 0) {
+                    if (getUpgrades(ModUpgrades.BLOCK_TRACKER.get()) > 0) {
                         trackedItems.add((ItemEntity) launchedEntity);
                     }
                     ((ItemEntity) launchedEntity).setPickUpDelay(20);
@@ -633,12 +633,12 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
     private Entity getPayloadEntity() {
         Entity e = ItemLaunching.getEntityToLaunch(getLevel(), itemHandler.getStackInSlot(CANNON_SLOT), getFakePlayer(),
-                getUpgrades(EnumUpgrade.DISPENSER) > 0, false);
+                getUpgrades(ModUpgrades.DISPENSER.get()) > 0, false);
         if (e instanceof ItemEntity) {
             // 1200 ticks left to live = 60s
             ((ItemEntity) e).age = 4800; //setAgeToCreativeDespawnTime();
             // + 30s per item life upgrade, to a max of 5 mins
-            ((ItemEntity) e).lifespan += Math.min(getUpgrades(EnumUpgrade.ITEM_LIFE) * 600, 4800);
+            ((ItemEntity) e).lifespan += Math.min(getUpgrades(ModUpgrades.ITEM_LIFE.get()) * 600, 4800);
         }
         return e;
     }
@@ -654,7 +654,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
 
     private Entity getCloseEntityIfUpgraded() {
-        int entityUpgrades = Math.min(5, getUpgrades(EnumUpgrade.ENTITY_TRACKER));
+        int entityUpgrades = Math.min(5, getUpgrades(ModUpgrades.ENTITY_TRACKER.get()));
         if (entityUpgrades > 0) {
             List<LivingEntity> entities = nonNullLevel().getEntitiesOfClass(LivingEntity.class, new AABB(getBlockPos()).inflate(entityUpgrades));
             if (!entities.isEmpty()) {

@@ -18,19 +18,19 @@
 package me.desht.pneumaticcraft.common.thirdparty.crafttweaker.handlers;
 
 import com.blamejared.crafttweaker.api.CraftTweakerAPI;
+import com.blamejared.crafttweaker.api.action.recipe.ActionAddRecipe;
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
 import com.blamejared.crafttweaker.api.fluid.IFluidStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
-import com.blamejared.crafttweaker.api.action.recipe.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.RefineryRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
 
 @Document("mods/PneumaticCraft/Refinery")

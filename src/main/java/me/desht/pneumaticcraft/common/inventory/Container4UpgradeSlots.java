@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.core.BlockPos;
 
 public class Container4UpgradeSlots<T extends TileEntityBase> extends ContainerPneumaticBase<T> {
 

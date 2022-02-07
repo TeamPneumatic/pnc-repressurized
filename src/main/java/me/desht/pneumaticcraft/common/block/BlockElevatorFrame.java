@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
 import net.minecraft.core.BlockPos;
@@ -203,7 +203,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft
                         }
                     }
                     entity.setPos(eX, baseY + teBase.extension + 1.2, eZ);
-                    if (entity instanceof ServerPlayer && teBase.getUpgrades(EnumUpgrade.SPEED) >= 6) {
+                    if (entity instanceof ServerPlayer && teBase.getUpgrades(ModUpgrades.SPEED.get()) >= 6) {
                         // prevents "<player> moved too quickly" problems when the elevator is fast
                         // note: using this can lead to jerky upward movement, so only doing for fast elevators
                         ((ServerPlayer) entity).connection.resetPosition();

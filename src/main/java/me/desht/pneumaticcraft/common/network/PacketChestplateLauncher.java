@@ -17,20 +17,20 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -69,7 +69,7 @@ public class PacketChestplateLauncher {
         if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().chestplateLauncherHandler, false) && !stack.isEmpty()) {
             ItemStack toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
             Entity launchedEntity = ItemLaunching.getEntityToLaunch(player.getCommandSenderWorld(), toFire, player,true, true);
-            int upgrades = handler.getUpgradeCount(EquipmentSlot.CHEST, EnumUpgrade.DISPENSER, PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
+            int upgrades = handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.DISPENSER.get(), PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
 
             if (launchedEntity instanceof AbstractArrow) {
                 AbstractArrow arrow = (AbstractArrow) launchedEntity;

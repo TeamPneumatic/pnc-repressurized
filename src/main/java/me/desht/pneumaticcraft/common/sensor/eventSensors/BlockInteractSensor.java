@@ -18,10 +18,11 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
 import com.google.common.collect.ImmutableSet;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinateEventSensor;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -35,8 +36,8 @@ public class BlockInteractSensor implements IBlockAndCoordinateEventSensor {
     }
 
     @Override
-    public Set<EnumUpgrade> getRequiredUpgrades() {
-        return ImmutableSet.of(EnumUpgrade.BLOCK_TRACKER);
+    public Set<PNCUpgrade> getRequiredUpgrades() {
+        return ImmutableSet.of(ModUpgrades.BLOCK_TRACKER.get());
     }
 
     @Override
@@ -46,8 +47,7 @@ public class BlockInteractSensor implements IBlockAndCoordinateEventSensor {
 
     @Override
     public int emitRedstoneOnEvent(Event event, BlockEntity sensor, int range, Set<BlockPos> positions) {
-        if (event instanceof PlayerInteractEvent) {
-            PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
+        if (event instanceof PlayerInteractEvent interactEvent) {
             return positions.contains(interactEvent.getPos()) ? 15 : 0;
         }
         return 0;

@@ -33,15 +33,15 @@ import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.UUID;
 

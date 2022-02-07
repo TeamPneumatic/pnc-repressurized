@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.goal.Goal;
 
 public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
     public ProgWidgetTeleport() {

@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

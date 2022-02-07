@@ -21,11 +21,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.DroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -100,7 +100,7 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     public static boolean enabledForPlayer(Player player) {
         if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            return handler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.DISPENSER) > 0;
+            return handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.DISPENSER.get()) > 0;
         } else {
             return false;
         }

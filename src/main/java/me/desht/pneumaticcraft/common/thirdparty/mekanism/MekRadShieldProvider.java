@@ -43,7 +43,7 @@ public class MekRadShieldProvider /*implements ICapabilityProvider*/ {
 //
 //        @Override
 //        public double getRadiationShielding() {
-//            boolean upgrade = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.RADIATION_SHIELDING) > 0;
+//            boolean upgrade = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.RADIATION_SHIELDING.get()) > 0;
 //            if (!upgrade) return 0d;
 //            switch (slot) {
 //                case HEAD: return 0.25;

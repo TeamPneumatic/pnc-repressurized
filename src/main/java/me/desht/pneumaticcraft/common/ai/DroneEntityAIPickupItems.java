@@ -22,17 +22,15 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.progwidgets.IItemPickupWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
 
 import java.util.EnumSet;
 import java.util.List;
-
-import net.minecraft.world.entity.ai.goal.Goal.Flag;
 
 public class DroneEntityAIPickupItems extends Goal {
     private final IDroneBase drone;

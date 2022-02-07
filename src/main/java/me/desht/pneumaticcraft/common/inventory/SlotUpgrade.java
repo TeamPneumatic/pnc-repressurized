@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.world.item.ItemStack;
@@ -40,11 +40,11 @@ public class SlotUpgrade extends SlotItemHandler {
 
     @Override
     public void setChanged() {
-        te.getUpgradeCache().invalidate();
+        te.getUpgradeCache().invalidateCache();
     }
 
     @Override
     public int getMaxStackSize(@Nonnull ItemStack stack) {
-        return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te, EnumUpgrade.from(stack));
+        return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te, PNCUpgrade.from(stack));
     }
 }

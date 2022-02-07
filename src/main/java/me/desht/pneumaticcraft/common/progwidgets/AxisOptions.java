@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.Direction;
 
 import java.util.BitSet;
 

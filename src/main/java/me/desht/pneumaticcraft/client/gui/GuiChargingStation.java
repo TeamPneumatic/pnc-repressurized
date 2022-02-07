@@ -17,8 +17,9 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -29,13 +30,13 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -187,11 +188,21 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
             x -= 18;
             y -= (particleProgress - 0.7F) * 70;
         }
-        BufferBuilder wr = Tesselator.getInstance().getBuilder();
-        GL11.glPointSize(5);
-        wr.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION);
-        wr.vertex(matrixStack.last().pose(), x, y, 0f).endVertex();
-        wr.vertex(matrixStack.last().pose(), x + 1, y + 1, 0f).endVertex();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        Matrix4f posMat = matrixStack.last().pose();
+        bufferbuilder.vertex(posMat, x - 1f, y + 1f, 0.0F).color(0.9f, 0.9f, 0.9f, 1f).endVertex();
+        bufferbuilder.vertex(posMat, x + 1f, y + 1f, 0.0F).color(0.9f, 0.9f, 0.9f, 1f).endVertex();
+        bufferbuilder.vertex(posMat, x + 1f, y - 1f, 0.0F).color(0.9f, 0.9f, 0.9f, 1f).endVertex();
+        bufferbuilder.vertex(posMat, x - 1f, y - 1f, 0.0F).color(0.9f, 0.9f, 0.9f, 1f).endVertex();
+//        bufferbuilder.end();
+//
+//        GL11.glPointSize(5);
+//        RenderSystem.setShader(GameRenderer::getPositionShader);
+//        wr.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION);
+//        wr.vertex(matrixStack.last().pose(), x, y, 0f).endVertex();
+//        wr.vertex(matrixStack.last().pose(), x + 1, y + 1, 0f).endVertex();
         Tesselator.getInstance().end();
     }
 }

@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -91,7 +91,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     public void tickClient() {
         super.tickClient();
 
-        if (getUpgrades(EnumUpgrade.MAGNET) == 0) {
+        if (getUpgrades(ModUpgrades.MAGNET.get()) == 0) {
             AreaRenderManager.getInstance().removeHandlers(this);
         }
     }
@@ -142,7 +142,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     private boolean tryDispense(Direction dir) {
-        if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
             if (!Block.canSupportCenter(nonNullLevel(), worldPosition, dir.getOpposite())) {
                 ItemStack toPush = findNextItem(inventory, pushSlots, dir);
                 if (!toPush.isEmpty()) {
@@ -186,8 +186,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     private boolean tryMagnet(Direction dir) {
-        if (getUpgrades(EnumUpgrade.MAGNET) > 0) {
-            int range = getUpgrades(EnumUpgrade.RANGE);
+        if (getUpgrades(ModUpgrades.MAGNET.get()) > 0) {
+            int range = getUpgrades(ModUpgrades.RANGE.get());
             BlockPos centrePos = worldPosition.relative(dir, range + 2);
             AABB aabb = new AABB(centrePos).inflate(range + 1);
             List<ItemEntity> items = nonNullLevel().getEntitiesOfClass(ItemEntity.class, aabb,
@@ -252,11 +252,11 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     public int getTickRate() {
-        return 8 >> Math.min(3, getUpgrades(EnumUpgrade.SPEED));
+        return 8 >> Math.min(3, getUpgrades(ModUpgrades.SPEED.get()));
     }
 
     public int getMaxItems() {
-        int upgrades = getUpgrades(EnumUpgrade.SPEED);
+        int upgrades = getUpgrades(ModUpgrades.SPEED.get());
         return upgrades > 3 ? Math.min(1 << (upgrades - 3), 256) : 1;
     }
 

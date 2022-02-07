@@ -19,14 +19,15 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -149,7 +150,7 @@ public class ItemMinigun extends ItemPressurizable implements
         if (minigun.getPlayer().containerMenu instanceof ContainerMinigunMagazine) {
             return;  // avoid potential item duping or other shenanigans
         }
-        int itemLife = minigun.getUpgrades(EnumUpgrade.ITEM_LIFE);
+        int itemLife = minigun.getUpgrades(ModUpgrades.ITEM_LIFE.get());
         if (itemLife > 0) {
             MagazineHandler handler = getMagazine(stack);
             boolean repaired = false;
@@ -225,7 +226,7 @@ public class ItemMinigun extends ItemPressurizable implements
             int prevDamage = ammo.getDamageValue();
             Minigun minigun = getMinigun(stack, player, ammo);
             // an item life upgrade will prevent the stack from being destroyed
-            boolean usedUpAmmo = minigun.tryFireMinigun(null) && minigun.getUpgrades(EnumUpgrade.ITEM_LIFE) == 0;
+            boolean usedUpAmmo = minigun.tryFireMinigun(null) && minigun.getUpgrades(ModUpgrades.ITEM_LIFE.get()) == 0;
             if (usedUpAmmo) ammo.setCount(0);
             if (usedUpAmmo || ammo.getDamageValue() != prevDamage) {
                 magazineHandler.save();
@@ -250,7 +251,7 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     @Override
-    public Map<EnumUpgrade,Integer> getApplicableUpgrades() {
+    public Map<PNCUpgrade,Integer> getApplicableUpgrades() {
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 
@@ -262,7 +263,7 @@ public class ItemMinigun extends ItemPressurizable implements
     @Override
     public float getFOVModifier(ItemStack stack, Player player, EquipmentSlot slot) {
         Minigun minigun = getMinigun(stack, player);
-        int trackers = minigun.getUpgrades(EnumUpgrade.ENTITY_TRACKER);
+        int trackers = minigun.getUpgrades(ModUpgrades.ENTITY_TRACKER.get());
         if (!minigun.isMinigunActivated() || trackers == 0) return 1.0f;
         return 1 - (trackers * minigun.getMinigunSpeed() / 2);
     }
@@ -455,7 +456,7 @@ public class ItemMinigun extends ItemPressurizable implements
         }
 
         @Override
-        public int getUpgrades(EnumUpgrade upgrade) {
+        public int getUpgrades(PNCUpgrade upgrade) {
             return Math.min(ApplicableUpgradesDB.getInstance().getMaxUpgrades(minigunStack.getItem(), upgrade),
                     UpgradableItemUtils.getUpgrades(minigunStack, upgrade));
         }

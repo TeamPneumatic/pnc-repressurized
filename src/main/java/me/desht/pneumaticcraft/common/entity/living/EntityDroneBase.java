@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.entity.living;
 
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;

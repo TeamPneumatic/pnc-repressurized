@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client.model.entity.drone;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -11,7 +10,6 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
 public class ModelDroneCore extends EntityModel<EntityDroneBase> {
     private final ModelPart drone;

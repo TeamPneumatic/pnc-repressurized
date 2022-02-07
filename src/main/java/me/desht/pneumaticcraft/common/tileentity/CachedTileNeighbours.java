@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.lang.ref.WeakReference;
 import java.util.BitSet;

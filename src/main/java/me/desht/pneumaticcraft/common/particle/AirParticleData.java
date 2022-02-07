@@ -22,14 +22,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.common.core.ModParticleTypes;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Calendar;
 import java.util.Locale;
-
-import net.minecraft.core.particles.ParticleOptions.Deserializer;
 
 public class AirParticleData implements ParticleOptions {
     public static final AirParticleData NORMAL = new AirParticleData(0.1f);

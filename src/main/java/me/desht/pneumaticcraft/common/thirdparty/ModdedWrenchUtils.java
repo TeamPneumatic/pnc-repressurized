@@ -21,12 +21,12 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;

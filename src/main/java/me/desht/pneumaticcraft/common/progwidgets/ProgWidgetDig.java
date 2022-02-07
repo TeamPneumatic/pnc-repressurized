@@ -21,12 +21,12 @@ import me.desht.pneumaticcraft.common.ai.DroneAIDig;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.List;
 

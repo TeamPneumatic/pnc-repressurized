@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
     private final Component localizedName;

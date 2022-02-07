@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemStackHandler;
 

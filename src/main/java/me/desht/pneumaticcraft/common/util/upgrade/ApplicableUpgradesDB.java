@@ -17,91 +17,72 @@
 
 package me.desht.pneumaticcraft.common.util.upgrade;
 
-import com.google.common.primitives.Ints;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public enum ApplicableUpgradesDB {
     INSTANCE;
 
-    // map a registry name to a list of upgrade amount
-    // each list is (EnumUpgrade.values().length) in size, and stores the max. number of upgrades allowed for each upgrade
-    private final Map<ResourceLocation, List<Integer>> TILE_ENTITIES = new HashMap<>();
-    private final Map<ResourceLocation, List<Integer>> ENTITIES = new HashMap<>();
-    private final Map<ResourceLocation, List<Integer>> ITEMS = new HashMap<>();
-
-    private final List<Integer> NO_UPGRADES = Ints.asList(new int[EnumUpgrade.values().length]);
+    private final Table<BlockEntityType<?>, PNCUpgrade, Integer> TILE_ENTITIES = HashBasedTable.create();
+    private final Table<EntityType<?>, PNCUpgrade, Integer> ENTITIES = HashBasedTable.create();
+    private final Table<Item, PNCUpgrade, Integer> ITEMS = HashBasedTable.create();
 
     public static ApplicableUpgradesDB getInstance() {
         return INSTANCE;
     }
 
     public void addApplicableUpgrades(BlockEntityType<?> type, UpgradesDBSetup.Builder builder) {
-        addUpgrades(TILE_ENTITIES, type.getRegistryName(), builder);
+        addUpgrades(TILE_ENTITIES, type, builder);
     }
 
     public void addApplicableUpgrades(EntityType<?> type, UpgradesDBSetup.Builder builder) {
-        addUpgrades(ENTITIES, type.getRegistryName(), builder);
+        addUpgrades(ENTITIES, type, builder);
     }
 
     public void addApplicableUpgrades(Item item, UpgradesDBSetup.Builder builder) {
-        addUpgrades(ITEMS, item.getRegistryName(), builder);
+        addUpgrades(ITEMS, item, builder);
     }
 
-    public int getMaxUpgrades(BlockEntity te, EnumUpgrade upgrade) {
+    public int getMaxUpgrades(BlockEntity te, PNCUpgrade upgrade) {
         if (te == null || upgrade == null) return 0;
-        return TILE_ENTITIES.getOrDefault(te.getType().getRegistryName(), NO_UPGRADES).get(upgrade.ordinal());
+        Integer max = TILE_ENTITIES.get(te.getType(), upgrade);
+        return max == null ? 0 : max;
     }
 
-    public int getMaxUpgrades(Entity e, EnumUpgrade upgrade) {
+    public int getMaxUpgrades(Entity e, PNCUpgrade upgrade) {
         if (e == null || upgrade == null) return 0;
-        return ENTITIES.getOrDefault(e.getType().getRegistryName(), NO_UPGRADES).get(upgrade.ordinal());
+        Integer max = ENTITIES.get(e.getType(), upgrade);
+        return max == null ? 0 : max;
     }
 
-    public int getMaxUpgrades(Item item, EnumUpgrade upgrade) {
+    public int getMaxUpgrades(Item item, PNCUpgrade upgrade) {
         if (item == null || upgrade == null) return 0;
-        return ITEMS.getOrDefault(item.getRegistryName(), NO_UPGRADES).get(upgrade.ordinal());
+        Integer max = ITEMS.get(item, upgrade);
+        return max == null ? 0 : max;
     }
 
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades(BlockEntity te) {
-        return getApplicableUpgrades(TILE_ENTITIES.getOrDefault(te.getType().getRegistryName(), NO_UPGRADES));
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades(BlockEntity te) {
+        return TILE_ENTITIES.row(te.getType());
     }
 
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades(Entity e) {
-        return getApplicableUpgrades(ENTITIES.getOrDefault(e.getType().getRegistryName(), NO_UPGRADES));
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades(Entity e) {
+        return ENTITIES.row(e.getType());
     }
 
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades(Item item) {
-        return getApplicableUpgrades(ITEMS.getOrDefault(item.getRegistryName(), NO_UPGRADES));
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades(Item item) {
+        return ITEMS.row(item);
     }
 
-    private Map<EnumUpgrade, Integer> getApplicableUpgrades(List<Integer> l) {
-        Map<EnumUpgrade,Integer> res = new EnumMap<>(EnumUpgrade.class);
-        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-            int n = l.get(upgrade.ordinal());
-            if (n > 0) res.put(upgrade, n);
-        }
-        return res;
-    }
-
-    private void addUpgrades(Map<ResourceLocation,List<Integer>> l, ResourceLocation key, UpgradesDBSetup.Builder builder) {
-        List<Integer> u = l.computeIfAbsent(key, k -> createArrayList());
-        for (int i = 0; i < EnumUpgrade.values().length; i++) {
-            u.set(i, u.get(i) + builder.upgrades().get(i));
-        }
-    }
-
-    private List<Integer> createArrayList() {
-        return Ints.asList(new int[EnumUpgrade.values().length]);
+    private <T extends ForgeRegistryEntry<?>> void addUpgrades(Table<T,PNCUpgrade,Integer> table, T entry, UpgradesDBSetup.Builder builder) {
+        builder.getUpgrades().forEach((upgrade, max) -> table.put(entry, upgrade, max));
     }
 }

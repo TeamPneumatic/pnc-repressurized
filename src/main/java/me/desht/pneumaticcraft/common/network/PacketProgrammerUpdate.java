@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;

@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
@@ -115,7 +115,7 @@ public class PneumaticArmorHandler {
             }
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)) {
                 // straight fall distance reduction if jump upgrade operational in legs
-                event.setDistance(Math.max(0, event.getDistance() - 1.5f * handler.getUpgradeCount(EquipmentSlot.LEGS, EnumUpgrade.JUMPING)));
+                event.setDistance(Math.max(0, event.getDistance() - 1.5f * handler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.JUMPING.get())));
                 if (event.getDistance() < 2) {
                     event.setCanceled(true);
                     return;
@@ -150,7 +150,7 @@ public class PneumaticArmorHandler {
             if (isPneumaticArmorPiece(player, EquipmentSlot.CHEST) && event.getSource().isFire() && !(player.isCreative() || player.isSpectator())) {
                 // security upgrade in chestplate protects from fire
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.isArmorEnabled() && handler.hasMinPressure(EquipmentSlot.CHEST) && handler.getUpgradeCount(EquipmentSlot.CHEST, EnumUpgrade.SECURITY) > 0) {
+                if (handler.isArmorEnabled() && handler.hasMinPressure(EquipmentSlot.CHEST) && handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.SECURITY.get()) > 0) {
                     event.setCanceled(true);
                     player.clearFire();
                     if (!player.level.isClientSide) {
@@ -203,7 +203,7 @@ public class PneumaticArmorHandler {
             }
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)) {
                 float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
-                int rangeUpgrades = handler.getUpgradeCount(EquipmentSlot.LEGS, EnumUpgrade.JUMPING,
+                int rangeUpgrades = handler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.JUMPING.get(),
                         player.isShiftKeyDown() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);
                 Vec3 m = player.getDeltaMovement();
@@ -227,7 +227,7 @@ public class PneumaticArmorHandler {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getPlayer());
             JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
             if (jbState.isEnabled() && jbState.isBuilderMode()) {
-                int n = (max + 1) - handler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS, max);
+                int n = (max + 1) - handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get(), max);
                 if (n < 4) {
                     float mult = 5.0f / n;   // default dig speed when not on ground is 1/5 of normal
                     float oldSpeed = event.getOriginalSpeed();
@@ -321,7 +321,7 @@ public class PneumaticArmorHandler {
         if (event.getPlayer() instanceof ServerPlayer && event.getTarget() instanceof ServerPlayer trackedPlayer) {
             if (trackedPlayer.getItemBySlot(EquipmentSlot.FEET).getItem() == ModItems.PNEUMATIC_BOOTS.get()) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(trackedPlayer);
-                if (handler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS) > 0) {
+                if (handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()) > 0) {
                     JetBootsState state = JetBootsStateTracker.getServerTracker().getJetBootsState(trackedPlayer);
                     NetworkHandler.sendToPlayer(new PacketJetBootsStateSync(trackedPlayer, state), (ServerPlayer) event.getPlayer());
                 }

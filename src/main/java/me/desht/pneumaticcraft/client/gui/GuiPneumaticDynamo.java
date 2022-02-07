@@ -26,11 +26,11 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDynamo;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDynamo;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.energy.CapabilityEnergy;
 
 import java.util.ArrayList;

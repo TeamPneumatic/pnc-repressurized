@@ -17,20 +17,20 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
@@ -60,7 +60,7 @@ public class PacketPneumaticKick {
             ServerPlayer player = ctx.get().getSender();
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().kickHandler, false)) {
-                int upgrades = handler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.DISPENSER);
+                int upgrades = handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.DISPENSER.get());
                 if (upgrades > 0) {
                     handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
                 }

@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.JetBootsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -31,6 +30,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
@@ -167,8 +167,8 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
                 prevZ = player.getZ();
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            int n = Math.max(1, handler.getUpgradeCount(EquipmentSlot.FEET, EnumUpgrade.JET_BOOTS));
-            ItemStack stack = new ItemStack(EnumUpgrade.JET_BOOTS.getItem(n));
+            int n = Math.max(1, handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()));
+            ItemStack stack = new ItemStack(ModUpgrades.JET_BOOTS.get().getItem(n));
             jbStat = new WidgetAnimatedStat(null, xlate(ArmorUpgradeRegistry.getStringKey(getCommonHandler().getID())),
                     WidgetAnimatedStat.StatIcon.of(stack),
                     HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.jetBootsStat);

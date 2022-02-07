@@ -20,14 +20,14 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPressureChamberGlass extends BlockPressureChamberWallBase implements EntityBlockPneumaticCraft {

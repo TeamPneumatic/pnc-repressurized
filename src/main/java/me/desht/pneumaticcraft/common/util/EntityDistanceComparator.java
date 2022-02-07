@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Comparator;

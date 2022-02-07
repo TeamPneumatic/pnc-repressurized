@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.EntityRing;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
 

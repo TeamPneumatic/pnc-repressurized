@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.network;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Function;

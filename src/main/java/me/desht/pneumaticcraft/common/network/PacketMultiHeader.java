@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.lang.reflect.Constructor;

@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.MushroomCow;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 
 import java.util.List;
 

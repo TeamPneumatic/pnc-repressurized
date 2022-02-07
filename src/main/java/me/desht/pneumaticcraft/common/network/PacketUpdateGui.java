@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;

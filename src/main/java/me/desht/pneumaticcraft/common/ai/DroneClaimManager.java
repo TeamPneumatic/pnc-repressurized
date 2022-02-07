@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;

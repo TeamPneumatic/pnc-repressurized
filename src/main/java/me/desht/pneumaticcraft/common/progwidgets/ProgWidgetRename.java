@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 import java.util.Set;

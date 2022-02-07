@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import com.google.gson.JsonObject;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;

@@ -22,14 +22,14 @@ import com.google.gson.JsonParseException;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.commons.lang3.Validate;
 
@@ -41,8 +41,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
-import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 
 public class AssemblyRecipeImpl extends AssemblyRecipe {
     private final Ingredient input;

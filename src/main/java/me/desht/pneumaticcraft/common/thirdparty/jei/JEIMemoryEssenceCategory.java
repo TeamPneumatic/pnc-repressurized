@@ -19,22 +19,22 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
@@ -91,7 +91,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
     static Collection<MemoryEssenceRecipe> getAllRecipes() {
         return ImmutableList.of(
                 new MemoryEssenceRecipe(ModItems.MEMORY_STICK.get(), null),
-                new MemoryEssenceRecipe(ModBlocks.AERIAL_INTERFACE.get(), EnumUpgrade.DISPENSER.getItem()),
+                new MemoryEssenceRecipe(ModBlocks.AERIAL_INTERFACE.get(), ModUpgrades.DISPENSER.get().getItem()),
                 new MemoryEssenceRecipe(ModItems.DRONE.get(), ModItems.PROGRAMMING_PUZZLE.get())
                         .setTooltipKey(1, "pneumaticcraft.gui.jei.tooltip.droneImportOrbs")
         );

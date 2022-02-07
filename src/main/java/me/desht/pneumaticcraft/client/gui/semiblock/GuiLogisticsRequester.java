@@ -17,20 +17,14 @@
 
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsRequester;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
-import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2PNCAddon;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

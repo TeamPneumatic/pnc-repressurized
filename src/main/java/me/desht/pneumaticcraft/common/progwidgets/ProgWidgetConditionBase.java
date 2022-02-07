@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.DyeColor;
 
 import java.util.ArrayList;
 import java.util.List;

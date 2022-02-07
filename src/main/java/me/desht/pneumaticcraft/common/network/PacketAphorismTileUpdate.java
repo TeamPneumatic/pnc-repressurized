@@ -20,9 +20,8 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Arrays;

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.universal_sensor;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -40,7 +40,7 @@ public interface IBaseSensor {
      *
      * @return a set of upgrades
      */
-    Set<EnumUpgrade> getRequiredUpgrades();
+    Set<PNCUpgrade> getRequiredUpgrades();
 
     /**
      * Should this sensor's GUI display a text box for extra information to be entered?

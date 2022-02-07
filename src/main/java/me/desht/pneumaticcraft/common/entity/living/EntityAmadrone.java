@@ -19,10 +19,11 @@ package me.desht.pneumaticcraft.common.entity.living;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -84,10 +85,10 @@ public class EntityAmadrone extends EntityDrone {
         if (amadroneStack.isEmpty()) {
             amadroneStack = new ItemStack(ModItems.DRONE.get());
             ItemStackHandler upgradeInv = new ItemStackHandler(9);
-            upgradeInv.setStackInSlot(0, EnumUpgrade.SPEED.getItemStack(10));
-            upgradeInv.setStackInSlot(1, EnumUpgrade.INVENTORY.getItemStack(35));
-            upgradeInv.setStackInSlot(2, EnumUpgrade.ITEM_LIFE.getItemStack(10));
-            upgradeInv.setStackInSlot(3, EnumUpgrade.SECURITY.getItemStack());
+            upgradeInv.setStackInSlot(0, ModUpgrades.SPEED.get().getItemStack(10));
+            upgradeInv.setStackInSlot(1, ModUpgrades.INVENTORY.get().getItemStack(35));
+            upgradeInv.setStackInSlot(2, ModUpgrades.ITEM_LIFE.get().getItemStack(10));
+            upgradeInv.setStackInSlot(3, ModUpgrades.SECURITY.get().getItemStack());
             UpgradableItemUtils.setUpgrades(amadroneStack, upgradeInv);
             amadroneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                     .orElseThrow(RuntimeException::new).addAir(100000);
@@ -141,13 +142,15 @@ public class EntityAmadrone extends EntityDrone {
     }
 
     @Override
-    public int getUpgrades(EnumUpgrade upgrade) {
-        return switch (upgrade) {
-            case SECURITY -> 1;
-            case ITEM_LIFE, SPEED -> 10;
-            case INVENTORY -> 35;
-            default -> 0;
-        };
+    public int getUpgrades(PNCUpgrade upgrade) {
+        if (ModUpgrades.SECURITY.get() == upgrade) {
+            return 1;
+        } else if (ModUpgrades.ITEM_LIFE.get() == upgrade || ModUpgrades.SPEED.get() == upgrade) {
+            return 10;
+        } else if (ModUpgrades.INVENTORY.get() == upgrade) {
+            return 35;
+        }
+        return 0;
     }
 
     @Override

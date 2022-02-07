@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;

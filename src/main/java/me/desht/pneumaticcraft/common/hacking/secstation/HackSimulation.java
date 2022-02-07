@@ -21,9 +21,9 @@ import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.H
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;

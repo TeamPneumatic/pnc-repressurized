@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
@@ -76,7 +76,7 @@ public class ContainerChargingStationUpgradeManager extends ContainerPneumaticBa
 
         @Override
         public int getMaxStackSize(@Nonnull ItemStack stack) {
-            return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te.getChargingStack().getItem(), EnumUpgrade.from(stack));
+            return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te.getChargingStack().getItem(), PNCUpgrade.from(stack));
         }
 
         @Override

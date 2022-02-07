@@ -18,36 +18,38 @@
 package me.desht.pneumaticcraft.client.gui.charging;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +60,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
 
     protected final ItemStack itemStack;
     private Button guiBackButton;
-    private final Map<EnumUpgrade, IGuiAnimatedStat> cycleTabs = new EnumMap<>(EnumUpgrade.class);
+    private final Map<PNCUpgrade, IGuiAnimatedStat> cycleTabs = new Object2ObjectOpenHashMap<>();
 
     GuiChargingUpgradeManager(ContainerChargingStationUpgradeManager container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -84,7 +86,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
 
     @Override
     protected void addPressureStatInfo(List<Component> pressureStatText) {
-        int upgrades = UpgradableItemUtils.getUpgrades(itemStack, EnumUpgrade.VOLUME);
+        int upgrades = UpgradableItemUtils.getUpgrades(itemStack, ModUpgrades.VOLUME.get());
         int volume = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(IAirHandler::getVolume).orElse(getDefaultVolume());
         float curPressure = te.chargingItemPressure;
@@ -156,7 +158,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     public void containerTick() {
         super.containerTick();
 
-        long gameTime = Minecraft.getInstance().level.getGameTime();
+        long gameTime = ClientUtils.getClientLevel().getGameTime();
         if (gameTime % TIER_CYCLE_TIME == 0) {
             cycleTabs.forEach((upgrade, tab) -> {
                 long tier = gameTime % (TIER_CYCLE_TIME * upgrade.getMaxTier()) / TIER_CYCLE_TIME;
@@ -169,15 +171,16 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
 
     void addUpgradeTabs(Item item, String... what) {
         boolean leftSided = true;
-        for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-            if (upgrade.isDepLoaded()) {
+        for (PNCUpgrade upgrade : ModUpgrades.UPGRADES.get().getValues()) {
+            if (upgrade.isDependencyLoaded()) {
                 int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(item, upgrade);
                 if (max > 0) {
                     ItemStack upgradeStack = upgrade.getItemStack();
                     List<Component> text = new ArrayList<>();
                     text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
                     for (String w : what) {
-                        String key = "pneumaticcraft.gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
+                        String name = PneumaticCraftUtils.modDefaultedString(upgrade.getName()).replace(':', '.');
+                        String key = "pneumaticcraft.gui.tab.info.item." + w + "." + name + "Upgrade";
                         if (I18n.exists(key)) {
                             text.addAll(GuiUtils.xlateAndSplit(key));
                             break;

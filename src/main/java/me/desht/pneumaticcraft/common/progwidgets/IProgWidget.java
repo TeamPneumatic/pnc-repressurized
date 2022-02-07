@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.IProgWidgetBase;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.item.DyeColor;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 

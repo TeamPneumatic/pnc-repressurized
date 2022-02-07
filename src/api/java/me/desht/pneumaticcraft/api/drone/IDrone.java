@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -48,8 +48,9 @@ public interface IDrone extends ICapabilityProvider {
      * Get the number of installed upgrades of the given item type.
      *
      * @return amount of installed upgrades in the drone
+     * @param upgrade
      */
-    int getUpgrades(EnumUpgrade upgrade);
+    int getUpgrades(PNCUpgrade upgrade);
 
     /**
      * Get the drone's world.

@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

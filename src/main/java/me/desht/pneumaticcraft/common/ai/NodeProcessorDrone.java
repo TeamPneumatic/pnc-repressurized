@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
 import net.minecraft.world.level.pathfinder.Node;
-import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nullable;
 

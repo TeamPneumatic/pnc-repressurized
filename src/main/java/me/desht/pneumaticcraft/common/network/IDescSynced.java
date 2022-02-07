@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.List;
 

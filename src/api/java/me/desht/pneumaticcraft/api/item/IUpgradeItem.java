@@ -17,6 +17,30 @@
 
 package me.desht.pneumaticcraft.api.item;
 
+import net.minecraftforge.registries.RegistryObject;
+
+/**
+ * Represents an item which can be used as a PneumaticCraft upgrade in machines or other items. You can implement this
+ * interface on your own items, or you can use {@link IItemRegistry#makeUpgradeItem(RegistryObject, int)} to create an
+ * upgrade with PneumaticCraft tooltips.
+ * <p>
+ * Items that you implement yourself should take a {@code Supplier&lt;PNCUpgrade&gt;} in their constructor, and
+ * store that in a final field. A Supplier is needed because items are registered before PNCUpgrade objects.
+ */
 public interface IUpgradeItem {
-    EnumUpgrade getUpgradeType();
+    /**
+     * Return the PNCUpgrade object associated with this item.
+     *
+     * @return the PNC upgrade
+     */
+    PNCUpgrade getUpgradeType();
+
+    /**
+     * Get the tier of this upgrade.
+     *
+     * @return the upgrade tier
+     */
+    default int getUpgradeTier() {
+        return 1;
+    }
 }

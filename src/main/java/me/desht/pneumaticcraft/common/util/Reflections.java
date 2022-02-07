@@ -23,10 +23,7 @@ import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.entity.monster.Shulker;
-import net.minecraft.world.level.BaseSpawner;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**

@@ -17,25 +17,26 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +108,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
     }
 
     @Override
-    protected boolean isUpgradeAvailable(EnumUpgrade upgrade) {
-        return upgrade != EnumUpgrade.DISPENSER || ConfigHelper.common().machines.omniHopperDispenser.get();
+    protected boolean isUpgradeAvailable(PNCUpgrade upgrade) {
+        return upgrade != ModUpgrades.DISPENSER.get() || ConfigHelper.common().machines.omniHopperDispenser.get();
     }
 }

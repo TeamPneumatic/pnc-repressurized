@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Map;
 

@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.IItemFiltering;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.server.level.ServerLevel;
 
 public class DroneAIVoidItem extends Goal {
     private final IDroneBase drone;

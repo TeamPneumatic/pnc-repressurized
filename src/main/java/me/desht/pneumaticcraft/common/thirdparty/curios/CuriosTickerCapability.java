@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.thirdparty.curios;
 
 import me.desht.pneumaticcraft.common.item.ItemMemoryStick;
 import me.desht.pneumaticcraft.common.item.ItemMemoryStick.MemoryStickLocator;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;

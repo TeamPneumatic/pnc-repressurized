@@ -17,10 +17,11 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -36,13 +37,13 @@ public class BlockTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtension
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[] { EnumUpgrade.BLOCK_TRACKER };
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[] { ModUpgrades.BLOCK_TRACKER.get() };
     }
 
     @Override
     public float getIdleAirUsage(ICommonArmorHandler armorHandler) {
-        int upgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.BLOCK_TRACKER);
+        int upgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.BLOCK_TRACKER.get());
         return PneumaticValues.USAGE_BLOCK_TRACKER
                 * (1 + (float) Math.min(5, upgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE / BLOCK_TRACKING_RANGE);
     }

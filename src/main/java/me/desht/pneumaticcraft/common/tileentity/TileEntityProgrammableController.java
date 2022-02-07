@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -33,10 +32,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
@@ -413,7 +409,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     private void calculateUpgrades() {
         int oldInvUpgrades = droneItemHandler.getSlots() - 1;
-        int newInvUpgrades = Math.min(35, getUpgrades(EnumUpgrade.INVENTORY));
+        int newInvUpgrades = Math.min(35, getUpgrades(ModUpgrades.INVENTORY.get()));
         if (oldInvUpgrades != newInvUpgrades) {
             resizeDroneInventory(oldInvUpgrades + 1, newInvUpgrades + 1);
             tank.setCapacity((newInvUpgrades + 1) * 16000);
@@ -422,7 +418,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             }
         }
 
-        speedUpgrades = getUpgrades(EnumUpgrade.SPEED);
+        speedUpgrades = getUpgrades(ModUpgrades.SPEED.get());
     }
 
     private void resizeDroneInventory(int oldSize, int newSize) {
@@ -442,14 +438,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         super.load(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
-        tank.setCapacity((getUpgrades(EnumUpgrade.INVENTORY) + 1) * 16000);
+        tank.setCapacity((getUpgrades(ModUpgrades.INVENTORY.get()) + 1) * 16000);
         tank.readFromNBT(tag.getCompound("tank"));
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
         ownerName = tag.contains("ownerName") ? new TextComponent(tag.getString("ownerName")) : new TextComponent(FALLBACK_NAME);
         ownerNameClient = ownerName.getString();
 
-        droneItemHandler.setUseableSlots(getUpgrades(EnumUpgrade.INVENTORY) + 1);
+        droneItemHandler.setUseableSlots(getUpgrades(ModUpgrades.INVENTORY.get()) + 1);
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("droneItems"));
         for (int i = 0; i < Math.min(tmpInv.getSlots(), droneItemHandler.getSlots()); i++) {

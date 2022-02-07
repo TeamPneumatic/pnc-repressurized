@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * MineChess

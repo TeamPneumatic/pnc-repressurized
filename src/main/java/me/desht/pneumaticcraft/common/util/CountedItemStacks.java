@@ -18,14 +18,12 @@
 package me.desht.pneumaticcraft.common.util;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Objects;
-
-import it.unimi.dsi.fastutil.Hash.Strategy;
 
 public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
     private final boolean canCoalesce;

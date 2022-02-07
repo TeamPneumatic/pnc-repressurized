@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidFilter;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 

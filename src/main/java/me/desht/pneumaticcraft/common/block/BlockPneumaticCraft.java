@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.IPneumaticCraftProbeable;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -389,7 +389,7 @@ public abstract class BlockPneumaticCraft extends Block
     }
 
     @Override
-    public Map<EnumUpgrade, Integer> getApplicableUpgrades() {
+    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
         if (this instanceof EntityBlock eb) {
             BlockEntity te = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
             if (te instanceof IUpgradeAcceptor ua) return ua.getApplicableUpgrades();

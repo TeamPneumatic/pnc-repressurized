@@ -29,10 +29,10 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Collections;

@@ -17,24 +17,25 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -46,8 +47,8 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     }
 
     @Override
-    public EnumUpgrade[] getRequiredUpgrades() {
-        return new EnumUpgrade[] { EnumUpgrade.SCUBA };
+    public PNCUpgrade[] getRequiredUpgrades() {
+        return new PNCUpgrade[] { ModUpgrades.SCUBA.get() };
     }
 
     @Override
@@ -70,7 +71,7 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
             ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
 
             int baseVol = ((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume();
-            int vol = PressureHelper.getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlot.HEAD, EnumUpgrade.VOLUME));
+            int vol = PressureHelper.getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.VOLUME.get()));
             float airInHelmet = commonArmorHandler.getArmorPressure(EquipmentSlot.HEAD) * vol;
             int playerAir = (int) Math.min(300 - player.getAirSupply(), airInHelmet / ConfigHelper.common().armor.scubaMultiplier.get());
             player.setAirSupply(player.getAirSupply() + playerAir);

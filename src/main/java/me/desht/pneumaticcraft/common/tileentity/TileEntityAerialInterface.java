@@ -19,13 +19,9 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.XPFluidManager;
-import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -235,7 +231,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         super.onUpgradesChanged();
 
         boolean wasInserted = dispenserUpgradeInserted;
-        dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
+        dispenserUpgradeInserted = getUpgrades(ModUpgrades.DISPENSER.get()) > 0;
         if (wasInserted != dispenserUpgradeInserted) {
             needUpdateNeighbours = true;
         }
@@ -332,7 +328,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         energyStorage.readFromNBT(tag);
 
         curXPFluidIndex = curXpFluid == Fluids.EMPTY ? -1 : XPFluidManager.getInstance().getAvailableLiquidXPs().indexOf(curXpFluid);
-        dispenserUpgradeInserted = getUpgrades(EnumUpgrade.DISPENSER) > 0;
+        dispenserUpgradeInserted = getUpgrades(ModUpgrades.DISPENSER.get()) > 0;
     }
 
     @Override
