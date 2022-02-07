@@ -57,5 +57,7 @@ jobs:
         uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        if:
+          env.DISCORD_WEBHOOK != null
         with:
-          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }}.'
+          args: 'Build complete for project {{ EVENT_PAYLOAD.repository.full_name }}: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}.'
