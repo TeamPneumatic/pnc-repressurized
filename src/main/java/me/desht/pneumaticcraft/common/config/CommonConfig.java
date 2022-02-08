@@ -42,6 +42,9 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
         public ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
         public ForgeConfigSpec.BooleanValue dronesCanBePickedUp;
+        public ForgeConfigSpec.IntValue bandageCooldown;
+        public ForgeConfigSpec.IntValue bandageUseTime;
+        public ForgeConfigSpec.DoubleValue bandageHealthRestored;
     }
     public static class Machines {
         public ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -257,6 +260,21 @@ public class CommonConfig {
                 .comment("Blacklisted entity type ID's or tags (use '#' prefix), which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
                 .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
                 .define("vacuum_trap_blacklist", Lists.newArrayList());
+        general.bandageCooldown = builder
+                .worldRestart()
+                .comment("Cooldown, in ticks, between subsequent uses of Bandages. Set to 0 to disable cooldowns entirely.")
+                .translation("pneumaticcraft.config.common.general.bandage_cooldown")
+                .defineInRange("bandage_cooldown", 160, 0, Integer.MAX_VALUE);
+        general.bandageUseTime = builder
+                .worldRestart()
+                .comment("Time, in ticks, it takes to use a bandage.")
+                .translation("pneumaticcraft.config.common.general.bandage_use_time")
+                .defineInRange("bandage_use_time", 40, 1, Integer.MAX_VALUE);
+        general.bandageHealthRestored = builder
+                .worldRestart()
+                .comment("Health points restored on bandage use (1 health = half a heart).")
+                .translation("pneumaticcraft.config.common.general.bandage_health_restored")
+                .defineInRange("bandage_health_restored", 6.0, 1.0, Double.MAX_VALUE);
         builder.pop();
 
         builder.push("Machine Properties");
