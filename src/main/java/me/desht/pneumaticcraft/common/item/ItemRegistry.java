@@ -20,11 +20,13 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.*;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -41,6 +43,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public enum ItemRegistry implements IItemRegistry {
     INSTANCE;
+
+    private static final int MAX_UPGRADES_IN_TOOLTIP = 12;
 
     private final List<Item> inventoryItemBlacklist = new ArrayList<>();
     public final List<IInventoryItem> inventoryItems = new ArrayList<>();
@@ -96,7 +100,16 @@ public enum ItemRegistry implements IItemRegistry {
                 tempList.add(Symbols.BULLET + " " + I18n.get(acceptor.getUpgradeAcceptorTranslationKey()));
             }
             Collections.sort(tempList);
-            tooltip.addAll(tempList.stream().map(TextComponent::new).toList());
+            if (tempList.size() > MAX_UPGRADES_IN_TOOLTIP) {
+                int n = (int) ((ClientUtils.getClientLevel().getGameTime() / 8) % acceptors.size());
+                List<String> tempList2 = new ArrayList<>(MAX_UPGRADES_IN_TOOLTIP);
+                for (int i = 0; i < MAX_UPGRADES_IN_TOOLTIP; i++) {
+                    tempList2.add(tempList.get((n + i) % acceptors.size()));
+                }
+                tooltip.addAll(tempList2.stream().map(s -> new TextComponent(s).withStyle(ChatFormatting.DARK_AQUA)).toList());
+            } else {
+                tooltip.addAll(tempList.stream().map(s -> new TextComponent(s).withStyle(ChatFormatting.DARK_AQUA)).toList());
+            }
         }
     }
 

@@ -24,48 +24,81 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PNCUpgrade extends ForgeRegistryEntry<PNCUpgrade> {
     private static final AtomicInteger ids = new AtomicInteger();
 
-    private final ResourceLocation name;
     private final int maxTier;
     private final List<String> depModIds;
     private final int cacheId;  // for caching efficiency; may change between game restarts, don't use
 
-    public PNCUpgrade(ResourceLocation name) {
-        this(name, 1);
+    public PNCUpgrade() {
+        this(1);
     }
 
-    public PNCUpgrade(ResourceLocation name, int maxTier, String... depModIds) {
-        this.name = name;
+    public PNCUpgrade(int maxTier, String... depModIds) {
         this.maxTier = maxTier;
         this.depModIds = ImmutableList.copyOf(depModIds);
         this.cacheId = ids.getAndIncrement();
     }
 
-    public final ResourceLocation getName() {
-        return name;
-    }
-
+    /**
+     * A numeric id for the upgrade which is not guaranteed to be persistent across game restarts. Used internally
+     * for performance; do not depend on the value of this.
+     *
+     * @return a numeric ID, for internal use
+     */
     public int getCacheId() {
         return cacheId;
     }
 
+    /**
+     * Get the max upgrade tier allowable for this upgrade.
+     *
+     * @return the max tier
+     */
     public final int getMaxTier() {
         return maxTier;
     }
 
+    /**
+     * Check if this upgrade's dependent mods are loaded. Used to control whether the upgrade is added to the creative
+     * item list (and thus JEI), and whether any upgrade info is shown for it in GUI side tabs.
+     *
+     * @return true if this upgrade's dependencies are satisfied, false otherwise
+     */
     public final boolean isDependencyLoaded() {
         return depModIds.isEmpty() || depModIds.stream().anyMatch(modid -> ModList.get().isLoaded(modid));
     }
 
-    public ResourceLocation getItemRegistryName(int tier) {
-        String registryName = getName().toString() + "_upgrade";
+    /**
+     * Get the registry name for the corresponding item for this upgrade, given a tier. Do not call this before the
+     * upgrade itself has been registered.
+     * <p>
+     * The default naming strategy is to take the upgrade's registry name and simply append "_upgrade" to it. You can
+     * override this strategy by extending this class and overriding this method if you need to.
+     *
+     * @param tier tier of this upgrade
+     * @return an item registry name
+     * @throws NullPointerException if called before the upgrade is registered
+     */
+    protected ResourceLocation getItemRegistryName(int tier) {
+        String registryName = Objects.requireNonNull(getRegistryName()).toString() + "_upgrade";
         if (getMaxTier() > 1) registryName += "_" + tier;
         return new ResourceLocation(registryName);
     }
 
+    /**
+     * Get the corresponding item for this upgrade and tier
+     * @param tier the upgrade tier
+     * @return a Mincraft item
+     * @throws NullPointerException if called before the upgrade is registered
+     */
     public final Item getItem(int tier) {
         return tier > maxTier ? Items.AIR : ForgeRegistries.ITEMS.getValue(getItemRegistryName(tier));
     }
 
+    /**
+     * Get the corresponding item for this upgrade, assuming tier 1
+     * @return a Mincraft item
+     * @throws NullPointerException if called before the upgrade is registered
+     */
     public final Item getItem() {
         return getItem(1);
     }
@@ -86,17 +119,5 @@ public class PNCUpgrade extends ForgeRegistryEntry<PNCUpgrade> {
      */
     public static PNCUpgrade from(ItemStack stack) {
         return stack.getItem() instanceof IUpgradeItem u ? u.getUpgradeType() : null;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof PNCUpgrade upgrade)) return false;
-        return name.equals(upgrade.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 }

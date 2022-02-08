@@ -179,7 +179,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
                     List<Component> text = new ArrayList<>();
                     text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
                     for (String w : what) {
-                        String name = PneumaticCraftUtils.modDefaultedString(upgrade.getName()).replace(':', '.');
+                        String name = PneumaticCraftUtils.modDefaultedString(upgrade.getRegistryName()).replace(':', '.');
                         String key = "pneumaticcraft.gui.tab.info.item." + w + "." + name + "Upgrade";
                         if (I18n.exists(key)) {
                             text.addAll(GuiUtils.xlateAndSplit(key));

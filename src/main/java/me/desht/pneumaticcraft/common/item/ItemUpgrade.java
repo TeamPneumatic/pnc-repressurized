@@ -71,7 +71,7 @@ public class ItemUpgrade extends Item implements IUpgradeItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn"));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn").withStyle(ChatFormatting.AQUA));
             PneumaticRegistry.getInstance().getItemRegistry().addTooltip(upgrade.get(), infoList);
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(ChatFormatting.AQUA));

@@ -145,7 +145,7 @@ public class SensorHandler implements ISensorRegistry {
 
         StringBuilder ret = new StringBuilder();
         for (int i = 0; i < upgrades.size(); i++) {
-            ret.append(upgrades.get(i).getName()).append(i < upgrades.size() - 1 ? "_" : "/");
+            ret.append(upgrades.get(i).getRegistryName()).append(i < upgrades.size() - 1 ? "_" : "/");
         }
 
         return ret.toString();

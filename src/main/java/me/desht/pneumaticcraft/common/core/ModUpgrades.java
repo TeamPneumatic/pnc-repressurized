@@ -10,8 +10,6 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-
 public class ModUpgrades {
     public static final DeferredRegister<PNCUpgrade> UPGRADES_DEFERRED = DeferredRegister.create(PNCUpgrade.class, Names.MOD_ID);
     public static final Supplier<IForgeRegistry<PNCUpgrade>> UPGRADES = UPGRADES_DEFERRED
@@ -44,7 +42,7 @@ public class ModUpgrades {
     public static final RegistryObject<PNCUpgrade> RADIATION_SHIELDING = register(BuiltinUpgrade.RADIATION_SHIELDING);
 
     private static RegistryObject<PNCUpgrade> register(BuiltinUpgrade upgrade) {
-        return UPGRADES_DEFERRED.register(upgrade.name, () -> new PNCUpgrade(RL(upgrade.name), upgrade.maxTier, upgrade.depModIds));
+        return UPGRADES_DEFERRED.register(upgrade.name, () -> new PNCUpgrade(upgrade.maxTier, upgrade.depModIds));
     }
 
     enum BuiltinUpgrade {
