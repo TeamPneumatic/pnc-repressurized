@@ -123,8 +123,6 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue blockHitParticles;
     }
     public static class Recipes {
-        public ForgeConfigSpec.BooleanValue coalToDiamondsRecipe;
-        public ForgeConfigSpec.BooleanValue explosionCrafting;
         public ForgeConfigSpec.BooleanValue inWorldPlasticSolidification;
         public ForgeConfigSpec.BooleanValue inWorldYeastCrafting;
     }
@@ -550,14 +548,6 @@ public class CommonConfig {
         builder.pop();
 
         builder.push("Recipes");
-        recipes.explosionCrafting = builder
-                .comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially. NOTE: this should be considered deprecated, and will be removed in a future release. You should control this via data pack recipes (recipe type 'pneumaticcraft:explosion_crafting').")
-                .translation("pneumaticcraft.config.common.general.explosion_crafting")
-                .define("explosion_crafting", true);
-        recipes.coalToDiamondsRecipe = builder
-                .comment("Enable crafting diamonds from coal blocks in the pressure chamber?  NOTE: this should be considered deprecated, and will be removed in a future release. You should control this via datapack recipe (default recipe ID: 'pneumaticcraft:pressure_chamber/coal_to_diamond').")
-                .translation("pneumaticcraft.config.common.recipes.coal_to_diamonds")
-                .define("coal_to_diamonds", true);
         recipes.inWorldPlasticSolidification = builder
                 .comment("Does Molten Plastic solidify to Plastic Sheets when poured into the world? If set to false, then Heat Frame cooling is the only other default way to make Plastic Sheets.")
                 .translation("pneumaticcraft.config.common.recipes.in_world_plastic_solidification")

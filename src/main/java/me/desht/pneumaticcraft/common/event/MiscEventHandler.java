@@ -115,7 +115,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void explosionCraftingEvent(ExplosionEvent.Detonate event) {
-        if (!ConfigHelper.common().recipes.explosionCrafting.get() || event.getWorld().isClientSide) {
+        if (event.getWorld().isClientSide) {
             return;
         }
 

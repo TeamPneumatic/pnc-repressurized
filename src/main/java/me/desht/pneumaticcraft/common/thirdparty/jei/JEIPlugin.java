@@ -87,11 +87,9 @@ public class JEIPlugin implements IModPlugin {
                 new JEIEtchingTankCategory(),
                 new JEISpawnerExtractionCategory(),
                 new JEIBlockHeatPropertiesCategory(),
-                new JEIMemoryEssenceCategory()
+                new JEIMemoryEssenceCategory(),
+                new JEIExplosionCraftingCategory()
         );
-        if (ConfigHelper.common().recipes.explosionCrafting.get()) {
-            registry.addRecipeCategories(new JEIExplosionCraftingCategory());
-        }
         if (ConfigHelper.common().recipes.inWorldPlasticSolidification.get()) {
             registry.addRecipeCategories(new JEIPlasticSolidifyingCategory());
         }
@@ -112,9 +110,7 @@ public class JEIPlugin implements IModPlugin {
         addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER, ModCategoryUid.ASSEMBLY_CONTROLLER);
         addRecipeType(registration, PneumaticCraftRecipeType.AMADRON_OFFERS, ModCategoryUid.AMADRON_TRADE);
         addRecipeType(registration, PneumaticCraftRecipeType.FLUID_MIXER, ModCategoryUid.FLUID_MIXER);
-        if (ConfigHelper.common().recipes.explosionCrafting.get()) {
-            addRecipeType(registration, PneumaticCraftRecipeType.EXPLOSION_CRAFTING, ModCategoryUid.EXPLOSION_CRAFTING);
-        }
+        addRecipeType(registration, PneumaticCraftRecipeType.EXPLOSION_CRAFTING, ModCategoryUid.EXPLOSION_CRAFTING);
 
         // these have their own pseudo-recipes
         registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
