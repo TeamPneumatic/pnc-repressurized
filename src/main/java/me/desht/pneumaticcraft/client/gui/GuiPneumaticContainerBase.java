@@ -218,7 +218,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     protected String upgradeCategory() {
-        return te.getType().getRegistryName().getPath();
+        return PneumaticCraftUtils.modDefaultedString(Objects.requireNonNull(te.getType().getRegistryName()));
     }
 
     private void addUpgradeTab() {
@@ -230,7 +230,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                         int max = te.getApplicableUpgrades().get(upgrade);
                         text.add(upgrade.getItemStack().getHoverName().copy().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE));
                         text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
-                        String upgradeName = upgrade.toString().toLowerCase(Locale.ROOT);
+                        String upgradeName = PneumaticCraftUtils.modDefaultedString(upgrade.getRegistryName());
                         String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
                         text.addAll(I18n.exists(k) ? GuiUtils.xlateAndSplit(k) : GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName));
                         text.add(TextComponent.EMPTY);
