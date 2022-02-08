@@ -67,7 +67,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     @DescSynced
-    private float doorSpeed = 0f;
+    private float doorSpeed = 1f;
     @DescSynced
     @LazySynced
     public float inputProgress;

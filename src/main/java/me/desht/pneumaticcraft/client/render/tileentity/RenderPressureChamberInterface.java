@@ -149,11 +149,9 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
             matrixStack.pushPose();
 
             matrixStack.translate(0.5, 0.5, 0.5);
-            RenderUtils.rotateMatrixForDirection(matrixStack, te.getRotation());
-            matrixStack.scale(0.5F, 0.5F, 0.5F);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
             BakedModel bakedModel = itemRenderer.getModel(te.getStackInInterface(), te.getLevel(), null, 0);
-            itemRenderer.render(te.getStackInInterface(), ItemTransforms.TransformType.FIXED, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, bakedModel);
+            itemRenderer.render(te.getStackInInterface(), ItemTransforms.TransformType.GROUND, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, bakedModel);
 
             matrixStack.popPose();
         }
