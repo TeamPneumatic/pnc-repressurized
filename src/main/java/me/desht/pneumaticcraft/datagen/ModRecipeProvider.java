@@ -955,6 +955,7 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(ModUpgrades.DISPENSER.get(), Blocks.DISPENSER, Tags.Items.GEMS_QUARTZ).save(consumer);
         standardUpgrade(ModUpgrades.ENTITY_TRACKER.get(), Items.FERMENTED_SPIDER_EYE, Tags.Items.BONES).save(consumer);
         standardUpgrade(ModUpgrades.FLIPPERS.get(), Items.BLACK_WOOL, PneumaticCraftTags.Items.PLASTIC_SHEETS).save(consumer);
+        standardUpgrade(ModUpgrades.GILDED.get(), Blocks.GILDED_BLACKSTONE, Tags.Items.INGOTS_GOLD).save(consumer);
         standardUpgrade(ModUpgrades.INVENTORY.get(), Tags.Items.CHESTS_WOODEN, ItemTags.PLANKS).save(consumer);
         standardUpgrade(ModUpgrades.ITEM_LIFE.get(), Items.CLOCK, Items.APPLE).save(consumer);
         standardUpgrade(ModUpgrades.MAGNET.get(), PneumaticCraftTags.Items.PLASTIC_SHEETS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);

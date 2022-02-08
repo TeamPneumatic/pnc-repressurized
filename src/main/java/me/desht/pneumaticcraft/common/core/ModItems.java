@@ -263,6 +263,7 @@ public class ModItems {
         registerUpgrade(ModUpgrades.STANDBY, BuiltinUpgrade.STANDBY);
         registerUpgrade(ModUpgrades.MINIGUN, BuiltinUpgrade.MINIGUN);
         registerUpgrade(ModUpgrades.RADIATION_SHIELDING, BuiltinUpgrade.RADIATION_SHIELDING);
+        registerUpgrade(ModUpgrades.GILDED, BuiltinUpgrade.GILDED);
     }
 
     /* -----------------------*/

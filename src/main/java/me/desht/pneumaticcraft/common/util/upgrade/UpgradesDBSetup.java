@@ -114,6 +114,7 @@ public class UpgradesDBSetup {
                     .with(ModUpgrades.ITEM_LIFE.get(), PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES)
                     .with(ModUpgrades.ARMOR.get(), 4)
                     .with(ModUpgrades.RADIATION_SHIELDING.get(), 1)
+                    .with(ModUpgrades.GILDED.get(), 1)
                     .with(ModUpgrades.THAUMCRAFT.get(), 1);
         }
         // piece-specific upgrades which don't have a specific upgrade handler

@@ -1,0 +1,7 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:item/upgrades/upgrade_layer0",
+      "layer1" : "minecraft:item/gold_nugget"
+   },
+   "parent" : "item/generated"
+}

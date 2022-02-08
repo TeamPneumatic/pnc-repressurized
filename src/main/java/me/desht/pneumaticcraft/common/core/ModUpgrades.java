@@ -40,6 +40,7 @@ public class ModUpgrades {
     public static final RegistryObject<PNCUpgrade> STANDBY = register(BuiltinUpgrade.STANDBY);
     public static final RegistryObject<PNCUpgrade> MINIGUN = register(BuiltinUpgrade.MINIGUN);
     public static final RegistryObject<PNCUpgrade> RADIATION_SHIELDING = register(BuiltinUpgrade.RADIATION_SHIELDING);
+    public static final RegistryObject<PNCUpgrade> GILDED = register(BuiltinUpgrade.GILDED);
 
     private static RegistryObject<PNCUpgrade> register(BuiltinUpgrade upgrade) {
         return UPGRADES_DEFERRED.register(upgrade.name, () -> new PNCUpgrade(upgrade.maxTier, upgrade.depModIds));
@@ -70,7 +71,8 @@ public class ModUpgrades {
         FLIPPERS("flippers"),
         STANDBY("standby"),
         MINIGUN("minigun"),
-        RADIATION_SHIELDING("radiation_shielding", 1, ModIds.MEKANISM);
+        RADIATION_SHIELDING("radiation_shielding", 1, ModIds.MEKANISM),
+        GILDED("gilded");
 
         private final String name;
         private final int maxTier;

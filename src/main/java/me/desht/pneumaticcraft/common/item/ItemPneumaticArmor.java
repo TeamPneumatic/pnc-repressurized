@@ -61,6 +61,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -390,6 +391,11 @@ public class ItemPneumaticArmor extends ArmorItem implements
         // default IDyeableArmor gives undyed items a leather-brown colour... override for compressed-iron-grey
         CompoundTag nbt = stack.getTagElement("display");
         return nbt != null && nbt.contains("color", Tag.TAG_ANY_NUMERIC) ? nbt.getInt("color") : DEFAULT_PRIMARY_COLOR;
+    }
+
+    @Override
+    public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+        return UpgradableItemUtils.getUpgrades(stack, ModUpgrades.GILDED.get()) > 0;
     }
 
     /**
