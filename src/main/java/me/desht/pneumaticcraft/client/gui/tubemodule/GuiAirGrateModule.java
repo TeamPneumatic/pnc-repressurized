@@ -64,7 +64,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
         helpLabel.visible = this.module.isUpgraded();
 
         WidgetButtonExtended advPCB = new WidgetButtonExtended(this.guiLeft + 10, this.guiTop + 21, 20, 20, TextComponent.EMPTY)
-                .setRenderStacks(new ItemStack(ModItems.ADVANCED_PCB.get()))
+                .setRenderStacks(new ItemStack(ModItems.MODULE_EXPANSION_CARD.get()))
                 .setTooltipKey("pneumaticcraft.gui.redstoneModule.addAdvancedPCB").setVisible(false);
         advPCB.visible = !module.isUpgraded();
         addRenderableWidget(advPCB);

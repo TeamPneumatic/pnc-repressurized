@@ -298,7 +298,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo
                 if (!simulate) module.onPlaced();
                 return true;
             }
-        } else if (heldStack.getItem() == ModItems.ADVANCED_PCB.get() && !simulate) {
+        } else if (heldStack.getItem() == ModItems.MODULE_EXPANSION_CARD.get() && !simulate) {
             TubeModule module = BlockPressureTube.getFocusedModule(world, pos, player);
             if (module != null && !module.isUpgraded() && module.canUpgrade()) {
                 if (!world.isClientSide) {

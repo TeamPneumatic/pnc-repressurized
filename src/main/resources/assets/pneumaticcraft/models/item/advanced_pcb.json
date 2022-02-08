@@ -1,6 +1,0 @@
-{
-   "textures" : {
-      "layer0" : "pneumaticcraft:item/advanced_pcb"
-   },
-   "parent" : "item/generated"
-}

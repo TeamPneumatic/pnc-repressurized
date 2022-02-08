@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "Note that $(thing)flow/$ is a different physical quantity to $(l:base_concepts/pressure)pressure/$. Flow is the amount of air traveling through a tube per tick. So if you have (say) an $(l:machines/elevator)Elevator/$ which isn't running, the flow will be 0, but when it runs it will be consuming air, so the flow will be non-zero. So this module can be used to detect if a machine is using air.$(p)The Flow Detector Module does not accept an $(l:tubes/advanced_pcb)Advanced PCB/$."
+      "text": "Note that $(thing)flow/$ is a different physical quantity to $(l:base_concepts/pressure)pressure/$. Flow is the amount of air traveling through a tube per tick. So if you have (say) an $(l:machines/elevator)Elevator/$ which isn't running, the flow will be 0, but when it runs it will be consuming air, so the flow will be non-zero. So this module can be used to detect if a machine is using air.$(p)The Flow Detector Module does not accept an $(l:tubes/module_expansion_card)Module Expansion Card/$."
     },
     {
       "type": "crafting",

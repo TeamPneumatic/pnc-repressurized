@@ -122,7 +122,7 @@ public abstract class TubeModule {
         NonNullList<ItemStack> drops = NonNullList.create();
         if (shouldDrop) {
             drops.add(new ItemStack(getItem()));
-            if (upgraded) drops.add(new ItemStack(ModItems.ADVANCED_PCB.get()));
+            if (upgraded) drops.add(new ItemStack(ModItems.MODULE_EXPANSION_CARD.get()));
         }
         return drops;
     }
@@ -195,7 +195,7 @@ public abstract class TubeModule {
 
     public void addInfo(List<Component> curInfo) {
         if (upgraded) {
-            ItemStack stack = new ItemStack(ModItems.ADVANCED_PCB.get());
+            ItemStack stack = new ItemStack(ModItems.MODULE_EXPANSION_CARD.get());
             curInfo.add(stack.getHoverName().copy().append(" installed").withStyle(ChatFormatting.GREEN));
         }
         if (this instanceof INetworkedModule) {

@@ -75,7 +75,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModBlocks.LIQUID_COMPRESSOR.get()
         ).save(consumer);
 
-        shaped(ModItems.ADVANCED_PCB.get(), 4, ModItems.PRINTED_CIRCUIT_BOARD.get(),
+        shaped(ModItems.MODULE_EXPANSION_CARD.get(), 4, ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "RPR/PCP/RPR",
                 'R', Tags.Items.DUSTS_REDSTONE,
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,

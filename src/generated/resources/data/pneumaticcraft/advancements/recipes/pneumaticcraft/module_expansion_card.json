@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "pneumaticcraft:advanced_pcb"
+      "pneumaticcraft:module_expansion_card"
     ]
   },
   "criteria": {
@@ -21,7 +21,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "pneumaticcraft:advanced_pcb"
+        "recipe": "pneumaticcraft:module_expansion_card"
       }
     }
   },

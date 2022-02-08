@@ -18,8 +18,8 @@
     },
     {
       "type": "text",
-      "title": "Advanced PCB",
-      "text": "When you apply an $(l:tubes/advanced_pcb)Advanced PCB/$ to the Regulator Module, the module gains a GUI providing far more control over the threshold level. You can set a precise threshold in the GUI, or with the $(bold)Advanced Config/$ checkbox, configure interpolated threshold levels based on the redstone signal. This functions exactly like the $(l:tubes/safety_module)Safety Module/$."
+      "title": "Module Expansion Card",
+      "text": "When you apply an $(l:tubes/module_expansion_card)Module Expansion Card/$ to the Regulator Module, the module gains a GUI providing far more control over the threshold level. You can set a precise threshold in the GUI, or with the $(bold)Advanced Config/$ checkbox, configure interpolated threshold levels based on the redstone signal. This functions exactly like the $(l:tubes/safety_module)Safety Module/$."
     },
     {
       "type": "crafting",

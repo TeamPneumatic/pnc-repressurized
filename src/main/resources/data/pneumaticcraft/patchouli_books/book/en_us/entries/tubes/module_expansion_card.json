@@ -1,0 +1,17 @@
+{
+  "name": "Module Expansion Card",
+  "icon": "pneumaticcraft:module_expansion_card",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The $(item)Module Expansion Card/$ is a pluggable circuit board which you can attach to $(l:tubes/tube_modules)Tube Modules/$ to enhance their functionality in various ways. $(thing)Right-click/$ the card on a Tube Module to apply it.$(p)See the pages for individual tube modules for more information on how the module is enhanced."
+    },
+    {
+      "type": "crafting",
+      "text": "Creating a Module Expansion Card",
+      "recipe": "pneumaticcraft:module_expansion_card"
+    }
+  ]
+}

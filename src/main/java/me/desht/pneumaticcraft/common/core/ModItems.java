@@ -59,7 +59,7 @@ public class ModItems {
     public static final RegistryObject<Item> NUKE_VIRUS = register("nuke_virus");
     public static final RegistryObject<Item> COMPRESSED_IRON_GEAR = register("compressed_iron_gear");
     public static final RegistryObject<Item> PROGRAMMING_PUZZLE = register("programming_puzzle");
-    public static final RegistryObject<Item> ADVANCED_PCB = register("advanced_pcb");
+    public static final RegistryObject<Item> MODULE_EXPANSION_CARD = register("module_expansion_card");
     public static final RegistryObject<Item> LOGISTICS_CORE = register("logistics_core");
     public static final RegistryObject<Item> UPGRADE_MATRIX = register("upgrade_matrix");
     public static final RegistryObject<Item> WHEAT_FLOUR = register("wheat_flour");
