@@ -160,14 +160,16 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     private void updateClientSideArmor(EquipmentSlot slot) {
         Player player = ClientUtils.getClientPlayer();
         ItemStack stack = player.getItemBySlot(slot);
-        if (stack.getItem() instanceof ItemPneumaticArmor) {
-            ((ItemPneumaticArmor) stack.getItem()).setColor(stack, colors[slot.getIndex()][SelectorType.PRIMARY.ordinal()]);
-            ((ItemPneumaticArmor) stack.getItem()).setSecondaryColor(stack, colors[slot.getIndex()][SelectorType.SECONDARY.ordinal()]);
+        if (stack.getItem() instanceof ItemPneumaticArmor armor) {
+            armor.setColor(stack, colors[slot.getIndex()][SelectorType.PRIMARY.ordinal()]);
+            armor.setSecondaryColor(stack, colors[slot.getIndex()][SelectorType.SECONDARY.ordinal()]);
             if (slot == EquipmentSlot.HEAD) {
-                ((ItemPneumaticArmor) stack.getItem()).setEyepieceColor(stack, colors[slot.getIndex()][SelectorType.EYEPIECE.ordinal()]);
+                armor.setEyepieceColor(stack, colors[slot.getIndex()][SelectorType.EYEPIECE.ordinal()]);
             }
         }
-        for (EquipmentSlot slot2: EquipmentSlot.values()) HUDHandler.getInstance().updateOverlayColors(slot2);
+        for (EquipmentSlot slot2: EquipmentSlot.values()) {
+            HUDHandler.getInstance().updateOverlayColors(slot2);
+        }
         selectorButtons.get((3 - slot.getIndex()) * SelectorType.values().length).setRenderStacks(stack);
         needSave = true;
     }

@@ -446,6 +446,7 @@ public class ClientSetup {
         cr.registerHandler(r.nightVisionHandler, new NightVisionClientHandler());
         cr.registerHandler(r.scubaHandler, new ScubaClientHandler());
         cr.registerHandler(r.hackHandler, new HackClientHandler());
+        cr.registerHandler(r.enderVisorHandler, new EnderVisorClientHandler());
 
         cr.registerHandler(r.magnetHandler, new MagnetClientHandler());
         cr.registerHandler(r.chargingHandler, new ChargingClientHandler());

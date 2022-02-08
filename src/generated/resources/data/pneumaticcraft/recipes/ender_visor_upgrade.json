@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "tag": "pneumaticcraft:upgrade_components"
+    },
+    "X": {
+      "item": "minecraft:chorus_flower"
+    },
+    "C": {
+      "item": "minecraft:carved_pumpkin"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:ender_visor_upgrade"
+  }
+}

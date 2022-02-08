@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EnderVisorClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
@@ -65,10 +66,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -77,6 +80,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -123,6 +127,11 @@ public class ItemPneumaticArmor extends ArmorItem implements
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
         return new AirHandlerItemStack(stack, 10F);
+    }
+
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        consumer.accept(new EnderVisorClientHandler.PumpkinOverlay());
     }
 
     /**
@@ -396,6 +405,15 @@ public class ItemPneumaticArmor extends ArmorItem implements
     @Override
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
         return UpgradableItemUtils.getUpgrades(stack, ModUpgrades.GILDED.get()) > 0;
+    }
+
+    @Override
+    public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
+        if (stack.getItem() instanceof ItemPneumaticArmor) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+            return handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().enderVisorHandler, true);
+        }
+        return false;
     }
 
     /**

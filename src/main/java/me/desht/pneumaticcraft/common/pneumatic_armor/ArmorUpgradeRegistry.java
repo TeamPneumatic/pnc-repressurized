@@ -50,6 +50,7 @@ public enum ArmorUpgradeRegistry {
     public final NightVisionHandler nightVisionHandler;
     public final ScubaHandler scubaHandler;
     public final HackHandler hackHandler;
+    public final EnderVisorHandler enderVisorHandler;
 
     public final MagnetHandler magnetHandler;
     public final ChargingHandler chargingHandler;
@@ -83,6 +84,7 @@ public enum ArmorUpgradeRegistry {
         nightVisionHandler = registerUpgradeHandler(new NightVisionHandler());
         scubaHandler = registerUpgradeHandler(new ScubaHandler());
         hackHandler = registerUpgradeHandler(new HackHandler());
+        enderVisorHandler = registerUpgradeHandler(new EnderVisorHandler());
 
         magnetHandler = registerUpgradeHandler(new MagnetHandler());
         chargingHandler = registerUpgradeHandler(new ChargingHandler());

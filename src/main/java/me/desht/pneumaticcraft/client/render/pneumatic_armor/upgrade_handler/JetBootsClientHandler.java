@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.JetBootsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -146,7 +147,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
                 GuiUtils.renderItemStack(matrixStack, ROTOR, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
-            if (Minecraft.getInstance().player.isFallFlying()) {
+            if (ClientUtils.getClientPlayer().isFallFlying()) {
                 GuiUtils.renderItemStack(matrixStack, ELYTRA, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
