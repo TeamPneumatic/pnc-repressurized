@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionHand;
@@ -44,12 +45,15 @@ public class ItemBandage extends Item {
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level worldIn, LivingEntity entityLiving) {
-        if (entityLiving instanceof Player) {
-            entityLiving.setHealth(entityLiving.getHealth() + 6f);
+        if (entityLiving instanceof Player player) {
+            player.setHealth(player.getHealth() + ConfigHelper.common().general.bandageHealthRestored.get().floatValue());
             stack.shrink(1);
-            ((Player) entityLiving).getCooldowns().addCooldown(stack.getItem(), 160);
+            int cooldown = ConfigHelper.common().general.bandageCooldown.get();
+            if (cooldown > 0) {
+                player.getCooldowns().addCooldown(stack.getItem(), cooldown);
+            }
             if (worldIn.isClientSide) {
-                Vec3 pos = entityLiving.getEyePosition(1f).add(entityLiving.getLookAngle().scale(0.5));
+                Vec3 pos = player.getEyePosition(1f).add(player.getLookAngle().scale(0.5));
                 for (int i = 0; i < 5; i++) {
                     worldIn.addParticle(ParticleTypes.HEART, pos.x + worldIn.random.nextFloat() - 0.5, pos.y + worldIn.random.nextFloat() - 0.5, pos.z + worldIn.random.nextFloat() - 0.5, 0, 0.05, 0);
                 }
@@ -60,7 +64,7 @@ public class ItemBandage extends Item {
 
     @Override
     public int getUseDuration(ItemStack stack) {
-        return 40;
+        return ConfigHelper.common().general.bandageUseTime.get();
     }
 
     @Override
