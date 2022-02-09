@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIForEachCoordinate;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -110,10 +111,12 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
-        // TODO 1.18+ - a test for (0,0,0) isn't so useful any longer, due to world height limit changes
-        //   need an alternative way of specifying "invalid position" (maybe a coordinate operator option to delete variables?)
+        // In 1.16.5 and earlier, setting variable to (0,0,0) broke out of the loop, which worked most of the time
+        // Now in 1.18+, (0,0,0) is even more likely to be a perfectly valid blockpos
+        //   So to break out of a loop now, set the variable to any position outside this world's build height
+        BlockPos varPos = aiManager.getCoordinate(drone.getOwnerUUID(), elementVariable).orElse(PneumaticCraftUtils.invalidPos());
         if (!locations.isEmpty() && ai != null
-                && (traversedPositions.size() == 1 || !aiManager.getCoordinate(drone.getOwnerUUID(), elementVariable).orElse(BlockPos.ZERO).equals(BlockPos.ZERO))) {
+                && (traversedPositions.size() == 1 || !drone.world().isOutsideBuildHeight(varPos))) {
             BlockPos pos = ai.getCurCoord();
             if (pos != null) {
                 aiManager.setCoordinate(elementVariable, pos);

@@ -24,6 +24,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
@@ -233,7 +234,8 @@ public class RenderUtils {
         Matrix4f posMat = matrixStack.last().pose();
         BufferBuilder wr = Tesselator.getInstance().getBuilder();
         RenderSystem.lineWidth(lineWidth);
-        wr.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         wr.vertex(posMat, line.startX, line.startY, line.startZ)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
