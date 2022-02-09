@@ -4,6 +4,35 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+## Minecraft 1.18.1
+
+## 3.0.0-??? (unreleased)
+
+This release is based on the latest 1.16.5 code, with the following changes and additions:
+
+### New
+
+* New armor upgrades:
+  * Ender Visor: Pneumatic Helmet upgrade to prevent Enderman aggro
+  * Gilded: Pneumatic Armor upgrade (any slot) to prevent Piglin aggro
+* There are now two types of global variable (as used by Drones, GPS Tools, Universal Sensors & Remotes)
+  * Player-global variables, prefixed with a "#", are individual to each player on a server
+  * Server-global variable, prefixed with a "%", are common to *all* players (this is how global variables worked in 1.16.5)
+* All PneumaticCraft commands are now under the common `/pncr` root, e.g. `/pncr dump_nbt`
+* Config file has been reorganised and cleaned up a fair bit
+  * New Drones section in `pneumaticcraft-common.toml`
+  * Dropped `explosionCrafting` and `coalToDiamonds` - both of these can be achieved with recipe datapacks
+* "Used by" tooltip for upgrades now scrolls if over 12 lines
+* The Advanced PCB is now known as the Module Expansion Card (because that's what it is)
+* The Printed Circuit Board is now known as the Finished PCB
+  * Searching for "PCB" in JEI now finds all PCB items
+* Electrostatic Compressor now looks at the `pneumaticcraft:electrostatic_grid` to determine what blocks can be used for the grid
+  * Default is just `minecraft:iron_bars`
+* Oil lake frequency values are now done slightly differently in config
+  * Separate `underground_oil_lake_frequency` and `surface_oil_lake_frequency` settings
+  * Frequencies are now a "1 in x" values rather than a percentage as in 1.16.5
+  * E.g. frequency of 25 means a 1 in 25 chance of trying to generate a lake in a given chunk 
+
 ## Minecraft 1.16.5
 
 ## Dependencies
