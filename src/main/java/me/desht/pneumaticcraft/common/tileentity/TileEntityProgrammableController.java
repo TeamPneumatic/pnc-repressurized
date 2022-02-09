@@ -229,7 +229,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 drone.setPos(curX, curY, curZ);
                 ClientUtils.spawnEntityClientside(drone);
             }
-        } else {
+        } else if (drone != null) {
+            // drone could still be null if in different (unloaded) chunk from controller
             drone.setPos(curX, curY, curZ);
         }
     }
