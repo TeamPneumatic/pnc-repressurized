@@ -2,31 +2,31 @@
   "processor": "me.desht.pneumaticcraft.common.thirdparty.patchouli.ProcessorAssemblySystem",
   "components": [
     {
-      "type": "header",
+      "type": "patchouli:header",
       "text": "#name",
       "x": -1,
       "y": -6
     },
     {
-      "type": "item",
+      "type": "patchouli:item",
       "item": "#input",
       "x": 13,
       "y": 8
     },
     {
-      "type": "item",
+      "type": "patchouli:item",
       "item": "#program",
       "x": 48,
       "y": 8
     },
     {
-      "type": "item",
+      "type": "patchouli:item",
       "item": "#output",
       "x": 83,
       "y": 8
     },
     {
-      "type": "image",
+      "type": "patchouli:image",
       "image": "pneumaticcraft:textures/patchouli/elements.png",
       "x": 10,
       "y": 5,
@@ -36,7 +36,7 @@
       "height": 22
     },
     {
-      "type": "text",
+      "type": "patchouli:text",
       "text": "#desc",
       "x": 5,
       "y": 30

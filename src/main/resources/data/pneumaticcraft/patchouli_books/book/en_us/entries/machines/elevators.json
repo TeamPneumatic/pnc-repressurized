@@ -43,7 +43,7 @@
         "pneumaticcraft:textures/patchouli/elevator.png"
       ],
       "border": "true",
-      "text": "$(italic)A small Elevator with 3 Elevator Callers/$"
+      "text": "$(italic)A 3x3 Elevator with two visible Elevator Callers/$"
     },
     {
       "type": "crafting",

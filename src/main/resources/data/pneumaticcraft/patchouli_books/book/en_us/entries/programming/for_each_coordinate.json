@@ -11,7 +11,7 @@
     {
       "type": "text",
       "title": "Breaking",
-      "text": "You can break out of the loop by setting the coordinate variable used by the $(thing)For Each Coordinate/$ to (0,0,0). Next time, when the program jumps back to the $(thing)For Each Coordinate/$, it will notice this and cancel further traversal of coordinates."
+      "text": "You can break out of the loop by setting the coordinate variable used by the $(thing)For Each Coordinate/$ to any blockpos outside the current world's build height. Next time, when the program jumps back to the $(thing)For Each Coordinate/$, it will notice this and cancel further traversal of coordinates.$(p)$(italic)This behaviour has changed in MC 1.18+ due to new world height functionality; (0,0,0) used to be considered invalid, which was always dubious (void worlds), but even more so now./$"
     },
     {
       "type": "image",

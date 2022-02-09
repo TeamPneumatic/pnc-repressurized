@@ -2,13 +2,13 @@
   "processor": "me.desht.pneumaticcraft.common.thirdparty.patchouli.ProcessorThermoPlant",
   "components": [
     {
-      "type": "header",
+      "type": "patchouli:header",
       "text": "#header",
       "x": -1,
       "y": -6
     },
     {
-      "type": "custom",
+      "type": "patchouli:custom",
       "class": "me.desht.pneumaticcraft.common.thirdparty.patchouli.ComponentFluid",
       "fluid": "#fluid_input",
       "scale": "#scale",
@@ -16,13 +16,13 @@
       "y": 7
     },
     {
-      "type": "item",
+      "type": "patchouli:item",
       "item": "#item_input",
       "x": 38,
       "y": 7
     },
     {
-      "type": "custom",
+      "type": "patchouli:custom",
       "class": "me.desht.pneumaticcraft.common.thirdparty.patchouli.ComponentFluid",
       "fluid": "#fluid_output",
       "scale": "#scale",
@@ -30,13 +30,13 @@
       "y": 7
     },
     {
-      "type": "item",
+      "type": "patchouli:item",
       "item": "#item_output",
       "x": 53,
       "y": 55
     },
     {
-      "type": "image",
+      "type": "patchouli:image",
       "image": "pneumaticcraft:textures/patchouli/elements.png",
       "x": 10,
       "y": 5,
@@ -46,7 +46,7 @@
       "height": 67
     },
     {
-      "type": "text",
+      "type": "patchouli:text",
       "text": "#text",
       "x": 5,
       "y": 80
