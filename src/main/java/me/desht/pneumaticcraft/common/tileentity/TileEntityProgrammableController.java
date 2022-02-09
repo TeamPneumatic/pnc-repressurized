@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
@@ -255,7 +256,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         }
         prevChunkPos = newChunkPos;
         fp.tick();
-        heldItem = fp.getMainHandItem();
+
+        heldItem = ConfigHelper.common().drones.dronesRenderHeldItem.get() ? fp.getMainHandItem() : ItemStack.EMPTY;
 
         if (getPressure() >= getMinWorkingPressure()) {
             if (!isIdle) {
