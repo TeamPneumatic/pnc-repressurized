@@ -65,4 +65,8 @@ public abstract class EntityDroneBase extends PathfinderMob {
     public abstract String getLabel();
 
     public abstract boolean isTeleportRangeLimited();
+
+    public boolean hasMinigun() {
+        return false;
+    }
 }

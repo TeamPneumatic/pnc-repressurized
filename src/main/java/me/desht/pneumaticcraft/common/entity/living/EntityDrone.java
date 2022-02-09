@@ -664,6 +664,7 @@ public class EntityDrone extends EntityDroneBase implements
         entityData.set(HAS_MINIGUN, hasMinigun);
     }
 
+    @Override
     public boolean hasMinigun() {
         return entityData.get(HAS_MINIGUN);
     }
@@ -672,8 +673,8 @@ public class EntityDrone extends EntityDroneBase implements
         return entityData.get(AMMO);
     }
 
-    private void setAmmoColor(ItemStack ammo) {
-        int color = ammo.getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammo.getItem()).getAmmoColor(ammo) : 0xFFFF0000;
+    private void setAmmoColor(ItemStack ammoStack) {
+        int color = ammoStack.getItem() instanceof ItemGunAmmo ammo ? ammo.getAmmoColor(ammoStack) : 0xFFFF0000;
         entityData.set(AMMO, color);
     }
 

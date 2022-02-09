@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.client.render.entity.drone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import net.minecraft.client.Minecraft;
@@ -39,11 +38,9 @@ public class DroneHeldItemLayer extends RenderLayer<EntityDroneBase, ModelDrone>
 
     @Override
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, EntityDroneBase entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entityIn instanceof EntityDrone drone) {
-            ItemStack held = drone.getDroneHeldItem();
-            if (!held.isEmpty() && !(held.getItem() instanceof ItemGunAmmo && drone.hasMinigun())) {
-                renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F));
-            }
+        ItemStack held = entityIn.getDroneHeldItem();
+        if (!held.isEmpty() && !(held.getItem() instanceof ItemGunAmmo && entityIn.hasMinigun())) {
+            renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F));
         }
     }
 

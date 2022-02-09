@@ -91,7 +91,7 @@ public class EntityProgrammableController extends EntityDroneBase {
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return controller == null ? ItemStack.EMPTY : controller.getFakePlayer().getMainHandItem();
+        return controller == null ? ItemStack.EMPTY : controller.heldItem;
     }
 
     @Override

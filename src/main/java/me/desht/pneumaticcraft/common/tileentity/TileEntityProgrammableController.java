@@ -128,6 +128,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     private final DroneItemHandler droneItemHandler = new DroneItemHandler(this, 1);
 
+    private final ControllerNavigator controllerNavigator = new ControllerNavigator();
+
     private EntityProgrammableController drone;
     private DroneAIManager aiManager;
     private DroneFakePlayer fakePlayer;
@@ -147,6 +149,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private int speedUpgrades;
     @DescSynced
     public boolean isIdle;
+    @DescSynced
+    public ItemStack heldItem = ItemStack.EMPTY;
     @GuiSynced
     public boolean shouldChargeHeldItem;
     @DescSynced
@@ -201,16 +205,16 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         super.tickCommonPre();
 
         double speed = BASE_SPEED + speedUpgrades * SPEED_PER_UPGRADE;
-        if (PneumaticCraftUtils.distBetweenSq(getBlockPos(), targetX, targetY, targetZ) <= 1 && isIdle) {
-            curX = targetX;
-            curY = targetY;
-            curZ = targetZ;
-        } else if (PneumaticCraftUtils.distBetweenSq(curX, curY, curZ, targetX, targetY, targetZ) > 0.25) {
+        if (PneumaticCraftUtils.distBetweenSq(curX, curY, curZ, targetX, targetY, targetZ) > speed / 2d) {
             // dist-between check here avoids drone "jitter" when it's very near its target
             Vec3 vec = new Vec3(targetX - curX, targetY - curY, targetZ - curZ).normalize().scale(speed);
             curX += vec.x;
             curY += vec.y;
             curZ += vec.z;
+        } else {
+            curX = targetX;
+            curY = targetY;
+            curZ = targetZ;
         }
     }
 
@@ -246,10 +250,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         fp.setPos(curX, curY, curZ);
         ChunkPos newChunkPos = new ChunkPos((int)curX >> 4, (int)curZ >> 4);
         if (prevChunkPos == null || !prevChunkPos.equals(newChunkPos)) {
-            handleDynamicChunkloading(prevChunkPos, newChunkPos);
+            handleDynamicChunkloading(newChunkPos);
         }
         prevChunkPos = newChunkPos;
         fp.tick();
+        heldItem = fp.getMainHandItem();
 
         if (getPressure() >= getMinWorkingPressure()) {
             if (!isIdle) {
@@ -267,8 +272,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         }
     }
 
-    private void handleDynamicChunkloading(ChunkPos oldPos, ChunkPos newPos) {
-//        Log.info("drone moved from " + oldPos + " to " + newPos);
+    private void handleDynamicChunkloading(ChunkPos newPos) {
+//        Log.info("drone moved into chunk " + newPos);
         for (int cx = newPos.x - 1; cx <= newPos.x + 1; cx++) {
             for (int cz = newPos.z - 1; cz <= newPos.z + 1; cz++) {
                 ChunkPos cp = new ChunkPos(cx, cz);
@@ -585,36 +590,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public IPathNavigator getPathNavigator() {
-        return new IPathNavigator() {
-
-            @Override
-            public boolean moveToXYZ(double x, double y, double z) {
-                if (isBlockValidPathfindBlock(new BlockPos(x, y, z))) {
-                    targetX = x + 0.5;
-                    targetY = y - 0.3;
-                    targetZ = z + 0.5;
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public boolean moveToEntity(Entity entity) {
-                return moveToXYZ(entity.getX(), entity.getY() + 0.3, entity.getZ());
-            }
-
-            @Override
-            public boolean hasNoPath() {
-                return PneumaticCraftUtils.distBetweenSq(curX, curY, curZ, targetX, targetY, targetZ) < 0.5;
-            }
-
-            @Override
-            public boolean isGoingToTeleport() {
-                return false;
-            }
-
-        };
+        return controllerNavigator;
     }
 
     @Override
@@ -901,6 +877,35 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
+        }
+    }
+
+    private class ControllerNavigator implements IPathNavigator {
+        @Override
+        public boolean moveToXYZ(double x, double y, double z) {
+            if (isBlockValidPathfindBlock(new BlockPos(x, y, z))) {
+                targetX = x + 0.5;
+                targetY = y /*+ 0.5*/;
+                targetZ = z + 0.5;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean moveToEntity(Entity entity) {
+            return moveToXYZ(entity.getX(), entity.getY() + 0.3, entity.getZ());
+        }
+
+        @Override
+        public boolean hasNoPath() {
+            return PneumaticCraftUtils.distBetweenSq(curX, curY, curZ, targetX, targetY, targetZ) < 0.5;
+        }
+
+        @Override
+        public boolean isGoingToTeleport() {
+            return false;
         }
     }
 }

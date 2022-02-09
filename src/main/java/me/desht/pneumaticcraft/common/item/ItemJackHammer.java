@@ -178,12 +178,11 @@ public class ItemJackHammer extends ItemPressurizable
 
     @Override
     public boolean onBlockStartBreak(ItemStack itemstack, BlockPos pos, Player player) {
-        if (!player.getCommandSenderWorld().isClientSide && !player.isCrouching()) {
-            ServerPlayer serverPlayer = (ServerPlayer) player;
-            Level world = serverPlayer.getCommandSenderWorld();
+        if (player instanceof ServerPlayer serverPlayer && !player.isCrouching()) {
+            Level level = serverPlayer.getCommandSenderWorld();
 
-            HitResult brtr = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
-            if (brtr instanceof BlockHitResult) {
+            HitResult hitResult = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
+            if (hitResult instanceof BlockHitResult blockHitResult) {
                 itemstack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
                     DigMode digMode = ItemJackHammer.getDigMode(itemstack);
 
@@ -196,7 +195,7 @@ public class ItemJackHammer extends ItemPressurizable
                         // sanity check
                         digMode = DigMode.MODE_1X1;
                     }
-                    Set<BlockPos> brokenPos = getBreakPositions(world, pos, ((BlockHitResult) brtr).getDirection(), player.getDirection(), digMode);
+                    Set<BlockPos> brokenPos = getBreakPositions(level, pos, blockHitResult.getDirection(), player.getDirection(), digMode);
                     brokenPos.remove(pos); // start pos already broken
 
                     float air = airHandler.getAir();
@@ -205,27 +204,27 @@ public class ItemJackHammer extends ItemPressurizable
                     if (magnet) usage *= 1.1f;
 
                     for (BlockPos pos1 : brokenPos) {
-                        BlockState state1 = world.getBlockState(pos1);
-                        if (state1.getDestroySpeed(world, pos1) < 0) continue;
+                        BlockState state1 = level.getBlockState(pos1);
+                        if (state1.getDestroySpeed(level, pos1) < 0) continue;
 
                         int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.level, serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1);
                         if (exp == -1) {
                             continue;
                         }
-                        if (world.getBlockEntity(pos1) != null) {
+                        if (level.getBlockEntity(pos1) != null) {
                             continue;
                         }
                         Block block = state1.getBlock();
-                        boolean removed = state1.onDestroyedByPlayer(world, pos1, player, true, world.getFluidState(pos1));
+                        boolean removed = state1.onDestroyedByPlayer(level, pos1, player, true, level.getFluidState(pos1));
                         if (removed) {
-                            block.destroy(world, pos1, state1);
+                            block.destroy(level, pos1, state1);
                             if (magnet) {
-                                magnetHarvest(block, world, player, pos, pos1, state1, itemstack);
+                                magnetHarvest(block, level, player, pos, pos1, state1, itemstack);
                             } else {
-                                block.playerDestroy(world, player, pos1, state1, null, itemstack);
+                                block.playerDestroy(level, player, pos1, state1, null, itemstack);
                             }
-                            if (exp > 0 && world instanceof ServerLevel) {
-                                block.popExperience((ServerLevel) world, magnet ? pos : pos1, exp);
+                            if (exp > 0 && level instanceof ServerLevel) {
+                                block.popExperience((ServerLevel) level, magnet ? pos : pos1, exp);
                             }
                             if (!player.isCreative()) {
                                 air -= usage;
@@ -244,13 +243,13 @@ public class ItemJackHammer extends ItemPressurizable
     }
 
     // just like Block#harvest, except all items are dropped in the same place (the block that was mined)
-    private static void magnetHarvest(Block block, Level world, Player player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
+    private static void magnetHarvest(Block block, Level level, Player player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
         player.awardStat(Stats.BLOCK_MINED.get(block));
         player.causeFoodExhaustion(0.005F);
-        if (world instanceof ServerLevel) {
-            Block.getDrops(state, (ServerLevel)world, pos, null, player, stack)
-                    .forEach((stackToSpawn) -> Block.popResource(world, pos0, stackToSpawn));
-            state.spawnAfterBreak((ServerLevel)world, pos, stack);
+        if (level instanceof ServerLevel serverLevel) {
+            Block.getDrops(state, serverLevel, pos, null, player, stack)
+                    .forEach((stackToSpawn) -> Block.popResource(level, pos0, stackToSpawn));
+            state.spawnAfterBreak(serverLevel, pos, stack);
         }
     }
 

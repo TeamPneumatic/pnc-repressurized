@@ -35,6 +35,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -129,7 +130,11 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 }
             }
             if (res.size() == 2) {
-                res.add(new TextComponent(type.toString()));
+                MutableComponent c = xlate(type.getTranslationKey()).append("/");
+                List<AreaTypeWidget> widgets = new ArrayList<>();
+                type.addUIWidgets(widgets);
+                c.append(String.join("/", widgets.stream().map(AreaTypeWidget::getCurValue).toList()));
+                res.add(c);
             }
         }
         return res;
