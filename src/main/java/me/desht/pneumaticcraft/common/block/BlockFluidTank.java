@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
-import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderFluidTank;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
@@ -37,7 +36,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -62,7 +60,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public class BlockFluidTank extends BlockPneumaticCraft
-        implements ColorHandlers.ITintableBlock, EntityBlockPneumaticCraft, IBlockComparatorSupport
+        implements EntityBlockPneumaticCraft, IBlockComparatorSupport
 {
     // TODO: Fix VoxelShapes to show the top/bottom when available is possible. Otherwise update this to be a full block
     private static final VoxelShape SHAPE = Stream.of(
@@ -156,19 +154,20 @@ public class BlockFluidTank extends BlockPneumaticCraft
 
     private boolean tryToggleConnection(TileEntityFluidTank thisTank, Direction dir) {
         BlockState state = thisTank.getBlockState();
-        TileEntityFluidTank neighbourTank = getTankAt(thisTank.getLevel(), thisTank.getBlockPos().relative(dir));
+        Level level = thisTank.nonNullLevel();
+        TileEntityFluidTank neighbourTank = getTankAt(level, thisTank.getBlockPos().relative(dir));
         if (neighbourTank == null) return false;
         BlockState stateOther = neighbourTank.getBlockState();
         boolean isConnected = state.getValue(connectionProperty(dir));
         if (isConnected) {
-            thisTank.getLevel().setBlockAndUpdate(thisTank.getBlockPos(), state.setValue(connectionProperty(dir), false));
-            thisTank.getLevel().setBlockAndUpdate(neighbourTank.getBlockPos(), stateOther.setValue(connectionProperty(dir.getOpposite()), false));
+            level.setBlockAndUpdate(thisTank.getBlockPos(), state.setValue(connectionProperty(dir), false));
+            level.setBlockAndUpdate(neighbourTank.getBlockPos(), stateOther.setValue(connectionProperty(dir.getOpposite()), false));
             return true;
         } else {
             FluidStack stack = thisTank.getTank().getFluid();
             if (neighbourTank.isFluidCompatible(stack, neighbourTank.getTank()) && neighbourTank.isNeighbourCompatible(stack, dir)) {
-                thisTank.getLevel().setBlockAndUpdate(thisTank.getBlockPos(), state.setValue(connectionProperty(dir), true));
-                thisTank.getLevel().setBlockAndUpdate(neighbourTank.getBlockPos(), stateOther.setValue(connectionProperty(dir.getOpposite()), true));
+                level.setBlockAndUpdate(thisTank.getBlockPos(), state.setValue(connectionProperty(dir), true));
+                level.setBlockAndUpdate(neighbourTank.getBlockPos(), stateOther.setValue(connectionProperty(dir.getOpposite()), true));
                 return true;
             }
         }
@@ -180,21 +179,13 @@ public class BlockFluidTank extends BlockPneumaticCraft
         return te instanceof TileEntityFluidTank ? (TileEntityFluidTank) te : null;
     }
 
-    @Override
-    public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
-        if (tintIndex == 1) {
-            return size.tintColor;
-        }
-        return 0xFFFFFFFF;
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return size.beFactory.apply(pPos, pState);
     }
 
-    public static class ItemBlockFluidTank extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered {
+    public static class ItemBlockFluidTank extends BlockItem implements IFluidRendered {
         public static final String TANK_NAME = "Tank";
         private final int capacity;
 
@@ -220,16 +211,6 @@ public class BlockFluidTank extends BlockPneumaticCraft
                 handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
                 return handler.getContainer();
             }).orElseThrow(RuntimeException::new);
-        }
-
-        // TODO: Remove tint as it is now Texture Based
-        @Override
-        public int getTintColor(ItemStack stack, int tintIndex) {
-            if (tintIndex == 1 && stack.getItem() instanceof ItemBlockFluidTank) {
-                Block b = ((ItemBlockFluidTank) stack.getItem()).getBlock();
-                return ((BlockFluidTank) b).size.tintColor;
-            }
-            return 0xFFFFFFFF;
         }
 
         @Override
@@ -258,18 +239,16 @@ public class BlockFluidTank extends BlockPneumaticCraft
     }
 
     public enum Size {
-        SMALL(32000, 0xFF909090, TileEntityFluidTank.Small::new),
-        MEDIUM(64000, 0xFFFFFF40, TileEntityFluidTank.Medium::new),
-        LARGE(128000, 0xFF91E8E4, TileEntityFluidTank.Large::new),
-        HUGE(512000, 0xFF5A3950, TileEntityFluidTank.Huge::new);
+        SMALL(32000, TileEntityFluidTank.Small::new),
+        MEDIUM(64000, TileEntityFluidTank.Medium::new),
+        LARGE(128000, TileEntityFluidTank.Large::new),
+        HUGE(512000, TileEntityFluidTank.Huge::new);
 
         private final int capacity;
-        private final int tintColor;
         private final BiFunction<BlockPos,BlockState,BlockEntity> beFactory;
 
-        Size(int capacity, int tintColor, BiFunction<BlockPos,BlockState,BlockEntity> beFactory) {
+        Size(int capacity, BiFunction<BlockPos, BlockState, BlockEntity> beFactory) {
             this.capacity = capacity;
-            this.tintColor = tintColor;
             this.beFactory = beFactory;
         }
 
