@@ -118,15 +118,19 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     @Override
     public List<Component> getExtraStringInfo() {
         List<Component> res = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            if (!varNames[i].isEmpty()) {
-                res.add(new TextComponent("\"" + varNames[i] + "\""));
-            } else if (PneumaticCraftUtils.isValidPos(pos[i])) {
-                res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[i])));
+        if (PneumaticCraftUtils.isValidPos(pos[0]) && pos[0].equals(pos[1])) {
+            res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[0])));
+        } else {
+            for (int i = 0; i < 2; i++) {
+                if (!varNames[i].isEmpty()) {
+                    res.add(new TextComponent("\"" + varNames[i] + "\""));
+                } else if (PneumaticCraftUtils.isValidPos(pos[i])) {
+                    res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[i])));
+                }
             }
-        }
-        if (res.size() == 2) {
-            res.add(new TextComponent(type.toString()));
+            if (res.size() == 2) {
+                res.add(new TextComponent(type.toString()));
+            }
         }
         return res;
     }
@@ -135,17 +139,21 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
-        int n = curTooltip.size();
-        for (int i = 0; i < 2; i++) {
-            String text = varNames[i].isEmpty() ?
-                    pos[i] == null ? null : PneumaticCraftUtils.posToString(pos[i]) :
-                    String.format("var \"%s\"", varNames[i]);
-            if (text != null) {
-                curTooltip.add(new TextComponent("P" + (i + 1) + ": ").append(new TextComponent(text).withStyle(ChatFormatting.YELLOW)));
+        if (PneumaticCraftUtils.isValidPos(pos[0]) && pos[0].equals(pos[1])) {
+            curTooltip.add(new TextComponent("P1: ").append(new TextComponent(PneumaticCraftUtils.posToString(pos[0])).withStyle(ChatFormatting.YELLOW)));
+        } else {
+            int n = curTooltip.size();
+            for (int i = 0; i < 2; i++) {
+                String text = varNames[i].isEmpty() ?
+                        pos[i] == null ? null : PneumaticCraftUtils.posToString(pos[i]) :
+                        String.format("var \"%s\"", varNames[i]);
+                if (text != null) {
+                    curTooltip.add(new TextComponent("P" + (i + 1) + ": ").append(new TextComponent(text).withStyle(ChatFormatting.YELLOW)));
+                }
             }
-        }
-        if (curTooltip.size() - n == 2) {
-            addAreaTypeTooltip(curTooltip);
+            if (curTooltip.size() - n == 2) {
+                addAreaTypeTooltip(curTooltip);
+            }
         }
     }
 
