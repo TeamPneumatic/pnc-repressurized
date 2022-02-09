@@ -32,6 +32,12 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * Separate `underground_oil_lake_frequency` and `surface_oil_lake_frequency` settings
   * Frequencies are now a "1 in x" values rather than a percentage as in 1.16.5
   * E.g. frequency of 25 means a 1 in 25 chance of trying to generate a lake in a given chunk 
+* Drone programming: Foreach Coordinate widget no longer use special pos (0,0,0) to break the loop
+  * This was always dubious, since (0,0,0) could be valid in a void world, but even more so now in 1.18+ with altered build height limits
+  * Now, setting the control variable to any position outside world build height breaks out of the loop
+* Programmable Controller: minidrone now renders its held item
+* Patchouli manual is now a resource-pack-based book (see https://vazkiimods.github.io/Patchouli/docs/upgrading/upgrade-guide-117#resource-pack-based-books)
+  * This means modpack & resource pack makers can modify it more easily...
 
 ## Minecraft 1.16.5
 
