@@ -168,8 +168,9 @@ public abstract class TileEntityBase extends BlockEntity
         if (descriptionFields == null) {
             descriptionFields = NetworkUtils.getSyncedFields(this, DescSynced.class);
             fieldsToSync = new BitSet(descriptionFields.size());
-            for (SyncedField<?> field : descriptionFields) {
-                field.update();
+            for (int i = 0; i < descriptionFields.size(); i++) {
+                SyncedField<?> field = descriptionFields.get(i);
+                if (field.update()) fieldsToSync.set(i);
             }
         }
         return descriptionFields;
