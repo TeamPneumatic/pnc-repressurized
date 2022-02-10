@@ -4,47 +4,73 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-## Minecraft 1.18.1
+# Minecraft 1.18.1
 
 ## 3.0.0-??? (unreleased)
 
 This release is based on the latest 1.16.5 code, with the following changes and additions:
 
-### New
-
+### New and Updated Gameplay Features
 * New armor upgrades:
   * Ender Visor: Pneumatic Helmet upgrade to prevent Enderman aggro
   * Gilded: Pneumatic Armor upgrade (any slot) to prevent Piglin aggro
 * There are now two types of global variable (as used by Drones, GPS Tools, Universal Sensors & Remotes)
   * Player-global variables, prefixed with a "#", are individual to each player on a server
   * Server-global variable, prefixed with a "%", are common to *all* players (this is how global variables worked in 1.16.5)
+* Drone programming: Foreach Coordinate widget no longer uses the special pos (0,0,0) to break the loop
+  * This was always dubious, since (0,0,0) could be valid in a void world, but even more so now in 1.18+ with altered build height limits
+  * Now, setting the control variable to any position outside the world build height breaks out of the foreach loop
+
+### QoL improvements
+* "Used by" tooltip for upgrades now scrolls if over 12 lines
+* Programmable Controller: minidrone now renders its held item
+* The Advanced PCB is now known as the Module Expansion Card (because that's what it is)
+* The Printed Circuit Board is now known as the Finished PCB
+  * Searching for "PCB" in JEI now finds all PCB items
+
+### Configuration and Management
 * All PneumaticCraft commands are now under the common `/pncr` root, e.g. `/pncr dump_nbt`
 * Config file has been reorganised and cleaned up a fair bit
   * New Drones section in `pneumaticcraft-common.toml`
   * Dropped `explosionCrafting` and `coalToDiamonds` - both of these can be achieved with recipe datapacks
-* "Used by" tooltip for upgrades now scrolls if over 12 lines
-* The Advanced PCB is now known as the Module Expansion Card (because that's what it is)
-* The Printed Circuit Board is now known as the Finished PCB
-  * Searching for "PCB" in JEI now finds all PCB items
-* Electrostatic Compressor now looks at the `pneumaticcraft:electrostatic_grid` to determine what blocks can be used for the grid
+  * Oil lake frequency values are now done slightly differently in config
+    * Separate `underground_oil_lake_frequency` and `surface_oil_lake_frequency` settings
+    * Frequencies are now "1 in x" values rather than a percentage as in 1.16.5
+    * E.g. frequency of 25 means a 1 in 25 chance of trying to generate a lake in any given chunk
+* Electrostatic Compressor now looks at the `pneumaticcraft:electrostatic_grid` block tag to determine what blocks can be used for the grid
   * Default is just `minecraft:iron_bars`
-* Oil lake frequency values are now done slightly differently in config
-  * Separate `underground_oil_lake_frequency` and `surface_oil_lake_frequency` settings
-  * Frequencies are now a "1 in x" values rather than a percentage as in 1.16.5
-  * E.g. frequency of 25 means a 1 in 25 chance of trying to generate a lake in a given chunk 
-* Drone programming: Foreach Coordinate widget no longer use special pos (0,0,0) to break the loop
-  * This was always dubious, since (0,0,0) could be valid in a void world, but even more so now in 1.18+ with altered build height limits
-  * Now, setting the control variable to any position outside world build height breaks out of the loop
-* Programmable Controller: minidrone now renders its held item
 * Patchouli manual is now a resource-pack-based book (see https://vazkiimods.github.io/Patchouli/docs/upgrading/upgrade-guide-117#resource-pack-based-books)
   * This means modpack & resource pack makers can modify it more easily...
 
-## Minecraft 1.16.5
+# Minecraft 1.16.5
 
 ## Dependencies
 
 * PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
+
+## 2.15.2-303 (4th Feb 2022)
+
+### Updates
+* Amadrone spawn-in location is now adjustable in config (`pneumaticcraft-common.toml`)
+  * See `amadrone_spawn_location` and `amadrone_spawn_location_relative_to_ground_level` settings
+  * May be useful in stoneblock-style worlds, where Amadrones can have trouble finding a place to spawn with default settings
+* PneumaticCraft Diesel & Biodiesel are no longer registered (in code) with Immersive Engineering as generator fuels
+  *  IE is moving away from code-based registration, since this is better done with datapacks
+* Compressed Iron Gears are now item-tagged as `forge:gears` and `forge:gears/compressed_iron`
+* Basic drones can now also be dyed via crafting recipe, same as standard Drones can be
+  * Dyeing in entity form (right-clicking drone with dye) also still works
+  * All drones now also show their dye color when in item form
+  * All basic drones now have a default dye color matching their main body (logistics = red, guard = blue, harvester = green, collector = yellow)
+
+### Fixes
+* Logistics Frames marked as invisible now fade in & out as they used to
+* Fixed Universal Sensors getting entity filters mixed up when multiple sensors use an "Entities In Range" sensor setting
+* Fixed Radiation Shielding Upgrades not protecting against Mekanism radiation (was built against Mek 10.0.x API)
+  * PNC:R now *requires* Mekanism 10.1.x (assuming it's installed) - it will no longer work with Mekanism 10.0.x
+* Fixed a few machines (Charging Station, Creative Compressor & Creative Compressed Iron Block) not always persisting their data across world reloads
+* Hopefully fix a CME causing player kicks when drones are deployed under certain circumstances (possibly related to carried equipment?)
+  * I could not reproduce this one myself, so hard to know for sure if it's fixed, but some extra-defensive coding has been added
 
 ## 2.15.1-297 (19th Jan 2022)
 
@@ -631,7 +657,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed client crash when players hit drones (bug introduced in 2.10.2 related to drones being immune to their own area attacks)
 * Fixed a server crash related to capturing Drones in a Mob Imprisonment Tool (Industrial Foregoing) and then releasing them
 
-## Minecraft 1.16.3 / 1.16.4 / 1.16.5
+# Minecraft 1.16.3 / 1.16.4 / 1.16.5
 
 ## 2.10.3-149 (6 Mar 2021)
 
@@ -1187,7 +1213,7 @@ This is an alpha intended for testing API updates, and a heavily-overhauled buil
 * Fixed client crash caused by certain mods trying to pass null world or blockpos data when querying blocks shapes for camouflageable blocks
   * Not a PNC bug as such, but pays to be defensive
   
-## Minecraft 1.16.3
+# Minecraft 1.16.3
 
 ## 2.4.5-62 (25 Oct 2020)
 
@@ -1277,11 +1303,11 @@ The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functio
 * Oil Lake worldgen blacklisting is now done by biome ID instead of dimension ID (see `oil_world_gen_blacklist` in `config/pneumaticcraft-common.toml`)
 * Oil Lakes can now generate in the Basalt Deltas biome in the Nether (but no other Nether biomes)
 
-## Minecraft 1.16.2
+# Minecraft 1.16.2
 
 *There were no public releases for Minecraft 1.16.2 (would have been PneumaticCraft: Repressurized 2.3.x).*
 
-## Minecraft 1.16.1
+# Minecraft 1.16.1
 
 The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 release (for MC 1.15.2), with a few minor player-visible changes.
 
@@ -1427,7 +1453,7 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 ### Fixes
 * Fixed fluid rendering tile entities not rendering when any GUI is open
 
-## Minecraft 1.15.2
+# Minecraft 1.15.2
 
 ## 1.4.2-58 (29 Jul 2020)
 
@@ -1775,7 +1801,7 @@ This release adds no major new features to the 1.14.4 version, but there are sev
 * Fixed multiblock elevators playing their sound effects much too loud.
 * JEI now shows all "special" crafting recipes: gun ammo + potion crafting, drone dyeing, drone upgrading, guidebook crafting and pneumatic helmet + one probe crafting.
 
-## Minecraft 1.14.4
+# Minecraft 1.14.4
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
