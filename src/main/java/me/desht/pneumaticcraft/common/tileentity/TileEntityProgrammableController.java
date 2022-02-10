@@ -888,7 +888,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         public boolean moveToXYZ(double x, double y, double z) {
             if (isBlockValidPathfindBlock(new BlockPos(x, y, z))) {
                 targetX = x + 0.5;
-                targetY = y /*+ 0.5*/;
+                targetY = y + 0.5;
                 targetZ = z + 0.5;
                 return true;
             } else {
