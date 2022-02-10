@@ -211,17 +211,14 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.general.use_up_dyes_when_coloring")
                 .define("use_up_dyes_when_coloring", false);
         general.bandageCooldown = builder
-                .worldRestart()
                 .comment("Cooldown, in ticks, between subsequent uses of Bandages. Set to 0 to disable cooldowns entirely.")
                 .translation("pneumaticcraft.config.common.general.bandage_cooldown")
                 .defineInRange("bandage_cooldown", 160, 0, Integer.MAX_VALUE);
         general.bandageUseTime = builder
-                .worldRestart()
                 .comment("Time, in ticks, it takes to use a bandage.")
                 .translation("pneumaticcraft.config.common.general.bandage_use_time")
                 .defineInRange("bandage_use_time", 40, 1, Integer.MAX_VALUE);
         general.bandageHealthRestored = builder
-                .worldRestart()
                 .comment("Health points restored on bandage use (1 health = half a heart).")
                 .translation("pneumaticcraft.config.common.general.bandage_health_restored")
                 .defineInRange("bandage_health_restored", 6.0, 1.0, Double.MAX_VALUE);
