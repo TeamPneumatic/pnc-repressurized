@@ -18,17 +18,16 @@
 package me.desht.pneumaticcraft.client.util;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
-import net.minecraft.client.ComponentCollector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -43,10 +42,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -65,7 +61,6 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GuiUtils {
@@ -344,8 +339,7 @@ public class GuiUtils {
     public static List<FormattedCharSequence> wrapTextComponentList(List<Component> text, int maxWidth, Font font) {
         ImmutableList.Builder<FormattedCharSequence> builder = ImmutableList.builder();
         for (Component line : text) {
-            // note: using workaround method below instead of RenderComponentsUtil.wrapComponents()
-            builder.addAll(wrapComponents(line, maxWidth, font));
+            builder.addAll(ComponentRenderUtils.wrapComponents(line, maxWidth, font));
         }
         return builder.build();
     }
@@ -354,36 +348,6 @@ public class GuiUtils {
         return Arrays.stream(StringUtils.splitByWholeSeparator(I18n.get(key, params), TRANSLATION_LINE_BREAK))
                 .map(TextComponent::new)
                 .collect(Collectors.toList());
-    }
-
-    //
-    // next 2 methods are temporary workaround for clashing 'pStyle' params in ITextProperties.of() leading to styles being lost
-    //
-    private static final FormattedCharSequence INDENT = FormattedCharSequence.codepoint(' ', Style.EMPTY);
-    private static List<FormattedCharSequence> wrapComponents(FormattedText textProperties, int maxWidth, Font font) {
-        // use instead of RenderComponentsUtil.wrapComponents()
-        ComponentCollector textpropertiesmanager = new ComponentCollector();
-        textProperties.visit((style, str) -> {
-            textpropertiesmanager.append(makeProperties(str, style));
-            return Optional.empty();
-        }, Style.EMPTY);
-        List<FormattedCharSequence> list = Lists.newArrayList();
-        font.getSplitter().splitLines(textpropertiesmanager.getResultOrEmpty(), maxWidth, Style.EMPTY, (props, bool) -> {
-            FormattedCharSequence ireorderingprocessor = Language.getInstance().getVisualOrder(props);
-            list.add(bool ? FormattedCharSequence.composite(INDENT, ireorderingprocessor) : ireorderingprocessor);
-        });
-        return list.isEmpty() ? Lists.newArrayList(FormattedCharSequence.EMPTY) : list;
-    }
-
-    private static FormattedText makeProperties(final String pText, final Style pStyle) {
-        return new FormattedText() {
-            public <T> Optional<T> visit(FormattedText.ContentConsumer<T> pAcceptor) {
-                return pAcceptor.accept(pText);
-            }
-            public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> pAcceptor, Style pStyle2) {
-                return pAcceptor.accept(pStyle2.applyTo(pStyle), pText);
-            }
-        };
     }
 
     public static void bindTexture(ResourceLocation texture, float r, float g, float b, float a) {

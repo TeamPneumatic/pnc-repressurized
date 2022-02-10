@@ -119,15 +119,19 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     @Override
     public List<Component> getExtraStringInfo() {
         List<Component> res = new ArrayList<>();
-        if (PneumaticCraftUtils.isValidPos(pos[0]) && pos[0].equals(pos[1])) {
+
+        if (varNames[0].isEmpty() && varNames[1].isEmpty() && PneumaticCraftUtils.isValidPos(pos[0]) && pos[0].equals(pos[1])) {
             res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[0])));
         } else {
-            for (int i = 0; i < 2; i++) {
-                if (!varNames[i].isEmpty()) {
-                    res.add(new TextComponent("\"" + varNames[i] + "\""));
-                } else if (PneumaticCraftUtils.isValidPos(pos[i])) {
-                    res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[i])));
-                }
+            if (!varNames[0].isEmpty()) {
+                res.add(new TextComponent("\"" + varNames[0] + "\""));
+            } else if (PneumaticCraftUtils.isValidPos(pos[0])) {
+                res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[0])));
+            }
+            if (!varNames[1].isEmpty() && !varNames[1].equals(varNames[0])) {
+                res.add(new TextComponent("\"" + varNames[1] + "\""));
+            } else if (PneumaticCraftUtils.isValidPos(pos[1]) && !pos[1].equals(pos[0])) {
+                res.add(new TextComponent(PneumaticCraftUtils.posToString(pos[1])));
             }
             if (res.size() == 2) {
                 MutableComponent c = xlate(type.getTranslationKey()).append("/");
@@ -144,14 +148,16 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
 
-        if (PneumaticCraftUtils.isValidPos(pos[0]) && pos[0].equals(pos[1])) {
+        if (!varNames[0].isEmpty() && varNames[0].equals(varNames[1])) {
+            curTooltip.add(new TextComponent(String.format("Var \"%s\"", varNames[0])).withStyle(ChatFormatting.YELLOW));
+        } else if (PneumaticCraftUtils.isValidPos(pos[0]) && pos[0].equals(pos[1])) {
             curTooltip.add(new TextComponent("P1: ").append(new TextComponent(PneumaticCraftUtils.posToString(pos[0])).withStyle(ChatFormatting.YELLOW)));
         } else {
             int n = curTooltip.size();
             for (int i = 0; i < 2; i++) {
                 String text = varNames[i].isEmpty() ?
                         pos[i] == null ? null : PneumaticCraftUtils.posToString(pos[i]) :
-                        String.format("var \"%s\"", varNames[i]);
+                        String.format("Var \"%s\"", varNames[i]);
                 if (text != null) {
                     curTooltip.add(new TextComponent("P" + (i + 1) + ": ").append(new TextComponent(text).withStyle(ChatFormatting.YELLOW)));
                 }

@@ -897,31 +897,32 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         List<Component> tooltip = new ArrayList<>();
         tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.desc"));
 
-        boolean startFound = false;
-        for (IProgWidget startWidget : te.progWidgets) {
-            if (startWidget instanceof ProgWidgetStart) {
-                startFound = true;
-                IProgWidget widget = startWidget.getOutputWidget();
-                if (widget instanceof ProgWidgetCoordinateOperator operatorWidget) {
-                    if (!operatorWidget.getVariable().isEmpty()) {
-                        try {
-                            if (generateRelativeOperators(operatorWidget, tooltip, true)) {
-                                convertToRelativeButton.active = true;
-                            } else {
-                                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom"));
-                            }
-                        } catch (NullPointerException e) {
-                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables"));
-                        }
-                    } else {
-                        tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName"));
-                    }
-                } else {
-                    tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate"));
-                }
-            }
+        IProgWidget startWidget = findWidget(te.progWidgets, ProgWidgetStart.class);
+        if (startWidget == null) {
+            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece"));
+            return;
         }
-        if (!startFound) tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece"));
+
+        IProgWidget widget = startWidget.getOutputWidget();
+        if (widget instanceof ProgWidgetCoordinateOperator operatorWidget) {
+            if (operatorWidget.getVariable().isEmpty()) {
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName"));
+                return;
+            }
+            try {
+                if (generateRelativeOperators(operatorWidget, tooltip, true)) {
+                    convertToRelativeButton.active = true;
+                } else {
+                    tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom"));
+                }
+            } catch (NullPointerException e) {
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables"));
+            }
+
+        } else {
+            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate"));
+        }
+
         convertToRelativeButton.setTooltipText(tooltip);
     }
 
