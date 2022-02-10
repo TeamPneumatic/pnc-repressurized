@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -44,6 +45,7 @@ import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -80,6 +82,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private WidgetTextField filterField;
     private WidgetButtonExtended undoButton, redoButton;
     private WidgetButtonExtended convertToRelativeButton;
+    private WidgetButtonExtended rotateCoordsButton;
 
     // those widgets currently visible in the tray
     private final List<IProgWidget> visibleSpawnWidgets = new ArrayList<>();
@@ -200,6 +203,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         redoButton = new WidgetButtonExtended(leftPos - 24, topPos + 23, 20, 20, "").withTag("redo");
         WidgetButtonExtended clearAllButton = new WidgetButtonExtended(leftPos - 24, topPos + 65, 20, 20, TextComponent.EMPTY, b -> clear());
         convertToRelativeButton = new WidgetButtonExtended(leftPos - 24, topPos + 86, 20, 20, "R", b -> convertToRelative());
+        rotateCoordsButton = new WidgetButtonExtended(leftPos - 24, topPos + 107, 20, 20, "90", b -> rotateCoords90())
+                .setTooltipText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.programmer.button.rotate90button.tooltip"));
 
         undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
@@ -213,6 +218,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addRenderableWidget(redoButton);
         addRenderableWidget(clearAllButton);
         addRenderableWidget(convertToRelativeButton);
+        addRenderableWidget(rotateCoordsButton);
 
         addLabel(title, leftPos + 7, topPos + 5, 0xFF404040);
 
@@ -893,34 +899,43 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     private void updateConvertRelativeState() {
+        convertToRelativeButton.visible = programmerDifficulty == WidgetDifficulty.ADVANCED;
+        rotateCoordsButton.visible = programmerDifficulty == WidgetDifficulty.ADVANCED;
+        if (programmerDifficulty != WidgetDifficulty.ADVANCED) {
+            return;
+        }
+
         convertToRelativeButton.active = false;
+        rotateCoordsButton.active = false;
+
         List<Component> tooltip = new ArrayList<>();
         tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.desc"));
 
         IProgWidget startWidget = findWidget(te.progWidgets, ProgWidgetStart.class);
         if (startWidget == null) {
-            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece"));
+            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece").withStyle(ChatFormatting.RED));
             return;
         }
 
         IProgWidget widget = startWidget.getOutputWidget();
         if (widget instanceof ProgWidgetCoordinateOperator operatorWidget) {
             if (operatorWidget.getVariable().isEmpty()) {
-                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName"));
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName").withStyle(ChatFormatting.RED));
                 return;
             }
             try {
+                rotateCoordsButton.active = true;
                 if (generateRelativeOperators(operatorWidget, tooltip, true)) {
                     convertToRelativeButton.active = true;
                 } else {
-                    tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom"));
+                    tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom").withStyle(ChatFormatting.RED));
                 }
             } catch (NullPointerException e) {
-                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables"));
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables").withStyle(ChatFormatting.RED));
             }
 
         } else {
-            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate"));
+            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate").withStyle(ChatFormatting.RED));
         }
 
         convertToRelativeButton.setTooltipText(tooltip);
@@ -953,10 +968,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     if (PneumaticCraftUtils.distBetweenSq(coord, 0, 0, 0) < 4096) {
                         // When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
                         if (tooltip != null)
-                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsNotChangedWarning", coordStr));
+                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsNotChangedWarning", coordStr)
+                                    .withStyle(ChatFormatting.YELLOW));
                     } else {
                         if (tooltip != null)
-                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsChangedWarning", coordStr));
+                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsChangedWarning", coordStr)
+                                    .withStyle(ChatFormatting.YELLOW));
                         if (!simulate) {
                             BlockPos offset = coord.subtract(baseCoord);
                             String var = makeOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
@@ -1008,6 +1025,38 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
         return true;
+    }
+
+    private void rotateCoords90() {
+        IProgWidget startWidget = findWidget(te.progWidgets, ProgWidgetStart.class);
+        if (startWidget == null) {
+            return;
+        }
+        boolean changed = false;
+        if (startWidget.getOutputWidget() instanceof ProgWidgetCoordinateOperator baseWidget && !baseWidget.getVariable().isEmpty()) {
+            String varName = baseWidget.getVariable();
+            for (IProgWidget widget : te.progWidgets) {
+                // iterate through all add/sub coordinate operators; try to find a coordinate on the right
+                // whose variable matches the base widget variable,
+                // and then at least one more coordinate to the right of that
+                // if that matches, assume it's an offset, and rotate it: (x,z) -> (z,-x)
+                if (widget instanceof ProgWidgetCoordinateOperator oper && oper.getOperator() == EnumOperator.PLUS_MINUS) {
+                    if (oper.getConnectedParameters()[0] instanceof ProgWidgetCoordinate c1
+                            && c1.isUsingVariable() && varName.equals(c1.getVariable())
+                            && c1.getConnectedParameters()[0] instanceof ProgWidgetCoordinate) {
+                        while (c1.getConnectedParameters()[0] instanceof ProgWidgetCoordinate c2) {
+                            BlockPos pos = c2.getCoordinate().orElse(BlockPos.ZERO);
+                            c2.setCoordinate(new BlockPos(pos.getZ(), pos.getY(), -pos.getX()));
+                            c1 = c2;
+                        }
+                        changed = true;
+                    }
+                }
+            }
+        }
+        if (changed) {
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+        }
     }
 
     private String makeOffsetVariable(Map<BlockPos, String> offsetToVariableNames, String baseVariable, BlockPos offset) {
