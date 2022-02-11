@@ -18,18 +18,26 @@
 package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModParticleTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.Random;
 
 public class MovingSoundMinigun extends AbstractTickableSoundInstance {
     private final Entity entity;
@@ -72,15 +80,16 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
                 x = (float) entity.getX();
                 y = (float) entity.getY();
                 z = (float) entity.getZ();
-                if (entity instanceof Player) {
-                    Player player = (Player) entity;
+                if (entity instanceof Player player) {
                     ItemStack curItem = player.getMainHandItem();
                     if (curItem.getItem() == ModItems.MINIGUN.get()) {
                         minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
                     }
-                } else if (entity instanceof EntityDrone) {
-                    minigun = ((EntityDrone) entity).getMinigun();
+                } else if (entity instanceof EntityDrone drone) {
+                    minigun = drone.getMinigun();
                 }
+
+
             }
         } else if (tileEntity != null) {
             if (tileEntity.isRemoved()) {
@@ -91,9 +100,49 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
                 }
             }
         }
+        if (minigun != null) {
+            playParticles(minigun);
+        }
+
         finished = minigun == null || !minigun.isMinigunActivated() || minigun.getMinigunSpeed() < Minigun.MAX_GUN_SPEED * 0.9;
         if (finished && !wasFinished) {
             ClientUtils.getClientLevel().playSound(ClientUtils.getClientPlayer(), x, y, z, ModSounds.MINIGUN_STOP.get(), SoundSource.NEUTRAL, volume, 1f);
+            if (minigun != null) {
+                Vec3 startVec = minigun.getMuzzlePosition();
+                if (startVec != null) {
+                    ClientUtils.getClientLevel().addParticle(ParticleTypes.LARGE_SMOKE, startVec.x, startVec.y, startVec.z, 0, 0, 0);
+                }
+            }
+        }
+    }
+
+    private void playParticles(Minigun minigun) {
+        Vec3 muzzlePos = minigun.getMuzzlePosition();
+        if (muzzlePos == null) return;
+
+        Vec3 lookVec = minigun.getLookAngle();
+        Random r = ClientUtils.getClientLevel().random;
+        for (int i = 0; i < 10; i ++) {
+            Vec3 velVec = lookVec.scale(3f + i * 0.2f);
+            Particle bullet = Minecraft.getInstance().particleEngine.createParticle(ModParticleTypes.BULLET_PARTICLE.get(),
+                    muzzlePos.x + r.nextFloat(0.1f) - 0.05f,
+                    muzzlePos.y + r.nextFloat(0.1f) - 0.05f,
+                    muzzlePos.z + r.nextFloat(0.1f) - 0.05f,
+                    velVec.x, velVec.y, velVec.z);
+            if (bullet != null) {
+                switch (r.nextInt(8)) {
+                    case 0 -> bullet.setColor(0.1f, 0.1f, 0.1f);
+                    case 1,2,3,4,5 -> bullet.setColor(1f, 0.25f + r.nextFloat(0.75f), 0f);
+                    default -> {
+                        float[] rgb = RenderUtils.decomposeColorF(minigun.getAmmoColor());
+                        bullet.setColor(rgb[1], rgb[2], rgb[3]);
+                    }
+                }
+                bullet.scale(minigun.getParticleScale());
+            }
+        }
+        if (r.nextInt(10) == 0) {
+            ClientUtils.getClientLevel().addParticle(ParticleTypes.FLAME, muzzlePos.x, muzzlePos.y, muzzlePos.z, lookVec.x * 0.01f, lookVec.y * 0.01f, lookVec.z * 0.01f);
         }
     }
 

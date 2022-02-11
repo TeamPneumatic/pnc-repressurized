@@ -45,7 +45,7 @@ public class DroneTargetLaserLayer extends RenderLayer<EntityDroneBase, ModelDro
                 matrixStackIn.translate(0, -1.5, 0);
                 matrixStackIn.scale(2f, 2f, 2f);
                 VertexConsumer builder = bufferIn.getBuffer(RenderType.LINES);
-                RenderUtils.renderProgressingLine(oldTargetLine, targetLine, partialTicks, matrixStackIn, builder, 0xFFFF0000);
+                RenderUtils.renderProgressingLine3d(oldTargetLine, targetLine, partialTicks, matrixStackIn, builder, 0xFFFF0000);
                 matrixStackIn.popPose();
             }
         }

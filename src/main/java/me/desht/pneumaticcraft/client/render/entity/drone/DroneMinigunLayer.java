@@ -18,18 +18,15 @@
 package me.desht.pneumaticcraft.client.render.entity.drone;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
-import me.desht.pneumaticcraft.client.render.RenderMinigunTracers;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.util.Mth;
 
 public class DroneMinigunLayer extends RenderLayer<EntityDroneBase, ModelDrone> {
     private final ModelMinigun modelDroneMinigun;
@@ -45,22 +42,7 @@ public class DroneMinigunLayer extends RenderLayer<EntityDroneBase, ModelDrone> 
         if (entityIn instanceof EntityDrone drone) {
             if (drone.hasMinigun()) {
                 modelDroneMinigun.renderMinigun(matrixStackIn, bufferIn, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F), drone.getMinigun(), partialTicks, true);
-                renderMinigunTracers(drone, matrixStackIn, bufferIn, partialTicks);
             }
-        }
-    }
-
-    private void renderMinigunTracers(EntityDrone drone, PoseStack matrixStackIn, MultiBufferSource bufferIn, float partialTicks) {
-        if (RenderMinigunTracers.shouldRender(drone.getMinigun())) {
-            double x = Mth.lerp(partialTicks, drone.xOld, drone.getX());
-            double y = Mth.lerp(partialTicks, drone.yOld, drone.getY());
-            double z = Mth.lerp(partialTicks, drone.zOld, drone.getZ());
-            matrixStackIn.pushPose();
-            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
-            matrixStackIn.translate(0, -1.5, 0);
-            matrixStackIn.scale(2f, 2f, 2f);
-            RenderMinigunTracers.render(drone.getMinigun(), matrixStackIn, bufferIn, x, y, z, 0.6);
-            matrixStackIn.popPose();
         }
     }
 }

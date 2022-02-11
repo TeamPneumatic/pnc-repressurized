@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import org.lwjgl.opengl.GL11;
 
@@ -42,7 +42,7 @@ public class RenderHackSimulation {
         RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         for (HackSimulation.ConnectionEntry entry : hackSimulation.allConnections) {
-            RenderUtils.renderProgressingLineGUI(matrixStack, makeProgressingLine(entry), color, 3F);
+            GuiUtils.renderProgressingLine2d(matrixStack, makeProgressingLine(entry), color, 3F);
         }
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

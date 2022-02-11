@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.mojang.authlib.GameProfile;
-import me.desht.pneumaticcraft.client.render.RenderMinigunTracers;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -166,9 +165,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
 
     @Override
     public AABB getRenderBoundingBox() {
-        return RenderMinigunTracers.shouldRender(getMinigun()) ?
-                new AABB(getBlockPos(), getMinigun().getAttackTarget().blockPosition()) :
-                super.getRenderBoundingBox();
+        return super.getRenderBoundingBox().inflate(1);
     }
 
     @Override
@@ -337,6 +334,29 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
             world.playSound(null, getBlockPos(), soundName, SoundSource.BLOCKS, volume, pitch);
+        }
+
+        @Override
+        public Vec3 getMuzzlePosition() {
+            Vec3 centre = Vec3.atCenterOf(getPosition());
+            LivingEntity target = minigun.getAttackTarget();
+            if (target == null) return null;
+            Vec3 offset = target.position()
+                    .add(0, target.getBbHeight() / 2, 0)
+                    .subtract(centre)
+                    .add(0, 0.5, 0)
+                    .normalize().scale(1.5);
+            return centre.add(offset);
+        }
+
+        @Override
+        public Vec3 getLookAngle() {
+            return Vec3.directionFromRotation(minigunPitch, minigunYaw).normalize();
+        }
+
+        @Override
+        public float getParticleScale() {
+            return 1f;
         }
 
         @Override

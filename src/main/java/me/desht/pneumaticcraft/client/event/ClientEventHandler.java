@@ -21,8 +21,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -40,7 +38,6 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
 import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
@@ -53,7 +50,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.world.InteractionHand;
@@ -63,7 +59,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.FogType;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
@@ -131,25 +126,25 @@ public class ClientEventHandler {
         if (player == Minecraft.getInstance().player && Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
 
         ItemStack curItem = player.getMainHandItem();
-        if (curItem.getItem() == ModItems.MINIGUN.get()) {
-            Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
-            if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                VertexConsumer builder = event.getMultiBufferSource().getBuffer(RenderType.LINES);
-                // FIXME: this just doesn't place the start of the line where it should... why?
-                Vec3 startVec = new Vec3(0, player.getEyeHeight() / 2, 0).add(player.getLookAngle());
-                Vec3 endVec = startVec.add(player.getLookAngle().scale(20));
-                int[] cols = RenderUtils.decomposeColor(minigun.getAmmoColor());
-                Matrix4f posMat = event.getPoseStack().last().pose();
-                for (int i = 0; i < 5; i++) {
-                    RenderUtils.posF(builder, posMat, startVec.x, startVec.y, startVec.z)
-                            .color(cols[1], cols[2], cols[3], 64)
-                            .endVertex();
-                    RenderUtils.posF(builder, posMat, endVec.x + player.getRandom().nextDouble() - 0.5, endVec.y + player.getRandom().nextDouble() - 0.5, endVec.z + player.getRandom().nextDouble() - 0.5)
-                            .color(cols[1], cols[2], cols[3], 64)
-                            .endVertex();
-                }
-            }
-        }
+//        if (curItem.getItem() == ModItems.MINIGUN.get()) {
+//            Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
+//            if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
+//                VertexConsumer builder = event.getMultiBufferSource().getBuffer(RenderType.LINES);
+//                // FIXME: this just doesn't place the start of the line where it should... why?
+//                Vec3 startVec = new Vec3(0, player.getEyeHeight() / 2, 0).add(player.getLookAngle());
+//                Vec3 endVec = startVec.add(player.getLookAngle().scale(20));
+//                int[] cols = RenderUtils.decomposeColor(minigun.getAmmoColor());
+//                Matrix4f posMat = event.getPoseStack().last().pose();
+//                for (int i = 0; i < 5; i++) {
+//                    RenderUtils.posF(builder, posMat, startVec.x, startVec.y, startVec.z)
+//                            .color(cols[1], cols[2], cols[3], 64)
+//                            .endVertex();
+//                    RenderUtils.posF(builder, posMat, endVec.x + player.getRandom().nextDouble() - 0.5, endVec.y + player.getRandom().nextDouble() - 0.5, endVec.z + player.getRandom().nextDouble() - 0.5)
+//                            .color(cols[1], cols[2], cols[3], 64)
+//                            .endVertex();
+//                }
+//            }
+//        }
     }
 
     @SubscribeEvent
@@ -164,7 +159,7 @@ public class ClientEventHandler {
                     if (Math.abs(roll) < 0.0001) {
                         targetRoll = 0F;
                     } else {
-                        targetRoll = Math.signum(roll) * MAX_SCREEN_ROLL;
+                        targetRoll = Math.signum(roll) * 45F;//MAX_SCREEN_ROLL;
                         div = Math.abs(400F / roll);
                     }
                 } else {
@@ -182,7 +177,7 @@ public class ClientEventHandler {
     public static void jetBootsEvent(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             Player player = event.player;
-            if (player == null || player.level == null || !player.level.isClientSide) return;
+            if (player == null || !player.level.isClientSide) return;
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             JetBootsHandler jbHandler = ArmorUpgradeRegistry.getInstance().jetBootsHandler;
             JetBootsState jbState = jbHandler.getJetBootsSyncedState(handler);
@@ -253,8 +248,7 @@ public class ClientEventHandler {
         AbstractContainerScreen<?> container = event.getContainerScreen();
         PoseStack matrixStack = event.getPoseStack();
         for (Slot s : container.getMenu().slots) {
-            if (s.getItem().getItem() instanceof ICustomDurabilityBar) {
-                ICustomDurabilityBar custom = (ICustomDurabilityBar) s.getItem().getItem();
+            if (s.getItem().getItem() instanceof ICustomDurabilityBar custom) {
                 if (custom.shouldShowCustomDurabilityBar(s.getItem())) {
                     int x = s.x;
                     int y = s.y;

@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -49,6 +49,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
@@ -61,6 +62,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -154,14 +156,14 @@ public class ItemMinigun extends ItemPressurizable implements
         if (itemLife > 0) {
             MagazineHandler handler = getMagazine(stack);
             boolean repaired = false;
-            float pressure = minigun.getAirCapability().map(IAirHandler::getPressure).orElse(0f);
-            for (int i = 0; i < handler.getSlots() && pressure > 0.25f; i++) {
-                ItemStack ammo = handler.getStackInSlot(i);
-                if (ammo.getItem() instanceof ItemGunAmmo && ammo.getDamageValue() > 0) {
-                    if (world.getGameTime() % (475 - itemLife * 75L) == 0) {
+            float pressure = minigun.getAirCapability().orElseThrow(RuntimeException::new).getPressure();
+            if (world.getGameTime() % (200 - itemLife * 35L) == 0) {
+                for (int i = 0; i < handler.getSlots() && pressure > 0.25f; i++) {
+                    ItemStack ammo = handler.getStackInSlot(i);
+                    if (ammo.getItem() instanceof ItemGunAmmo && ammo.getDamageValue() > 0) {
                         ammo.setDamageValue(ammo.getDamageValue() - 1);
-                        minigun.getAirCapability().ifPresent(h -> h.addAir(-(50 * itemLife)));
-                        pressure = minigun.getAirCapability().map(IAirHandler::getPressure).orElse(0f);
+                        minigun.getAirCapability().ifPresent(h -> h.addAir(-(100 * itemLife)));
+                        pressure = minigun.getAirCapability().orElseThrow(RuntimeException::new).getPressure();
                         repaired = true;
                     }
                 }
@@ -413,6 +415,29 @@ public class ItemMinigun extends ItemPressurizable implements
             if (!player.level.isClientSide) {
                 NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundSource.PLAYERS, player.blockPosition(), volume, pitch, false), player.level, player.blockPosition());
             }
+        }
+
+        @Override
+        public Vec3 getMuzzlePosition() {
+            float pitch = player.getXRot() * ((float) Math.PI / 180F);
+            // 12 degree clockwise rotation
+            float yaw = -(player.getYRot() + 13.5f) * ((float) Math.PI / 180F);
+            float f2 = Mth.cos(yaw);
+            float f3 = Mth.sin(yaw);
+            float f4 = Mth.cos(pitch);
+            float f5 = Mth.sin(pitch);
+            Vec3 lookVec = new Vec3(f3 * f4, -f5, f2 * f4);
+            return player.getEyePosition(0f).add(lookVec.scale(2.2f)).subtract(0, .3, 0);
+        }
+
+        @Override
+        public Vec3 getLookAngle() {
+            return player.getLookAngle();
+        }
+
+        @Override
+        public float getParticleScale() {
+            return player.getId() == ClientUtils.getClientPlayer().getId() && ClientUtils.isFirstPersonCamera() ? 0.4f : 1f;
         }
 
         @Override

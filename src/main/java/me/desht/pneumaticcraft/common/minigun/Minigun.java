@@ -43,9 +43,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -129,6 +131,21 @@ public abstract class Minigun {
     public abstract int getAmmoColor();
 
     public abstract void playSound(SoundEvent soundName, float volume, float pitch);
+
+    /**
+     * The position from which particles originate when the gun is firing
+     * @return a vector position, may be null
+     */
+    @Nullable
+    public abstract Vec3 getMuzzlePosition();
+
+    /**
+     * A normalised look vector for the minigun
+     * @return a vector
+     */
+    public abstract Vec3 getLookAngle();
+
+    public abstract float getParticleScale();
 
     protected int getAmmoColor(@Nonnull ItemStack stack) {
         return stack.getItem() instanceof ItemGunAmmo ?

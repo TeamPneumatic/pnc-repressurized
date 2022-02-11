@@ -22,12 +22,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import net.minecraft.core.Direction;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,9 +34,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -166,15 +159,15 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
      * @return the number of rounds fired
      */
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
-        if (ConfigHelper.common().minigun.blockHitParticles.get()) {
-            Level w = minigun.getPlayer().level;
-            BlockState state = w.getBlockState(brtr.getBlockPos());
-            Direction face = brtr.getDirection();
-            Vec3 hitVec = brtr.getLocation();
-            ParticleOptions data = new BlockParticleOption(ParticleTypes.BLOCK, state);
-            ((ServerLevel) w).sendParticles(data, hitVec.x, hitVec.y, hitVec.z, 10,
-                    face.getStepX() * 0.2, face.getStepY() * 0.2, face.getStepZ() * 0.2, 0.05);
-        }
+//        if (ConfigHelper.common().minigun.blockHitParticles.get()) {
+//            Level w = minigun.getPlayer().level;
+//            BlockState state = w.getBlockState(brtr.getBlockPos());
+//            Direction face = brtr.getDirection();
+//            Vec3 hitVec = brtr.getLocation();
+//            ParticleOptions data = new BlockParticleOption(ParticleTypes.BLOCK, state);
+//            ((ServerLevel) w).sendParticles(data, hitVec.x, hitVec.y, hitVec.z, 10,
+//                    face.getStepX() * 0.2, face.getStepY() * 0.2, face.getStepZ() * 0.2, 0.05);
+//        }
 
         // not taking speed upgrades into account here; being kind to players who miss a lot...
         return 1;

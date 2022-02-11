@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDroneCore;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.*;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
+import me.desht.pneumaticcraft.client.particle.BulletParticle;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.entity.RenderEntityRing;
@@ -108,6 +109,7 @@ public class ClientSetup {
     public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
         Minecraft.getInstance().particleEngine.register(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
         Minecraft.getInstance().particleEngine.register(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
+        Minecraft.getInstance().particleEngine.register(ModParticleTypes.BULLET_PARTICLE.get(), BulletParticle.Factory::new);
     }
 
     public static void initLate() {

@@ -1547,6 +1547,28 @@ public class EntityDrone extends EntityDroneBase implements
         }
 
         @Override
+        public Vec3 getMuzzlePosition() {
+            Vec3 centre = position();
+            LivingEntity target = minigun.getAttackTarget();
+            if (target == null) return null;
+            Vec3 offset = target.position()
+                    .add(0, target.getBbHeight() / 2, 0)
+                    .subtract(centre)
+                    .normalize().scale(0.6);
+            return centre.add(offset);
+        }
+
+        @Override
+        public Vec3 getLookAngle() {
+            return Vec3.directionFromRotation(minigunPitch, minigunYaw).normalize();
+        }
+
+        @Override
+        public float getParticleScale() {
+            return 1f;
+        }
+
+        @Override
         public boolean isValid() {
             return EntityDrone.this.isAlive();
         }

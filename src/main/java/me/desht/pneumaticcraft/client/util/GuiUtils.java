@@ -63,6 +63,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static net.minecraft.util.Mth.lerp;
+
 public class GuiUtils {
     private static final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
@@ -358,5 +360,28 @@ public class GuiUtils {
 
     public static void bindTexture(ResourceLocation texture) {
         bindTexture(texture, 1f, 1f, 1f, 1f);
+    }
+
+    /**
+     * Render a progressing line in GUI context
+     * @param matrixStack the matrix stack
+     * @param line the line to render
+     * @param color line's colour
+     */
+    public static void renderProgressingLine2d(PoseStack matrixStack, ProgressingLine line, int color, float lineWidth) {
+        int[] cols = RenderUtils.decomposeColor(color);
+        float progress = line.getProgress();
+        Matrix4f posMat = matrixStack.last().pose();
+        BufferBuilder wr = Tesselator.getInstance().getBuilder();
+        RenderSystem.lineWidth(lineWidth);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+        wr.vertex(posMat, line.startX, line.startY, line.startZ)
+                .color(cols[1], cols[2], cols[3], cols[0])
+                .endVertex();
+        wr.vertex(posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
+                .color(cols[1], cols[2], cols[3], cols[0])
+                .endVertex();
+        Tesselator.getInstance().end();
     }
 }

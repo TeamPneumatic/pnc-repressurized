@@ -20,7 +20,9 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.particle.AirParticleType;
+import me.desht.pneumaticcraft.common.particle.BulletParticleType;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -32,6 +34,7 @@ public class ModParticleTypes {
 
     public static final RegistryObject<ParticleType<AirParticleData>> AIR_PARTICLE = register("air_particle", AirParticleType::new);
     public static final RegistryObject<ParticleType<AirParticleData>> AIR_PARTICLE_2 = register("air_particle_2", AirParticleType::new);
+    public static final RegistryObject<SimpleParticleType> BULLET_PARTICLE = register("bullet_particle", BulletParticleType::new);
 
     private static <T extends ParticleType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return PARTICLES.register(name, sup);

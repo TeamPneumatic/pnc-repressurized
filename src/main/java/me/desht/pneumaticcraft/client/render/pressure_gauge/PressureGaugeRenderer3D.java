@@ -130,7 +130,7 @@ public class PressureGaugeRenderer3D {
         // vertex builder is set up for VertexMode.LINE_STRIP
         float[] cols = RenderUtils.decomposeColorF(fgColor);
         for (int i = 0; i < CIRCLE_POINTS; i++) {
-            normalLine(builder, posMat, normal,
+            RenderUtils.normalLine(builder, posMat, normal,
                     GAUGE_SURROUND[i][0] + xPos, GAUGE_SURROUND[i][1] + yPos, 0f,
                     GAUGE_SURROUND[i + 1][0] + xPos, GAUGE_SURROUND[i + 1][1] + yPos, 0f,
                     cols[0], cols[1], cols[2], cols[3],
@@ -153,7 +153,7 @@ public class PressureGaugeRenderer3D {
                 float y1 = y * RADIUS * r1 + yPos;
                 float x2 = x * RADIUS * r2 + xPos;
                 float y2 = y * RADIUS * r2 + yPos;
-                normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, 1f, 0f, 0f, 0f, false);
+                RenderUtils.normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, 1f, 0f, 0f, 0f, false);
             }
         }
     }
@@ -169,10 +169,10 @@ public class PressureGaugeRenderer3D {
         float x3 = Mth.cos(angle) * RADIUS * 0.8F + xPos;
         float y3 = Mth.sin(angle) * RADIUS * 0.8F + yPos;
 
-        normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        normalLine(builder, posMat, normal, x2, y2, 0f, x3, y3, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        normalLine(builder, posMat, normal, x3, y3, 0f, x1, y1, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        RenderUtils.normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        RenderUtils.normalLine(builder, posMat, normal, x2, y2, 0f, x3, y3, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        RenderUtils.normalLine(builder, posMat, normal, x3, y3, 0f, x1, y1, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        RenderUtils.normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
     }
 
     private static void drawText(PoseStack matrixStack, MultiBufferSource buffer, int xPos, int yPos, int fgColor, List<TextScaler> textScalers) {
@@ -188,22 +188,4 @@ public class PressureGaugeRenderer3D {
         }
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private static void normalLine(VertexConsumer builder, Matrix4f posMat, Matrix3f normal, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, boolean isStrip) {
-        float nx = x2 - x1;
-        float ny = y2 - y1;
-        float nz = z2 - z1;
-        float d = Mth.sqrt(nx * nx + ny * ny + nz * nz);
-        builder.vertex(posMat, x1, y1, z1)
-                .color(r, g, b, a)
-                .normal(normal, nx / d , ny / d, nz / d)
-                .endVertex();
-        if (!isStrip) {
-            // when drawing line strips, second set of x/y/z coords are just for normal calculation
-            builder.vertex(posMat, x2, y2, z2)
-                    .color(r, g, b, a)
-                    .normal(normal, nx / d , ny / d, nz / d)
-                    .endVertex();
-        }
-    }
 }

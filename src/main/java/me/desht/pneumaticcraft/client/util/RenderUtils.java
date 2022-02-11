@@ -18,13 +18,14 @@
 package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
@@ -222,57 +223,17 @@ public class RenderUtils {
         return yRotation;
     }
 
-    /**
-     * Render a progressing line in GUI context
-     * @param matrixStack the matrix stack
-     * @param line the line to render
-     * @param color line's colour
-     */
-    public static void renderProgressingLineGUI(PoseStack matrixStack, ProgressingLine line, int color, float lineWidth) {
-        int[] cols = decomposeColor(color);
-        float progress = line.getProgress();
-        Matrix4f posMat = matrixStack.last().pose();
-        BufferBuilder wr = Tesselator.getInstance().getBuilder();
-        RenderSystem.lineWidth(lineWidth);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-        wr.vertex(posMat, line.startX, line.startY, line.startZ)
-                .color(cols[1], cols[2], cols[3], cols[0])
-                .endVertex();
-        wr.vertex(posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
-                .color(cols[1], cols[2], cols[3], cols[0])
-                .endVertex();
-        Tesselator.getInstance().end();
-    }
-
-    public static void renderProgressingLine(ProgressingLine line, PoseStack matrixStack, VertexConsumer builder, int color) {
-        int[] cols = decomposeColor(color);
-        float progress = line.getProgress();
-        Matrix4f posMat = matrixStack.last().pose();
-        posF(builder, posMat, line.startX, line.startY, line.startZ)
-                .color(cols[1], cols[2], cols[3], cols[0])
-                .endVertex();
-        posF(builder, posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
-                .color(cols[1], cols[2], cols[3], cols[0])
-                .endVertex();
-    }
-
-    public static void renderProgressingLine(ProgressingLine prev, ProgressingLine line, float partialTick, PoseStack matrixStack, VertexConsumer builder, int color) {
-        int[] cols = decomposeColor(color);
+    public static void renderProgressingLine3d(ProgressingLine prev, ProgressingLine line, float partialTick, PoseStack matrixStack, VertexConsumer builder, int color) {
+        float[] cols = decomposeColorF(color);
         Matrix4f posMat = matrixStack.last().pose();
         float progress = line.getProgress();
-        double lx1 = lerp(partialTick, line.startX, prev.startX);
-        double ly1 = lerp(partialTick, line.startY, prev.startY);
-        double lz1 = lerp(partialTick, line.startZ, prev.startZ);
-        posF(builder, posMat, lx1, ly1, lz1)
-                .color(cols[1], cols[2], cols[3], cols[0])
-                .endVertex();
-        posF(builder, posMat,
-                lerp(progress, lx1, lerp(partialTick, line.endX, prev.endX)),
-                lerp(progress, ly1, lerp(partialTick, line.endY, prev.endY)),
-                lerp(progress, lz1, lerp(partialTick, line.endZ, prev.endZ)))
-                .color(cols[1], cols[2], cols[3], cols[0])
-                .endVertex();
+        float lx1 = lerp(partialTick, line.startX, prev.startX);
+        float ly1 = lerp(partialTick, line.startY, prev.startY);
+        float lz1 = lerp(partialTick, line.startZ, prev.startZ);
+        float lx2 = lerp(progress, lx1, lerp(partialTick, line.endX, prev.endX));
+        float ly2 = lerp(progress, ly1, lerp(partialTick, line.endY, prev.endY));
+        float lz2 = lerp(progress, lz1, lerp(partialTick, line.endZ, prev.endZ));
+        normalLine(builder, posMat, matrixStack.last().normal(), lx1, ly1, lz1, lx2, ly2, lz2, cols[0], cols[1], cols[2], cols[3], false);
     }
 
     public static void renderRing(ProgressingLine line, ProgressingLine lastLine, PoseStack matrixStackIn, MultiBufferSource bufferIn, float partialTick, float rotationYaw, float rotationPitch, int color) {
@@ -295,7 +256,6 @@ public class RenderUtils {
         for (float i = 0; i < FULL_CIRCLE; i += STEP) {
             Vec3 v1 = new Vec3(0, Mth.sin(i) * size, Mth.cos(i) * size);
             Vec3 v2 = new Vec3(0, Mth.sin(i + STEP) * size, Mth.cos(i + STEP) * size);
-
             RenderUtils.posF(builder, posMat, 0f, v1.y(), v1.z())
                     .color(cols[1], cols[2], cols[3], cols[0])
                     .normal(matrixStackIn.last().normal(), 0f, (float) (v2.y() - v1.y()), (float) (v2.z() - v1.z()))
@@ -377,5 +337,23 @@ public class RenderUtils {
     public static void renderString3d(Component str, float x, float y, int color, PoseStack matrixStack, MultiBufferSource buffer, boolean dropShadow, boolean disableDepthTest) {
         Font fr = Minecraft.getInstance().font;
         fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest, 0, FULL_BRIGHT);
+    }
+
+    public static void normalLine(VertexConsumer builder, Matrix4f posMat, Matrix3f normal, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, boolean isStrip) {
+        float nx = x2 - x1;
+        float ny = y2 - y1;
+        float nz = z2 - z1;
+        float d = Mth.sqrt(nx * nx + ny * ny + nz * nz);
+        builder.vertex(posMat, x1, y1, z1)
+                .color(r, g, b, a)
+                .normal(normal, nx / d , ny / d, nz / d)
+                .endVertex();
+        if (!isStrip) {
+            // when drawing line strips, second set of x/y/z coords are just for normal calculation
+            builder.vertex(posMat, x2, y2, z2)
+                    .color(r, g, b, a)
+                    .normal(normal, nx / d , ny / d, nz / d)
+                    .endVertex();
+        }
     }
 }
