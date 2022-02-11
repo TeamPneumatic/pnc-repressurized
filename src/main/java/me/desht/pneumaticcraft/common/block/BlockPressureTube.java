@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.tubes.INetworkedModule;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
@@ -27,6 +28,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedPressureTube;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedPressureTube;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
@@ -69,6 +71,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 import static me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType.CONNECTED;
 import static me.desht.pneumaticcraft.common.util.DirectionUtil.HORIZONTALS;
@@ -129,7 +132,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return tier == Tier.TWO ? new TileEntityAdvancedPressureTube(pPos, pState) : new TileEntityPressureTube(pPos, pState);
+        return tier.teFactory.apply(pPos, pState);
     }
 
     @Override
@@ -258,10 +261,6 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo
             }
         }
         return super.use(state, world, pos, player, hand, brtr);
-    }
-
-    public int getTier() {
-        return tier.tier;
     }
 
     @Override
@@ -577,21 +576,18 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo
     }
 
     public enum Tier {
-        ONE(1, PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, TileEntityPressureTube.class),
-        TWO(2, PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_ADVANCED_PRESSURE_TUBE, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, TileEntityAdvancedPressureTube.class);
+        ONE(PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE, TileEntityPressureTube::new),
+        ONE_HALF(PressureTier.TIER_ONE_HALF, PneumaticValues.VOLUME_PRESSURE_TUBE, TileEntityReinforcedPressureTube::new),
+        TWO(PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, TileEntityAdvancedPressureTube::new);
 
-        private final int tier;
-        final float dangerPressure;
-        final float criticalPressure;
+        private final PressureTier tier;
         final int volume;
-        private final Class<? extends TileEntityPressureTube> teClass;
+        private final BiFunction<BlockPos,BlockState,? extends TileEntityPressureTube> teFactory;
 
-        Tier(int tier, float dangerPressure, float criticalPressure, int volume, Class<? extends TileEntityPressureTube> teClass) {
+        Tier(PressureTier tier, int volume, BiFunction<BlockPos,BlockState,? extends TileEntityPressureTube> teFactory) {
             this.tier = tier;
-            this.dangerPressure = dangerPressure;
-            this.criticalPressure = criticalPressure;
             this.volume = volume;
-            this.teClass = teClass;
+            this.teFactory = teFactory;
         }
     }
 

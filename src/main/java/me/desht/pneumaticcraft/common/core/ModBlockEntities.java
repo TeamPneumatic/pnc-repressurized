@@ -160,6 +160,9 @@ public class ModBlockEntities {
             = register("pressurized_spawner", () -> new BlockEntityType<>(TileEntityPressurizedSpawner::new, ImmutableSet.of(ModBlocks.PRESSURIZED_SPAWNER.get()), null));
     public static final RegistryObject<BlockEntityType<TileEntityCreativeCompressedIronBlock>> CREATIVE_COMPRESSED_IRON_BLOCK
             = register("creative_compressed_iron_block", () -> new BlockEntityType<>(TileEntityCreativeCompressedIronBlock::new, ImmutableSet.of(ModBlocks.CREATIVE_COMPRESSED_IRON_BLOCK.get()), null));
+    public static final RegistryObject<BlockEntityType<TileEntityReinforcedPressureTube>> REINFORCED_PRESSURE_TUBE
+            = register("reinforced_pressure_tube", () -> new BlockEntityType<>(TileEntityReinforcedPressureTube::new, ImmutableSet.of(ModBlocks.REINFORCED_PRESSURE_TUBE.get()), null));
+
     private static <T extends BlockEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return BLOCK_ENTITIES.register(name, sup);
     }

@@ -1,0 +1,16 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "item_input": {
+    "item": "pneumaticcraft:pressure_tube"
+  },
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "tag": "pneumaticcraft:plastic",
+    "amount": 50
+  },
+  "item_output": {
+    "item": "pneumaticcraft:reinforced_pressure_tube"
+  },
+  "pressure": 1.5,
+  "exothermic": false
+}

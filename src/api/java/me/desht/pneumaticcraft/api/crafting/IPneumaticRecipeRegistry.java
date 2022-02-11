@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.api.crafting;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
@@ -133,12 +133,14 @@ public interface IPneumaticRecipeRegistry {
      * @param operatingTemperature the operating temperature range
      * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
      * @param speed recipe speed multiplier (smaller values mean recipe takes longer to process)
+     * @param airUseMultiplier air usage cost factor
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature
      * is required)
      */
     ThermoPlantRecipe thermoPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed);
+            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
+            float airUseMultiplier, float speed);
 
     /**
      * Create a standard exothermic Thermopneumatic Processing Plant recipe.  Exothermic recipes produce heat rather than
@@ -153,9 +155,11 @@ public interface IPneumaticRecipeRegistry {
      * @param operatingTemperature the operating temperature range
      * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
      * @param speed recipe speed multiplier (smaller values mean recipe takes longer to process)
+     * @param airUseMultiplier air usage cost factor
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature is required)
      */
     ThermoPlantRecipe exothermicThermoPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed);
+            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
+            float airUseMultiplier, float speed);
 }

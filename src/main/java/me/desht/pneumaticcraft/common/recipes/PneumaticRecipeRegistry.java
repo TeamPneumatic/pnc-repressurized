@@ -75,12 +75,12 @@ public enum PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     }
 
     @Override
-    public ThermoPlantRecipe thermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed) {
-        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, false);
+    public ThermoPlantRecipe thermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float airUseMultiplier, float speed) {
+        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, airUseMultiplier, false);
     }
 
     @Override
-    public ThermoPlantRecipe exothermicThermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed) {
-        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, true);
+    public ThermoPlantRecipe exothermicThermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed, float airUseMultiplier) {
+        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, airUseMultiplier, true);
     }
 }

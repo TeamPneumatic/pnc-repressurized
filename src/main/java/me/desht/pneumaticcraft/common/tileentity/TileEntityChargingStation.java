@@ -202,7 +202,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
     @Override
     public boolean canConnectPneumatic(Direction side) {
-        return getRotation() == side;
+        return getRotation() == side || side == Direction.DOWN;
     }
 
     @Override

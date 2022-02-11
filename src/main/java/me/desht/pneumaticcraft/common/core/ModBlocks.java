@@ -65,6 +65,8 @@ public class ModBlocks {
 
     public static final RegistryObject<BlockPressureTube> PRESSURE_TUBE = register("pressure_tube",
             () -> new BlockPressureTube(BlockPressureTube.Tier.ONE));
+    public static final RegistryObject<BlockPressureTube> REINFORCED_PRESSURE_TUBE = register("reinforced_pressure_tube",
+            () -> new BlockPressureTube(BlockPressureTube.Tier.ONE_HALF));
     public static final RegistryObject<BlockPressureTube> ADVANCED_PRESSURE_TUBE = register("advanced_pressure_tube",
             () -> new BlockPressureTube(BlockPressureTube.Tier.TWO));
     public static final RegistryObject<BlockAirCannon> AIR_CANNON = register("air_cannon",

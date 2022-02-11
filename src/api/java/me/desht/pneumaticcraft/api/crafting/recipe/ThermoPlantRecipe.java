@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
 public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
@@ -98,7 +98,9 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
 
     public abstract ItemStack getOutputItem();
 
-    public abstract double getRecipeSpeed();
+    public abstract float getRecipeSpeed();
+
+    public abstract float getAirUseMultiplier();
 
     /**
      * Check if this recipe is exothermic, i.e. produces heat rather than requiring it. Such recipes generally

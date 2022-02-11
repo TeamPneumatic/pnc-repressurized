@@ -431,7 +431,7 @@ public class ItemJackHammer extends ItemPressurizable
         MODE_1X3("1x3", 3, DrillBitType.COMPRESSED_IRON),
         MODE_3X3_CROSS("3x3_cross", 5, DrillBitType.DIAMOND),
         MODE_VEIN("vein", 128, DrillBitType.DIAMOND),
-        MODE_3X3_FULL("3x3_full", 9, DrillBitType.NETHERITE),
+        MODE_3X3_FULL("3x3_full", 9, DrillBitType.DIAMOND),
         MODE_VEIN_PLUS("vein_plus", 128, DrillBitType.NETHERITE);
 
         private final String name;

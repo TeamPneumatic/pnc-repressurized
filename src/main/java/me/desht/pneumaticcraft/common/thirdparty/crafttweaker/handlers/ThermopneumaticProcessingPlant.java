@@ -40,7 +40,7 @@ import org.openzen.zencode.java.ZenCodeType;
 @ZenRegister
 public class ThermopneumaticProcessingPlant implements IRecipeManager<ThermoPlantRecipe> {
     @ZenCodeType.Method
-    public void addRecipe(String name, CTFluidIngredient inputFluid, IIngredient inputItem, IFluidStack outputFluid, IItemStack outputItem, float pressure, int minTemp, @ZenCodeType.OptionalInt(Integer.MAX_VALUE) int maxTemp, @ZenCodeType.OptionalFloat(1f) float recipeSpeed, @ZenCodeType.OptionalBoolean() boolean exothermic) {
+    public void addRecipe(String name, CTFluidIngredient inputFluid, IIngredient inputItem, IFluidStack outputFluid, IItemStack outputItem, float pressure, int minTemp, @ZenCodeType.OptionalInt(Integer.MAX_VALUE) int maxTemp, @ZenCodeType.OptionalFloat(1f) float recipeSpeed, @ZenCodeType.OptionalFloat(1f) float airUseMultiplier, @ZenCodeType.OptionalBoolean() boolean exothermic) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
                 new ThermoPlantRecipeImpl(new ResourceLocation("crafttweaker", fixRecipeName(name)),
                         CTUtils.toFluidIngredient(inputFluid),
@@ -50,6 +50,7 @@ public class ThermopneumaticProcessingPlant implements IRecipeManager<ThermoPlan
                         TemperatureRange.of(minTemp, maxTemp),
                         pressure,
                         recipeSpeed,
+                        airUseMultiplier,
                         exothermic)
         ));
     }

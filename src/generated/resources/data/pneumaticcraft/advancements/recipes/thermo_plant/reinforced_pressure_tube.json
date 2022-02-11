@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:thermo_plant/reinforced_pressure_tube"
+    ]
+  },
+  "criteria": {
+    "thermopneumatic_processing_plant": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:thermopneumatic_processing_plant"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:thermo_plant/reinforced_pressure_tube"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "thermopneumatic_processing_plant",
+      "has_the_recipe"
+    ]
+  ]
+}

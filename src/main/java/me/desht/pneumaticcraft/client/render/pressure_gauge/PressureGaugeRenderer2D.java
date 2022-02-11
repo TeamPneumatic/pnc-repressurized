@@ -133,7 +133,7 @@ public class PressureGaugeRenderer2D {
 
     private static void drawText(PoseStack matrixStack, Font fontRenderer, int xPos, int yPos, int fgColor, List<TextScaler> textScalers) {
         for (int i = 0; i < textScalers.size(); i++) {
-            if (textScalers.size() <= 11 || i % 5 == 0) {
+            if (textScalers.size() <= 14 || i % 5 == 0) {
                 TextScaler scaler = textScalers.get(i);
                 matrixStack.pushPose();
                 matrixStack.translate(xPos + scaler.x - 1.5, yPos + scaler.y - 1.5, 0);

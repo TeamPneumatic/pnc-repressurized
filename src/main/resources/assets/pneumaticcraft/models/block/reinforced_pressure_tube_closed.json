@@ -1,0 +1,8 @@
+{
+  "parent": "pneumaticcraft:block/pressure_tube_closed",
+  "textures": {
+    "pipe": "pneumaticcraft:model/reinforced_pressure_tube",
+    "pipeplug": "pneumaticcraft:model/tube_closed",
+    "particle": "pneumaticcraft:model/reinforced_pressure_tube"
+  }
+}

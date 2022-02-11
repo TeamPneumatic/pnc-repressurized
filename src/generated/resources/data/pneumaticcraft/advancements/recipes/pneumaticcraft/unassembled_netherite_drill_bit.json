@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:unassembled_netherite_drill_bit"
+    ]
+  },
+  "criteria": {
+    "has_drill_bit_diamond": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:drill_bit_diamond"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:unassembled_netherite_drill_bit"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_drill_bit_diamond",
+      "has_the_recipe"
+    ]
+  ]
+}

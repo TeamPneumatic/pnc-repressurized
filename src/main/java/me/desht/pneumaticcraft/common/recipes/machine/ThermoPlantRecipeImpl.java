@@ -49,12 +49,13 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     private final boolean exothermic;
     private final TemperatureRange operatingTemperature;
     private final ItemStack outputItem;
+    private float airUseMultiplier;
 
     // TODO 1.17 make inputItem a StackedIngredient to support item counts
     public ThermoPlantRecipeImpl(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nonnull Ingredient inputItem,
             FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
-            float recipeSpeed, boolean exothermic)
+            float recipeSpeed, float airUseMultiplier, boolean exothermic)
     {
         super(id);
 
@@ -65,6 +66,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         this.operatingTemperature = operatingTemperature;
         this.requiredPressure = requiredPressure;
         this.recipeSpeed = recipeSpeed;
+        this.airUseMultiplier = airUseMultiplier;
         this.exothermic = exothermic;
     }
 
@@ -111,8 +113,13 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public double getRecipeSpeed() {
+    public float getRecipeSpeed() {
         return recipeSpeed;
+    }
+
+    @Override
+    public float getAirUseMultiplier() {
+        return airUseMultiplier;
     }
 
     @Override
@@ -124,6 +131,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         outputFluid.writeToPacket(buffer);
         buffer.writeItem(outputItem);
         buffer.writeFloat(recipeSpeed);
+        buffer.writeFloat(airUseMultiplier);
         buffer.writeBoolean(exothermic);
     }
 
@@ -187,7 +195,9 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
             float recipeSpeed = GsonHelper.getAsFloat(json, "speed", 1.0f);
 
-            return factory.create(recipeId, (FluidIngredient) fluidInput, itemInput, fluidOutput, itemOutput, range, pressure, recipeSpeed, exothermic);
+            float airUseMultiplier = GsonHelper.getAsFloat(json, "air_use_multiplier", 1.0f);
+
+            return factory.create(recipeId, (FluidIngredient) fluidInput, itemInput, fluidOutput, itemOutput, range, pressure, recipeSpeed, airUseMultiplier, exothermic);
         }
 
         @Nullable
@@ -200,8 +210,9 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
             FluidStack fluidOut = FluidStack.readFromPacket(buffer);
             ItemStack itemOutput = buffer.readItem();
             float recipeSpeed = buffer.readFloat();
+            float airUseMultiplier = buffer.readFloat();
             boolean exothermic = buffer.readBoolean();
-            return factory.create(recipeId, fluidIn, input, fluidOut, itemOutput, range, pressure, recipeSpeed, exothermic);
+            return factory.create(recipeId, fluidIn, input, fluidOut, itemOutput, range, pressure, recipeSpeed, airUseMultiplier, exothermic);
         }
 
         @Override
@@ -212,7 +223,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         public interface IFactory <T extends ThermoPlantRecipe> {
             T create(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
                      FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
-                     float recipeSpeed, boolean exothermic);
+                     float recipeSpeed, float airUseMultiplier, boolean exothermic);
         }
     }
 }

@@ -13,5 +13,6 @@
   },
   "pressure": 3.0,
   "speed": 0.5,
+  "air_use_multiplier": 2.0,
   "exothermic": false
 }

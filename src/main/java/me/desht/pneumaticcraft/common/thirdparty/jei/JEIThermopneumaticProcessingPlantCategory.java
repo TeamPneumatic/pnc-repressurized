@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -32,6 +32,7 @@ import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.ingredients.IIngredients;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -111,7 +112,9 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
     public void draw(ThermoPlantRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() != 0) {
             float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-            PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 141, 42);
+            PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1,
+                    PressureTier.TIER_ONE_HALF.getCriticalPressure(), PressureTier.TIER_ONE_HALF.getDangerPressure(),
+                    recipe.getRequiredPressure(), pressure, 141, 42);
         }
 
         if (!recipe.getOperatingTemperature().isAny()) {
@@ -132,6 +135,10 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
         }
         if (recipe.getRequiredPressure() > 0 && mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
             res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
+            if (recipe.getAirUseMultiplier() != 1f) {
+                res.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage").append(" x")
+                        .append(String.format("%.1f", recipe.getAirUseMultiplier())).withStyle(ChatFormatting.GRAY));
+            }
         }
         return res;
     }

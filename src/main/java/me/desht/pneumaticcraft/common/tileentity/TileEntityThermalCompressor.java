@@ -69,7 +69,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     private final RedstoneController<TileEntityThermalCompressor> rsController = new RedstoneController<>(this);
 
     public TileEntityThermalCompressor(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.THERMAL_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
+        super(ModBlockEntities.THERMAL_COMPRESSOR.get(), pos, state, PressureTier.TIER_ONE_HALF, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
 
         IntStream.range(0, heatExchangers.length).forEach(i -> {
             heatExchangers[i] = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();

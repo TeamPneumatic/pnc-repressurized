@@ -115,7 +115,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     private double airUsage;
 
     public TileEntityThermopneumaticProcessingPlant(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), pos, state, PressureTier.TIER_ONE, 3000, 4);
+        super(ModBlockEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), pos, state, PressureTier.TIER_ONE_HALF, 3000, 4);
         heatExchanger.setThermalResistance(10);
     }
 
@@ -184,7 +184,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
             double progressInc = speedBoost * currentRecipe.getRecipeSpeed() * 100;
             craftingProgress += progressInc;
             double progressDivider = progressInc / CRAFTING_TIME;
-            airUsage += currentRecipe.airUsed() * progressDivider * speedBoost;
+            airUsage += currentRecipe.airUsed() * progressDivider * speedBoost * currentRecipe.getAirUseMultiplier();
             if (airUsage > 1) {
                 int i = (int) airUsage;
                 addAir(-i);
@@ -199,13 +199,22 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.EXECUTE);
                 outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), false);
                 inputTank.drain(currentRecipe.getInputFluid().getAmount(), FluidAction.EXECUTE);
-                inputItemHandler.extractItem(0, 1, false);
+                inputItemHandler.extractItem(0, getInputItemCount(), false);
                 craftingProgress -= CRAFTING_TIME;
             } else {
                 problem = TPProblem.OUTPUT_BLOCKED;
             }
         }
         didWork = problem == TPProblem.OK;
+    }
+
+    private int getInputItemCount() {
+        if (currentRecipe != null) {
+            return currentRecipe.getInputItem().getItems().length > 0 ?
+                    currentRecipe.getInputItem().getItems()[0].getCount() :
+                    1;
+        }
+        return 0;
     }
 
     private boolean hasEnoughPressure() {

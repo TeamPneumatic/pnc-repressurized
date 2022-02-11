@@ -878,6 +878,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).save(consumer);
 
+        shapeless(ModItems.UNASSEMBLED_NETHERITE_DRILL_BIT.get(), ModItems.DIAMOND_DRILL_BIT.get(),
+                ModItems.DIAMOND_DRILL_BIT.get(), Tags.Items.INGOTS_NETHERITE
+        ).save(consumer);
+
         shaped(ModBlocks.UNIVERSAL_SENSOR.get(), ModItems.PLASTIC.get(),
                 " S /PRP/PCP",
                 'S', ModItems.SEISMIC_SENSOR.get(),
@@ -1349,96 +1353,100 @@ public class ModRecipeProvider extends RecipeProvider {
         // thermopneumatic processing plant
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.DIESEL), Ingredient.EMPTY,
                 new FluidStack(ModFluids.KEROSENE.get(), 80), ItemStack.EMPTY,
-                TemperatureRange.min(573), 2.0f, 1.0f, false
+                TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/kerosene"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.KEROSENE), Ingredient.EMPTY,
                 new FluidStack(ModFluids.GASOLINE.get(), 80), ItemStack.EMPTY,
-                TemperatureRange.min(573), 2.0f, 1.0f, false
+                TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/gasoline"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.GASOLINE), Ingredient.EMPTY,
                 new FluidStack(ModFluids.LPG.get(), 80), ItemStack.EMPTY,
-                TemperatureRange.min(573), 2.0f, 1.0f, false
+                TemperatureRange.min(573), 2.0f, 1.0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/lpg"));
         thermoPlant(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.DIESEL), Ingredient.of(Tags.Items.DUSTS_REDSTONE),
                 new FluidStack(ModFluids.LUBRICANT.get(), 1000), ItemStack.EMPTY,
-                TemperatureRange.min(373), 0f, 1.0f, false
+                TemperatureRange.min(373), 0f, 1.0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/lubricant_from_diesel"));
         thermoPlant(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.BIODIESEL), Ingredient.of(Tags.Items.DUSTS_REDSTONE),
                 new FluidStack(ModFluids.LUBRICANT.get(), 1000), ItemStack.EMPTY,
-                TemperatureRange.min(373), 0f, 1.0f, false
+                TemperatureRange.min(373), 0f, 1.0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/lubricant_from_biodiesel"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.LPG), Ingredient.of(Items.COAL),
                 new FluidStack(ModFluids.PLASTIC.get(), 1000), ItemStack.EMPTY,
-                TemperatureRange.min(373), 0f,1.0f,  false
+                TemperatureRange.min(373), 0f,1.0f, 1.0f,  false
         ).build(consumer, RL("thermo_plant/plastic_from_lpg"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.BIODIESEL), Ingredient.of(Items.CHARCOAL),
                 new FluidStack(ModFluids.PLASTIC.get(), 1000), ItemStack.EMPTY,
-                TemperatureRange.min(373), 0f,1.0f,  false
+                TemperatureRange.min(373), 0f,1.0f, 1.0f,  false
         ).build(consumer, RL("thermo_plant/plastic_from_biodiesel"));
         thermoPlant(FluidIngredient.of(1000, Fluids.WATER), Ingredient.of(Items.LAPIS_LAZULI),
                 FluidStack.EMPTY, new ItemStack(ModItems.UPGRADE_MATRIX.get(), 4),
-                TemperatureRange.min(273), 2f, 1.0f, false
+                TemperatureRange.min(273), 2f, 1.0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/upgrade_matrix"));
         thermoPlant(FluidIngredient.of(1000, Fluids.WATER), Ingredient.of(Tags.Items.MUSHROOMS),
                 new FluidStack(ModFluids.YEAST_CULTURE.get(), 250), ItemStack.EMPTY,
-                TemperatureRange.of(303, 333), 0f, 0.1f, false
+                TemperatureRange.of(303, 333), 0f, 0.1f, 1.0f, false
         ).build(consumer, RL("thermo_plant/yeast_culture"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.SUGAR),
                 new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
-                TemperatureRange.of(303, 333), 0f, 0.5f, true
+                TemperatureRange.of(303, 333), 0f, 0.5f, 1.0f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_sugar"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Tags.Items.CROPS_POTATO),
                 new FluidStack(ModFluids.ETHANOL.get(), 25), ItemStack.EMPTY,
-                TemperatureRange.of(303, 333), 0f, 0.25f, true
+                TemperatureRange.of(303, 333), 0f, 0.25f, 1.0f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_potato"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.POISONOUS_POTATO),
                 new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
-                TemperatureRange.of(303, 333), 0f, 0.25f, true
+                TemperatureRange.of(303, 333), 0f, 0.25f, 1.0f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_poisonous_potato"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.APPLE),
                 new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
-                TemperatureRange.of(303, 333), 0f, 0.25f, true
+                TemperatureRange.of(303, 333), 0f, 0.25f, 1.0f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_apple"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.MELON_SLICE),
                 new FluidStack(ModFluids.ETHANOL.get(), 10), ItemStack.EMPTY,
-                TemperatureRange.of(303, 333), 0f, 0.4f, true
+                TemperatureRange.of(303, 333), 0f, 0.4f, 1.0f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_melon"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.of(Items.SWEET_BERRIES),
                 new FluidStack(ModFluids.ETHANOL.get(), 20), ItemStack.EMPTY,
-                TemperatureRange.of(303, 333), 0f, 0.4f, true
+                TemperatureRange.of(303, 333), 0f, 0.4f, 1.0f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_sweet_berries"));
         thermoPlant(FluidIngredient.EMPTY, Ingredient.of(Tags.Items.SEEDS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 50), ItemStack.EMPTY,
-                TemperatureRange.any(), 2f, 0.5f, false
+                TemperatureRange.any(), 2f, 0.5f, 1.0f, false
         ).build(consumer, RL("thermo_plant/vegetable_oil_from_seeds"));
         thermoPlant(FluidIngredient.EMPTY, Ingredient.of(Tags.Items.CROPS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 20), ItemStack.EMPTY,
-                TemperatureRange.any(), 2f, 0.5f, false
+                TemperatureRange.any(), 2f, 0.5f, 1.0f, false
         ).build(consumer, RL("thermo_plant/vegetable_oil_from_crops"));
         thermoPlant(FluidIngredient.of(2000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.of(Tags.Items.INGOTS_IRON),
                 FluidStack.EMPTY, new ItemStack(ModItems.IRON_DRILL_BIT.get()),
-                TemperatureRange.any(), 3f, 0.5f, false
+                TemperatureRange.any(), 3f, 0.5f, 2.0f, false
         ).build(consumer, RL("thermo_plant/iron_drill_bit"));
         thermoPlant(FluidIngredient.of(4000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.of(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON),
                 FluidStack.EMPTY, new ItemStack(ModItems.COMPRESSED_IRON_DRILL_BIT.get()),
-                TemperatureRange.min(573), 4f, 0.25f, false
+                TemperatureRange.min(573), 4f, 0.25f, 5.0f, false
         ).build(consumer, RL("thermo_plant/compressed_iron_drill_bit"));
         thermoPlant(FluidIngredient.of(8000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.of(Tags.Items.STORAGE_BLOCKS_DIAMOND),
                 FluidStack.EMPTY, new ItemStack(ModItems.DIAMOND_DRILL_BIT.get()),
-                TemperatureRange.min(773), 4.5f, 0.1f, false
+                TemperatureRange.min(773), 7.5f, 0.1f, 10.0f, false
         ).build(consumer, RL("thermo_plant/diamond_drill_bit"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.PLANT_OIL), Ingredient.of(Tags.Items.CROPS_POTATO),
                 FluidStack.EMPTY, new ItemStack(ModItems.CHIPS.get(), 4),
-                TemperatureRange.min(423), 0f, 1.0f, false
+                TemperatureRange.min(423), 0f, 1.0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/chips"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.PLANT_OIL), Ingredient.of(ModItems.RAW_SALMON_TEMPURA.get()),
                 FluidStack.EMPTY, new ItemStack(ModItems.SALMON_TEMPURA.get(), 1),
-                TemperatureRange.min(423), 0f, 1.0f, false
+                TemperatureRange.min(423), 0f, 1.0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/salmon_tempura"));
         thermoPlant(FluidIngredient.of(4000, PneumaticCraftTags.Fluids.EXPERIENCE), Ingredient.of(ModItems.SPAWNER_CORE_SHELL.get()),
                 FluidStack.EMPTY, new ItemStack(ModItems.SPAWNER_CORE.get()),
-                TemperatureRange.any(), 3f, 0.5f, false
+                TemperatureRange.any(), 3f, 0.5f, 3.0f, false
         ).build(consumer, RL("thermo_plant/spawner_core"));
+        thermoPlant(FluidIngredient.of(50, PneumaticCraftTags.Fluids.PLASTIC), Ingredient.of(ModBlocks.PRESSURE_TUBE.get()),
+                FluidStack.EMPTY, new ItemStack(ModBlocks.REINFORCED_PRESSURE_TUBE.get()),
+                TemperatureRange.any(), 1.5f, 1f, 1.0f, false
+        ).build(consumer, RL("thermo_plant/reinforced_pressure_tube"));
 
         // assembly system
         assembly(Ingredient.of(ModItems.EMPTY_PCB.get()), new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
@@ -1456,7 +1464,7 @@ public class ModRecipeProvider extends RecipeProvider {
         assembly(Ingredient.of(Tags.Items.STORAGE_BLOCKS_QUARTZ), new ItemStack(ModBlocks.APHORISM_TILE.get(), 4),
                 AssemblyProgramType.LASER)
                 .build(consumer, RL("assembly/aphorism_tile"));
-        assembly(Ingredient.of(Items.NETHERITE_INGOT), new ItemStack(ModItems.NETHERITE_DRILL_BIT.get()),
+        assembly(Ingredient.of(ModItems.UNASSEMBLED_NETHERITE_DRILL_BIT.get()), new ItemStack(ModItems.NETHERITE_DRILL_BIT.get()),
                 AssemblyProgramType.DRILL)
                 .build(consumer, RL("assembly/netherite_drill_bit"));
 
@@ -1713,8 +1721,8 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private ThermoPlantRecipeBuilder thermoPlant(FluidIngredient inputFluid, @Nullable Ingredient inputItem,
                                                  FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
-                                                 float speed, boolean exothermic) {
-        return new ThermoPlantRecipeBuilder(inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, exothermic)
+                                                 float speed, float airUseMuliplier, boolean exothermic) {
+        return new ThermoPlantRecipeBuilder(inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, airUseMuliplier, exothermic)
                 .addCriterion(Criteria.has(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()));
     }
 
