@@ -48,6 +48,7 @@ public class ClientConfig {
         public ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
         public ForgeConfigSpec.BooleanValue showPressureNumerically;
         public ForgeConfigSpec.BooleanValue showEnchantGlint;
+        public ForgeConfigSpec.IntValue maxJetBootsFlightRoll;
     }
 
     public static class Sound {
@@ -111,10 +112,6 @@ public class ClientConfig {
         builder.pop();
 
         builder.push("armor");
-        armor.fancyArmorModels = builder
-                .comment("Use fancy models for Pneumatic Armor (currently unimplemented)")
-                .translation("pneumaticcraft.config.client.armor.fancy_armor_models")
-                .define("fancy_armor_models", true);
         armor.leggingsFOVFactor = builder
                 .comment("Intensity of the FOV modification when using Pneumatic Leggings speed boost: 0.0 for no FOV modification, higher values zoom out more.  Note: non-zero values may cause FOV clashes with other mods.")
                 .translation("pneumaticcraft.config.client.armor.leggings_fov_factor")
@@ -147,6 +144,10 @@ public class ClientConfig {
                 .comment("Should enchantment glint be shown on Pneumatic Armor pieces? Disable if you don't like the enchantment glint messing up your carefully chosen colour scheme...")
                 .translation("pneumaticcraft.config.client.armor.show_enchant_glint")
                 .define("show_enchant_glint", true);
+        armor.maxJetBootsFlightRoll = builder
+                .comment("Maximum screen roll in degrees when banking left or right during Jet Boots flight - cosmetic only")
+                .translation("pneumaticcraft.config.client.armor.max_jet_boots_roll")
+                .defineInRange("max_jet_boots_roll", 35, 0, 90);
         builder.pop();
 
         builder.push("sound");

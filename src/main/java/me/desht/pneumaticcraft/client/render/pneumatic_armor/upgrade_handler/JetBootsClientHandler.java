@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.JetBootsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
@@ -32,6 +33,8 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
@@ -83,6 +86,18 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     public void tickClient(ICommonArmorHandler armorHandler) {
         super.tickClient(armorHandler);
 
+        JetBootsHandler jbHandler = ArmorUpgradeRegistry.getInstance().jetBootsHandler;
+        JetBootsStateTracker.JetBootsState jbState = jbHandler.getJetBootsSyncedState(armorHandler);
+        if (armorHandler.upgradeUsable(jbHandler, false)) {
+            if (jbState.isActive() && (!jbState.isEnabled() || !thrustKeyPressed(jbState.isBuilderMode()))) {
+                NetworkHandler.sendToServer(new PacketJetBootsActivate(false));
+                jbHandler.setJetBootsActive(armorHandler, false);
+            } else if (!jbState.isActive() && jbState.isEnabled() && thrustKeyPressed(jbState.isBuilderMode())) {
+                NetworkHandler.sendToServer(new PacketJetBootsActivate(true));
+                jbHandler.setJetBootsActive(armorHandler, true);
+            }
+        }
+
         String g1 = ChatFormatting.WHITE.toString();
         String g2 = ChatFormatting.GREEN.toString();
 
@@ -111,7 +126,6 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             widestR = Math.max(fr.width(r1), Math.max(fr.width(r2), fr.width(r3)));
 
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
             builderMode = jbState.isBuilderMode();
 
             JetBootsHandler.JetBootsLocalState jbLocal = handler.getExtensionData(getCommonHandler());
@@ -187,5 +201,9 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     @Override
     public Collection<ResourceLocation> getSubKeybinds() {
         return ImmutableList.of(RL("jet_boots.module.builder_mode"), RL("jet_boots.module.flight_stabilizers"), RL("jet_boots.module.smart_hover"));
+    }
+
+    private static boolean thrustKeyPressed(boolean builderMode) {
+        return KeyHandler.getInstance().keybindJetBoots.isDown() || builderMode && Minecraft.getInstance().options.keyJump.isDown();
     }
 }

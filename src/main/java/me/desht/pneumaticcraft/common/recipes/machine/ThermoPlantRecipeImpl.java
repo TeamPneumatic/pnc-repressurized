@@ -49,9 +49,8 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     private final boolean exothermic;
     private final TemperatureRange operatingTemperature;
     private final ItemStack outputItem;
-    private float airUseMultiplier;
+    private final float airUseMultiplier;
 
-    // TODO 1.17 make inputItem a StackedIngredient to support item counts
     public ThermoPlantRecipeImpl(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nonnull Ingredient inputItem,
             FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
