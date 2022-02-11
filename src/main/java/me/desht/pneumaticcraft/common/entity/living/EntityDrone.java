@@ -284,11 +284,12 @@ public class EntityDrone extends EntityDroneBase implements
             stackEnchants.putAll(EnchantmentHelper.getEnchantments(droneStack));
             int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getAir();
             getAirHandler().addAir(air);
-            if (((ItemDrone) droneStack.getItem()).canProgram(droneStack)) {
+            ItemDrone droneItem = (ItemDrone) droneStack.getItem();
+            if (droneItem.canProgram(droneStack)) {
                 progWidgets = TileEntityProgrammer.getWidgetsFromNBT(stackTag);
                 TileEntityProgrammer.updatePuzzleConnections(progWidgets);
             }
-            setDroneColor(stackTag.getInt(NBT_DRONE_COLOR));
+            setDroneColor(droneItem.getDroneColor(droneStack).getId());
             fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
             droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
             if (stackTag.contains("Tank")) {

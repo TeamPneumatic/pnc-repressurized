@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -64,11 +63,13 @@ import static me.desht.pneumaticcraft.common.entity.living.EntityDrone.NBT_DRONE
 public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor, ColorHandlers.ITintableItem {
     private final BiFunction<Level, Player, EntityDrone> droneCreator;
     private final boolean programmable;
+    private final DyeColor defaultColor;
 
-    public ItemDrone(BiFunction<Level, Player, EntityDrone> droneCreator, boolean programmable) {
+    public ItemDrone(BiFunction<Level, Player, EntityDrone> droneCreator, boolean programmable, DyeColor defaultColor) {
         super((int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
         this.droneCreator = droneCreator;
         this.programmable = programmable;
+        this.defaultColor = defaultColor;
     }
 
     @Override
@@ -109,6 +110,12 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
                 );
             }
         }
+    }
+
+    public DyeColor getDroneColor(ItemStack stack) {
+        return stack.hasTag() && Objects.requireNonNull(stack.getTag()).contains(NBT_DRONE_COLOR) ?
+                DyeColor.byId(stack.getTag().getInt(NBT_DRONE_COLOR)) :
+                defaultColor;
     }
 
     public void spawnDrone(Player player, Level world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
@@ -160,10 +167,6 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
 
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
-        if (tintIndex == 1 && stack.hasTag()) {
-            int dyeID = Objects.requireNonNull(stack.getTag()).getInt(NBT_DRONE_COLOR);
-            return PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(dyeID));
-        }
-        return -1;
+        return tintIndex == 1 ? PneumaticCraftUtils.getDyeColorAsRGB(getDroneColor(stack)) : -1;
     }
 }
