@@ -31,8 +31,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsRequester> {
     private WidgetCheckBox aeIntegration;
 
-    public GuiLogisticsRequester(ContainerLogistics container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
+    public GuiLogisticsRequester(ContainerLogistics menu, Inventory inv, Component displayString) {
+        super(menu, inv, displayString);
     }
 
     @Override

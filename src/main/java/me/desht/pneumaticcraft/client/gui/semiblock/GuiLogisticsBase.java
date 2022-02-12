@@ -65,10 +65,10 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     private WidgetTextFieldNumber minItemsField;
     private WidgetTextFieldNumber minFluidField;
 
-    public GuiLogisticsBase(ContainerLogistics container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
+    public GuiLogisticsBase(ContainerLogistics menu, Inventory inv, Component displayString) {
+        super(menu, inv, displayString);
 
-        this.logistics = (L) container.logistics;
+        this.logistics = (L) menu.logistics;
         imageHeight = 216;
     }
 
@@ -201,7 +201,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     }
 
     private void syncToServer() {
-        NetworkHandler.sendToServer(new PacketSyncSemiblock(logistics));
+        NetworkHandler.sendToServer(new PacketSyncSemiblock(logistics, menu.isItemContainer()));
     }
 
     private void fluidClicked(WidgetFluidStack widget, int idx) {

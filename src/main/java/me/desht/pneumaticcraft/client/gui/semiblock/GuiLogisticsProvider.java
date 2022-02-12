@@ -23,7 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 public class GuiLogisticsProvider extends GuiLogisticsBase<EntityLogisticsPassiveProvider> {
-    public GuiLogisticsProvider(ContainerLogistics container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
+    public GuiLogisticsProvider(ContainerLogistics menu, Inventory inv, Component displayString) {
+        super(menu, inv, displayString);
     }
 }

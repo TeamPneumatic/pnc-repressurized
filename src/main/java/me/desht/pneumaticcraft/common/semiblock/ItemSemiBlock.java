@@ -47,11 +47,6 @@ public class ItemSemiBlock extends Item {
         }
     }
 
-    @Override
-    public InteractionResult useOn(UseOnContext context) {
-        return super.useOn(context);
-    }
-
     /**
      * Create a semiblock entity from the given itemstack, loading any saved NBT into the entity.  Does not add the
      * entity to the world.
@@ -64,7 +59,6 @@ public class ItemSemiBlock extends Item {
      */
     public EntitySemiblockBase createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
         EntityType<?> type = ForgeRegistries.ENTITIES.getValue(getRegistryName());
-//        Entity e = type.create(world, stack.getTag(), null, player, pos, SpawnReason.NATURAL, false, true);
         if (type != null) {
             Entity e = type.create(world);
             if (e != null) {
@@ -93,8 +87,8 @@ public class ItemSemiBlock extends Item {
                 }
             }
 
-            if (eSemi instanceof IDirectionalSemiblock) {
-                ((IDirectionalSemiblock) eSemi).setSide(direction);
+            if (eSemi instanceof IDirectionalSemiblock d) {
+                d.setSide(direction);
             }
 
             if (SemiblockTracker.getInstance().getAllSemiblocks(world, eSemi.getBlockPos()).anyMatch(s -> !s.canCoexist(eSemi))) {
@@ -104,7 +98,7 @@ public class ItemSemiBlock extends Item {
             world.addFreshEntity(eSemi);
             eSemi.onPlaced(player, context.getItemInHand(), direction);
             world.updateNeighborsAt(blockpos, world.getBlockState(blockpos).getBlock());
-            if (!player.isCreative()) {
+            if (player != null && !player.isCreative()) {
                 itemstack.shrink(1);
             }
         } else {

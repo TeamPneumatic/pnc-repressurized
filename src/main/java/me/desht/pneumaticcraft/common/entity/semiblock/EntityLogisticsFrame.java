@@ -98,12 +98,9 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     private boolean itemWhiteList = true;
     private boolean fluidWhiteList = true;
     private int alpha = 255;
-    public final double antiZfight;  // prevents frames on adjacent full-blocks from z-fighting
 
     EntityLogisticsFrame(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
-
-        this.antiZfight = worldIn.random.nextDouble() * 0.005;
     }
 
     /**
@@ -440,7 +437,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
                 }
             };
 
-            NetworkHandler.sendToPlayer(new PacketSyncSemiblock(this), (ServerPlayer) player);
+            NetworkHandler.sendToPlayer(new PacketSyncSemiblock(this, false), (ServerPlayer) player);
             NetworkHooks.openGui((ServerPlayer) player, provider, buffer -> buffer.writeVarInt(getId()));
         }
         return true;
@@ -512,9 +509,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     public static class Listener {
         @SubscribeEvent
         public static void onPlayerLeftClick(AttackEntityEvent event) {
-            if (event.getTarget() instanceof EntityLogisticsFrame) {
+            if (event.getTarget() instanceof EntityLogisticsFrame frame) {
                 // pass a left-click on invisible logistics frame through to the block it's on
-                EntityLogisticsFrame frame = (EntityLogisticsFrame) event.getTarget();
                 if (frame.isSemiblockInvisible()) {
                     frame.getBlockState().attack(frame.getWorld(), frame.getBlockPos(), event.getPlayer());
                     event.setCanceled(true);

@@ -40,8 +40,8 @@ public class PacketSyncSemiblock {
     private final int entityID;  // -1 indicates no entity, sync'ing to item in hand
     private final FriendlyByteBuf payload;
 
-    public PacketSyncSemiblock(ISemiBlock semiBlock) {
-        this.entityID = semiBlock.getTrackingId();
+    public PacketSyncSemiblock(ISemiBlock semiBlock, boolean itemContainer) {
+        this.entityID = itemContainer ? -1 : semiBlock.getTrackingId();
         this.payload = new FriendlyByteBuf(Unpooled.buffer());
         semiBlock.writeToBuf(payload);
     }
@@ -72,8 +72,10 @@ public class PacketSyncSemiblock {
 
     private void handleServer(ServerPlayer sender) {
         if (entityID == -1) {
-            if (sender.containerMenu instanceof ISyncableSemiblockItem) {
-                ((ISyncableSemiblockItem) sender.containerMenu).syncSemiblockItemFromClient(sender, payload);
+            if (sender.containerMenu instanceof ISyncableSemiblockItem syncable) {
+                syncable.syncSemiblockItemFromClient(sender, payload);
+            } else {
+                Log.warning("PacketSyncSemiblock: received packet with entity -1, but player is not holding a semiblock item?");
             }
         } else {
             processEntity(sender.getLevel());
@@ -90,7 +92,7 @@ public class PacketSyncSemiblock {
         if (semiBlock != null) {
             semiBlock.readFromBuf(payload);
         } else {
-            Log.warning("PacketSemiBlockSync: did not get expected ISemiBlock entity for entity ID %d", entityID);
+            Log.warning("PacketSyncSemiblock: did not get expected ISemiBlock entity for entity ID %d", entityID);
         }
     }
 }
