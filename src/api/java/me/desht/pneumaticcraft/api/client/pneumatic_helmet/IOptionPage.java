@@ -126,7 +126,7 @@ public interface IOptionPage {
     boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY);
 
     /**
-     * Can this upgrade be toggled off & on?  If true, a checkbox (with the ability to bind a key) will be
+     * Can this upgrade be toggled on &amp; off?  If true, a checkbox (with the ability to bind a key) will be
      * automatically displayed in this upgrade's GUI.
      *
      * @return true if the upgrade is toggleable, false otherwise

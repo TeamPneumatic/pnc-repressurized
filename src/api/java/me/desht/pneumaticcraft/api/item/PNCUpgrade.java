@@ -15,8 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents an upgrade which can be inserted into a PNC machine or item. Upgrades are Forge registry objects, and
- * should be registered in the usual way ({@code DeferredRegister&lt;PNCUpgrade&gt;} and/or
- * {@code RegistryEvent.Register&lt;PNCUpgrade&gt;}.
+ * should be registered in the usual way, using {@code RegistryEvent.Register&lt;PNCUpgrade&gt;}.
  * <p>
  * Upgrades can have multiple tiers; each upgrade must have one corresponding item registered per upgrade tier.
  * Such items must implement {@link IUpgradeItem}.
@@ -71,8 +70,9 @@ public class PNCUpgrade extends ForgeRegistryEntry<PNCUpgrade> {
      * Get the registry name for the corresponding item for this upgrade, given a tier. Do not call this before the
      * upgrade itself has been registered.
      * <p>
-     * The default naming strategy is to take the upgrade's registry name and simply append "_upgrade" to it. You can
-     * override this strategy by extending this class and overriding this method if you need to.
+     * The default naming strategy is to take the upgrade's registry name and simply append "_upgrade" to it (along with
+     * the tier number if it's a multitier upgrade). You can override this strategy by extending this class and
+     * overriding this method if you need to.
      *
      * @param tier tier of this upgrade
      * @return an item registry name

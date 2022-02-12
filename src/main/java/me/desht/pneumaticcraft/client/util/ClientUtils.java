@@ -66,7 +66,7 @@ import java.util.Objects;
 
 /**
  * Miscellaneous client-side utilities.  Used to wrap client-only code in methods safe to call from classes that could
- * be loaded on dedicated server (mainly packet handlers & event handlers, but could be anywhere...)
+ * be loaded on dedicated server (mainly packet handlers and event handlers, but could be anywhere...)
  */
 public class ClientUtils {
     /**

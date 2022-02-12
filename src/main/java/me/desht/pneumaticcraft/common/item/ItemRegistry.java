@@ -40,6 +40,7 @@ import org.apache.commons.lang3.Validate;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 public enum ItemRegistry implements IItemRegistry {
     INSTANCE;
@@ -87,7 +88,7 @@ public enum ItemRegistry implements IItemRegistry {
     }
 
     @Override
-    public Item makeUpgradeItem(RegistryObject<PNCUpgrade> upgrade, int tier) {
+    public Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier) {
         return new ItemUpgrade(upgrade, tier);
     }
 

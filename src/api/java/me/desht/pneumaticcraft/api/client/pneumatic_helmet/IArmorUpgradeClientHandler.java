@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.KeyMapping;
-import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -117,7 +117,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     }
 
     /**
-     * Is this upgrade toggleable, i.e. can it be switched on & off?  Toggleable upgrades will have a checkbox in their
+     * Is this upgrade toggleable, i.e. can it be switched on &amp; off?  Toggleable upgrades will have a checkbox in their
      * GUI page with a possible associated keybinding. Non-toggleable upgrades generally have a bindable hotkey to
      * trigger a one-off action (e.g. hacking, chestplate launcher...).  The default return value for this method is
      * true, which is the most common case.  Override to return false for non-toggleable upgrades.

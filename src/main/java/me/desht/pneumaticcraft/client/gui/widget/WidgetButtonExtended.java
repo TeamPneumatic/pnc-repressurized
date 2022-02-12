@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  * Extension of GuiButtonExt that add: 1) a string tag which is sent to the server when clicked (PacketGuiButton),
- * 2) ability to draw itemstack or textured icons & 3) can render its area when invisible
+ * 2) ability to draw itemstack or textured icons, and 3) can render its area when invisible
  */
 public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget, ITooltipProvider {
     private int iconSpacing = 18;

@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import java.util.function.Predicate;
 
 /**
- * Much like the default FluidTank implementation in Forge, but also passes the previous fluid & amount in its
+ * Much like the default FluidTank implementation in Forge, but also passes the previous fluid &amp; amount in its
  * onContentsChanged() method.
  */
 public class PNCFluidTank implements IFluidHandler, IFluidTank {

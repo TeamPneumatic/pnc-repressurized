@@ -57,7 +57,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     public abstract AmadronTradeResource getOutput();
 
     /**
-     * Get the offer's vendor name, for display purposes.  The default is "Amadron" for static & periodic offers loaded
+     * Get the offer's vendor name, for display purposes.  The default is "Amadron" for static and periodic offers loaded
      * from datapack, "Villagers" for villager-discovered offers, and the player's display name (at the time of offer
      * creation) for player-added offers.
      *
@@ -91,7 +91,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     /**
      * Update the number of trades Amadron currently has in stock for this offer. It is the responsbility of the
      * implementation to ensure the stock level does not go below 0, or above the max stock level as returned by
-     * {@link #getMaxStock()} (provided that the max stock level is > 0).
+     * {@link #getMaxStock()} (provided that the max stock level is &gt; 0).
      *
      * @param stock the new stock level
      */
@@ -100,7 +100,7 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     /**
      * Get the maximum (initial) stock level for this offer.
      *
-     * @return the max stock level; any quantity <= 0 indicates no maximum in force
+     * @return the max stock level; any quantity &le; 0 indicates no maximum in force
      */
     public abstract int getMaxStock();
 

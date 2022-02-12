@@ -94,7 +94,7 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
      * synced to clients on the next tick so that particles and sound effects can be played there.  The amount of air
      * leaked in a tick is pressure-dependent; the exact amount is {@code pressure * 40 + 20 mL}.
      * <p>(Note: in theory, an air handler could leak in multiple directions at once, but this is a simplified
-     * implementation to keep the code straightforward & efficient, while still being effective)</p>
+     * implementation to keep the code straightforward &amp; efficient, while still being effective)</p>
      *
      * @param dir the direction the leak is occurring (affects particle velocities), or null for no leak
      */

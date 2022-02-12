@@ -116,8 +116,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
         addSyncedFields(this);
 
-        if (invPlayer.player instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) invPlayer.player;
+        if (invPlayer.player instanceof ServerPlayer player) {
             ItemStack tablet = player.getItemInHand(hand);
             ShoppingBasket savedBasket = ItemAmadronTablet.loadShoppingCart(tablet);
 

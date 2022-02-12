@@ -68,7 +68,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
     void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides);
 
     /**
-     * Initialize this heat exchanger's ambient temperature based on the given world & position.  You don't need to call
+     * Initialize this heat exchanger's ambient temperature based on the given world &amp; position.  You don't need to call
      * this method if your heat exchanger is a hull exchanger (i.e. provides an {@link IHeatExchangerLogic} object via
      * capability lookup), as hulls are automatically initialized by
      * {@link IHeatExchangerLogic#initializeAsHull(Level, BlockPos, BiPredicate, Direction...)}

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Represents an item which can store & provide one or more block positions.  An example would be the GPS Tool (one
+ * Represents an item which can store &amp; provide one or more block positions.  An example would be the GPS Tool (one
  * position), the GPS Area Tool (possibly many positions) or the Amadron Tablet (two positions).
  */
 public interface IPositionProvider {
@@ -43,7 +43,7 @@ public interface IPositionProvider {
     List<BlockPos> getStoredPositions(UUID playerId, @Nonnull ItemStack stack);
 
     /**
-     * Color that should be used to highlight the stored block positions if & when they are rendered on-screen.
+     * Color that should be used to highlight the stored block positions if &amp; when they are rendered on-screen.
      *
      * @param index the index in the list returned by getStoredPositions()
      * @return a color in ARGB format, or 0 to skip rendering completely

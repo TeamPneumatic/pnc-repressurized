@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.api.pneumatic_armor;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
@@ -162,7 +162,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      * in the common armor handler for the player, and can be retrieved with
      * {@link ICommonArmorHandler#getExtensionData(IArmorUpgradeHandler)}.
      *
-     * @return a supplier for the extension data for this upgrade & player; supply null if there is none
+     * @return a supplier for the extension data for this upgrade &amp; player; supply null if there is none
      */
     @Nonnull
     default Supplier<T> extensionData() {

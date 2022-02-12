@@ -24,10 +24,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Get an instance of this with {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getItemRegistry()}
@@ -54,13 +54,14 @@ public interface IItemRegistry {
      * PneumaticCraft upgrade. This item has the default PneumaticCraft tooltip behaviour in that
      * {@link #addTooltip(PNCUpgrade, List)} is called when Shift is held while hovering over the item.
      * <p>
-     * You can use this method as an alternative to implementing {@code IUpgradeItem} yourself.
+     * You can use this method when registering upgrade items as an alternative to creating an Item which implements
+     * {@code IUpgradeItem} yourself.
      *
-     * @param upgrade the upgrade's registry object
+     * @param upgrade a supplier for the upgrade object, which will not yet be registered
      * @param tier upgrade tier of this item
      * @return an item
      */
-    Item makeUpgradeItem(RegistryObject<PNCUpgrade> upgrade, int tier);
+    Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier);
 
     /**
      * Can be used for custom upgrade items to handle tooltips. This will work for implementors registered via

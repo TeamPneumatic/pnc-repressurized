@@ -37,7 +37,7 @@ public interface IPathfindHandler {
 
     /**
      * CURRENTLY NOT IMPLEMENTED!
-     * Will be called every tick as long as the drone is < 1 block away from the given coordinate.
+     * Will be called every tick as long as the drone is &lt; 1 block away from the given coordinate.
      * can be used to open a door for a drone for example.
      *
      * @param world the drone's world

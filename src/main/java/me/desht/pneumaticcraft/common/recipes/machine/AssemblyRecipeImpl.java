@@ -107,7 +107,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
     /**
      * Work out which recipes can be chained.  E.g. if laser recipe makes B from A, and drill recipe makes C from B,
-     * then add a synthetic laser/drill recipe to make C from A. Takes into account the number of inputs & outputs
+     * then add a synthetic laser/drill recipe to make C from A. Takes into account the number of inputs and outputs
      * from each step.
      *
      * @param drillRecipes all known drill recipes

@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * Server side tracker to find the semiblock entities at a given world & blockpos
+ * Server side tracker to find the semiblock entities at a given world and blockpos
  * (Note that one blockpos could have up to 7 semiblocks - one non-sided plus six sided semiblocks)
  */
 @Mod.EventBusSubscriber(modid = Names.MOD_ID)
@@ -123,7 +123,7 @@ public enum SemiblockTracker {
     }
 
     /**
-     * Add a semiblock at the given world & pos
+     * Add a semiblock at the given world/pos
      *
      * @param world the world
      * @param pos the blockpos

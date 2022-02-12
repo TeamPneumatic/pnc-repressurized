@@ -40,7 +40,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * A player filter is a collection of individual matcher objects with either match-any or match-all behaviour.
- * Custom matcher objects can be registered and have support for reading & writing to JSON and packet buffers, so
+ * Custom matcher objects can be registered and have support for reading/writing to JSON and packet buffers, so
  * are suitable for use in recipes, for example.
  */
 public class PlayerFilter implements Predicate<Player> {
@@ -141,13 +141,12 @@ public class PlayerFilter implements Predicate<Player> {
 
     @Override
     public boolean test(Player player) {
-        switch (op) {
-            case YES: return true;
-            case NO: return false;
-            case OR: return matchers.values().stream().anyMatch(matcher -> matcher.test(player));
-            case AND: return matchers.values().stream().allMatch(matcher -> matcher.test(player));
-        }
-        return false;
+        return switch (op) {
+            case YES -> true;
+            case NO -> false;
+            case OR -> matchers.values().stream().anyMatch(matcher -> matcher.test(player));
+            case AND -> matchers.values().stream().allMatch(matcher -> matcher.test(player));
+        };
     }
 
     public void getDescription(Player player, List<Component> tooltip) {

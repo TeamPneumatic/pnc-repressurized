@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * The glue between FluidItemModel and TankRenderInfo.  Provides the fluids & bounding boxes for the FluidItemModel
+ * The glue between FluidItemModel and TankRenderInfo.  Provides the fluids and bounding boxes for the FluidItemModel
  * to add the right quads to the item model.
  */
 public interface IFluidItemRenderInfoProvider {

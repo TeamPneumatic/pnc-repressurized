@@ -102,7 +102,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
     }
 
     /**
-     * Go through all items & fluids in the basket and ensure that the providing inventory/tank contains enough
+     * Go through all items and fluids in the basket and ensure that the providing inventory/tank contains enough
      * resources to fund all of the offers.
      *
      * @param tablet    the Amadron tablet, to get the inventory/tank locations
