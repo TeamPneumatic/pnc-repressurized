@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
+import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -36,8 +36,8 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPressureChamberValve,TileEntityPressureChamberValve> {
-    public GuiPressureChamber(ContainerPressureChamberValve container, Inventory inv, Component displayString) {
+public class GuiPressureChamber extends GuiPneumaticContainerBase<PressureChamberValveMenu,TileEntityPressureChamberValve> {
+    public GuiPressureChamber(PressureChamberValveMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

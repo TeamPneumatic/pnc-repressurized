@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
-import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
+import me.desht.pneumaticcraft.common.inventory.SecurityStationHackingMenu;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
@@ -52,7 +52,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiSecurityStationHacking extends GuiPneumaticContainerBase<ContainerSecurityStationHacking, TileEntitySecurityStation> {
+public class GuiSecurityStationHacking extends GuiPneumaticContainerBase<SecurityStationHackingMenu, TileEntitySecurityStation> {
     private WidgetAnimatedStat statusStat;
 
     private RenderHackSimulation hackRenderer;
@@ -66,7 +66,7 @@ public class GuiSecurityStationHacking extends GuiPneumaticContainerBase<Contain
     private WidgetButtonExtended nukeVirusButton;
     private WidgetButtonExtended stopWormButton;
 
-    public GuiSecurityStationHacking(ContainerSecurityStationHacking container, Inventory inv, Component displayString) {
+    public GuiSecurityStationHacking(SecurityStationHackingMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 238;
@@ -102,7 +102,7 @@ public class GuiSecurityStationHacking extends GuiPneumaticContainerBase<Contain
     }
 
     private void initConnectionRendering() {
-        hackRenderer = new RenderHackSimulation(leftPos + 16, topPos + 30, ContainerSecurityStationHacking.NODE_SPACING);
+        hackRenderer = new RenderHackSimulation(leftPos + 16, topPos + 30, SecurityStationHackingMenu.NODE_SPACING);
         bgSimulation = HackSimulation.dummySimulation();
         bgSimulation.wakeUp();
         for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {

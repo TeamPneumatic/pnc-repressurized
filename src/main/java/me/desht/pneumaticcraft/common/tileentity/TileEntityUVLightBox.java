@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
+import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -286,7 +286,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerUVLightBox(i, playerInventory, getBlockPos());
+        return new UVLightBoxMenu(i, playerInventory, getBlockPos());
     }
 
     public int getThreshold() {

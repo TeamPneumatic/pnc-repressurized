@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
+import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -40,14 +40,14 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<ContainerPressureChamberInterface,TileEntityPressureChamberInterface> {
+public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<PressureChamberInterfaceMenu,TileEntityPressureChamberInterface> {
     private WidgetAnimatedStat statusStat;
     private WidgetButtonExtended exportAnyButton;
     private WidgetLabel exportTypeLabel;
 
     private boolean hasEnoughPressure = true;
 
-    public GuiPressureChamberInterface(ContainerPressureChamberInterface container, Inventory inv, Component displayString) {
+    public GuiPressureChamberInterface(PressureChamberInterfaceMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

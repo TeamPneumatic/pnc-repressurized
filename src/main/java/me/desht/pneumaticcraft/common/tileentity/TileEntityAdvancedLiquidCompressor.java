@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.inventory.ContainerAdvancedLiquidCompressor;
+import me.desht.pneumaticcraft.common.inventory.AdvancedLiquidCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -64,7 +64,7 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerAdvancedLiquidCompressor(i, playerInventory, getBlockPos());
+        return new AdvancedLiquidCompressorMenu(i, playerInventory, getBlockPos());
     }
 
     @Override

@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
+import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -42,7 +42,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerChargingStation,TileEntityChargingStation> {
+public class GuiChargingStation extends GuiPneumaticContainerBase<ChargingStationMenu,TileEntityChargingStation> {
     private WidgetButtonExtended guiSelectButton;
     private WidgetButtonExtended upgradeOnlyButton;
     private float renderAirProgress;
@@ -50,7 +50,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     private static final Component UPGRADE_ONLY_ON = new TextComponent("\u2b06").withStyle(ChatFormatting.AQUA);
     private static final Component UPGRADE_ONLY_OFF = new TextComponent("\u2b06").withStyle(ChatFormatting.GRAY);
 
-    public GuiChargingStation(ContainerChargingStation container, Inventory inv, Component displayString) {
+    public GuiChargingStation(ChargingStationMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 182;

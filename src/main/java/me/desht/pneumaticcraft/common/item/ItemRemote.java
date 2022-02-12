@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
+import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -124,7 +124,7 @@ public class ItemRemote extends Item {
     }
 
     private void toBytes(FriendlyByteBuf buf, Player player, InteractionHand hand, boolean syncGlobals) {
-        // see ContainerRemote constructor for corresponding deserialisation
+        // see RemoteMenu constructor for corresponding deserialisation
         buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
         if (syncGlobals) {
             Collection<String> variables = GlobalVariableManager.getInstance().getAllActiveVariableNames(player);
@@ -195,10 +195,10 @@ public class ItemRemote extends Item {
         @Nullable
         @Override
         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-            return new ContainerRemote(getType(), windowId, playerInventory, hand);
+            return new RemoteMenu(getType(), windowId, playerInventory, hand);
         }
 
-        protected MenuType<? extends ContainerRemote> getType() {
+        protected MenuType<? extends RemoteMenu> getType() {
             return ModMenuTypes.REMOTE.get();
         }
     }
@@ -209,7 +209,7 @@ public class ItemRemote extends Item {
         }
 
         @Override
-        protected MenuType<? extends ContainerRemote> getType() {
+        protected MenuType<? extends RemoteMenu> getType() {
             return ModMenuTypes.REMOTE_EDITOR.get();
         }
     }

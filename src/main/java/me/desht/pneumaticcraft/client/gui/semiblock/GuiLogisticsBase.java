@@ -27,8 +27,8 @@ import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
-import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
-import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
+import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
+import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
@@ -52,7 +52,7 @@ import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<ContainerLogistics, TileEntityBase> {
+public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<LogisticsMenu, TileEntityBase> {
     protected final L logistics;
     private GuiItemSearcher itemSearchGui;
     private GuiLogisticsLiquidFilter fluidSearchGui;
@@ -65,7 +65,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     private WidgetTextFieldNumber minItemsField;
     private WidgetTextFieldNumber minFluidField;
 
-    public GuiLogisticsBase(ContainerLogistics menu, Inventory inv, Component displayString) {
+    public GuiLogisticsBase(LogisticsMenu menu, Inventory inv, Component displayString) {
         super(menu, inv, displayString);
 
         this.logistics = (L) menu.logistics;

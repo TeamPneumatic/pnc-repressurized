@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
+import me.desht.pneumaticcraft.common.inventory.AssemblyControllerMenu;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.tileentity.IAssemblyMachine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
@@ -42,11 +42,11 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAssemblyController,TileEntityAssemblyController> {
+public class GuiAssemblyController extends GuiPneumaticContainerBase<AssemblyControllerMenu,TileEntityAssemblyController> {
 
     private WidgetAnimatedStat statusStat;
 
-    public GuiAssemblyController(ContainerAssemblyController container, Inventory inv, Component displayString) {
+    public GuiAssemblyController(AssemblyControllerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

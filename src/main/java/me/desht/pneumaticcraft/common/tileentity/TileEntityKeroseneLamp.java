@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
+import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -401,6 +401,6 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerKeroseneLamp(i, playerInventory, getBlockPos());
+        return new KeroseneLampMenu(i, playerInventory, getBlockPos());
     }
 }

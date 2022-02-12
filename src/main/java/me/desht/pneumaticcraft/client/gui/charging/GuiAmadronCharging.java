@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.charging;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
+import me.desht.pneumaticcraft.common.inventory.ChStUpgradeManagerMenu;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -27,7 +27,7 @@ import net.minecraft.world.entity.player.Inventory;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiAmadronCharging extends GuiChargingUpgradeManager {
-    public GuiAmadronCharging(ContainerChargingStationUpgradeManager container, Inventory inv, Component displayString) {
+    public GuiAmadronCharging(ChStUpgradeManagerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

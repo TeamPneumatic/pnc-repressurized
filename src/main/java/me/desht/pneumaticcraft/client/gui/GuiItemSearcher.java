@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.inventory.ContainerItemSearcher;
+import me.desht.pneumaticcraft.common.inventory.ItemSearcherMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
@@ -58,7 +58,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GuiItemSearcher extends AbstractContainerScreen<ContainerItemSearcher> {
+public class GuiItemSearcher extends AbstractContainerScreen<ItemSearcherMenu> {
     private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER;
     private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
     private static final int SEARCH_SLOT = 48;
@@ -77,7 +77,7 @@ public class GuiItemSearcher extends AbstractContainerScreen<ContainerItemSearch
     private String lastSearch = "";
     private int updateCounter = 0;
 
-    public GuiItemSearcher(ContainerItemSearcher container, Inventory playerInventory, Component displayString) {
+    public GuiItemSearcher(ItemSearcherMenu container, Inventory playerInventory, Component displayString) {
         super(container, playerInventory, displayString);
 
         passEvents = true;

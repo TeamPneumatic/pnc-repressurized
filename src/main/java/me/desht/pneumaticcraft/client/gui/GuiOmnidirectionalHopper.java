@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
+import me.desht.pneumaticcraft.common.inventory.OmnidirectionalHopperMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -43,7 +43,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<ContainerOmnidirectionalHopper,TileEntityOmnidirectionalHopper> {
+public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<OmnidirectionalHopperMenu,TileEntityOmnidirectionalHopper> {
     private static final Component ARROW_NO_RR = new TextComponent(Symbols.ARROW_RIGHT);
     private static final Component ARROW_RR = new TextComponent(Symbols.CIRCULAR_ARROW).withStyle(ChatFormatting.GREEN);
 
@@ -51,7 +51,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
     private WidgetButtonExtended rrButton;
 
-    public GuiOmnidirectionalHopper(ContainerOmnidirectionalHopper container, Inventory inv, Component displayString) {
+    public GuiOmnidirectionalHopper(OmnidirectionalHopperMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

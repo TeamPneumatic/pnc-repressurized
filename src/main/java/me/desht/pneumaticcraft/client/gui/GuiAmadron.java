@@ -25,8 +25,8 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
+import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
+import me.desht.pneumaticcraft.common.inventory.AmadronMenu.EnumProblemState;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
@@ -48,7 +48,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileEntityBase> {
+public class GuiAmadron extends GuiPneumaticContainerBase<AmadronMenu,TileEntityBase> {
     private static final int ROWS = 4;
     public static final int OFFERS_PER_PAGE = ROWS * 2;
 
@@ -65,7 +65,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     private boolean needTooltipUpdate = true;
     private int problemTimer = 0;
 
-    public GuiAmadron(ContainerAmadron container, Inventory inv, @SuppressWarnings("unused") Component displayString) {
+    public GuiAmadron(AmadronMenu container, Inventory inv, @SuppressWarnings("unused") Component displayString) {
         super(container, inv, new TextComponent(""));
         imageWidth = 176;
         imageHeight = 202;

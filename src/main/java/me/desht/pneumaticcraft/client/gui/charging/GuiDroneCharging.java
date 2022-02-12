@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.charging;
 
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
+import me.desht.pneumaticcraft.common.inventory.ChStUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -28,7 +28,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiDroneCharging extends GuiChargingUpgradeManager {
 
-    public GuiDroneCharging(ContainerChargingStationUpgradeManager container, Inventory inv, Component displayString) {
+    public GuiDroneCharging(ChStUpgradeManagerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

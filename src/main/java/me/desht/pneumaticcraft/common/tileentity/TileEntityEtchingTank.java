@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.inventory.ContainerEtchingTank;
+import me.desht.pneumaticcraft.common.inventory.EtchingTankMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -217,7 +217,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInv, Player player) {
-        return new ContainerEtchingTank(windowId, playerInv, getBlockPos());
+        return new EtchingTankMenu(windowId, playerInv, getBlockPos());
     }
 
     @Nonnull

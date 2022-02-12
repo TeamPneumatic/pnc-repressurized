@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
+import me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -62,7 +62,7 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
     }
 
     private void handleServerSide(ServerPlayer player, AmadronPlayerOffer offer) {
-        if (player.containerMenu instanceof ContainerAmadronAddTrade) {
+        if (player.containerMenu instanceof AmadronAddTradeMenu) {
             offer.updatePlayerId();
             if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
                 player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);

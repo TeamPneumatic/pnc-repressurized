@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsBase;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
-import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
+import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;

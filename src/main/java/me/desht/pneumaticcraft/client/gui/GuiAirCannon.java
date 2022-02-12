@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
+import me.desht.pneumaticcraft.common.inventory.AirCannonMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -38,14 +38,14 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,TileEntityAirCannon> {
+public class GuiAirCannon extends GuiPneumaticContainerBase<AirCannonMenu,TileEntityAirCannon> {
     private WidgetAnimatedStat statusStat;
     private WidgetAnimatedStat strengthTab;
     private int gpsX;
     private int gpsY;
     private int gpsZ;
 
-    public GuiAirCannon(ContainerAirCannon container, Inventory inventoryPlayer, Component displayName) {
+    public GuiAirCannon(AirCannonMenu container, Inventory inventoryPlayer, Component displayName) {
         super(container, inventoryPlayer, displayName);
 
         gpsX = te.gpsX;

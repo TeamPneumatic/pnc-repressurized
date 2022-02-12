@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -55,8 +55,8 @@ public class PacketAmadronOrderUpdate {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
-            if (player != null && player.containerMenu instanceof ContainerAmadron) {
-                ((ContainerAmadron) player.containerMenu).clickOffer(orderId, mouseButton, sneaking, player);
+            if (player != null && player.containerMenu instanceof AmadronMenu) {
+                ((AmadronMenu) player.containerMenu).clickOffer(orderId, mouseButton, sneaking, player);
             }
         });
         ctx.get().setPacketHandled(true);

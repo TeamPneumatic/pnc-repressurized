@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
+import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -30,12 +30,12 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
-public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEntityBase> {
+public class GuiRemote extends GuiPneumaticContainerBase<RemoteMenu,TileEntityBase> {
 
     RemoteLayout remoteLayout;
     protected final ItemStack remote;
 
-    public GuiRemote(ContainerRemote container, Inventory inv, Component displayString) {
+    public GuiRemote(RemoteMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageWidth = 183;

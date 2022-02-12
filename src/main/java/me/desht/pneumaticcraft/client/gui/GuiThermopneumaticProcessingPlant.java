@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.common.inventory.ThermopneumaticProcessingPlantMenu;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant.TPProblem;
@@ -44,13 +44,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class GuiThermopneumaticProcessingPlant extends
-        GuiPneumaticContainerBase<ContainerThermopneumaticProcessingPlant,TileEntityThermopneumaticProcessingPlant> {
+        GuiPneumaticContainerBase<ThermopneumaticProcessingPlantMenu,TileEntityThermopneumaticProcessingPlant> {
 
     private WidgetTemperature tempWidget;
     private WidgetButtonExtended dumpButton;
     private int nExposedFaces;
 
-    public GuiThermopneumaticProcessingPlant(ContainerThermopneumaticProcessingPlant container, Inventory inv, Component displayString) {
+    public GuiThermopneumaticProcessingPlant(ThermopneumaticProcessingPlantMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
         imageHeight = 212;
     }

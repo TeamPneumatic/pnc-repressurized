@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
+import me.desht.pneumaticcraft.common.inventory.PneumaticDoorBaseMenu;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
@@ -311,7 +311,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerPneumaticDoorBase(i, playerInventory, getBlockPos());
+        return new PneumaticDoorBaseMenu(i, playerInventory, getBlockPos());
     }
 
     public boolean shouldPassSignalToDoor() {

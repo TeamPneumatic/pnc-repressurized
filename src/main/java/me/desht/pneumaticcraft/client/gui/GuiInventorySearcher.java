@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.inventory.ContainerInventorySearcher;
+import me.desht.pneumaticcraft.common.inventory.InventorySearcherMenu;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -44,14 +44,14 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class GuiInventorySearcher extends AbstractContainerScreen<ContainerInventorySearcher> {
+public class GuiInventorySearcher extends AbstractContainerScreen<InventorySearcherMenu> {
     private final ItemStackHandler inventory = new ItemStackHandler(1);
     private final Screen parentScreen;
     private Predicate<ItemStack> stackPredicate = itemStack -> true;
     private WidgetLabel label;
     private int clickedMouseButton;
 
-    public GuiInventorySearcher(ContainerInventorySearcher container, Inventory inv, Component title) {
+    public GuiInventorySearcher(InventorySearcherMenu container, Inventory inv, Component title) {
         super(container, inv, title);
 
         inv.player.containerMenu = container;

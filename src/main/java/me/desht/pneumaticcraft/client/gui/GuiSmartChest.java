@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
+import me.desht.pneumaticcraft.common.inventory.SmartChestMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.common.tileentity.RangeManager;
@@ -61,16 +61,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static me.desht.pneumaticcraft.common.inventory.ContainerSmartChest.N_COLS;
+import static me.desht.pneumaticcraft.common.inventory.SmartChestMenu.N_COLS;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.CHEST_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest, TileEntitySmartChest> {
+public class GuiSmartChest extends GuiPneumaticContainerBase<SmartChestMenu, TileEntitySmartChest> {
     private List<Pair<Integer, ItemStack>> filter;
     private IGuiAnimatedStat statusStat;
     private WidgetButtonExtended showRangeButton;
 
-    public GuiSmartChest(ContainerSmartChest container, Inventory inv, Component displayString) {
+    public GuiSmartChest(SmartChestMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         this.imageWidth = 234;

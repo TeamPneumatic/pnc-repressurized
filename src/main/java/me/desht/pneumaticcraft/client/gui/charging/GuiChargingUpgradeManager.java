@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
+import me.desht.pneumaticcraft.common.inventory.ChStUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -55,14 +55,14 @@ import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBase<ContainerChargingStationUpgradeManager,TileEntityChargingStation> {
+public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBase<ChStUpgradeManagerMenu,TileEntityChargingStation> {
     private static final long TIER_CYCLE_TIME = 20L;
 
     protected final ItemStack itemStack;
     private Button guiBackButton;
     private final Map<PNCUpgrade, IGuiAnimatedStat> cycleTabs = new Object2ObjectOpenHashMap<>();
 
-    GuiChargingUpgradeManager(ContainerChargingStationUpgradeManager container, Inventory inv, Component displayString) {
+    GuiChargingUpgradeManager(ChStUpgradeManagerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
         itemStack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
 

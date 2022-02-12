@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
+import me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -56,11 +56,11 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
-import static me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade.INPUT_SLOT;
-import static me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade.OUTPUT_SLOT;
+import static me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu.INPUT_SLOT;
+import static me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu.OUTPUT_SLOT;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadronAddTrade, TileEntityBase> {
+public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<AmadronAddTradeMenu, TileEntityBase> {
     private GuiItemSearcher searchGui;
     private GuiInventorySearcher invSearchGui;
     private GuiInventorySearcher gpsSearchGui;
@@ -73,7 +73,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     private Button addButton;
     private boolean openingSubGUI = false;
 
-    public GuiAmadronAddTrade(ContainerAmadronAddTrade container, Inventory inv, Component displayString) {
+    public GuiAmadronAddTrade(AmadronAddTradeMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageWidth = 183;

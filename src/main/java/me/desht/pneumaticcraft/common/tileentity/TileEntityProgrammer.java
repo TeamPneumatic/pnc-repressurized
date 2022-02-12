@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
+import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.*;
@@ -543,7 +543,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerProgrammer(i, playerInventory, getBlockPos());
+        return new ProgrammerMenu(i, playerInventory, getBlockPos());
     }
 
     /**
@@ -572,7 +572,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         if (!nonNullLevel().isClientSide) {
             List<ServerPlayer> players = nonNullLevel().getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(5));
             for (ServerPlayer player : players) {
-                if (player != updatingPlayer && player.containerMenu instanceof ContainerProgrammer) {
+                if (player != updatingPlayer && player.containerMenu instanceof ProgrammerMenu) {
                     NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(this), player);
                 }
             }

@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
+import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -679,7 +679,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerPressureChamberValve(i, playerInventory, getBlockPos());
+        return new PressureChamberValveMenu(i, playerInventory, getBlockPos());
     }
 
     private void rebuildRenderedItems() {

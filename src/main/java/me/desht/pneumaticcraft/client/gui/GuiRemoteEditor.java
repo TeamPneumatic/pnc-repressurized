@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
+import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.item.ItemRemote;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateRemoteLayout;
@@ -60,7 +60,7 @@ public class GuiRemoteEditor extends GuiRemote {
     private int dragWidgetStartX, dragWidgetStartY;
     private int oldGuiLeft, oldGuiTop;
 
-    public GuiRemoteEditor(ContainerRemote container, Inventory inv, Component displayString) {
+    public GuiRemoteEditor(RemoteMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageWidth = 283;

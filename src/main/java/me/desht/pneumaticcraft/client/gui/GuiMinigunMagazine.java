@@ -23,7 +23,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
+import me.desht.pneumaticcraft.common.inventory.MinigunMagazineMenu;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -36,10 +36,10 @@ import net.minecraftforge.client.event.ContainerScreenEvent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinigunMagazine,TileEntityBase> implements IExtraGuiHandling {
+public class GuiMinigunMagazine extends GuiPneumaticContainerBase<MinigunMagazineMenu,TileEntityBase> implements IExtraGuiHandling {
     private int lockedSlot = -1;
 
-    public GuiMinigunMagazine(ContainerMinigunMagazine container, Inventory inv, Component displayString) {
+    public GuiMinigunMagazine(MinigunMagazineMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

@@ -27,8 +27,8 @@ import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
 import me.desht.pneumaticcraft.common.hacking.secstation.SimulationController;
-import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
-import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
+import me.desht.pneumaticcraft.common.inventory.SecurityStationHackingMenu;
+import me.desht.pneumaticcraft.common.inventory.SecurityStationMainMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
@@ -147,7 +147,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             // hack in progress
             simulationController.tick();
             Player hacker = simulationController.getHacker();
-            if (!(hacker.containerMenu instanceof ContainerSecurityStationHacking)) {
+            if (!(hacker.containerMenu instanceof SecurityStationHackingMenu)) {
                 if (!simulationController.isSimulationDone()
                         && simulationController.getSimulation(HackingSide.AI).isAwake()
                         && !simulationController.isJustTesting()) {
@@ -184,7 +184,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         if (rsController.parseRedstoneMode(tag)) return;
 
-        if (player.containerMenu instanceof ContainerSecurityStationMain && isPlayerOnWhiteList(player)) {
+        if (player.containerMenu instanceof SecurityStationMainMenu && isPlayerOnWhiteList(player)) {
             if (tag.equals("reboot")) {
                 rebootStation();
             } else if (tag.equals("test")) {
@@ -200,7 +200,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
                 String name = tag.split(":", 2)[1];
                 addTrustedUser(new GameProfile(null, name));
             }
-        } else if (player.containerMenu instanceof ContainerSecurityStationHacking && isPlayerHacking(player)) {
+        } else if (player.containerMenu instanceof SecurityStationHackingMenu && isPlayerHacking(player)) {
             if (tag.equals("end_test") && simulationController.isJustTesting()) {
                 NetworkHooks.openGui(player, this, getBlockPos());
             } else if (tag.startsWith("nuke:")) {
@@ -447,7 +447,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerSecurityStationMain(i, playerInventory, getBlockPos());
+        return new SecurityStationMainMenu(i, playerInventory, getBlockPos());
     }
 
     public void initiateHacking(Player hacker) {
@@ -656,7 +656,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         @Nullable
         @Override
         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-            return new ContainerSecurityStationHacking(windowId, playerInventory, getBlockPos());
+            return new SecurityStationHackingMenu(windowId, playerInventory, getBlockPos());
         }
     }
 
@@ -743,8 +743,8 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         @SubscribeEvent
         public static void onContainerClose(PlayerContainerEvent.Close event) {
             // reopen the main secstation window if closing a test-mode hacking window
-            if (event.getPlayer() instanceof ServerPlayer && event.getContainer() instanceof ContainerSecurityStationHacking) {
-                TileEntitySecurityStation teSS = ((ContainerSecurityStationHacking) event.getContainer()).te;
+            if (event.getPlayer() instanceof ServerPlayer && event.getContainer() instanceof SecurityStationHackingMenu) {
+                TileEntitySecurityStation teSS = ((SecurityStationHackingMenu) event.getContainer()).te;
                 if (teSS.getSimulationController() != null && teSS.getSimulationController().isJustTesting()) {
                     ServerPlayer player = (ServerPlayer) event.getPlayer();
                     MinecraftServer server = player.getServer();

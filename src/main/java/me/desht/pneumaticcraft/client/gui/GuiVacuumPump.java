@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
+import me.desht.pneumaticcraft.common.inventory.VacuumPumpMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -39,9 +39,9 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump,TileEntityVacuumPump> {
+public class GuiVacuumPump extends GuiPneumaticContainerBase<VacuumPumpMenu,TileEntityVacuumPump> {
 
-    public GuiVacuumPump(ContainerVacuumPump container, Inventory inv, Component displayString) {
+    public GuiVacuumPump(VacuumPumpMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

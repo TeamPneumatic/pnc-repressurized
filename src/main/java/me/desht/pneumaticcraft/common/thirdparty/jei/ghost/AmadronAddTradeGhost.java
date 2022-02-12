@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei.ghost;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.GuiAmadronAddTrade;
-import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
+import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;

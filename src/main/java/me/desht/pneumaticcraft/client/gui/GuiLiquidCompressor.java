@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
-import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
+import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiquidCompressor,TileEntityLiquidCompressor> {
-    public GuiLiquidCompressor(ContainerLiquidCompressor container, Inventory inv, Component displayString) {
+public class GuiLiquidCompressor extends GuiPneumaticContainerBase<LiquidCompressorMenu,TileEntityLiquidCompressor> {
+    public GuiLiquidCompressor(LiquidCompressorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

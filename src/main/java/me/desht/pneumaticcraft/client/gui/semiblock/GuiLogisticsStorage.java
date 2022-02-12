@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsStorage;
-import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
+import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 public class GuiLogisticsStorage extends GuiLogisticsBase<EntityLogisticsStorage> {
-    public GuiLogisticsStorage(ContainerLogistics menu, Inventory inv, Component displayString) {
+    public GuiLogisticsStorage(LogisticsMenu menu, Inventory inv, Component displayString) {
         super(menu, inv, displayString);
     }
 }

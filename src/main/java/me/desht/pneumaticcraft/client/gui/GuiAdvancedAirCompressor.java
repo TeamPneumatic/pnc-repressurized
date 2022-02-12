@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
+import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedAirCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -33,7 +33,7 @@ import java.util.List;
 public class GuiAdvancedAirCompressor extends GuiAirCompressor {
     private WidgetTemperature tempWidget;
 
-    public GuiAdvancedAirCompressor(ContainerAirCompressor container, Inventory inv, Component displayString) {
+    public GuiAdvancedAirCompressor(AirCompressorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

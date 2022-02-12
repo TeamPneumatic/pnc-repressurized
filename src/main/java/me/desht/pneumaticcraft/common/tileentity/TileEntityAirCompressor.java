@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockAirCompressor;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
+import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -81,7 +81,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerAirCompressor(i, playerInventory, getBlockPos());
+        return new AirCompressorMenu(i, playerInventory, getBlockPos());
     }
 
     public boolean isActive() {

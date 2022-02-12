@@ -36,7 +36,7 @@ import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
+import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -71,7 +71,7 @@ import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer,TileEntityProgrammer> {
+public class GuiProgrammer extends GuiPneumaticContainerBase<ProgrammerMenu,TileEntityProgrammer> {
     private GuiPastebin pastebinGui;
 
     private WidgetButtonExtended importButton;
@@ -112,7 +112,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private final boolean hiRes;
     private WidgetDifficulty programmerDifficulty;
 
-    public GuiProgrammer(ContainerProgrammer container, Inventory inv, Component displayString) {
+    public GuiProgrammer(ProgrammerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         hiRes = container.isHiRes();

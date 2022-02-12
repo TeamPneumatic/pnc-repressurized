@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
+import me.desht.pneumaticcraft.common.inventory.PneumaticDoorBaseMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -31,10 +31,10 @@ import net.minecraft.world.item.ItemStack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPneumaticDoorBase extends GuiPneumaticContainerBase<ContainerPneumaticDoorBase,TileEntityPneumaticDoorBase> {
+public class GuiPneumaticDoorBase extends GuiPneumaticContainerBase<PneumaticDoorBaseMenu,TileEntityPneumaticDoorBase> {
     WidgetAnimatedStat passRedstoneTab;
 
-    public GuiPneumaticDoorBase(ContainerPneumaticDoorBase container, Inventory inv, Component displayString) {
+    public GuiPneumaticDoorBase(PneumaticDoorBaseMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

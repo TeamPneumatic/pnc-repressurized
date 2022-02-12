@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
+import me.desht.pneumaticcraft.common.inventory.ChStUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
@@ -41,9 +41,9 @@ public interface IChargeableContainerProvider {
 
     class Provider implements MenuProvider {
         private final TileEntityChargingStation te;
-        private final MenuType<? extends ContainerChargingStationUpgradeManager> type;
+        private final MenuType<? extends ChStUpgradeManagerMenu> type;
 
-        public Provider(TileEntityChargingStation te, MenuType<? extends ContainerChargingStationUpgradeManager> type) {
+        public Provider(TileEntityChargingStation te, MenuType<? extends ChStUpgradeManagerMenu> type) {
             this.te = te;
             this.type = type;
         }
@@ -56,7 +56,7 @@ public interface IChargeableContainerProvider {
         @Nullable
         @Override
         public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-            return new ContainerChargingStationUpgradeManager(type, windowId, playerInventory, te.getBlockPos());
+            return new ChStUpgradeManagerMenu(type, windowId, playerInventory, te.getBlockPos());
         }
     }
 }

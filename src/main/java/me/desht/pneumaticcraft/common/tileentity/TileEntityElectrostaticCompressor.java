@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.block.BlockElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
+import me.desht.pneumaticcraft.common.inventory.ElectrostaticCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
@@ -220,7 +220,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerElectrostaticCompressor(i, playerInventory, getBlockPos());
+        return new ElectrostaticCompressorMenu(i, playerInventory, getBlockPos());
     }
 
     @Override

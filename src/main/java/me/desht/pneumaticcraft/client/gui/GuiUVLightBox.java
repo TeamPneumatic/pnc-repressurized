@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
+import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -37,10 +37,10 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox,TileEntityUVLightBox> implements Slider.ISlider {
+public class GuiUVLightBox extends GuiPneumaticContainerBase<UVLightBoxMenu,TileEntityUVLightBox> implements Slider.ISlider {
     private Slider slider;
 
-    public GuiUVLightBox(ContainerUVLightBox container, Inventory inv, Component displayString) {
+    public GuiUVLightBox(UVLightBoxMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 196;

@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
-import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
+import me.desht.pneumaticcraft.common.inventory.SecurityStationMainMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<ContainerSecurityStationMain, TileEntitySecurityStation> {
+public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<SecurityStationMainMenu, TileEntitySecurityStation> {
     private WidgetAnimatedStat statusStat;
     private WidgetAnimatedStat accessStat;
 
@@ -67,7 +67,7 @@ public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<Conta
     private HackSimulation hackSimulation;
     private boolean reInitBG;
 
-    public GuiSecurityStationInventory(ContainerSecurityStationMain container, Inventory inv, Component displayString) {
+    public GuiSecurityStationInventory(SecurityStationMainMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 239;

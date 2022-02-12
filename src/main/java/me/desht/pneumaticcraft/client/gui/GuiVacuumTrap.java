@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerVacuumTrap;
+import me.desht.pneumaticcraft.common.inventory.VacuumTrapMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -31,10 +31,10 @@ import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
 
-public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap, TileEntityVacuumTrap> {
+public class GuiVacuumTrap extends GuiPneumaticContainerBase<VacuumTrapMenu, TileEntityVacuumTrap> {
     WidgetButtonExtended rangeButton;
 
-    public GuiVacuumTrap(ContainerVacuumTrap container, Inventory inv, Component displayString) {
+    public GuiVacuumTrap(VacuumTrapMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

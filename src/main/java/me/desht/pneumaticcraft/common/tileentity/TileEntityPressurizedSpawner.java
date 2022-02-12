@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
+import me.desht.pneumaticcraft.common.inventory.PressurizedSpawnerMenu;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -183,7 +183,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
-        return new ContainerPressurizedSpawner(windowId, inv, getBlockPos());
+        return new PressurizedSpawnerMenu(windowId, inv, getBlockPos());
     }
 
     @Override

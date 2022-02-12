@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.inventory.ContainerTagWorkbench;
+import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
 import me.desht.pneumaticcraft.common.item.ItemTagFilter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -123,7 +123,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements Me
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
-        return new ContainerTagWorkbench(windowId, inv, getBlockPos());
+        return new TagWorkbenchMenu(windowId, inv, getBlockPos());
     }
 
     private class TagMatcherItemHandler extends DisplayItemHandler {

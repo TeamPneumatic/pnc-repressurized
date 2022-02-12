@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.common.inventory.ThermopneumaticProcessingPlantMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -335,7 +335,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerThermopneumaticProcessingPlant(i, playerInventory, getBlockPos());
+        return new ThermopneumaticProcessingPlantMenu(i, playerInventory, getBlockPos());
     }
 
     public IItemHandler getOutputInventory() {

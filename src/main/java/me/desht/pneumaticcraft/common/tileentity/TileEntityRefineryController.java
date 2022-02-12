@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
+import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
@@ -384,7 +384,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerRefinery(i, playerInventory, getBlockPos());
+        return new RefineryMenu(i, playerInventory, getBlockPos());
     }
 
     @Override

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.block.BlockLiquidHopper;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
+import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
@@ -259,7 +259,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerLiquidHopper(i, playerInventory, getBlockPos());
+        return new LiquidHopperMenu(i, playerInventory, getBlockPos());
     }
 
     @Override

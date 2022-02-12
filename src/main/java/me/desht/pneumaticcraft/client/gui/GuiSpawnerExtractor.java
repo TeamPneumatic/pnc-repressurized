@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerSpawnerExtractor;
+import me.desht.pneumaticcraft.common.inventory.SpawnerExtractorMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -30,8 +30,8 @@ import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
 
-public class GuiSpawnerExtractor extends GuiPneumaticContainerBase<ContainerSpawnerExtractor, TileEntitySpawnerExtractor> {
-    public GuiSpawnerExtractor(ContainerSpawnerExtractor container, Inventory inv, Component displayString) {
+public class GuiSpawnerExtractor extends GuiPneumaticContainerBase<SpawnerExtractorMenu, TileEntitySpawnerExtractor> {
+    public GuiSpawnerExtractor(SpawnerExtractorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

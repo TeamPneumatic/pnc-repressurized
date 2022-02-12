@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
-import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
+import me.desht.pneumaticcraft.common.inventory.MinigunMagazineMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.minigun.MinigunPlayerTracker;
@@ -149,7 +149,7 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     private void handleAmmoRepair(ItemStack stack, Level world, Minigun minigun) {
-        if (minigun.getPlayer().containerMenu instanceof ContainerMinigunMagazine) {
+        if (minigun.getPlayer().containerMenu instanceof MinigunMagazineMenu) {
             return;  // avoid potential item duping or other shenanigans
         }
         int itemLife = minigun.getUpgrades(ModUpgrades.ITEM_LIFE.get());
@@ -198,7 +198,7 @@ public class ItemMinigun extends ItemPressurizable implements
 
                     @Override
                     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-                        return new ContainerMinigunMagazine(i, playerInventory, handIn);
+                        return new MinigunMagazineMenu(i, playerInventory, handIn);
                     }
                 }, buf -> AbstractPneumaticCraftMenu.putHand(buf, handIn));
             }

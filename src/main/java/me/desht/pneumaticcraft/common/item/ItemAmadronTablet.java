@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
@@ -205,7 +205,7 @@ public class ItemAmadronTablet extends ItemPressurizable
 
             @Override
             public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-                return new ContainerAmadron(windowId, playerInventory, handIn);
+                return new AmadronMenu(windowId, playerInventory, handIn);
             }
         }, buf -> buf.writeBoolean(handIn == InteractionHand.MAIN_HAND));
     }

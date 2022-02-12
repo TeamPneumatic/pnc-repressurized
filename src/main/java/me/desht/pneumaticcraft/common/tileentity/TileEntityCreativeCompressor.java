@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
+import me.desht.pneumaticcraft.common.inventory.CreativeCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -80,7 +80,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerCreativeCompressor(i, playerInventory, getBlockPos());
+        return new CreativeCompressorMenu(i, playerInventory, getBlockPos());
     }
 
 }

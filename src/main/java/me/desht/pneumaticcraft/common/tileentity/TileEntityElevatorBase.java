@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
+import me.desht.pneumaticcraft.common.inventory.ElevatorMenu;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
@@ -683,6 +683,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerElevator(i, playerInventory, getBlockPos());
+        return new ElevatorMenu(i, playerInventory, getBlockPos());
     }
 }

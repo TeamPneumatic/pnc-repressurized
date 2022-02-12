@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
+import me.desht.pneumaticcraft.common.inventory.GasLiftMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -358,7 +358,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerGasLift(i, playerInventory, getBlockPos());
+        return new GasLiftMenu(i, playerInventory, getBlockPos());
     }
 
     @Nonnull

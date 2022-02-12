@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
+import me.desht.pneumaticcraft.common.inventory.ThermalCompressorMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -40,10 +40,10 @@ import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThermalCompressor, TileEntityThermalCompressor> {
+public class GuiThermalCompressor extends GuiPneumaticContainerBase<ThermalCompressorMenu, TileEntityThermalCompressor> {
     private final WidgetTemperatureSided[] tempWidgets = new WidgetTemperatureSided[4];
 
-    public GuiThermalCompressor(ContainerThermalCompressor container, Inventory inv, Component displayString) {
+    public GuiThermalCompressor(ThermalCompressorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

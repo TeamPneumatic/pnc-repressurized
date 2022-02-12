@@ -22,7 +22,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.*;
-import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
+import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -408,7 +408,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-        return new ContainerAerialInterface(windowId, playerInventory, getBlockPos());
+        return new AerialInterfaceMenu(windowId, playerInventory, getBlockPos());
     }
 
     @Override

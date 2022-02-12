@@ -37,7 +37,7 @@ import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
-import me.desht.pneumaticcraft.common.inventory.ContainerProgrammableController;
+import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -403,7 +403,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerProgrammableController(i, playerInventory, getBlockPos());
+        return new ProgrammableControllerMenu(i, playerInventory, getBlockPos());
     }
 
 

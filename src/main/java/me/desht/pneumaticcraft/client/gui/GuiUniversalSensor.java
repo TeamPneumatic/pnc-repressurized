@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
+import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
@@ -55,7 +55,7 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.api.misc.Symbols.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUniversalSensor,TileEntityUniversalSensor> {
+public class GuiUniversalSensor extends GuiPneumaticContainerBase<UniversalSensorMenu,TileEntityUniversalSensor> {
     private static final int MAX_TEXTFIELD_LENGTH = 256;
 
     private WidgetAnimatedStat sensorInfoStat;
@@ -68,7 +68,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     private int ticksExisted;
     private final List<AbstractWidget> sensorButtons = new ArrayList<>();
 
-    public GuiUniversalSensor(ContainerUniversalSensor container, Inventory inv, Component displayString) {
+    public GuiUniversalSensor(UniversalSensorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 239;

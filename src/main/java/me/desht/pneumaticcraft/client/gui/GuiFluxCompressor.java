@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerFluxCompressor;
+import me.desht.pneumaticcraft.common.inventory.FluxCompressorMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluxCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -39,11 +39,11 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCompressor,TileEntityFluxCompressor> {
+public class GuiFluxCompressor extends GuiPneumaticContainerBase<FluxCompressorMenu,TileEntityFluxCompressor> {
     private WidgetAnimatedStat inputStat;
     private WidgetTemperature tempWidget;
 
-    public GuiFluxCompressor(ContainerFluxCompressor container, Inventory inv, Component displayString) {
+    public GuiFluxCompressor(FluxCompressorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

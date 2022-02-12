@@ -20,16 +20,16 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
+import me.desht.pneumaticcraft.common.inventory.CreativeCompressorMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCreativeCompressor,TileEntityCreativeCompressor> {
+public class GuiCreativeCompressor extends GuiPneumaticContainerBase<CreativeCompressorMenu,TileEntityCreativeCompressor> {
 
-    public GuiCreativeCompressor(ContainerCreativeCompressor container, Inventory inv, Component displayString) {
+    public GuiCreativeCompressor(CreativeCompressorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

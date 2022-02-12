@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.block.BlockFluidTank.ItemBlockFluidTank;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerFluidTank;
+import me.desht.pneumaticcraft.common.inventory.FluidTankMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -151,7 +151,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
-        return new ContainerFluidTank(windowId, inv, getBlockPos());
+        return new FluidTankMenu(windowId, inv, getBlockPos());
     }
 
     public boolean isNeighbourCompatible(FluidStack stack, Direction dir) {

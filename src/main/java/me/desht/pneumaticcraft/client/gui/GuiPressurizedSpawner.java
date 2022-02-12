@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
+import me.desht.pneumaticcraft.common.inventory.PressurizedSpawnerMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -37,11 +37,11 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPressurizedSpawner, TileEntityPressurizedSpawner> {
+public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<PressurizedSpawnerMenu, TileEntityPressurizedSpawner> {
     WidgetAnimatedStat infoStat;
     WidgetButtonExtended rangeButton;
 
-    public GuiPressurizedSpawner(ContainerPressurizedSpawner container, Inventory inv, Component displayString) {
+    public GuiPressurizedSpawner(PressurizedSpawnerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

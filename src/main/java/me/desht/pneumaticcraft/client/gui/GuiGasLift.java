@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
+import me.desht.pneumaticcraft.common.inventory.GasLiftMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift.PumpMode;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -40,11 +40,11 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileEntityGasLift> {
+public class GuiGasLift extends GuiPneumaticContainerBase<GasLiftMenu,TileEntityGasLift> {
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[PumpMode.values().length];
 
-    public GuiGasLift(ContainerGasLift container, Inventory inv, Component displayString) {
+    public GuiGasLift(GasLiftMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

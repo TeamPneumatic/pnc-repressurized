@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerLiquidHopper;
+import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -43,11 +43,11 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHopper,TileEntityLiquidHopper> {
+public class GuiLiquidHopper extends GuiPneumaticContainerBase<LiquidHopperMenu,TileEntityLiquidHopper> {
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
 
-    public GuiLiquidHopper(ContainerLiquidHopper container, Inventory inv, Component displayString) {
+    public GuiLiquidHopper(LiquidHopperMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

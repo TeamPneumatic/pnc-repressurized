@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronStockUpdate;
@@ -84,7 +84,7 @@ public class EventHandlerAmadron {
     private void onAmadronFailure(EntityAmadrone drone, AmadronRecipe offer) {
         // order failed - Amadrone didn't get enough of the purchase price (maybe player removed items after placing order?)
         if (offer instanceof AmadronPlayerOffer || offer.getMaxStock() >= 0) {
-            // restore stock to previous level (we reduced stock in ContainerAmadron#retrieveOrderItems())
+            // restore stock to previous level (we reduced stock in AmadronMenu#retrieveOrderItems())
             offer.setStock(offer.getStock() + drone.getOfferTimes());
             if (offer instanceof AmadronPlayerOffer) AmadronPlayerOffers.save();
             NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getId(), offer.getStock()));
@@ -167,7 +167,7 @@ public class EventHandlerAmadron {
 
     private boolean anyPlayerUsingAmadron(MinecraftServer server) {
         return server.getPlayerList().getPlayers().stream()
-                .anyMatch(player -> player.containerMenu instanceof ContainerAmadron);
+                .anyMatch(player -> player.containerMenu instanceof AmadronMenu);
     }
 
     private AmadronPlayerOffer getPlayerOffer(AmadronRecipe offer) {

@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
+import me.desht.pneumaticcraft.common.inventory.ElevatorMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
@@ -44,14 +44,14 @@ import static me.desht.pneumaticcraft.api.misc.Symbols.ARROW_LEFT;
 import static me.desht.pneumaticcraft.api.misc.Symbols.ARROW_RIGHT;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, TileEntityElevatorBase> {
+public class GuiElevator extends GuiPneumaticContainerBase<ElevatorMenu, TileEntityElevatorBase> {
     private WidgetAnimatedStat statusStat;
     private WidgetTextField floorNameField;
     private WidgetLabel noFloorsLabel, floorNumberLabel;
     private WidgetButtonExtended cycleDown, cycleUp;
     private int currentEditedFloor;
 
-    public GuiElevator(ContainerElevator container, Inventory inventoryPlayer, Component displayName) {
+    public GuiElevator(ElevatorMenu container, Inventory inventoryPlayer, Component displayName) {
         super(container, inventoryPlayer, displayName);
     }
 

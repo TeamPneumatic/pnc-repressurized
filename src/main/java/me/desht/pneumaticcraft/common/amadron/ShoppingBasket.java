@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.amadron;
 
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
+import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
+import me.desht.pneumaticcraft.common.inventory.AmadronMenu.EnumProblemState;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderResponse;
@@ -177,7 +177,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
                     },
                     fluidStack -> {
                         int availableTrades = Math.min(
-                                ContainerAmadron.HARD_MAX_MB / fluidStack.getAmount(),
+                                AmadronMenu.HARD_MAX_MB / fluidStack.getAmount(),
                                 offer.getOutput().findSpaceInFluidOutput(fluidCap, units)
                         );
                         if (availableTrades < units) {

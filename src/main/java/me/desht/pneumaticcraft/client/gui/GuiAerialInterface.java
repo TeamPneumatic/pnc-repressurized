@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.XPFluidManager;
-import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
+import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface.FeedMode;
@@ -51,12 +51,12 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAerialInterface,TileEntityAerialInterface> {
+public class GuiAerialInterface extends GuiPneumaticContainerBase<AerialInterfaceMenu,TileEntityAerialInterface> {
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[FeedMode.values().length];
     private WidgetButtonExtended xpButton;
     private WidgetAnimatedStat feedModeTab;
 
-    public GuiAerialInterface(ContainerAerialInterface container, Inventory inv, Component displayString) {
+    public GuiAerialInterface(AerialInterfaceMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

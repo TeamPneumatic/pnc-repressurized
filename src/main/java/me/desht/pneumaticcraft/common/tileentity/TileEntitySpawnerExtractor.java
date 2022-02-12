@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.inventory.ContainerSpawnerExtractor;
+import me.desht.pneumaticcraft.common.inventory.SpawnerExtractorMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -322,7 +322,7 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
-        return new ContainerSpawnerExtractor(windowId, inv, worldPosition);
+        return new SpawnerExtractorMenu(windowId, inv, worldPosition);
     }
 
     @Override

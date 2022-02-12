@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.amadron;
 
-import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -29,7 +29,7 @@ public class AmadronUtil {
     public static ItemStack[] buildStacks(ItemStack stack, int units) {
         int amount = stack.getCount() * units;
         List<ItemStack> stacks = new ArrayList<>();
-        while (amount > 0 && stacks.size() < ContainerAmadron.HARD_MAX_STACKS) {
+        while (amount > 0 && stacks.size() < AmadronMenu.HARD_MAX_STACKS) {
             ItemStack toAdd = ItemHandlerHelper.copyStackWithSize(stack, Math.min(amount, stack.getMaxStackSize()));
             stacks.add(toAdd);
             amount -= toAdd.getCount();
@@ -39,7 +39,7 @@ public class AmadronUtil {
 
     public static FluidStack buildFluidStack(FluidStack fluidStack, int units) {
         FluidStack res = fluidStack.copy();
-        res.setAmount(Math.min(ContainerAmadron.HARD_MAX_MB, res.getAmount() * units));
+        res.setAmount(Math.min(AmadronMenu.HARD_MAX_MB, res.getAmount() * units));
         return res;
     }
 }

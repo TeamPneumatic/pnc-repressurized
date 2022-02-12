@@ -24,8 +24,8 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
+import me.desht.pneumaticcraft.common.inventory.ChStUpgradeManagerMenu;
+import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
@@ -348,7 +348,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerChargingStation(i, playerInventory, getBlockPos());
+        return new ChargingStationMenu(i, playerInventory, getBlockPos());
     }
 
     private class ChargingStationHandler extends BaseItemStackHandler {
@@ -387,7 +387,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             // if any other player has a gui open for the previous item, force a reopen of the charging station gui
             for (Player player : teCS.nonNullLevel().players()) {
                 if (player instanceof ServerPlayer sp
-                        && player.containerMenu instanceof ContainerChargingStationUpgradeManager manager
+                        && player.containerMenu instanceof ChStUpgradeManagerMenu manager
                         && manager.te == te) {
                     NetworkHooks.openGui(sp, TileEntityChargingStation.this, getBlockPos());
                 }

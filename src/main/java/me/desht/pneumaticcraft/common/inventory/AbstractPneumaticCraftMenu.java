@@ -17,6 +17,9 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.inventory.slot.IPhantomSlot;
+import me.desht.pneumaticcraft.common.inventory.slot.SlotPlayer;
+import me.desht.pneumaticcraft.common.inventory.slot.SlotUpgrade;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;

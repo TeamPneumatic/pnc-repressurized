@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerReinforcedChest;
+import me.desht.pneumaticcraft.common.inventory.ReinforcedChestMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -129,7 +129,7 @@ public class TileEntityReinforcedChest extends TileEntityBase implements MenuPro
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         maybeFillWithLoot(player);
-        return new ContainerReinforcedChest(windowId, inv, getBlockPos());
+        return new ReinforcedChestMenu(windowId, inv, getBlockPos());
     }
 
     private void maybeFillWithLoot(Player player) {

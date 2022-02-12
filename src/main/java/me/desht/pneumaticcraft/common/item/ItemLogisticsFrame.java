@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
-import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
+import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -60,7 +60,7 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock {
 
                 @Override
                 public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-                    return new ContainerLogistics(getContainerType(), i, playerInventory, -1);
+                    return new LogisticsMenu(getContainerType(), i, playerInventory, -1);
                 }
             }, (buffer) -> buffer.writeVarInt(-1));
         }

@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
-import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
+import me.desht.pneumaticcraft.common.inventory.ThermalCompressorMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -225,7 +225,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerThermalCompressor(i, playerInventory, getBlockPos());
+        return new ThermalCompressorMenu(i, playerInventory, getBlockPos());
     }
 
     @Override

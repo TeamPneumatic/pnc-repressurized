@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressedIronBlock;
+import me.desht.pneumaticcraft.common.inventory.CreativeCompressedIronBlockMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressedIronBlock;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -31,10 +31,10 @@ import net.minecraft.world.entity.player.Inventory;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiCreativeCompressedIronBlock extends GuiPneumaticContainerBase<ContainerCreativeCompressedIronBlock, TileEntityCreativeCompressedIronBlock> {
+public class GuiCreativeCompressedIronBlock extends GuiPneumaticContainerBase<CreativeCompressedIronBlockMenu, TileEntityCreativeCompressedIronBlock> {
     private WidgetButtonExtended down2, down1, up1, up2;
 
-    public GuiCreativeCompressedIronBlock(ContainerCreativeCompressedIronBlock container, Inventory inv, Component displayString) {
+    public GuiCreativeCompressedIronBlock(CreativeCompressedIronBlockMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

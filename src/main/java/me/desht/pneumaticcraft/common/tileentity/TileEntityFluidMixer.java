@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerFluidMixer;
+import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.inventory.handler.OutputItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -276,7 +276,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
-        return new ContainerFluidMixer(windowId, inv, worldPosition);
+        return new FluidMixerMenu(windowId, inv, worldPosition);
     }
 
     @Override

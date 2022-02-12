@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
-import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
+import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -230,6 +230,6 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerLiquidCompressor(i, playerInventory, getBlockPos());
+        return new LiquidCompressorMenu(i, playerInventory, getBlockPos());
     }
 }

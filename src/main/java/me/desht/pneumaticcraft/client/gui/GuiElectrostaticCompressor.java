@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
+import me.desht.pneumaticcraft.common.inventory.ElectrostaticCompressorMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -40,11 +40,11 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor.MAX_ELECTROSTATIC_GRID_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<ContainerElectrostaticCompressor,TileEntityElectrostaticCompressor> {
+public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<ElectrostaticCompressorMenu,TileEntityElectrostaticCompressor> {
     private int connectedCompressors;
     private WidgetAnimatedStat electrostaticStat;
 
-    public GuiElectrostaticCompressor(ContainerElectrostaticCompressor container, Inventory inv, Component displayString) {
+    public GuiElectrostaticCompressor(ElectrostaticCompressorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
+import me.desht.pneumaticcraft.common.inventory.OmnidirectionalHopperMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -275,7 +275,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerOmnidirectionalHopper(i, playerInventory, getBlockPos());
+        return new OmnidirectionalHopperMenu(i, playerInventory, getBlockPos());
     }
 
     @Override

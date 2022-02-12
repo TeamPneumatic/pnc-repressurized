@@ -21,7 +21,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
+import me.desht.pneumaticcraft.common.inventory.SentryTurretMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -239,7 +239,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerSentryTurret(i, playerInventory, getBlockPos());
+        return new SentryTurretMenu(i, playerInventory, getBlockPos());
     }
 
     public void setIdleYaw(float idleYaw) {

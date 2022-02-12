@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
+import me.desht.pneumaticcraft.common.inventory.VacuumPumpMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -173,6 +173,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerVacuumPump(i, playerInventory, getBlockPos());
+        return new VacuumPumpMenu(i, playerInventory, getBlockPos());
     }
 }

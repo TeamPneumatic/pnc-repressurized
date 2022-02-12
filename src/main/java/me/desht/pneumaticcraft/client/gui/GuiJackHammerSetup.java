@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.inventory.ContainerJackhammerSetup;
+import me.desht.pneumaticcraft.common.inventory.JackhammerSetupMenu;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer;
@@ -41,11 +41,11 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackhammerSetup, TileEntityBase> {
+public class GuiJackHammerSetup extends GuiPneumaticContainerBase<JackhammerSetupMenu, TileEntityBase> {
     private final EnumMap<DigMode,WidgetButtonExtended> typeButtons = new EnumMap<>(DigMode.class);
     private WidgetButtonExtended selectorButton;
 
-    public GuiJackHammerSetup(ContainerJackhammerSetup container, Inventory inv, Component displayString) {
+    public GuiJackHammerSetup(JackhammerSetupMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 182;

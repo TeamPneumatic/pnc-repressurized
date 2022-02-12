@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerFluidMixer;
+import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -42,10 +42,10 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer, TileEntityFluidMixer> {
+public class GuiFluidMixer extends GuiPneumaticContainerBase<FluidMixerMenu, TileEntityFluidMixer> {
     private final WidgetButtonExtended[] dumpButtons = new WidgetButtonExtended[2];
 
-    public GuiFluidMixer(ContainerFluidMixer container, Inventory inv, Component displayString) {
+    public GuiFluidMixer(FluidMixerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
         imageHeight = 212;
     }

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressedIronBlock;
+import me.desht.pneumaticcraft.common.inventory.CreativeCompressedIronBlockMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -86,6 +86,6 @@ public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedI
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-        return new ContainerCreativeCompressedIronBlock(windowId, playerInventory, getBlockPos());
+        return new CreativeCompressedIronBlockMenu(windowId, playerInventory, getBlockPos());
     }
 }

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetList;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.inventory.ContainerTagWorkbench;
+import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
 import me.desht.pneumaticcraft.common.item.ItemTagFilter;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkbench, TileEntityTagWorkbench> {
+public class GuiTagWorkbench extends GuiPneumaticContainerBase<TagWorkbenchMenu, TileEntityTagWorkbench> {
     private static final int AVAILABLE_X = 9;
     private static final int SELECTED_X = 123;
     private static final int LIST_HEIGHT = 126;
@@ -58,7 +58,7 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
     private WidgetList<ResourceLocation> selectedList;
     private WidgetButtonExtended writeButton;
 
-    public GuiTagWorkbench(ContainerTagWorkbench container, Inventory inv, Component displayString) {
+    public GuiTagWorkbench(TagWorkbenchMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageWidth = 234;

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
+import me.desht.pneumaticcraft.common.inventory.AssemblyControllerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -258,7 +258,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerAssemblyController(i, playerInventory, getBlockPos());
+        return new AssemblyControllerMenu(i, playerInventory, getBlockPos());
     }
 
     public static class AssemblySystem {

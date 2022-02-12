@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.inventory.ContainerVacuumTrap;
+import me.desht.pneumaticcraft.common.inventory.VacuumTrapMenu;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -229,7 +229,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
-        return new ContainerVacuumTrap(windowId, inv, getBlockPos());
+        return new VacuumTrapMenu(windowId, inv, getBlockPos());
     }
 
     @Override

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
+import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -33,12 +33,12 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKeroseneLamp,TileEntityKeroseneLamp> implements Slider.ISlider {
+public class GuiKeroseneLamp extends GuiPneumaticContainerBase<KeroseneLampMenu,TileEntityKeroseneLamp> implements Slider.ISlider {
 
     private WidgetLabel rangeLabel;
     private Slider slider;
 
-    public GuiKeroseneLamp(ContainerKeroseneLamp container, Inventory inv, Component displayString) {
+    public GuiKeroseneLamp(KeroseneLampMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
 

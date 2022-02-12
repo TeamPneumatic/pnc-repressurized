@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
+import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
@@ -42,12 +42,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRefinery, TileEntityRefineryController> {
+public class GuiRefineryController extends GuiPneumaticContainerBase<RefineryMenu, TileEntityRefineryController> {
     private List<TileEntityRefineryOutput> outputs;
     private WidgetTemperature widgetTemperature;
     private int nExposedFaces;
 
-    public GuiRefineryController(ContainerRefinery container, Inventory inv, Component displayString) {
+    public GuiRefineryController(RefineryMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 
         imageHeight = 189;

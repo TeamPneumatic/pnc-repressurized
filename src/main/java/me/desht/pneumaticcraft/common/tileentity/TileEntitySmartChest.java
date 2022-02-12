@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
+import me.desht.pneumaticcraft.common.inventory.SmartChestMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -302,7 +302,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         if (player instanceof ServerPlayer) {
             NetworkHandler.sendToPlayer(new PacketSyncSmartChest(this), (ServerPlayer) player);
         }
-        return new ContainerSmartChest(windowId, inv, getBlockPos());
+        return new SmartChestMenu(windowId, inv, getBlockPos());
     }
 
     @Override

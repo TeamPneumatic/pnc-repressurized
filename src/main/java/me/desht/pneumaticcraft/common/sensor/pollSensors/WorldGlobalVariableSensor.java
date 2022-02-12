@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
+import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -74,6 +74,6 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public List<String> getTextBoxOptions(Player player) {
-        return player.containerMenu instanceof ContainerUniversalSensor c ? c.getGlobalVars() : null;
+        return player.containerMenu instanceof UniversalSensorMenu c ? c.getGlobalVars() : null;
     }
 }

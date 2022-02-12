@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.client.gui.GuiUniversalSensor;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
+import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -534,7 +534,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerUniversalSensor(i, playerInventory, getBlockPos());
+        return new UniversalSensorMenu(i, playerInventory, getBlockPos());
     }
 
     public void setPlayerId(UUID playerId) {

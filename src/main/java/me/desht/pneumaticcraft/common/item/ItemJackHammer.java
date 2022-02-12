@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
-import me.desht.pneumaticcraft.common.inventory.ContainerJackhammerSetup;
+import me.desht.pneumaticcraft.common.inventory.JackhammerSetupMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -155,7 +155,7 @@ public class ItemJackHammer extends ItemPressurizable
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
-                    return new ContainerJackhammerSetup(windowId, inv, handIn);
+                    return new JackhammerSetupMenu(windowId, inv, handIn);
                 }
             }, buf -> AbstractPneumaticCraftMenu.putHand(buf, handIn));
         }
