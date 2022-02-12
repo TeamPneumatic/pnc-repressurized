@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgrammer> {
+public class ContainerProgrammer extends AbstractPneumaticCraftMenu<TileEntityProgrammer> {
 
     private final boolean hiRes;
 
@@ -87,7 +87,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
             for (Direction d : DirectionUtil.VALUES) {
                 BlockEntity neighbor = te.getCachedNeighbor(d);
                 if (neighbor != null && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).isPresent()) {
-                    final ContainerPneumaticBase<?> self = this;
+                    final AbstractPneumaticCraftMenu<?> self = this;
                     List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
                             .filter(p -> p.containerMenu == self)
                             .collect(Collectors.toList());

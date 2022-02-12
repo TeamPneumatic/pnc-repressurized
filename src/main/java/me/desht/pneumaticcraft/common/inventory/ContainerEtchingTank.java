@@ -30,7 +30,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerEtchingTank extends ContainerPneumaticBase<TileEntityEtchingTank> {
+public class ContainerEtchingTank extends AbstractPneumaticCraftMenu<TileEntityEtchingTank> {
     public ContainerEtchingTank(int windowId, Inventory playerInv, BlockPos pos) {
         super(ModMenuTypes.ETCHING_TANK.get(), windowId, playerInv, pos);
 

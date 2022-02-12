@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
+import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -74,8 +74,8 @@ public class PacketUtil {
         } else {
             // server-side: don't trust the blockpos the client sent us
             // instead get the TE from the player's open container
-            if (player.containerMenu instanceof ContainerPneumaticBase) {
-                BlockEntity te = ((ContainerPneumaticBase<?>) player.containerMenu).te;
+            if (player.containerMenu instanceof AbstractPneumaticCraftMenu) {
+                BlockEntity te = ((AbstractPneumaticCraftMenu<?>) player.containerMenu).te;
                 if (te != null && cls.isAssignableFrom(te.getClass()) && (pos == null || te.getBlockPos().equals(pos))) {
                     //noinspection unchecked
                     return Optional.of((T) te);

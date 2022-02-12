@@ -29,7 +29,7 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefineryController> {
+public class ContainerRefinery extends AbstractPneumaticCraftMenu<TileEntityRefineryController> {
 
     public ContainerRefinery(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

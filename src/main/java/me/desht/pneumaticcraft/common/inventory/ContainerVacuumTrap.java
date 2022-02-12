@@ -29,7 +29,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerVacuumTrap extends ContainerPneumaticBase<TileEntityVacuumTrap> {
+public class ContainerVacuumTrap extends AbstractPneumaticCraftMenu<TileEntityVacuumTrap> {
     public ContainerVacuumTrap(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(windowId, playerInventory, getTilePos(buffer));
     }

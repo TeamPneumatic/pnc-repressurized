@@ -23,9 +23,8 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
+import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDynamo;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -184,7 +183,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player playerEntity) {
-        return new ContainerEnergy<TileEntityPneumaticDynamo>(ModMenuTypes.PNEUMATIC_DYNAMO.get(), windowId, playerInventory, getBlockPos());
+        return new ContainerPneumaticDynamo(windowId, playerInventory, getBlockPos());
     }
 
     @Nullable

@@ -31,7 +31,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityChargingStation> {
+public class ContainerChargingStation extends AbstractPneumaticCraftMenu<TileEntityChargingStation> {
 
     public ContainerChargingStation(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
@@ -66,7 +66,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
         if (slot == 0 && srcStack.getItem() instanceof ArmorItem) {
             // chargeable slot - move to armor if appropriate, player inv otherwise
             if (!moveItemStackTo(srcStack, 5, 9, false)
-                    && !moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
+                    && !moveItemStackToHotbarOrInventory(srcStack, playerSlotsStart))
                 return ItemStack.EMPTY;
         } else if (slot >= 5 && slot < 9 && srcStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             // armor slots - try to move to the charging slot if possible
@@ -74,7 +74,7 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
                     && !moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
                 return ItemStack.EMPTY;
         } else if (slot < playerSlotsStart) {
-            if (!moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, false))
+            if (!moveItemStackToHotbarOrInventory(srcStack, playerSlotsStart))
                 return ItemStack.EMPTY;
         } else {
             if (!moveItemStackTo(srcStack, 0, playerSlotsStart, false))

@@ -24,7 +24,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
-public class ContainerLiquidCompressor extends ContainerPneumaticBase<TileEntityLiquidCompressor> {
+public class ContainerLiquidCompressor extends AbstractPneumaticCraftMenu<TileEntityLiquidCompressor> {
 
     public ContainerLiquidCompressor(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(ModMenuTypes.LIQUID_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));

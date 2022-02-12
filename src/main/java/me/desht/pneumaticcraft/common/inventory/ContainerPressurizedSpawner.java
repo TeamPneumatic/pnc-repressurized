@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerPressurizedSpawner extends ContainerPneumaticBase<TileEntityPressurizedSpawner> {
+public class ContainerPressurizedSpawner extends AbstractPneumaticCraftMenu<TileEntityPressurizedSpawner> {
     public ContainerPressurizedSpawner(int windowId, Inventory invPlayer, FriendlyByteBuf buffer) {
         this(windowId, invPlayer, getTilePos(buffer));
     }

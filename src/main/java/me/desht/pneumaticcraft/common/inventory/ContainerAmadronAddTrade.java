@@ -32,7 +32,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityBase> implements IGUIButtonSensitive {
+public class ContainerAmadronAddTrade extends AbstractPneumaticCraftMenu<TileEntityBase> implements IGUIButtonSensitive {
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
 

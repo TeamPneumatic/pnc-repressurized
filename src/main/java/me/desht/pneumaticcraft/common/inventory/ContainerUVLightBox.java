@@ -30,7 +30,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerUVLightBox extends ContainerPneumaticBase<TileEntityUVLightBox> {
+public class ContainerUVLightBox extends AbstractPneumaticCraftMenu<TileEntityUVLightBox> {
 
     public ContainerUVLightBox(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

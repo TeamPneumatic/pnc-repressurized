@@ -23,9 +23,8 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
-import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
+import me.desht.pneumaticcraft.common.inventory.ContainerFluxCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -169,7 +168,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
-        return new ContainerEnergy<>(ModMenuTypes.FLUX_COMPRESSOR.get(), i, playerInventory, getBlockPos());
+        return new ContainerFluxCompressor(i, playerInventory, getBlockPos());
     }
 
     @Override

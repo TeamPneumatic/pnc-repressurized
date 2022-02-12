@@ -61,7 +61,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
+public class ContainerAmadron extends AbstractPneumaticCraftMenu<TileEntityBase> {
     public static final int HARD_MAX_STACKS = 36;
     public static final int HARD_MAX_MB = 576_000;
 

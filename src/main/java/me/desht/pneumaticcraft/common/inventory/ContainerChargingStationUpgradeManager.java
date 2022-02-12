@@ -31,7 +31,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerChargingStationUpgradeManager extends ContainerPneumaticBase<TileEntityChargingStation> {
+public class ContainerChargingStationUpgradeManager extends AbstractPneumaticCraftMenu<TileEntityChargingStation> {
 
     private ContainerChargingStationUpgradeManager(MenuType type, int windowId, Inventory inv, FriendlyByteBuf data) {
         this(type, windowId, inv, getTilePos(data));

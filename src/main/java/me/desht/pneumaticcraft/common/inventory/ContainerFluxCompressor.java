@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerFluxCompressor extends ContainerEnergy<TileEntityFluxCompressor> {
+public class ContainerFluxCompressor extends AbstractForgeEnergyMenu<TileEntityFluxCompressor> {
     public ContainerFluxCompressor(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         super(ModMenuTypes.FLUX_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
     }

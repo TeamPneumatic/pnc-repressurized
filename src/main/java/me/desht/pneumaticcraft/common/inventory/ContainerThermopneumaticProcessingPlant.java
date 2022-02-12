@@ -25,7 +25,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerThermopneumaticProcessingPlant extends
-        ContainerPneumaticBase<TileEntityThermopneumaticProcessingPlant> {
+        AbstractPneumaticCraftMenu<TileEntityThermopneumaticProcessingPlant> {
 
     public ContainerThermopneumaticProcessingPlant(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

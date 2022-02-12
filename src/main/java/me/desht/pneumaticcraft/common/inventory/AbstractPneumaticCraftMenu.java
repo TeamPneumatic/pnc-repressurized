@@ -41,21 +41,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ContainerPneumaticBase<T extends TileEntityBase> extends AbstractContainerMenu implements IGUIButtonSensitive {
+public abstract class AbstractPneumaticCraftMenu<T extends TileEntityBase> extends AbstractContainerMenu implements IGUIButtonSensitive {
     public final T te;
     private final List<SyncedField<?>> syncedFields = new ArrayList<>();
     private boolean firstTick = true;
     int playerSlotsStart;
 
-    public ContainerPneumaticBase(MenuType type, int windowId, Inventory invPlayer, FriendlyByteBuf extraData) {
+    public AbstractPneumaticCraftMenu(MenuType type, int windowId, Inventory invPlayer, FriendlyByteBuf extraData) {
         this(type, windowId, invPlayer, getTilePos(extraData));
     }
 
-    public ContainerPneumaticBase(MenuType type, int windowId, Inventory invPlayer) {
+    public AbstractPneumaticCraftMenu(MenuType type, int windowId, Inventory invPlayer) {
         this(type, windowId, invPlayer, (BlockPos) null);
     }
 
-    public ContainerPneumaticBase(MenuType type, int windowId, Inventory invPlayer, BlockPos tilePos) {
+    public AbstractPneumaticCraftMenu(MenuType type, int windowId, Inventory invPlayer, BlockPos tilePos) {
         super(type, windowId);
         if (tilePos != null) {
             BlockEntity te0 = invPlayer.player.level.getBlockEntity(tilePos);
@@ -110,7 +110,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends AbstractCo
             }
         }
         if (!toUpdate.isEmpty()) {
-            final ContainerPneumaticBase<?> self = this;
+            final AbstractPneumaticCraftMenu<?> self = this;
             List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
                     .filter(p -> p.containerMenu == self)
                     .collect(Collectors.toList());
@@ -179,7 +179,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends AbstractCo
         ItemStack copyOfSrcStack = srcStack.copy();
 
         if (slot < playerSlotsStart) {
-            if (!moveItemStackTo(srcStack, playerSlotsStart, playerSlotsStart + 36, true))
+            if (!moveItemStackToHotbarOrInventory(srcStack, playerSlotsStart))
                 return ItemStack.EMPTY;
         } else {
             if (!moveItemStackTo(srcStack, 0, playerSlotsStart, false))
@@ -191,6 +191,11 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends AbstractCo
         srcSlot.onTake(player, srcStack);
 
         return copyOfSrcStack;
+    }
+
+    boolean moveItemStackToHotbarOrInventory(ItemStack stack, int startIndex) {
+        return moveItemStackTo(stack, startIndex + 27, startIndex + 36, false)
+                || moveItemStackTo(stack, startIndex, startIndex + 27, false);
     }
 
     // almost the same as the super method, but pays attention to slot itemstack limits

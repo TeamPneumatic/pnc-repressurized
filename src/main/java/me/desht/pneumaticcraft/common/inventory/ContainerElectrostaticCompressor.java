@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerElectrostaticCompressor extends Container4UpgradeSlots<TileEntityElectrostaticCompressor> {
+public class ContainerElectrostaticCompressor extends Abstract4SlotMenu<TileEntityElectrostaticCompressor> {
     public ContainerElectrostaticCompressor(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         super(ModMenuTypes.ELECTROSTATIC_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
     }

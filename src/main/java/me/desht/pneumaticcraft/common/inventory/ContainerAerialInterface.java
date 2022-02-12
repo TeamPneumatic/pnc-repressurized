@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerAerialInterface extends ContainerEnergy<TileEntityAerialInterface> {
+public class ContainerAerialInterface extends AbstractForgeEnergyMenu<TileEntityAerialInterface> {
     public ContainerAerialInterface(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         super(ModMenuTypes.AERIAL_INTERFACE.get(), i, playerInventory, getTilePos(buffer));
     }

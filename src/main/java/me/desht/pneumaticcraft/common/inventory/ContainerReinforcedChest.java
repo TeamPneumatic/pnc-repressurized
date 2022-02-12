@@ -24,7 +24,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerReinforcedChest extends ContainerPneumaticBase<TileEntityReinforcedChest> {
+public class ContainerReinforcedChest extends AbstractPneumaticCraftMenu<TileEntityReinforcedChest> {
     public ContainerReinforcedChest(int windowId, Inventory invPlayer, BlockPos pos) {
         super(ModMenuTypes.REINFORCED_CHEST.get(), windowId, invPlayer, pos);
 

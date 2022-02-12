@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerPneumaticDynamo extends ContainerEnergy<TileEntityPneumaticDynamo> {
+public class ContainerPneumaticDynamo extends AbstractForgeEnergyMenu<TileEntityPneumaticDynamo> {
     public ContainerPneumaticDynamo(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         super(ModMenuTypes.PNEUMATIC_DYNAMO.get(), i, playerInventory, getTilePos(buffer));
     }

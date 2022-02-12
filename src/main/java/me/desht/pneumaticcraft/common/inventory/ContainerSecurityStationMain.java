@@ -29,7 +29,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.Predicate;
 
-public class ContainerSecurityStationMain extends ContainerPneumaticBase<TileEntitySecurityStation> {
+public class ContainerSecurityStationMain extends AbstractPneumaticCraftMenu<TileEntitySecurityStation> {
 
     public ContainerSecurityStationMain(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

@@ -28,7 +28,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import java.util.Collections;
 import java.util.List;
 
-public class ContainerUniversalSensor extends ContainerPneumaticBase<TileEntityUniversalSensor> {
+public class ContainerUniversalSensor extends AbstractPneumaticCraftMenu<TileEntityUniversalSensor> {
     private final List<String> globalVars;
 
     public ContainerUniversalSensor(int windowId, Inventory playerInventory, BlockPos pos) {

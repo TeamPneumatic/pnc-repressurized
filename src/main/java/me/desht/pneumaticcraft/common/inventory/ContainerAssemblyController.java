@@ -24,7 +24,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerAssemblyController extends ContainerPneumaticBase<TileEntityAssemblyController> {
+public class ContainerAssemblyController extends AbstractPneumaticCraftMenu<TileEntityAssemblyController> {
     public ContainerAssemblyController(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }

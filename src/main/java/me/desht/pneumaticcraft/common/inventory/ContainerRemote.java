@@ -39,7 +39,7 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
+public class ContainerRemote extends AbstractPneumaticCraftMenu<TileEntityBase> {
     private final List<String> syncedVars;
     private final BlockPos[] lastValues;
     private final InteractionHand hand;

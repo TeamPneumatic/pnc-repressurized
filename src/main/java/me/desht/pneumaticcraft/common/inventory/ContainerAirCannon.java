@@ -27,7 +27,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import java.util.List;
 
-public class ContainerAirCannon extends ContainerPneumaticBase<TileEntityAirCannon> {
+public class ContainerAirCannon extends AbstractPneumaticCraftMenu<TileEntityAirCannon> {
 
     public ContainerAirCannon(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContainerSecurityStationHacking extends ContainerPneumaticBase<TileEntitySecurityStation> {
+public class ContainerSecurityStationHacking extends AbstractPneumaticCraftMenu<TileEntitySecurityStation> {
     public static final int NODE_SPACING = 31;
 
     public ContainerSecurityStationHacking(int i, Inventory playerInventory, FriendlyByteBuf buffer) {

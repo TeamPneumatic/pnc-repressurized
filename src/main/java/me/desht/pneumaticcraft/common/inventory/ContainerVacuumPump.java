@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerVacuumPump extends ContainerPneumaticBase<TileEntityVacuumPump> {
+public class ContainerVacuumPump extends AbstractPneumaticCraftMenu<TileEntityVacuumPump> {
 
     public ContainerVacuumPump(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

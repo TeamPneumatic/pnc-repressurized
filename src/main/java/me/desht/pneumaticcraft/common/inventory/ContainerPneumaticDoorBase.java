@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerPneumaticDoorBase extends ContainerPneumaticBase<TileEntityPneumaticDoorBase> {
+public class ContainerPneumaticDoorBase extends AbstractPneumaticCraftMenu<TileEntityPneumaticDoorBase> {
 
     public ContainerPneumaticDoorBase(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

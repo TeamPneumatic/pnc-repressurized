@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerFluidMixer extends ContainerPneumaticBase<TileEntityFluidMixer> {
+public class ContainerFluidMixer extends AbstractPneumaticCraftMenu<TileEntityFluidMixer> {
     public ContainerFluidMixer(int windowId, Inventory inv, BlockPos pos) {
         super(ModMenuTypes.FLUID_MIXER.get(), windowId, inv, pos);
 

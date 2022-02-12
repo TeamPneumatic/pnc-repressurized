@@ -39,7 +39,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
+import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
@@ -79,7 +79,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase<T>, T extends TileEntityBase> extends AbstractContainerScreen<C> {
+public abstract class GuiPneumaticContainerBase<C extends AbstractPneumaticCraftMenu<T>, T extends TileEntityBase> extends AbstractContainerScreen<C> {
     public final T te;
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
     private WidgetAnimatedStat pressureStat;

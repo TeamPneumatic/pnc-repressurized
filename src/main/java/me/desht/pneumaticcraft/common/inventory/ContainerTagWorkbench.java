@@ -24,7 +24,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerTagWorkbench extends ContainerPneumaticBase<TileEntityTagWorkbench> {
+public class ContainerTagWorkbench extends AbstractPneumaticCraftMenu<TileEntityTagWorkbench> {
     public ContainerTagWorkbench(int windowId, Inventory inv, BlockPos pos) {
         super(ModMenuTypes.TAG_MATCHER.get(), windowId, inv, pos);
 

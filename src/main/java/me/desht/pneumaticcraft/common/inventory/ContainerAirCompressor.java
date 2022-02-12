@@ -25,7 +25,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerAirCompressor extends ContainerPneumaticBase<TileEntityAirCompressor> {
+public class ContainerAirCompressor extends AbstractPneumaticCraftMenu<TileEntityAirCompressor> {
 
     public ContainerAirCompressor(int windowId, Inventory invPlayer, FriendlyByteBuf extra) {
         this(ModMenuTypes.AIR_COMPRESSOR.get(), windowId, invPlayer, getTilePos(extra));

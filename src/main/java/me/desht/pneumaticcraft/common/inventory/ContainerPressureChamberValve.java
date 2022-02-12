@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerPressureChamberValve extends ContainerPneumaticBase<TileEntityPressureChamberValve> {
+public class ContainerPressureChamberValve extends AbstractPneumaticCraftMenu<TileEntityPressureChamberValve> {
 
     public ContainerPressureChamberValve(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

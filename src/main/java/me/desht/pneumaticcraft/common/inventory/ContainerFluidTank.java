@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerFluidTank extends ContainerPneumaticBase<TileEntityFluidTank> {
+public class ContainerFluidTank extends AbstractPneumaticCraftMenu<TileEntityFluidTank> {
     public ContainerFluidTank(int windowId, Inventory inv, FriendlyByteBuf extraData) {
         this(windowId, inv, getTilePos(extraData));
     }

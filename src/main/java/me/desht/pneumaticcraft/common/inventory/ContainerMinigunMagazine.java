@@ -32,7 +32,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityBase> {
+public class ContainerMinigunMagazine extends AbstractPneumaticCraftMenu<TileEntityBase> {
     private final ItemMinigun.MagazineHandler gunInv;
     private final InteractionHand hand;
 

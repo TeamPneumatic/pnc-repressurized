@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerLiquidHopper extends ContainerPneumaticBase<TileEntityLiquidHopper> {
+public class ContainerLiquidHopper extends AbstractPneumaticCraftMenu<TileEntityLiquidHopper> {
 
     public ContainerLiquidHopper(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

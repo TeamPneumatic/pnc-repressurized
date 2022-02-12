@@ -24,7 +24,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerSentryTurret extends ContainerPneumaticBase<TileEntitySentryTurret> {
+public class ContainerSentryTurret extends AbstractPneumaticCraftMenu<TileEntitySentryTurret> {
 
     public ContainerSentryTurret(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

@@ -24,7 +24,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerSmartChest extends ContainerPneumaticBase<TileEntitySmartChest> {
+public class ContainerSmartChest extends AbstractPneumaticCraftMenu<TileEntitySmartChest> {
     public static final int N_COLS = 12;
 
     public ContainerSmartChest(int windowId, Inventory inv, BlockPos pos) {

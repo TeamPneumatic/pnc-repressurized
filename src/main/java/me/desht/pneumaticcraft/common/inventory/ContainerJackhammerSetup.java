@@ -33,7 +33,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityBase> {
+public class ContainerJackhammerSetup extends AbstractPneumaticCraftMenu<TileEntityBase> {
     private final ItemJackHammer.DrillBitHandler drillBitHandler;
     private final ItemJackHammer.EnchantmentHandler enchantmentHandler;
     private final InteractionHand hand;

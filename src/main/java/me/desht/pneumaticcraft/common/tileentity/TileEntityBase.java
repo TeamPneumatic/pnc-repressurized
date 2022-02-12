@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
-import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
+import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
@@ -625,8 +625,8 @@ public abstract class TileEntityBase extends BlockEntity
      */
     public int countPlayersUsing() {
         return (int) nonNullLevel().players().stream()
-                .filter(player -> player.containerMenu instanceof ContainerPneumaticBase)
-                .filter(player -> ((ContainerPneumaticBase<?>) player.containerMenu).te == this)
+                .filter(player -> player.containerMenu instanceof AbstractPneumaticCraftMenu)
+                .filter(player -> ((AbstractPneumaticCraftMenu<?>) player.containerMenu).te == this)
                 .count();
     }
 

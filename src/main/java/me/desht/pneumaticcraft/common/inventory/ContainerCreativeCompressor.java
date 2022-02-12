@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerCreativeCompressor extends ContainerPneumaticBase<TileEntityCreativeCompressor> {
+public class ContainerCreativeCompressor extends AbstractPneumaticCraftMenu<TileEntityCreativeCompressor> {
     public ContainerCreativeCompressor(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }

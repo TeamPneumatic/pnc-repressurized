@@ -40,7 +40,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> implements ISyncableSemiblockItem {
+public class ContainerLogistics extends AbstractPneumaticCraftMenu<TileEntityBase> implements ISyncableSemiblockItem {
     public final EntityLogisticsFrame logistics;
     private final boolean itemContainer;  // true if GUI opened from held item, false if from in-world entity
 

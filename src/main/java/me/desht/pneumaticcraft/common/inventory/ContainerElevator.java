@@ -23,7 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ContainerElevator extends ContainerPneumaticBase<TileEntityElevatorBase> {
+public class ContainerElevator extends AbstractPneumaticCraftMenu<TileEntityElevatorBase> {
 
     public ContainerElevator(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

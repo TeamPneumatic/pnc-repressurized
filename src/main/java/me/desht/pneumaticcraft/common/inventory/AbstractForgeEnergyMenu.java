@@ -17,34 +17,30 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.SyncedField;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.items.SlotItemHandler;
 
-public class ContainerProgrammableController extends AbstractPneumaticCraftMenu<TileEntityProgrammableController> {
+public abstract class AbstractForgeEnergyMenu<T extends TileEntityBase> extends Abstract4SlotMenu<T> {
 
-    public ContainerProgrammableController(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        this(i, playerInventory, getTilePos(buffer));
+    private AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, FriendlyByteBuf buffer) {
+        this(type, i, playerInventory, getTilePos(buffer));
     }
 
-    public ContainerProgrammableController(int i, Inventory playerInventory, BlockPos pos) {
-        super(ModMenuTypes.PROGRAMMABLE_CONTROLLER.get(), i, playerInventory, pos);
+    public AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, BlockPos tilePos) {
+        super(type, i, playerInventory, tilePos);
 
-        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 89, 36));
-
-        addUpgradeSlots(39, 29);
-
-        addPlayerSlots(playerInventory, 84);
-
-        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> {
+        if (!te.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
+            throw new IllegalStateException("tile entity must support CapabilityEnergy.ENERGY on face null!");
+        }
+        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(h -> {
             try {
-                addSyncedField(new SyncedField.SyncedInt(handler, EnergyStorage.class.getDeclaredField("energy")));
+                addSyncedField(new SyncedField.SyncedInt(h, EnergyStorage.class.getDeclaredField("energy")));
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
