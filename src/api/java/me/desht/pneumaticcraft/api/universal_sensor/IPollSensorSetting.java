@@ -35,7 +35,7 @@ public interface IPollSensorSetting extends ISensorSetting {
     int getPollFrequency(BlockEntity te);
 
     /**
-     * Called regularly by the Universal Sensor tile entity to calculate the output redstone value 0-15 of this sensor.
+     * Called regularly by the Universal Sensor block entity to calculate the output redstone value 0-15 of this sensor.
      * When this sensor is digital, just return 0 or 15.
      *
      * @param level the world

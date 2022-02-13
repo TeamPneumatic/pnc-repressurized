@@ -55,7 +55,7 @@ public interface IInventoryItem {
 
     /**
      * Convenience implementation for {@link IInventoryItem#getStacksInItem(ItemStack, List)} for items have been
-     * dropped from a tile entity block with serialized data.
+     * dropped from a block entity block with serialized data.
      *
      * @param stack the stack
      * @param curStacks a list of stacks to fill

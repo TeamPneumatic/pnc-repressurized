@@ -87,10 +87,10 @@ public class GlobalPosHelper {
     }
 
     /**
-     * Get the tile entity at the given global pos.  This will not force-load the dimension or chunks.
+     * Get the block entity at the given global pos.  This will not force-load the dimension or chunks.
      *
      * @param globalPos the global pos
-     * @return the tile entity, if any
+     * @return the block entity, if any
      */
     public static BlockEntity getTileEntity(GlobalPos globalPos) {
         Level world = getWorldForGlobalPos(globalPos);

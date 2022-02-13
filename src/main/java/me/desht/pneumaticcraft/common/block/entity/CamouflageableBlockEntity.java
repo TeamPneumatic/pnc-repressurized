@@ -31,14 +31,14 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public interface CamouflageableBlockEntity {
     /**
-     * Get the camouflage state; the blockstate which will be used to render this tile entity's block.
+     * Get the camouflage state; the blockstate which will be used to render this block entity's block.
      *
      * @return the camouflage state, or null if the block should not be camouflaged
      */
     BlockState getCamouflage();
 
     /**
-     * Set the camouflage for the tile entity.  The tile entity should sync this state to the client, and do
+     * Set the camouflage for the block entity.  The block entity should sync this state to the client, and do
      * any necessary re-rendering of the block when the synced state changes.
      *
      * @param state the camo block state
@@ -58,7 +58,7 @@ public interface CamouflageableBlockEntity {
     /**
      * Convenience method: sync camo state to client
      *
-     * @param te the tile entity
+     * @param te the block entity
      */
     static void syncToClient(AbstractPneumaticCraftBlockEntity te) {
         if (te.getLevel() != null && !te.getLevel().isClientSide) {

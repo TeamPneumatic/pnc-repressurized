@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
- * Handles redstone behaviour & emission for a tile entity
+ * Handles redstone behaviour & emission for a block entity
  */
 public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     private static final Pattern RS_TAG_PATTERN = Pattern.compile("^redstone:(\\d+)$");
@@ -52,7 +52,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     @GuiSynced
     private int currentMode;
     @GuiSynced
-    private int currentRedstonePower = -1; // current power level for the tile entity's block (< 0 means "unknown")
+    private int currentRedstonePower = -1; // current power level for the block entity's block (< 0 means "unknown")
 
     public RedstoneController(T te) {
         this.teRef = new WeakReference<>(te);

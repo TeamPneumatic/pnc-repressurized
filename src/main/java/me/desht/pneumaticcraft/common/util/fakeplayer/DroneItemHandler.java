@@ -87,7 +87,7 @@ public class DroneItemHandler extends ItemStackHandler {
     }
 
     /**
-     * Call this when it's safe to create a fake player (i.e. NOT when reading NBT during entity/tile entity creation!)
+     * Call this when it's safe to create a fake player (i.e. NOT when reading NBT during entity/block entity creation!)
      */
     public void setFakePlayerReady() {
         if (!fakePlayerReady && !holder.world().isClientSide) {

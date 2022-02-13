@@ -22,7 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 
 /**
- * Represents a tile entity which has a range manager and the concept of a range area of effect.
+ * Represents a block entity which has a range manager and the concept of a range area of effect.
  */
 @FunctionalInterface
 public interface IRangedTE {

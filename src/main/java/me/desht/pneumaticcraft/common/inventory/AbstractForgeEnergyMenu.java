@@ -36,7 +36,7 @@ public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBl
         super(type, i, playerInventory, tilePos);
 
         if (!te.getCapability(CapabilityEnergy.ENERGY).isPresent()) {
-            throw new IllegalStateException("tile entity must support CapabilityEnergy.ENERGY on face null!");
+            throw new IllegalStateException("block entity must support CapabilityEnergy.ENERGY on face null!");
         }
         te.getCapability(CapabilityEnergy.ENERGY).ifPresent(h -> {
             try {

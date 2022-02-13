@@ -94,7 +94,7 @@ public enum AreaRenderManager {
         Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
-        // tile entity controlled renderers
+        // block entity controlled renderers
         for (AreaRenderer handler : showHandlers.values()) {
             handler.render(matrixStack, buffer);
         }

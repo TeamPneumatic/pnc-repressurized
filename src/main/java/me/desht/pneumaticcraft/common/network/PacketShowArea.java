@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 
 /**
  * Received on: CLIENT
- * Sent by server to make a tile entity render its area of effect
+ * Sent by server to make a block entity render its area of effect
  */
 public class PacketShowArea extends LocationIntPacket {
     private final BlockPos[] area;

@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 /**
  * Received on: SERVER
- * Sent by client GUI's to update a IGUITextFieldSensitive tile entity server-side
+ * Sent by client GUI's to update a IGUITextFieldSensitive block entity server-side
  */
 public class PacketUpdateTextfield {
     private final int textFieldID;

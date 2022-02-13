@@ -50,7 +50,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 /**
- * A ticking air handler owned by a tile entity, which disperses air to those neighbouring air handlers
+ * A ticking air handler owned by a block entity, which disperses air to those neighbouring air handlers
  * which have lower pressure than it does.
  */
 public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMachine, IManoMeasurable {

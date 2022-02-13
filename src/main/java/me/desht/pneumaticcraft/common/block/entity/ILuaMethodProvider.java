@@ -20,19 +20,19 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 
 /**
- * A Tile Entity which makes some of its functionality available via Lua methods for calling from other mods
+ * A Block Entity which makes some of its functionality available via Lua methods for calling from other mods
  * (e.g. ComputerCraft)
  */
 public interface ILuaMethodProvider {
     /**
-     * Get this TE's method registry object.  This should be created in the TE constructor, but not populated
+     * Get this BE's method registry object.  This should be created in the BE constructor, but not populated
      * with methods yet.
      * @return the method registry
      */
     LuaMethodRegistry getLuaMethodRegistry();
 
     /**
-     * Get a unique identifier for this type of method provider.  The TE's type (a registry ID) is a good choice.
+     * Get a unique identifier for this type of method provider.  The BE's type (a registry ID) is a good choice.
      * @return a unique string identifier
      */
     String getPeripheralType();

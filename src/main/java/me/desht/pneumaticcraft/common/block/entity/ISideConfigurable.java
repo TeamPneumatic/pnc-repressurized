@@ -24,8 +24,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Represents an tile entity whose sides can be reconfigured, i.e. connected to different capability handlers,
- * typically controlled by GUI side tabs.  ISideConfigurable tile entity GUI's will automatically get a side tab for
+ * Represents an block entity whose sides can be reconfigured, i.e. connected to different capability handlers,
+ * typically controlled by GUI side tabs.  ISideConfigurable block entity GUI's will automatically get a side tab for
  * each side configurator they have.  Each side configurator handles one capability (items, fluids, energy...)
  * <p>
  * Any TE which supports side configuration must also be rotatable, since configurable sides are relative to the

@@ -195,7 +195,7 @@ public class RenderUtils {
     }
 
     /**
-     * Rotates the render matrix dependant on the rotation of a block. Used by many tile entity render methods.
+     * Rotates the render matrix dependant on the rotation of a block. Used by many block entity render methods.
      *
      * @param matrixStack the matrix stack
      * @param facing block facing direction

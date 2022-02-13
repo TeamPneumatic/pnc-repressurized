@@ -58,7 +58,7 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
     /**
      * Force loot generation, as this is required on the client side to peek inside inventories.
      * The client is not able to generate the loot.
-     * @param te the tile entity
+     * @param te the block entity
      */
     private void forceLootGeneration(BlockEntity te){
         if(te instanceof RandomizableContainerBlockEntity){

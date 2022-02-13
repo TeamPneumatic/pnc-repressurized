@@ -24,8 +24,8 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 
 /**
- * Represents a tile entity which stores tank data that should be serialized onto the dropped item stack when the block
- * is broken, and deserialized back to the tile entity when the block is placed down again.
+ * Represents a block entity which stores tank data that should be serialized onto the dropped item stack when the block
+ * is broken, and deserialized back to the block entity when the block is placed down again.
  */
 @FunctionalInterface
 public interface ISerializableTanks {

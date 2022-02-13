@@ -182,7 +182,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
      * Called by the BlockTrackUpgradeHandler when it finds inventories while scanning blocks.  If
      * the inventory contains any of the searched item, its position is added to a track list.
      *
-     * @param te TileEntity the tile entity, which is already known to support the item handler capability
+     * @param te TileEntity the block entity, which is already known to support the item handler capability
      * @param handlerEnabled true if the search handler is actually enabled, false otherwise
      */
     void checkInventoryForItems(BlockEntity te, Direction face, boolean handlerEnabled) {

@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 /**
  * Sent to: CLIENT
  *
- * This is the primary mechanism for syncing tile entity data to clients when it changes.
+ * This is the primary mechanism for syncing block entity data to clients when it changes.
  */
 public class PacketDescription extends LocationIntPacket {
     private final boolean fullSync;

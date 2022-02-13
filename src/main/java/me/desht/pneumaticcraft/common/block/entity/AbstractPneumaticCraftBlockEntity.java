@@ -420,9 +420,9 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /**
-     * Called when a neighboring tile entity changes state (specifically when
+     * Called when a neighboring block entity changes state (specifically when
      * {@link Level#updateNeighbourForOutputSignal(BlockPos, Block)} is called.
-     * @param tilePos the blockpos of the neighboring tile entity
+     * @param tilePos the blockpos of the neighboring block entity
      */
     public void onNeighborTileUpdate(BlockPos tilePos) {
     }
@@ -442,7 +442,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /**
-     * Take a fluid-containing from the input slot, use it to fill the primary input tank of the tile entity,
+     * Take a fluid-containing from the input slot, use it to fill the primary input tank of the block entity,
      * and place the resulting emptied container in the output slot.
      *
      * @param inputSlot input slot
@@ -571,7 +571,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /**
-     * Should this tile entity preserve its state (currently: upgrades and stored air) when broken?
+     * Should this block entity preserve its state (currently: upgrades and stored air) when broken?
      * By default this is true when sneak-wrenched, and false when broken by pick.
      *
      * @return true if state should be preserved, false otherwise
@@ -619,7 +619,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /**
-     * Get the number of players who have a GUI open for this tile entity.  Only use this server-side.
+     * Get the number of players who have a GUI open for this block entity.  Only use this server-side.
      *
      * @return the player count
      */

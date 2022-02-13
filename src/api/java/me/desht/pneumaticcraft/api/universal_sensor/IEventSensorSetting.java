@@ -32,7 +32,7 @@ public interface IEventSensorSetting extends ISensorSetting {
      *     <li>{@link AttackEntityEvent}</li>
      * </ul>
      * @param event the Forge event (one of PlayerInteractEvent, EntityItemPickupEvent or AttackEntityEvent)
-     * @param sensor the Universal Sensor tile entity
+     * @param sensor the Universal Sensor block entity
      * @param range the Universal Sensor's range, in blocks
      * @param textboxText any text which was entered in the sensor configuration's textfield
      * @return the redstone strength which should be emitted

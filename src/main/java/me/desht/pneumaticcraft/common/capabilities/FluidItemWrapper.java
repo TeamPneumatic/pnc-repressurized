@@ -57,7 +57,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
      * tank is empty, it will be removed from the stack's NBT to keep it clean (helps with stackability)
      * <p>
      * Data is serialized under the "BlockEntityTag" sub-tag, so will
-     * be automatically deserialized back into the tile entity when this item (assuming it's from a block,
+     * be automatically deserialized back into the block entity when this item (assuming it's from a block,
      * of course) is placed back down.
      *
      * @param tank the fluid tank

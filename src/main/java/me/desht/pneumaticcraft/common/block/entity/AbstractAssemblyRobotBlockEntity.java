@@ -298,7 +298,7 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
     }
 
     /**
-     * A compound direction relative to the tile entity in question. First direction is always non-null, second
+     * A compound direction relative to the block entity in question. First direction is always non-null, second
      * direction may be null for an adjacent neighbour, or non-null for a diagonal neighbour.
      */
     static class TargetDirections {

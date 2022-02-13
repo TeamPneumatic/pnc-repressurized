@@ -31,7 +31,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -68,8 +67,8 @@ public interface ISemiBlock extends ICapabilityProvider {
     BlockPos getBlockPos();
 
     /**
-     * Get the tile entity at the semiblock's position.  This is cached for performance.
-     * @return the tile entity, or null if there is none
+     * Get the block entity at the semiblock's position.  This is cached for performance.
+     * @return the block entity, or null if there is none
      */
     BlockEntity getCachedTileEntity();
 

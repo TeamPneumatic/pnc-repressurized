@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.block.entity;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
- * Implement on a Container/Tile Entity/EntitySemiblock to allow it to receive messages from the client when a GUI button is
+ * Implement on a Container/Block Entity/EntitySemiblock to allow it to receive messages from the client when a GUI button is
  * clicked.
  */
 @FunctionalInterface

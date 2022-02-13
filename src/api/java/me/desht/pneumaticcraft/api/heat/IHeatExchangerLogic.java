@@ -29,11 +29,11 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 
 /**
- * Represents a heat exchanger owned by a tile entity. Retrieve instances of this via capability lookup; you
+ * Represents a heat exchanger owned by a block entity. Retrieve instances of this via capability lookup; you
  * can use {@link me.desht.pneumaticcraft.api.PNCCapabilities#HEAT_EXCHANGER_CAPABILITY} or get your own
  * instance with {@link net.minecraftforge.common.capabilities.CapabilityManager#get(CapabilityToken)}.
  * <p>
- * If you are implementing a tile entity with a heat exchanger, you should <strong>not</strong> implement this
+ * If you are implementing a block entity with a heat exchanger, you should <strong>not</strong> implement this
  * interface yourself; get an instance of it via {@link IHeatRegistry#makeHeatExchangerLogic()}, store it as field
  * in your TE, and provide it via capability as described above. Your TE should also call {@link #tick()} and
  * {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)} as documented in those methods.
@@ -47,12 +47,12 @@ import java.util.function.BiPredicate;
 public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
     /**
      * Call this to tick this logic, and make the heat disperse itself. In general this should be called each tick
-     * by the owning tile entity's {@code tick()} method, on the server side only.
+     * by the owning block entity's {@code tick()} method, on the server side only.
      */
     void tick();
 
     /**
-     * When called (on tile entity first tick and on neighbor block updates), this discovers all heat
+     * When called (on block entity first tick and on neighbor block updates), this discovers all heat
      * exchanging neighbor tile entities as connected heat exchangers (i.e. tile entities who provide the
      * {@link IHeatExchangerLogic} capability on that side).  It will also account for neighbouring blocks with
      * special heat properties, like Magma or Lava, and other special cases like Heat Frames (which are entities).

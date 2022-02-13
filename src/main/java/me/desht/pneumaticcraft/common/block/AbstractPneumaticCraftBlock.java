@@ -147,7 +147,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
      * serialised, and handle deserialisation in the corresponding container constructor.
      *
      * @param player the server player
-     * @param te the tile entity, which is known to be an INamedContainerProvider
+     * @param te the block entity, which is known to be an INamedContainerProvider
      */
     protected void doOpenGui(ServerPlayer player, BlockEntity te) {
         NetworkHooks.openGui(player, (MenuProvider) te, te.getBlockPos());

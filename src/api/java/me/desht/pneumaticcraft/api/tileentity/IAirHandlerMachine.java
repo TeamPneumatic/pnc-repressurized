@@ -36,7 +36,7 @@ import java.util.function.Predicate;
  * over-pressurized.
  * <p>
  * Don't implement this class yourself!  Use one of the methods in {@link IAirHandlerMachineFactory} to obtain
- * a suitable implementation for your tile entity.
+ * a suitable implementation for your block entity.
  */
 public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     /**
@@ -61,7 +61,7 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     void setPressure(float newPressure);
 
     /**
-     * Should be called by the owning tile entity when its volume upgrades change.  This will cause the air handler
+     * Should be called by the owning block entity when its volume upgrades change.  This will cause the air handler
      * to recalculate its current volume.  A decrease in volume will cause air to be lost, keeping the pressure
      * constant.  An increase in volume will keep the air constant, causing a pressure drop.
      *
@@ -83,9 +83,9 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     void disableSafetyVenting();
 
     /**
-     * Must be called every tick by the owning tile entity.
+     * Must be called every tick by the owning block entity.
      *
-     * @param ownerTE the owning tile entity
+     * @param ownerTE the owning block entity
      */
     void tick(BlockEntity ownerTE);
 
@@ -110,7 +110,7 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     /**
      * Get a list of all air handlers connected to this one.
      *
-     * @param ownerTE the owning tile entity
+     * @param ownerTE the owning block entity
      * @return a list of all connected air handlers
      */
     List<IAirHandlerMachine.Connection> getConnectedAirHandlers(BlockEntity ownerTE);

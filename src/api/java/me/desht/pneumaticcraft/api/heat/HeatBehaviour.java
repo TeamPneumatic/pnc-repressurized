@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.api.heat;
 
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.function.Supplier;
@@ -48,16 +48,16 @@ public abstract class HeatBehaviour<T extends BlockEntity> implements INBTSerial
     private BlockPos pos;
     private T cachedTE;
     private BlockState blockState;
-    private Direction direction;  // direction of this behaviour, from the tile entity's point of view
+    private Direction direction;  // direction of this behaviour, from the block entity's point of view
 
     /**
      * This method is called by the connected {@link IHeatExchangerLogic} when it initialises itself as a hull
-     * heat exchanger; this happens when the owning tile entity gets a neighbor block update.  You can override
+     * heat exchanger; this happens when the owning block entity gets a neighbor block update.  You can override
      * and extend this method, but <strong>be sure to call the super method</strong>!
      * @param connectedHeatLogic the connected heat exchanger logic
      * @param world the world
-     * @param pos block pos of the owning tile entity
-     * @param direction direction of this behaviour (from the tile entity's point of view)
+     * @param pos block pos of the owning block entity
+     * @param direction direction of this behaviour (from the block entity's point of view)
      */
     public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, Level world, BlockPos pos, Direction direction) {
         this.connectedHeatLogic = connectedHeatLogic;

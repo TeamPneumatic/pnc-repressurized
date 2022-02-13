@@ -49,7 +49,7 @@ public interface IActuator {
     List<String> getDescription();
 
     /**
-     * @param universalActuator an actuator tile entity
+     * @param universalActuator an actuator block entity
      */
     void actuate(BlockEntity universalActuator);
 }

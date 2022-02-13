@@ -50,7 +50,7 @@ public class PacketUtil {
     }
 
     /**
-     * Get the relevant target tile entity for packet purposes.  When the packet is
+     * Get the relevant target block entity for packet purposes.  When the packet is
      * being received on the server, the player's open container is used to determine
      * the TE; don't trust a blockpos that the client sent, although we'll check the
      * sent blockpos is the same as the TE's actual blockpos.
@@ -60,8 +60,8 @@ public class PacketUtil {
      *
      * @param player the player, will be null if packet is being received on client
      * @param pos the blockpos, ignored if packet is being received on server
-     * @param cls the desired tile entity class
-     * @return the relevant tile entity, or Optional.empty() if none can be found
+     * @param cls the desired block entity class
+     * @return the relevant block entity, or Optional.empty() if none can be found
      */
     @Nonnull
     public static <T extends BlockEntity> Optional<T> getTE(Player player, BlockPos pos, Class<T> cls) {
@@ -89,8 +89,8 @@ public class PacketUtil {
      * Server-only variant of {@link #getTE(PlayerEntity, BlockPos, Class)}
      *
      * @param player the player
-     * @param cls the desired tile entity class
-     * @return the relevant tile entity, or Optional.empty() if none can be found
+     * @param cls the desired block entity class
+     * @return the relevant block entity, or Optional.empty() if none can be found
      */
     @Nonnull
     public static <T extends BlockEntity> Optional<T> getTE(Player player, Class<T> cls) {

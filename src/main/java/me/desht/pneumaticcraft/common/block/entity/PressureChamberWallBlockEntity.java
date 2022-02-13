@@ -101,7 +101,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity
     }
 
     /**
-     * Reads a tile entity from NBT.
+     * Reads a block entity from NBT.
      */
     @Override
     public void load(CompoundTag tag) {

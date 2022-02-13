@@ -108,7 +108,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
         Direction dir = getRotation();
 
-        // try to fill any neighbouring fluid-accepting tile entity
+        // try to fill any neighbouring fluid-accepting block entity
         BlockEntity neighbor = getCachedNeighbor(dir);
         if (neighbor != null) {
             return IOHelper.getFluidHandlerForTE(neighbor, dir.getOpposite()).map(fluidHandler -> {

@@ -48,7 +48,7 @@ public interface ISimulationController {
     void onNodeFortified(HackSimulation hackSimulation, int pos);
 
     /**
-     * Called every game tick (both client and server) by the owning security station tile entity.
+     * Called every game tick (both client and server) by the owning security station block entity.
      */
     void tick();
 

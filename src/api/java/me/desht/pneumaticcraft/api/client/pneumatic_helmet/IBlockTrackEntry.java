@@ -61,7 +61,7 @@ public interface IBlockTrackEntry {
      * only the TE's own block pos, but potentially others for multiblocks like the
      * vanilla double chest)
      *
-     * @param te the tile entity at the currently checked location, may be null
+     * @param te the block entity at the currently checked location, may be null
      * @return a list of the block positions for which update request packets should be sent
      */
     List<BlockPos> getServerUpdatePositions(@Nullable BlockEntity te);

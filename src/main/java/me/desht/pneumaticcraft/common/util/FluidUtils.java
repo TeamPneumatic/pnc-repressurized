@@ -93,11 +93,11 @@ public class FluidUtils {
     }
 
     /**
-     * Have the player attempt to insert liquid into a tile entity, which must support FLUID_HANDLER_CAPABILITY.
+     * Have the player attempt to insert liquid into a block entity, which must support FLUID_HANDLER_CAPABILITY.
      * The player's held item will be updated if any fluid was inserted.
      *
-     * @param te the tile entity to insert into
-     * @param face the face of the tile entity's block to insert to
+     * @param te the block entity to insert into
+     * @param face the face of the block entity's block to insert to
      * @param player the player
      * @param hand the hand being used
      * @return true if any fluid was inserted, false otherwise
@@ -107,11 +107,11 @@ public class FluidUtils {
     }
 
     /**
-     * Have the player attempt to extract liquid from a tile entity, which must support FLUID_HANDLER_CAPABILITY.
+     * Have the player attempt to extract liquid from a block entity, which must support FLUID_HANDLER_CAPABILITY.
      * The player's held item will be updated if any fluid was extracted.
      *
-     * @param te the tile entity to extract from
-     * @param face the face of the tile entity's block to extract from
+     * @param te the block entity to extract from
+     * @param face the face of the block entity's block to extract from
      * @param player the player
      * @param hand the hand being used
      * @return true if any fluid was extracted, false otherwise

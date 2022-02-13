@@ -153,7 +153,7 @@ public class ClientUtils {
 
     /**
      * Get a TE client-side.  Convenience method for packet handling code, primarily.
-     * @return a tile entity or null
+     * @return a block entity or null
      */
     public static BlockEntity getBlockEntity(BlockPos pos) {
         return getClientLevel().getBlockEntity(pos);
