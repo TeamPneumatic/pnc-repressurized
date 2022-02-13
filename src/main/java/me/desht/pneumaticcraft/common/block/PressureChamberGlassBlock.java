@@ -17,14 +17,11 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberGlassBlockEntity;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -33,23 +30,6 @@ import org.jetbrains.annotations.Nullable;
 public class PressureChamberGlassBlock extends AbstractPressureWallBlock implements EntityBlockPneumaticCraft {
     public PressureChamberGlassBlock() {
         super(IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
-    }
-
-    @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (worldIn.isClientSide()) {
-            PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, PressureChamberGlassBlockEntity.class).ifPresent(teGlass -> {
-                teGlass.requestModelDataUpdate();
-                // handle any glass that's diagonally connected
-                for (Direction d : DirectionUtil.VALUES) {
-                    if (d.getAxis() != facing.getAxis()) {
-                        BlockEntity te1 = teGlass.getCachedNeighbor(d);
-                        if (te1 instanceof PressureChamberGlassBlockEntity) te1.requestModelDataUpdate();
-                    }
-                }
-            });
-        }
-        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
@@ -75,21 +55,6 @@ public class PressureChamberGlassBlock extends AbstractPressureWallBlock impleme
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new PressureChamberGlassBlockEntity(pPos, pState);
+        return new PressureChamberWallBlockEntity(pPos, pState);
     }
-
-//    @Override
-//    public boolean causesSuffocation(BlockState p_220060_1_, IBlockReader p_220060_2_, BlockPos p_220060_3_) {
-//        return false;
-//    }
-
-//    @Override
-//    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
-//        return false;
-//    }
-
-//    public boolean canEntitySpawn(BlockState p_220067_1_, IBlockReader p_220067_2_, BlockPos p_220067_3_, EntityType<?> p_220067_4_) {
-//        return false;
-//    }
-
 }

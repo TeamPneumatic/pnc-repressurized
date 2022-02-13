@@ -51,8 +51,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity
 
     public PressureChamberValveBlockEntity getCore() {
         if (teValve == null && (valveX != 0 || valveY != 0 || valveZ != 0)) {
-            // when the saved BE equals null, check if we can
-            // retrieve the BE from the NBT saved coords.
+            // when the saved BE equals null, check if we can retrieve it from the NBT saved coords.
             BlockEntity te = nonNullLevel().getBlockEntity(new BlockPos(valveX, valveY, valveZ));
             setCore(te instanceof PressureChamberValveBlockEntity ? (PressureChamberValveBlockEntity) te : null);
         }

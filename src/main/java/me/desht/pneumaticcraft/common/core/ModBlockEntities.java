@@ -42,9 +42,7 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<AirCannonBlockEntity>> AIR_CANNON
             = register("air_cannon", () -> new BlockEntityType<>(AirCannonBlockEntity::new, ImmutableSet.of(ModBlocks.AIR_CANNON.get()), null));
     public static final RegistryObject<BlockEntityType<PressureChamberWallBlockEntity>> PRESSURE_CHAMBER_WALL
-            = register("pressure_chamber_wall", () -> new BlockEntityType<>(PressureChamberWallBlockEntity::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_WALL.get()), null));
-    public static final RegistryObject<BlockEntityType<PressureChamberGlassBlockEntity>> PRESSURE_CHAMBER_GLASS
-            = register("pressure_chamber_glass", () -> new BlockEntityType<>(PressureChamberGlassBlockEntity::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_GLASS.get()), null));
+            = register("pressure_chamber_wall", () -> new BlockEntityType<>(PressureChamberWallBlockEntity::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_WALL.get(), ModBlocks.PRESSURE_CHAMBER_GLASS.get()), null));
     public static final RegistryObject<BlockEntityType<PressureChamberValveBlockEntity>> PRESSURE_CHAMBER_VALVE
             = register("pressure_chamber_valve", () -> new BlockEntityType<>(PressureChamberValveBlockEntity::new, ImmutableSet.of(ModBlocks.PRESSURE_CHAMBER_VALVE.get()), null));
     public static final RegistryObject<BlockEntityType<ChargingStationBlockEntity>> CHARGING_STATION

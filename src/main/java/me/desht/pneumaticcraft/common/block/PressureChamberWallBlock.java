@@ -18,8 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.BlockGetter;
@@ -53,7 +52,8 @@ public class PressureChamberWallBlock extends AbstractPressureWallBlock {
     }
 
     public BlockState updateState(BlockState state, BlockGetter world, BlockPos pos) {
-        return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(wall -> {
+        // note: this will also get called for pressure chamber glass, but that doesn't have any wall state properties
+        return world.getBlockEntity(pos, ModBlockEntities.PRESSURE_CHAMBER_WALL.get()).map(wall -> {
             EnumWallState wallState = EnumWallState.NONE;
             PressureChamberValveBlockEntity core = wall.getCore();
             if (core != null) {
