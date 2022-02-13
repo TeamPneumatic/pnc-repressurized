@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -83,7 +83,7 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements E
         });
     }
 
-    private void updateDoorSide(TileEntityPneumaticDoorBase doorBase) {
+    private void updateDoorSide(PneumaticDoorBaseBlockEntity doorBase) {
         doorBase.nonNullLevel().getBlockEntity(doorBase.getBlockPos().relative(doorBase.getRotation()), ModBlockEntities.PNEUMATIC_DOOR.get())
                 .ifPresent(teDoor -> {
                     if (doorBase.getRotation().getClockWise() == teDoor.getRotation() && teDoor.rightGoing
@@ -120,6 +120,6 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements E
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityPneumaticDoorBase(pPos, pState);
+        return new PneumaticDoorBaseBlockEntity(pPos, pState);
     }
 }

@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.VacuumPumpBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class VacuumPumpMenu extends AbstractPneumaticCraftMenu<TileEntityVacuumPump> {
+public class VacuumPumpMenu extends AbstractPneumaticCraftMenu<VacuumPumpBlockEntity> {
 
     public VacuumPumpMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotItemSpecific;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class AssemblyControllerMenu extends AbstractPneumaticCraftMenu<TileEntityAssemblyController> {
+public class AssemblyControllerMenu extends AbstractPneumaticCraftMenu<AssemblyControllerBlockEntity> {
     public AssemblyControllerMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }

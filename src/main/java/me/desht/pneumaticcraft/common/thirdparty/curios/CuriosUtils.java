@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.curios;
 
-import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
+import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.energy.CapabilityEnergy;

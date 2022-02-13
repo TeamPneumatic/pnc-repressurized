@@ -24,11 +24,11 @@ import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.RefineryOutputBlockEntity;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -42,8 +42,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class GuiRefineryController extends GuiPneumaticContainerBase<RefineryMenu, TileEntityRefineryController> {
-    private List<TileEntityRefineryOutput> outputs;
+public class GuiRefineryController extends GuiPneumaticContainerBase<RefineryMenu, RefineryControllerBlockEntity> {
+    private List<RefineryOutputBlockEntity> outputs;
     private WidgetTemperature widgetTemperature;
     private int nExposedFaces;
 
@@ -71,13 +71,13 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<RefineryMen
         if (te1 != null) {
             int i = 0;
             do {
-                TileEntityRefineryOutput teRO = (TileEntityRefineryOutput) te1;
+                RefineryOutputBlockEntity teRO = (RefineryOutputBlockEntity) te1;
                 if (outputs.size() < 4) addRenderableWidget(new WidgetTank(x, y, te.outputsSynced[i++]));
                 x += 20;
                 y -= 4;
                 outputs.add(teRO);
                 te1 = te1.getLevel().getBlockEntity(te1.getBlockPos().above());
-            } while (te1 instanceof TileEntityRefineryOutput);
+            } while (te1 instanceof RefineryOutputBlockEntity);
         }
 
         if (outputs.size() < 2 || outputs.size() > 4) {

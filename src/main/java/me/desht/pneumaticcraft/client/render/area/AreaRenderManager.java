@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Coo
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
@@ -33,7 +34,6 @@ import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
-import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;

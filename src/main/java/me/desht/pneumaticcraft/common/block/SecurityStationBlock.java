@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.ChatFormatting;
@@ -103,7 +103,7 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
         } else {
             if (!world.isClientSide) {
                 BlockEntity te = world.getBlockEntity(pos);
-                if (te instanceof TileEntitySecurityStation teSS) {
+                if (te instanceof SecurityStationBlockEntity teSS) {
                     if (teSS.isPlayerOnWhiteList(player)) {
                         return super.use(state, world, pos, player, hand, brtr);
                     } else if (!teSS.hasValidNetwork()) {
@@ -142,6 +142,6 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntitySecurityStation(pPos, pState);
+        return new SecurityStationBlockEntity(pPos, pState);
     }
 }

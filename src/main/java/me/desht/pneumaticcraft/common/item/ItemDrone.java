@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -127,7 +127,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
         drone.setDeployPos(placePos);
 
         if (drone.addProgram(clickPos, facing, placePos, iStack, drone.progWidgets)) {
-            TileEntityProgrammer.updatePuzzleConnections(drone.progWidgets);
+            ProgrammerBlockEntity.updatePuzzleConnections(drone.progWidgets);
         }
 
         if (world instanceof ServerLevelAccessor) {
@@ -161,7 +161,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     }
 
     @Override
-    public MenuProvider getContainerProvider(TileEntityChargingStation te) {
+    public MenuProvider getContainerProvider(ChargingStationBlockEntity te) {
         return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_DRONE.get());
     }
 

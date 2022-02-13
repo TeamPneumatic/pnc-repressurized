@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModParticleTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -95,8 +95,8 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
             if (tileEntity.isRemoved()) {
                 finished = true;
             } else {
-                if (tileEntity instanceof TileEntitySentryTurret) {
-                    minigun = ((TileEntitySentryTurret) tileEntity).getMinigun();
+                if (tileEntity instanceof SentryTurretBlockEntity) {
+                    minigun = ((SentryTurretBlockEntity) tileEntity).getMinigun();
                 }
             }
         }

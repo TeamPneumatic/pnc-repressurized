@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -65,6 +65,6 @@ public class AssemblyControllerBlock extends AbstractPneumaticCraftBlock impleme
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityAssemblyController(pPos, pState);
+        return new AssemblyControllerBlockEntity(pPos, pState);
     }
 }

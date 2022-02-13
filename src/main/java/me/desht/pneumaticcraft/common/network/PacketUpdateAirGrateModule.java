@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
+import me.desht.pneumaticcraft.common.tubemodules.AirGrateModule;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
@@ -29,7 +29,7 @@ import net.minecraft.world.entity.player.Player;
 public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule {
     private final String entityFilter;
 
-    public PacketUpdateAirGrateModule(TubeModule module, String entityFilter) {
+    public PacketUpdateAirGrateModule(AbstractTubeModule module, String entityFilter) {
         super(module);
         this.entityFilter = entityFilter;
     }
@@ -46,9 +46,9 @@ public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule {
     }
 
     @Override
-    protected void onModuleUpdate(TubeModule module, Player player) {
-        if (module instanceof ModuleAirGrate && module.isUpgraded()) {
-            ((ModuleAirGrate) module).setEntityFilter(entityFilter);
+    protected void onModuleUpdate(AbstractTubeModule module, Player player) {
+        if (module instanceof AirGrateModule && module.isUpgraded()) {
+            ((AirGrateModule) module).setEntityFilter(entityFilter);
         }
     }
 }

@@ -22,10 +22,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SentryTurretMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.language.I18n;
@@ -38,7 +38,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.Collections;
 import java.util.List;
 
-public class GuiSentryTurret extends GuiPneumaticContainerBase<SentryTurretMenu,TileEntitySentryTurret> {
+public class GuiSentryTurret extends GuiPneumaticContainerBase<SentryTurretMenu,SentryTurretBlockEntity> {
     private WidgetTextField entityFilter;
     private WidgetButtonExtended errorButton;
     private String prevFilterText = "";

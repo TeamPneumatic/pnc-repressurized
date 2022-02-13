@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.machine.UVLightBoxRecipe;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
@@ -47,7 +47,7 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
     private static final List<UVLightBoxRecipe> UV_LIGHT_BOX_RECIPES;
     static {
         ItemStack out = new ItemStack(ModItems.EMPTY_PCB.get());
-        TileEntityUVLightBox.setExposureProgress(out, 100);
+        UVLightBoxBlockEntity.setExposureProgress(out, 100);
         UVLightBoxRecipe recipe = new UVLightBoxRecipe(Ingredient.of(ModItems.EMPTY_PCB.get()), out);
         UV_LIGHT_BOX_RECIPES = Collections.singletonList(recipe);
     }

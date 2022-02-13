@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
+import me.desht.pneumaticcraft.common.block.entity.AirCannonBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotItemSpecific;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -28,7 +28,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import java.util.List;
 
-public class AirCannonMenu extends AbstractPneumaticCraftMenu<TileEntityAirCannon> {
+public class AirCannonMenu extends AbstractPneumaticCraftMenu<AirCannonBlockEntity> {
 
     public AirCannonMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

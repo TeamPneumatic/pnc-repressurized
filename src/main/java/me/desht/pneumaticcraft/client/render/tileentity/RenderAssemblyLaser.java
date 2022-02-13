@@ -21,7 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyLaserBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -31,7 +31,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAssemblyLaser> {
+public class RenderAssemblyLaser extends AbstractTileModelRenderer<AssemblyLaserBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;
@@ -103,7 +103,7 @@ public class RenderAssemblyLaser extends AbstractTileModelRenderer<TileEntityAss
     }
 
     @Override
-    public void renderModel(TileEntityAssemblyLaser te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(AssemblyLaserBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 5; i++) {
             angles[i] = Mth.lerp(partialTicks, te.oldAngles[i], te.angles[i]);

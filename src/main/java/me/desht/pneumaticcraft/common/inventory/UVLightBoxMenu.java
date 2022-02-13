@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -32,7 +32,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class UVLightBoxMenu extends AbstractPneumaticCraftMenu<TileEntityUVLightBox> {
+public class UVLightBoxMenu extends AbstractPneumaticCraftMenu<UVLightBoxBlockEntity> {
 
     public UVLightBoxMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

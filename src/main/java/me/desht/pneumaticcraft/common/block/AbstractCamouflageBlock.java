@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;

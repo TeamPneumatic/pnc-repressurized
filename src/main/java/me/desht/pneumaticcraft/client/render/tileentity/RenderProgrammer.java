@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -30,12 +30,12 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 
-public class RenderProgrammer implements BlockEntityRenderer<TileEntityProgrammer> {
+public class RenderProgrammer implements BlockEntityRenderer<ProgrammerBlockEntity> {
     public RenderProgrammer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityProgrammer te, float pPartialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(ProgrammerBlockEntity te, float pPartialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (!te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStackIn.pushPose();

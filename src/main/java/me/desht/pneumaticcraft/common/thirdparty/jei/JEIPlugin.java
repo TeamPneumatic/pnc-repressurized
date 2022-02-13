@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetItemFilter;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsBase;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -31,7 +32,6 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.AmadronAddTradeGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.LogisticsFilterGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.ProgWidgetItemFilterGhost;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -69,7 +69,7 @@ public class JEIPlugin implements IModPlugin {
                 );
             }
         }
-        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB.get(), (s, ctx) -> String.valueOf(TileEntityUVLightBox.getExposureProgress(s)));
+        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB.get(), (s, ctx) -> String.valueOf(UVLightBoxBlockEntity.getExposureProgress(s)));
     }
 
     @Override

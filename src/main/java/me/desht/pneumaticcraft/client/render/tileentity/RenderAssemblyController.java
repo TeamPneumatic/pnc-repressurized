@@ -6,7 +6,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderAssemblyController extends AbstractTileModelRenderer<TileEntityAssemblyController> {
+public class RenderAssemblyController extends AbstractTileModelRenderer<AssemblyControllerBlockEntity> {
     private static final float TEXT_SIZE = 0.007F;
     private final ModelPart screen;
 
@@ -45,7 +45,7 @@ public class RenderAssemblyController extends AbstractTileModelRenderer<TileEnti
     }
 
     @Override
-    public void renderModel(TileEntityAssemblyController te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(AssemblyControllerBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_CONTROLLER));
 
         // have the screen face the player

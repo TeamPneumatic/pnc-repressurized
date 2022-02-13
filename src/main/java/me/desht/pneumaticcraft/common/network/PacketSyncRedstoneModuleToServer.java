@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
+import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -42,7 +42,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     private final boolean input;
     private final boolean comparatorInput;
 
-    public PacketSyncRedstoneModuleToServer(ModuleRedstone module) {
+    public PacketSyncRedstoneModuleToServer(RedstoneModule module) {
         super(module.getTube().getBlockPos());
 
         this.input = module.getRedstoneDirection() == EnumRedstoneDirection.INPUT;
@@ -96,14 +96,14 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
             Player player = ctx.get().getSender();
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
                 player.level.getBlockEntity(pos, ModBlockEntities.PRESSURE_TUBE.get()).ifPresent(tube -> {
-                    if (tube.getModule(side) instanceof ModuleRedstone mr) {
+                    if (tube.getModule(side) instanceof RedstoneModule mr) {
                         mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
                         mr.setColorChannel(ourColor);
                         if (input) {
                             mr.setComparatorInput(comparatorInput);
                         } else {
                             mr.setInverted(invert);
-                            mr.setOperation(ModuleRedstone.Operation.values()[op], otherColor, constantVal);
+                            mr.setOperation(RedstoneModule.Operation.values()[op], otherColor, constantVal);
                         }
                         mr.updateNeighbors();
                         mr.setInputLevel(-1);  // force recalc

@@ -23,7 +23,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBaseBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -36,7 +36,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntityPneumaticDoorBase> {
+public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<PneumaticDoorBaseBlockEntity> {
     private final ModelPart cylinder1;
     private final ModelPart cylinder2;
     private final ModelPart cylinder3;
@@ -73,7 +73,7 @@ public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<TileEntit
 
 
     @Override
-    public void renderModel(TileEntityPneumaticDoorBase te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(PneumaticDoorBaseBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE));
 
         float progress = Mth.lerp(partialTicks, te.oldProgress, te.progress);

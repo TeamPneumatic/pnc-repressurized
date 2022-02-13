@@ -19,19 +19,19 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetColorSelector;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketTubeModuleColor;
+import me.desht.pneumaticcraft.common.tubemodules.LogisticsModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiLogisticsModule extends GuiTubeModule<ModuleLogistics> {
+public class GuiLogisticsModule extends GuiTubeModule<LogisticsModule> {
     private int ourColor;
 
-    public GuiLogisticsModule(ModuleLogistics module) {
+    public GuiLogisticsModule(LogisticsModule module) {
         super(module);
 
         ySize = 57;

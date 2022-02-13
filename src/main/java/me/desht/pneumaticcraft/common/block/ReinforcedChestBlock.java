@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
+import me.desht.pneumaticcraft.common.block.entity.ReinforcedChestBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
@@ -59,7 +59,7 @@ public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityReinforcedChest(pPos, pState);
+        return new ReinforcedChestBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockReinforcedChest extends BlockItem implements IInventoryItem {

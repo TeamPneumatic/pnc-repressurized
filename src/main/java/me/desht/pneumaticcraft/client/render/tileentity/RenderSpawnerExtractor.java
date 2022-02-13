@@ -22,8 +22,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.fluid.AbstractFluidTER;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
+import me.desht.pneumaticcraft.common.block.entity.SpawnerExtractorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModFluids;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -35,7 +35,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fluids.FluidStack;
 
-public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntitySpawnerExtractor> {
+public class RenderSpawnerExtractor extends AbstractTileModelRenderer<SpawnerExtractorBlockEntity> {
     private static final AABB FLUID_BB = new AABB(6/16D, 0, 6/16D, 10/16D, 1, 10/16D);
 
     private static final String MODEL = "model";
@@ -66,7 +66,7 @@ public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntity
 
 
     @Override
-    void renderModel(TileEntitySpawnerExtractor te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(SpawnerExtractorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_SPAWNER_EXTRACTOR));
 
         float extension = te.getProgress() * -0.75f;
@@ -76,7 +76,7 @@ public class RenderSpawnerExtractor extends AbstractTileModelRenderer<TileEntity
     }
 
     @Override
-    protected void renderExtras(TileEntitySpawnerExtractor te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+    protected void renderExtras(SpawnerExtractorBlockEntity te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.getProgress() > 0f && te.getProgress() < 1f) {
             matrixStack.pushPose();
             matrixStack.translate(0, 13/16D, 0);

@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common.inventory.handler;
 
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.world.item.ItemStack;
 
 public class ChargeableItemHandler extends BaseItemStackHandler {
-    public ChargeableItemHandler(TileEntityChargingStation te) {
+    public ChargeableItemHandler(ChargingStationBlockEntity te) {
         super(te, UpgradableItemUtils.UPGRADE_INV_SIZE);
 
         if (!NBTUtils.hasTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG)) {
@@ -41,7 +41,7 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     }
 
     private ItemStack getChargingStack() {
-        return ((TileEntityChargingStation) te).getChargingStack();
+        return ((ChargingStationBlockEntity) te).getChargingStack();
     }
 
     public void writeToNBT() {

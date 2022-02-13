@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.SyncedField;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,7 +27,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ProgrammableControllerMenu extends AbstractPneumaticCraftMenu<TileEntityProgrammableController> {
+public class ProgrammableControllerMenu extends AbstractPneumaticCraftMenu<ProgrammableControllerBlockEntity> {
 
     public ProgrammableControllerMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.common.block.entity.ThermalCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -53,6 +53,6 @@ public class ThermalCompressorBlock extends AbstractPneumaticCraftBlock
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityThermalCompressor(pPos, pState);
+        return new ThermalCompressorBlockEntity(pPos, pState);
     }
 }

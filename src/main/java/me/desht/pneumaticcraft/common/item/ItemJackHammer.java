@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
@@ -37,7 +38,6 @@ import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -362,7 +362,7 @@ public class ItemJackHammer extends ItemPressurizable
     }
 
     @Override
-    public MenuProvider getContainerProvider(TileEntityChargingStation te) {
+    public MenuProvider getContainerProvider(ChargingStationBlockEntity te) {
         return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_JACKHAMMER.get());
     }
 

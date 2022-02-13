@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.core.ModUpgrades.BuiltinUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.*;
 import me.desht.pneumaticcraft.common.fluid.FluidPlastic;
@@ -29,6 +28,7 @@ import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
+import me.desht.pneumaticcraft.common.tubemodules.*;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
@@ -193,21 +193,21 @@ public class ModItems {
             ItemGunAmmoFreezing::new);
 
     public static final RegistryObject<ItemTubeModule> SAFETY_TUBE_MODULE = register("safety_tube_module",
-            () -> new ItemTubeModule(ModuleSafetyValve::new));
+            () -> new ItemTubeModule(SafetyValveModule::new));
     public static final RegistryObject<ItemTubeModule> PRESSURE_GAUGE_MODULE = register("pressure_gauge_module",
-            () -> new ItemTubeModule(ModulePressureGauge::new));
+            () -> new ItemTubeModule(PressureGaugeModule::new));
     public static final RegistryObject<ItemTubeModule> FLOW_DETECTOR_MODULE = register("flow_detector_module",
-            () -> new ItemTubeModule(ModuleFlowDetector::new));
+            () -> new ItemTubeModule(FlowDetectorModule::new));
     public static final RegistryObject<ItemTubeModule> AIR_GRATE_MODULE = register("air_grate_module",
-            () -> new ItemTubeModule(ModuleAirGrate::new));
+            () -> new ItemTubeModule(AirGrateModule::new));
     public static final RegistryObject<ItemTubeModule> REGULATOR_TUBE_MODULE = register("regulator_tube_module",
-            () -> new ItemTubeModule(ModuleRegulatorTube::new));
+            () -> new ItemTubeModule(RegulatorModule::new));
     public static final RegistryObject<ItemTubeModule> CHARGING_MODULE = register("charging_module",
-            () -> new ItemTubeModule(ModuleCharging::new));
+            () -> new ItemTubeModule(ChargingModule::new));
     public static final RegistryObject<ItemTubeModule> LOGISTICS_MODULE = register("logistics_module",
-            () -> new ItemTubeModule(ModuleLogistics::new));
+            () -> new ItemTubeModule(LogisticsModule::new));
     public static final RegistryObject<ItemTubeModule> REDSTONE_MODULE = register("redstone_module",
-            () -> new ItemTubeModule(ModuleRedstone::new));
+            () -> new ItemTubeModule(RedstoneModule::new));
 
     public static final RegistryObject<BucketItem> OIL_BUCKET = registerBucket("oil_bucket",
             ModFluids.OIL);

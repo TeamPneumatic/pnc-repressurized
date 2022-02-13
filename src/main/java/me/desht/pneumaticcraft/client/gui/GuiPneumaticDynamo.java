@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDynamoBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDynamoMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDynamo;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -38,7 +38,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<PneumaticDynamoMenu,TileEntityPneumaticDynamo> {
+public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<PneumaticDynamoMenu,PneumaticDynamoBlockEntity> {
     private WidgetAnimatedStat inputStat;
     private WidgetTemperature tempWidget;
 

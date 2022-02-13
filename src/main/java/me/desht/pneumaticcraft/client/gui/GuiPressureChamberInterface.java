@@ -24,9 +24,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -37,10 +37,10 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
+import static me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<PressureChamberInterfaceMenu,TileEntityPressureChamberInterface> {
+public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<PressureChamberInterfaceMenu,PressureChamberInterfaceBlockEntity> {
     private WidgetAnimatedStat statusStat;
     private WidgetButtonExtended exportAnyButton;
     private WidgetLabel exportTypeLabel;
@@ -87,7 +87,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Press
     public void containerTick() {
         super.containerTick();
 
-        boolean exporting = te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.EXPORT;
+        boolean exporting = te.interfaceMode == PressureChamberInterfaceBlockEntity.InterfaceDirection.EXPORT;
         exportAnyButton.setVisible(exporting);
         exportAnyButton.visible = exporting;
         exportTypeLabel.visible = exporting;
@@ -114,7 +114,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Press
     protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
-        if (te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.NONE) {
+        if (te.interfaceMode == PressureChamberInterfaceBlockEntity.InterfaceDirection.NONE) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressure_chamber_interface.not_formed"));
         } else if (!te.hasEnoughPressure()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressure_chamber_interface.not_enough_pressure"));

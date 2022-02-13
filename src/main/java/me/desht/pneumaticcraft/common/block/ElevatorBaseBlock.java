@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -55,7 +55,7 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Entity
     @Override
     public void onPlace(BlockState newState, Level world, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onPlace(newState, world, pos, oldState, isMoving);
-        TileEntityElevatorBase elevatorBase = getCoreTileEntity(world, pos);
+        ElevatorBaseBlockEntity elevatorBase = getCoreTileEntity(world, pos);
         if (elevatorBase != null) {
             elevatorBase.updateMaxElevatorHeight();
         }
@@ -85,8 +85,8 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Entity
         }
     }
 
-    public static TileEntityElevatorBase getCoreTileEntity(Level world, BlockPos pos) {
-        return (TileEntityElevatorBase) world.getBlockEntity(getCoreElevatorPos(world, pos));
+    public static ElevatorBaseBlockEntity getCoreTileEntity(Level world, BlockPos pos) {
+        return (ElevatorBaseBlockEntity) world.getBlockEntity(getCoreElevatorPos(world, pos));
     }
 
     @Override
@@ -94,9 +94,9 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Entity
         if (state.getBlock() != newState.getBlock()) {
             if (world.getBlockState(pos.relative(Direction.DOWN)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
                 BlockEntity te = world.getBlockEntity(pos.relative(Direction.DOWN));
-                ((TileEntityElevatorBase) te).moveUpgradesFromAbove();
+                ((ElevatorBaseBlockEntity) te).moveUpgradesFromAbove();
             }
-            TileEntityElevatorBase elevatorBase = getCoreTileEntity(world, pos);
+            ElevatorBaseBlockEntity elevatorBase = getCoreTileEntity(world, pos);
             if (elevatorBase != null) {
                 elevatorBase.updateMaxElevatorHeight();
             }
@@ -107,6 +107,6 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Entity
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityElevatorBase(pPos, pState);
+        return new ElevatorBaseBlockEntity(pPos, pState);
     }
 }

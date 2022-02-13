@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,13 +43,13 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityPressureChamberWall(pPos, pState);
+        return new PressureChamberWallBlockEntity(pPos, pState);
     }
 
     @Override
     public void setPlacedBy(Level par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (!par1World.isClientSide && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
+        if (!par1World.isClientSide && PressureChamberValveBlockEntity.checkIfProperlyFormed(par1World, pos)) {
             AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayer) par5EntityLiving);
         }
     }
@@ -58,8 +58,8 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (world.isClientSide) return InteractionResult.PASS;
         // forward activation to the pressure chamber valve, which will open the GUI
-        return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(te -> {
-            TileEntityPressureChamberValve valve = te.getCore();
+        return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(te -> {
+            PressureChamberValveBlockEntity valve = te.getCore();
             if (valve != null) {
                 NetworkHooks.openGui((ServerPlayer) player, valve, valve.getBlockPos());
                 return InteractionResult.CONSUME;
@@ -71,8 +71,8 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class)
-                    .ifPresent(TileEntityPressureChamberWall::onBlockBreak);
+            PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class)
+                    .ifPresent(PressureChamberWallBlockEntity::onBlockBreak);
         }
         super.onRemove(state, world, pos, newState, isMoving);
     }

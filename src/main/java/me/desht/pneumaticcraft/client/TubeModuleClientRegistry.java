@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
 import me.desht.pneumaticcraft.client.render.tube_module.TubeModuleRendererBase;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
@@ -30,24 +30,24 @@ import java.util.function.Function;
 public class TubeModuleClientRegistry {
     private static final Map<ResourceLocation, ModuleRendererFactory<?>> MODEL_FACTORY
             = new ConcurrentHashMap<>();
-    private static final Map<ResourceLocation, Function<? extends TubeModule, ? extends GuiTubeModule<?>>> GUI_FACTORY
+    private static final Map<ResourceLocation, Function<? extends AbstractTubeModule, ? extends GuiTubeModule<?>>> GUI_FACTORY
             = new ConcurrentHashMap<>();
 
     static void registerTubeModuleRenderer(ResourceLocation moduleType, ModuleRendererFactory<?> factory) {
         MODEL_FACTORY.put(moduleType, factory);
     }
 
-    static <T extends TubeModule> void registerTubeModuleGUI(ResourceLocation moduleType, Function<T, ? extends GuiTubeModule<T>> factory) {
+    static <T extends AbstractTubeModule> void registerTubeModuleGUI(ResourceLocation moduleType, Function<T, ? extends GuiTubeModule<T>> factory) {
         GUI_FACTORY.put(moduleType, factory);
     }
 
-    public static <T extends TubeModule> GuiTubeModule<T> createGUI(T module) {
+    public static <T extends AbstractTubeModule> GuiTubeModule<T> createGUI(T module) {
         //noinspection unchecked
         Function<T, ? extends GuiTubeModule<T>> factory = (Function<T, ? extends GuiTubeModule<T>>)GUI_FACTORY.get(module.getType());
         return (factory == null) ? null : factory.apply(module);
     }
 
-    public static <T extends TubeModule> TubeModuleRendererBase<T> createModel(T module, BlockEntityRendererProvider.Context ctx) {
+    public static <T extends AbstractTubeModule> TubeModuleRendererBase<T> createModel(T module, BlockEntityRendererProvider.Context ctx) {
         //noinspection unchecked
         return (TubeModuleRendererBase<T>) MODEL_FACTORY.get(module.getType()).apply(ctx);
     }

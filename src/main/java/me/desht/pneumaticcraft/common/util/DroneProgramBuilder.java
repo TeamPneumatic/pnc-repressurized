@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +65,7 @@ public class DroneProgramBuilder {
             curY += instruction.mainInstruction.getHeight() / 2;
             instruction.addToWidgets(allWidgets);
         }
-        TileEntityProgrammer.updatePuzzleConnections(allWidgets);
+        ProgrammerBlockEntity.updatePuzzleConnections(allWidgets);
         return allWidgets;
     }
 

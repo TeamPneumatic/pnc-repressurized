@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.CreativeCompressedIronBlockBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressedIronBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class CreativeCompressedIronBlockMenu extends AbstractPneumaticCraftMenu<TileEntityCreativeCompressedIronBlock> {
+public class CreativeCompressedIronBlockMenu extends AbstractPneumaticCraftMenu<CreativeCompressedIronBlockBlockEntity> {
     public CreativeCompressedIronBlockMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
     }

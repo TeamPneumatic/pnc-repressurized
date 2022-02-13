@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
@@ -21,9 +21,9 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
 
-import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
+import static me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
 
-public class RenderPressureChamberInterface extends AbstractTileModelRenderer<TileEntityPressureChamberInterface> {
+public class RenderPressureChamberInterface extends AbstractTileModelRenderer<PressureChamberInterfaceBlockEntity> {
 
     private final ModelPart inputLeft;
     private final ModelPart inputRight;
@@ -91,7 +91,7 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
 
 
     @Override
-    public void renderModel(TileEntityPressureChamberInterface te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(PressureChamberInterfaceBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE));
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
@@ -144,7 +144,7 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
     }
 
     @Override
-    protected void renderExtras(TileEntityPressureChamberInterface te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
+    protected void renderExtras(PressureChamberInterfaceBlockEntity te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
         if (!te.getStackInInterface().isEmpty()) {
             matrixStack.pushPose();
 

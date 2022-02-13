@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.PneumaticDoorBaseMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +31,7 @@ import net.minecraft.world.item.ItemStack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPneumaticDoorBase extends GuiPneumaticContainerBase<PneumaticDoorBaseMenu,TileEntityPneumaticDoorBase> {
+public class GuiPneumaticDoorBase extends GuiPneumaticContainerBase<PneumaticDoorBaseMenu,PneumaticDoorBaseBlockEntity> {
     WidgetAnimatedStat passRedstoneTab;
 
     public GuiPneumaticDoorBase(PneumaticDoorBaseMenu container, Inventory inv, Component displayString) {
@@ -57,7 +57,7 @@ public class GuiPneumaticDoorBase extends GuiPneumaticContainerBase<PneumaticDoo
         super.containerTick();
 
         int mode = te.getRedstoneController().getCurrentMode();
-        passRedstoneTab.visible = mode == TileEntityPneumaticDoorBase.RS_MODE_WOODEN_DOOR || mode == TileEntityPneumaticDoorBase.RS_MODE_IRON_DOOR;
+        passRedstoneTab.visible = mode == PneumaticDoorBaseBlockEntity.RS_MODE_WOODEN_DOOR || mode == PneumaticDoorBaseBlockEntity.RS_MODE_IRON_DOOR;
     }
 
     @Override

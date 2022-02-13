@@ -21,11 +21,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.LiquidCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiLiquidCompressor extends GuiPneumaticContainerBase<LiquidCompressorMenu,TileEntityLiquidCompressor> {
+public class GuiLiquidCompressor extends GuiPneumaticContainerBase<LiquidCompressorMenu,LiquidCompressorBlockEntity> {
     public GuiLiquidCompressor(LiquidCompressorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }

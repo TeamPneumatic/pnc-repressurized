@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.tube_module;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
+import me.desht.pneumaticcraft.common.tubemodules.RegulatorModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -14,7 +14,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderRegulatorModule extends TubeModuleRendererBase<ModuleRegulatorTube> {
+public class RenderRegulatorModule extends TubeModuleRendererBase<RegulatorModule> {
     private final ModelPart tubeConnector;
     private final ModelPart valve1;
     private final ModelPart valve2;
@@ -49,7 +49,7 @@ public class RenderRegulatorModule extends TubeModuleRendererBase<ModuleRegulato
 
 
     @Override
-    protected void renderDynamic(ModuleRegulatorTube module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void renderDynamic(RegulatorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         valve1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         valve2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);

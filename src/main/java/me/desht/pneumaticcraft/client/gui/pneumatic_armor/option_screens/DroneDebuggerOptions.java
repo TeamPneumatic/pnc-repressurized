@@ -29,12 +29,12 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -210,7 +210,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                                 int guiLeft, int guiTop, Rect2i bounds,
                                 int translatedX, int translatedY, int lastZoom) {
             super(parent, progWidgets, guiLeft, guiTop, bounds, translatedX, translatedY, lastZoom);
-            TileEntityProgrammer.updatePuzzleConnections(progWidgets);
+            ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
         }
 
         @Override

@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -40,12 +40,12 @@ public class PacketSyncDroneEntityProgWidgets extends PacketDroneDebugBase {
 
     PacketSyncDroneEntityProgWidgets(FriendlyByteBuf buffer) {
         super(buffer);
-        progWidgets = TileEntityProgrammer.getWidgetsFromNBT(buffer.readNbt());
+        progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(buffer.readNbt());
     }
 
     public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
-        buf.writeNbt(TileEntityProgrammer.putWidgetsToNBT(progWidgets, new CompoundTag()));
+        buf.writeNbt(ProgrammerBlockEntity.putWidgetsToNBT(progWidgets, new CompoundTag()));
     }
 
     @Override

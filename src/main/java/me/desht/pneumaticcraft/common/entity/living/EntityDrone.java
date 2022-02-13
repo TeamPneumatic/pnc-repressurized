@@ -36,6 +36,8 @@ import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
+import me.desht.pneumaticcraft.common.block.entity.PneumaticEnergyStorage;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.*;
@@ -52,8 +54,6 @@ import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
-import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
@@ -286,8 +286,8 @@ public class EntityDrone extends EntityDroneBase implements
             getAirHandler().addAir(air);
             ItemDrone droneItem = (ItemDrone) droneStack.getItem();
             if (droneItem.canProgram(droneStack)) {
-                progWidgets = TileEntityProgrammer.getWidgetsFromNBT(stackTag);
-                TileEntityProgrammer.updatePuzzleConnections(progWidgets);
+                progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(stackTag);
+                ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
             }
             setDroneColor(droneItem.getDroneColor(droneStack).getId());
             fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
@@ -309,7 +309,7 @@ public class EntityDrone extends EntityDroneBase implements
         CompoundTag tag = new CompoundTag();
         tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
         if (((ItemDrone) droneStack.getItem()).canProgram(droneStack)) {
-            TileEntityProgrammer.putWidgetsToNBT(progWidgets, tag);
+            ProgrammerBlockEntity.putWidgetsToNBT(progWidgets, tag);
         }
         tag.putInt("color", getDroneColor());
         if (!fluidTank.isEmpty()) {
@@ -950,7 +950,7 @@ public class EntityDrone extends EntityDroneBase implements
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
 
-        TileEntityProgrammer.putWidgetsToNBT(progWidgets, tag);
+        ProgrammerBlockEntity.putWidgetsToNBT(progWidgets, tag);
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
         tag.putBoolean("disabledByHacking", disabledByHacking);
@@ -996,8 +996,8 @@ public class EntityDrone extends EntityDroneBase implements
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        progWidgets = TileEntityProgrammer.getWidgetsFromNBT(tag);
-        TileEntityProgrammer.updatePuzzleConnections(progWidgets);
+        progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(tag);
+        ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");
         setGoingToOwner(tag.getBoolean("hackedByOwner"));

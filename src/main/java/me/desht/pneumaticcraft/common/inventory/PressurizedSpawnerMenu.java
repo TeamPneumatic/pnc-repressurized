@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.PressurizedSpawnerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class PressurizedSpawnerMenu extends AbstractPneumaticCraftMenu<TileEntityPressurizedSpawner> {
+public class PressurizedSpawnerMenu extends AbstractPneumaticCraftMenu<PressurizedSpawnerBlockEntity> {
     public PressurizedSpawnerMenu(int windowId, Inventory invPlayer, FriendlyByteBuf buffer) {
         this(windowId, invPlayer, getTilePos(buffer));
     }

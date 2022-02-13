@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -36,7 +37,6 @@ import me.desht.pneumaticcraft.common.minigun.MinigunPlayerTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketMinigunStop;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -286,7 +286,7 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     @Override
-    public MenuProvider getContainerProvider(TileEntityChargingStation te) {
+    public MenuProvider getContainerProvider(ChargingStationBlockEntity te) {
         return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_MINIGUN.get());
     }
 

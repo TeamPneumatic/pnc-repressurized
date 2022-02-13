@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
 import me.desht.pneumaticcraft.common.hacking.secstation.SimulationController;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotUntouchable;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SecurityStationHackingMenu extends AbstractPneumaticCraftMenu<TileEntitySecurityStation> {
+public class SecurityStationHackingMenu extends AbstractPneumaticCraftMenu<SecurityStationBlockEntity> {
     public static final int NODE_SPACING = 31;
 
     public SecurityStationHackingMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
@@ -47,8 +47,8 @@ public class SecurityStationHackingMenu extends AbstractPneumaticCraftMenu<TileE
         super(ModMenuTypes.SECURITY_STATION_HACKING.get(), windowId, playerInventory, pos);
 
         //add the network slots
-        for (int i = 0; i < TileEntitySecurityStation.INV_ROWS; i++) {
-            for (int j = 0; j < TileEntitySecurityStation.INV_COLS; j++) {
+        for (int i = 0; i < SecurityStationBlockEntity.INV_ROWS; i++) {
+            for (int j = 0; j < SecurityStationBlockEntity.INV_COLS; j++) {
                 SlotUntouchable slot = (SlotUntouchable) addSlot(new SlotUntouchable(te.getPrimaryInventory(), j + i * 5, 8 + j * NODE_SPACING, 22 + i * NODE_SPACING));
                 slot.setEnabled(slot.hasItem());
             }
@@ -69,7 +69,7 @@ public class SecurityStationHackingMenu extends AbstractPneumaticCraftMenu<TileE
 
         boolean justTesting = buffer.readBoolean();
 
-        return PneumaticCraftUtils.getTileEntityAt(player.level, tilePos, TileEntitySecurityStation.class).map(teSS -> {
+        return PneumaticCraftUtils.getTileEntityAt(player.level, tilePos, SecurityStationBlockEntity.class).map(teSS -> {
             ISimulationController controller = new SimulationController(teSS, player, playerSimulation, aiSimulation, justTesting);
             nodes.forEach(node -> {
                 controller.getSimulation(HackingSide.PLAYER).addNode(node.getLeft(), node.getRight());

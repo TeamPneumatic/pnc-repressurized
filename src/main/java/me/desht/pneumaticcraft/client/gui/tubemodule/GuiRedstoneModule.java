@@ -22,12 +22,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.Operation;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
+import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
+import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.EnumRedstoneDirection;
+import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.Operation;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -41,7 +41,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.dyeColorDesc;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
+public class GuiRedstoneModule extends GuiTubeModule<RedstoneModule> {
     private WidgetComboBox comboBox;
     private WidgetLabel constLabel;
     private WidgetTextFieldNumber constTextField;
@@ -55,7 +55,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     private boolean output;
     private final List<FormattedCharSequence> lowerText = new ArrayList<>();
 
-    public GuiRedstoneModule(ModuleRedstone module) {
+    public GuiRedstoneModule(RedstoneModule module) {
         super(module);
 
         ySize = module.getRedstoneDirection() == EnumRedstoneDirection.OUTPUT ? 202 : 57;
@@ -226,7 +226,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         minecraft.player.playSound(ModSounds.INTERFACE_DOOR.get(), 0.7f, 2f);
     }
 
-    private String getDirText(ModuleRedstone module) {
+    private String getDirText(RedstoneModule module) {
         return module.getRedstoneDirection() == EnumRedstoneDirection.INPUT ?
                 ChatFormatting.DARK_RED + Symbols.TRIANGLE_LEFT :
                 ChatFormatting.RED + Symbols.TRIANGLE_RIGHT;

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -88,7 +88,7 @@ public class UniversalSensorBlock extends AbstractPneumaticCraftBlock implements
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityUniversalSensor(pPos, pState);
+        return new UniversalSensorBlockEntity(pPos, pState);
     }
 
     @Override

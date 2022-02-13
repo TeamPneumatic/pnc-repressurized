@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDynamoBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDynamo;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -98,6 +98,6 @@ public class PneumaticDynamoBlock extends AbstractPneumaticCraftBlock implements
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityPneumaticDynamo(pPos, pState);
+        return new PneumaticDynamoBlockEntity(pPos, pState);
     }
 }

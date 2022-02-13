@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTagWorkbench;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class TagWorkbenchMenu extends AbstractPneumaticCraftMenu<TileEntityTagWorkbench> {
+public class TagWorkbenchMenu extends AbstractPneumaticCraftMenu<TagWorkbenchBlockEntity> {
     public TagWorkbenchMenu(int windowId, Inventory inv, BlockPos pos) {
         super(ModMenuTypes.TAG_MATCHER.get(), windowId, inv, pos);
 

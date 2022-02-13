@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
-import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
+import me.desht.pneumaticcraft.common.block.entity.ILuaMethodProvider;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;

@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ElevatorFrameBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
@@ -81,7 +81,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
         super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
 
-        getElevatorBase(pLevel, pPos).ifPresent(TileEntityElevatorBase::updateMaxElevatorHeight);
+        getElevatorBase(pLevel, pPos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
     }
 
     @Override
@@ -193,12 +193,12 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
                         int x = pos.getX();
                         int z = pos.getZ();
                         AABB box = entity.getBoundingBox();
-                        if (box.minX < x && !(teBase.getCachedNeighbor(Direction.WEST) instanceof TileEntityElevatorBase)
-                                || (box.maxX > x + 1 && !(teBase.getCachedNeighbor(Direction.EAST) instanceof TileEntityElevatorBase))) {
+                        if (box.minX < x && !(teBase.getCachedNeighbor(Direction.WEST) instanceof ElevatorBaseBlockEntity)
+                                || (box.maxX > x + 1 && !(teBase.getCachedNeighbor(Direction.EAST) instanceof ElevatorBaseBlockEntity))) {
                             eX = x + 0.5;
                         }
-                        if (box.minZ < z && !(teBase.getCachedNeighbor(Direction.NORTH) instanceof TileEntityElevatorBase)
-                                || box.maxZ > z + 1 && !(teBase.getCachedNeighbor(Direction.SOUTH) instanceof TileEntityElevatorBase)) {
+                        if (box.minZ < z && !(teBase.getCachedNeighbor(Direction.NORTH) instanceof ElevatorBaseBlockEntity)
+                                || box.maxZ > z + 1 && !(teBase.getCachedNeighbor(Direction.SOUTH) instanceof ElevatorBaseBlockEntity)) {
                             eZ = z + 0.5;
                         }
                     }
@@ -214,11 +214,11 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
         });
     }
 
-    static Optional<TileEntityElevatorBase> getElevatorBase(BlockGetter world, BlockPos pos) {
+    static Optional<ElevatorBaseBlockEntity> getElevatorBase(BlockGetter world, BlockPos pos) {
         // caching the elevator base in the frame TE - this should be safe from a caching point of view,
         // since if the base (or any frame below us) is broken, all frames above it - including us - will also break
         return world.getBlockEntity(pos, ModBlockEntities.ELEVATOR_FRAME.get())
-                .map(TileEntityElevatorFrame::getElevatorBase);
+                .map(ElevatorFrameBlockEntity::getElevatorBase);
     }
 
     private double getElevatorBlockHeight(BlockGetter world, BlockPos pos) {
@@ -229,7 +229,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        getElevatorBase(world, pos).ifPresent(TileEntityElevatorBase::updateMaxElevatorHeight);
+        getElevatorBase(world, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
 
         super.onRemove(state, world, pos, newState, isMoving);
     }
@@ -277,7 +277,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityElevatorFrame(pPos, pState);
+        return new ElevatorFrameBlockEntity(pPos, pState);
     }
 
     private enum Corner {

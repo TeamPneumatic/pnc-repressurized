@@ -17,9 +17,11 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
+
 /**
  * Represents a widget with a string tag, which is sent to the server in a PacketUpdateGui when the widget is clicked.
- * The open container must implement {@link me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive} to
+ * The open container must implement {@link IGUIButtonSensitive} to
  * process the received packet.
  */
 @FunctionalInterface

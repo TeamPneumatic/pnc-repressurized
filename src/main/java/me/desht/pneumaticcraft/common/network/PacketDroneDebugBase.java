@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
@@ -39,11 +39,11 @@ public abstract class PacketDroneDebugBase {
         if (drone instanceof EntityDrone) {
             entityId = ((EntityDrone) drone).getId();
             pos = null;
-        } else if (drone instanceof TileEntityProgrammableController) {
-            pos = ((TileEntityProgrammableController) drone).getBlockPos();
+        } else if (drone instanceof ProgrammableControllerBlockEntity) {
+            pos = ((ProgrammableControllerBlockEntity) drone).getBlockPos();
             entityId = -1;
         } else {
-            throw new IllegalArgumentException("drone must be an EntityDrone or TileEntityProgrammableController!");
+            throw new IllegalArgumentException("drone must be an EntityDrone or ProgrammableControllerBlockEntity!");
         }
     }
 
@@ -83,7 +83,7 @@ public abstract class PacketDroneDebugBase {
                 }
             } else if (pos != null) {
                 BlockEntity te = world.getBlockEntity(pos);
-                if (te instanceof TileEntityProgrammableController) {
+                if (te instanceof ProgrammableControllerBlockEntity) {
                     handle(player, (IDroneBase) te);
                 }
             } else {

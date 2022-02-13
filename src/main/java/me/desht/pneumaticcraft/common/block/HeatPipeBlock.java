@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.HeatPipeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatPipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -118,6 +118,6 @@ public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWate
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityHeatPipe(pPos, pState);
+        return new HeatPipeBlockEntity(pPos, pState);
     }
 }

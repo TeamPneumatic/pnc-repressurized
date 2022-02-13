@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.common.block.entity.ReinforcedChestBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ReinforcedChestMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class GuiReinforcedChest extends GuiPneumaticContainerBase<ReinforcedChestMenu, TileEntityReinforcedChest> {
+public class GuiReinforcedChest extends GuiPneumaticContainerBase<ReinforcedChestMenu, ReinforcedChestBlockEntity> {
     public GuiReinforcedChest(ReinforcedChestMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
 

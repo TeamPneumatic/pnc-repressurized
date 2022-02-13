@@ -24,15 +24,15 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.IRedstoneControl;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
-import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
-import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -78,8 +78,8 @@ public class TOPInfoProvider {
         if (te instanceof IRedstoneControl) {
             handleRedstoneMode(mode, probeInfo, (IRedstoneControl<?>) te);
         }
-        if (te instanceof TileEntityPressureTube) {
-            handlePressureTube(mode, probeInfo, (TileEntityPressureTube) te, data.getSideHit(), player);
+        if (te instanceof PressureTubeBlockEntity) {
+            handlePressureTube(mode, probeInfo, (PressureTubeBlockEntity) te, data.getSideHit(), player);
         }
         if (te instanceof CamouflageableBlockEntity) {
             handleCamo(mode, probeInfo, ((CamouflageableBlockEntity) te).getCamouflage());
@@ -133,8 +133,8 @@ public class TOPInfoProvider {
         probeInfo.text(redstoneControl.getRedstoneController().getDescription());
     }
 
-    private static void handlePressureTube(ProbeMode mode, IProbeInfo probeInfo, TileEntityPressureTube te, Direction face, Player player) {
-        TubeModule module = PressureTubeBlock.getFocusedModule(te.nonNullLevel(), te.getBlockPos(), player);
+    private static void handlePressureTube(ProbeMode mode, IProbeInfo probeInfo, PressureTubeBlockEntity te, Direction face, Player player) {
+        AbstractTubeModule module = PressureTubeBlock.getFocusedModule(te.nonNullLevel(), te.getBlockPos(), player);
         if (module != null) {
             List<Component> currenttip = new ArrayList<>();
             module.addInfo(currenttip);

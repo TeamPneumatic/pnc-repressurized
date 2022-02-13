@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -43,7 +43,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiLiquidHopper extends GuiPneumaticContainerBase<LiquidHopperMenu,TileEntityLiquidHopper> {
+public class GuiLiquidHopper extends GuiPneumaticContainerBase<LiquidHopperMenu,LiquidHopperBlockEntity> {
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
 

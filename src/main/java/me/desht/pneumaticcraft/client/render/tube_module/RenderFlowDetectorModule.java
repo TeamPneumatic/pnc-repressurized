@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.tube_module;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleFlowDetector;
+import me.desht.pneumaticcraft.common.tubemodules.FlowDetectorModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class RenderFlowDetectorModule extends TubeModuleRendererBase<ModuleFlowDetector> {
+public class RenderFlowDetectorModule extends TubeModuleRendererBase<FlowDetectorModule> {
     private static final int TUBE_PARTS = 4;
 
     private final ModelPart face;
@@ -39,7 +39,7 @@ public class RenderFlowDetectorModule extends TubeModuleRendererBase<ModuleFlowD
     }
 
     @Override
-    protected void renderDynamic(ModuleFlowDetector module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void renderDynamic(FlowDetectorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         float rot = module != null ? Mth.lerp(partialTicks, module.oldRotation, module.rotation) : 0f;
         for (int i = 0; i < TUBE_PARTS; i++) {
             face.zRot = (float)i / TUBE_PARTS * 2 * (float)Math.PI + rot;

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
+import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

@@ -18,19 +18,19 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTagWorkbench;
+import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class RenderTagWorkbench implements BlockEntityRenderer<TileEntityTagWorkbench> {
+public class RenderTagWorkbench implements BlockEntityRenderer<TagWorkbenchBlockEntity> {
     public RenderTagWorkbench(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityTagWorkbench te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(TagWorkbenchBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (!te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStackIn.pushPose();

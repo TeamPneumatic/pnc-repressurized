@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;

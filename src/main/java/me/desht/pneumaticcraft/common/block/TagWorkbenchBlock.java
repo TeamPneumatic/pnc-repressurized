@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTagWorkbench;
+import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,6 +26,6 @@ import org.jetbrains.annotations.Nullable;
 public class TagWorkbenchBlock extends DisplayTableBlock {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityTagWorkbench(pPos, pState);
+        return new TagWorkbenchBlockEntity(pPos, pState);
     }
 }

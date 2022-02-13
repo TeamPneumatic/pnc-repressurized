@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.block.entity.ILuaMethodProvider;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
-import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.AttachCapabilitiesEvent;

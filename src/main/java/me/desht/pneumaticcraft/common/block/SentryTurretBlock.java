@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -76,9 +76,9 @@ public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements En
     @Override
     public void addExtraInformation(ItemStack stack, BlockGetter world, List<Component> curInfo, TooltipFlag flag) {
         CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        if (tag != null && tag.contains(TileEntitySentryTurret.NBT_ENTITY_FILTER, Tag.TAG_STRING)) {
+        if (tag != null && tag.contains(SentryTurretBlockEntity.NBT_ENTITY_FILTER, Tag.TAG_STRING)) {
             curInfo.add(new TranslatableComponent("pneumaticcraft.gui.entityFilter")
-                    .append(": " + tag.getString(TileEntitySentryTurret.NBT_ENTITY_FILTER)).withStyle(ChatFormatting.YELLOW));
+                    .append(": " + tag.getString(SentryTurretBlockEntity.NBT_ENTITY_FILTER)).withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -93,6 +93,6 @@ public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements En
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntitySentryTurret(pPos, pState);
+        return new SentryTurretBlockEntity(pPos, pState);
     }
 }

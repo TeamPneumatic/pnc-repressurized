@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.common.block.entity.VortexTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVortexTube;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
@@ -110,6 +110,6 @@ public class VortexTubeBlock extends AbstractPneumaticCraftBlock implements Colo
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityVortexTube(pPos, pState);
+        return new VortexTubeBlockEntity(pPos, pState);
     }
 }

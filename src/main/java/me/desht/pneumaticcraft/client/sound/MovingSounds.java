@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -72,7 +72,7 @@ public class MovingSounds {
             case ELEVATOR:
                 if (focus instanceof BlockPos) {
                     BlockEntity te = world.getBlockEntity((BlockPos) focus);
-                    return te instanceof TileEntityElevatorBase ? new MovingSoundElevator((TileEntityElevatorBase) te) : null;
+                    return te instanceof ElevatorBaseBlockEntity ? new MovingSoundElevator((ElevatorBaseBlockEntity) te) : null;
                 }
                 break;
             case AIR_LEAK:

@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.FluxCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.FluxCompressorMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityFluxCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -39,7 +39,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiFluxCompressor extends GuiPneumaticContainerBase<FluxCompressorMenu,TileEntityFluxCompressor> {
+public class GuiFluxCompressor extends GuiPneumaticContainerBase<FluxCompressorMenu,FluxCompressorBlockEntity> {
     private WidgetAnimatedStat inputStat;
     private WidgetTemperature tempWidget;
 

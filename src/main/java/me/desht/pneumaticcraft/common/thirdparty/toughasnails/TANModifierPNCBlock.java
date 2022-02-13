@@ -65,7 +65,7 @@ public class TANModifierPNCBlock /*implements ITemperatureModifier*/ {
 //                    if (te instanceof IHeatExchanger) {
 //                        Direction side;
 //                        float div3 = 1f;
-//                        if (te instanceof TileEntityHeatSink) {
+//                        if (te instanceof HeatSinkBlockEntity) {
 //                            side = null;  // heat sinks radiate heat off in all directions
 //                            div3 = 0.1f;  // heat sinks transfer heat very quickly, by design
 //                        } else {
@@ -83,8 +83,8 @@ public class TANModifierPNCBlock /*implements ITemperatureModifier*/ {
 //                            }
 //                        }
 //                    }
-//                    if (te instanceof TileEntityAirCompressor && ((TileEntityAirCompressor) te).isActive()
-//                            || te instanceof TileEntityLiquidCompressor && ((TileEntityLiquidCompressor) te).isProducing) {
+//                    if (te instanceof AirCompressorBlockEntity && ((AirCompressorBlockEntity) te).isActive()
+//                            || te instanceof LiquidCompressorBlockEntity && ((LiquidCompressorBlockEntity) te).isProducing) {
 //                        blockTemperatureModifier += 3;
 //                    }
 //                }

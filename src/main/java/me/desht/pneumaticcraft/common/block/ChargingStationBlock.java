@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -126,7 +126,7 @@ public class ChargingStationBlock extends AbstractCamouflageBlock implements Ent
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityChargingStation(pPos, pState);
+        return new ChargingStationBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockChargingStation extends BlockItem {

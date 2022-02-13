@@ -6,7 +6,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
+import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.SkullModel;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -22,7 +22,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Map;
 
-public class RenderAerialInterface implements BlockEntityRenderer<TileEntityAerialInterface> {
+public class RenderAerialInterface implements BlockEntityRenderer<AerialInterfaceBlockEntity> {
     private final SkullModel headModel;
 
     private static final double EXTRUSION = 0.05;  // how far the head sticks out of the main block
@@ -32,7 +32,7 @@ public class RenderAerialInterface implements BlockEntityRenderer<TileEntityAeri
     }
 
     @Override
-    public void render(TileEntityAerialInterface tileEntityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(AerialInterfaceBlockEntity tileEntityIn, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         // code adapted from SkullTileEntityRenderer
         if (tileEntityIn.gameProfileClient != null) {
             GameProfile gameProfile = tileEntityIn.gameProfileClient;

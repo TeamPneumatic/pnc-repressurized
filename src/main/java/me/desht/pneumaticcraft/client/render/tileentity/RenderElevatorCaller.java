@@ -22,13 +22,13 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
+import me.desht.pneumaticcraft.common.block.entity.ElevatorCallerBlockEntity;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderElevatorCaller implements BlockEntityRenderer<TileEntityElevatorCaller> {
+public class RenderElevatorCaller implements BlockEntityRenderer<ElevatorCallerBlockEntity> {
 
     private static final float Z_OFFSET = 0.499F;
 
@@ -39,7 +39,7 @@ public class RenderElevatorCaller implements BlockEntityRenderer<TileEntityEleva
     }
 
     @Override
-    public void render(TileEntityElevatorCaller te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(ElevatorCallerBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 1.5, 0.5);
         matrixStackIn.scale(1f, -1f, -1f);
@@ -48,7 +48,7 @@ public class RenderElevatorCaller implements BlockEntityRenderer<TileEntityEleva
 
         Matrix4f posMat = matrixStackIn.last().pose();
 
-        for (TileEntityElevatorCaller.ElevatorButton button : te.getFloors()) {
+        for (ElevatorCallerBlockEntity.ElevatorButton button : te.getFloors()) {
             // button background
             VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.UNTEXTURED_QUAD);
             builder.vertex(posMat, button.posX + 0.5F, button.posY + 0.5F, Z_OFFSET)

@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.XPFluidManager;
+import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity.FeedMode;
 import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface.FeedMode;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -51,7 +51,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAerialInterface extends GuiPneumaticContainerBase<AerialInterfaceMenu,TileEntityAerialInterface> {
+public class GuiAerialInterface extends GuiPneumaticContainerBase<AerialInterfaceMenu,AerialInterfaceBlockEntity> {
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[FeedMode.values().length];
     private WidgetButtonExtended xpButton;
     private WidgetAnimatedStat feedModeTab;

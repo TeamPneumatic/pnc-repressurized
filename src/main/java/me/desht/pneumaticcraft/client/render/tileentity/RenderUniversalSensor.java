@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
+import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderUniversalSensor extends AbstractTileModelRenderer<TileEntityUniversalSensor> {
+public class RenderUniversalSensor extends AbstractTileModelRenderer<UniversalSensorBlockEntity> {
     private final ModelPart part1;
     private final ModelPart part2;
     private final ModelPart part3;
@@ -170,7 +170,7 @@ public class RenderUniversalSensor extends AbstractTileModelRenderer<TileEntityU
     }
 
     @Override
-    public void renderModel(TileEntityUniversalSensor te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(UniversalSensorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_UNIVERSAL_SENSOR));
 
         float rotation = Mth.lerp(partialTicks, te.oldDishRotation, te.dishRotation);

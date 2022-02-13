@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.inventory.slot.IPhantomSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotPlayer;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotUpgrade;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

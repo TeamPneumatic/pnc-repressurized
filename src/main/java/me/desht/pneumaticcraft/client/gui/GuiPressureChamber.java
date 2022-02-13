@@ -21,9 +21,9 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -36,7 +36,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPressureChamber extends GuiPneumaticContainerBase<PressureChamberValveMenu,TileEntityPressureChamberValve> {
+public class GuiPressureChamber extends GuiPneumaticContainerBase<PressureChamberValveMenu,PressureChamberValveBlockEntity> {
     public GuiPressureChamber(PressureChamberValveMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }

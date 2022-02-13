@@ -23,11 +23,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ElevatorMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -44,7 +44,7 @@ import static me.desht.pneumaticcraft.api.misc.Symbols.ARROW_LEFT;
 import static me.desht.pneumaticcraft.api.misc.Symbols.ARROW_RIGHT;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiElevator extends GuiPneumaticContainerBase<ElevatorMenu, TileEntityElevatorBase> {
+public class GuiElevator extends GuiPneumaticContainerBase<ElevatorMenu, ElevatorBaseBlockEntity> {
     private WidgetAnimatedStat statusStat;
     private WidgetTextField floorNameField;
     private WidgetLabel noFloorsLabel, floorNumberLabel;

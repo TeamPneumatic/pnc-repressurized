@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -37,7 +37,7 @@ import java.util.List;
 public class DroneGoToChargingStation extends Goal {
     private final EntityDrone drone;
     public boolean isExecuting;
-    private TileEntityChargingStation curCharger;
+    private ChargingStationBlockEntity curCharger;
     private int chargingTime;
 
     public DroneGoToChargingStation(EntityDrone drone) {
@@ -50,12 +50,12 @@ public class DroneGoToChargingStation extends Goal {
      */
     @Override
     public boolean canUse() {
-        List<TileEntityChargingStation> validChargingStations = new ArrayList<>();
+        List<ChargingStationBlockEntity> validChargingStations = new ArrayList<>();
         drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
             if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE) {
                 int maxDistSq = ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get()
                         * ConfigHelper.common().drones.maxDroneChargingStationSearchRange.get();
-                for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
+                for (ChargingStationBlockEntity station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
                     if (station.getLevel() == drone.level && drone.distanceToSqr(Vec3.atCenterOf(station.getBlockPos())) <= maxDistSq) {
                         if (DroneClaimManager.getInstance(drone.level).isClaimed(station.getBlockPos())) {
                             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", station.getBlockPos());
@@ -73,8 +73,8 @@ public class DroneGoToChargingStation extends Goal {
 
         validChargingStations.sort(Comparator.comparingDouble(te -> PneumaticCraftUtils.distBetweenSq(te.getBlockPos(), drone.getX(), drone.getY(), drone.getZ())));
 
-        for (TileEntityChargingStation station : validChargingStations) {
-            if (TileEntitySecurityStation.isProtectedFromPlayer(drone.getFakePlayer(), station.getBlockPos(), false)) {
+        for (ChargingStationBlockEntity station : validChargingStations) {
+            if (SecurityStationBlockEntity.isProtectedFromPlayer(drone.getFakePlayer(), station.getBlockPos(), false)) {
                 drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.protected", station.getBlockPos());
             } else if (drone.getPathNavigator().moveToXYZ(station.getBlockPos().getX() + 0.5, station.getBlockPos().getY() + 1, station.getBlockPos().getZ() + 0.5)
                     || drone.getPathNavigator().isGoingToTeleport()) {

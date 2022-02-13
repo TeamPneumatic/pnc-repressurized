@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.SpawnerExtractorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -111,7 +111,7 @@ public class SpawnerExtractorBlock extends AbstractPneumaticCraftBlock implement
         super.setPlacedBy(world, pos, state, entity, stack);
 
         world.getBlockEntity(pos, ModBlockEntities.SPAWNER_EXTRACTOR.get())
-                .ifPresent(TileEntitySpawnerExtractor::updateMode);
+                .ifPresent(SpawnerExtractorBlockEntity::updateMode);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class SpawnerExtractorBlock extends AbstractPneumaticCraftBlock implement
             return Blocks.AIR.defaultBlockState();
         } else {
             worldIn.getBlockEntity(currentPos, ModBlockEntities.SPAWNER_EXTRACTOR.get())
-                    .ifPresent(TileEntitySpawnerExtractor::updateMode);
+                    .ifPresent(SpawnerExtractorBlockEntity::updateMode);
             return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
         }
     }
@@ -128,6 +128,6 @@ public class SpawnerExtractorBlock extends AbstractPneumaticCraftBlock implement
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntitySpawnerExtractor(pPos, pState);
+        return new SpawnerExtractorBlockEntity(pPos, pState);
     }
 }

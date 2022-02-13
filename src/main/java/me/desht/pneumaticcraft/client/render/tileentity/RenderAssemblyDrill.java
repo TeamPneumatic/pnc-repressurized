@@ -21,7 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyDrill;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyDrillBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -31,7 +31,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderAssemblyDrill extends AbstractTileModelRenderer<TileEntityAssemblyDrill> {
+public class RenderAssemblyDrill extends AbstractTileModelRenderer<AssemblyDrillBlockEntity> {
     private static final String BASETURN = "baseTurn";
     private static final String BASETURN2 = "baseTurn2";
     private static final String ARMBASE = "armBase";
@@ -101,7 +101,7 @@ public class RenderAssemblyDrill extends AbstractTileModelRenderer<TileEntityAss
     }
 
     @Override
-    void renderModel(TileEntityAssemblyDrill te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(AssemblyDrillBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 4; i++) {
             angles[i] = Mth.lerp(partialTicks, te.oldAngles[i], te.angles[i]);

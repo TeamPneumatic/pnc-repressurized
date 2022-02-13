@@ -22,11 +22,11 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.OmnidirectionalHopperBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.OmnidirectionalHopperMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -43,7 +43,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<OmnidirectionalHopperMenu,TileEntityOmnidirectionalHopper> {
+public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<OmnidirectionalHopperMenu,OmnidirectionalHopperBlockEntity> {
     private static final Component ARROW_NO_RR = new TextComponent(Symbols.ARROW_RIGHT);
     private static final Component ARROW_RR = new TextComponent(Symbols.CIRCULAR_ARROW).withStyle(ChatFormatting.GREEN);
 

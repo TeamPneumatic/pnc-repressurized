@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
+import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class RenderLiquidHopper extends AbstractFluidTER<TileEntityLiquidHopper> {
+public class RenderLiquidHopper extends AbstractFluidTER<LiquidHopperBlockEntity> {
     private static final AABB[] BOUNDS = new AABB[6];
     static {
         BOUNDS[Direction.DOWN.get3DDataValue()] = new AABB(0.51 / 16f, 0.51 / 16f, 0.51 / 16f, 15.49 / 16f, 4.99 / 16f, 15.49 / 16f);
@@ -45,7 +45,7 @@ public class RenderLiquidHopper extends AbstractFluidTER<TileEntityLiquidHopper>
     }
 
     @Override
-    Collection<TankRenderInfo> getTanksToRender(TileEntityLiquidHopper te) {
+    Collection<TankRenderInfo> getTanksToRender(LiquidHopperBlockEntity te) {
         return ImmutableList.of(new TankRenderInfo(te.getTank(), BOUNDS[te.getInputDirection().get3DDataValue()]));
     }
 

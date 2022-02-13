@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
-import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;

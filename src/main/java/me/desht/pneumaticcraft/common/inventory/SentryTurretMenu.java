@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class SentryTurretMenu extends AbstractPneumaticCraftMenu<TileEntitySentryTurret> {
+public class SentryTurretMenu extends AbstractPneumaticCraftMenu<SentryTurretBlockEntity> {
 
     public SentryTurretMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));

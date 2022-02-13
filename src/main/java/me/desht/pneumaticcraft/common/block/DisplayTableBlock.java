@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.DisplayTableBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityDisplayTable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -155,9 +155,9 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements En
         ItemStack heldStack = player.getItemInHand(hand);
         if (player.isShiftKeyDown() || te instanceof MenuProvider || ModdedWrenchUtils.getInstance().isWrench(heldStack)) {
             return super.use(state, world, pos, player, hand, brtr);
-        } else if (te instanceof TileEntityDisplayTable) {
+        } else if (te instanceof DisplayTableBlockEntity) {
             if (!world.isClientSide) {
-                TileEntityDisplayTable teDT = (TileEntityDisplayTable) te;
+                DisplayTableBlockEntity teDT = (DisplayTableBlockEntity) te;
                 if (teDT.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
                     // try to put the player's held item onto the table
                     ItemStack excess = teDT.getPrimaryInventory().insertItem(0, player.getItemInHand(hand), false);
@@ -176,7 +176,7 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements En
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityDisplayTable(pPos, pState);
+        return new DisplayTableBlockEntity(pPos, pState);
     }
 
     private enum Leg {

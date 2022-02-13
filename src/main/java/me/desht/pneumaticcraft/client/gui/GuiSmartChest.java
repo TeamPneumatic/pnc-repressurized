@@ -27,15 +27,15 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.RangeManager;
+import me.desht.pneumaticcraft.common.block.entity.SideConfigurator.RelativeFace;
+import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity.PushPullMode;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.SmartChestMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
-import me.desht.pneumaticcraft.common.tileentity.RangeManager;
-import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.PushPullMode;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
@@ -61,11 +61,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity.CHEST_SIZE;
 import static me.desht.pneumaticcraft.common.inventory.SmartChestMenu.N_COLS;
-import static me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.CHEST_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiSmartChest extends GuiPneumaticContainerBase<SmartChestMenu, TileEntitySmartChest> {
+public class GuiSmartChest extends GuiPneumaticContainerBase<SmartChestMenu, SmartChestBlockEntity> {
     private List<Pair<Integer, ItemStack>> filter;
     private IGuiAnimatedStat statusStat;
     private WidgetButtonExtended showRangeButton;

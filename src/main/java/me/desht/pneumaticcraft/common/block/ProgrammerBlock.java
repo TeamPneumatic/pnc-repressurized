@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
@@ -77,7 +77,7 @@ public class ProgrammerBlock extends AbstractPneumaticCraftBlock implements Enti
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (!world.isClientSide && !player.isShiftKeyDown()) {
             // FIXME this should be sync'd via the container as part of the openGui() call
-            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityProgrammer.class)
+            PneumaticCraftUtils.getTileEntityAt(world, pos, ProgrammerBlockEntity.class)
                     .ifPresent(te -> NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(te), (ServerPlayer) player));
         }
         return super.use(state, world, pos, player, hand, brtr);
@@ -91,6 +91,6 @@ public class ProgrammerBlock extends AbstractPneumaticCraftBlock implements Enti
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityProgrammer(pPos, pState);
+        return new ProgrammerBlockEntity(pPos, pState);
     }
 }

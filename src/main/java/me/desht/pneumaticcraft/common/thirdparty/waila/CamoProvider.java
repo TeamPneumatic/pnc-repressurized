@@ -21,8 +21,8 @@ import mcp.mobius.waila.api.BlockAccessor;
 import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
+import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
-import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;

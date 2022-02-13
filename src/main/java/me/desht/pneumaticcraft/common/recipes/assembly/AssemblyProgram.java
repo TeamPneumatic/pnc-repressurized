@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -84,7 +84,7 @@ public abstract class AssemblyProgram {
      *
      * @return true if the controller should use air and display 'running'. Return false to display 'standby'.
      */
-    public abstract boolean executeStep(TileEntityAssemblyController.AssemblySystem system);
+    public abstract boolean executeStep(AssemblyControllerBlockEntity.AssemblySystem system);
 
     public abstract void writeToNBT(CompoundTag tag);
 

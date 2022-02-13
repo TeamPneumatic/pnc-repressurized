@@ -21,9 +21,9 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.ElectrostaticCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ElectrostaticCompressorMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -37,10 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor.MAX_ELECTROSTATIC_GRID_SIZE;
+import static me.desht.pneumaticcraft.common.block.entity.ElectrostaticCompressorBlockEntity.MAX_ELECTROSTATIC_GRID_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<ElectrostaticCompressorMenu,TileEntityElectrostaticCompressor> {
+public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<ElectrostaticCompressorMenu,ElectrostaticCompressorBlockEntity> {
     private int connectedCompressors;
     private WidgetAnimatedStat electrostaticStat;
 
@@ -77,7 +77,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Electr
         if (firstUpdate || ClientUtils.getClientLevel().getGameTime() % 20 == 0) {
             Set<BlockPos> positions = new ObjectOpenHashSet<>(MAX_ELECTROSTATIC_GRID_SIZE);
             positions.add(te.getBlockPos());
-            Set<TileEntityElectrostaticCompressor> compressors = new ObjectOpenHashSet<>(20);
+            Set<ElectrostaticCompressorBlockEntity> compressors = new ObjectOpenHashSet<>(20);
             te.getElectrostaticGrid(positions, compressors, te.getBlockPos());
             connectedCompressors = compressors.size();
         }

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
+import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 
-public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone> {
+public class RenderRedstoneModule extends TubeModuleRendererBase<RedstoneModule> {
     private final ModelPart redstoneConnector;
     private final ModelPart faceplate;
     private final ModelPart tubeConnector1;
@@ -106,7 +106,7 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone>
 
 
     @Override
-    protected void renderDynamic(ModuleRedstone module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void renderDynamic(RedstoneModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         tubeConnector3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
@@ -117,7 +117,7 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone>
 
         float[] cols = { 1f, 1f, 1f, 1f };
         if (!module.isFake()) {
-            int l = module.getRedstoneDirection() == ModuleRedstone.EnumRedstoneDirection.INPUT ? module.getInputLevel() : module.getRedstoneLevel();
+            int l = module.getRedstoneDirection() == RedstoneModule.EnumRedstoneDirection.INPUT ? module.getInputLevel() : module.getRedstoneLevel();
             cols = RenderUtils.decomposeColorF(0xFF300000 | (l * 13 << 16));
             matrixStack.pushPose();
             matrixStack.translate(0, 0, 5.2 / 16);

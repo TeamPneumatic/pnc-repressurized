@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberGlassBlockEntity;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -38,13 +38,13 @@ public class PressureChamberGlassBlock extends AbstractPressureWallBlock impleme
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         if (worldIn.isClientSide()) {
-            PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, TileEntityPressureChamberGlass.class).ifPresent(teGlass -> {
+            PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, PressureChamberGlassBlockEntity.class).ifPresent(teGlass -> {
                 teGlass.requestModelDataUpdate();
                 // handle any glass that's diagonally connected
                 for (Direction d : DirectionUtil.VALUES) {
                     if (d.getAxis() != facing.getAxis()) {
                         BlockEntity te1 = teGlass.getCachedNeighbor(d);
-                        if (te1 instanceof TileEntityPressureChamberGlass) te1.requestModelDataUpdate();
+                        if (te1 instanceof PressureChamberGlassBlockEntity) te1.requestModelDataUpdate();
                     }
                 }
             });
@@ -75,7 +75,7 @@ public class PressureChamberGlassBlock extends AbstractPressureWallBlock impleme
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityPressureChamberGlass(pPos, pState);
+        return new PressureChamberGlassBlockEntity(pPos, pState);
     }
 
 //    @Override

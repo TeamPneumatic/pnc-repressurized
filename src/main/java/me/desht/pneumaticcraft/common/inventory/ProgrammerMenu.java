@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProgrammerMenu extends AbstractPneumaticCraftMenu<TileEntityProgrammer> {
+public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEntity> {
 
     private final boolean hiRes;
 

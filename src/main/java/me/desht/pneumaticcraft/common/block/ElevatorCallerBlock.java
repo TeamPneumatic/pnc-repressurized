@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ElevatorCallerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,7 +48,7 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Enti
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityElevatorCaller teEC) {
+        if (te instanceof ElevatorCallerBlockEntity teEC) {
             if (!world.isClientSide) {
                 int floor = getFloorForHit(teEC, brtr.getDirection(), brtr.getLocation().x, brtr.getLocation().y, brtr.getLocation().z);
                 if (floor >= 0) setSurroundingElevators(world, pos, floor);
@@ -57,7 +57,7 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Enti
         return getRotation(state).getOpposite() == brtr.getDirection() ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
-    private int getFloorForHit(TileEntityElevatorCaller teEC, Direction side, double hitX, double hitY, double hitZ) {
+    private int getFloorForHit(ElevatorCallerBlockEntity teEC, Direction side, double hitX, double hitY, double hitZ) {
         double x;
         switch (side) {
             case NORTH: x = Math.abs(hitX % 1); break;
@@ -68,7 +68,7 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Enti
         }
         double y = 1 - (hitY % 1);
 
-        for (TileEntityElevatorCaller.ElevatorButton button : teEC.getFloors()) {
+        for (ElevatorCallerBlockEntity.ElevatorButton button : teEC.getFloors()) {
             if (x >= button.posX && x <= button.posX + button.width && y >= button.posY && y <= button.posY + button.height) {
                 return button.floorNumber;
             }
@@ -117,13 +117,13 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Enti
         }
     }
 
-    private static Optional<TileEntityElevatorBase> getElevatorBase(Level world, BlockPos pos) {
+    private static Optional<ElevatorBaseBlockEntity> getElevatorBase(Level world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
         if (block == ModBlocks.ELEVATOR_FRAME.get()) {
             return ElevatorFrameBlock.getElevatorBase(world, pos);
         } else if (block == ModBlocks.ELEVATOR_BASE.get()) {
             return world.getBlockEntity(pos, ModBlockEntities.ELEVATOR_BASE.get())
-                    .filter(TileEntityElevatorBase::isCoreElevator);
+                    .filter(ElevatorBaseBlockEntity::isCoreElevator);
         }
         return Optional.empty();
     }
@@ -148,6 +148,6 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Enti
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityElevatorCaller(pPos, pState);
+        return new ElevatorCallerBlockEntity(pPos, pState);
     }
 }

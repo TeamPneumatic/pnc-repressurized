@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
+import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -53,7 +53,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         invis = buffer.readBoolean();
     }
 
-    public PacketAphorismTileUpdate(TileEntityAphorismTile tile) {
+    public PacketAphorismTileUpdate(AphorismTileBlockEntity tile) {
         super(tile.getBlockPos());
 
         text = tile.getTextLines();
@@ -77,7 +77,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             Player player = Objects.requireNonNull(ctx.get().getSender());
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                PneumaticCraftUtils.getTileEntityAt(player.level, pos, TileEntityAphorismTile.class).ifPresent(te -> {
+                PneumaticCraftUtils.getTileEntityAt(player.level, pos, AphorismTileBlockEntity.class).ifPresent(te -> {
                     te.setTextLines(text, false);
                     te.textRotation = textRotation;
                     te.setMarginSize(margin);

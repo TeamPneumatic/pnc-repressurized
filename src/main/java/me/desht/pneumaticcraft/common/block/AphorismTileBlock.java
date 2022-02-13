@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
+import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -64,8 +64,8 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.BLOCK_ENTITY_TAG;
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_EXTRA;
-import static me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile.NBT_BACKGROUND_COLOR;
-import static me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile.NBT_BORDER_COLOR;
+import static me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity.NBT_BACKGROUND_COLOR;
+import static me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity.NBT_BORDER_COLOR;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.ITintableBlock, EntityBlockPneumaticCraft {
@@ -122,7 +122,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
         if (tag != null && tag.contains(NBT_EXTRA)) {
             CompoundTag subTag = tag.getCompound(NBT_EXTRA);
             if (subTag.contains(NBT_BORDER_COLOR) || subTag.contains(NBT_BACKGROUND_COLOR)) {
-                ListTag l = subTag.getList(TileEntityAphorismTile.NBT_TEXT_LINES, Tag.TAG_STRING);
+                ListTag l = subTag.getList(AphorismTileBlockEntity.NBT_TEXT_LINES, Tag.TAG_STRING);
                 if (!l.isEmpty()) {
                     curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.text").withStyle(ChatFormatting.YELLOW));
                     l.forEach(el -> curInfo.add(new TextComponent("  " + el.getAsString()).withStyle(ChatFormatting.ITALIC)));
@@ -140,7 +140,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
         super.setPlacedBy(world, pos, state, entityLiving, iStack);
 
         if (world.isClientSide) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).ifPresent(teAT -> {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, AphorismTileBlockEntity.class).ifPresent(teAT -> {
                 CompoundTag tag = iStack.getTagElement(BLOCK_ENTITY_TAG);
                 if (tag != null) teAT.readFromPacket(tag);
                 GuiAphorismTile.openGui(teAT, true);
@@ -152,7 +152,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (!(te instanceof TileEntityAphorismTile teAT)) return InteractionResult.FAIL;
+        if (!(te instanceof AphorismTileBlockEntity teAT)) return InteractionResult.FAIL;
 
         if (!world.isClientSide && Tags.Items.DYES.contains(player.getItemInHand(hand).getItem()) && !teAT.isInvisible()) {
             return tryDyeTile(state, player, hand, brtr, teAT);
@@ -162,7 +162,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
         return InteractionResult.PASS;
     }
 
-    private InteractionResult tryDyeTile(BlockState state, Player player, InteractionHand hand, BlockHitResult brtr, TileEntityAphorismTile teAT) {
+    private InteractionResult tryDyeTile(BlockState state, Player player, InteractionHand hand, BlockHitResult brtr, AphorismTileBlockEntity teAT) {
         DyeColor color = DyeColor.getColor(player.getItemInHand(hand));
         if (color != null) {
             if (clickedBorder(state, brtr.getLocation())) {
@@ -181,7 +181,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
         return InteractionResult.FAIL;
     }
 
-    private InteractionResult openEditorGui(Player player, TileEntityAphorismTile teAT) {
+    private InteractionResult openEditorGui(Player player, AphorismTileBlockEntity teAT) {
         GuiAphorismTile.openGui(teAT, false);
         sendEditorMessage(player);
         return InteractionResult.SUCCESS;
@@ -219,7 +219,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     @Override
     public boolean onWrenched(Level world, Player player, BlockPos pos, Direction face, InteractionHand hand) {
         if (player != null && player.isShiftKeyDown()) {
-            return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).map(teAt -> {
+            return PneumaticCraftUtils.getTileEntityAt(world, pos, AphorismTileBlockEntity.class).map(teAt -> {
                 if (++teAt.textRotation > 3) teAt.textRotation = 0;
                 teAt.sendDescriptionPacket();
                 return true;
@@ -237,7 +237,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     @Override
     public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
-            return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).map(teAt -> switch (tintIndex) {
+            return PneumaticCraftUtils.getTileEntityAt(world, pos, AphorismTileBlockEntity.class).map(teAt -> switch (tintIndex) {
                 case 0 -> // border
                         PneumaticCraftUtils.getDyeColorAsRGB(DyeColor.byId(teAt.getBorderColor()));
                 case 1 -> // background
@@ -251,7 +251,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityAphorismTile(pPos, pState);
+        return new AphorismTileBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockAphorismTile extends BlockItem implements ColorHandlers.ITintableItem {

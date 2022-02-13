@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
+import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
@@ -37,7 +37,7 @@ public class PacketSyncSmartChest extends LocationIntPacket {
     private final int lastSlot;
     private final List<Pair<Integer, ItemStack>> filter;
 
-    public PacketSyncSmartChest(TileEntitySmartChest te) {
+    public PacketSyncSmartChest(SmartChestBlockEntity te) {
         super(te.getBlockPos());
 
         lastSlot = te.getLastSlot();
@@ -71,7 +71,7 @@ public class PacketSyncSmartChest extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PacketUtil.getTE(ctx.get().getSender(), pos, TileEntitySmartChest.class).ifPresent(te -> {
+            PacketUtil.getTE(ctx.get().getSender(), pos, SmartChestBlockEntity.class).ifPresent(te -> {
                 te.setLastSlot(lastSlot);
                 te.setFilter(filter);
             });

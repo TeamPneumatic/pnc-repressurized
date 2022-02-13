@@ -27,13 +27,13 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.render.RenderHackSimulation;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity.EnumNetworkValidityProblem;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.inventory.SecurityStationMainMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation.EnumNetworkValidityProblem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<SecurityStationMainMenu, TileEntitySecurityStation> {
+public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<SecurityStationMainMenu, SecurityStationBlockEntity> {
     private WidgetAnimatedStat statusStat;
     private WidgetAnimatedStat accessStat;
 

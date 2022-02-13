@@ -25,11 +25,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.ThermopneumaticProcessingPlantBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ThermopneumaticProcessingPlantBlockEntity.TPProblem;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ThermopneumaticProcessingPlantMenu;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant.TPProblem;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class GuiThermopneumaticProcessingPlant extends
-        GuiPneumaticContainerBase<ThermopneumaticProcessingPlantMenu,TileEntityThermopneumaticProcessingPlant> {
+        GuiPneumaticContainerBase<ThermopneumaticProcessingPlantMenu,ThermopneumaticProcessingPlantBlockEntity> {
 
     private WidgetTemperature tempWidget;
     private WidgetButtonExtended dumpButton;

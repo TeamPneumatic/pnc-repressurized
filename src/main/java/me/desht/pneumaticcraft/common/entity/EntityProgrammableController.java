@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.entity;
 
+import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * Special client-only entity used for rendering the programmable controller's "minidrone".
  */
 public class EntityProgrammableController extends EntityDroneBase {
-    private TileEntityProgrammableController controller;
+    private ProgrammableControllerBlockEntity controller;
     private float propSpeed = 0f;
 
     public EntityProgrammableController(EntityType<EntityProgrammableController> type, Level world) {
@@ -41,7 +41,7 @@ public class EntityProgrammableController extends EntityDroneBase {
         this.blocksBuilding = false;
     }
 
-    public void setController(TileEntityProgrammableController controller) {
+    public void setController(ProgrammableControllerBlockEntity controller) {
         this.controller = controller;
     }
 
@@ -118,7 +118,7 @@ public class EntityProgrammableController extends EntityDroneBase {
         return controller.getBlockPos();
     }
 
-    public TileEntityProgrammableController getController() {
+    public ProgrammableControllerBlockEntity getController() {
         return controller;
     }
 }

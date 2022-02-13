@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
+import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;

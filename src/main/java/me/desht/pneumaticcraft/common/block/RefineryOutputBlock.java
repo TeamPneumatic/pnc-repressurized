@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
+import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.RefineryOutputBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
@@ -102,7 +102,7 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
             if (canTransferFluid) {
                 return super.use(state, world, pos, player, hand, brtr);
             } else if (!world.isClientSide) {
-                TileEntityRefineryController master = te.getRefineryController();
+                RefineryControllerBlockEntity master = te.getRefineryController();
                 if (master != null) {
                     NetworkHooks.openGui((ServerPlayer) player, master, master.getBlockPos());
                 }
@@ -144,8 +144,8 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
     }
 
     private void recache(LevelAccessor world, BlockPos pos) {
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityRefineryOutput.class).ifPresent(te -> {
-            TileEntityRefineryController teC = te.getRefineryController();
+        PneumaticCraftUtils.getTileEntityAt(world, pos, RefineryOutputBlockEntity.class).ifPresent(te -> {
+            RefineryControllerBlockEntity teC = te.getRefineryController();
             if (teC != null) teC.cacheRefineryOutputs();
         });
     }
@@ -153,6 +153,6 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityRefineryOutput(pPos, pState);
+        return new RefineryOutputBlockEntity(pPos, pState);
     }
 }

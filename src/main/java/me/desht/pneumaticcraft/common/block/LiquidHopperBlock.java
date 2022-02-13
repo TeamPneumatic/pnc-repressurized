@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
+import me.desht.pneumaticcraft.common.block.entity.LiquidHopperBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -48,7 +48,7 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Ent
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityLiquidHopper(pPos, pState);
+        return new LiquidHopperBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered {

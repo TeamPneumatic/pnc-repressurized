@@ -24,9 +24,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.language.I18n;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiProgrammableController extends GuiPneumaticContainerBase<ProgrammableControllerMenu,TileEntityProgrammableController>
+public class GuiProgrammableController extends GuiPneumaticContainerBase<ProgrammableControllerMenu,ProgrammableControllerBlockEntity>
         implements IGuiDrone
 {
     private static final ItemStack EYE_OFF = new ItemStack(Items.ENDER_EYE);
@@ -71,7 +71,7 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Program
 
         te.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> addRenderableWidget(new WidgetEnergy(leftPos + 12, topPos + 20, handler)));
 
-        List<Component> exc = TileEntityProgrammableController.BLACKLISTED_WIDGETS.stream()
+        List<Component> exc = ProgrammableControllerBlockEntity.BLACKLISTED_WIDGETS.stream()
                 .map(s -> Symbols.BULLET + " " + I18n.get("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))
                 .sorted()
                 .map(TextComponent::new)

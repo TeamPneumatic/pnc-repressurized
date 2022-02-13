@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
-public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticScreenBase {
+public abstract class GuiTubeModule<M extends AbstractTubeModule> extends GuiPneumaticScreenBase {
     protected final M module;
 
     GuiTubeModule(M module) {
@@ -46,7 +46,7 @@ public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticSc
         return false;
     }
 
-    public static void openGuiForModule(TubeModule module) {
+    public static void openGuiForModule(AbstractTubeModule module) {
         Minecraft.getInstance().setScreen(TubeModuleClientRegistry.createGUI(module));
     }
 }

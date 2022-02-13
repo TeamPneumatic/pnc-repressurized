@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.KeroseneLampBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -33,7 +33,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiKeroseneLamp extends GuiPneumaticContainerBase<KeroseneLampMenu,TileEntityKeroseneLamp> implements Slider.ISlider {
+public class GuiKeroseneLamp extends GuiPneumaticContainerBase<KeroseneLampMenu,KeroseneLampBlockEntity> implements Slider.ISlider {
 
     private WidgetLabel rangeLabel;
     private Slider slider;
@@ -51,7 +51,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<KeroseneLampMenu,
 
         addRenderableWidget(slider = new Slider(leftPos + 7, topPos + 30, 118, 20,
                 xlate("pneumaticcraft.gui.keroseneLamp.maxRange").append(" "), TextComponent.EMPTY,
-                1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true,
+                1, KeroseneLampBlockEntity.MAX_RANGE, te.getTargetRange(), false, true,
                 b -> { }, this));
     }
 

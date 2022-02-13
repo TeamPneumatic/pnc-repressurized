@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
-import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.core.BlockPos;

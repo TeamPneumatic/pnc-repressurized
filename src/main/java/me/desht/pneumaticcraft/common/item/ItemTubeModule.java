@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -39,15 +39,15 @@ import java.util.List;
 import java.util.function.Function;
 
 public class ItemTubeModule extends Item {
-    private final Function<ItemTubeModule, TubeModule> moduleFactory;
+    private final Function<ItemTubeModule, AbstractTubeModule> moduleFactory;
 
-    public ItemTubeModule(Function<ItemTubeModule, TubeModule> moduleFactory) {
+    public ItemTubeModule(Function<ItemTubeModule, AbstractTubeModule> moduleFactory) {
         super(ModItems.defaultProps());
         this.moduleFactory = moduleFactory;
     }
 
     @Nonnull
-    public TubeModule createModule() {
+    public AbstractTubeModule createModule() {
         return moduleFactory.apply(this);
     }
 
@@ -56,7 +56,7 @@ public class ItemTubeModule extends Item {
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
 
-        TubeModule module = createModule();
+        AbstractTubeModule module = createModule();
         tooltip.add(new TextComponent("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(ChatFormatting.DARK_AQUA));
     }
 

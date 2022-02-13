@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.tileentity.IGUITextFieldSensitive;
+import me.desht.pneumaticcraft.common.block.entity.IGUITextFieldSensitive;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;

@@ -20,6 +20,10 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
+import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ThermopneumaticProcessingPlantBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.item.ItemSeismicSensor;
@@ -28,10 +32,6 @@ import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -117,15 +117,15 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         types.forEach(type -> type.cachedRecipes.clear());
 
         HeatFrameCoolingRecipeImpl.cacheMaxThresholdTemp(Collections.emptyList());  // clear the cached temp
-        TileEntityFluidMixer.clearCachedFluids();
-        TileEntityPressureChamberInterface.clearCachedItems();
-        TileEntityThermopneumaticProcessingPlant.clearCachedItemsAndFluids();
+        FluidMixerBlockEntity.clearCachedFluids();
+        PressureChamberInterfaceBlockEntity.clearCachedItems();
+        ThermopneumaticProcessingPlantBlockEntity.clearCachedItemsAndFluids();
         AmadronOfferManager.getInstance().rebuildRequired();
         FuelRegistry.getInstance().clearCachedFuelFluids();
         ItemSeismicSensor.clearCachedFluids();
         BlockHeatProperties.getInstance().clear();
         CraftingRecipeCache.INSTANCE.clear();
-        TileEntityVacuumTrap.clearBlacklistCache();
+        VacuumTrapBlockEntity.clearBlacklistCache();
     }
 
     public Map<ResourceLocation, T> getRecipes(Level world) {
@@ -152,7 +152,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
                 Collection<AssemblyRecipe> laserRecipes = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipes(world).values();
                 AssemblyRecipeImpl.calculateAssemblyChain(drillRecipes, laserRecipes).forEach((id, recipe) -> cachedRecipes.put(id, (T) recipe));
             } else if (this == FLUID_MIXER) {
-                TileEntityFluidMixer.cacheRecipeFluids((List<FluidMixerRecipeImpl>) recipes);
+                FluidMixerBlockEntity.cacheRecipeFluids((List<FluidMixerRecipeImpl>) recipes);
             }
         }
 

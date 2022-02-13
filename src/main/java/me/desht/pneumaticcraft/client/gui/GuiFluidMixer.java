@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -42,7 +42,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiFluidMixer extends GuiPneumaticContainerBase<FluidMixerMenu, TileEntityFluidMixer> {
+public class GuiFluidMixer extends GuiPneumaticContainerBase<FluidMixerMenu, FluidMixerBlockEntity> {
     private final WidgetButtonExtended[] dumpButtons = new WidgetButtonExtended[2];
 
     public GuiFluidMixer(FluidMixerMenu container, Inventory inv, Component displayString) {

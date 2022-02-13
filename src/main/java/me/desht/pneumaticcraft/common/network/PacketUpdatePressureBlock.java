@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.tileentity.AbstractAirHandlingBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;

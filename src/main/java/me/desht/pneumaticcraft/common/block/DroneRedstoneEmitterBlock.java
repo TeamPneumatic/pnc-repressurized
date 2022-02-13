@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.DroneRedstoneEmitterBlockEntity;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityDroneRedstoneEmitter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -66,6 +66,6 @@ public class DroneRedstoneEmitterBlock extends AirBlock implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityDroneRedstoneEmitter(pPos, pState);
+        return new DroneRedstoneEmitterBlockEntity(pPos, pState);
     }
 }

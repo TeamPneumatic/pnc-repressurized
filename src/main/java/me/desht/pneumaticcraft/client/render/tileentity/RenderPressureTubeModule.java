@@ -21,9 +21,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.render.tube_module.TubeModuleRendererBase;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class RenderPressureTubeModule implements BlockEntityRenderer<TileEntityPressureTube> {
+public class RenderPressureTubeModule implements BlockEntityRenderer<PressureTubeBlockEntity> {
 
     private final Map<ResourceLocation, TubeModuleRendererBase<?>> models = new HashMap<>();
     private final BlockEntityRendererProvider.Context ctx;
@@ -49,7 +49,7 @@ public class RenderPressureTubeModule implements BlockEntityRenderer<TileEntityP
     }
 
     @Override
-    public void render(TileEntityPressureTube tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
+    public void render(PressureTubeBlockEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
         if (tile.getCamouflage() != null) {
             return;
         }
@@ -64,7 +64,7 @@ public class RenderPressureTubeModule implements BlockEntityRenderer<TileEntityP
             moduleItem = null;
         }
 
-        List<TubeModule> modules = tile.tubeModules().collect(Collectors.toList());
+        List<AbstractTubeModule> modules = tile.tubeModules().collect(Collectors.toList());
         if (modules.isEmpty() && moduleItem == null)
             return;
 
@@ -74,7 +74,7 @@ public class RenderPressureTubeModule implements BlockEntityRenderer<TileEntityP
             if (blockHitResult.getBlockPos().equals(tile.getBlockPos())
                     && player.level.getBlockEntity(blockHitResult.getBlockPos()) == tile
                     && tile.getModule(face) == null) {
-                TubeModule fakeModule = moduleItem.createModule();
+                AbstractTubeModule fakeModule = moduleItem.createModule();
                 if (tile.mayPlaceModule(fakeModule, face)) {
                     fakeModule.markFake();
                     fakeModule.setDirection(face);
@@ -84,19 +84,19 @@ public class RenderPressureTubeModule implements BlockEntityRenderer<TileEntityP
             }
         }
 
-        for (TubeModule m : modules) {
+        for (AbstractTubeModule m : modules) {
             getModuleRenderer(m).renderModule(m, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
         }
     }
 
-    private <T extends TubeModule> TubeModuleRendererBase<T> getModuleRenderer(T module) {
+    private <T extends AbstractTubeModule> TubeModuleRendererBase<T> getModuleRenderer(T module) {
         TubeModuleRendererBase<?> res = models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module, ctx));
         //noinspection unchecked
         return (TubeModuleRendererBase<T>) res;
     }
 
     @Override
-    public boolean shouldRenderOffScreen(TileEntityPressureTube te) {
+    public boolean shouldRenderOffScreen(PressureTubeBlockEntity te) {
         return te.tubeModules().findAny().isPresent();
     }
 }

@@ -23,7 +23,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyIOUnitBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
@@ -41,7 +41,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAssemblyIOUnit> {
+public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<AssemblyIOUnitBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;
@@ -135,7 +135,7 @@ public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAs
     }
 
     @Override
-    void renderModel(TileEntityAssemblyIOUnit te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(AssemblyIOUnitBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         float[] angles = new float[5];
         for (int i = 0; i < 5; i++) {
             angles[i] = te.oldAngles[i] + (te.angles[i] - te.oldAngles[i]) * partialTicks;
@@ -221,7 +221,7 @@ public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<TileEntityAs
         return Pair.of(renderOverride, clawTrans);
     }
 
-    private ResourceLocation getTexture(TileEntityAssemblyIOUnit te) {
+    private ResourceLocation getTexture(AssemblyIOUnitBlockEntity te) {
         return te != null && te.isImportUnit() ? Textures.MODEL_ASSEMBLY_IO_IMPORT : Textures.MODEL_ASSEMBLY_IO_EXPORT;
     }
 }

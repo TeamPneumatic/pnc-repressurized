@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractRedstoneReceivingModule;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -32,11 +32,11 @@ import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
+public class GuiPressureModuleSimple extends GuiTubeModule<AbstractTubeModule> {
     private WidgetTextFieldNumber thresholdField;
     private WidgetButtonExtended moreOrLessButton;
 
-    GuiPressureModuleSimple(TubeModule module) {
+    GuiPressureModuleSimple(AbstractTubeModule module) {
         super(module);
 
         ySize = 57;
@@ -62,8 +62,8 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
         thresholdField.setWidth(40);
         thresholdField.setFocus(true);
 
-        if (module instanceof TubeModuleRedstoneReceiving) {
-            thresholdField.setValue(((TubeModuleRedstoneReceiving) module).getThreshold());
+        if (module instanceof AbstractRedstoneReceivingModule) {
+            thresholdField.setValue(((AbstractRedstoneReceivingModule) module).getThreshold());
             Component s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.threshold");
             addLabel(s, guiLeft + 80 - font.width(s), guiTop + 36);
         } else {

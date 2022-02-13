@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -28,12 +28,12 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 
-public class RenderChargingStation implements BlockEntityRenderer<TileEntityChargingStation> {
+public class RenderChargingStation implements BlockEntityRenderer<ChargingStationBlockEntity> {
     public RenderChargingStation(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityChargingStation te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(ChargingStationBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (te.getChargingStackSynced().isEmpty() || !te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStackIn.pushPose();

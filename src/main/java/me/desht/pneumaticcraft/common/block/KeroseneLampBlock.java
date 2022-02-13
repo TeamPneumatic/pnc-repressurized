@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.KeroseneLampBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
@@ -110,7 +110,7 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements En
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityKeroseneLamp(pPos, pState);
+        return new KeroseneLampBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockKeroseneLamp extends BlockItem implements ICustomTooltipName {

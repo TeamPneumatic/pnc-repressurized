@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.ElectrostaticCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -54,6 +54,6 @@ public class ElectrostaticCompressorBlock extends AbstractPneumaticCraftBlock im
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityElectrostaticCompressor(pPos, pState);
+        return new ElectrostaticCompressorBlockEntity(pPos, pState);
     }
 }

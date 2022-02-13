@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
-import me.desht.pneumaticcraft.common.tileentity.AbstractFluidTankBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;

@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.CreativeCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -77,7 +77,7 @@ public class CreativeCompressorBlock extends AbstractPneumaticCraftBlock impleme
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityCreativeCompressor(pPos, pState);
+        return new CreativeCompressorBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockCreativeCompressor extends BlockItem {

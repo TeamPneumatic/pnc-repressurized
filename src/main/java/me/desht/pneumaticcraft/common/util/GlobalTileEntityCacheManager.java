@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
+import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.world.WorldEvent;
@@ -58,10 +58,10 @@ public class GlobalTileEntityCacheManager{
 
 //    private final Map<TileEntityType<? extends TileEntity>, GlobalTileEntityCache<? extends TileEntity>> cacheMap = new HashMap<>();
 
-    public final GlobalTileEntityCache<TileEntityUniversalSensor> universalSensors = new GlobalTileEntityCache<>();
-    public final GlobalTileEntityCache<TileEntityChargingStation> chargingStations = new GlobalTileEntityCache<>();
-    public final GlobalTileEntityCache<TileEntitySecurityStation> securityStations = new GlobalTileEntityCache<>();
-    public final GlobalTileEntityCache<TileEntityAerialInterface> aerialInterfaces = new GlobalTileEntityCache<>();
+    public final GlobalTileEntityCache<UniversalSensorBlockEntity> universalSensors = new GlobalTileEntityCache<>();
+    public final GlobalTileEntityCache<ChargingStationBlockEntity> chargingStations = new GlobalTileEntityCache<>();
+    public final GlobalTileEntityCache<SecurityStationBlockEntity> securityStations = new GlobalTileEntityCache<>();
+    public final GlobalTileEntityCache<AerialInterfaceBlockEntity> aerialInterfaces = new GlobalTileEntityCache<>();
 
     private void removeFromWorld(LevelAccessor world){
         universalSensors.removeFromWorld(world);

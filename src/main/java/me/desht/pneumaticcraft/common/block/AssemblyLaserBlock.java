@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.AssemblyLaserBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyLaser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -55,6 +55,6 @@ public class AssemblyLaserBlock extends AbstractPneumaticCraftBlock implements E
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityAssemblyLaser(pPos, pState);
+        return new AssemblyLaserBlockEntity(pPos, pState);
     }
 }

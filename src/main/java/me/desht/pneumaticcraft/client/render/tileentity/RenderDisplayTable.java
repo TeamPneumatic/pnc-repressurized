@@ -21,7 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.DisplayTableBlock;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityDisplayTable;
+import me.desht.pneumaticcraft.common.block.entity.DisplayTableBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -34,12 +34,12 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
-public class RenderDisplayTable implements BlockEntityRenderer<TileEntityDisplayTable> {
+public class RenderDisplayTable implements BlockEntityRenderer<DisplayTableBlockEntity> {
     public RenderDisplayTable(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityDisplayTable te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(DisplayTableBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (!te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStackIn.pushPose();

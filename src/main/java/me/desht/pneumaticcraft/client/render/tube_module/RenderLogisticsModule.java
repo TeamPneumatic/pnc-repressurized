@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
+import me.desht.pneumaticcraft.common.tubemodules.LogisticsModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
-public class RenderLogisticsModule extends TubeModuleRendererBase<ModuleLogistics> {
+public class RenderLogisticsModule extends TubeModuleRendererBase<LogisticsModule> {
     private final ModelPart base2;
     private final ModelPart shape1;
     private final ModelPart shape2;
@@ -86,7 +86,7 @@ public class RenderLogisticsModule extends TubeModuleRendererBase<ModuleLogistic
     }
 
     @Override
-    protected void renderDynamic(ModuleLogistics module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void renderDynamic(LogisticsModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         ModelPart base;
         if (module.getTicksSinceAction() >= 0) {
             base = action;

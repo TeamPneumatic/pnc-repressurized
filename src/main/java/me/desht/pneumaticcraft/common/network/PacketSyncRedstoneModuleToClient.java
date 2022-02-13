@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
@@ -31,13 +31,13 @@ import java.util.function.Supplier;
  * Sent by server to sync up the settings of a redstone module
  */
 public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
-    private final ModuleRedstone.EnumRedstoneDirection dir;
+    private final RedstoneModule.EnumRedstoneDirection dir;
     private final int outputLevel;
     private final int inputLevel;
     private final int channel;
     private final Direction side;
 
-    public PacketSyncRedstoneModuleToClient(ModuleRedstone module) {
+    public PacketSyncRedstoneModuleToClient(RedstoneModule module) {
         super(module.getTube().getBlockPos());
 
         this.dir = module.getRedstoneDirection();
@@ -49,7 +49,7 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
 
     PacketSyncRedstoneModuleToClient(FriendlyByteBuf buffer) {
         super(buffer);
-        dir = ModuleRedstone.EnumRedstoneDirection.values()[buffer.readByte()];
+        dir = RedstoneModule.EnumRedstoneDirection.values()[buffer.readByte()];
         side = buffer.readEnum(Direction.class);
         outputLevel = buffer.readByte();
         inputLevel = buffer.readByte();
@@ -69,7 +69,7 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() ->
                 ClientUtils.getClientLevel().getBlockEntity(pos, ModBlockEntities.PRESSURE_TUBE.get()).ifPresent(te -> {
-                    if (te.getModule(side) instanceof ModuleRedstone mr) {
+                    if (te.getModule(side) instanceof RedstoneModule mr) {
                         mr.setColorChannel(channel);
                         mr.setRedstoneDirection(dir);
                         mr.setOutputLevel(outputLevel);

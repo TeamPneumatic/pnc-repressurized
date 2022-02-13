@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.ElectrostaticCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ElectrostaticCompressorMenu extends Abstract4SlotMenu<TileEntityElectrostaticCompressor> {
+public class ElectrostaticCompressorMenu extends Abstract4SlotMenu<ElectrostaticCompressorBlockEntity> {
     public ElectrostaticCompressorMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         super(ModMenuTypes.ELECTROSTATIC_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
     }

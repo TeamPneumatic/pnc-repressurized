@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -31,7 +31,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class ChStUpgradeManagerMenu extends AbstractPneumaticCraftMenu<TileEntityChargingStation> {
+public class ChStUpgradeManagerMenu extends AbstractPneumaticCraftMenu<ChargingStationBlockEntity> {
 
     private ChStUpgradeManagerMenu(MenuType type, int windowId, Inventory inv, FriendlyByteBuf data) {
         this(type, windowId, inv, getTilePos(data));
@@ -70,7 +70,7 @@ public class ChStUpgradeManagerMenu extends AbstractPneumaticCraftMenu<TileEntit
     }
 
     private class UpgradeSlot extends SlotItemHandler {
-        UpgradeSlot(TileEntityChargingStation te, int slotIndex, int posX, int posY) {
+        UpgradeSlot(ChargingStationBlockEntity te, int slotIndex, int posX, int posY) {
             super(te.getChargeableInventory(), slotIndex, posX, posY);
         }
 

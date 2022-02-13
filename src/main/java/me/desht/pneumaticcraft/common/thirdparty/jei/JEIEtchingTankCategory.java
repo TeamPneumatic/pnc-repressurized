@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -82,7 +82,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
         ItemStack[] input = new ItemStack[4];
         for (int i = 0; i < input.length; i++) {
             input[i] = new ItemStack(ModItems.EMPTY_PCB.get());
-            TileEntityUVLightBox.setExposureProgress(input[i], 25 + 25 * i);
+            UVLightBoxBlockEntity.setExposureProgress(input[i], 25 + 25 * i);
         }
 
         return Collections.singletonList(

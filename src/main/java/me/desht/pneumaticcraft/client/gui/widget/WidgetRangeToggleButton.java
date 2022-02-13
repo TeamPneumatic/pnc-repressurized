@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import me.desht.pneumaticcraft.common.tileentity.IRangedTE;
+import me.desht.pneumaticcraft.common.block.entity.IRangedTE;
 
 public class WidgetRangeToggleButton extends WidgetButtonExtended {
     public WidgetRangeToggleButton(int startX, int startY, IRangedTE te) {

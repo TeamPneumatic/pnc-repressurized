@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
+import me.desht.pneumaticcraft.common.block.entity.EtchingTankBlockEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Collection;
 
-public class RenderEtchingTank extends AbstractFluidTER<TileEntityEtchingTank> {
+public class RenderEtchingTank extends AbstractFluidTER<EtchingTankBlockEntity> {
     private static final AABB TANK_BOUNDS = new AABB(2.1/16f, 1.1/16f, 2.1/16f, 13.9/16f, 13.9/16f, 13.9/16f);
 
     public RenderEtchingTank(BlockEntityRendererProvider.Context ctx) {
@@ -33,7 +33,7 @@ public class RenderEtchingTank extends AbstractFluidTER<TileEntityEtchingTank> {
     }
 
     @Override
-    Collection<TankRenderInfo> getTanksToRender(TileEntityEtchingTank te) {
+    Collection<TankRenderInfo> getTanksToRender(EtchingTankBlockEntity te) {
         return ImmutableList.of(new TankRenderInfo(te.getAcidTank(), TANK_BOUNDS).without(Direction.DOWN));
     }
 }

@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -70,7 +70,7 @@ public class ProgrammableControllerBlock extends AbstractPneumaticCraftBlock imp
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         if (entity instanceof Player) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityProgrammableController.class)
+            PneumaticCraftUtils.getTileEntityAt(world, pos, ProgrammableControllerBlockEntity.class)
                     .ifPresent(te -> te.setOwner((Player) entity));
         }
         super.setPlacedBy(world, pos, state, entity, stack);
@@ -79,6 +79,6 @@ public class ProgrammableControllerBlock extends AbstractPneumaticCraftBlock imp
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityProgrammableController(pPos, pState);
+        return new ProgrammableControllerBlockEntity(pPos, pState);
     }
 }

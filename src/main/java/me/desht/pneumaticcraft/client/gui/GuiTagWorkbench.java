@@ -21,12 +21,12 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetList;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
 import me.desht.pneumaticcraft.common.item.ItemTagFilter;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTagWorkbench;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiTagWorkbench extends GuiPneumaticContainerBase<TagWorkbenchMenu, TileEntityTagWorkbench> {
+public class GuiTagWorkbench extends GuiPneumaticContainerBase<TagWorkbenchMenu, TagWorkbenchBlockEntity> {
     private static final int AVAILABLE_X = 9;
     private static final int SELECTED_X = 123;
     private static final int LIST_HEIGHT = 126;
@@ -137,8 +137,8 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<TagWorkbenchMenu,
         addButton.active = availableList.getSelectedLine() != null;
         removeButton.active = selectedList.getSelectedLine() != null;
         writeButton.active = selectedList.size() > 0
-                && (!menu.getSlot(TileEntityTagWorkbench.PAPER_SLOT).getItem().isEmpty()
-                || !menu.getSlot(TileEntityTagWorkbench.OUTPUT_SLOT).getItem().isEmpty());
+                && (!menu.getSlot(TagWorkbenchBlockEntity.PAPER_SLOT).getItem().isEmpty()
+                || !menu.getSlot(TagWorkbenchBlockEntity.OUTPUT_SLOT).getItem().isEmpty());
     }
 
     @Override

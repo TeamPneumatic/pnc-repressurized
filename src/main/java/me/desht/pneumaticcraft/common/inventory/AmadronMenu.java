@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -34,7 +35,6 @@ import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;

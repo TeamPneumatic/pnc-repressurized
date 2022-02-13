@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class AerialInterfaceMenu extends AbstractForgeEnergyMenu<TileEntityAerialInterface> {
+public class AerialInterfaceMenu extends AbstractForgeEnergyMenu<AerialInterfaceBlockEntity> {
     public AerialInterfaceMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         super(ModMenuTypes.AERIAL_INTERFACE.get(), i, playerInventory, getTilePos(buffer));
     }

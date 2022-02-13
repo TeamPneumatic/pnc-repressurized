@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
+import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderSentryTurret extends AbstractTileModelRenderer<TileEntitySentryTurret> {
+public class RenderSentryTurret extends AbstractTileModelRenderer<SentryTurretBlockEntity> {
     private final ModelMinigun model;
 
     public RenderSentryTurret(BlockEntityRendererProvider.Context ctx) {
@@ -34,7 +34,7 @@ public class RenderSentryTurret extends AbstractTileModelRenderer<TileEntitySent
     }
 
     @Override
-    void renderModel(TileEntitySentryTurret te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(SentryTurretBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrixStackIn.translate(0, -13 / 16F, 0);
         model.renderMinigun(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, te.getMinigun(), partialTicks, false);
     }

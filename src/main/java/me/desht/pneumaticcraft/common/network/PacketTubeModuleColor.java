@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.tubes.INetworkedModule;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
+import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,7 +35,7 @@ public class PacketTubeModuleColor extends LocationIntPacket {
     private final int ourColor;
     private final Direction side;
 
-    public PacketTubeModuleColor(TubeModule module) {
+    public PacketTubeModuleColor(AbstractTubeModule module) {
         super(module.getTube().getBlockPos());
 
         this.ourColor = ((INetworkedModule) module).getColorChannel();

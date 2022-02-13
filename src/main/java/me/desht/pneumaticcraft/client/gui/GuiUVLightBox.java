@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.UVLightBoxBlock;
+import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -37,7 +37,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiUVLightBox extends GuiPneumaticContainerBase<UVLightBoxMenu,TileEntityUVLightBox> implements Slider.ISlider {
+public class GuiUVLightBox extends GuiPneumaticContainerBase<UVLightBoxMenu,UVLightBoxBlockEntity> implements Slider.ISlider {
     private Slider slider;
 
     public GuiUVLightBox(UVLightBoxMenu container, Inventory inv, Component displayString) {
@@ -57,7 +57,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<UVLightBoxMenu,Tile
 
     @Override
     public void containerTick() {
-        boolean interpolate = te.rsController.getCurrentMode() == TileEntityUVLightBox.RS_MODE_INTERPOLATE;
+        boolean interpolate = te.rsController.getCurrentMode() == UVLightBoxBlockEntity.RS_MODE_INTERPOLATE;
         if (firstUpdate || interpolate) {
             // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
             slider.setValue(te.getThreshold());
@@ -87,7 +87,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<UVLightBoxMenu,Tile
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
 
-        if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_SLOT).isEmpty()) {
+        if (te.getPrimaryInventory().getStackInSlot(UVLightBoxBlockEntity.PCB_SLOT).isEmpty()) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.uv_light_box.no_item"));
         }
     }

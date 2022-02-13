@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 public class PacketProgrammerUpdate extends LocationIntPacket implements ILargePayload {
     private final List<IProgWidget> widgets;
 
-    public PacketProgrammerUpdate(TileEntityProgrammer te) {
+    public PacketProgrammerUpdate(ProgrammerBlockEntity te) {
         super(te.getBlockPos());
         this.widgets = te.progWidgets;
     }
@@ -86,7 +86,7 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     }
 
     private void updateTE(Player player) {
-        PacketUtil.getTE(player, pos, TileEntityProgrammer.class).ifPresent(te -> te.setProgWidgets(widgets, player));
+        PacketUtil.getTE(player, pos, ProgrammerBlockEntity.class).ifPresent(te -> te.setProgWidgets(widgets, player));
     }
 
     @Override

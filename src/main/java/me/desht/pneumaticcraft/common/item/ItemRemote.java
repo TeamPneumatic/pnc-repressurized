@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
@@ -80,7 +80,7 @@ public class ItemRemote extends Item {
         BlockPos pos = ctx.getClickedPos();
         BlockEntity te = world.getBlockEntity(pos);
 
-        if (te instanceof TileEntitySecurityStation teSS && player instanceof ServerPlayer && player.isCrouching() && isAllowedToEdit(player, remote)) {
+        if (te instanceof SecurityStationBlockEntity teSS && player instanceof ServerPlayer && player.isCrouching() && isAllowedToEdit(player, remote)) {
             if (teSS.doesAllowPlayer(player)) {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                 setSecurityStationPos(remote, gPos);
@@ -145,8 +145,8 @@ public class ItemRemote extends Item {
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
             BlockEntity te = GlobalPosHelper.getTileEntity(gPos);
-            if (te instanceof TileEntitySecurityStation) {
-                boolean canAccess = ((TileEntitySecurityStation) te).doesAllowPlayer(player);
+            if (te instanceof SecurityStationBlockEntity) {
+                boolean canAccess = ((SecurityStationBlockEntity) te).doesAllowPlayer(player);
                 if (!canAccess) {
                     player.displayClientMessage(new TranslatableComponent("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(ChatFormatting.RED), false);
                 }
@@ -171,7 +171,7 @@ public class ItemRemote extends Item {
             GlobalPos gPos = getSecurityStationPos(remote);
             if (gPos != null) {
                 BlockEntity te = GlobalPosHelper.getTileEntity(gPos);
-                if (!(te instanceof TileEntitySecurityStation) && remote.hasTag()) {
+                if (!(te instanceof SecurityStationBlockEntity) && remote.hasTag()) {
                     Objects.requireNonNull(remote.getTag()).remove(NBT_SECURITY_POS);
                 }
             }

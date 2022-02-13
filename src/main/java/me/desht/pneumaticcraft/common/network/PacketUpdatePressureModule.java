@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
@@ -26,7 +26,7 @@ public class PacketUpdatePressureModule extends PacketUpdateTubeModule {
     private final float higher;
     private final boolean advanced;
 
-    public PacketUpdatePressureModule(TubeModule module) {
+    public PacketUpdatePressureModule(AbstractTubeModule module) {
         super(module);
         this.lower = module.lowerBound;
         this.higher = module.higherBound;
@@ -49,7 +49,7 @@ public class PacketUpdatePressureModule extends PacketUpdateTubeModule {
     }
 
     @Override
-    protected void onModuleUpdate(TubeModule module, Player player) {
+    protected void onModuleUpdate(AbstractTubeModule module, Player player) {
         module.lowerBound = lower;
         module.higherBound = higher;
         module.advancedConfig = advanced;

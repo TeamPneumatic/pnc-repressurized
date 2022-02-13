@@ -19,12 +19,12 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBaseBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -101,7 +101,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements E
         float xMax = 0.999f;
         float zMax = 0.999f;
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityPneumaticDoor door) {
+        if (te instanceof PneumaticDoorBlockEntity door) {
             Direction rotation = getRotation(state);
             float t = thickness / 16F;
             float rads = (float) Math.toRadians(door.rotationAngle);
@@ -173,7 +173,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements E
                 teDoor.rightGoing = false;
             }
             BlockEntity topHalf = world.getBlockEntity(top);
-            if (topHalf instanceof TileEntityPneumaticDoor door) {
+            if (topHalf instanceof PneumaticDoorBlockEntity door) {
                 door.rightGoing = teDoor.rightGoing;
                 door.color = teDoor.color;
             }
@@ -219,17 +219,17 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements E
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        TileEntityPneumaticDoorBase doorBase = getDoorBase(world, pos);
+        PneumaticDoorBaseBlockEntity doorBase = getDoorBase(world, pos);
         if (!world.isClientSide) {
             DyeColor dyeColor =  DyeColor.getColor(player.getItemInHand(hand));
             if (dyeColor != null) {
                 BlockEntity te = world.getBlockEntity(isTopDoor(state) ? pos.below() : pos);
-                if (te instanceof TileEntityPneumaticDoor teDoor) {
+                if (te instanceof PneumaticDoorBlockEntity teDoor) {
                     if (teDoor.setColor(dyeColor) && ConfigHelper.common().general.useUpDyesWhenColoring.get()) {
                         player.getItemInHand(hand).shrink(1);
                     }
                 }
-            } else if (doorBase != null && doorBase.getRedstoneController().getCurrentMode() == TileEntityPneumaticDoorBase.RS_MODE_WOODEN_DOOR
+            } else if (doorBase != null && doorBase.getRedstoneController().getCurrentMode() == PneumaticDoorBaseBlockEntity.RS_MODE_WOODEN_DOOR
                     && doorBase.getPressure() >= doorBase.getMinWorkingPressure() && hand == InteractionHand.MAIN_HAND) {
                 doorBase.setOpening(!doorBase.isOpening());
                 doorBase.setNeighborOpening(doorBase.isOpening());
@@ -244,7 +244,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements E
         if (!powered) {
             powered = world.getBestNeighborSignal(pos.relative(isTopDoor(state) ? Direction.DOWN : Direction.UP)) > 0;
         }
-        TileEntityPneumaticDoorBase doorBase = getDoorBase(world, pos);
+        PneumaticDoorBaseBlockEntity doorBase = getDoorBase(world, pos);
         if (!world.isClientSide && doorBase != null && doorBase.getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
             if (powered != doorBase.wasPowered) {
                 doorBase.wasPowered = powered;
@@ -259,7 +259,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements E
         return state.getValue(DoorBlock.OPEN);
     }
 
-    private TileEntityPneumaticDoorBase getDoorBase(BlockGetter world, BlockPos pos) {
+    private PneumaticDoorBaseBlockEntity getDoorBase(BlockGetter world, BlockPos pos) {
         if (world.getBlockState(pos).getBlock() != this) return null;
         if (!isTopDoor(world.getBlockState(pos))) {
             return getDoorBase(world, pos.relative(Direction.UP));
@@ -270,11 +270,11 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements E
                 return null;
             }
             BlockEntity te1 = world.getBlockEntity(pos.relative(dir.getClockWise()));
-            if (te1 instanceof TileEntityPneumaticDoorBase doorBase && doorBase.getRotation() == dir.getCounterClockWise()) {
+            if (te1 instanceof PneumaticDoorBaseBlockEntity doorBase && doorBase.getRotation() == dir.getCounterClockWise()) {
                 return doorBase;
             }
             BlockEntity te2 = world.getBlockEntity(pos.relative(dir.getCounterClockWise()));
-            if (te2 instanceof TileEntityPneumaticDoorBase doorBase && doorBase.getRotation() == dir.getClockWise()) {
+            if (te2 instanceof PneumaticDoorBaseBlockEntity doorBase && doorBase.getRotation() == dir.getClockWise()) {
                 return doorBase;
             }
             return null;
@@ -284,7 +284,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements E
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityPneumaticDoor(pPos, pState);
+        return new PneumaticDoorBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockPneumaticDoor extends BlockItem implements ColorHandlers.ITintableItem {

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.block;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -43,7 +43,7 @@ public class HackableSecurityStation implements IHackableBlock {
     @Override
     public boolean canHack(BlockGetter world, BlockPos pos, Player player) {
         BlockEntity te = world.getBlockEntity(pos);
-        return te instanceof TileEntitySecurityStation && !((TileEntitySecurityStation) te).doesAllowPlayer(player);
+        return te instanceof SecurityStationBlockEntity && !((SecurityStationBlockEntity) te).doesAllowPlayer(player);
     }
 
     @Override

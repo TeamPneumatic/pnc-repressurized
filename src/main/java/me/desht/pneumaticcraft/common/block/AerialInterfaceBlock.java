@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.AerialInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -72,6 +72,6 @@ public class AerialInterfaceBlock extends AbstractPneumaticCraftBlock implements
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityAerialInterface(pPos, pState);
+        return new AerialInterfaceBlockEntity(pPos, pState);
     }
 }

@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.VacuumTrapMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +31,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
 
-public class GuiVacuumTrap extends GuiPneumaticContainerBase<VacuumTrapMenu, TileEntityVacuumTrap> {
+public class GuiVacuumTrap extends GuiPneumaticContainerBase<VacuumTrapMenu, VacuumTrapBlockEntity> {
     WidgetButtonExtended rangeButton;
 
     public GuiVacuumTrap(VacuumTrapMenu container, Inventory inv, Component displayString) {
@@ -62,7 +62,7 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<VacuumTrapMenu, Til
     @Override
     protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
-        if (te.problem == TileEntityVacuumTrap.Problems.NO_CORE || te.problem == TileEntityVacuumTrap.Problems.CORE_FULL) {
+        if (te.problem == VacuumTrapBlockEntity.Problems.NO_CORE || te.problem == VacuumTrapBlockEntity.Problems.CORE_FULL) {
             curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.getTranslationKey()));
         }
     }
@@ -70,10 +70,10 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<VacuumTrapMenu, Til
     @Override
     protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
-        if (te.problem == TileEntityVacuumTrap.Problems.TRAP_CLOSED) {
+        if (te.problem == VacuumTrapBlockEntity.Problems.TRAP_CLOSED) {
             curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.getTranslationKey()));
         }
-        if (te.getFluidTank().getFluidAmount() < TileEntityVacuumTrap.MEMORY_ESSENCE_AMOUNT) {
+        if (te.getFluidTank().getFluidAmount() < VacuumTrapBlockEntity.MEMORY_ESSENCE_AMOUNT) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.vacuum_trap.no_memory_essence"));
         }
     }

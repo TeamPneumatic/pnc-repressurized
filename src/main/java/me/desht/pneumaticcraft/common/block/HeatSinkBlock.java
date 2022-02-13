@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.common.block.entity.HeatSinkBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
@@ -80,7 +80,7 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity)) return;
 
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityHeatSink.class).ifPresent(te -> {
+        PneumaticCraftUtils.getTileEntityAt(world, pos, HeatSinkBlockEntity.class).ifPresent(te -> {
             double temp = te.getHeatExchanger().getTemperature();
             if (temp > 333) { // +60C
                 entity.hurt(DamageSource.HOT_FLOOR, 1f + ((float) temp - 333) * 0.05f);
@@ -101,6 +101,6 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityHeatSink(pPos, pState);
+        return new HeatSinkBlockEntity(pPos, pState);
     }
 }

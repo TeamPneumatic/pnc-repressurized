@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.AirCannonBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.AirCannonMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -38,7 +38,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAirCannon extends GuiPneumaticContainerBase<AirCannonMenu,TileEntityAirCannon> {
+public class GuiAirCannon extends GuiPneumaticContainerBase<AirCannonMenu,AirCannonBlockEntity> {
     private WidgetAnimatedStat statusStat;
     private WidgetAnimatedStat strengthTab;
     private int gpsX;

@@ -22,7 +22,7 @@ import mcjty.theoneprobe.api.IElement;
 import mcjty.theoneprobe.api.IElementFactory;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
-import me.desht.pneumaticcraft.common.tileentity.IMinWorkingPressure;
+import me.desht.pneumaticcraft.common.block.entity.IMinWorkingPressure;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

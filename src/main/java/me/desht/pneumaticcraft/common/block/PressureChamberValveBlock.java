@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,7 +50,7 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     @Override
     public void setPlacedBy(Level par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (!par1World.isClientSide && TileEntityPressureChamberValve.checkIfProperlyFormed(par1World, pos)) {
+        if (!par1World.isClientSide && PressureChamberValveBlockEntity.checkIfProperlyFormed(par1World, pos)) {
             AdvancementTriggers.PRESSURE_CHAMBER.trigger((ServerPlayer) par5EntityLiving);
         }
     }
@@ -82,7 +82,7 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
                     NetworkHooks.openGui((ServerPlayer) player, te, pos);
                 } else if (te.accessoryValves.size() > 0) {
                     // when this isn't the core valve, track down the core valve
-                    for (TileEntityPressureChamberValve valve : te.accessoryValves) {
+                    for (PressureChamberValveBlockEntity valve : te.accessoryValves) {
                         if (valve.multiBlockSize > 0) {
                             NetworkHooks.openGui((ServerPlayer) player, valve, valve.getBlockPos());
                             break;
@@ -107,14 +107,14 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
 
     private void invalidateMultiBlock(Level world, BlockPos pos) {
         if (!world.isClientSide) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberValve.class).ifPresent(teValve -> {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberValveBlockEntity.class).ifPresent(teValve -> {
                 if (teValve.multiBlockSize > 0) {
                     teValve.onMultiBlockBreak();
                 } else if (teValve.accessoryValves.size() > 0) {
                     teValve.accessoryValves.stream()
                             .filter(valve -> valve.multiBlockSize > 0)
                             .findFirst()
-                            .ifPresent(TileEntityPressureChamberValve::onMultiBlockBreak);
+                            .ifPresent(PressureChamberValveBlockEntity::onMultiBlockBreak);
                 }
             });
         }
@@ -123,6 +123,6 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityPressureChamberValve(pPos, pState);
+        return new PressureChamberValveBlockEntity(pPos, pState);
     }
 }

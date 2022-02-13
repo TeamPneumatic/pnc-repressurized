@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.PressurizedSpawnerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.PressurizedSpawnerMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -37,7 +37,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<PressurizedSpawnerMenu, TileEntityPressurizedSpawner> {
+public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<PressurizedSpawnerMenu, PressurizedSpawnerBlockEntity> {
     WidgetAnimatedStat infoStat;
     WidgetButtonExtended rangeButton;
 
@@ -79,7 +79,7 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<Pressurized
     @Override
     protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
-        if (te.problem == TileEntityVacuumTrap.Problems.NO_CORE) {
+        if (te.problem == VacuumTrapBlockEntity.Problems.NO_CORE) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressurized_spawner.no_core"));
         }
     }

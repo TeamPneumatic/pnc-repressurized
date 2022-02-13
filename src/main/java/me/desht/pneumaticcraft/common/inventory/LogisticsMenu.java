@@ -18,13 +18,13 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantomUnstackable;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
-import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;

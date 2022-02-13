@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
@@ -47,7 +47,7 @@ public class PacketSyncHackSimulationUpdate extends LocationIntPacket {
     private final boolean aiWon;
     private final boolean playerWon;
 
-    public PacketSyncHackSimulationUpdate(TileEntitySecurityStation te) {
+    public PacketSyncHackSimulationUpdate(SecurityStationBlockEntity te) {
         super(te.getBlockPos());
 
         HackSimulation aiSim = te.getSimulationController().getSimulation(HackingSide.AI);
@@ -112,8 +112,8 @@ public class PacketSyncHackSimulationUpdate extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             BlockEntity te = ClientUtils.getBlockEntity(pos);
-            if (te instanceof TileEntitySecurityStation) {
-                ISimulationController controller = ((TileEntitySecurityStation) te).getSimulationController();
+            if (te instanceof SecurityStationBlockEntity) {
+                ISimulationController controller = ((SecurityStationBlockEntity) te).getSimulationController();
                 if (controller != null) {
                     HackSimulation aiSim = controller.getSimulation(HackingSide.AI);
                     HackSimulation playerSim = controller.getSimulation(HackingSide.PLAYER);

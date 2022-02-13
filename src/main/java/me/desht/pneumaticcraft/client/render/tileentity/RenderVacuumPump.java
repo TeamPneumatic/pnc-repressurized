@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
+import me.desht.pneumaticcraft.common.block.entity.VacuumPumpBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderVacuumPump extends AbstractTileModelRenderer<TileEntityVacuumPump> {
+public class RenderVacuumPump extends AbstractTileModelRenderer<VacuumPumpBlockEntity> {
     private static final int BLADE_COUNT = 6;
 
     private static final String BLADE = "blade";
@@ -45,7 +45,7 @@ public class RenderVacuumPump extends AbstractTileModelRenderer<TileEntityVacuum
 
 
     @Override
-    public void renderModel(TileEntityVacuumPump te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(VacuumPumpBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityTranslucent(Textures.MODEL_VACUUM_PUMP));
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
@@ -55,7 +55,7 @@ public class RenderVacuumPump extends AbstractTileModelRenderer<TileEntityVacuum
     }
 
 
-    private void renderBlades(TileEntityVacuumPump te, float partialTicks, PoseStack matrixStackIn, VertexConsumer builder, int combinedLightIn, int combinedOverlayIn) {
+    private void renderBlades(VacuumPumpBlockEntity te, float partialTicks, PoseStack matrixStackIn, VertexConsumer builder, int combinedLightIn, int combinedOverlayIn) {
         float rotation = Mth.lerp(partialTicks, te.oldRotation, te.rotation) + 1;
 
         matrixStackIn.pushPose();

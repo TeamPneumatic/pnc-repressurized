@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetExternalProgram;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -100,8 +100,8 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                 if (stack.getItem() instanceof IProgrammable) {
                     IProgrammable programmable = (IProgrammable) stack.getItem();
                     if (programmable.canProgram(stack) && programmable.usesPieces(stack)) {
-                        List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(stack);
-                        TileEntityProgrammer.updatePuzzleConnections(widgets);
+                        List<IProgWidget> widgets = ProgrammerBlockEntity.getProgWidgets(stack);
+                        ProgrammerBlockEntity.updatePuzzleConnections(widgets);
                         boolean areWidgetsValid = widgets.stream().allMatch(widget -> drone.isProgramApplicable(widget.getType()));
                         if (areWidgetsValid) {
                             if (progWidget.shareVariables) mainAI.connectVariables(subAI);

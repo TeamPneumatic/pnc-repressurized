@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -161,7 +161,7 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityVacuumTrap(pPos, pState);
+        return new VacuumTrapBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockVacuumTrap extends BlockItem {

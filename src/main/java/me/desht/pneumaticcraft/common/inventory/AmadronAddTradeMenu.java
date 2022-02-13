@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantomUnstackable;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
-import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
-import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
+import me.desht.pneumaticcraft.common.block.entity.ElevatorBaseBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -36,7 +36,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
 
-public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElevatorBase> {
+public class RenderElevatorBase extends AbstractTileModelRenderer<ElevatorBaseBlockEntity> {
     private static final float FACTOR = 9F / 16;
     private static final float[] SHADE = new float[] { 1f, 0.85f, 0.7f, 0.55f };
 
@@ -88,7 +88,7 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
 
 
     @Override
-    public void renderModel(TileEntityElevatorBase te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(ElevatorBaseBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (te.extension == 0) return;
 
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ELEVATOR));
@@ -103,7 +103,7 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
     }
 
     @Override
-    protected void renderExtras(TileEntityElevatorBase te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+    protected void renderExtras(ElevatorBaseBlockEntity te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.fakeFloorTextureUV != null && te.fakeFloorTextureUV.length == 4) {
             matrixStack.pushPose();
             double extension = Mth.lerp(partialTicks, te.oldExtension, te.extension);
@@ -133,7 +133,7 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
     }
 
     @Override
-    public boolean shouldRenderOffScreen(TileEntityElevatorBase te) {
+    public boolean shouldRenderOffScreen(ElevatorBaseBlockEntity te) {
         return true;  // since this can get very tall
     }
 }

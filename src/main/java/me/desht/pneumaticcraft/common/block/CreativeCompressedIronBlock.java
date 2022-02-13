@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.common.block.entity.CreativeCompressedIronBlockBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityCreativeCompressedIronBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
@@ -50,7 +50,7 @@ public class CreativeCompressedIronBlock extends AbstractPneumaticCraftBlock
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityCreativeCompressedIronBlock(pPos, pState);
+        return new CreativeCompressedIronBlockBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockCreativeCompressedIron extends BlockItem {

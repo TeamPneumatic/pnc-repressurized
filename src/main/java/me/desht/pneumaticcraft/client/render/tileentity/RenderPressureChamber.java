@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -34,13 +34,13 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class RenderPressureChamber implements BlockEntityRenderer<TileEntityPressureChamberValve> {
+public class RenderPressureChamber implements BlockEntityRenderer<PressureChamberValveBlockEntity> {
 
     public RenderPressureChamber(@SuppressWarnings("unused") BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(TileEntityPressureChamberValve te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(PressureChamberValveBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
        if (te.multiBlockSize == 0 || !te.hasGlass) return;
 
         List<ItemStack> stacks = te.renderedItems;

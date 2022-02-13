@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.model;
 
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
-import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;

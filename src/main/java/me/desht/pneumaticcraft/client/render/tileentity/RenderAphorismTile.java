@@ -22,7 +22,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
+import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -33,7 +33,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 
 import java.util.regex.Pattern;
 
-public class RenderAphorismTile implements BlockEntityRenderer<TileEntityAphorismTile> {
+public class RenderAphorismTile implements BlockEntityRenderer<AphorismTileBlockEntity> {
     private static final float ICON_SCALE = 9f;
 
     private final Font font;
@@ -43,7 +43,7 @@ public class RenderAphorismTile implements BlockEntityRenderer<TileEntityAphoris
     }
 
     @Override
-    public void render(TileEntityAphorismTile te, float v, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
+    public void render(AphorismTileBlockEntity te, float v, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
 
         matrixStack.translate(0.5, 1.5, 0.5);
@@ -98,7 +98,7 @@ public class RenderAphorismTile implements BlockEntityRenderer<TileEntityAphoris
         matrixStack.popPose();
     }
 
-    private GuiAphorismTile getEditor(TileEntityAphorismTile te) {
+    private GuiAphorismTile getEditor(AphorismTileBlockEntity te) {
         return Minecraft.getInstance().screen instanceof GuiAphorismTile
                 && ((GuiAphorismTile) Minecraft.getInstance().screen).tile == te ?
                 (GuiAphorismTile) Minecraft.getInstance().screen : null;

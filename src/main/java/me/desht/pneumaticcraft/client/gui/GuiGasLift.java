@@ -22,10 +22,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.GasLiftBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.GasLiftBlockEntity.PumpMode;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.GasLiftMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift.PumpMode;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -40,7 +40,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiGasLift extends GuiPneumaticContainerBase<GasLiftMenu,TileEntityGasLift> {
+public class GuiGasLift extends GuiPneumaticContainerBase<GasLiftMenu,GasLiftBlockEntity> {
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[PumpMode.values().length];
 
@@ -114,7 +114,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<GasLiftMenu,TileEntity
             if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
                 curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.noTubes"));
             }
-            if (te.status == TileEntityGasLift.Status.STUCK) {
+            if (te.status == GasLiftBlockEntity.Status.STUCK) {
                 curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.stuck"));
             }
         } else {

@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.common.block.entity.AbstractHopperBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.OmnidirectionalHopperBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.tileentity.AbstractHopperBlockEntity;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
@@ -160,7 +160,7 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityOmnidirectionalHopper(pPos, pState);
+        return new OmnidirectionalHopperBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockOmnidirectionalHopper extends BlockItem implements ColorHandlers.ITintableItem {

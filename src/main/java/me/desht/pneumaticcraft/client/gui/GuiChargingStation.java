@@ -24,9 +24,9 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -42,7 +42,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiChargingStation extends GuiPneumaticContainerBase<ChargingStationMenu,TileEntityChargingStation> {
+public class GuiChargingStation extends GuiPneumaticContainerBase<ChargingStationMenu,ChargingStationBlockEntity> {
     private WidgetButtonExtended guiSelectButton;
     private WidgetButtonExtended upgradeOnlyButton;
     private float renderAirProgress;
@@ -94,7 +94,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ChargingStatio
     public void containerTick() {
         super.containerTick();
 
-        ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
+        ItemStack stack = te.getPrimaryInventory().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
         guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
         if (guiSelectButton.visible) {
             guiSelectButton.setTooltipText(xlate("pneumaticcraft.gui.tooltip.charging_station.manageUpgrades", stack.getHoverName()));
@@ -135,7 +135,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ChargingStatio
     @Override
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
-        ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
+        ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
         if (!chargeStack.isEmpty() && !chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             // shouldn't ever happen - I can't be bothered to add a translation
             textList.add(new TextComponent(ChatFormatting.RED + "Non-pneumatic item in the charge slot!?"));
@@ -145,7 +145,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ChargingStatio
     @Override
     protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
-        ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
+        ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
         if (chargeStack.isEmpty()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.no_item"));
         } else if (!te.upgradeOnly) {

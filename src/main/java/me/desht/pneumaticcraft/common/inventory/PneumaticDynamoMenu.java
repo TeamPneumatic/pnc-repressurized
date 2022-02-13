@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDynamoBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDynamo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class PneumaticDynamoMenu extends AbstractForgeEnergyMenu<TileEntityPneumaticDynamo> {
+public class PneumaticDynamoMenu extends AbstractForgeEnergyMenu<PneumaticDynamoBlockEntity> {
     public PneumaticDynamoMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         super(ModMenuTypes.PNEUMATIC_DYNAMO.get(), i, playerInventory, getTilePos(buffer));
     }

@@ -20,15 +20,15 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.block.tubes.INetworkedModule;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
+import me.desht.pneumaticcraft.common.block.entity.AdvancedPressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ReinforcedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedPressureTube;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedPressureTube;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
+import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
+import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
@@ -177,7 +177,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     }
 
     public static BlockState recalculateState(LevelAccessor worldIn, BlockPos currentPos, BlockState stateIn) {
-        TileEntityPressureTube tePT = getPressureTube(worldIn, currentPos);
+        PressureTubeBlockEntity tePT = getPressureTube(worldIn, currentPos);
         if (tePT != null) {
             // can't clear cached shape immediately since it appears getShape() can get called
             // soon enough to re-cache the old shape...
@@ -200,7 +200,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         return stateIn;
     }
 
-    private static BlockState checkForSingleConnection(TileEntityPressureTube te, BlockState state) {
+    private static BlockState checkForSingleConnection(PressureTubeBlockEntity te, BlockState state) {
         List<Direction> connected = new ArrayList<>();
         int nUnconnected = 0;
         for (Direction dir : DirectionUtil.VALUES) {
@@ -224,7 +224,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public VoxelShape getUncamouflagedShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext ctx) {
         VoxelShape res = getCachedShape(state);
-        TileEntityPressureTube te = getPressureTube(reader, pos);
+        PressureTubeBlockEntity te = getPressureTube(reader, pos);
         return te != null ? te.getCachedTubeShape(res) : res;
     }
 
@@ -255,7 +255,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             return InteractionResult.SUCCESS;
         }
         if (!player.isShiftKeyDown()) {
-            TubeModule module = getFocusedModule(world, pos, player);
+            AbstractTubeModule module = getFocusedModule(world, pos, player);
             if (module != null) {
                 return module.onActivated(player, hand) ? InteractionResult.SUCCESS : InteractionResult.PASS;
             }
@@ -269,19 +269,19 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
 
         ModuleNetworkManager.getInstance(world).invalidateCache();
         // force TE to calculate its connections immediately so network manager rescanning works
-        TileEntityPressureTube te = getPressureTube(world, pos);
+        PressureTubeBlockEntity te = getPressureTube(world, pos);
         if (te != null) {
             te.onNeighborTileUpdate(null);
         }
     }
 
     public boolean tryPlaceModule(Player player, Level world, BlockPos pos, Direction side, InteractionHand hand, boolean simulate) {
-        TileEntityPressureTube tePT = getPressureTube(world, pos);
+        PressureTubeBlockEntity tePT = getPressureTube(world, pos);
         if (tePT == null) return false;
 
         ItemStack heldStack = player.getItemInHand(hand);
         if (heldStack.getItem() instanceof ItemTubeModule) {
-            TubeModule module = ((ItemTubeModule) heldStack.getItem()).createModule();
+            AbstractTubeModule module = ((ItemTubeModule) heldStack.getItem()).createModule();
             if (tePT.mayPlaceModule(module, side)) {
                 if (simulate) module.markFake();
                 tePT.setModule(side, module);
@@ -298,7 +298,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 return true;
             }
         } else if (heldStack.getItem() == ModItems.MODULE_EXPANSION_CARD.get() && !simulate) {
-            TubeModule module = PressureTubeBlock.getFocusedModule(world, pos, player);
+            AbstractTubeModule module = PressureTubeBlock.getFocusedModule(world, pos, player);
             if (module != null && !module.isUpgraded() && module.canUpgrade()) {
                 if (!world.isClientSide) {
                     module.upgrade();
@@ -319,13 +319,13 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
      * @param player the player
      * @return a tube module, or null if no module is focused
      */
-    public static TubeModule getFocusedModule(Level world, BlockPos pos, Player player) {
+    public static AbstractTubeModule getFocusedModule(Level world, BlockPos pos, Player player) {
         Pair<Vec3, Vec3> vecs = RayTraceUtils.getStartAndEndLookVec(player, PneumaticCraftUtils.getPlayerReachDistance(player));
         BlockState state = world.getBlockState(pos);
         BlockHitInfo rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = rayTraceResult.tubeHitInfo();
         if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
-            TileEntityPressureTube tube = getPressureTube(world, pos);
+            PressureTubeBlockEntity tube = getPressureTube(world, pos);
             return tube == null ? null : tube.getModule(tubeHitInfo.dir);
         }
         return null;
@@ -335,9 +335,9 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         return state.setValue(CONNECTION_PROPERTIES_3[side.get3DDataValue()], type);
     }
 
-    private static TileEntityPressureTube getPressureTube(BlockGetter world, BlockPos pos) {
+    private static PressureTubeBlockEntity getPressureTube(BlockGetter world, BlockPos pos) {
         BlockEntity te = world.getBlockEntity(pos);
-        return te instanceof TileEntityPressureTube ? (TileEntityPressureTube) te : null;
+        return te instanceof PressureTubeBlockEntity ? (PressureTubeBlockEntity) te : null;
     }
 
     /**
@@ -375,7 +375,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         }
 
         // now check each arm of the tube
-        TileEntityPressureTube tube = getPressureTube(world, pos);
+        PressureTubeBlockEntity tube = getPressureTube(world, pos);
         if (tube == null) return new BlockHitInfo(BlockHitResult.miss(origin, Direction.UP, pos), TubeHitInfo.NO_HIT);
         for (int i = 0; i < 6; i++) {
             AABB arm = switch (state.getValue(CONNECTION_PROPERTIES_3[i])) {
@@ -396,7 +396,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
 
         // now check attached tube modules
         for (Direction dir : DirectionUtil.VALUES) {
-            TubeModule tm = tube.getModule(dir);
+            AbstractTubeModule tm = tube.getModule(dir);
             if (tm != null) {
                 AABB tubeAABB = tm.getShape().bounds();
                 brtr = AABB.clip(Collections.singletonList(tubeAABB), origin, direction, pos);
@@ -423,9 +423,9 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
             return super.getCloneItemStack(state, target, world, pos, player);
         } else if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
-            TileEntityPressureTube tube = getPressureTube(world, pos);
+            PressureTubeBlockEntity tube = getPressureTube(world, pos);
             if (tube != null) {
-                TubeModule tm = tube.getModule(tubeHitInfo.dir);
+                AbstractTubeModule tm = tube.getModule(tubeHitInfo.dir);
                 if (tm != null) {
                     return new ItemStack(tm.getItem());
                 }
@@ -437,9 +437,9 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public boolean onWrenched(Level world, Player player, BlockPos pos, Direction side, InteractionHand hand) {
         if (player == null) return false;
-        TileEntityPressureTube tube = getPressureTube(world, pos);
+        PressureTubeBlockEntity tube = getPressureTube(world, pos);
         if (tube == null) return false;
-        TubeModule module = getFocusedModule(world, pos, player);
+        AbstractTubeModule module = getFocusedModule(world, pos, player);
         if (player.isShiftKeyDown()) {
             if (module != null) {
                 // detach and drop the module as an item
@@ -488,10 +488,10 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         super.onRemove(state, world, pos, newState, isMoving);
     }
 
-    private static NonNullList<ItemStack> getModuleDrops(TileEntityPressureTube tube) {
+    private static NonNullList<ItemStack> getModuleDrops(PressureTubeBlockEntity tube) {
         NonNullList<ItemStack> drops = NonNullList.create();
         if (tube != null) {
-            tube.tubeModules().map(TubeModule::getDrops).forEach(drops::addAll);
+            tube.tubeModules().map(AbstractTubeModule::getDrops).forEach(drops::addAll);
         }
         return drops;
     }
@@ -503,7 +503,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
 //    public void animateTick(BlockState state, World par1World, BlockPos pos, Random rand) {
 //        if (!ConfigHelper.client().tubeModuleRedstoneParticles.get()) return;
 //
-//        TileEntityPressureTube tePt = TileEntityPressureTube.getTube(par1World.getTileEntity(pos));
+//        PressureTubeBlockEntity tePt = PressureTubeBlockEntity.getTube(par1World.getTileEntity(pos));
 //        if (tePt != null) {
 //            int l = 0;
 //            Direction side = null;
@@ -528,11 +528,11 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
 
     @Override
     public int getSignal(BlockState state, BlockGetter par1IBlockAccess, BlockPos pos, Direction side) {
-        TileEntityPressureTube tePt = getPressureTube(par1IBlockAccess, pos);
+        PressureTubeBlockEntity tePt = getPressureTube(par1IBlockAccess, pos);
         if (tePt != null) {
             int redstoneLevel = 0;
             for (Direction face : DirectionUtil.VALUES) {
-                TubeModule tm = tePt.getModule(face);
+                AbstractTubeModule tm = tePt.getModule(face);
                 if (tm != null) {
                     if (side.getOpposite() == face || face != side && tm.isInline()) {
                         // if we are on the same side, or when we have an 'in line' module that is not on the opposite side.
@@ -576,15 +576,15 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     }
 
     public enum Tier {
-        ONE(PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE, TileEntityPressureTube::new),
-        ONE_HALF(PressureTier.TIER_ONE_HALF, PneumaticValues.VOLUME_PRESSURE_TUBE, TileEntityReinforcedPressureTube::new),
-        TWO(PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, TileEntityAdvancedPressureTube::new);
+        ONE(PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE, PressureTubeBlockEntity::new),
+        ONE_HALF(PressureTier.TIER_ONE_HALF, PneumaticValues.VOLUME_PRESSURE_TUBE, ReinforcedPressureTubeBlockEntity::new),
+        TWO(PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, AdvancedPressureTubeBlockEntity::new);
 
         private final PressureTier tier;
         final int volume;
-        private final BiFunction<BlockPos,BlockState,? extends TileEntityPressureTube> teFactory;
+        private final BiFunction<BlockPos,BlockState,? extends PressureTubeBlockEntity> teFactory;
 
-        Tier(PressureTier tier, int volume, BiFunction<BlockPos,BlockState,? extends TileEntityPressureTube> teFactory) {
+        Tier(PressureTier tier, int volume, BiFunction<BlockPos,BlockState,? extends PressureTubeBlockEntity> teFactory) {
             this.tier = tier;
             this.volume = volume;
             this.teFactory = teFactory;

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyIOUnit;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyIOUnitBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -54,7 +54,7 @@ public abstract class AbstractAssemblyIOUnitBlock extends AbstractPneumaticCraft
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityAssemblyIOUnit(pPos, pState);
+        return new AssemblyIOUnitBlockEntity(pPos, pState);
     }
 
     public static class Import extends AbstractAssemblyIOUnitBlock {

@@ -25,10 +25,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractRedstoneReceivingModule;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.components.EditBox;
@@ -41,7 +41,7 @@ import net.minecraft.util.Mth;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPressureModule extends GuiTubeModule<TubeModule> {
+public class GuiPressureModule extends GuiTubeModule<AbstractTubeModule> {
     private EditBox lowerBoundField;
     private EditBox higherBoundField;
     private int graphLowY;
@@ -51,11 +51,11 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     private Rect2i lowerBoundArea, higherBoundArea;
     private boolean grabLower, grabHigher;
 
-    public static GuiTubeModule<?> createGUI(TubeModule module) {
+    public static GuiTubeModule<?> createGUI(AbstractTubeModule module) {
         return module.advancedConfig ? new GuiPressureModule(module) : new GuiPressureModuleSimple(module);
     }
 
-    public GuiPressureModule(TubeModule module) {
+    public GuiPressureModule(AbstractTubeModule module) {
         super(module);
         ySize = 191;
     }
@@ -115,8 +115,8 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     @Override
     public void drawForeground(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         GuiUtils.bindTexture(getTexture());
-        int scrollbarLowerBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.lowerBound / (TubeModule.MAX_VALUE + 1)));
-        int scrollbarHigherBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.higherBound / (TubeModule.MAX_VALUE + 1)));
+        int scrollbarLowerBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.lowerBound / (AbstractTubeModule.MAX_VALUE + 1)));
+        int scrollbarHigherBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.higherBound / (AbstractTubeModule.MAX_VALUE + 1)));
 
         blit(matrixStack, scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
         blit(matrixStack, scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
@@ -124,11 +124,11 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         renderGraph(matrixStack);
 
         // current redstone input, if applicable
-        if (module instanceof TubeModuleRedstoneReceiving) {
+        if (module instanceof AbstractRedstoneReceivingModule) {
             module.onNeighborBlockUpdate();
-            hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((TubeModuleRedstoneReceiving) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
+            hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((AbstractRedstoneReceivingModule) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
             String status = I18n.get("pneumaticcraft.gui.tubeModule.simpleConfig.threshold")
-                    + " " + PneumaticCraftUtils.roundNumberTo(((TubeModuleRedstoneReceiving) module).getThreshold(), 1) + " bar";
+                    + " " + PneumaticCraftUtils.roundNumberTo(((AbstractRedstoneReceivingModule) module).getThreshold(), 1) + " bar";
             font.draw(matrixStack, status, guiLeft + xSize / 2f - font.width(status) / 2f, guiTop + 175, 0xFF404040);
         }
 
@@ -178,14 +178,14 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
             switch (fieldId) {
                 case 0 -> {
                     prev = module.lowerBound;
-                    module.lowerBound = Mth.clamp(Float.parseFloat(lowerBoundField.getValue()), -1, TubeModule.MAX_VALUE);
+                    module.lowerBound = Mth.clamp(Float.parseFloat(lowerBoundField.getValue()), -1, AbstractTubeModule.MAX_VALUE);
                     if (!Mth.equal(module.lowerBound, prev)) {
                         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
                     }
                 }
                 case 1 -> {
                     prev = module.higherBound;
-                    module.higherBound = Mth.clamp(Float.parseFloat(higherBoundField.getValue()), -1, TubeModule.MAX_VALUE);
+                    module.higherBound = Mth.clamp(Float.parseFloat(higherBoundField.getValue()), -1, AbstractTubeModule.MAX_VALUE);
                     if (!Mth.equal(module.higherBound, prev)) {
                         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
                     }
@@ -199,13 +199,13 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (lowerBoundArea.contains((int)mouseX, (int)mouseY)) {
-            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
-            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), TubeModule.MAX_VALUE);
+            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * AbstractTubeModule.MAX_VALUE;
+            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), AbstractTubeModule.MAX_VALUE);
             grabLower = true;
             return true;
         } else if (higherBoundArea.contains((int)mouseX, (int)mouseY)) {
-            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
-            module.higherBound = Math.min(Math.max(-1, module.higherBound), TubeModule.MAX_VALUE);
+            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * AbstractTubeModule.MAX_VALUE;
+            module.higherBound = Math.min(Math.max(-1, module.higherBound), AbstractTubeModule.MAX_VALUE);
             grabHigher = true;
             return true;
         }
@@ -215,12 +215,12 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double dx, double dy) {
         if (grabLower) {
-            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
-            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), TubeModule.MAX_VALUE);
+            module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * AbstractTubeModule.MAX_VALUE;
+            module.lowerBound = Math.min(Math.max(-1, module.lowerBound), AbstractTubeModule.MAX_VALUE);
             return true;
         } else if (grabHigher) {
-            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * TubeModule.MAX_VALUE;
-            module.higherBound = Math.min(Math.max(-1, module.higherBound), TubeModule.MAX_VALUE);
+            module.higherBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * AbstractTubeModule.MAX_VALUE;
+            module.higherBound = Math.min(Math.max(-1, module.higherBound), AbstractTubeModule.MAX_VALUE);
             return true;
         } else {
             return super.mouseDragged(mouseX, mouseY, clickedMouseButton, dx, dy);

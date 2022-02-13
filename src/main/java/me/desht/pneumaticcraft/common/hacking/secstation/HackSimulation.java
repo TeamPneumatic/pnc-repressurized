@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.hacking.secstation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
-import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ItemStack;
@@ -101,7 +101,7 @@ public class HackSimulation {
 
     public static HackSimulation dummySimulation() {
         // used for rendering background connection lines
-        return new HackSimulation(null, -1, TileEntityConstants.NETWORK_AI_BRIDGE_SPEED, HackingSide.AI);
+        return new HackSimulation(null, -1, BlockEntityConstants.NETWORK_AI_BRIDGE_SPEED, HackingSide.AI);
     }
 
     public static HackSimulation readFromNetwork(FriendlyByteBuf buffer) {
@@ -394,7 +394,7 @@ public class HackSimulation {
         }
 
         float getProgressPerTick() {
-            return baseBridgeSpeed * (1 / (TileEntityConstants.NETWORK_NODE_RATING_MULTIPLIER * (size + (isFortified() ? 1 : 0))));
+            return baseBridgeSpeed * (1 / (BlockEntityConstants.NETWORK_NODE_RATING_MULTIPLIER * (size + (isFortified() ? 1 : 0))));
         }
 
         public void tick() {

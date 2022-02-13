@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -28,7 +28,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import java.util.Collections;
 import java.util.List;
 
-public class UniversalSensorMenu extends AbstractPneumaticCraftMenu<TileEntityUniversalSensor> {
+public class UniversalSensorMenu extends AbstractPneumaticCraftMenu<UniversalSensorBlockEntity> {
     private final List<String> globalVars;
 
     public UniversalSensorMenu(int windowId, Inventory playerInventory, BlockPos pos) {

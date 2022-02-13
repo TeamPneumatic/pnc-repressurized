@@ -113,7 +113,7 @@ public class EntityTumblingBlock extends ThrowableProjectile {
     // shoot()
     @Override
     public void shootFromRotation(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy) {
-        // velocities etc. get set up in TileEntityAirCannon#launchEntity()
+        // velocities etc. get set up in AirCannonBlockEntity#launchEntity()
     }
 
     @Override

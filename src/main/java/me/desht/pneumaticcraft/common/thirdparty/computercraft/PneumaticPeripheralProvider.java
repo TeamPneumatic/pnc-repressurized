@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 
 import dan200.computercraft.api.peripheral.IPeripheral;
-import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
+import me.desht.pneumaticcraft.common.block.entity.ILuaMethodProvider;
 import net.minecraft.core.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;

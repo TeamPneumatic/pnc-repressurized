@@ -17,13 +17,13 @@
 
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SecurityStationHackingMenu;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncHackSimulationUpdate;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,7 +46,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * by GuiSecurityStationHacking.
  */
 public class SimulationController implements ISimulationController {
-    private final TileEntitySecurityStation te;
+    private final SecurityStationBlockEntity te;
     private final Player hacker;
     private final HackSimulation playerSimulation;
     private final HackSimulation aiSimulation;
@@ -58,14 +58,14 @@ public class SimulationController implements ISimulationController {
      * @param te the security station
      * @param hacker the hacking player
      */
-    public SimulationController(TileEntitySecurityStation te, Player hacker, boolean justTesting) {
+    public SimulationController(SecurityStationBlockEntity te, Player hacker, boolean justTesting) {
         this.te = te;
         this.hacker = hacker;
 
         this.playerSimulation = new HackSimulation(this, te.findComponent(NetworkComponentType.NETWORK_IO_PORT),
-                TileEntityConstants.NETWORK_NORMAL_BRIDGE_SPEED, HackingSide.PLAYER);
+                BlockEntityConstants.NETWORK_NORMAL_BRIDGE_SPEED, HackingSide.PLAYER);
         this.aiSimulation = new HackSimulation(this, te.findComponent(NetworkComponentType.DIAGNOSTIC_SUBROUTINE),
-                TileEntityConstants.NETWORK_AI_BRIDGE_SPEED, HackingSide.AI);
+                BlockEntityConstants.NETWORK_AI_BRIDGE_SPEED, HackingSide.AI);
 
         for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
             this.playerSimulation.addNode(i, te.getPrimaryInventory().getStackInSlot(i));
@@ -83,7 +83,7 @@ public class SimulationController implements ISimulationController {
      * @param playerSimulation the hacking player's simulation object
      * @param aiSimulation the security station's simulation object
      */
-    public SimulationController(TileEntitySecurityStation te, Player hacker, HackSimulation playerSimulation, HackSimulation aiSimulation, boolean justTesting) {
+    public SimulationController(SecurityStationBlockEntity te, Player hacker, HackSimulation playerSimulation, HackSimulation aiSimulation, boolean justTesting) {
         this.te = te;
         this.hacker = hacker;
         this.playerSimulation = playerSimulation.setController(this);

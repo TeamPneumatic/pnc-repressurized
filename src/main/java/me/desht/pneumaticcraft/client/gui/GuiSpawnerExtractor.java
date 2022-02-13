@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.SpawnerExtractorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SpawnerExtractorMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySpawnerExtractor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +30,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
 
-public class GuiSpawnerExtractor extends GuiPneumaticContainerBase<SpawnerExtractorMenu, TileEntitySpawnerExtractor> {
+public class GuiSpawnerExtractor extends GuiPneumaticContainerBase<SpawnerExtractorMenu, SpawnerExtractorBlockEntity> {
     public GuiSpawnerExtractor(SpawnerExtractorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }
@@ -60,7 +60,7 @@ public class GuiSpawnerExtractor extends GuiPneumaticContainerBase<SpawnerExtrac
     protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
 
-        if (te.getMode() == TileEntitySpawnerExtractor.Mode.FINISHED) {
+        if (te.getMode() == SpawnerExtractorBlockEntity.Mode.FINISHED) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.spawnerExtractor.finished"));
         }
     }

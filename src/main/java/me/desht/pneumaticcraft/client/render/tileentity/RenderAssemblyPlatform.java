@@ -23,7 +23,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyPlatform;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyPlatformBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
@@ -40,7 +40,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntityAssemblyPlatform> {
+public class RenderAssemblyPlatform extends AbstractTileModelRenderer<AssemblyPlatformBlockEntity> {
     private static final float ITEM_SCALE = 0.5F;
 
     private final ModelPart claw1;
@@ -76,7 +76,7 @@ public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntity
     }
 
     @Override
-    public void renderModel(TileEntityAssemblyPlatform te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(AssemblyPlatformBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         ItemStack heldStack = te.getPrimaryInventory().getStackInSlot(0);
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_PLATFORM));

@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateAirGrateModule;
+import me.desht.pneumaticcraft.common.tubemodules.AirGrateModule;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -38,13 +38,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
+public class GuiAirGrateModule extends GuiTubeModule<AirGrateModule> {
     private int sendTimer = 0;
     private WidgetButtonExtended warningButton;
     private WidgetButtonExtended rangeButton;
     private EditBox textfield;
 
-    public GuiAirGrateModule(ModuleAirGrate module) {
+    public GuiAirGrateModule(AirGrateModule module) {
         super(module);
 
         ySize = 57;

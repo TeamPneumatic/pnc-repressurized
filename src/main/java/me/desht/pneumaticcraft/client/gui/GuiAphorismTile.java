@@ -23,12 +23,12 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAphorismTileUpdate;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.drama.DramaGenerator;
 import net.minecraft.SharedConstants;
@@ -48,7 +48,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiAphorismTile extends Screen implements Slider.ISlider {
     private static final int PANEL_HEIGHT = 88;
-    public final TileEntityAphorismTile tile;
+    public final AphorismTileBlockEntity tile;
     private String[] textLines;
     public int cursorY;
     public int cursorX;
@@ -56,7 +56,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
     private GuiItemSearcher itemSearchGui;
     private int panelWidth;
 
-    public GuiAphorismTile(TileEntityAphorismTile tile, boolean placing) {
+    public GuiAphorismTile(AphorismTileBlockEntity tile, boolean placing) {
         super(new ItemStack(ModBlocks.APHORISM_TILE.get()).getHoverName());
 
         this.tile = tile;
@@ -116,7 +116,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
         }
     }
 
-    public static void openGui(TileEntityAphorismTile te, boolean placing) {
+    public static void openGui(AphorismTileBlockEntity te, boolean placing) {
         if (te != null) {
             Minecraft.getInstance().setScreen(new GuiAphorismTile(te, placing));
         }

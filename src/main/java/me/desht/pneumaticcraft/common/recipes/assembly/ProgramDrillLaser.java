@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.common.recipes.assembly;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -38,7 +38,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
     }
 
     @Override
-    public boolean executeStep(TileEntityAssemblyController.AssemblySystem system) {
+    public boolean executeStep(AssemblyControllerBlockEntity.AssemblySystem system) {
         boolean useAir = true;
 
         Level world = system.getPlatform().getLevel();

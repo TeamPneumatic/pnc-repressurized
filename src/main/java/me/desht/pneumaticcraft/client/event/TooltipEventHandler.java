@@ -27,12 +27,12 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.ChatFormatting;
@@ -125,7 +125,7 @@ public class TooltipEventHandler {
         if (programmable.canProgram(event.getItemStack()) && programmable.showProgramTooltip()) {
             boolean hasInvalidPrograms = false;
             List<Component> addedEntries = new ArrayList<>();
-            List<IProgWidget> widgets = TileEntityProgrammer.getProgWidgets(event.getItemStack());
+            List<IProgWidget> widgets = ProgrammerBlockEntity.getProgWidgets(event.getItemStack());
             Map<ResourceLocation, Integer> widgetMap = getPuzzleSummary(widgets);
             for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
                 ChatFormatting[] prefix = new ChatFormatting[0];

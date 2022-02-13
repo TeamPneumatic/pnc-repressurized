@@ -21,11 +21,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.IAssemblyMachine;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.AssemblyControllerMenu;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
-import me.desht.pneumaticcraft.common.tileentity.IAssemblyMachine;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -42,7 +42,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAssemblyController extends GuiPneumaticContainerBase<AssemblyControllerMenu,TileEntityAssemblyController> {
+public class GuiAssemblyController extends GuiPneumaticContainerBase<AssemblyControllerMenu,AssemblyControllerBlockEntity> {
 
     private WidgetAnimatedStat statusStat;
 

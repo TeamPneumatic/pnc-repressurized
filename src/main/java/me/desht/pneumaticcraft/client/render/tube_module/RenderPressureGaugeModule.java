@@ -7,8 +7,8 @@ import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer3D;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.tubemodules.PressureGaugeModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePressureGauge> {
+public class RenderPressureGaugeModule extends TubeModuleRendererBase<PressureGaugeModule> {
     private static final float GAUGE_SCALE = 0.007f;
 
     private final ModelPart tubeConnector1;
@@ -106,7 +106,7 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
 
 
     @Override
-    protected void renderDynamic(ModulePressureGauge module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void renderDynamic(PressureGaugeModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
@@ -121,7 +121,7 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
     }
 
     @Override
-    public void renderExtras(ModulePressureGauge module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
+    public void renderExtras(PressureGaugeModule module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         BlockPos pos = module.getTube().getBlockPos();
         if (ClientUtils.getClientPlayer().distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
 
@@ -133,7 +133,7 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
         matrixStack.translate(0, 1.01, 0.378);
         matrixStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
-        TileEntityPressureTube te = module.getTube();
+        PressureTubeBlockEntity te = module.getTube();
         PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, te.getCriticalPressure(), te.getDangerPressure(),
                 0, te.getPressure(), 0, 0, 0xFF000000);
 

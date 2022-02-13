@@ -32,6 +32,8 @@ import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.client.GuiRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -42,8 +44,6 @@ import me.desht.pneumaticcraft.common.pressure.AirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
@@ -90,7 +90,7 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     @Override
     public int getProtectingSecurityStations(Player player, BlockPos pos) {
         Validate.isTrue(!player.getCommandSenderWorld().isClientSide, "This method can only be called from the server side!");
-        return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
+        return SecurityStationBlockEntity.getProtectingSecurityStations(player, pos, false);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
 
     @Override
     public IItemHandler deserializeSmartChest(CompoundTag tag) {
-        return TileEntitySmartChest.deserializeSmartChest(tag);
+        return SmartChestBlockEntity.deserializeSmartChest(tag);
     }
 
     @Override

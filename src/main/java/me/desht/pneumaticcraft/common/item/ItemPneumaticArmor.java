@@ -30,6 +30,8 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EnderVisorClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -41,8 +43,6 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -319,9 +319,9 @@ public class ItemPneumaticArmor extends ArmorItem implements
         if (helmet.getItem() != ModItems.PNEUMATIC_HELMET.get()) return false;
         if (e instanceof EntityDrone) {
             return NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == ((EntityDrone)e).getId();
-        } else if (e instanceof TileEntityProgrammableController) {
+        } else if (e instanceof ProgrammableControllerBlockEntity) {
             CompoundTag tag = helmet.getTagElement(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
-            return tag != null && NbtUtils.readBlockPos(tag).equals(((TileEntityProgrammableController) e).getBlockPos());
+            return tag != null && NbtUtils.readBlockPos(tag).equals(((ProgrammableControllerBlockEntity) e).getBlockPos());
         } else {
             return false;
         }
@@ -364,7 +364,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     }
 
     @Override
-    public MenuProvider getContainerProvider(TileEntityChargingStation te) {
+    public MenuProvider getContainerProvider(ChargingStationBlockEntity te) {
         return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_ARMOR.get());
     }
 

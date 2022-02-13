@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
@@ -47,7 +48,6 @@ import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -71,7 +71,7 @@ import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiProgrammer extends GuiPneumaticContainerBase<ProgrammerMenu,TileEntityProgrammer> {
+public class GuiProgrammer extends GuiPneumaticContainerBase<ProgrammerMenu,ProgrammerBlockEntity> {
     private GuiPastebin pastebinGui;
 
     private WidgetButtonExtended importButton;
@@ -129,7 +129,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ProgrammerMenu,Tile
         if (pastebinGui != null && pastebinGui.outputTag != null) {
             if (pastebinGui.shouldMerge) {
                 List<IProgWidget> newWidgets = te.mergeWidgetsFromNBT(pastebinGui.outputTag);
-                TileEntityProgrammer.updatePuzzleConnections(newWidgets);
+                ProgrammerBlockEntity.updatePuzzleConnections(newWidgets);
                 te.setProgWidgets(newWidgets, ClientUtils.getClientPlayer());
             } else {
                 te.readProgWidgetsFromNBT(pastebinGui.outputTag);
@@ -1021,7 +1021,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ProgrammerMenu,Tile
             }
             if (!simulate) {
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
-                TileEntityProgrammer.updatePuzzleConnections(te.progWidgets);
+                ProgrammerBlockEntity.updatePuzzleConnections(te.progWidgets);
             }
         }
         return true;
@@ -1246,7 +1246,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ProgrammerMenu,Tile
                 }
             }
             NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
-            TileEntityProgrammer.updatePuzzleConnections(te.progWidgets);
+            ProgrammerBlockEntity.updatePuzzleConnections(te.progWidgets);
             draggingWidget = null;
         }
         return super.mouseReleased(mouseX, mouseY, button);

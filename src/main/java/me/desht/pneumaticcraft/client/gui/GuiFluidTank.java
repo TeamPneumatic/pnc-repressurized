@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.FluidTankMenu;
-import me.desht.pneumaticcraft.common.tileentity.AbstractFluidTankBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

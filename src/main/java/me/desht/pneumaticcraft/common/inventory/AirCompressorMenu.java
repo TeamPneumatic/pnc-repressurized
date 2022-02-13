@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.AirCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class AirCompressorMenu extends AbstractPneumaticCraftMenu<TileEntityAirCompressor> {
+public class AirCompressorMenu extends AbstractPneumaticCraftMenu<AirCompressorBlockEntity> {
 
     public AirCompressorMenu(int windowId, Inventory invPlayer, FriendlyByteBuf extra) {
         this(ModMenuTypes.AIR_COMPRESSOR.get(), windowId, invPlayer, getTilePos(extra));

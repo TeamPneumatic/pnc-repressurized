@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
+import me.desht.pneumaticcraft.common.block.entity.AirCannonBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderAirCannon extends AbstractTileModelRenderer<TileEntityAirCannon> {
+public class RenderAirCannon extends AbstractTileModelRenderer<AirCannonBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseFrame1;
     private final ModelPart baseFrame2;
@@ -71,7 +71,7 @@ public class RenderAirCannon extends AbstractTileModelRenderer<TileEntityAirCann
     }
 
     @Override
-    void renderModel(TileEntityAirCannon te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    void renderModel(AirCannonBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_AIR_CANNON));
 
         float angle = RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());

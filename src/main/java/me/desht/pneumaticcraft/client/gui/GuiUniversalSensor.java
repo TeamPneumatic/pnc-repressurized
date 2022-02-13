@@ -25,13 +25,13 @@ import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
+import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity.SensorStatus;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor.SensorStatus;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -55,7 +55,7 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.api.misc.Symbols.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiUniversalSensor extends GuiPneumaticContainerBase<UniversalSensorMenu,TileEntityUniversalSensor> {
+public class GuiUniversalSensor extends GuiPneumaticContainerBase<UniversalSensorMenu,UniversalSensorBlockEntity> {
     private static final int MAX_TEXTFIELD_LENGTH = 256;
 
     private WidgetAnimatedStat sensorInfoStat;

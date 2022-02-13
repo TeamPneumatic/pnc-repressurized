@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.block.entity.AirCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -33,7 +33,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAirCompressor extends GuiPneumaticContainerBase<AirCompressorMenu,TileEntityAirCompressor> {
+public class GuiAirCompressor extends GuiPneumaticContainerBase<AirCompressorMenu,AirCompressorBlockEntity> {
 
     public GuiAirCompressor(AirCompressorMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);

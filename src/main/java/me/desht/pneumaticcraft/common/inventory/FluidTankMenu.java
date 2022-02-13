@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotFluidContainer;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
-import me.desht.pneumaticcraft.common.tileentity.AbstractFluidTankBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

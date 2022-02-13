@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotUpgrade;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class FluidMixerMenu extends AbstractPneumaticCraftMenu<TileEntityFluidMixer> {
+public class FluidMixerMenu extends AbstractPneumaticCraftMenu<FluidMixerBlockEntity> {
     public FluidMixerMenu(int windowId, Inventory inv, BlockPos pos) {
         super(ModMenuTypes.FLUID_MIXER.get(), windowId, inv, pos);
 

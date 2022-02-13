@@ -17,11 +17,11 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.EtchingTankBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,11 +31,11 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class EtchingTankMenu extends AbstractPneumaticCraftMenu<TileEntityEtchingTank> {
+public class EtchingTankMenu extends AbstractPneumaticCraftMenu<EtchingTankBlockEntity> {
     public EtchingTankMenu(int windowId, Inventory playerInv, BlockPos pos) {
         super(ModMenuTypes.ETCHING_TANK.get(), windowId, playerInv, pos);
 
-        for (int i = 0; i < TileEntityEtchingTank.ETCHING_SLOTS; i++) {
+        for (int i = 0; i < EtchingTankBlockEntity.ETCHING_SLOTS; i++) {
             int x = 8 + 18 * (i % 5);
             int y = 18 + 18 * (i / 5);
             addSlot(new SlotPCB(te.getPrimaryInventory(), i, x, y));
@@ -59,7 +59,7 @@ public class EtchingTankMenu extends AbstractPneumaticCraftMenu<TileEntityEtchin
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.EMPTY_PCB.get() && TileEntityUVLightBox.getExposureProgress(stack) > 0;
+            return stack.getItem() == ModItems.EMPTY_PCB.get() && UVLightBoxBlockEntity.getExposureProgress(stack) > 0;
         }
 
         @Override

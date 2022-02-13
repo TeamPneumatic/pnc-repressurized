@@ -23,8 +23,8 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
-import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -39,8 +39,8 @@ public class TubeModuleProvider {
     public static class Data implements IServerDataProvider<BlockEntity> {
         @Override
         public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
-            if (blockEntity instanceof TileEntityPressureTube) {
-                TubeModule module = PressureTubeBlock.getFocusedModule(level, blockEntity.getBlockPos(), serverPlayer);
+            if (blockEntity instanceof PressureTubeBlockEntity) {
+                AbstractTubeModule module = PressureTubeBlock.getFocusedModule(level, blockEntity.getBlockPos(), serverPlayer);
                 if (module != null) {
                     compoundTag.put("module", module.writeToNBT(new CompoundTag()));
                     compoundTag.putByte("side", (byte) module.getDirection().get3DDataValue());
@@ -52,11 +52,11 @@ public class TubeModuleProvider {
     public static class Component implements IComponentProvider {
         @Override
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
-            TileEntityPressureTube tube = (TileEntityPressureTube) blockAccessor.getBlockEntity();
+            PressureTubeBlockEntity tube = (PressureTubeBlockEntity) blockAccessor.getBlockEntity();
             CompoundTag tubeTag = blockAccessor.getServerData();
             if (tubeTag.contains("side", Tag.TAG_BYTE)) {
                 int side = tubeTag.getByte("side");
-                TubeModule module = tube.getModule(Direction.from3DDataValue(side));
+                AbstractTubeModule module = tube.getModule(Direction.from3DDataValue(side));
                 if (module != null) {
                     module.readFromNBT(tubeTag.getCompound("module"));
                     List<net.minecraft.network.chat.Component> l = new ArrayList<>();

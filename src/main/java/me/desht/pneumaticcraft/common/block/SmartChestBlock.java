@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -69,7 +69,7 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Enti
     @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntitySmartChest(pPos, pState);
+        return new SmartChestBlockEntity(pPos, pState);
     }
 
     public static class ItemBlockBlockSmartChest extends BlockItem implements IInventoryItem {
@@ -99,8 +99,8 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Enti
                     tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.filter", l.size()));
                 }
                 int lastSlot = subTag.getInt("LastSlot");
-                if (lastSlot < TileEntitySmartChest.CHEST_SIZE) {
-                    tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.slotsClosed", TileEntitySmartChest.CHEST_SIZE - lastSlot));
+                if (lastSlot < SmartChestBlockEntity.CHEST_SIZE) {
+                    tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.slotsClosed", SmartChestBlockEntity.CHEST_SIZE - lastSlot));
                 }
             }
         }

@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.tube_module;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
+import me.desht.pneumaticcraft.common.tubemodules.AirGrateModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -14,7 +14,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderAirGrateModule extends TubeModuleRendererBase<ModuleAirGrate> {
+public class RenderAirGrateModule extends TubeModuleRendererBase<AirGrateModule> {
     private final ModelPart top;
     private final ModelPart side1;
     private final ModelPart side2;
@@ -90,7 +90,7 @@ public class RenderAirGrateModule extends TubeModuleRendererBase<ModuleAirGrate>
     }
 
     @Override
-    protected void renderDynamic(ModuleAirGrate module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void renderDynamic(AirGrateModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         top.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         side1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         side2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);

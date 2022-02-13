@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.AssemblyDrillBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyDrill;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -55,6 +55,6 @@ public class AssemblyDrillBlock extends AbstractPneumaticCraftBlock implements E
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityAssemblyDrill(pPos, pState);
+        return new AssemblyDrillBlockEntity(pPos, pState);
     }
 }

@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
+import me.desht.pneumaticcraft.common.block.entity.KeroseneLampBlockEntity;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Collection;
 
-public class RenderKeroseneLamp extends AbstractFluidTER<TileEntityKeroseneLamp> {
+public class RenderKeroseneLamp extends AbstractFluidTER<KeroseneLampBlockEntity> {
     private static final AABB TANK_BOUNDS = new AABB(5.1/16f, 1/16f, 5.1/16f, 10.9/16f, 9/16f, 10.9/16f);
 
     public RenderKeroseneLamp(BlockEntityRendererProvider.Context ctx) {
@@ -33,7 +33,7 @@ public class RenderKeroseneLamp extends AbstractFluidTER<TileEntityKeroseneLamp>
     }
 
     @Override
-    Collection<TankRenderInfo> getTanksToRender(TileEntityKeroseneLamp te) {
+    Collection<TankRenderInfo> getTanksToRender(KeroseneLampBlockEntity te) {
         return ImmutableList.of(new TankRenderInfo(te.getTank(), TANK_BOUNDS).without(Direction.DOWN));
     }
 }

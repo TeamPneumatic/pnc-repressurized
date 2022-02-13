@@ -21,12 +21,12 @@ import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.RangedInt;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
+import me.desht.pneumaticcraft.common.block.entity.UniversalSensorBlockEntity;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerAttackSensor;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor;
 import me.desht.pneumaticcraft.common.sensor.pollSensors.*;
 import me.desht.pneumaticcraft.common.sensor.pollSensors.entity.EntityInRangeSensor;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -201,7 +201,7 @@ public class SensorHandler implements ISensorRegistry {
 
         @Override
         public int emitRedstoneOnEvent(Event event, BlockEntity tile, int sensorRange, String textboxText) {
-            TileEntityUniversalSensor teUs = (TileEntityUniversalSensor) tile;
+            UniversalSensorBlockEntity teUs = (UniversalSensorBlockEntity) tile;
             Set<BlockPos> positions = teUs.getGPSPositions();
             return positions.isEmpty() ? 0 : coordinateSensor.emitRedstoneOnEvent(event, teUs, sensorRange, positions);
         }
@@ -256,7 +256,7 @@ public class SensorHandler implements ISensorRegistry {
 
         @Override
         public int getPollFrequency(BlockEntity te) {
-            TileEntityUniversalSensor us = (TileEntityUniversalSensor) te;
+            UniversalSensorBlockEntity us = (UniversalSensorBlockEntity) te;
             Set<BlockPos> positions = us.getGPSPositions();
             int mult = positions.isEmpty() ? 1 : positions.size();
             return coordinateSensor.getPollFrequency() * mult;
@@ -265,8 +265,8 @@ public class SensorHandler implements ISensorRegistry {
         @Override
         public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
             BlockEntity te = level.getBlockEntity(pos);
-            if (te instanceof TileEntityUniversalSensor) {
-                TileEntityUniversalSensor teUs = (TileEntityUniversalSensor) te;
+            if (te instanceof UniversalSensorBlockEntity) {
+                UniversalSensorBlockEntity teUs = (UniversalSensorBlockEntity) te;
                 Set<BlockPos> positions = teUs.getGPSPositions();
                 return positions.isEmpty() ? 0 : coordinateSensor.getRedstoneValue(level, pos, sensorRange, textBoxText, positions);
             }

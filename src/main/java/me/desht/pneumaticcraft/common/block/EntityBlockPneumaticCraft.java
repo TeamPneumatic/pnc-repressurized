@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.AbstractTickingBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;

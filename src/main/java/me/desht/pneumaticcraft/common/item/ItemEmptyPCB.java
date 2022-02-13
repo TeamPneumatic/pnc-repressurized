@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
+import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
-import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
@@ -46,7 +46,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     @Override
     public void appendHoverText(ItemStack stack, Level player, List<Component> infoList, TooltipFlag par4) {
         super.appendHoverText(stack, player, infoList, par4);
-        int uvProgress = TileEntityUVLightBox.getExposureProgress(stack);
+        int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);
         int etchProgress = getEtchProgress(stack);
 
         if (etchProgress > 0) {
@@ -77,13 +77,13 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
 
     @Override
     public int getBarWidth(ItemStack pStack) {
-        int progress = TileEntityUVLightBox.getExposureProgress(pStack);
+        int progress = UVLightBoxBlockEntity.getExposureProgress(pStack);
         return Math.round(progress / 100F * 13F);
     }
 
     @Override
     public int getBarColor(ItemStack pStack) {
-        int progress = TileEntityUVLightBox.getExposureProgress(pStack);
+        int progress = UVLightBoxBlockEntity.getExposureProgress(pStack);
         return progress * 2 << 16 | 0xFF;
     }
 
@@ -97,7 +97,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
             }
             int etchProgress = getEtchProgress(stack);
             if (etchProgress < 100) {
-                if (entityItem.tickCount % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0) {
+                if (entityItem.tickCount % (BlockEntityConstants.PCB_ETCH_TIME / 5) == 0) {
                     setEtchProgress(stack, etchProgress + 1);
                 }
                 Level world = entityItem.getCommandSenderWorld();
@@ -110,7 +110,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
             } else if (!entityItem.level.isClientSide) {
                 int successCount = 0;
                 int failedCount = 0;
-                int uvProgress = TileEntityUVLightBox.getExposureProgress(stack);
+                int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);
                 for (int i = 0; i < stack.getCount(); i++) {
                     if (entityItem.level.random.nextInt(100) <= uvProgress) {
                         successCount++;
@@ -139,7 +139,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
             items.add(new ItemStack(this));
 
             ItemStack stack = new ItemStack(this);
-            TileEntityUVLightBox.setExposureProgress(stack, 100);
+            UVLightBoxBlockEntity.setExposureProgress(stack, 100);
             items.add(stack);
         }
     }

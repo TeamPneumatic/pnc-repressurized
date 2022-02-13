@@ -23,7 +23,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.PneumaticDoorBlock;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
+import me.desht.pneumaticcraft.common.block.entity.PneumaticDoorBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -34,7 +34,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 
-public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPneumaticDoor> {
+public class RenderPneumaticDoor extends AbstractTileModelRenderer<PneumaticDoorBlockEntity> {
     private static final String DOOR = "door";
 
     private final ModelPart door;
@@ -79,7 +79,7 @@ public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPne
     }
 
     @Override
-    public void renderModel(TileEntityPneumaticDoor te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void renderModel(PneumaticDoorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (te.getBlockState().getValue(PneumaticDoorBlock.TOP_DOOR)) return;
 
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC));

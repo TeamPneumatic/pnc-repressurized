@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberValveBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.PressureChamberWallBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringRepresentable;
@@ -53,9 +53,9 @@ public class PressureChamberWallBlock extends AbstractPressureWallBlock {
     }
 
     public BlockState updateState(BlockState state, BlockGetter world, BlockPos pos) {
-        return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(wall -> {
+        return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(wall -> {
             EnumWallState wallState = EnumWallState.NONE;
-            TileEntityPressureChamberValve core = wall.getCore();
+            PressureChamberValveBlockEntity core = wall.getCore();
             if (core != null) {
                 boolean xMin = pos.getX() == core.multiBlockX;
                 boolean yMin = pos.getY() == core.multiBlockY;

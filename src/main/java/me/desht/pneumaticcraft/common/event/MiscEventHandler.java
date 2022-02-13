@@ -30,7 +30,8 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.DroneClaimManager;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -42,8 +43,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
+import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -178,7 +178,7 @@ public class MiscEventHandler {
             Block b = event.getWorld().getBlockState(brtr.getBlockPos()).getBlock();
             if (b instanceof LiquidBlock) {
                 Fluid fluid = ((LiquidBlock) b).getFluid();
-                if (TileEntityRefineryController.isInputFluidValid(event.getWorld(), fluid, 4) && event.getPlayer() instanceof ServerPlayer) {
+                if (RefineryControllerBlockEntity.isInputFluidValid(event.getWorld(), fluid, 4) && event.getPlayer() instanceof ServerPlayer) {
                     AdvancementTriggers.OIL_BUCKET.trigger((ServerPlayer) event.getPlayer());
                 }
             }
@@ -233,7 +233,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void onInventoryTracking(InventoryTrackEvent event) {
-        if (event.getTileEntity() instanceof TileEntityProgrammer) event.setCanceled(true);
+        if (event.getTileEntity() instanceof ProgrammerBlockEntity) event.setCanceled(true);
     }
 
     @SubscribeEvent

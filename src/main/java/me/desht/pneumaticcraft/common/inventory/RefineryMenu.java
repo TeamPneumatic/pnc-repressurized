@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -29,7 +29,7 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class RefineryMenu extends AbstractPneumaticCraftMenu<TileEntityRefineryController> {
+public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerBlockEntity> {
 
     public RefineryMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(i, playerInventory, getTilePos(buffer));
@@ -38,10 +38,10 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<TileEntityRefineryC
     public RefineryMenu(int i, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.REFINERY.get(), i, playerInventory, pos);
 
-        TileEntityRefineryController refinery = te;
+        RefineryControllerBlockEntity refinery = te;
         refinery.onNeighborTileUpdate(null);
-        while (refinery.getCachedNeighbor(Direction.UP) instanceof TileEntityRefineryController) {
-            refinery = (TileEntityRefineryController) refinery.getCachedNeighbor(Direction.UP);
+        while (refinery.getCachedNeighbor(Direction.UP) instanceof RefineryControllerBlockEntity) {
+            refinery = (RefineryControllerBlockEntity) refinery.getCachedNeighbor(Direction.UP);
             addSyncedFields(refinery);
             refinery.onNeighborTileUpdate(null);
         }

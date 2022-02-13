@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.block.entity.AdvancedLiquidCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -91,6 +91,6 @@ public class AdvancedLiquidCompressorBlock extends AbstractPneumaticCraftBlock i
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityAdvancedLiquidCompressor(pPos, pState);
+        return new AdvancedLiquidCompressorBlockEntity(pPos, pState);
     }
 }

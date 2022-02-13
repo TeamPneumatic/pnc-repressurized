@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -29,7 +29,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class VacuumTrapMenu extends AbstractPneumaticCraftMenu<TileEntityVacuumTrap> {
+public class VacuumTrapMenu extends AbstractPneumaticCraftMenu<VacuumTrapBlockEntity> {
     public VacuumTrapMenu(int windowId, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(windowId, playerInventory, getTilePos(buffer));
     }
