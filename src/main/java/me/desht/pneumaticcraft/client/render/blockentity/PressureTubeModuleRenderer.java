@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
@@ -38,12 +38,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RenderPressureTubeModule implements BlockEntityRenderer<PressureTubeBlockEntity> {
+public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureTubeBlockEntity> {
 
     private final Map<ResourceLocation, AbstractTubeModuleRenderer<?>> models = new HashMap<>();
     private final BlockEntityRendererProvider.Context ctx;
 
-    public RenderPressureTubeModule(BlockEntityRendererProvider.Context ctx) {
+    public PressureTubeModuleRenderer(BlockEntityRendererProvider.Context ctx) {
         this.ctx = ctx;
     }
 

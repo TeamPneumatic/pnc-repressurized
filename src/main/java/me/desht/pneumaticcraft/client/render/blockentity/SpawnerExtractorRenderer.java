@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -35,14 +35,14 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fluids.FluidStack;
 
-public class RenderSpawnerExtractor extends AbstractBlockEntityModelRenderer<SpawnerExtractorBlockEntity> {
+public class SpawnerExtractorRenderer extends AbstractBlockEntityModelRenderer<SpawnerExtractorBlockEntity> {
     private static final AABB FLUID_BB = new AABB(6/16D, 0, 6/16D, 10/16D, 1, 10/16D);
 
     private static final String MODEL = "model";
 
     private final ModelPart model;
 
-    public RenderSpawnerExtractor(BlockEntityRendererProvider.Context ctx) {
+    public SpawnerExtractorRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.SPAWNER_EXTRACTOR);

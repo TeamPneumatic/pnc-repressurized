@@ -29,42 +29,31 @@ import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.Pair;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
+import static me.desht.pneumaticcraft.client.util.RenderUtils.normalLine;
 
 public class RenderProgressBar {
-    public static void render3d(PoseStack matrixStack, MultiBufferSource buffer, double minX, double minY, double maxX, double maxY, double zLevel, float progress, int color1, int color2) {
+    public static void render3d(PoseStack matrixStack, MultiBufferSource buffer, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
         Pair<float[], float[]> cols = calcColors(color1, color2, progress);
         float[] f1 = cols.getLeft();
         float[] f2 = cols.getRight();
 
-        double x = Mth.lerp(progress / 100D, minX, maxX);
+        float x = Mth.lerp(progress / 100F, minX, maxX);
 
         // draw the bar
         RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH, (posMat, builder) -> {
-            RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
-            RenderUtils.posF(builder, posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
-            RenderUtils.posF(builder, posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();
-            RenderUtils.posF(builder, posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();
+            builder.vertex(posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
+            builder.vertex(posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
+            builder.vertex(posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();
+            builder.vertex(posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();
         });
 
         // draw the outline
         final Matrix3f normal = matrixStack.last().normal();
         RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoops(1.5), (posMat, builder) -> {
-            RenderUtils.posF(builder, posMat, minX, minY, zLevel)
-                    .color(0, 0, 0, 255)
-                    .normal(normal, 0, 1, 0)
-                    .endVertex();
-            RenderUtils.posF(builder, posMat, minX, maxY, zLevel)
-                    .color(0, 0, 0, 255)
-                    .normal(normal, 1, 0, 0)
-                    .endVertex();
-            RenderUtils.posF(builder, posMat, maxX, maxY, zLevel)
-                    .color(0, 0, 0, 255)
-                    .normal(normal, 0, -1, 0)
-                    .endVertex();
-            RenderUtils.posF(builder, posMat, maxX, minY, zLevel)
-                    .color(0, 0, 0, 255)
-                    .normal(normal, -1, 0, 0)
-                    .endVertex();
+            normalLine(builder, posMat, normal, minX, minY, zLevel, minX, maxY, zLevel, 255,0, 0, 0, true);
+            normalLine(builder, posMat, normal, minX, maxY, zLevel, maxX, maxY, zLevel, 255,0, 0, 0, true);
+            normalLine(builder, posMat, normal, maxX, maxY, zLevel, maxX, minY, zLevel, 255,0, 0, 0, true);
+            normalLine(builder, posMat, normal, maxX, minY, zLevel, minX, minY, zLevel, 255,0, 0, 0, true);
         });
     }
 

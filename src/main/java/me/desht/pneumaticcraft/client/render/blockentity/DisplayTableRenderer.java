@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -34,8 +34,8 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
-public class RenderDisplayTable implements BlockEntityRenderer<DisplayTableBlockEntity> {
-    public RenderDisplayTable(BlockEntityRendererProvider.Context ctx) {
+public class DisplayTableRenderer implements BlockEntityRenderer<DisplayTableBlockEntity> {
+    public DisplayTableRenderer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override

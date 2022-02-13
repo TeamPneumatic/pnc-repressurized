@@ -191,6 +191,11 @@ public class TintColor {
         return new TintColor(HSBtoRGB(h, s, b));
     }
 
+    /**
+     * Get color components as a float array, ARGB format
+     * @param compArray input float array, may be null; if not null, must be a float[4]
+     * @return resulting float array of ARGB components
+     */
     public float[] getComponents(float[] compArray) {
         float[] f = compArray == null ? new float[4] : compArray;
         f[0] = getRed() / 255f;

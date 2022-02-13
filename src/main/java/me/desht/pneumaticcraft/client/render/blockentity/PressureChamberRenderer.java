@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -34,9 +34,9 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class RenderPressureChamber implements BlockEntityRenderer<PressureChamberValveBlockEntity> {
+public class PressureChamberRenderer implements BlockEntityRenderer<PressureChamberValveBlockEntity> {
 
-    public RenderPressureChamber(@SuppressWarnings("unused") BlockEntityRendererProvider.Context ctx) {
+    public PressureChamberRenderer(@SuppressWarnings("unused") BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override

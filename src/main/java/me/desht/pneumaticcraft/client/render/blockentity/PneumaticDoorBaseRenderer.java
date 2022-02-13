@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -36,7 +36,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderPneumaticDoorBase extends AbstractBlockEntityModelRenderer<PneumaticDoorBaseBlockEntity> {
+public class PneumaticDoorBaseRenderer extends AbstractBlockEntityModelRenderer<PneumaticDoorBaseBlockEntity> {
     private final ModelPart cylinder1;
     private final ModelPart cylinder2;
     private final ModelPart cylinder3;
@@ -45,7 +45,7 @@ public class RenderPneumaticDoorBase extends AbstractBlockEntityModelRenderer<Pn
     private static final String CYLINDER2 = "cylinder2";
     private static final String CYLINDER3 = "cylinder3";
 
-    public RenderPneumaticDoorBase(BlockEntityRendererProvider.Context ctx) {
+    public PneumaticDoorBaseRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.PNEUMATIC_DOOR_BASE);

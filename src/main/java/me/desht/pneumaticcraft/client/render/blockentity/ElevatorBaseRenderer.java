@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -36,7 +36,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
 
-public class RenderElevatorBase extends AbstractBlockEntityModelRenderer<ElevatorBaseBlockEntity> {
+public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<ElevatorBaseBlockEntity> {
     private static final float FACTOR = 9F / 16;
     private static final float[] SHADE = new float[] { 1f, 0.85f, 0.7f, 0.55f };
 
@@ -52,7 +52,7 @@ public class RenderElevatorBase extends AbstractBlockEntityModelRenderer<Elevato
     private static final String POLE4 = "pole4";
     private static final String FLOOR = "floor";
 
-    public RenderElevatorBase(BlockEntityRendererProvider.Context ctx) {
+    public ElevatorBaseRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.ELEVATOR_BASE);

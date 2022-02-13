@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.client.Minecraft;
@@ -14,12 +14,13 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.IItemRenderProperties;
 import net.minecraftforge.common.util.NonNullLazy;
+
+import java.util.Objects;
 
 public class RenderItemMinigun extends BlockEntityWithoutLevelRenderer {
     private final ModelMinigun model;
@@ -32,12 +33,11 @@ public class RenderItemMinigun extends BlockEntityWithoutLevelRenderer {
 
     @Override
     public void renderByItem(ItemStack stack, TransformType transformType, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        if (stack.getItem() == ModItems.MINIGUN.get() && stack.hasTag()) {
+        if (stack.getItem() instanceof ItemMinigun itemMinigun && stack.hasTag()) {
             Minecraft mc = Minecraft.getInstance();
-            int id = stack.getTag().getInt(ItemMinigun.OWNING_PLAYER_ID);
-            Entity owningPlayer = Minecraft.getInstance().level.getEntity(id);
-            if (owningPlayer instanceof Player) {
-                Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, (Player) owningPlayer);
+            int id = Objects.requireNonNull(stack.getTag()).getInt(ItemMinigun.OWNING_PLAYER_ID);
+            if (ClientUtils.getClientLevel().getEntity(id) instanceof Player player) {
+                Minigun minigun = itemMinigun.getMinigun(stack, player);
                 matrixStack.pushPose();
                 boolean thirdPerson = transformType == TransformType.THIRD_PERSON_RIGHT_HAND || transformType == TransformType.THIRD_PERSON_LEFT_HAND;
                 if (thirdPerson) {

@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -19,13 +19,13 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderAssemblyController extends AbstractBlockEntityModelRenderer<AssemblyControllerBlockEntity> {
+public class AssemblyControllerRenderer extends AbstractBlockEntityModelRenderer<AssemblyControllerBlockEntity> {
     private static final float TEXT_SIZE = 0.007F;
     private final ModelPart screen;
 
     private static final String SCREEN = "screen";
 
-    public RenderAssemblyController(BlockEntityRendererProvider.Context ctx) {
+    public AssemblyControllerRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_CONTROLLER);

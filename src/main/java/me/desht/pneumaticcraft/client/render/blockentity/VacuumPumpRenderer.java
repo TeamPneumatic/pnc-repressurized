@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -18,14 +18,14 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderVacuumPump extends AbstractBlockEntityModelRenderer<VacuumPumpBlockEntity> {
+public class VacuumPumpRenderer extends AbstractBlockEntityModelRenderer<VacuumPumpBlockEntity> {
     private static final int BLADE_COUNT = 6;
 
     private static final String BLADE = "blade";
 
     private final ModelPart blade;
 
-    public RenderVacuumPump(BlockEntityRendererProvider.Context ctx) {
+    public VacuumPumpRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.VACUUM_PUMP);

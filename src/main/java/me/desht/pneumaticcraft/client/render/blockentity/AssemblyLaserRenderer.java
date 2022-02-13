@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -31,7 +31,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderAssemblyLaser extends AbstractBlockEntityModelRenderer<AssemblyLaserBlockEntity> {
+public class AssemblyLaserRenderer extends AbstractBlockEntityModelRenderer<AssemblyLaserBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;
@@ -46,7 +46,7 @@ public class RenderAssemblyLaser extends AbstractBlockEntityModelRenderer<Assemb
     private static final String LASERBASE = "laserBase";
     private static final String LASER = "laser";
 
-    public RenderAssemblyLaser(BlockEntityRendererProvider.Context ctx) {
+    public AssemblyLaserRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_LASER);

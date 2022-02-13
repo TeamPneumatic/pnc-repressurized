@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -41,7 +41,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class RenderAssemblyIOUnit extends AbstractBlockEntityModelRenderer<AssemblyIOUnitBlockEntity> {
+public class AssemblyIOUnitRenderer extends AbstractBlockEntityModelRenderer<AssemblyIOUnitBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;
@@ -64,7 +64,7 @@ public class RenderAssemblyIOUnit extends AbstractBlockEntityModelRenderer<Assem
     private static final String CLAW1 = "claw1";
     private static final String CLAW2 = "claw2";
 
-    public RenderAssemblyIOUnit(BlockEntityRendererProvider.Context ctx) {
+    public AssemblyIOUnitRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_IO_UNIT);

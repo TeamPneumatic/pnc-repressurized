@@ -178,7 +178,7 @@ public class RenderBlockTarget {
         float targetAcquireProgress = (ticksExisted + partialTicks) / 1.2f;
 
         if (ticksExisted > 50 && ticksExisted <= 120) {
-            RenderProgressBar.render3d(matrixStack, buffer,0D, 0.4D, 1.8D, 0.7D, 0, targetAcquireProgress, 0xD0FFFF00, 0xD000FF00);
+            RenderProgressBar.render3d(matrixStack, buffer,0, 0.4F, 1.8F, 0.7F, 0, targetAcquireProgress, 0xD0FFFF00, 0xD000FF00);
         }
 
         matrixStack.scale(STAT_SCALE, STAT_SCALE, STAT_SCALE);

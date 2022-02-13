@@ -41,6 +41,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -455,6 +456,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         GuiComponent.fill(matrixStack, renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(3.0F);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder wr = Tesselator.getInstance().getBuilder();
         wr.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
         float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
@@ -465,6 +467,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         wr.vertex(renderBaseX + renderWidth, renderAffectedY, zLevel).color(c2[0], c2[1], c2[2], c2[3]).endVertex();
         wr.vertex(renderBaseX + renderWidth, renderAffectedY + renderHeight, zLevel).color(c3[0], c3[1], c3[2],c3[3]).endVertex();
         wr.vertex(renderBaseX, renderAffectedY + renderHeight, zLevel).color(c4[0], c4[1], c4[2], c4[3]).endVertex();
+        wr.vertex(renderBaseX, renderAffectedY, zLevel).color(c1[0], c1[1], c1[2], c1[3]).endVertex();
         Tesselator.getInstance().end();
         RenderSystem.enableTexture();
         if (leftSided) renderWidth *= -1;
@@ -540,22 +543,16 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             float[] c2 = bgColorHi.getComponents(null);
             float[] c3 = leftSided ? bgColorHi.getComponents(null) : bgColorLo.getComponents(null);
             float[] c4 = bgColorLo.getComponents(null);
-            builder.vertex(posMat, renderBaseX, renderEffectiveY, 0)
-                    .color(c1[0], c1[1], c1[2], c1[3])
-                    .normal(normal, 1, 0, 0)
-                    .endVertex();
-            builder.vertex(posMat, renderBaseX + rw, renderEffectiveY, 0)
-                    .color(c2[0], c2[1], c2[2], c2[3])
-                    .normal(normal, 0, 1, 0)
-                    .endVertex();
-            builder.vertex(posMat, renderBaseX + rw, renderEffectiveY + renderHeight, 0)
-                    .color(c3[0], c3[1], c3[2],c3[3])
-                    .normal(normal, -1, 0, 0)
-                    .endVertex();
-            builder.vertex(posMat, renderBaseX, renderEffectiveY + renderHeight, 0)
-                    .color(c4[0], c4[1], c4[2], c4[3])
-                    .normal(normal, 0, -1, 0)
-                    .endVertex();
+            RenderUtils.normalLine(builder, posMat, normal, renderBaseX, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY,
+                    0, c1[0], c1[1], c1[2], c1[3], true);
+            RenderUtils.normalLine(builder, posMat, normal, renderBaseX + rw, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY + height,
+                    0, c2[0], c2[1], c2[2], c2[3], true);
+            RenderUtils.normalLine(builder, posMat, normal, renderBaseX + rw, renderEffectiveY + height, 0, renderBaseX, renderEffectiveY + height,
+                    0, c3[0], c3[1], c3[2], c3[3], true);
+            RenderUtils.normalLine(builder, posMat, normal, renderBaseX, renderEffectiveY + height, 0, renderBaseX, renderEffectiveY,
+                    0, c4[0], c4[1], c4[2], c4[3], true);
+            RenderUtils.normalLine(builder, posMat, normal, renderBaseX, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY,
+                    0, c1[0], c1[1], c1[2], c1[3], true);
         });
 
         if (doneExpanding) {

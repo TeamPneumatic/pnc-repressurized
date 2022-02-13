@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderAirCannon extends AbstractBlockEntityModelRenderer<AirCannonBlockEntity> {
+public class AirCannonRenderer extends AbstractBlockEntityModelRenderer<AirCannonBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseFrame1;
     private final ModelPart baseFrame2;
@@ -27,7 +27,7 @@ public class RenderAirCannon extends AbstractBlockEntityModelRenderer<AirCannonB
     private static final String AXIS = "axis";
     private static final String CANNON = "cannon";
 
-    public RenderAirCannon(BlockEntityRendererProvider.Context ctx) {
+    public AirCannonRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.AIR_CANNON);

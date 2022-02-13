@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
@@ -33,13 +33,13 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 
 import java.util.regex.Pattern;
 
-public class RenderAphorismTile implements BlockEntityRenderer<AphorismTileBlockEntity> {
+public class AphorismTileRenderer implements BlockEntityRenderer<AphorismTileBlockEntity> {
     private static final float ICON_SCALE = 9f;
     private static final String REDSTONE_STR = Pattern.quote("{redstone}");
 
     private final Font font;
 
-    public RenderAphorismTile(BlockEntityRendererProvider.Context ctx) {
+    public AphorismTileRenderer(BlockEntityRendererProvider.Context ctx) {
         font = ctx.getFont();
     }
 

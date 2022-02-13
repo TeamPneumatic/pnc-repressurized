@@ -15,11 +15,12 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -27,24 +28,33 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
 
-public class RenderChargingStation implements BlockEntityRenderer<ChargingStationBlockEntity> {
-    public RenderChargingStation(BlockEntityRendererProvider.Context ctx) {
+public class ProgrammerRenderer implements BlockEntityRenderer<ProgrammerBlockEntity> {
+    public ProgrammerRenderer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(ChargingStationBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getChargingStackSynced().isEmpty() || !te.nonNullLevel().isLoaded(te.getBlockPos())) return;
+    public void render(ProgrammerBlockEntity te, float pPartialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        if (!te.nonNullLevel().isLoaded(te.getBlockPos())) return;
 
         matrixStackIn.pushPose();
-
-        matrixStackIn.translate(0.5, 0.5, 0.5);
+        matrixStackIn.translate(0.5, 11/16d, 0.5);
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
-        matrixStackIn.scale(0.5F, 0.5F, 0.5F);
+
+        // not sure why negative X/Z offsets are needed for east/west rotation, but ok...
+        if (te.getRotation().getAxis() == Direction.Axis.X) {
+            matrixStackIn.translate(-0.345, 0.025, -0.28);
+        } else {
+            matrixStackIn.translate(0.345, 0.025, 0.28);
+        }
+        // lie the item flat
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
+        matrixStackIn.scale(0.25f, 0.25f, 0.25f);
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        BakedModel bakedModel = itemRenderer.getModel(te.getChargingStackSynced(), te.getLevel(), null, 0);
-        itemRenderer.render(te.getChargingStackSynced(), ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+        BakedModel bakedModel = itemRenderer.getModel(te.displayedStack, Minecraft.getInstance().level, null, 0);
+        itemRenderer.render(te.displayedStack, ItemTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
 
         matrixStackIn.popPose();
     }

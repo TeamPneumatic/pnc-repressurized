@@ -26,7 +26,7 @@ import net.minecraft.client.renderer.RenderType;
  * Used in three different places:
  * 1. Drone's minigun (in DroneMinigunLayer)
  * 2. ISTER for the minigun item (RenderItemMinigun)
- * 3. Sentry turrent TER model (RenderSentryTurret)
+ * 3. Sentry turrent TER model (SentryTurretRenderer)
  */
 public class ModelMinigun extends Model {
     //fields

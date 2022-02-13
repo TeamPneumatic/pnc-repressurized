@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -31,7 +31,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderAssemblyDrill extends AbstractBlockEntityModelRenderer<AssemblyDrillBlockEntity> {
+public class AssemblyDrillRenderer extends AbstractBlockEntityModelRenderer<AssemblyDrillBlockEntity> {
     private static final String BASETURN = "baseTurn";
     private static final String BASETURN2 = "baseTurn2";
     private static final String ARMBASE = "armBase";
@@ -46,7 +46,7 @@ public class RenderAssemblyDrill extends AbstractBlockEntityModelRenderer<Assemb
     private final ModelPart drillBase;
     private final ModelPart drill;
 
-    public RenderAssemblyDrill(BlockEntityRendererProvider.Context ctx) {
+    public AssemblyDrillRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.ASSEMBLY_DRILL);

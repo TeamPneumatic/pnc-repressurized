@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
@@ -25,8 +25,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-public class RenderTagWorkbench implements BlockEntityRenderer<TagWorkbenchBlockEntity> {
-    public RenderTagWorkbench(BlockEntityRendererProvider.Context ctx) {
+public class TagWorkbenchRenderer implements BlockEntityRenderer<TagWorkbenchBlockEntity> {
+    public TagWorkbenchRenderer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
@@ -35,11 +35,11 @@ public class RenderTagWorkbench implements BlockEntityRenderer<TagWorkbenchBlock
 
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 1, 0.5);
-        RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
+        DisplayTableRenderer.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
                 te.displayedStack, 0, 0, -0.25, 0.4f, te.getRotation());
-        RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
+        DisplayTableRenderer.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
                 new ItemStack(Item.byId(te.paperItemId)), -0.25, 0, 0.25, 0.4f, te.getRotation());
-        RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
+        DisplayTableRenderer.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
                 new ItemStack(Item.byId(te.outputItemId)), 0.25, 0, 0.25, 0.4f, te.getRotation());
         matrixStackIn.popPose();
     }

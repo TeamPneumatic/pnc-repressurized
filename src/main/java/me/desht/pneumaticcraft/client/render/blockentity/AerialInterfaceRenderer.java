@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
@@ -22,12 +22,12 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Map;
 
-public class RenderAerialInterface implements BlockEntityRenderer<AerialInterfaceBlockEntity> {
+public class AerialInterfaceRenderer implements BlockEntityRenderer<AerialInterfaceBlockEntity> {
     private final SkullModel headModel;
 
     private static final double EXTRUSION = 0.05;  // how far the head sticks out of the main block
 
-    public RenderAerialInterface(BlockEntityRendererProvider.Context ctx) {
+    public AerialInterfaceRenderer(BlockEntityRendererProvider.Context ctx) {
         headModel = new SkullModel(ctx.getModelSet().bakeLayer(ModelLayers.PLAYER_HEAD));
     }
 

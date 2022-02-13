@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -23,7 +23,7 @@ import net.minecraft.util.Mth;
 
 import static me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
 
-public class RenderPressureChamberInterface extends AbstractBlockEntityModelRenderer<PressureChamberInterfaceBlockEntity> {
+public class PressureChamberInterfaceRenderer extends AbstractBlockEntityModelRenderer<PressureChamberInterfaceBlockEntity> {
 
     private final ModelPart inputLeft;
     private final ModelPart inputRight;
@@ -43,7 +43,7 @@ public class RenderPressureChamberInterface extends AbstractBlockEntityModelRend
     private static final String OUTPUTBOTTOM = "outputBottom";
     private static final String OUTPUTTOP = "outputTop";
 
-    public RenderPressureChamberInterface(BlockEntityRendererProvider.Context ctx) {
+    public PressureChamberInterfaceRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.PRESSURE_CHAMBER_INTERFACE);

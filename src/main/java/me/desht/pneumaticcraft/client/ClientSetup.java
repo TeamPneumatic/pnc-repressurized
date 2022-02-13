@@ -20,6 +20,7 @@ import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.particle.BulletParticle;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
+import me.desht.pneumaticcraft.client.render.blockentity.*;
 import me.desht.pneumaticcraft.client.render.entity.RenderEntityRing;
 import me.desht.pneumaticcraft.client.render.entity.RenderEntityVortex;
 import me.desht.pneumaticcraft.client.render.entity.RenderMicromissile;
@@ -34,7 +35,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticArmorLayer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
-import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.render.tube_module.*;
 import me.desht.pneumaticcraft.client.sound.MovingSoundJackhammer;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
@@ -161,20 +161,20 @@ public class ClientSetup {
         event.registerLayerDefinition(PNCModelLayers.MINIGUN, ModelMinigun::createBodyLayer);
 
         // block entities
-        event.registerLayerDefinition(PNCModelLayers.AIR_CANNON, RenderAirCannon::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.PNEUMATIC_DOOR, RenderPneumaticDoor::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.PNEUMATIC_DOOR_BASE, RenderPneumaticDoorBase::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_CONTROLLER, RenderAssemblyController::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_DRILL, RenderAssemblyDrill::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_LASER, RenderAssemblyLaser::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_IO_UNIT, RenderAssemblyIOUnit::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_PLATFORM, RenderAssemblyPlatform::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.ELEVATOR_BASE, RenderElevatorBase::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.PRESSURE_CHAMBER_INTERFACE, RenderPressureChamberInterface::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.SPAWNER_EXTRACTOR, RenderSpawnerExtractor::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.SPAWNER_EXTRACTOR, RenderSpawnerExtractor::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.UNIVERSAL_SENSOR, RenderUniversalSensor::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.VACUUM_PUMP, RenderVacuumPump::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.AIR_CANNON, AirCannonRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.PNEUMATIC_DOOR, PneumaticDoorRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.PNEUMATIC_DOOR_BASE, PneumaticDoorBaseRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_CONTROLLER, AssemblyControllerRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_DRILL, AssemblyDrillRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_LASER, AssemblyLaserRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_IO_UNIT, AssemblyIOUnitRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.ASSEMBLY_PLATFORM, AssemblyPlatformRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.ELEVATOR_BASE, ElevatorBaseRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.PRESSURE_CHAMBER_INTERFACE, PressureChamberInterfaceRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.SPAWNER_EXTRACTOR, SpawnerExtractorRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.SPAWNER_EXTRACTOR, SpawnerExtractorRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.UNIVERSAL_SENSOR, UniversalSensorRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.VACUUM_PUMP, VacuumPumpRenderer::createBodyLayer);
 
         // tube modules
         event.registerLayerDefinition(PNCModelLayers.AIR_GRATE_MODULE, AirGrateRenderer::createBodyLayer);
@@ -272,43 +272,43 @@ public class ClientSetup {
 
     private static void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.ADVANCED_LIQUID_COMPRESSOR.get(), RenderAdvancedLiquidCompressor::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ADVANCED_PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.AERIAL_INTERFACE.get(), RenderAerialInterface::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.AIR_CANNON.get(), RenderAirCannon::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.APHORISM_TILE.get(), RenderAphorismTile::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_CONTROLLER.get(), RenderAssemblyController::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_DRILL.get(), RenderAssemblyDrill::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_IO_UNIT.get(), RenderAssemblyIOUnit::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_LASER.get(), RenderAssemblyLaser::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_PLATFORM.get(), RenderAssemblyPlatform::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get(), RenderChargingStation::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.DISPLAY_TABLE.get(), RenderDisplayTable::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ELEVATOR_BASE.get(), RenderElevatorBase::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.ELEVATOR_CALLER.get(), RenderElevatorCaller::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ADVANCED_PRESSURE_TUBE.get(), PressureTubeModuleRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.AERIAL_INTERFACE.get(), AerialInterfaceRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.AIR_CANNON.get(), AirCannonRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.APHORISM_TILE.get(), AphorismTileRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_CONTROLLER.get(), AssemblyControllerRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_DRILL.get(), AssemblyDrillRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_IO_UNIT.get(), AssemblyIOUnitRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_LASER.get(), AssemblyLaserRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ASSEMBLY_PLATFORM.get(), AssemblyPlatformRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CHARGING_STATION.get(), ChargingStationRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.DISPLAY_TABLE.get(), DisplayTableRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ELEVATOR_BASE.get(), ElevatorBaseRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ELEVATOR_CALLER.get(), ElevatorCallerRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ETCHING_TANK.get(), RenderEtchingTank::new);
         event.registerBlockEntityRenderer(ModBlockEntities.FLUID_MIXER.get(), RenderFluidMixer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.KEROSENE_LAMP.get(), RenderKeroseneLamp::new);
         event.registerBlockEntityRenderer(ModBlockEntities.GAS_LIFT.get(), RenderGasLift::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LIQUID_HOPPER.get(), RenderLiquidHopper::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LIQUID_COMPRESSOR.get(), RenderLiquidCompressor::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.PNEUMATIC_DOOR.get(), RenderPneumaticDoor::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.PNEUMATIC_DOOR_BASE.get(), RenderPneumaticDoorBase::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get(), RenderPressureChamberInterface::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.PROGRAMMER.get(), RenderProgrammer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PNEUMATIC_DOOR.get(), PneumaticDoorRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PNEUMATIC_DOOR_BASE.get(), PneumaticDoorBaseRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PRESSURE_CHAMBER_VALVE.get(), PressureChamberRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PRESSURE_CHAMBER_INTERFACE.get(), PressureChamberInterfaceRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PRESSURE_TUBE.get(), PressureTubeModuleRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PROGRAMMER.get(), ProgrammerRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.REFINERY.get(), RenderRefineryController::new);
         event.registerBlockEntityRenderer(ModBlockEntities.REFINERY_OUTPUT.get(), RenderRefineryOutput::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.SENTRY_TURRET.get(), RenderSentryTurret::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.SPAWNER_EXTRACTOR.get(), RenderSpawnerExtractor::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SENTRY_TURRET.get(), SentryTurretRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SPAWNER_EXTRACTOR.get(), SpawnerExtractorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.TANK_SMALL.get(), RenderFluidTank::new);
         event.registerBlockEntityRenderer(ModBlockEntities.TANK_MEDIUM.get(), RenderFluidTank::new);
         event.registerBlockEntityRenderer(ModBlockEntities.TANK_LARGE.get(), RenderFluidTank::new);
         event.registerBlockEntityRenderer(ModBlockEntities.TANK_HUGE.get(), RenderFluidTank::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.TAG_WORKBENCH.get(), RenderTagWorkbench::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.TAG_WORKBENCH.get(), TagWorkbenchRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderThermopneumaticProcessingPlant::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.UNIVERSAL_SENSOR.get(), RenderUniversalSensor::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.VACUUM_PUMP.get(), RenderVacuumPump::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.UNIVERSAL_SENSOR.get(), UniversalSensorRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.VACUUM_PUMP.get(), VacuumPumpRenderer::new);
     }
 
     private static void registerScreenFactories() {

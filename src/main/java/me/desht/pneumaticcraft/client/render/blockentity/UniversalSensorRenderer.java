@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.render.tileentity;
+package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderUniversalSensor extends AbstractBlockEntityModelRenderer<UniversalSensorBlockEntity> {
+public class UniversalSensorRenderer extends AbstractBlockEntityModelRenderer<UniversalSensorBlockEntity> {
     private final ModelPart part1;
     private final ModelPart part2;
     private final ModelPart part3;
@@ -58,7 +58,7 @@ public class RenderUniversalSensor extends AbstractBlockEntityModelRenderer<Univ
     private static final String PART15 = "part15";
     private static final String PART15_R1 = "part15_r1";
 
-    public RenderUniversalSensor(BlockEntityRendererProvider.Context ctx) {
+    public UniversalSensorRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
 
         ModelPart root = ctx.bakeLayer(PNCModelLayers.UNIVERSAL_SENSOR);
