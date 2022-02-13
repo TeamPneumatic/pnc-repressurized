@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.render.fluid;
 
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
@@ -42,8 +42,8 @@ public class RenderFluidTank extends AbstractFluidTER<TileEntityFluidTank> {
 
     @Override
     Collection<TankRenderInfo> getTanksToRender(TileEntityFluidTank te) {
-        boolean up = te.getBlockState().getValue(BlockPneumaticCraft.UP);
-        boolean down = te.getBlockState().getValue(BlockPneumaticCraft.DOWN);
+        boolean up = te.getBlockState().getValue(AbstractPneumaticCraftBlock.UP);
+        boolean down = te.getBlockState().getValue(AbstractPneumaticCraftBlock.DOWN);
         AABB bounds;
         if (up && down)
             bounds = BOUNDS_BOTH;

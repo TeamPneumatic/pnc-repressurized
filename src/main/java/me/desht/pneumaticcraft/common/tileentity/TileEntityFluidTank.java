@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.common.block.BlockFluidTank;
-import me.desht.pneumaticcraft.common.block.BlockFluidTank.ItemBlockFluidTank;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
+import me.desht.pneumaticcraft.common.block.FluidTankBlock;
+import me.desht.pneumaticcraft.common.block.FluidTankBlock.ItemBlockFluidTank;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.FluidTankMenu;
@@ -75,7 +75,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
-    TileEntityFluidTank(BlockEntityType<?> type, BlockPos pos, BlockState state, BlockFluidTank.Size tankSize) {
+    TileEntityFluidTank(BlockEntityType<?> type, BlockPos pos, BlockState state, FluidTankBlock.Size tankSize) {
         super(type, pos, state, 4);
 
         this.tank = new StackableTank(tankSize.getCapacity());
@@ -98,9 +98,9 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
         FluidStack stack = getTank().getFluid();
         if (!stack.isEmpty()) {
             Direction dir = stack.getFluid().getAttributes().getDensity() < 0 ? Direction.UP : Direction.DOWN;
-            if (getBlockState().getValue(BlockPneumaticCraft.connectionProperty(dir))) {
+            if (getBlockState().getValue(AbstractPneumaticCraftBlock.connectionProperty(dir))) {
                 BlockState other = nonNullLevel().getBlockState(worldPosition.relative(dir));
-                if (other.getBlock() instanceof BlockFluidTank && other.getValue(BlockPneumaticCraft.connectionProperty(dir.getOpposite()))) {
+                if (other.getBlock() instanceof FluidTankBlock && other.getValue(AbstractPneumaticCraftBlock.connectionProperty(dir.getOpposite()))) {
                     BlockEntity teOther = getCachedNeighbor(dir);
                     if (teOther instanceof TileEntityFluidTank) {
                         FluidUtil.tryFluidTransfer(((TileEntityFluidTank) teOther).getTank(), tank, tank.getCapacity() / 32, true);
@@ -110,7 +110,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
         }
 
         Direction ejectDir = getUpgradeCache().getEjectDirection();
-        if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(BlockPneumaticCraft.connectionProperty(ejectDir)))) {
+        if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(AbstractPneumaticCraftBlock.connectionProperty(ejectDir)))) {
             IOHelper.getFluidHandlerForTE(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
                 int amount = BASE_EJECT_RATE << getUpgrades(ModUpgrades.SPEED.get());
                 FluidUtil.tryFluidTransfer(h, tank, amount, true);
@@ -157,8 +157,8 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     public boolean isNeighbourCompatible(FluidStack stack, Direction dir) {
         BlockState state = getBlockState();
         TileEntityFluidTank curTank = this;
-        while (state.getBlock() instanceof BlockFluidTank) {
-            if (!state.getValue(BlockPneumaticCraft.connectionProperty(dir))) {
+        while (state.getBlock() instanceof FluidTankBlock) {
+            if (!state.getValue(AbstractPneumaticCraftBlock.connectionProperty(dir))) {
                 // no connection? no problem
                 return true;
             }
@@ -199,25 +199,25 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
 
     public static class Small extends TileEntityFluidTank {
         public Small(BlockPos pos, BlockState state) {
-            super(ModBlockEntities.TANK_SMALL.get(), pos, state, BlockFluidTank.Size.SMALL);
+            super(ModBlockEntities.TANK_SMALL.get(), pos, state, FluidTankBlock.Size.SMALL);
         }
     }
 
     public static class Medium extends TileEntityFluidTank {
         public Medium(BlockPos pos, BlockState state) {
-            super(ModBlockEntities.TANK_MEDIUM.get(), pos, state, BlockFluidTank.Size.MEDIUM);
+            super(ModBlockEntities.TANK_MEDIUM.get(), pos, state, FluidTankBlock.Size.MEDIUM);
         }
     }
 
     public static class Large extends TileEntityFluidTank {
         public Large(BlockPos pos, BlockState state) {
-            super(ModBlockEntities.TANK_LARGE.get(), pos, state, BlockFluidTank.Size.LARGE);
+            super(ModBlockEntities.TANK_LARGE.get(), pos, state, FluidTankBlock.Size.LARGE);
         }
     }
 
     public static class Huge extends TileEntityFluidTank {
         public Huge(BlockPos pos, BlockState state) {
-            super(ModBlockEntities.TANK_HUGE.get(), pos, state, BlockFluidTank.Size.HUGE);
+            super(ModBlockEntities.TANK_HUGE.get(), pos, state, FluidTankBlock.Size.HUGE);
         }
     }
 }

@@ -22,7 +22,7 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
-import me.desht.pneumaticcraft.common.block.BlockPressureTube;
+import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.core.Direction;
@@ -40,7 +40,7 @@ public class TubeModuleProvider {
         @Override
         public void appendServerData(CompoundTag compoundTag, ServerPlayer serverPlayer, Level level, BlockEntity blockEntity, boolean b) {
             if (blockEntity instanceof TileEntityPressureTube) {
-                TubeModule module = BlockPressureTube.getFocusedModule(level, blockEntity.getBlockPos(), serverPlayer);
+                TubeModule module = PressureTubeBlock.getFocusedModule(level, blockEntity.getBlockPos(), serverPlayer);
                 if (module != null) {
                     compoundTag.put("module", module.writeToNBT(new CompoundTag()));
                     compoundTag.putByte("side", (byte) module.getDirection().get3DDataValue());

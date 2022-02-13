@@ -69,7 +69,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static me.desht.pneumaticcraft.common.block.BlockKeroseneLamp.LIT;
+import static me.desht.pneumaticcraft.common.block.KeroseneLampBlock.LIT;
 
 public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         IRedstoneControl<TileEntityKeroseneLamp>, ISerializableTanks, MenuProvider {

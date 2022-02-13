@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
+import me.desht.pneumaticcraft.common.block.UVLightBoxBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -136,14 +136,14 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
     private void checkStateUpdates(ItemStack loadedStack, boolean didWork) {
         BlockState state = getBlockState();
         if (state.getBlock() == ModBlocks.UV_LIGHT_BOX.get()) {
-            boolean loaded = state.getValue(BlockUVLightBox.LOADED);
+            boolean loaded = state.getValue(UVLightBoxBlock.LOADED);
             boolean update = false;
             if (loaded == loadedStack.isEmpty()) {
-                state = state.setValue(BlockUVLightBox.LOADED, !loadedStack.isEmpty());
+                state = state.setValue(UVLightBoxBlock.LOADED, !loadedStack.isEmpty());
                 update = true;
             }
-            if (didWork != getBlockState().getValue(BlockUVLightBox.LIT)) {
-                state = state.setValue(BlockUVLightBox.LIT, didWork);
+            if (didWork != getBlockState().getValue(UVLightBoxBlock.LIT)) {
+                state = state.setValue(UVLightBoxBlock.LIT, didWork);
                 update = true;
             }
             long now = nonNullLevel().getGameTime();

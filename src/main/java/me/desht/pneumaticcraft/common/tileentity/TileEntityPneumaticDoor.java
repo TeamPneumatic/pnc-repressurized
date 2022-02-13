@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
+import me.desht.pneumaticcraft.common.block.PneumaticDoorBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
@@ -69,7 +69,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     public boolean setColor(DyeColor dyeColor) {
-        if (color != dyeColor.getId() && !getBlockState().getValue(BlockPneumaticDoor.TOP_DOOR)) {
+        if (color != dyeColor.getId() && !getBlockState().getValue(PneumaticDoorBlock.TOP_DOOR)) {
             color = (byte) dyeColor.getId();
             nonNullLevel().getBlockEntity(getBlockPos(), ModBlockEntities.PNEUMATIC_DOOR.get()).ifPresent(topHalf -> {
                 topHalf.color = color;
@@ -85,7 +85,7 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     private boolean isTopDoor() {
-        return BlockPneumaticDoor.isTopDoor(nonNullLevel().getBlockState(getBlockPos()));
+        return PneumaticDoorBlock.isTopDoor(nonNullLevel().getBlockState(getBlockPos()));
     }
 
     @Override

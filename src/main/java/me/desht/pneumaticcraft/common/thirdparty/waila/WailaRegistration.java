@@ -21,8 +21,8 @@ import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.block.BlockPressureTube;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
+import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
@@ -43,12 +43,12 @@ public class WailaRegistration implements IWailaPlugin {
 
         iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, Block.class);
         iRegistrar.registerComponentProvider(new SemiblockProvider.Component(), TooltipPosition.BODY, Block.class);
-        iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, BlockPneumaticCraft.class);
-        iRegistrar.registerComponentProvider(new TubeModuleProvider.Component(), TooltipPosition.BODY, BlockPressureTube.class);
+        iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, AbstractPneumaticCraftBlock.class);
+        iRegistrar.registerComponentProvider(new TubeModuleProvider.Component(), TooltipPosition.BODY, PressureTubeBlock.class);
         iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, LivingEntity.class);
 //        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.HEAD, EntitySemiblockBase.class);
         iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, EntitySemiblockBase.class);
 //        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.TAIL, EntitySemiblockBase.class);
-        iRegistrar.registerComponentProvider(new CamoProvider.Component(), TooltipPosition.BODY, BlockPneumaticCraft.class);
+        iRegistrar.registerComponentProvider(new CamoProvider.Component(), TooltipPosition.BODY, AbstractPneumaticCraftBlock.class);
     }
 }

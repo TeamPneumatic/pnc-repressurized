@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
@@ -80,7 +80,7 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements Camouf
         BlockState state = getBlockState();
         boolean changed = false;
         for (Direction dir : DirectionUtil.VALUES) {
-            BooleanProperty prop = BlockPneumaticCraft.connectionProperty(dir);
+            BooleanProperty prop = AbstractPneumaticCraftBlock.connectionProperty(dir);
             boolean connected = heatExchanger.isSideConnected(dir);
             if (state.getValue(prop) != connected) {
                 state = state.setValue(prop, connected);

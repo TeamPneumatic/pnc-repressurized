@@ -21,7 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
+import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -49,7 +49,7 @@ public class RenderAphorismTile implements BlockEntityRenderer<TileEntityAphoris
         matrixStack.translate(0.5, 1.5, 0.5);
         matrixStack.scale(1, -1, -1);
         RenderUtils.rotateMatrixForDirection(matrixStack, te.getRotation());
-        double zOff = te.isInvisible() ? 0.01 : BlockAphorismTile.APHORISM_TILE_THICKNESS;
+        double zOff = te.isInvisible() ? 0.01 : AphorismTileBlock.APHORISM_TILE_THICKNESS;
         matrixStack.translate(0, 1, 0.5 - zOff - 0.01);
 
         int fh = font.lineHeight;

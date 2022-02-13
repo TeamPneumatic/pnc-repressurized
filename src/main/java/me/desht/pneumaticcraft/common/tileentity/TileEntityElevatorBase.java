@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
+import me.desht.pneumaticcraft.common.block.ElevatorBaseBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -556,7 +556,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     private TileEntityElevatorBase getCoreElevator() {
         if (coreElevator == null || (nonNullLevel().isClientSide && (nonNullLevel().getGameTime() & 0x3f) == 0)) {
             // bit of a hack; force a recalc every 64 ticks on the client
-            coreElevator = BlockElevatorBase.getCoreTileEntity(nonNullLevel(), getBlockPos());
+            coreElevator = ElevatorBaseBlock.getCoreTileEntity(nonNullLevel(), getBlockPos());
         }
         return coreElevator;
     }

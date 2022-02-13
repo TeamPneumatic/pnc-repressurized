@@ -23,7 +23,7 @@ import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
@@ -92,7 +92,7 @@ public class AreaRenderer {
         boolean xray = disableDepthTest || disableWriteMask;
         if (!xray && !state.getMaterial().isReplaceable()) return;
         if (drawShapes) {
-            VoxelShape shape = state.getBlock() instanceof BlockPneumaticCraftCamo c ?
+            VoxelShape shape = state.getBlock() instanceof AbstractCamouflageBlock c ?
                     c.getUncamouflagedShape(state, level, pos, CollisionContext.empty()) :
                     state.getShape(level, pos, CollisionContext.empty());
             shape.forAllBoxes((x1d, y1d, z1d, x2d, y2d, z2d) -> {

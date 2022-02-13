@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
+import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.FriendlyByteBuf;
@@ -59,7 +59,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         text = tile.getTextLines();
         textRotation = tile.textRotation;
         margin = tile.getMarginSize();
-        invis = tile.getBlockState().getValue(BlockAphorismTile.INVISIBLE);
+        invis = tile.getBlockState().getValue(AphorismTileBlock.INVISIBLE);
     }
 
     @Override

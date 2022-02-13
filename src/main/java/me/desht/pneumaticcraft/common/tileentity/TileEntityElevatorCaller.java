@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
+import me.desht.pneumaticcraft.common.block.ElevatorCallerBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -100,7 +100,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         boolean wasPowered = getRedstoneController().getCurrentRedstonePower() > 0;
         super.onNeighborBlockUpdate(fromPos);
         if (getRedstoneController().getCurrentRedstonePower() > 0 && !wasPowered) {
-            BlockElevatorCaller.setSurroundingElevators(getLevel(), getBlockPos(), thisFloor);
+            ElevatorCallerBlock.setSurroundingElevators(getLevel(), getBlockPos(), thisFloor);
         }
     }
 

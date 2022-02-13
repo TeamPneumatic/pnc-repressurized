@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
+import me.desht.pneumaticcraft.common.block.OmnidirectionalHopperBlock;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -62,7 +62,7 @@ public abstract class TileEntityAbstractHopper<T extends BlockEntity & IRedstone
     }
 
     public Direction getInputDirection() {
-        return getBlockState().getValue(BlockOmnidirectionalHopper.INPUT_FACING);
+        return getBlockState().getValue(OmnidirectionalHopperBlock.INPUT_FACING);
     }
 
     @Override

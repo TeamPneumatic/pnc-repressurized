@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.block.BlockPressureTube;
+import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.ChatFormatting;
@@ -65,7 +65,7 @@ public class ItemTubeModule extends Item {
         if (context.getPlayer() != null && context.getPlayer().isCrouching()) {
             // sneak-click module to attach it to opposite side of tube, if possible
             BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-            if (state.getBlock() instanceof BlockPressureTube) {
+            if (state.getBlock() instanceof PressureTubeBlock) {
                 BlockHitResult brtr = new BlockHitResult(context.getClickLocation(), context.getClickedFace().getOpposite(), context.getClickedPos(), false);
                 return state.use(context.getLevel(), context.getPlayer(), context.getHand(), brtr);
             }

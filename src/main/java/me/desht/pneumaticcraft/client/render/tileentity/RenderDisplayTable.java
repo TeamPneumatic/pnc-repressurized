@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.BlockDisplayTable;
+import me.desht.pneumaticcraft.common.block.DisplayTableBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityDisplayTable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -45,7 +45,7 @@ public class RenderDisplayTable implements BlockEntityRenderer<TileEntityDisplay
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 1, 0.5);
         Block b = te.getBlockState().getBlock();
-        double yOff = b instanceof BlockDisplayTable.Shelf ? 1d - (((BlockDisplayTable.Shelf) b).getTableHeight()): 0d;
+        double yOff = b instanceof DisplayTableBlock.Shelf ? 1d - (((DisplayTableBlock.Shelf) b).getTableHeight()): 0d;
         renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, te.displayedStack, 0d, yOff, 0d, 0.5f, te.getRotation());
         matrixStackIn.popPose();
     }

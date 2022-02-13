@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.block.BlockElectrostaticCompressor;
+import me.desht.pneumaticcraft.common.block.ElectrostaticCompressorBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -131,7 +131,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
             for (int y = getBlockPos().getY() + 5; y > getBlockPos().getY() - 5; y--) {
                 BlockPos hitPos = new BlockPos(x, y, z);
                 BlockState state = level.getBlockState(hitPos);
-                if (state.getBlock() instanceof BlockElectrostaticCompressor || state.getBlock() == Blocks.IRON_BARS) {
+                if (state.getBlock() instanceof ElectrostaticCompressorBlock || state.getBlock() == Blocks.IRON_BARS) {
                     Set<BlockPos> gridSet = new ObjectOpenHashSet<>(MAX_ELECTROSTATIC_GRID_SIZE);
                     Set<TileEntityElectrostaticCompressor> compressorSet = new ObjectOpenHashSet<>(20);
                     getElectrostaticGrid(gridSet, compressorSet, hitPos);

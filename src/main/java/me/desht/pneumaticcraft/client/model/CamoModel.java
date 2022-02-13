@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.model;
 
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -60,10 +60,10 @@ public class CamoModel implements IDynamicBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData modelData) {
-        if (state == null || !(state.getBlock() instanceof BlockPneumaticCraftCamo)) {
+        if (state == null || !(state.getBlock() instanceof AbstractCamouflageBlock)) {
             return originalModel.getQuads(state, side, rand, modelData);
         }
-        BlockState camoState = modelData.getData(BlockPneumaticCraftCamo.CAMO_STATE);
+        BlockState camoState = modelData.getData(AbstractCamouflageBlock.CAMO_STATE);
 
         RenderType layer = MinecraftForgeClient.getRenderType();
         if (layer == null) {
@@ -134,7 +134,7 @@ public class CamoModel implements IDynamicBakedModel {
         @Override
         public BlockState getBlockState(@Nonnull BlockPos pos) {
             BlockState state = compose.getBlockState(pos);
-            if (state.getBlock() instanceof BlockPneumaticCraftCamo) {
+            if (state.getBlock() instanceof AbstractCamouflageBlock) {
                 BlockEntity te = compose.getBlockEntity(pos);
                 if (te instanceof CamouflageableBlockEntity) {
                     state = ((CamouflageableBlockEntity) te).getCamouflage();

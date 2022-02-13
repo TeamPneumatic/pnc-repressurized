@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
+import me.desht.pneumaticcraft.common.block.PneumaticDoorBlock;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
@@ -80,7 +80,7 @@ public class RenderPneumaticDoor extends AbstractTileModelRenderer<TileEntityPne
 
     @Override
     public void renderModel(TileEntityPneumaticDoor te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getBlockState().getValue(BlockPneumaticDoor.TOP_DOOR)) return;
+        if (te.getBlockState().getValue(PneumaticDoorBlock.TOP_DOOR)) return;
 
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC));
 

@@ -25,9 +25,9 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
-import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
+import me.desht.pneumaticcraft.common.block.PressureChamberGlassBlock;
+import me.desht.pneumaticcraft.common.block.PressureChamberValveBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -234,8 +234,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     private void doPostNBTSetup() {
         if (!nbtValveList.isEmpty()) {
             BlockState state = nonNullLevel().getBlockState(getBlockPos());
-            if (state.getBlock() instanceof BlockPressureChamberValve)
-                nonNullLevel().setBlock(getBlockPos(), state.setValue(BlockPressureChamberValve.FORMED, isPrimaryValve()), 2);
+            if (state.getBlock() instanceof PressureChamberValveBlock)
+                nonNullLevel().setBlock(getBlockPos(), state.setValue(PressureChamberValveBlock.FORMED, isPrimaryValve()), 2);
 
             accessoryValves.clear();
             for (BlockPos valve : nbtValveList) {
@@ -361,7 +361,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
             for (int y = 0; y < multiBlockSize; y++) {
                 for (int z = 0; z < multiBlockSize; z++) {
                     mPos = mPos.set(multiBlockX + x, multiBlockY + y, multiBlockZ + z);
-                    if (nonNullLevel().getBlockState(mPos).getBlock() instanceof BlockPressureChamberGlass) {
+                    if (nonNullLevel().getBlockState(mPos).getBlock() instanceof PressureChamberGlassBlock) {
                         return true;
                     }
                 }
@@ -562,7 +562,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                         }
                     } else if (!(state.getBlock() instanceof IBlockPressureChamber)) {
                         return false;
-                    } else if (state.getBlock() instanceof BlockPressureChamberValve) {
+                    } else if (state.getBlock() instanceof PressureChamberValveBlock) {
                         // this a valve; ensure it faces the right way for the face it's in
                         boolean xMid = x != 0 && x != size - 1;
                         boolean yMid = y != 0 && y != size - 1;
@@ -616,12 +616,12 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     BlockEntity te = world.getBlockEntity(new BlockPos(x + baseX, y + baseY, z + baseZ));
                     if (te instanceof TileEntityPressureChamberWall teWall) {
                         teWall.setCore(primaryValve);  // this also forces re-rendering with the formed texture
-                        if (world.getBlockState(te.getBlockPos()).getBlock() instanceof BlockPressureChamberGlass) {
+                        if (world.getBlockState(te.getBlockPos()).getBlock() instanceof PressureChamberGlassBlock) {
                             primaryValve.hasGlass = true;
                         }
                     } else if (te instanceof TileEntityPressureChamberValve) {
                         BlockState state = world.getBlockState(te.getBlockPos());
-                        world.setBlock(te.getBlockPos(), state.setValue(BlockPressureChamberValve.FORMED, ((TileEntityPressureChamberValve) te).isPrimaryValve()), 2);
+                        world.setBlock(te.getBlockPos(), state.setValue(PressureChamberValveBlock.FORMED, ((TileEntityPressureChamberValve) te).isPrimaryValve()), 2);
                     }
                     if (te != null) {
                         double dx = x == 0 ? -0.1 : 0.1;

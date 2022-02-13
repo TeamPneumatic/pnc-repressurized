@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
+import me.desht.pneumaticcraft.common.block.UVLightBoxBlock;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
@@ -72,7 +72,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<UVLightBoxMenu,Tile
     @Override
     protected ResourceLocation getGuiTexture() {
         BlockState state = te.getBlockState();
-        return state.getBlock() == ModBlocks.UV_LIGHT_BOX.get() && state.getValue(BlockUVLightBox.LIT) ?
+        return state.getBlock() == ModBlocks.UV_LIGHT_BOX.get() && state.getValue(UVLightBoxBlock.LIT) ?
                 Textures.GUI_UV_LIGHT_BOX_ON : Textures.GUI_UV_LIGHT_BOX;
     }
 
@@ -96,7 +96,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<UVLightBoxMenu,Tile
     protected void addPressureStatInfo(List<Component> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         BlockState state = te.getBlockState();
-        if (state.getBlock() instanceof BlockUVLightBox && state.getValue(BlockUVLightBox.LIT)) {
+        if (state.getBlock() instanceof UVLightBoxBlock && state.getValue(UVLightBoxBlock.LIT)) {
             float usage = PneumaticValues.USAGE_UV_LIGHTBOX * te.getSpeedUsageMultiplierFromUpgrades();
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.airUsage", PneumaticCraftUtils.roundNumberTo(usage, 2)));
         }

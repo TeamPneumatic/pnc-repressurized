@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.common.block.BlockLiquidHopper;
+import me.desht.pneumaticcraft.common.block.LiquidHopperBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -253,7 +253,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
     @Nonnull
     @Override
     public Map<String, PNCFluidTank> getSerializableTanks() {
-        return ImmutableMap.of(BlockLiquidHopper.ItemBlockLiquidHopper.TANK_NAME, tank);
+        return ImmutableMap.of(LiquidHopperBlock.ItemBlockLiquidHopper.TANK_NAME, tank);
     }
 
     @Nullable

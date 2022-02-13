@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.EntityBlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
-public class BlockDroneInterface extends BlockPneumaticCraft implements EntityBlockPneumaticCraft {
+public class BlockDroneInterface extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
     static final BooleanProperty CONNECTED = BooleanProperty.create("connected");
 
     public BlockDroneInterface() {

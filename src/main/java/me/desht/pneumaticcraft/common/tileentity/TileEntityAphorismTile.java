@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.BlockAphorismTile;
+import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -210,8 +210,8 @@ public class TileEntityAphorismTile extends TileEntityBase {
         this.invisible = invisible;
         if (level != null) {
             BlockState state = getBlockState();
-            if (state.getBlock() instanceof BlockAphorismTile) {
-                level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockAphorismTile.INVISIBLE, invisible));
+            if (state.getBlock() instanceof AphorismTileBlock) {
+                level.setBlockAndUpdate(worldPosition, getBlockState().setValue(AphorismTileBlock.INVISIBLE, invisible));
             }
         }
     }

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
-import me.desht.pneumaticcraft.common.block.BlockPressureTube;
+import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.tubes.IInfluenceDispersing;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
@@ -291,7 +291,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             modules.remove(side);
         }
         if (getLevel() != null && !getLevel().isClientSide) {
-            getLevel().setBlock(getBlockPos(), BlockPressureTube.recalculateState(level, worldPosition, getBlockState()), Block.UPDATE_ALL);
+            getLevel().setBlock(getBlockPos(), PressureTubeBlock.recalculateState(level, worldPosition, getBlockState()), Block.UPDATE_ALL);
             sendDescriptionPacket();
             setChanged();
         }

@@ -63,158 +63,158 @@ public class ModBlocks {
         return Block.Properties.of(Material.WATER).noCollission().strength(100f).noDrops();
     }
 
-    public static final RegistryObject<BlockPressureTube> PRESSURE_TUBE = register("pressure_tube",
-            () -> new BlockPressureTube(BlockPressureTube.Tier.ONE));
-    public static final RegistryObject<BlockPressureTube> REINFORCED_PRESSURE_TUBE = register("reinforced_pressure_tube",
-            () -> new BlockPressureTube(BlockPressureTube.Tier.ONE_HALF));
-    public static final RegistryObject<BlockPressureTube> ADVANCED_PRESSURE_TUBE = register("advanced_pressure_tube",
-            () -> new BlockPressureTube(BlockPressureTube.Tier.TWO));
-    public static final RegistryObject<BlockAirCannon> AIR_CANNON = register("air_cannon",
-            BlockAirCannon::new);
-    public static final RegistryObject<BlockPressureChamberWall> PRESSURE_CHAMBER_WALL = register("pressure_chamber_wall",
-            BlockPressureChamberWall::new);
-    public static final RegistryObject<BlockPressureChamberGlass> PRESSURE_CHAMBER_GLASS = register("pressure_chamber_glass",
-            BlockPressureChamberGlass::new);
-    public static final RegistryObject<BlockPressureChamberValve> PRESSURE_CHAMBER_VALVE = register("pressure_chamber_valve",
-            BlockPressureChamberValve::new);
-    public static final RegistryObject<BlockPressureChamberInterface> PRESSURE_CHAMBER_INTERFACE = register("pressure_chamber_interface",
-            BlockPressureChamberInterface::new);
-    public static final RegistryObject<BlockChargingStation> CHARGING_STATION = register("charging_station",
-            BlockChargingStation::new, block -> () -> new BlockChargingStation.ItemBlockChargingStation(block.get()));
-    public static final RegistryObject<BlockDrillPipe> DRILL_PIPE = register("drill_pipe",
-            BlockDrillPipe::new);
-    public static final RegistryObject<BlockElevatorBase> ELEVATOR_BASE = register("elevator_base",
-            BlockElevatorBase::new);
-    public static final RegistryObject<BlockElevatorFrame> ELEVATOR_FRAME = register("elevator_frame",
-            BlockElevatorFrame::new);
-    public static final RegistryObject<BlockVacuumPump> VACUUM_PUMP = register("vacuum_pump",
-            BlockVacuumPump::new);
-    public static final RegistryObject<BlockPneumaticDoorBase> PNEUMATIC_DOOR_BASE = register("pneumatic_door_base",
-            BlockPneumaticDoorBase::new);
-    public static final RegistryObject<BlockPneumaticDoor> PNEUMATIC_DOOR = register("pneumatic_door",
-            BlockPneumaticDoor::new, block -> () -> new BlockPneumaticDoor.ItemBlockPneumaticDoor(block.get()));
-    public static final RegistryObject<BlockAssemblyPlatform> ASSEMBLY_PLATFORM = register("assembly_platform",
-            BlockAssemblyPlatform::new);
-    public static final RegistryObject<BlockAssemblyIOUnit> ASSEMBLY_IO_UNIT_IMPORT = register("assembly_io_unit_import",
-            () -> new BlockAssemblyIOUnit.Import(defaultProps()));
-    public static final RegistryObject<BlockAssemblyIOUnit> ASSEMBLY_IO_UNIT_EXPORT = register("assembly_io_unit_export",
-            () -> new BlockAssemblyIOUnit.Export(defaultProps()));
-    public static final RegistryObject<BlockAssemblyDrill> ASSEMBLY_DRILL = register("assembly_drill",
-            BlockAssemblyDrill::new);
-    public static final RegistryObject<BlockAssemblyLaser> ASSEMBLY_LASER = register("assembly_laser",
-            BlockAssemblyLaser::new);
-    public static final RegistryObject<BlockAssemblyController> ASSEMBLY_CONTROLLER = register("assembly_controller",
-            BlockAssemblyController::new);
-    public static final RegistryObject<BlockCompressedIron> COMPRESSED_IRON_BLOCK = register("compressed_iron_block",
-            BlockCompressedIron::new);
-    public static final RegistryObject<BlockUVLightBox> UV_LIGHT_BOX = register("uv_light_box",
-            BlockUVLightBox::new);
-    public static final RegistryObject<BlockSecurityStation> SECURITY_STATION = register("security_station",
-            BlockSecurityStation::new);
-    public static final RegistryObject<BlockUniversalSensor> UNIVERSAL_SENSOR = register("universal_sensor",
-            BlockUniversalSensor::new);
-    public static final RegistryObject<BlockAerialInterface> AERIAL_INTERFACE = register("aerial_interface",
-            BlockAerialInterface::new);
-    public static final RegistryObject<BlockElectrostaticCompressor> ELECTROSTATIC_COMPRESSOR = register("electrostatic_compressor",
-            BlockElectrostaticCompressor::new);
-    public static final RegistryObject<BlockAphorismTile> APHORISM_TILE = register("aphorism_tile",
-            BlockAphorismTile::new, block -> () -> new BlockAphorismTile.ItemBlockAphorismTile(block.get()));
-    public static final RegistryObject<BlockOmnidirectionalHopper> OMNIDIRECTIONAL_HOPPER = register("omnidirectional_hopper",
-            BlockOmnidirectionalHopper::new, block -> () -> new BlockOmnidirectionalHopper.ItemBlockOmnidirectionalHopper(block.get()));
-    public static final RegistryObject<BlockElevatorCaller> ELEVATOR_CALLER = register("elevator_caller",
-            BlockElevatorCaller::new);
-    public static final RegistryObject<BlockProgrammer> PROGRAMMER = register("programmer",
-            BlockProgrammer::new);
-    public static final RegistryObject<BlockCreativeCompressor> CREATIVE_COMPRESSOR = register("creative_compressor",
-            BlockCreativeCompressor::new, block -> () -> new BlockCreativeCompressor.ItemBlockCreativeCompressor(block.get()));
-    public static final RegistryObject<BlockCreativeCompressedIron> CREATIVE_COMPRESSED_IRON_BLOCK = register("creative_compressed_iron_block",
-            BlockCreativeCompressedIron::new, block -> () -> new BlockCreativeCompressedIron.ItemBlockCreativeCompressedIron(block.get()));
-    public static final RegistryObject<BlockLiquidCompressor> LIQUID_COMPRESSOR = register("liquid_compressor",
-            BlockLiquidCompressor::new);
-    public static final RegistryObject<BlockAdvancedLiquidCompressor> ADVANCED_LIQUID_COMPRESSOR = register("advanced_liquid_compressor",
-            BlockAdvancedLiquidCompressor::new);
-    public static final RegistryObject<BlockAirCompressor> AIR_COMPRESSOR = register("air_compressor",
-            BlockAirCompressor::new);
-    public static final RegistryObject<BlockAdvancedAirCompressor> ADVANCED_AIR_COMPRESSOR = register("advanced_air_compressor",
-            BlockAdvancedAirCompressor::new);
-    public static final RegistryObject<BlockLiquidHopper> LIQUID_HOPPER = register("liquid_hopper",
-            BlockLiquidHopper::new, block -> () -> new BlockLiquidHopper.ItemBlockLiquidHopper(block.get()));
-    public static final RegistryObject<BlockDroneRedstoneEmitter> DRONE_REDSTONE_EMITTER = registerNoItem("drone_redstone_emitter",
-            BlockDroneRedstoneEmitter::new);
-    public static final RegistryObject<BlockHeatSink> HEAT_SINK = register("heat_sink",
-            BlockHeatSink::new);
-    public static final RegistryObject<BlockVortexTube> VORTEX_TUBE = register("vortex_tube",
-            BlockVortexTube::new);
-    public static final RegistryObject<BlockProgrammableController> PROGRAMMABLE_CONTROLLER = register("programmable_controller",
-            BlockProgrammableController::new);
-    public static final RegistryObject<BlockGasLift> GAS_LIFT = register("gas_lift",
-            BlockGasLift::new);
-    public static final RegistryObject<BlockRefineryController> REFINERY = register("refinery",
-            BlockRefineryController::new);
-    public static final RegistryObject<BlockRefineryOutput> REFINERY_OUTPUT = register("refinery_output",
-            BlockRefineryOutput::new);
-    public static final RegistryObject<BlockThermopneumaticProcessingPlant> THERMOPNEUMATIC_PROCESSING_PLANT = register("thermopneumatic_processing_plant",
-            BlockThermopneumaticProcessingPlant::new);
-    public static final RegistryObject<BlockKeroseneLamp> KEROSENE_LAMP = register("kerosene_lamp",
-            BlockKeroseneLamp::new, block -> () -> new BlockKeroseneLamp.ItemBlockKeroseneLamp(block.get()));
-    public static final RegistryObject<BlockKeroseneLampLight> KEROSENE_LAMP_LIGHT = registerNoItem("kerosene_lamp_light",
-            BlockKeroseneLampLight::new);
-    public static final RegistryObject<BlockSentryTurret> SENTRY_TURRET = register("sentry_turret",
-            BlockSentryTurret::new);
-    public static final RegistryObject<BlockFluxCompressor> FLUX_COMPRESSOR = register("flux_compressor",
-            BlockFluxCompressor::new);
-    public static final RegistryObject<BlockPneumaticDynamo> PNEUMATIC_DYNAMO = register("pneumatic_dynamo",
-            BlockPneumaticDynamo::new);
-    public static final RegistryObject<BlockThermalCompressor> THERMAL_COMPRESSOR = register("thermal_compressor",
-            BlockThermalCompressor::new);
-    public static final RegistryObject<BlockHeatPipe> HEAT_PIPE = register("heat_pipe",
-            BlockHeatPipe::new);
-    public static final RegistryObject<BlockEtchingTank> ETCHING_TANK = register("etching_tank",
-            BlockEtchingTank::new);
-    public static final RegistryObject<BlockFluidTank> TANK_SMALL = register("small_tank",
-            () -> new BlockFluidTank(BlockFluidTank.Size.SMALL), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
-    public static final RegistryObject<BlockFluidTank> TANK_MEDIUM = register("medium_tank",
-            () -> new BlockFluidTank(BlockFluidTank.Size.MEDIUM), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
-    public static final RegistryObject<BlockFluidTank> TANK_LARGE = register("large_tank",
-            () -> new BlockFluidTank(BlockFluidTank.Size.LARGE), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
-    public static final RegistryObject<BlockFluidTank> TANK_HUGE = register("huge_tank",
-            () -> new BlockFluidTank(BlockFluidTank.Size.HUGE), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
-    public static final RegistryObject<BlockReinforcedChest> REINFORCED_CHEST = register("reinforced_chest",
-            BlockReinforcedChest::new, block -> () -> new BlockReinforcedChest.ItemBlockReinforcedChest(block.get()));
-    public static final RegistryObject<BlockSmartChest> SMART_CHEST = register("smart_chest",
-            BlockSmartChest::new, block -> () -> new BlockSmartChest.ItemBlockBlockSmartChest(block.get()));
-    public static final RegistryObject<BlockTagWorkbench> TAG_WORKBENCH = register("tag_workbench",
-            BlockTagWorkbench::new);
-    public static final RegistryObject<BlockDisplayTable> DISPLAY_TABLE = register("display_table",
-            BlockDisplayTable::new);
-    public static final RegistryObject<BlockDisplayTable.Shelf> DISPLAY_SHELF = register("display_shelf",
-            BlockDisplayTable.Shelf::new);
+    public static final RegistryObject<PressureTubeBlock> PRESSURE_TUBE = register("pressure_tube",
+            () -> new PressureTubeBlock(PressureTubeBlock.Tier.ONE));
+    public static final RegistryObject<PressureTubeBlock> REINFORCED_PRESSURE_TUBE = register("reinforced_pressure_tube",
+            () -> new PressureTubeBlock(PressureTubeBlock.Tier.ONE_HALF));
+    public static final RegistryObject<PressureTubeBlock> ADVANCED_PRESSURE_TUBE = register("advanced_pressure_tube",
+            () -> new PressureTubeBlock(PressureTubeBlock.Tier.TWO));
+    public static final RegistryObject<AirCannonBlock> AIR_CANNON = register("air_cannon",
+            AirCannonBlock::new);
+    public static final RegistryObject<PressureChamberWallBlock> PRESSURE_CHAMBER_WALL = register("pressure_chamber_wall",
+            PressureChamberWallBlock::new);
+    public static final RegistryObject<PressureChamberGlassBlock> PRESSURE_CHAMBER_GLASS = register("pressure_chamber_glass",
+            PressureChamberGlassBlock::new);
+    public static final RegistryObject<PressureChamberValveBlock> PRESSURE_CHAMBER_VALVE = register("pressure_chamber_valve",
+            PressureChamberValveBlock::new);
+    public static final RegistryObject<PressureChamberInterfaceBlock> PRESSURE_CHAMBER_INTERFACE = register("pressure_chamber_interface",
+            PressureChamberInterfaceBlock::new);
+    public static final RegistryObject<ChargingStationBlock> CHARGING_STATION = register("charging_station",
+            ChargingStationBlock::new, block -> () -> new ChargingStationBlock.ItemBlockChargingStation(block.get()));
+    public static final RegistryObject<DrillPipeBlock> DRILL_PIPE = register("drill_pipe",
+            DrillPipeBlock::new);
+    public static final RegistryObject<ElevatorBaseBlock> ELEVATOR_BASE = register("elevator_base",
+            ElevatorBaseBlock::new);
+    public static final RegistryObject<ElevatorFrameBlock> ELEVATOR_FRAME = register("elevator_frame",
+            ElevatorFrameBlock::new);
+    public static final RegistryObject<VacuumPumpBlock> VACUUM_PUMP = register("vacuum_pump",
+            VacuumPumpBlock::new);
+    public static final RegistryObject<PneumaticDoorBaseBlock> PNEUMATIC_DOOR_BASE = register("pneumatic_door_base",
+            PneumaticDoorBaseBlock::new);
+    public static final RegistryObject<PneumaticDoorBlock> PNEUMATIC_DOOR = register("pneumatic_door",
+            PneumaticDoorBlock::new, block -> () -> new PneumaticDoorBlock.ItemBlockPneumaticDoor(block.get()));
+    public static final RegistryObject<AssemblyPlatformBlock> ASSEMBLY_PLATFORM = register("assembly_platform",
+            AssemblyPlatformBlock::new);
+    public static final RegistryObject<AbstractAssemblyIOUnitBlock> ASSEMBLY_IO_UNIT_IMPORT = register("assembly_io_unit_import",
+            () -> new AbstractAssemblyIOUnitBlock.Import(defaultProps()));
+    public static final RegistryObject<AbstractAssemblyIOUnitBlock> ASSEMBLY_IO_UNIT_EXPORT = register("assembly_io_unit_export",
+            () -> new AbstractAssemblyIOUnitBlock.Export(defaultProps()));
+    public static final RegistryObject<AssemblyDrillBlock> ASSEMBLY_DRILL = register("assembly_drill",
+            AssemblyDrillBlock::new);
+    public static final RegistryObject<AssemblyLaserBlock> ASSEMBLY_LASER = register("assembly_laser",
+            AssemblyLaserBlock::new);
+    public static final RegistryObject<AssemblyControllerBlock> ASSEMBLY_CONTROLLER = register("assembly_controller",
+            AssemblyControllerBlock::new);
+    public static final RegistryObject<CompressedIronBlock> COMPRESSED_IRON_BLOCK = register("compressed_iron_block",
+            CompressedIronBlock::new);
+    public static final RegistryObject<UVLightBoxBlock> UV_LIGHT_BOX = register("uv_light_box",
+            UVLightBoxBlock::new);
+    public static final RegistryObject<SecurityStationBlock> SECURITY_STATION = register("security_station",
+            SecurityStationBlock::new);
+    public static final RegistryObject<UniversalSensorBlock> UNIVERSAL_SENSOR = register("universal_sensor",
+            UniversalSensorBlock::new);
+    public static final RegistryObject<AerialInterfaceBlock> AERIAL_INTERFACE = register("aerial_interface",
+            AerialInterfaceBlock::new);
+    public static final RegistryObject<ElectrostaticCompressorBlock> ELECTROSTATIC_COMPRESSOR = register("electrostatic_compressor",
+            ElectrostaticCompressorBlock::new);
+    public static final RegistryObject<AphorismTileBlock> APHORISM_TILE = register("aphorism_tile",
+            AphorismTileBlock::new, block -> () -> new AphorismTileBlock.ItemBlockAphorismTile(block.get()));
+    public static final RegistryObject<OmnidirectionalHopperBlock> OMNIDIRECTIONAL_HOPPER = register("omnidirectional_hopper",
+            OmnidirectionalHopperBlock::new, block -> () -> new OmnidirectionalHopperBlock.ItemBlockOmnidirectionalHopper(block.get()));
+    public static final RegistryObject<ElevatorCallerBlock> ELEVATOR_CALLER = register("elevator_caller",
+            ElevatorCallerBlock::new);
+    public static final RegistryObject<ProgrammerBlock> PROGRAMMER = register("programmer",
+            ProgrammerBlock::new);
+    public static final RegistryObject<CreativeCompressorBlock> CREATIVE_COMPRESSOR = register("creative_compressor",
+            CreativeCompressorBlock::new, block -> () -> new CreativeCompressorBlock.ItemBlockCreativeCompressor(block.get()));
+    public static final RegistryObject<CreativeCompressedIronBlock> CREATIVE_COMPRESSED_IRON_BLOCK = register("creative_compressed_iron_block",
+            CreativeCompressedIronBlock::new, block -> () -> new CreativeCompressedIronBlock.ItemBlockCreativeCompressedIron(block.get()));
+    public static final RegistryObject<LiquidCompressorBlock> LIQUID_COMPRESSOR = register("liquid_compressor",
+            LiquidCompressorBlock::new);
+    public static final RegistryObject<AdvancedLiquidCompressorBlock> ADVANCED_LIQUID_COMPRESSOR = register("advanced_liquid_compressor",
+            AdvancedLiquidCompressorBlock::new);
+    public static final RegistryObject<AirCompressorBlock> AIR_COMPRESSOR = register("air_compressor",
+            AirCompressorBlock::new);
+    public static final RegistryObject<AdvancedAirCompressorBlock> ADVANCED_AIR_COMPRESSOR = register("advanced_air_compressor",
+            AdvancedAirCompressorBlock::new);
+    public static final RegistryObject<LiquidHopperBlock> LIQUID_HOPPER = register("liquid_hopper",
+            LiquidHopperBlock::new, block -> () -> new LiquidHopperBlock.ItemBlockLiquidHopper(block.get()));
+    public static final RegistryObject<DroneRedstoneEmitterBlock> DRONE_REDSTONE_EMITTER = registerNoItem("drone_redstone_emitter",
+            DroneRedstoneEmitterBlock::new);
+    public static final RegistryObject<HeatSinkBlock> HEAT_SINK = register("heat_sink",
+            HeatSinkBlock::new);
+    public static final RegistryObject<VortexTubeBlock> VORTEX_TUBE = register("vortex_tube",
+            VortexTubeBlock::new);
+    public static final RegistryObject<ProgrammableControllerBlock> PROGRAMMABLE_CONTROLLER = register("programmable_controller",
+            ProgrammableControllerBlock::new);
+    public static final RegistryObject<GasLiftBlock> GAS_LIFT = register("gas_lift",
+            GasLiftBlock::new);
+    public static final RegistryObject<RefineryControllerBlock> REFINERY = register("refinery",
+            RefineryControllerBlock::new);
+    public static final RegistryObject<RefineryOutputBlock> REFINERY_OUTPUT = register("refinery_output",
+            RefineryOutputBlock::new);
+    public static final RegistryObject<ThermopneumaticProcessingPlantBlock> THERMOPNEUMATIC_PROCESSING_PLANT = register("thermopneumatic_processing_plant",
+            ThermopneumaticProcessingPlantBlock::new);
+    public static final RegistryObject<KeroseneLampBlock> KEROSENE_LAMP = register("kerosene_lamp",
+            KeroseneLampBlock::new, block -> () -> new KeroseneLampBlock.ItemBlockKeroseneLamp(block.get()));
+    public static final RegistryObject<KeroseneLampLightBlock> KEROSENE_LAMP_LIGHT = registerNoItem("kerosene_lamp_light",
+            KeroseneLampLightBlock::new);
+    public static final RegistryObject<SentryTurretBlock> SENTRY_TURRET = register("sentry_turret",
+            SentryTurretBlock::new);
+    public static final RegistryObject<FluxCompressorBlock> FLUX_COMPRESSOR = register("flux_compressor",
+            FluxCompressorBlock::new);
+    public static final RegistryObject<PneumaticDynamoBlock> PNEUMATIC_DYNAMO = register("pneumatic_dynamo",
+            PneumaticDynamoBlock::new);
+    public static final RegistryObject<ThermalCompressorBlock> THERMAL_COMPRESSOR = register("thermal_compressor",
+            ThermalCompressorBlock::new);
+    public static final RegistryObject<HeatPipeBlock> HEAT_PIPE = register("heat_pipe",
+            HeatPipeBlock::new);
+    public static final RegistryObject<EtchingTankBlock> ETCHING_TANK = register("etching_tank",
+            EtchingTankBlock::new);
+    public static final RegistryObject<FluidTankBlock> TANK_SMALL = register("small_tank",
+            () -> new FluidTankBlock(FluidTankBlock.Size.SMALL), block -> () -> new FluidTankBlock.ItemBlockFluidTank(block.get()));
+    public static final RegistryObject<FluidTankBlock> TANK_MEDIUM = register("medium_tank",
+            () -> new FluidTankBlock(FluidTankBlock.Size.MEDIUM), block -> () -> new FluidTankBlock.ItemBlockFluidTank(block.get()));
+    public static final RegistryObject<FluidTankBlock> TANK_LARGE = register("large_tank",
+            () -> new FluidTankBlock(FluidTankBlock.Size.LARGE), block -> () -> new FluidTankBlock.ItemBlockFluidTank(block.get()));
+    public static final RegistryObject<FluidTankBlock> TANK_HUGE = register("huge_tank",
+            () -> new FluidTankBlock(FluidTankBlock.Size.HUGE), block -> () -> new FluidTankBlock.ItemBlockFluidTank(block.get()));
+    public static final RegistryObject<ReinforcedChestBlock> REINFORCED_CHEST = register("reinforced_chest",
+            ReinforcedChestBlock::new, block -> () -> new ReinforcedChestBlock.ItemBlockReinforcedChest(block.get()));
+    public static final RegistryObject<SmartChestBlock> SMART_CHEST = register("smart_chest",
+            SmartChestBlock::new, block -> () -> new SmartChestBlock.ItemBlockBlockSmartChest(block.get()));
+    public static final RegistryObject<TagWorkbenchBlock> TAG_WORKBENCH = register("tag_workbench",
+            TagWorkbenchBlock::new);
+    public static final RegistryObject<DisplayTableBlock> DISPLAY_TABLE = register("display_table",
+            DisplayTableBlock::new);
+    public static final RegistryObject<DisplayTableBlock.Shelf> DISPLAY_SHELF = register("display_shelf",
+            DisplayTableBlock.Shelf::new);
     public static final RegistryObject<BlockDroneInterface> DRONE_INTERFACE = register("drone_interface",
             BlockDroneInterface::new);
-    public static final RegistryObject<BlockThermalLagging> THERMAL_LAGGING = register("thermal_lagging",
-            BlockThermalLagging::new);
-    public static final RegistryObject<BlockFluidMixer> FLUID_MIXER = register("fluid_mixer",
-            BlockFluidMixer::new);
-    public static final RegistryObject<BlockVacuumTrap> VACUUM_TRAP = register("vacuum_trap",
-            BlockVacuumTrap::new, block -> () -> new BlockVacuumTrap.ItemBlockVacuumTrap(block.get()));
-    public static final RegistryObject<BlockSpawnerExtractor> SPAWNER_EXTRACTOR = register("spawner_extractor",
-            BlockSpawnerExtractor::new);
-    public static final RegistryObject<BlockEmptySpawner> EMPTY_SPAWNER = register("empty_spawner",
-            BlockEmptySpawner::new);
-    public static final RegistryObject<BlockPressurizedSpawner> PRESSURIZED_SPAWNER = register("pressurized_spawner",
-            BlockPressurizedSpawner::new);
+    public static final RegistryObject<ThermalLaggingBlock> THERMAL_LAGGING = register("thermal_lagging",
+            ThermalLaggingBlock::new);
+    public static final RegistryObject<FluidMixerBlock> FLUID_MIXER = register("fluid_mixer",
+            FluidMixerBlock::new);
+    public static final RegistryObject<VacuumTrapBlock> VACUUM_TRAP = register("vacuum_trap",
+            VacuumTrapBlock::new, block -> () -> new VacuumTrapBlock.ItemBlockVacuumTrap(block.get()));
+    public static final RegistryObject<SpawnerExtractorBlock> SPAWNER_EXTRACTOR = register("spawner_extractor",
+            SpawnerExtractorBlock::new);
+    public static final RegistryObject<EmptySpawnerBlock> EMPTY_SPAWNER = register("empty_spawner",
+            EmptySpawnerBlock::new);
+    public static final RegistryObject<PressurizedSpawnerBlock> PRESSURIZED_SPAWNER = register("pressurized_spawner",
+            PressurizedSpawnerBlock::new);
 
-    public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
-    public static final List<RegistryObject<BlockWallLamp>> WALL_LAMPS = new ArrayList<>();
-    public static final List<RegistryObject<BlockWallLamp>> WALL_LAMPS_INVERTED = new ArrayList<>();
+    public static final List<RegistryObject<PlasticBrickBlock>> PLASTIC_BRICKS = new ArrayList<>();
+    public static final List<RegistryObject<WallLampBlock>> WALL_LAMPS = new ArrayList<>();
+    public static final List<RegistryObject<WallLampBlock>> WALL_LAMPS_INVERTED = new ArrayList<>();
     static {
         for (DyeColor color : DyeColor.values()) {
-            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getName(), () -> new BlockPlasticBrick(color),
-                    block -> () -> new BlockPlasticBrick.ItemPlasticBrick(block.get())));
-            WALL_LAMPS.add(register("wall_lamp_" + color.getName(), () -> new BlockWallLamp(color, false),
-                    block -> () -> new BlockWallLamp.ItemWallLamp(block.get())));
-            WALL_LAMPS_INVERTED.add(register("wall_lamp_inverted_" + color.getName(), () -> new BlockWallLamp(color, true),
-                    block -> () -> new BlockWallLamp.ItemWallLamp(block.get())));
+            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getName(), () -> new PlasticBrickBlock(color),
+                    block -> () -> new PlasticBrickBlock.ItemPlasticBrick(block.get())));
+            WALL_LAMPS.add(register("wall_lamp_" + color.getName(), () -> new WallLampBlock(color, false),
+                    block -> () -> new WallLampBlock.ItemWallLamp(block.get())));
+            WALL_LAMPS_INVERTED.add(register("wall_lamp_inverted_" + color.getName(), () -> new WallLampBlock(color, true),
+                    block -> () -> new WallLampBlock.ItemWallLamp(block.get())));
         }
     }
 
@@ -254,8 +254,8 @@ public class ModBlocks {
     public static final RegistryObject<Block> COMPRESSED_BRICK_WALL = register("compressed_brick_wall",
             () -> new WallBlock(reinforcedStoneProps()));
 
-    public static final RegistryObject<BlockFluidEtchingAcid> ETCHING_ACID = registerNoItem("etching_acid",
-            () -> new BlockFluidEtchingAcid(fluidProps()));
+    public static final RegistryObject<FluidEtchingAcidBlock> ETCHING_ACID = registerNoItem("etching_acid",
+            () -> new FluidEtchingAcidBlock(fluidProps()));
     public static final RegistryObject<LiquidBlock> PLASTIC = registerNoItem("plastic",
             () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.PLASTIC.get(), fluidProps()));
     public static final RegistryObject<LiquidBlock> LUBRICANT = registerNoItem("lubricant",
@@ -283,11 +283,11 @@ public class ModBlocks {
 
 
 
-    public static RegistryObject<BlockPlasticBrick> plasticBrick(DyeColor color) {
+    public static RegistryObject<PlasticBrickBlock> plasticBrick(DyeColor color) {
         return PLASTIC_BRICKS.get(color.getId());
     }
 
-    public static RegistryObject<BlockWallLamp> wallLamp(DyeColor color, boolean inverted) {
+    public static RegistryObject<WallLampBlock> wallLamp(DyeColor color, boolean inverted) {
         return inverted ? WALL_LAMPS_INVERTED.get(color.getId()) : WALL_LAMPS.get(color.getId());
     }
 }

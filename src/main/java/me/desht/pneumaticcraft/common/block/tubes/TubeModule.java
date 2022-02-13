@@ -40,8 +40,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.List;
 import java.util.Objects;
 
-import static me.desht.pneumaticcraft.common.block.BlockPressureTube.CORE_MAX;
-import static me.desht.pneumaticcraft.common.block.BlockPressureTube.CORE_MIN;
+import static me.desht.pneumaticcraft.common.block.PressureTubeBlock.CORE_MAX;
+import static me.desht.pneumaticcraft.common.block.PressureTubeBlock.CORE_MIN;
 
 public abstract class TubeModule {
     public static final float MAX_VALUE = 30;

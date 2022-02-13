@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.block.BlockAirCompressor;
+import me.desht.pneumaticcraft.common.block.AirCompressorBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
@@ -127,8 +127,8 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         isActive = burnTime > curFuelUsage;
         if (wasActive != isActive) {
             BlockState state = getBlockState();
-            if (state.hasProperty(BlockAirCompressor.ON)) {
-                nonNullLevel().setBlockAndUpdate(getBlockPos(), state.setValue(BlockAirCompressor.ON, isActive));
+            if (state.hasProperty(AirCompressorBlock.ON)) {
+                nonNullLevel().setBlockAndUpdate(getBlockPos(), state.setValue(AirCompressorBlock.ON, isActive));
             }
         }
         airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);

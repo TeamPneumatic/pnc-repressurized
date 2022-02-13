@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.CamouflageableBlockEntity;
@@ -61,7 +61,7 @@ public class ColorHandlers {
         for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof ITintableBlock) {
                 event.getBlockColors().register(((ITintableBlock) block.get())::getTintColor, block.get());
-            } else if (block.get() instanceof BlockPneumaticCraftCamo) {
+            } else if (block.get() instanceof AbstractCamouflageBlock) {
                 event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
                     if (blockAccess != null && pos != null) {
                         BlockEntity te = blockAccess.getBlockEntity(pos);

@@ -23,7 +23,7 @@ import mcjty.theoneprobe.api.ProbeMode;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.block.BlockPressureTube;
+import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -134,7 +134,7 @@ public class TOPInfoProvider {
     }
 
     private static void handlePressureTube(ProbeMode mode, IProbeInfo probeInfo, TileEntityPressureTube te, Direction face, Player player) {
-        TubeModule module = BlockPressureTube.getFocusedModule(te.nonNullLevel(), te.getBlockPos(), player);
+        TubeModule module = PressureTubeBlock.getFocusedModule(te.nonNullLevel(), te.getBlockPos(), player);
         if (module != null) {
             List<Component> currenttip = new ArrayList<>();
             module.addInfo(currenttip);

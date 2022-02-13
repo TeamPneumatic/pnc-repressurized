@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.model.custom;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -55,10 +55,10 @@ public class CamouflageModel implements IDynamicBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData modelData) {
-        if (state == null || !(state.getBlock() instanceof BlockPneumaticCraftCamo)) {
+        if (state == null || !(state.getBlock() instanceof AbstractCamouflageBlock)) {
             return originalModel.getQuads(state, side, rand, modelData);
         }
-        BlockState camoState = modelData.getData(BlockPneumaticCraftCamo.CAMO_STATE);
+        BlockState camoState = modelData.getData(AbstractCamouflageBlock.CAMO_STATE);
 
         RenderType layer = MinecraftForgeClient.getRenderType();
         if (layer == null) {

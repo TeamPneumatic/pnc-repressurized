@@ -38,7 +38,7 @@ import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.render.tube_module.*;
 import me.desht.pneumaticcraft.client.sound.MovingSoundJackhammer;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit;
@@ -231,7 +231,7 @@ public class ClientSetup {
 
         // camouflageable blocks need to render in all layers, since their camo could render in any layer
         for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
-            if (ro.get() instanceof BlockPneumaticCraftCamo) {
+            if (ro.get() instanceof AbstractCamouflageBlock) {
                 ItemBlockRenderTypes.setRenderLayer(ro.get(), r -> true);
             }
         }

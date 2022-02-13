@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.BakedModel;
@@ -45,7 +45,7 @@ public class ModClientEventHandler {
     public static void onModelBaking(ModelBakeEvent event) {
         // set up camo models for camouflageable blocks
         for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
-            if (block.get() instanceof BlockPneumaticCraftCamo) {
+            if (block.get() instanceof AbstractCamouflageBlock) {
                 for (BlockState state : block.get().getStateDefinition().getPossibleStates()) {
                     ModelResourceLocation loc = BlockModelShaper.stateToModelLocation(state);
                     BakedModel model = event.getModelRegistry().get(loc);

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -26,7 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Implement this interface in tile entities which should store a camouflaged state.  The corresponding block should
- * be a subclass of {@link me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo}
+ * be a subclass of {@link AbstractCamouflageBlock}
  */
 public interface CamouflageableBlockEntity {
     /**

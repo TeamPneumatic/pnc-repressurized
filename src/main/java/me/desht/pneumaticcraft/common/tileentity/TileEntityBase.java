@@ -24,8 +24,8 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
-import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
+import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
@@ -369,9 +369,9 @@ public abstract class TileEntityBase extends BlockEntity
     public IModelData getModelData() {
         if (this instanceof CamouflageableBlockEntity c) {
             return new ModelDataMap.Builder()
-                    .withInitial(BlockPneumaticCraftCamo.BLOCK_ACCESS, level)
-                    .withInitial(BlockPneumaticCraftCamo.BLOCK_POS, worldPosition)
-                    .withInitial(BlockPneumaticCraftCamo.CAMO_STATE, c.getCamouflage())
+                    .withInitial(AbstractCamouflageBlock.BLOCK_ACCESS, level)
+                    .withInitial(AbstractCamouflageBlock.BLOCK_POS, worldPosition)
+                    .withInitial(AbstractCamouflageBlock.CAMO_STATE, c.getCamouflage())
                     .build();
         } else {
             return super.getModelData();
@@ -386,7 +386,7 @@ public abstract class TileEntityBase extends BlockEntity
 
     public Direction getRotation() {
         BlockState state = getBlockState();
-        return state.getBlock() instanceof BlockPneumaticCraft b ? b.getRotation(state) : Direction.NORTH;
+        return state.getBlock() instanceof AbstractPneumaticCraftBlock b ? b.getRotation(state) : Direction.NORTH;
     }
 
     public int getUpgrades(PNCUpgrade upgrade) {

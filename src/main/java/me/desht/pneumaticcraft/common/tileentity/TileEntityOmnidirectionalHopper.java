@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
+import me.desht.pneumaticcraft.common.block.OmnidirectionalHopperBlock;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -226,7 +226,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
     @Override
     protected void setupInputOutputRegions() {
         // Ensure the input region also contains the hollow part of the hopper itself
-        AABB bowl = BlockOmnidirectionalHopper.INPUT_SHAPES[inputDir.get3DDataValue()].bounds().move(worldPosition);
+        AABB bowl = OmnidirectionalHopperBlock.INPUT_SHAPES[inputDir.get3DDataValue()].bounds().move(worldPosition);
         inputAABB = bowl.minmax(new AABB(worldPosition.relative(inputDir)));
         // output zone is a bit simpler
         outputAABB = new AABB(getBlockPos().relative(getRotation()));
