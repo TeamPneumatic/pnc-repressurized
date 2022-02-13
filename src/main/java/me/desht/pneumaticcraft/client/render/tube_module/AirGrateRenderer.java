@@ -14,7 +14,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderAirGrateModule extends TubeModuleRendererBase<AirGrateModule> {
+public class AirGrateRenderer extends AbstractTubeModuleRenderer<AirGrateModule> {
     private final ModelPart top;
     private final ModelPart side1;
     private final ModelPart side2;
@@ -33,7 +33,7 @@ public class RenderAirGrateModule extends TubeModuleRendererBase<AirGrateModule>
     private static final String BASE2 = "base2";
     private static final String BASE3 = "base3";
 
-    public RenderAirGrateModule(BlockEntityRendererProvider.Context ctx) {
+    public AirGrateRenderer(BlockEntityRendererProvider.Context ctx) {
         ModelPart root = ctx.bakeLayer(PNCModelLayers.AIR_GRATE_MODULE);
         top = root.getChild(TOP);
         side1 = root.getChild(SIDE1);
@@ -79,18 +79,12 @@ public class RenderAirGrateModule extends TubeModuleRendererBase<AirGrateModule>
 
 
     @Override
-    protected ResourceLocation getTexture() {
-        ResourceLocation texture;
-        if (isUpgraded()) {
-            texture = Textures.MODEL_AIR_GRATE_UPGRADED;
-        } else {
-            texture = Textures.MODEL_AIR_GRATE;
-        }
-        return texture;
+    protected ResourceLocation getTexture(boolean isUpgraded) {
+        return isUpgraded ? Textures.MODEL_AIR_GRATE_UPGRADED : Textures.MODEL_AIR_GRATE;
     }
 
     @Override
-    protected void renderDynamic(AirGrateModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(AirGrateModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         top.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         side1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         side2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);

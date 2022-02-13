@@ -23,7 +23,7 @@ import net.minecraft.util.Mth;
 
 import static me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
 
-public class RenderPressureChamberInterface extends AbstractTileModelRenderer<PressureChamberInterfaceBlockEntity> {
+public class RenderPressureChamberInterface extends AbstractBlockEntityModelRenderer<PressureChamberInterfaceBlockEntity> {
 
     private final ModelPart inputLeft;
     private final ModelPart inputRight;

@@ -30,7 +30,6 @@ import me.desht.pneumaticcraft.common.item.ItemSeismicSensor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
-import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.Registry;
@@ -152,7 +151,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
                 Collection<AssemblyRecipe> laserRecipes = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipes(world).values();
                 AssemblyRecipeImpl.calculateAssemblyChain(drillRecipes, laserRecipes).forEach((id, recipe) -> cachedRecipes.put(id, (T) recipe));
             } else if (this == FLUID_MIXER) {
-                FluidMixerBlockEntity.cacheRecipeFluids((List<FluidMixerRecipeImpl>) recipes);
+                List<FluidMixerRecipe> l = recipes.stream().filter(r -> r instanceof FluidMixerRecipe).map(r -> (FluidMixerRecipe)r).toList();
+                FluidMixerBlockEntity.cacheRecipeFluids(l);
             }
         }
 

@@ -35,7 +35,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fluids.FluidStack;
 
-public class RenderSpawnerExtractor extends AbstractTileModelRenderer<SpawnerExtractorBlockEntity> {
+public class RenderSpawnerExtractor extends AbstractBlockEntityModelRenderer<SpawnerExtractorBlockEntity> {
     private static final AABB FLUID_BB = new AABB(6/16D, 0, 6/16D, 10/16D, 1, 10/16D);
 
     private static final String MODEL = "model";

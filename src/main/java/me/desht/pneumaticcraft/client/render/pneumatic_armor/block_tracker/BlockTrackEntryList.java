@@ -26,7 +26,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public enum BlockTrackEntryList {
     INSTANCE;
@@ -47,8 +46,8 @@ public enum BlockTrackEntryList {
     public List<IBlockTrackEntry> getEntriesForCoordinate(BlockGetter blockAccess, BlockPos pos, BlockEntity te) {
         final BlockState state = blockAccess.getBlockState(pos);
         return trackList.stream()
-                .filter(entry -> WidgetKeybindCheckBox.get(entry.getEntryID()).checked
-                        && entry.shouldTrackWithThisEntry(blockAccess, pos, state, te))
-                .collect(Collectors.toList());
+                .filter(entry -> WidgetKeybindCheckBox.get(entry.getEntryID()).checked)
+                .filter(entry -> entry.shouldTrackWithThisEntry(blockAccess, pos, state, te))
+                .toList();
     }
 }

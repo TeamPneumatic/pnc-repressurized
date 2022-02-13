@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
-import me.desht.pneumaticcraft.client.render.tube_module.TubeModuleRendererBase;
+import me.desht.pneumaticcraft.client.render.tube_module.AbstractTubeModuleRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
@@ -37,11 +37,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class RenderPressureTubeModule implements BlockEntityRenderer<PressureTubeBlockEntity> {
 
-    private final Map<ResourceLocation, TubeModuleRendererBase<?>> models = new HashMap<>();
+    private final Map<ResourceLocation, AbstractTubeModuleRenderer<?>> models = new HashMap<>();
     private final BlockEntityRendererProvider.Context ctx;
 
     public RenderPressureTubeModule(BlockEntityRendererProvider.Context ctx) {
@@ -64,7 +63,7 @@ public class RenderPressureTubeModule implements BlockEntityRenderer<PressureTub
             moduleItem = null;
         }
 
-        List<AbstractTubeModule> modules = tile.tubeModules().collect(Collectors.toList());
+        List<AbstractTubeModule> modules = tile.tubeModules().toList();
         if (modules.isEmpty() && moduleItem == null)
             return;
 
@@ -89,10 +88,10 @@ public class RenderPressureTubeModule implements BlockEntityRenderer<PressureTub
         }
     }
 
-    private <T extends AbstractTubeModule> TubeModuleRendererBase<T> getModuleRenderer(T module) {
-        TubeModuleRendererBase<?> res = models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module, ctx));
+    private <T extends AbstractTubeModule> AbstractTubeModuleRenderer<T> getModuleRenderer(T module) {
+        AbstractTubeModuleRenderer<?> res = models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module, ctx));
         //noinspection unchecked
-        return (TubeModuleRendererBase<T>) res;
+        return (AbstractTubeModuleRenderer<T>) res;
     }
 
     @Override

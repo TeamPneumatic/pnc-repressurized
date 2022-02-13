@@ -14,7 +14,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderChargingModule extends TubeModuleRendererBase<ChargingModule> {
+public class ChargingRenderer extends AbstractTubeModuleRenderer<ChargingModule> {
     private final ModelPart tip;
     private final ModelPart body;
     private final ModelPart tubeConnector;
@@ -31,7 +31,7 @@ public class RenderChargingModule extends TubeModuleRendererBase<ChargingModule>
     private static final String TIPRIGHT = "tipRight";
     private static final String TIPLEFT = "tipLeft";
 
-    public RenderChargingModule(BlockEntityRendererProvider.Context ctx) {
+    public ChargingRenderer(BlockEntityRendererProvider.Context ctx) {
         ModelPart root = ctx.bakeLayer(PNCModelLayers.CHARGING_MODULE);
         tip = root.getChild(TIP);
         body = root.getChild(BODY);
@@ -73,7 +73,7 @@ public class RenderChargingModule extends TubeModuleRendererBase<ChargingModule>
 
 
     @Override
-    protected void renderDynamic(ChargingModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(ChargingModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         tip.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         body.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
@@ -84,13 +84,7 @@ public class RenderChargingModule extends TubeModuleRendererBase<ChargingModule>
     }
 
     @Override
-    protected ResourceLocation getTexture() {
-        ResourceLocation texture;
-        if (isUpgraded()) {
-            texture = Textures.MODEL_CHARGING_MODULE_UPGRADED;
-        } else {
-            texture = Textures.MODEL_CHARGING_MODULE;
-        }
-        return texture;
+    protected ResourceLocation getTexture(boolean isUpgraded) {
+        return isUpgraded ? Textures.MODEL_CHARGING_MODULE_UPGRADED : Textures.MODEL_CHARGING_MODULE;
     }
 }

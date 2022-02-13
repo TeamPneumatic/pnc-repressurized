@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.RenderEntityTarget;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -39,7 +40,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHand
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -78,7 +78,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get());
         Player player = armorHandler.getPlayer();
 
-        if ((Minecraft.getInstance().level.getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler)) {
+        if ((ClientUtils.getClientLevel().getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler)) {
             ArmorUpgradeClientRegistry.getInstance()
                     .getClientHandler(ArmorUpgradeRegistry.getInstance().searchHandler, SearchClientHandler.class)
                     .trackItemEntities(player, rangeUpgrades);

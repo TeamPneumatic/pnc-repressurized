@@ -36,7 +36,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
 
-public class RenderElevatorBase extends AbstractTileModelRenderer<ElevatorBaseBlockEntity> {
+public class RenderElevatorBase extends AbstractBlockEntityModelRenderer<ElevatorBaseBlockEntity> {
     private static final float FACTOR = 9F / 16;
     private static final float[] SHADE = new float[] { 1f, 0.85f, 0.7f, 0.55f };
 

@@ -34,7 +34,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 
-public class RenderPneumaticDoor extends AbstractTileModelRenderer<PneumaticDoorBlockEntity> {
+public class RenderPneumaticDoor extends AbstractBlockEntityModelRenderer<PneumaticDoorBlockEntity> {
     private static final String DOOR = "door";
 
     private final ModelPart door;

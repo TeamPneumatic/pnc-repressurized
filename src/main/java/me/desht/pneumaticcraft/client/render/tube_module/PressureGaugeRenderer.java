@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderPressureGaugeModule extends TubeModuleRendererBase<PressureGaugeModule> {
+public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGaugeModule> {
     private static final float GAUGE_SCALE = 0.007f;
 
     private final ModelPart tubeConnector1;
@@ -48,7 +48,7 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<PressureGa
     private static final String GAUGE7 = "gauge7";
     private static final String GAUGE8 = "gauge8";
 
-    public RenderPressureGaugeModule(BlockEntityRendererProvider.Context ctx) {
+    public PressureGaugeRenderer(BlockEntityRendererProvider.Context ctx) {
         ModelPart root = ctx.bakeLayer(PNCModelLayers.PRESSURE_GAUGE_MODULE);
         tubeConnector1 = root.getChild(TUBECONNECTOR1);
         tubeConnector2 = root.getChild(TUBECONNECTOR2);
@@ -106,7 +106,7 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<PressureGa
 
 
     @Override
-    protected void renderDynamic(PressureGaugeModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(PressureGaugeModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
@@ -141,13 +141,7 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<PressureGa
     }
 
     @Override
-    protected ResourceLocation getTexture() {
-        ResourceLocation texture;
-        if (isUpgraded()) {
-            texture = Textures.MODEL_GAUGE_UPGRADED;
-        } else {
-            texture = Textures.MODEL_GAUGE;
-        }
-        return texture;
+    protected ResourceLocation getTexture(boolean isUpgraded) {
+        return isUpgraded ? Textures.MODEL_GAUGE_UPGRADED : Textures.MODEL_GAUGE;
     }
 }

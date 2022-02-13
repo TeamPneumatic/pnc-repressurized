@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
-import me.desht.pneumaticcraft.client.render.tube_module.TubeModuleRendererBase;
+import me.desht.pneumaticcraft.client.render.tube_module.AbstractTubeModuleRenderer;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -47,11 +47,11 @@ public class TubeModuleClientRegistry {
         return (factory == null) ? null : factory.apply(module);
     }
 
-    public static <T extends AbstractTubeModule> TubeModuleRendererBase<T> createModel(T module, BlockEntityRendererProvider.Context ctx) {
+    public static <T extends AbstractTubeModule> AbstractTubeModuleRenderer<T> createModel(T module, BlockEntityRendererProvider.Context ctx) {
         //noinspection unchecked
-        return (TubeModuleRendererBase<T>) MODEL_FACTORY.get(module.getType()).apply(ctx);
+        return (AbstractTubeModuleRenderer<T>) MODEL_FACTORY.get(module.getType()).apply(ctx);
     }
 
-    public interface ModuleRendererFactory<T extends TubeModuleRendererBase<?>> extends Function<BlockEntityRendererProvider.Context, T> {
+    public interface ModuleRendererFactory<T extends AbstractTubeModuleRenderer<?>> extends Function<BlockEntityRendererProvider.Context, T> {
     }
 }

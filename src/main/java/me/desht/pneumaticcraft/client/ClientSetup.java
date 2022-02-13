@@ -177,14 +177,14 @@ public class ClientSetup {
         event.registerLayerDefinition(PNCModelLayers.VACUUM_PUMP, RenderVacuumPump::createBodyLayer);
 
         // tube modules
-        event.registerLayerDefinition(PNCModelLayers.AIR_GRATE_MODULE, RenderAirGrateModule::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.CHARGING_MODULE, RenderChargingModule::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.FLOW_DETECTOR_MODULE, RenderFlowDetectorModule::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.LOGISTICS_MODULE, RenderLogisticsModule::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.PRESSURE_GAUGE_MODULE, RenderPressureGaugeModule::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.REDSTONE_MODULE, RenderRedstoneModule::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.REGULATOR_MODULE, RenderRegulatorModule::createBodyLayer);
-        event.registerLayerDefinition(PNCModelLayers.SAFETY_VALVE_MODULE, RenderSafetyValveModule::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.AIR_GRATE_MODULE, AirGrateRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.CHARGING_MODULE, ChargingRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.FLOW_DETECTOR_MODULE, FlowDetectorRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.LOGISTICS_MODULE, LogisticsRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.PRESSURE_GAUGE_MODULE, PressureGaugeRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.REDSTONE_MODULE, RedstoneRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.REGULATOR_MODULE, RegulatorRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.SAFETY_VALVE_MODULE, SafetyValveRenderer::createBodyLayer);
     }
 
     private static void registerItemModelProperties() {
@@ -425,14 +425,14 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REDSTONE, GuiRedstoneModule::new);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_LOGISTICS, GuiLogisticsModule::new);
 
-        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_AIR_GRATE, RenderAirGrateModule::new);
-        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_REDSTONE, RenderRedstoneModule::new);
-        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_SAFETY_VALVE, RenderSafetyValveModule::new);
-        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_REGULATOR, RenderRegulatorModule::new);
-        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_GAUGE, RenderPressureGaugeModule::new);
-        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_CHARGING, RenderChargingModule::new);
-        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_FLOW_DETECTOR, RenderFlowDetectorModule::new);
-        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_LOGISTICS, RenderLogisticsModule::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_AIR_GRATE, AirGrateRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_REDSTONE, RedstoneRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_SAFETY_VALVE, SafetyValveRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_REGULATOR, RegulatorRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_GAUGE, PressureGaugeRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_CHARGING, ChargingRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_FLOW_DETECTOR, FlowDetectorRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_LOGISTICS, LogisticsRenderer::new);
     }
 
     private static void registerArmorClientUpgradeHandlers() {

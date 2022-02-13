@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderUniversalSensor extends AbstractTileModelRenderer<UniversalSensorBlockEntity> {
+public class RenderUniversalSensor extends AbstractBlockEntityModelRenderer<UniversalSensorBlockEntity> {
     private final ModelPart part1;
     private final ModelPart part2;
     private final ModelPart part3;

@@ -40,7 +40,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class RenderAssemblyPlatform extends AbstractTileModelRenderer<AssemblyPlatformBlockEntity> {
+public class RenderAssemblyPlatform extends AbstractBlockEntityModelRenderer<AssemblyPlatformBlockEntity> {
     private static final float ITEM_SCALE = 0.5F;
 
     private final ModelPart claw1;

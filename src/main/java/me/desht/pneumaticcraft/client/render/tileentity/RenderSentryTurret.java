@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.block.entity.SentryTurretBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderSentryTurret extends AbstractTileModelRenderer<SentryTurretBlockEntity> {
+public class RenderSentryTurret extends AbstractBlockEntityModelRenderer<SentryTurretBlockEntity> {
     private final ModelMinigun model;
 
     public RenderSentryTurret(BlockEntityRendererProvider.Context ctx) {

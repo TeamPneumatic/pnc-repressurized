@@ -30,7 +30,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -235,8 +234,8 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         FLUID_MATCHES.clear();
     }
 
-    public static void cacheRecipeFluids(List<FluidMixerRecipeImpl> values) {
-        for (FluidMixerRecipeImpl recipe : values) {
+    public static void cacheRecipeFluids(List<FluidMixerRecipe> values) {
+        for (FluidMixerRecipe recipe : values) {
             for (FluidStack input1 : recipe.getInput1().getFluidStacks()) {
                 for (FluidStack input2 : recipe.getInput2().getFluidStacks()) {
                     Set<Fluid> fluidSet1 = FLUID_MATCHES.computeIfAbsent(input1.getFluid(), k -> new HashSet<>());

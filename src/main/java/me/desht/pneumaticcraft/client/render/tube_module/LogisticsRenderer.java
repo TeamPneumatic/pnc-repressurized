@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 
-public class RenderLogisticsModule extends TubeModuleRendererBase<LogisticsModule> {
+public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModule> {
     private final ModelPart base2;
     private final ModelPart shape1;
     private final ModelPart shape2;
@@ -37,7 +37,7 @@ public class RenderLogisticsModule extends TubeModuleRendererBase<LogisticsModul
     private static final String ACTION = "action";
     private static final String NOTENOUGHAIR = "notEnoughAir";
 
-    public RenderLogisticsModule(BlockEntityRendererProvider.Context ctx) {
+    public LogisticsRenderer(BlockEntityRendererProvider.Context ctx) {
         ModelPart root = ctx.bakeLayer(PNCModelLayers.LOGISTICS_MODULE);
         base2 = root.getChild(BASE2);
         shape1 = root.getChild(SHAPE1);
@@ -86,7 +86,7 @@ public class RenderLogisticsModule extends TubeModuleRendererBase<LogisticsModul
     }
 
     @Override
-    protected void renderDynamic(LogisticsModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(LogisticsModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         ModelPart base;
         if (module.getTicksSinceAction() >= 0) {
             base = action;
@@ -107,7 +107,7 @@ public class RenderLogisticsModule extends TubeModuleRendererBase<LogisticsModul
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getTexture(boolean isUpgraded) {
         return Textures.MODEL_LOGISTICS_MODULE;
     }
 }

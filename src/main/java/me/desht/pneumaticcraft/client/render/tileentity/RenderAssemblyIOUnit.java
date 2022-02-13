@@ -41,7 +41,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class RenderAssemblyIOUnit extends AbstractTileModelRenderer<AssemblyIOUnitBlockEntity> {
+public class RenderAssemblyIOUnit extends AbstractBlockEntityModelRenderer<AssemblyIOUnitBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;

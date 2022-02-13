@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 
 public class RenderAphorismTile implements BlockEntityRenderer<AphorismTileBlockEntity> {
     private static final float ICON_SCALE = 9f;
+    private static final String REDSTONE_STR = Pattern.quote("{redstone}");
 
     private final Font font;
 
@@ -54,7 +55,7 @@ public class RenderAphorismTile implements BlockEntityRenderer<AphorismTileBlock
 
         int fh = font.lineHeight;
 
-        GuiAphorismTile editor = getEditor(te);
+        GuiAphorismTile editor = Minecraft.getInstance().screen instanceof GuiAphorismTile g && g.tile == te ? g : null;
 
         String[] textLines = te.getTextLines();
         int lineWidth = te.getMaxLineWidth(editor != null);
@@ -85,22 +86,15 @@ public class RenderAphorismTile implements BlockEntityRenderer<AphorismTileBlock
                 } else {
                     textLine = textLines[i];
                 }
+                if (editor == null && te.isRedstoneLine(i)) {
+                    textLine = textLine.replaceAll(REDSTONE_STR, Integer.toString(te.pollRedstone()));
+                }
                 float x = -font.width(textLine) / 2f;
                 float y = -(textLines.length * fh) / 2f + i * fh + 1;
-                if (editor == null && te.isRedstoneLine(i)) {
-                    textLine = textLine.replaceAll(Pattern.quote("{redstone}"), Integer.toString(te.pollRedstone()));
-                    x = -font.width(textLine) / 2f;
-                }
                 font.drawInBatch(textLine, x, y, 0xFF000000, false, matrixStack.last().pose(), buffer, false, 0, combinedLight);
             }
         }
 
         matrixStack.popPose();
-    }
-
-    private GuiAphorismTile getEditor(AphorismTileBlockEntity te) {
-        return Minecraft.getInstance().screen instanceof GuiAphorismTile
-                && ((GuiAphorismTile) Minecraft.getInstance().screen).tile == te ?
-                (GuiAphorismTile) Minecraft.getInstance().screen : null;
     }
 }

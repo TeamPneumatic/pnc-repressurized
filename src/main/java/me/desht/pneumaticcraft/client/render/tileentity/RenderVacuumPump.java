@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderVacuumPump extends AbstractTileModelRenderer<VacuumPumpBlockEntity> {
+public class RenderVacuumPump extends AbstractBlockEntityModelRenderer<VacuumPumpBlockEntity> {
     private static final int BLADE_COUNT = 6;
 
     private static final String BLADE = "blade";

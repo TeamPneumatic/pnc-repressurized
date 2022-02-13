@@ -31,7 +31,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderAssemblyDrill extends AbstractTileModelRenderer<AssemblyDrillBlockEntity> {
+public class RenderAssemblyDrill extends AbstractBlockEntityModelRenderer<AssemblyDrillBlockEntity> {
     private static final String BASETURN = "baseTurn";
     private static final String BASETURN2 = "baseTurn2";
     private static final String ARMBASE = "armBase";

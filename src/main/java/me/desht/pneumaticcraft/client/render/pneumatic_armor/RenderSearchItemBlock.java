@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -94,7 +93,7 @@ public class RenderSearchItemBlock {
         float ratio = (float) itemCount / totalCount;
         float diff = (1 - ratio) / 1.5F;
         float size = 1 - diff;
-        float f = ((Minecraft.getInstance().level.getGameTime() & 0x1f) + partialTicks) / 5.092f;  // 0 .. 2*pi every 32 ticks
+        float f = ((ClientUtils.getClientLevel().getGameTime() & 0x1f) + partialTicks) / 5.092f;  // 0 .. 2*pi every 32 ticks
         float alpha = 0.65F + Mth.sin(f) * 0.15f;
         Matrix4f posMat = matrixStack.last().pose();
         builder.vertex(posMat, -size, size, 0).color(0, 1, 0, alpha).uv(0, 1).uv2(FULL_BRIGHT).endVertex();

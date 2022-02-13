@@ -14,7 +14,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderSafetyValveModule extends TubeModuleRendererBase<SafetyValveModule> {
+public class SafetyValveRenderer extends AbstractTubeModuleRenderer<SafetyValveModule> {
     private final ModelPart tubeConnector;
     private final ModelPart valve;
     private final ModelPart valveHandle;
@@ -25,7 +25,7 @@ public class RenderSafetyValveModule extends TubeModuleRendererBase<SafetyValveM
     private static final String VALVEHANDLE = "valveHandle";
     private static final String VALVELID = "valveLid";
 
-    public RenderSafetyValveModule(BlockEntityRendererProvider.Context ctx) {
+    public SafetyValveRenderer(BlockEntityRendererProvider.Context ctx) {
         ModelPart root = ctx.bakeLayer(PNCModelLayers.SAFETY_VALVE_MODULE);
         tubeConnector = root.getChild(TUBECONNECTOR);
         valve = root.getChild(VALVE);
@@ -55,7 +55,7 @@ public class RenderSafetyValveModule extends TubeModuleRendererBase<SafetyValveM
 
 
     @Override
-    protected void renderDynamic(SafetyValveModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(SafetyValveModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         valve.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         valveHandle.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
@@ -63,13 +63,7 @@ public class RenderSafetyValveModule extends TubeModuleRendererBase<SafetyValveM
     }
 
     @Override
-    protected ResourceLocation getTexture() {
-        ResourceLocation texture;
-        if (isUpgraded()) {
-            texture = Textures.MODEL_SAFETY_VALVE_UPGRADED;
-        } else {
-            texture = Textures.MODEL_SAFETY_VALVE;
-        }
-        return texture;
+    protected ResourceLocation getTexture(boolean isUpgraded) {
+        return isUpgraded ? Textures.MODEL_SAFETY_VALVE_UPGRADED : Textures.MODEL_SAFETY_VALVE;
     }
 }

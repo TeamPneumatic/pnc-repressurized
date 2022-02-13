@@ -14,7 +14,7 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderRegulatorModule extends TubeModuleRendererBase<RegulatorModule> {
+public class RegulatorRenderer extends AbstractTubeModuleRenderer<RegulatorModule> {
     private final ModelPart tubeConnector;
     private final ModelPart valve1;
     private final ModelPart valve2;
@@ -23,7 +23,7 @@ public class RenderRegulatorModule extends TubeModuleRendererBase<RegulatorModul
     private static final String VALVE1 = "valve1";
     private static final String VALVE2 = "valve2";
 
-    public RenderRegulatorModule(BlockEntityRendererProvider.Context ctx) {
+    public RegulatorRenderer(BlockEntityRendererProvider.Context ctx) {
         ModelPart root = ctx.bakeLayer(PNCModelLayers.REGULATOR_MODULE);
         tubeConnector = root.getChild(TUBECONNECTOR);
         valve1 = root.getChild(VALVE1);
@@ -49,20 +49,14 @@ public class RenderRegulatorModule extends TubeModuleRendererBase<RegulatorModul
 
 
     @Override
-    protected void renderDynamic(RegulatorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(RegulatorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         valve1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         valve2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
     }
 
     @Override
-    protected ResourceLocation getTexture() {
-        ResourceLocation texture;
-        if (isUpgraded()) {
-            texture = Textures.MODEL_REGULATOR_MODULE_UPGRADED;
-        } else {
-            texture = Textures.MODEL_REGULATOR_MODULE;
-        }
-        return texture;
+    protected ResourceLocation getTexture(boolean isUpgraded) {
+        return isUpgraded ? Textures.MODEL_REGULATOR_MODULE_UPGRADED : Textures.MODEL_REGULATOR_MODULE;
     }
 }

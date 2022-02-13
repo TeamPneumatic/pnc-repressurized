@@ -15,14 +15,14 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class RenderFlowDetectorModule extends TubeModuleRendererBase<FlowDetectorModule> {
+public class FlowDetectorRenderer extends AbstractTubeModuleRenderer<FlowDetectorModule> {
     private static final int TUBE_PARTS = 4;
 
     private final ModelPart face;
 
     private static final String FACE = "face";
 
-    public RenderFlowDetectorModule(BlockEntityRendererProvider.Context ctx) {
+    public FlowDetectorRenderer(BlockEntityRendererProvider.Context ctx) {
         ModelPart root = ctx.bakeLayer(PNCModelLayers.FLOW_DETECTOR_MODULE);
         face = root.getChild(FACE);
     }
@@ -39,7 +39,7 @@ public class RenderFlowDetectorModule extends TubeModuleRendererBase<FlowDetecto
     }
 
     @Override
-    protected void renderDynamic(FlowDetectorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(FlowDetectorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         float rot = module != null ? Mth.lerp(partialTicks, module.oldRotation, module.rotation) : 0f;
         for (int i = 0; i < TUBE_PARTS; i++) {
             face.zRot = (float)i / TUBE_PARTS * 2 * (float)Math.PI + rot;
@@ -48,7 +48,7 @@ public class RenderFlowDetectorModule extends TubeModuleRendererBase<FlowDetecto
     }
 
     @Override
-    protected ResourceLocation getTexture() {
+    protected ResourceLocation getTexture(boolean isUpgraded) {
         return Textures.MODEL_FLOW_DETECTOR;
     }
 }

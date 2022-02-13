@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 
-public class RenderRedstoneModule extends TubeModuleRendererBase<RedstoneModule> {
+public class RedstoneRenderer extends AbstractTubeModuleRenderer<RedstoneModule> {
     private final ModelPart redstoneConnector;
     private final ModelPart faceplate;
     private final ModelPart tubeConnector1;
@@ -44,7 +44,7 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<RedstoneModule>
     private static final String FRAME3 = "frame3";
     private static final String FRAME4 = "frame4";
 
-    public RenderRedstoneModule(BlockEntityRendererProvider.Context ctx) {
+    public RedstoneRenderer(BlockEntityRendererProvider.Context ctx) {
         ModelPart root = ctx.bakeLayer(PNCModelLayers.REDSTONE_MODULE);
         redstoneConnector = root.getChild(REDSTONECONNECTOR);
         faceplate = root.getChild(FACEPLATE);
@@ -106,7 +106,7 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<RedstoneModule>
 
 
     @Override
-    protected void renderDynamic(RedstoneModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
+    protected void render(RedstoneModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
         tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
         tubeConnector3.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
@@ -136,13 +136,7 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<RedstoneModule>
     }
 
     @Override
-    protected ResourceLocation getTexture() {
-        ResourceLocation texture;
-        if (isUpgraded()) {
-            texture = Textures.MODEL_REDSTONE_MODULE_UPGRADED;
-        } else {
-            texture = Textures.MODEL_REDSTONE_MODULE;
-        }
-        return texture;
+    protected ResourceLocation getTexture(boolean isUpgraded) {
+        return isUpgraded ? Textures.MODEL_REDSTONE_MODULE_UPGRADED : Textures.MODEL_REDSTONE_MODULE;
     }
 }

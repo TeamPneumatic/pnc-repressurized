@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.ChestplateLauncherOptions;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChestplateLauncher;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -91,7 +92,7 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
 
         matrixStack.pushPose();
         RenderSystem.disableTexture();
-        if (Minecraft.getInstance().player.getMainArm() == HumanoidArm.LEFT) {
+        if (ClientUtils.getClientPlayer().getMainArm() == HumanoidArm.LEFT) {
             matrixStack.translate(mw.getGuiScaledWidth() - 30, mw.getGuiScaledHeight() - 30, -90);
             matrixStack.scale(-1, 1, 1);
         } else {

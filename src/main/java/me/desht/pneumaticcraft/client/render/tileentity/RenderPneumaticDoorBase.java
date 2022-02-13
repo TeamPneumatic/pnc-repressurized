@@ -36,7 +36,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class RenderPneumaticDoorBase extends AbstractTileModelRenderer<PneumaticDoorBaseBlockEntity> {
+public class RenderPneumaticDoorBase extends AbstractBlockEntityModelRenderer<PneumaticDoorBaseBlockEntity> {
     private final ModelPart cylinder1;
     private final ModelPart cylinder2;
     private final ModelPart cylinder3;

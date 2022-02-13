@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderAirCannon extends AbstractTileModelRenderer<AirCannonBlockEntity> {
+public class RenderAirCannon extends AbstractBlockEntityModelRenderer<AirCannonBlockEntity> {
     private final ModelPart baseTurn;
     private final ModelPart baseFrame1;
     private final ModelPart baseFrame2;

@@ -23,8 +23,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public abstract class AbstractTileModelRenderer<T extends AbstractPneumaticCraftBlockEntity> implements BlockEntityRenderer<T> {
-    AbstractTileModelRenderer(BlockEntityRendererProvider.Context ctx) {
+/**
+ * For block entities with an entity-style model to render
+ * @param <T> the block entity type
+ */
+public abstract class AbstractBlockEntityModelRenderer<T extends AbstractPneumaticCraftBlockEntity> implements BlockEntityRenderer<T> {
+    AbstractBlockEntityModelRenderer(BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override

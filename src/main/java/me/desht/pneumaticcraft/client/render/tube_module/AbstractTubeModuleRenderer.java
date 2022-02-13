@@ -8,9 +8,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 
-public abstract class TubeModuleRendererBase<T extends AbstractTubeModule> {
-    private boolean isUpgraded;
-
+public abstract class AbstractTubeModuleRenderer<T extends AbstractTubeModule> {
     public final void renderModule(T module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         matrixStack.pushPose();
 
@@ -19,28 +17,23 @@ public abstract class TubeModuleRendererBase<T extends AbstractTubeModule> {
         matrixStack.scale(1f, -1f, -1f);
 
         RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
-        isUpgraded = module.isUpgraded();
         float alpha = module.isFake() ? 0.3f : 1f;
 
         VertexConsumer builder = module.isFake() ?
-                buffer.getBuffer(RenderType.entityTranslucent(getTexture())) :
-                buffer.getBuffer(RenderType.entityCutout(getTexture()));
-        renderDynamic(module, matrixStack, builder, partialTicks, combinedLight, combinedOverlay, alpha);
+                buffer.getBuffer(RenderType.entityTranslucent(getTexture(module.isUpgraded()))) :
+                buffer.getBuffer(RenderType.entityCutout(getTexture(module.isUpgraded())));
+        render(module, matrixStack, builder, partialTicks, combinedLight, combinedOverlay, alpha);
 
         matrixStack.popPose();
 
         renderExtras(module, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
     }
 
-    protected abstract void renderDynamic(T module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha);
+    protected abstract void render(T module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha);
 
-    protected abstract ResourceLocation getTexture();
+    protected abstract ResourceLocation getTexture(boolean isUpgraded);
 
     public void renderExtras(T module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         // nothing; override in subclasses
-    }
-
-    public boolean isUpgraded() {
-        return isUpgraded;
     }
 }

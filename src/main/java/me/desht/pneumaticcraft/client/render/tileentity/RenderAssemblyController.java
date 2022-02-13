@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public class RenderAssemblyController extends AbstractTileModelRenderer<AssemblyControllerBlockEntity> {
+public class RenderAssemblyController extends AbstractBlockEntityModelRenderer<AssemblyControllerBlockEntity> {
     private static final float TEXT_SIZE = 0.007F;
     private final ModelPart screen;
 
