@@ -24,7 +24,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 
 /**
- * Item stack handler which marks its owning TE as dirty when it changes.
+ * Item stack handler which marks its owning BE as dirty when it changes.
  * Also filters item insertion using the isItemValid() method (which returns true by default).
  */
 public class BaseItemStackHandler extends ItemStackHandler {

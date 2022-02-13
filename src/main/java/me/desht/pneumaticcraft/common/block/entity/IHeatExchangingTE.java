@@ -62,11 +62,11 @@ public interface IHeatExchangingTE {
     }
 
     /**
-     * Initialize this TE's hull heat exchanger to the ambient temperature, when the block is first placed down.
-     * Override this in TE's which have multiple hull heat exchangers (e.g. vortex tube or thermal compressor)
+     * Initialize this BE's hull heat exchanger to the ambient temperature, when the block is first placed down.
+     * Override this in BE's which have multiple hull heat exchangers (e.g. vortex tube or thermal compressor)
      *
-     * @param world the TE's world
-     * @param pos the TE's block pos
+     * @param world the BE's world
+     * @param pos the BE's block pos
      */
     default void initHeatExchangersOnPlacement(Level world, BlockPos pos) {
         IHeatExchangerLogic logic = getHeatExchanger();
@@ -75,11 +75,11 @@ public interface IHeatExchangingTE {
 
     /**
      * Discover heat exchangers by side for this block, and initialize each distinct heat exchanger with the side
-     * that it is connected to.  Call this on first TE server tick, and when a neighboring block update occurs.
+     * that it is connected to.  Call this on first BE server tick, and when a neighboring block update occurs.
      * Don't override this method.
      *
-     * @param world the TE's world
-     * @param pos the TE's block pos
+     * @param world the BE's world
+     * @param pos the BE's block pos
      */
     default void initializeHullHeatExchangers(Level world, BlockPos pos) {
         Map<IHeatExchangerLogic, List<Direction>> map = new IdentityHashMap<>();

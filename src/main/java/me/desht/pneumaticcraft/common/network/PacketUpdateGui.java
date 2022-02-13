@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 /**
  * Received on: CLIENT
  *
- * The primary mechanism for sync'ing TE fields to an open GUI.  TE fields annotated with @GuiSynced will be synced
+ * The primary mechanism for sync'ing BE fields to an open GUI.  BE fields annotated with @GuiSynced will be synced
  * in this packet, via {@link AbstractPneumaticCraftMenu#broadcastChanges()}.
  */
 public class PacketUpdateGui {

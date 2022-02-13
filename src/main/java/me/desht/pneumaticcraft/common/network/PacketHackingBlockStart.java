@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;

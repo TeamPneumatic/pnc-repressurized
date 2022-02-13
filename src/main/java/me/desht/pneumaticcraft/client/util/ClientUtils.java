@@ -152,7 +152,7 @@ public class ClientUtils {
     }
 
     /**
-     * Get a TE client-side.  Convenience method for packet handling code, primarily.
+     * Get a BE client-side.  Convenience method for packet handling code, primarily.
      * @return a block entity or null
      */
     public static BlockEntity getBlockEntity(BlockPos pos) {

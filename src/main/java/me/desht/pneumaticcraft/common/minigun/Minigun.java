@@ -272,7 +272,7 @@ public abstract class Minigun {
         }
     }
 
-    public void update(double posX, double posY, double posZ) {
+    public void tick(double posX, double posY, double posZ) {
         setOldMinigunRotation(getMinigunRotation());
         oldMinigunYaw = minigunYaw;
         oldMinigunPitch = minigunPitch;

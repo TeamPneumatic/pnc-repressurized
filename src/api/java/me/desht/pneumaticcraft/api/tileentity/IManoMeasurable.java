@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.api.tileentity;
 
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
 public interface IManoMeasurable {
     /**
-     * This method is invoked by the Manometer when a player right-clicks a TE or Entity with this interface implemented.
+     * This method is invoked by the Manometer when a player right-clicks a BE or Entity with this interface implemented.
      *
-     * @param player  player who is right-clicking the measurable TE, and therefore needs to get the message
+     * @param player  player who is right-clicking the measurable BE, and therefore needs to get the message
      * @param curInfo list you can append info to. If you don't append any info no air will be used.
      */
     void printManometerMessage(Player player, List<Component> curInfo);

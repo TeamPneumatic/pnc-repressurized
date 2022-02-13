@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  * You can extend this class, and register it via
  * {@link IHeatRegistry#registerHeatBehaviour(ResourceLocation, Supplier)}
  * <p>
- * This can be used to add heat dependent logic to non-TE's or blocks you don't have access to. For example,
+ * This can be used to add heat dependent logic to non-BE's or blocks you don't have access to. For example,
  * PneumaticCraft uses this to power Furnaces with heat, and to turn Lava into Obsidian when heat is drained.
  * Of course, this requires a ticking heat exchanger block (e.g. a compressed iron block or any heatable machine) to
  * perform the ticking behaviour; simply adding a heat behaviour to lava won't make lava spontaneously turn into

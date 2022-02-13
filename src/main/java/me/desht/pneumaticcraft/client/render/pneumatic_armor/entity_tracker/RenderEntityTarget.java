@@ -15,17 +15,21 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.client.render.pneumatic_armor;
+package me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix3f;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.DroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderDroneAI;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -37,7 +41,6 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -45,12 +48,17 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RenderEntityTarget {
     private static final float STAT_SCALE = 0.02f;
@@ -89,10 +97,10 @@ public class RenderEntityTarget {
         throw new IllegalStateException("[RenderTarget] Drone entity, but no drone AI Renderer?");
     }
 
-    public void update() {
+    public void tick() {
         stat.tickWidget();
         stat.setTitle(entity.getDisplayName());
-        Player player = Minecraft.getInstance().player;
+        Player player = ClientUtils.getClientPlayer();
 
         distToEntity = entity.distanceTo(ClientUtils.getClientPlayer());
 
@@ -104,10 +112,10 @@ public class RenderEntityTarget {
         boolean tagged = entity instanceof EntityDroneBase && ItemPneumaticArmor.isPlayerDebuggingDrone(player, (EntityDroneBase) entity);
         circle1.setRenderingAsTagged(tagged);
         circle2.setRenderingAsTagged(tagged);
-        circle1.update();
-        circle2.update();
+        circle1.tick();
+        circle2.tick();
         for (IEntityTrackEntry tracker : trackEntries) {
-            tracker.update(entity);
+            tracker.tick(entity);
         }
 
         isLookingAtTarget = isPlayerLookingAtTarget();
@@ -204,7 +212,7 @@ public class RenderEntityTarget {
 
     private boolean isPlayerLookingAtTarget() {
         // code used from the Enderman player looking code.
-        Player player = Minecraft.getInstance().player;
+        Player player = ClientUtils.getClientPlayer();
         Vec3 vec3 = player.getViewVector(1.0F).normalize();
         Vec3 vec31 = new Vec3(entity.getX() - player.getX(), entity.getBoundingBox().minY + entity.getBbHeight() / 2.0F - (player.getY() + player.getEyeHeight()), entity.getZ() - player.getZ());
         double d0 = vec31.length();
@@ -224,16 +232,17 @@ public class RenderEntityTarget {
     public void selectAsDebuggingTarget() {
         if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDroneBase) {
             DroneDebuggerOptions.clearAreaShowWidgetId();
-            if (ItemPneumaticArmor.isPlayerDebuggingDrone(ClientUtils.getClientPlayer(), (EntityDroneBase) entity)) {
+            Player player = ClientUtils.getClientPlayer();
+            if (ItemPneumaticArmor.isPlayerDebuggingDrone(player, (EntityDroneBase) entity)) {
                 NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(-1));
-                Minecraft.getInstance().player.playSound(ModSounds.SCI_FI.get(), 1.0f, 2.0f);
+                player.playSound(ModSounds.SCI_FI.get(), 1.0f, 2.0f);
             } else {
                 if (entity instanceof EntityDrone) {
                     NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getId()));
-                    Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
+                    player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
                 } else if (entity instanceof EntityProgrammableController) {
                     NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(((EntityProgrammableController) entity).getControllerPos()));
-                    Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
+                    player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
                 }
             }
         }
@@ -256,5 +265,103 @@ public class RenderEntityTarget {
 
     public void updateColor(int color) {
         stat.setBackgroundColor(color);
+    }
+
+    private static class RenderTargetCircle {
+        private static final float[] DRONE = { 1f, 1f, 0f };
+        private static final float[] HANGING = { 0f, 1f, 1f };
+        private static final float[] HOSTILE = { 1f, 0f, 0f };
+        private static final float[] DEFAULT = { 0f, 1f, 0f };
+
+        private static final double MAX_ROTATION = 8.0D;
+        private static final float QUARTER_CIRCLE = (float)(Math.PI / 2);
+        private static final float STEP = QUARTER_CIRCLE / 15f;
+
+        private double oldRotationAngle;
+        private double rotationAngle = 0;
+        private double rotationSpeed = 0;
+        private double rotationAcceleration = 0;
+        private final Random rand;
+        private boolean renderAsTagged;
+        private final float[] cols = new float[4];
+
+        RenderTargetCircle(Entity entity) {
+            rand = ThreadLocalRandom.current();
+            System.arraycopy(getCircleColour(entity), 0, cols, 0, 3);
+            cols[3] = 0.5f; // alpha
+        }
+
+        void setRenderingAsTagged(boolean tagged) {
+            renderAsTagged = tagged;
+        }
+
+        public void tick() {
+            oldRotationAngle = rotationAngle;
+            if (rand.nextInt(15) == 0) {
+                rotationAcceleration = (rand.nextDouble() - 0.5D) / 2.5D;
+            }
+            rotationSpeed = Mth.clamp(rotationSpeed + rotationAcceleration, -MAX_ROTATION, MAX_ROTATION);
+            rotationAngle += rotationSpeed;
+        }
+
+        public void render(PoseStack matrixStack, MultiBufferSource buffer, float size, float partialTicks, float alpha) {
+            double renderRotationAngle = Mth.lerp(partialTicks, oldRotationAngle, rotationAngle);
+
+            matrixStack.pushPose();
+
+            matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) renderRotationAngle));
+
+            for (int pass = 0; pass < 2; pass++) {
+                RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
+                    for (float i = 0; i < QUARTER_CIRCLE; i += STEP) {
+                        RenderUtils.posF(builder, posMat,Mth.cos(i) * size, Mth.sin(i) * size, 0)
+                                .color(cols[0], cols[1], cols[2], alpha)
+                                .uv2(RenderUtils.FULL_BRIGHT)
+                                .endVertex();
+                        RenderUtils.posF(builder, posMat,Mth.cos(i) * (size + 0.1F), Mth.sin(i) * (size + 0.1F), 0)
+                                .color(cols[0], cols[1], cols[2], alpha)
+                                .uv2(RenderUtils.FULL_BRIGHT)
+                                .endVertex();
+                    }
+                });
+
+                if (renderAsTagged) {
+                    final Matrix3f normal = matrixStack.last().normal();
+                    RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoops(3.0), (posMat, builder) -> {
+                        for (float i = 0; i < QUARTER_CIRCLE; i += STEP) {
+                            Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
+                            Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
+                            RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
+                                    .color(255, 0, 0, 255)
+                                    .normal(normal, (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
+                                    .endVertex();
+                        }
+                        for (float i = QUARTER_CIRCLE - STEP; i >= 0f; i -= STEP) {
+                            Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
+                            Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
+                            RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
+                                    .color(255, 0, 0, 255)
+                                    .normal(normal, (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f)
+                                    .endVertex();
+                        }
+                    });
+                }
+
+                matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
+            }
+            matrixStack.popPose();
+        }
+
+        private float[] getCircleColour(Entity entity) {
+            if (entity instanceof EntityDroneBase) {
+                return DRONE;
+            } else if (entity instanceof Enemy) {
+                return HOSTILE;
+            } else if (entity instanceof HangingEntity || entity instanceof AbstractMinecart) {
+                return HANGING;
+            } else {
+                return DEFAULT;
+            }
+        }
     }
 }

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 
 /**
  * Designed to sync temperature to client but only when changed by a certain amount, the delta being dependent on the
- * temperature at the time.  Include as a field in your TE and mark as @DescSynced, or in an Entity and use the data
+ * temperature at the time.  Include as a field in your BE and mark as @DescSynced, or in an Entity and use the data
  * manager to sync the temperature.
  */
 public class SyncedTemperature {

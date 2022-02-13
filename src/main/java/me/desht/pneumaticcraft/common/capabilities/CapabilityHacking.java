@@ -42,7 +42,7 @@ public class CapabilityHacking {
         private final List<IHackableEntity> hackables = new ArrayList<>();
 
         @Override
-        public void update(Entity entity) {
+        public void tick(Entity entity) {
             hackables.removeIf(hackable -> !hackable.afterHackTick(entity));
         }
 

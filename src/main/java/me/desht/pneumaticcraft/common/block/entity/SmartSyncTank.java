@@ -30,7 +30,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * A fluid tank which smartly syncs its fluid and amount to clients to avoid performance problems due to excessive
- * packet sending.  Also marks its owning TE as dirty when changed.
+ * packet sending.  Also marks its owning BE as dirty when changed.
  */
 public class SmartSyncTank extends PNCFluidTank {
     @DescSynced
@@ -52,7 +52,7 @@ public class SmartSyncTank extends PNCFluidTank {
     }
 
     /**
-     * Call from the holding TE's tick() method on both client and server
+     * Call from the holding BE's tick() method on both client and server
      */
     public void tick() {
         BlockEntity te = owner.get();

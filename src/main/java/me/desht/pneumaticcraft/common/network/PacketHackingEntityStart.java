@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;

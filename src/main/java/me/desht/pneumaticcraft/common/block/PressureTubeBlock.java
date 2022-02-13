@@ -268,7 +268,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         super.setPlacedBy(world, pos, state, entity, stack);
 
         ModuleNetworkManager.getInstance(world).invalidateCache();
-        // force TE to calculate its connections immediately so network manager rescanning works
+        // force BE to calculate its connections immediately so network manager rescanning works
         PressureTubeBlockEntity te = getPressureTube(world, pos);
         if (te != null) {
             te.onNeighborTileUpdate(null);

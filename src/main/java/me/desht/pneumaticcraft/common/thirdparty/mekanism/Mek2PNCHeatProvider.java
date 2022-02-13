@@ -39,7 +39,7 @@ public class Mek2PNCHeatProvider /*implements ICapabilityProvider*/ {
 //        }
 //
 //        if (handlers.isEmpty()) {
-//            // lazy init of the handlers list; this cap could be attached to any TE so let's not use more memory than necessary
+//            // lazy init of the handlers list; this cap could be attached to any BE so let's not use more memory than necessary
 //            for (int i = 0; i < 7; i++) {  // 6 faces plus null face
 //                handlers.add(LazyOptional.empty());
 //            }
@@ -63,7 +63,7 @@ public class Mek2PNCHeatProvider /*implements ICapabilityProvider*/ {
 //    }
 //
 //    // Mekanism transmitters (i.e. Thermodynamic Conductors or TC's) get special treatment, due to the
-//    // way Mek handles heat; Mek heater TE's will continue to push heat out to reduce their own
+//    // way Mek handles heat; Mek heater BE's will continue to push heat out to reduce their own
 //    // temperature back to 300K (Mek ambient), regardless of how hot the sink is.
 //    // TC's, with a heat capacity of only 1.0, get very hot very fast.
 //    // This poses a problem for PNC:R, since it handles heat by temperature delta between the two blocks, and

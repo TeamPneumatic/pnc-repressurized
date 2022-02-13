@@ -140,7 +140,7 @@ public class ItemManometer extends ItemPressurizable {
     }
 
     private void checkForHeatExtraction(Level world, BlockPos pos, List<Component> curInfo) {
-        // look for a heat handling TE adjacent to our pos which has a heat transition behaviour for our pos
+        // look for a heat handling BE adjacent to our pos which has a heat transition behaviour for our pos
         for (Direction d : DirectionUtil.VALUES) {
             BlockEntity te1 = world.getBlockEntity(pos.relative(d));
             if (te1 != null) {

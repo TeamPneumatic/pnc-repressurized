@@ -440,7 +440,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
 
     /**
      * Find a slot into which to place an exported item.  Note that other assembly robots are not valid export
-     * locations, but any other TE which provides CAPABILITY_ITEM_HANDLER on the top face is a valid candidate.
+     * locations, but any other BE which provides CAPABILITY_ITEM_HANDLER on the top face is a valid candidate.
      *
      * @param exportedItem item to export
      * @param te where the item is being attempted to insert to (will use the top face for IItemHandler cap.)

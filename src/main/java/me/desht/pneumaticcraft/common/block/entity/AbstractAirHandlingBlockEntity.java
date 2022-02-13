@@ -157,7 +157,7 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     }
 
     // called clientside when a PacketUpdatePressureBlock is received
-    // this ensures the TE can tick this air handler for air leak sound and particle purposes
+    // this ensures the BE can tick this air handler for air leak sound and particle purposes
     public void initializeHullAirHandlerClient(Direction dir, IAirHandlerMachine handler) {
         airHandlerMap.clear();
         List<Direction> l = Collections.singletonList(dir);
@@ -233,7 +233,7 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     }
 
     /**
-     * Checks if the given side of this TE can be pneumatically connected to.
+     * Checks if the given side of this BE can be pneumatically connected to.
      *
      * @param side the side to check
      * @return true if connected, false otherwise

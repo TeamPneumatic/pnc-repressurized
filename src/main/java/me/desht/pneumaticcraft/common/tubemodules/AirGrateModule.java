@@ -234,7 +234,7 @@ public class AirGrateModule extends AbstractTubeModule {
                 BlockEntity te = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
                 if (te != null) {
                     LazyOptional<IItemHandler> cap = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
-                    // bit of a kludge: exclude TE's which also offer a fluid capability on this side
+                    // bit of a kludge: exclude BE's which also offer a fluid capability on this side
                     if (cap.isPresent() && !te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).isPresent()) {
                         itemInsertionCap = cap;
                         itemInsertionCap.addListener(l -> itemInsertionCap = null);

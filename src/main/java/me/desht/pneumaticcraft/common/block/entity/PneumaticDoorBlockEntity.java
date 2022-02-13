@@ -57,7 +57,7 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
             nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(DoorBlock.OPEN, false));
         }
 
-        // also rotate the TE for the other half of the door
+        // also rotate the BE for the other half of the door
         BlockPos otherPos = getBlockPos().relative(isTopDoor() ? Direction.DOWN : Direction.UP);
         PneumaticCraftUtils.getTileEntityAt(getLevel(), otherPos, PneumaticDoorBlockEntity.class).ifPresent(otherDoorHalf -> {
             otherDoorHalf.rightGoing = rightGoing;

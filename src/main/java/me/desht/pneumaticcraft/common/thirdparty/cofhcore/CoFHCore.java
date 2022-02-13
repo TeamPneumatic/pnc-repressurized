@@ -40,7 +40,7 @@ public class CoFHCore implements IThirdParty {
 
         if (versionOK) {
             // CoFH Core doesn't actually register the Holding enchantment itself; it's done by Thermal Expansion
-            // we'll call it too, in the case that CoFH Core is present without TE
+            // we'll call it too, in the case that CoFH Core is present without BE
             // should be safe to call this multiple times (subsequent calls are effectively a no-op)
 //            CoreEnchantments.registerHoldingEnchantment();
         }

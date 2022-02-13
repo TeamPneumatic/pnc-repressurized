@@ -41,7 +41,7 @@ public class DroneClaimManager {
     /**
      * unclaim any positions that have been claimed too long. this prevents positions being claimed forever by died drones.
      */
-    public void update() {
+    public void tick() {
         Iterator<Map.Entry<BlockPos, Integer>> iterator = currentPositions.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<BlockPos, Integer> entry = iterator.next();

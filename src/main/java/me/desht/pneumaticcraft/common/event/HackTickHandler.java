@@ -53,9 +53,9 @@ public enum HackTickHandler {
 
             if (hackedEntities.containsKey(worldKey)) {
                 Set<Entity> entities = hackedEntities.get(worldKey);
-                // IHacking#update() will remove any no-longer-applicable hacks from the entity
+                // IHacking#tick() will remove any no-longer-applicable hacks from the entity
                 entities.forEach(entity -> entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
-                    if (entity.isAlive() && !hacking.getCurrentHacks().isEmpty()) hacking.update(entity);
+                    if (entity.isAlive() && !hacking.getCurrentHacks().isEmpty()) hacking.tick(entity);
                 }));
                 // Remove the entity from the tracker if it has no more applicable hacks
                 entities.removeIf(e -> !e.isAlive() ||

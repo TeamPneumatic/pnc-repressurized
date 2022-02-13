@@ -93,7 +93,7 @@ public class MiscEventHandler {
     public void onWorldTickEnd(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.world.isClientSide) {
 
-            DroneClaimManager.getInstance(event.world).update();
+            DroneClaimManager.getInstance(event.world).tick();
 
             if (event.world.getGameTime() % 100 == 0) {
                 double tickTime = Mth.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;

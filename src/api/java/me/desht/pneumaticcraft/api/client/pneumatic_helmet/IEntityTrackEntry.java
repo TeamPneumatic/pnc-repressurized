@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
@@ -48,12 +48,12 @@ public interface IEntityTrackEntry {
     void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget);
 
     /**
-     * Update is called every (client) tick, and can be used to update something like a timer (e.g. used for the Creeper
+     * Called every client tick; can be used to update something like a timer (e.g. used for the Creeper
      * explosion countdown).
      *
      * @param entity the tracked entity
      */
-    default void update(Entity entity) { }
+    default void tick(Entity entity) { }
 
     /**
      * Called every render tick, this method can be used to render additional info. Used for Drone AI visualisation,

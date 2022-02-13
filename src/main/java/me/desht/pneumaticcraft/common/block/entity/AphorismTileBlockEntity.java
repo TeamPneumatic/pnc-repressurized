@@ -67,7 +67,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     private boolean invisible;
     public int currentRedstonePower = 0;
     private long lastPoll = 0L;
-    public int cursorX = -1, cursorY = -1; // stored in client TE only to remember last editor cursor pos
+    public int cursorX = -1, cursorY = -1; // stored in client BE only to remember last editor cursor pos
 
     public AphorismTileBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.APHORISM_TILE.get(), pos, state);

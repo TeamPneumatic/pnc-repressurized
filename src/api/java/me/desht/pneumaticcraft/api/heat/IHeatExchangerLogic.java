@@ -35,7 +35,7 @@ import java.util.function.BiPredicate;
  * <p>
  * If you are implementing a block entity with a heat exchanger, you should <strong>not</strong> implement this
  * interface yourself; get an instance of it via {@link IHeatRegistry#makeHeatExchangerLogic()}, store it as field
- * in your TE, and provide it via capability as described above. Your TE should also call {@link #tick()} and
+ * in your BE, and provide it via capability as described above. Your BE should also call {@link #tick()} and
  * {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)} as documented in those methods.
  * <p>
  * If you want to attach this capability as an <em>adapater</em> to other mods' heat systems, see
@@ -80,12 +80,12 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
 
     /**
      * When called, this will create a thermal connection between this heat exchanger and the given one. This should
-     * be used when your TE contains more than one heat exchanger and you need a thermal connection between them;
+     * be used when your BE contains more than one heat exchanger and you need a thermal connection between them;
      * an example is the Vortex Tube.
      * <p>
-     * You <strong>don't</strong> need to call this method if your TE just has one heat exchanger to
+     * You <strong>don't</strong> need to call this method if your BE just has one heat exchanger to
      * expose to the world; in that case {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)} will
-     * handle connecting your TE's heat exchanger to neighbouring blocks.
+     * handle connecting your BE's heat exchanger to neighbouring blocks.
      * <p>
      * You should only call this method on one of the two heat exchangers being connected; a reciprocal connection
      * on the target heat exchanger will automatically be added.

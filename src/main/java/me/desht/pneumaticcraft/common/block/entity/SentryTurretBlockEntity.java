@@ -135,7 +135,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     public void tickCommonPost() {
         super.tickCommonPost();
 
-        getMinigun().update(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
+        getMinigun().tick(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
     }
 
     private void clearEmptyAmmo() {
@@ -313,7 +313,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         @Override
         public void setMinigunActivated(boolean activated) {
             if (!world.isClientSide) {
-                // ony set server-side; TE sync's the activation state to client
+                // ony set server-side; BE sync's the activation state to client
                 SentryTurretBlockEntity.this.activated = activated;
             }
         }
@@ -321,7 +321,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
             if (!world.isClientSide) {
-                // ony set server-side; TE sync's the activation state to client
+                // ony set server-side; BE sync's the activation state to client
                 minigunColorStack = ammo;
             }
         }

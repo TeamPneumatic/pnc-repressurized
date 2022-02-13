@@ -19,9 +19,7 @@ package me.desht.pneumaticcraft.api.hacking;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.List;
 
@@ -36,7 +34,7 @@ public interface IHacking {
      *
      * @param entity the hacked entity
      */
-    void update(Entity entity);
+    void tick(Entity entity);
 
     /**
      * Add a new hack to the entity's list of hacks.

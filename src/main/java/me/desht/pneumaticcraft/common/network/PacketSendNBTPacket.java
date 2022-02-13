@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 /**
  * Received on: CLIENT
- * Sent by server to give a clientside TE a copy of its NBT data
+ * Sent by server to give a clientside BE a copy of its NBT data
  */
 public class PacketSendNBTPacket extends LocationIntPacket {
     private final CompoundTag tag;

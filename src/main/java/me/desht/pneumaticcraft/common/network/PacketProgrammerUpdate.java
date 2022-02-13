@@ -34,7 +34,7 @@ import java.util.function.Supplier;
  * Received on: BOTH
  *
  * Sent by server when programmer GUI is being opened
- * Sent by client programmer GUI to push the current program to the server-side TE
+ * Sent by client programmer GUI to push the current program to the server-side BE
  */
 public class PacketProgrammerUpdate extends LocationIntPacket implements ILargePayload {
     private final List<IProgWidget> widgets;

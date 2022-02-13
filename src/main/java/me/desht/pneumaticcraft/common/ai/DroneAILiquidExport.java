@@ -78,7 +78,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
                     return false;
                 }
             }
-            // drop through to here if there was no TE or a TE had no valid fluid handler
+            // drop through to here if there was no BE or a BE had no valid fluid handler
 
             if (progWidget.isPlacingFluidBlocks() && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
                 LazyOptional<IFluidHandler> cap = drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);

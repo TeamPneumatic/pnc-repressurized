@@ -212,7 +212,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
 
     private void validateCachedSlot(Map<Direction,Integer> slotMap, Direction dir, IItemHandler handler) {
         // ensure cached slot is still valid for the handler we have
-        // could become invalid if the neighbouring TE has been replaced by one with a smaller inventory?
+        // could become invalid if the neighbouring BE has been replaced by one with a smaller inventory?
         if (slotMap.getOrDefault(dir, 0) >= handler.getSlots()) {
             slotMap.remove(dir);
         }

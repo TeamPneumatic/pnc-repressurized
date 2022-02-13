@@ -91,7 +91,7 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         return world.getBlockEntity(pos, ModBlockEntities.REFINERY_OUTPUT.get()).map(te -> {
-            // normally, activating any refinery output block would open the controller TE's gui, but if we
+            // normally, activating any refinery output block would open the controller BE's gui, but if we
             // activate with a fluid tank in hand (which can actually transfer fluid out),
             // then we must activate the actual refinery output that was clicked
             boolean canTransferFluid = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(player.getItemInHand(hand), 1))

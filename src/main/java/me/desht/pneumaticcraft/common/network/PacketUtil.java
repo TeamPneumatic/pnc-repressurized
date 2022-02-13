@@ -52,8 +52,8 @@ public class PacketUtil {
     /**
      * Get the relevant target block entity for packet purposes.  When the packet is
      * being received on the server, the player's open container is used to determine
-     * the TE; don't trust a blockpos that the client sent, although we'll check the
-     * sent blockpos is the same as the TE's actual blockpos.
+     * the BE; don't trust a blockpos that the client sent, although we'll check the
+     * sent blockpos is the same as the BE's actual blockpos.
      * <p>
      * Important: <strong>cannot</strong> be used to sync changes after the server-side
      * container could be closed, i.e. don't use this in packets sent from a GUI {@code onClose()} method.
@@ -73,7 +73,7 @@ public class PacketUtil {
             }
         } else {
             // server-side: don't trust the blockpos the client sent us
-            // instead get the TE from the player's open container
+            // instead get the BE from the player's open container
             if (player.containerMenu instanceof AbstractPneumaticCraftMenu) {
                 BlockEntity te = ((AbstractPneumaticCraftMenu<?>) player.containerMenu).te;
                 if (te != null && cls.isAssignableFrom(te.getClass()) && (pos == null || te.getBlockPos().equals(pos))) {

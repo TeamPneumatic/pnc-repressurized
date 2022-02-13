@@ -143,7 +143,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     /**
-     * Default open gui method just sends the TE's blockpos.  Override if more server->client data needs to be
+     * Default open gui method just sends the BE's blockpos.  Override if more server->client data needs to be
      * serialised, and handle deserialisation in the corresponding container constructor.
      *
      * @param player the server player

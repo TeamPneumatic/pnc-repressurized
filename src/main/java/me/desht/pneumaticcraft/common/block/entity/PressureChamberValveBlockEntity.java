@@ -228,7 +228,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
 
     /**
      * Initialize the accessory valve list from saved NBT data.
-     * This can't be done in readFromNBT() because there may be multiple valve TE's in the multiblock,
+     * This can't be done in readFromNBT() because there may be multiple valve BE's in the multiblock,
      * and all of them need to be fully initialized before this is run.
      */
     private void doPostNBTSetup() {
@@ -464,7 +464,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
                 for (int z = 0; z < multiBlockSize; z++) {
                     BlockEntity te = nonNullLevel().getBlockEntity(new BlockPos(x + multiBlockX, y + multiBlockY, z + multiBlockZ));
                     if (te instanceof PressureChamberWallBlockEntity teWall) {
-                        // Clear the base TE's, so that the walls can be used in a new MultiBlock
+                        // Clear the base BE's, so that the walls can be used in a new MultiBlock
                         teWall.setCore(null);
                     }
                 }

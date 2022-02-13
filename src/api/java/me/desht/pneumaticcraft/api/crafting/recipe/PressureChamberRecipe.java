@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -65,7 +65,7 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     public abstract float getCraftingPressureForDisplay();
 
     /**
-     * When called (by the pressure chamber TE when it detects a change in the chamber contents), try to find the
+     * When called (by the pressure chamber BE when it detects a change in the chamber contents), try to find the
      * ingredients for this recipe in the given item handler, which represents all of the items currently in the
      * pressure chamber. You must return a collection of slot indices into the item handler which contain the matching
      * ingredients; those indices will be passed promptly to {@link #getCraftingPressure(IItemHandler, List)} and

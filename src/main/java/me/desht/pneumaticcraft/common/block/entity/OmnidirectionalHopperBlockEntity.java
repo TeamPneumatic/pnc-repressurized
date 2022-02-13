@@ -82,7 +82,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     protected boolean doExport(final int maxItems) {
         Direction outputDir = getRotation();
 
-        // TODO cache the capability rather than the TE?
+        // TODO cache the capability rather than the BE?
         LazyOptional<IItemHandler> inv = IOHelper.getInventoryForTE(getCachedNeighbor(outputDir), outputDir.getOpposite());
         int notExported = maxItems;
         if (inv.isPresent()) {

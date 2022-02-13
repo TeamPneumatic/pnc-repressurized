@@ -451,7 +451,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     public void initiateHacking(Player hacker) {
-        // will only get here if the TE has a valid node network
+        // will only get here if the BE has a valid node network
         if (simulationController != null) {
             hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackInProgress").withStyle(ChatFormatting.GOLD), false);
         } else {

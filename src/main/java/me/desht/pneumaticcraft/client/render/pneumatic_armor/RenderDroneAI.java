@@ -46,10 +46,10 @@ public class RenderDroneAI {
 
     public RenderDroneAI(EntityDroneBase drone) {
         this.drone = drone;
-        update();
+        tick();
     }
 
-    public void update() {
+    public void tick() {
         BlockPos lastPos = pos;
         pos = drone.getTargetedBlock();
         if (pos != null) {

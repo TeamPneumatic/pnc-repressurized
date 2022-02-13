@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.RenderEntityTarget;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -123,7 +123,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
             boolean wasNegative = target.ticksExisted < 0;
             target.ticksExisted += armorHandler.getSpeedFromUpgrades(EquipmentSlot.HEAD);
             if (target.ticksExisted >= 0 && wasNegative) target.ticksExisted = -1;
-            target.update();
+            target.tick();
             if (target.isLookingAtTarget) {
                 if (target.isInitialized()) {
                     text.add(target.entity.getDisplayName().copy().withStyle(ChatFormatting.GRAY));

@@ -503,7 +503,7 @@ public class EntityDrone extends EntityDroneBase implements
         super.tick();
 
         if (hasMinigun()) {
-            getMinigun().setAttackTarget(getTarget()).update(getX(), getY(), getZ());
+            getMinigun().setAttackTarget(getTarget()).tick(getX(), getY(), getZ());
         }
 
         if (!level.isClientSide && isAlive()) {

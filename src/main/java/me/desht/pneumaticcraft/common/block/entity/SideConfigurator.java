@@ -38,7 +38,7 @@ import java.util.function.Predicate;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
- * A class to manage which sides of a TE's block are mapped to which capability handler objects (item/fluid/energy...)
+ * A class to manage which sides of a BE's block are mapped to which capability handler objects (item/fluid/energy...)
  */
 public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
     private static final String baseButtonTag = "SideConf";

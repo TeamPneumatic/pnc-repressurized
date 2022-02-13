@@ -41,7 +41,7 @@ public class PNC2MekHeatProvider /*implements ICapabilityProvider*/ {
 //        }
 //
 //        if (handlers.isEmpty()) {
-//            // lazy init of the handlers list; this cap could be attached to any TE
+//            // lazy init of the handlers list; this cap could be attached to any BE
 //            for (int i = 0; i < 7; i++) {  // 6 faces plus null face
 //                handlers.add(LazyOptional.empty());
 //            }

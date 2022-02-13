@@ -210,7 +210,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
                         level.destroyBlock(pos1, false);
                         level.setBlockAndUpdate(pos1, newState);
                         // kludge: don't permit placing more than one tube per tick
-                        // causes TE cache problems - root cause to be determined
+                        // causes BE cache problems - root cause to be determined
                         workTimer = 19;
                         addAir(-airRequired);
                     } else {

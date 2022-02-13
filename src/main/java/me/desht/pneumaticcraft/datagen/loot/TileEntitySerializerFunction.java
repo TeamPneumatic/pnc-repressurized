@@ -42,7 +42,7 @@ import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_SIDE_CONFIG;
 
 /**
  * Handle the standard serialization of PNC block entity data to the dropped itemstack.
- * Saved to the "BlockEntityTag" NBT tag, so will be copied directly back to the TE's NBT
+ * Saved to the "BlockEntityTag" NBT tag, so will be copied directly back to the BE's NBT
  * by {@link net.minecraft.world.item.BlockItem#updateCustomBlockEntityTag(Level, Player, BlockPos, ItemStack)}
  */
 public class TileEntitySerializerFunction extends LootItemConditionalFunction {

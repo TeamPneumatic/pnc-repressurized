@@ -58,7 +58,7 @@ public interface IBlockTrackEntry {
      * second intervals). This is specifically aimed at Tile Entities, as the server will
      * send an NBT packet. Return an empty list if no updates are needed, otherwise a
      * list of the block positions for which updates should be sent (in most cases,
-     * only the TE's own block pos, but potentially others for multiblocks like the
+     * only the BE's own block pos, but potentially others for multiblocks like the
      * vanilla double chest)
      *
      * @param te the block entity at the currently checked location, may be null

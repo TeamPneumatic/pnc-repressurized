@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderDroneAI;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
@@ -121,8 +120,8 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void update(Entity entity) {
-            droneAIRenderer.update();
+        public void tick(Entity entity) {
+            droneAIRenderer.tick();
         }
 
         @Override
@@ -266,7 +265,7 @@ public class EntityTrackHandler {
         }
 
         @Override
-        public void update(Entity entity) {
+        public void tick(Entity entity) {
             if (((Creeper) entity).getSwellDir() == 1) {
                 creeperInFuseTime++;
                 if (creeperInFuseTime > 30) creeperInFuseTime = 30;

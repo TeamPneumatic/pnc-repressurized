@@ -139,7 +139,7 @@ public class ItemMinigun extends ItemPressurizable implements
         Minigun minigun = null;
         if (currentItem) {
             minigun = getMinigun(stack, player);
-            minigun.update(player.getX(), player.getY(), player.getZ());
+            minigun.tick(player.getX(), player.getY(), player.getZ());
         }
         if (!world.isClientSide && slot >= 0 && slot <= 8) {
             // if on hotbar, possibility of ammo replenishment via item life upgrades

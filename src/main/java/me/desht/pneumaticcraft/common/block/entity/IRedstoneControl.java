@@ -25,7 +25,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 @FunctionalInterface
 public interface IRedstoneControl<T extends BlockEntity & IRedstoneControl<T>> {
     /**
-     * Get the redstone controller object for this TE
+     * Get the redstone controller object for this BE
      *
      * @return the redstone controller
      */
@@ -38,9 +38,9 @@ public interface IRedstoneControl<T extends BlockEntity & IRedstoneControl<T>> {
     }
 
     /**
-     * Get the current redstone level for this TE.
+     * Get the current redstone level for this BE.
      *
-     * @return the current redstone level for the TE
+     * @return the current redstone level for the BE
      */
     default int getCurrentRedstonePower() {
         return getRedstoneController().getCurrentRedstonePower();

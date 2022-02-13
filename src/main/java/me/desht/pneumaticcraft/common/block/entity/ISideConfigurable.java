@@ -28,14 +28,14 @@ import java.util.List;
  * typically controlled by GUI side tabs.  ISideConfigurable block entity GUI's will automatically get a side tab for
  * each side configurator they have.  Each side configurator handles one capability (items, fluids, energy...)
  * <p>
- * Any TE which supports side configuration must also be rotatable, since configurable sides are relative to the
+ * Any BE which supports side configuration must also be rotatable, since configurable sides are relative to the
  * block's facing direction.
  */
 public interface ISideConfigurable {
     /**
-     * Get a collection of all the side configurators this TE has
+     * Get a collection of all the side configurators this BE has
      *
-     * @return the TE's side configurators
+     * @return the BE's side configurators
      */
     List<SideConfigurator<?>> getSideConfigurators();
 
@@ -51,10 +51,10 @@ public interface ISideConfigurable {
     }
 
     /**
-     * Return the (absolute) direction that this TE is facing.  Required to determine how to map absolute to relative
+     * Return the (absolute) direction that this BE is facing.  Required to determine how to map absolute to relative
      * faces of the block.
      *
-     * @return the TE facing direction
+     * @return the BE facing direction
      */
     Direction byIndex();
 }

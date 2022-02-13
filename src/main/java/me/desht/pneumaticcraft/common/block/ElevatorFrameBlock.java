@@ -215,7 +215,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     }
 
     static Optional<ElevatorBaseBlockEntity> getElevatorBase(BlockGetter world, BlockPos pos) {
-        // caching the elevator base in the frame TE - this should be safe from a caching point of view,
+        // caching the elevator base in the frame BE - this should be safe from a caching point of view,
         // since if the base (or any frame below us) is broken, all frames above it - including us - will also break
         return world.getBlockEntity(pos, ModBlockEntities.ELEVATOR_FRAME.get())
                 .map(ElevatorFrameBlockEntity::getElevatorBase);

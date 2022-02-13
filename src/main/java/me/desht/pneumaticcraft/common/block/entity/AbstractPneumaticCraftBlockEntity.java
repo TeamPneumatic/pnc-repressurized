@@ -149,7 +149,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /***********
-       We don't override getUpdatePacket() or onDataPacket() because TE sync'ing is all handled
+       We don't override getUpdatePacket() or onDataPacket() because BE sync'ing is all handled
        by our custom PacketDescription and the @DescSynced system
      ***********/
 
@@ -177,7 +177,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /**
-     * Force a sync of this TE to the client right now.
+     * Force a sync of this BE to the client right now.
      */
     public final void sendDescriptionPacket() {
         if (level == null || level.isClientSide) return;
@@ -198,13 +198,13 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /*
-     * Even though this class doesn't implement ITickableTileEntity, we'll keep the base update() logic here; classes
+     * Even though this class doesn't implement ITickableTileEntity, we'll keep the base tick logic here; classes
      * which extend non-tickable subclasses might need it (e.g. PressureChamberInterfaceBlockEntity)
      */
     void defaultServerTick() {
         if (!nonNullLevel().isClientSide) {
             if (this instanceof IHeatExchangingTE he) {
-                // tick default heat exchanger; if the TE has other exchangers, they are handled in the subclass
+                // tick default heat exchanger; if the BE has other exchangers, they are handled in the subclass
                 IHeatExchangerLogic logic = he.getHeatExchanger();
                 if (logic != null) logic.tick();
             }
@@ -235,7 +235,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     @Override
     public void setChanged() {
-        // overridden to only update neighbours if this TE actually has a useful comparator output
+        // overridden to only update neighbours if this BE actually has a useful comparator output
         if (level != null) {
             if (level.isLoaded(worldPosition)) {
                 level.getChunkAt(worldPosition).setUnsaved(true);
@@ -545,8 +545,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     /**
-     * Collect all items which should be dropped when this TE is broken.  Override and extend this in subclassing
-     * TE's which have extra inventories to be dropped.
+     * Collect all items which should be dropped when this BE is broken.  Override and extend this in subclassing
+     * BE's which have extra inventories to be dropped.
      *
      * @param drops list in which to collect dropped items
      */
@@ -609,7 +609,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     /**
      * Get any extra data to be serialized onto a dropped item stack. The supplied tag is the "BlockEntityTag" subtag of
-     * the item's NBT data, so will be automatically deserialized into the TE (i.e. available to
+     * the item's NBT data, so will be automatically deserialized into the BE (i.e. available to
      * {@link BlockEntity#load(CompoundTag)} method) when the itemblock  is next placed.
      *
      * @param blockEntityTag the existing "BlockEntityTag" subtag to add data to
@@ -632,7 +632,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     @Override
     public void requestModelDataUpdate() {
-        // it is possible for the TE's client world to be a fake one, e.g. Create schematicannon previews
+        // it is possible for the BE's client world to be a fake one, e.g. Create schematicannon previews
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/812
         if (level != null && level.isClientSide && level == ClientUtils.getClientLevel()) {
             ModelDataManager.requestModelDataRefresh(this);
