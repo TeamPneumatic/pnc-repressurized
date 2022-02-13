@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatTinted, IHeatExchangingTE {
+public class TileEntityVortexTube extends AbstractAirHandlingBlockEntity implements IHeatTinted, IHeatExchangingTE {
     // hot side heat exchanger is also the default
     private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> hotHeatCap = LazyOptional.of(() -> hotHeatExchanger);

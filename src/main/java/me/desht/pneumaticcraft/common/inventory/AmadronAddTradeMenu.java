@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantomUnstackable;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -33,7 +33,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
-public class AmadronAddTradeMenu extends AbstractPneumaticCraftMenu<TileEntityBase> implements IGUIButtonSensitive {
+public class AmadronAddTradeMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> implements IGUIButtonSensitive {
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
 

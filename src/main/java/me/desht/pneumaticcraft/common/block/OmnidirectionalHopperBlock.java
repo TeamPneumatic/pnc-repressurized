@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAbstractHopper;
+import me.desht.pneumaticcraft.common.tileentity.AbstractHopperBlockEntity;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -138,7 +138,7 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
             if (inputDir == getRotation(world, pos)) inputDir = Direction.from3DDataValue(inputDir.get3DDataValue() + 1);
             world.setBlockAndUpdate(pos, state.setValue(INPUT_FACING, inputDir));
         }
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAbstractHopper.class).ifPresent(TileEntityAbstractHopper::onBlockRotated);
+        PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractHopperBlockEntity.class).ifPresent(AbstractHopperBlockEntity::onBlockRotated);
         return true;
     }
 
@@ -147,7 +147,7 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
         if (world != null && pos != null) {
             switch (tintIndex) {
                 case 0:
-                    return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAbstractHopper.class)
+                    return PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractHopperBlockEntity.class)
                             .filter(te -> te.isCreative)
                             .map(te -> 0xFFDB46CF).orElse(0xFF2b2727);
                 case 1:

@@ -75,7 +75,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class TileEntityBase extends BlockEntity
+public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         implements Nameable, IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
     private final UpgradeHandler upgradeHandler;
@@ -89,11 +89,11 @@ public abstract class TileEntityBase extends BlockEntity
     private boolean forceFullSync;
     private BitSet fieldsToSync;  // tracks which synced fields have changed and need to be synced on the next tick
 
-    public TileEntityBase(BlockEntityType type, BlockPos pos, BlockState state) {
+    public AbstractPneumaticCraftBlockEntity(BlockEntityType type, BlockPos pos, BlockState state) {
         this(type, pos, state, 0);
     }
 
-    public TileEntityBase(BlockEntityType type, BlockPos pos, BlockState state, int upgradeSize) {
+    public AbstractPneumaticCraftBlockEntity(BlockEntityType type, BlockPos pos, BlockState state, int upgradeSize) {
         super(type, pos, state);
 
         this.upgradeHandler = new UpgradeHandler(upgradeSize);
@@ -296,7 +296,7 @@ public abstract class TileEntityBase extends BlockEntity
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#load(CompoundTag)}.
+     * Encoded into the description packet. Also included in saved data read by {@link AbstractPneumaticCraftBlockEntity#load(CompoundTag)}.
      *
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -496,7 +496,7 @@ public abstract class TileEntityBase extends BlockEntity
                 public Object[] call(Object[] args) {
                     requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
                     Direction dir = args.length == 0 ? null : getDirForString((String) args[0]);
-                    IHeatExchangerLogic logic = ((IHeatExchangingTE) TileEntityBase.this).getHeatExchanger(dir);
+                    IHeatExchangerLogic logic = ((IHeatExchangingTE) AbstractPneumaticCraftBlockEntity.this).getHeatExchanger(dir);
                     double temp = logic == null ? HeatExchangerLogicAmbient.getAmbientTemperature(level, worldPosition) : logic.getTemperature();
                     return new Object[] { temp };
                 }
@@ -641,7 +641,7 @@ public abstract class TileEntityBase extends BlockEntity
 
     public class UpgradeHandler extends BaseItemStackHandler {
         UpgradeHandler(int upgradeSize) {
-            super(TileEntityBase.this, upgradeSize);
+            super(AbstractPneumaticCraftBlockEntity.this, upgradeSize);
         }
 
         @Override
@@ -665,7 +665,7 @@ public abstract class TileEntityBase extends BlockEntity
 
         private boolean isApplicable(ItemStack stack) {
             PNCUpgrade upgrade = PNCUpgrade.from(stack);
-            return ApplicableUpgradesDB.getInstance().getMaxUpgrades(TileEntityBase.this, upgrade) > 0;
+            return ApplicableUpgradesDB.getInstance().getMaxUpgrades(AbstractPneumaticCraftBlockEntity.this, upgrade) > 0;
         }
 
         @Override

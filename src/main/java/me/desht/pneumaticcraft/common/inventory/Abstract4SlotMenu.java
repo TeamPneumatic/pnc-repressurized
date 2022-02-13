@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
-public abstract class Abstract4SlotMenu<T extends TileEntityBase> extends AbstractPneumaticCraftMenu<T> {
+public abstract class Abstract4SlotMenu<T extends AbstractPneumaticCraftBlockEntity> extends AbstractPneumaticCraftMenu<T> {
 
     public Abstract4SlotMenu(MenuType type, int i, Inventory playerInventory, BlockPos tilePos) {
         super(type, i, playerInventory, tilePos);

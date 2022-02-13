@@ -27,7 +27,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import java.lang.ref.WeakReference;
 
-public class TileEntityElevatorFrame extends TileEntityBase {
+public class TileEntityElevatorFrame extends AbstractPneumaticCraftBlockEntity {
     private WeakReference<TileEntityElevatorBase> baseRef = null;
 
     //TODO redo elevator frames

@@ -31,7 +31,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
+public class TileEntityAssemblyDrill extends AbstractAssemblyRobotBlockEntity {
     @DescSynced
     private boolean isDrillOn;
     @DescSynced

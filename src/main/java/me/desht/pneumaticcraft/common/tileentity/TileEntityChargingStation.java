@@ -61,7 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl<TileEntityChargingStation>, CamouflageableBlockEntity, MenuProvider {
+public class TileEntityChargingStation extends AbstractAirHandlingBlockEntity implements IRedstoneControl<TileEntityChargingStation>, CamouflageableBlockEntity, MenuProvider {
     private static final List<RedstoneMode<TileEntityChargingStation>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
             new EmittingRedstoneMode<>("chargingStation.idle", Textures.GUI_CHARGE_IDLE, TileEntityChargingStation::isIdle),

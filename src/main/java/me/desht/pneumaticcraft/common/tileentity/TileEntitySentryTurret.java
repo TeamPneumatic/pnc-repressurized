@@ -59,7 +59,7 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
-public class TileEntitySentryTurret extends TileEntityTickableBase implements
+public class TileEntitySentryTurret extends AbstractTickingBlockEntity implements
         IRedstoneControl<TileEntitySentryTurret>, IGUITextFieldSensitive, MenuProvider {
     private static final int INVENTORY_SIZE = 4;
     public static final String NBT_ENTITY_FILTER = "entityFilter";

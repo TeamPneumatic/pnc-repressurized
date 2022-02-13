@@ -20,12 +20,12 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotFluidContainer;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
+import me.desht.pneumaticcraft.common.tileentity.AbstractFluidTankBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 
-public class FluidTankMenu extends AbstractPneumaticCraftMenu<TileEntityFluidTank> {
+public class FluidTankMenu extends AbstractPneumaticCraftMenu<AbstractFluidTankBlockEntity> {
     public FluidTankMenu(int windowId, Inventory inv, FriendlyByteBuf extraData) {
         this(windowId, inv, getTilePos(extraData));
     }

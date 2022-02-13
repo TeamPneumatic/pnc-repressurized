@@ -74,7 +74,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
+public class TileEntityPressureChamberValve extends AbstractAirHandlingBlockEntity
         implements IMinWorkingPressure, IAirListener, MenuProvider {
     private static final int CHAMBER_INV_SIZE = 18;
     private static final int OUTPUT_INV_SIZE = 9;

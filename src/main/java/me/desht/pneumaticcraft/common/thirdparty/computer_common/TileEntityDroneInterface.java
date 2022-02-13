@@ -34,8 +34,8 @@ import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
+import me.desht.pneumaticcraft.common.tileentity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityTickableBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -56,7 +56,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class TileEntityDroneInterface extends TileEntityTickableBase
+public class TileEntityDroneInterface extends AbstractTickingBlockEntity
         implements ILuaMethodProvider {
 
     private final LuaMethodRegistry luaMethodRegistry = new LuaMethodRegistry(this);

@@ -32,7 +32,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class TileEntityAssemblyPlatform extends TileEntityTickableBase implements IAssemblyMachine, IResettable {
+public class TileEntityAssemblyPlatform extends AbstractTickingBlockEntity implements IAssemblyMachine, IResettable {
     @DescSynced
     private boolean shouldClawClose;
     @DescSynced

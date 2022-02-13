@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class TileEntityAphorismTile extends TileEntityBase {
+public class TileEntityAphorismTile extends AbstractPneumaticCraftBlockEntity {
     public static final String NBT_BORDER_COLOR = "borderColor";
     public static final String NBT_BACKGROUND_COLOR = "backgroundColor";
     private static final String NBT_TEXT_ROTATION = "textRot";

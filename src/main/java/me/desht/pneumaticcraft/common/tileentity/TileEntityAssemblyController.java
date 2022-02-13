@@ -46,7 +46,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityAssemblyController extends TileEntityPneumaticBase
+public class TileEntityAssemblyController extends AbstractAirHandlingBlockEntity
         implements IAssemblyMachine, IMinWorkingPressure, MenuProvider {
     private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;

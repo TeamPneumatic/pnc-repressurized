@@ -24,7 +24,7 @@ import mcp.mobius.waila.api.WailaPlugin;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Block;
@@ -34,9 +34,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 public class WailaRegistration implements IWailaPlugin {
     @Override
     public void register(IRegistrar iRegistrar) {
-        iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), TileEntityBase.class);
+        iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), AbstractPneumaticCraftBlockEntity.class);
         iRegistrar.registerBlockDataProvider(new SemiblockProvider.Data(), BlockEntity.class);
-        iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), TileEntityBase.class);
+        iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), AbstractPneumaticCraftBlockEntity.class);
         iRegistrar.registerBlockDataProvider(new TubeModuleProvider.Data(), TileEntityPressureTube.class);
         iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), LivingEntity.class);
         iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), EntitySemiblockBase.class);

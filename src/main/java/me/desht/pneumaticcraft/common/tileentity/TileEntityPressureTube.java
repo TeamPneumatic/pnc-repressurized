@@ -58,7 +58,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, CamouflageableBlockEntity {
+public class TileEntityPressureTube extends AbstractAirHandlingBlockEntity implements IAirListener, IManoMeasurable, CamouflageableBlockEntity {
     @DescSynced
     private final boolean[] sidesClosed = new boolean[6];
     private final EnumMap<Direction,TubeModule> modules = new EnumMap<>(Direction.class);

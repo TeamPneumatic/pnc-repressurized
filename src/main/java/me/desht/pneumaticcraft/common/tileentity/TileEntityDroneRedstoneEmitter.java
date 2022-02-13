@@ -24,7 +24,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityDroneRedstoneEmitter extends TileEntityTickableBase {
+public class TileEntityDroneRedstoneEmitter extends AbstractTickingBlockEntity {
     public TileEntityDroneRedstoneEmitter(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DRONE_REDSTONE_EMITTER.get(), pos, state);
     }

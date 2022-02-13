@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.network.SyncedField;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,7 +26,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.EnergyStorage;
 
-public abstract class AbstractForgeEnergyMenu<T extends TileEntityBase> extends Abstract4SlotMenu<T> {
+public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBlockEntity> extends Abstract4SlotMenu<T> {
 
     private AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(type, i, playerInventory, getTilePos(buffer));

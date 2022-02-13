@@ -55,7 +55,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityLiquidHopper> implements ISerializableTanks {
+public class TileEntityLiquidHopper extends AbstractHopperBlockEntity<TileEntityLiquidHopper> implements ISerializableTanks {
     private int comparatorValue = -1;
 
     @DescSynced

@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class TileEntityThermalCompressor extends TileEntityPneumaticBase
+public class TileEntityThermalCompressor extends AbstractAirHandlingBlockEntity
         implements IHeatTinted, IRedstoneControl<TileEntityThermalCompressor>, MenuProvider, IHeatExchangingTE {
     private static final double AIR_GEN_MULTIPLIER = 0.05;  // mL per degree of difference
 

@@ -69,7 +69,7 @@ import java.util.Stack;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
+public class TileEntityElevatorBase extends AbstractAirHandlingBlockEntity implements
         IGUITextFieldSensitive, IRedstoneControl<TileEntityElevatorBase>, IMinWorkingPressure,
         CamouflageableBlockEntity, MenuProvider
 {

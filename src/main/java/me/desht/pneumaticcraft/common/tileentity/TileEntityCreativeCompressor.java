@@ -33,7 +33,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
-public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implements MenuProvider {
+public class TileEntityCreativeCompressor extends AbstractAirHandlingBlockEntity implements MenuProvider {
     @GuiSynced
     private float pressureSetpoint;
 

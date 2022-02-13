@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -92,7 +92,7 @@ public class ItemChestUpgradeKit extends Item {
                 }
 
                 // 3. fill the upgraded chest with the copied inventory
-                PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityBase.class).ifPresent(teRC -> {
+                PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(teRC -> {
                     IItemHandler chestInv = teRC.getPrimaryInventory();
                     for (int i = 0; i < inv.size(); i++) {
                         if (i < chestInv.getSlots()) {

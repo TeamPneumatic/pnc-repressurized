@@ -54,7 +54,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implements
+public class TileEntityLiquidCompressor extends AbstractAirHandlingBlockEntity implements
         IRedstoneControl<TileEntityLiquidCompressor>, ISerializableTanks, MenuProvider {
     public static final int INVENTORY_SIZE = 2;
 

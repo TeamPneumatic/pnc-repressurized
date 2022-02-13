@@ -55,7 +55,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_EXTENSION;
 import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_SPEED_FAST;
 
-public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase implements
+public class TileEntityPneumaticDoorBase extends AbstractAirHandlingBlockEntity implements
         IRedstoneControl<TileEntityPneumaticDoorBase>, IMinWorkingPressure, CamouflageableBlockEntity, MenuProvider {
     private static final List<RedstoneMode<TileEntityPneumaticDoorBase>> REDSTONE_MODES = ImmutableList.of(
             new ReceivingRedstoneMode<>("pneumaticDoor.playerNearby", new ItemStack(Items.OBSERVER),

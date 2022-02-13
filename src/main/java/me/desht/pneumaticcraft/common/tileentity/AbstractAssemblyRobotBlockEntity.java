@@ -34,7 +34,7 @@ import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nonnull;
 
-public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase implements IAssemblyMachine, IResettable {
+public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBlockEntity implements IAssemblyMachine, IResettable {
     public final float[] oldAngles = new float[EnumAngles.values().length];
     @DescSynced
     @LazySynced
@@ -48,7 +48,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     protected float speed = 1.0F;
     private BlockPos controllerPos;
 
-    TileEntityAssemblyRobot(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    AbstractAssemblyRobotBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
 
         gotoHomePosition();

@@ -71,7 +71,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.block.KeroseneLampBlock.LIT;
 
-public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
+public class TileEntityKeroseneLamp extends AbstractTickingBlockEntity implements
         IRedstoneControl<TileEntityKeroseneLamp>, ISerializableTanks, MenuProvider {
 
     private static final List<RedstoneMode<TileEntityKeroseneLamp>> REDSTONE_MODES = ImmutableList.of(

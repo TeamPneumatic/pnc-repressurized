@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class TileEntityAbstractHopper<T extends BlockEntity & IRedstoneControl<T>> extends TileEntityTickableBase
+public abstract class AbstractHopperBlockEntity<T extends BlockEntity & IRedstoneControl<T>> extends AbstractTickingBlockEntity
         implements IRedstoneControl<T>, IComparatorSupport, MenuProvider {
     private static final int BASE_TICK_RATE = 8;
 
@@ -57,7 +57,7 @@ public abstract class TileEntityAbstractHopper<T extends BlockEntity & IRedstone
     final List<Entity> cachedInputEntities = new ArrayList<>();
     final List<Entity> cachedOutputEntities = new ArrayList<>();
 
-    TileEntityAbstractHopper(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    AbstractHopperBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state, 4);
     }
 

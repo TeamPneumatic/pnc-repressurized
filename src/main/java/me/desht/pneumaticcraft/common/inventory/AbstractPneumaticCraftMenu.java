@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.common.inventory.slot.SlotPlayer;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotUpgrade;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractPneumaticCraftMenu<T extends TileEntityBase> extends AbstractContainerMenu implements IGUIButtonSensitive {
+public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraftBlockEntity> extends AbstractContainerMenu implements IGUIButtonSensitive {
     public final T te;
     private final List<SyncedField<?>> syncedFields = new ArrayList<>();
     private boolean firstTick = true;
@@ -62,7 +62,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends TileEntityBase> exten
         super(type, windowId);
         if (tilePos != null) {
             BlockEntity te0 = invPlayer.player.level.getBlockEntity(tilePos);
-            if (te0 instanceof TileEntityBase) {
+            if (te0 instanceof AbstractPneumaticCraftBlockEntity) {
                 //noinspection unchecked
                 te = (T) te0;  // should be safe: T extends TileEntityBase, and we're doing an instanceof
                 addSyncedFields(te);

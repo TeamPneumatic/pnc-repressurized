@@ -60,7 +60,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntitySmartChest extends TileEntityTickableBase
+public class TileEntitySmartChest extends AbstractTickingBlockEntity
         implements MenuProvider, IRedstoneControl<TileEntitySmartChest>, IComparatorSupport {
     public static final int CHEST_SIZE = 72;
     private static final String NBT_ITEMS = "Items";

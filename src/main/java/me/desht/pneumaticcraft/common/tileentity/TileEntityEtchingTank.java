@@ -55,7 +55,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityEtchingTank extends TileEntityTickableBase
+public class TileEntityEtchingTank extends AbstractTickingBlockEntity
         implements MenuProvider, ISerializableTanks, IHeatExchangingTE {
     public static final int ETCHING_SLOTS = 25;
 

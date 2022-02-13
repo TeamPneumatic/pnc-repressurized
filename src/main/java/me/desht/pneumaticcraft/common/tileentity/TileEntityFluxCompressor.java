@@ -46,7 +46,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityFluxCompressor extends TileEntityPneumaticBase
+public class TileEntityFluxCompressor extends AbstractAirHandlingBlockEntity
         implements IRedstoneControl<TileEntityFluxCompressor>, MenuProvider, IHeatExchangingTE {
     private static final int BASE_FE_PRODUCTION = 40;
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);

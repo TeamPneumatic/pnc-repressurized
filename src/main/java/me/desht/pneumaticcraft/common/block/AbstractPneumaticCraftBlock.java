@@ -33,10 +33,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
+import me.desht.pneumaticcraft.common.tileentity.AbstractAirHandlingBlockEntity;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.tileentity.IHeatExchangingTE;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -125,7 +125,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
             return InteractionResult.PASS;
         } else {
             if (!world.isClientSide) {
-                if (te instanceof TileEntityBase) {
+                if (te instanceof AbstractPneumaticCraftBlockEntity) {
                     if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
                         world.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
                         return InteractionResult.SUCCESS;
@@ -187,8 +187,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         super.setPlacedBy(world, pos, state, entity, stack);
 
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityBase && stack.hasCustomHoverName()) {
-            ((TileEntityBase) te).setCustomName(stack.getHoverName());
+        if (te instanceof AbstractPneumaticCraftBlockEntity && stack.hasCustomHoverName()) {
+            ((AbstractPneumaticCraftBlockEntity) te).setCustomName(stack.getHoverName());
         }
         if (te instanceof IHeatExchangingTE) {
             ((IHeatExchangingTE) te).initHeatExchangersOnPlacement(world, pos);
@@ -256,9 +256,9 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         if (player != null && player.isShiftKeyDown()) {
             BlockEntity te = world.getBlockEntity(pos);
             boolean preserve = false;
-            if (te instanceof TileEntityBase) {
+            if (te instanceof AbstractPneumaticCraftBlockEntity) {
                 preserve = true;
-                ((TileEntityBase) te).setPreserveStateOnBreak(true);
+                ((AbstractPneumaticCraftBlockEntity) te).setPreserveStateOnBreak(true);
             }
             if (!player.isCreative() || preserve) {
                 Block.dropResources(world.getBlockState(pos), world, pos, te);
@@ -282,7 +282,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                         setRotation(world, pos, f);
                     }
                     BlockEntity te = world.getBlockEntity(pos);
-                    if (te instanceof TileEntityBase) ((TileEntityBase) te).onBlockRotated();
+                    if (te instanceof AbstractPneumaticCraftBlockEntity) ((AbstractPneumaticCraftBlockEntity) te).onBlockRotated();
                 }
                 return true;
             } else {
@@ -312,8 +312,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos tilePos) {
         if (world instanceof Level && !((Level) world).isClientSide) {
             BlockEntity te = world.getBlockEntity(pos);
-            if (te instanceof TileEntityBase) {
-                ((TileEntityBase) te).onNeighborTileUpdate(tilePos);
+            if (te instanceof AbstractPneumaticCraftBlockEntity) {
+                ((AbstractPneumaticCraftBlockEntity) te).onNeighborTileUpdate(tilePos);
             }
         }
     }
@@ -322,8 +322,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         if (!world.isClientSide) {
             BlockEntity te = world.getBlockEntity(pos);
-            if (te instanceof TileEntityBase) {
-                ((TileEntityBase) te).onNeighborBlockUpdate(fromPos);
+            if (te instanceof AbstractPneumaticCraftBlockEntity) {
+                ((AbstractPneumaticCraftBlockEntity) te).onNeighborBlockUpdate(fromPos);
             }
         }
     }
@@ -367,7 +367,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         }
         if (ClientUtils.hasShiftDown() && this instanceof EntityBlock eb) {
             BlockEntity te = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
-            if (te instanceof TileEntityPneumaticBase pneumatic) {
+            if (te instanceof AbstractAirHandlingBlockEntity pneumatic) {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.maxPressure", pneumatic.getDangerPressure())
                         .withStyle(ChatFormatting.YELLOW));
             }
@@ -406,7 +406,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity te = world.getBlockEntity(pos);
-            if (te instanceof TileEntityBase teBase) {
+            if (te instanceof AbstractPneumaticCraftBlockEntity teBase) {
                 NonNullList<ItemStack> drops = NonNullList.create();
                 teBase.getContentsToDrop(drops);
                 drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
@@ -456,7 +456,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     @Override
     public void playerDestroy(Level worldIn, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
         if (player instanceof ServerPlayer sp && !(player instanceof FakePlayer)
-                && te instanceof TileEntityBase base && !base.shouldPreserveStateOnBreak()) {
+                && te instanceof AbstractPneumaticCraftBlockEntity base && !base.shouldPreserveStateOnBreak()) {
             AdvancementTriggers.MACHINE_VANDAL.trigger(sp);
         }
         super.playerDestroy(worldIn, player, pos, state, te, stack);

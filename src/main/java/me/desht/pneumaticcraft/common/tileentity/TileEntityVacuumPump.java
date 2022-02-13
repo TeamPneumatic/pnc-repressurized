@@ -50,7 +50,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
+public class TileEntityVacuumPump extends AbstractAirHandlingBlockEntity implements
         IRedstoneControl<TileEntityVacuumPump>, IManoMeasurable, MenuProvider {
     @GuiSynced
     private final IAirHandlerMachine vacuumHandler;

@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer.DigMode;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -41,7 +41,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiJackHammerSetup extends GuiPneumaticContainerBase<JackhammerSetupMenu, TileEntityBase> {
+public class GuiJackHammerSetup extends GuiPneumaticContainerBase<JackhammerSetupMenu, AbstractPneumaticCraftBlockEntity> {
     private final EnumMap<DigMode,WidgetButtonExtended> typeButtons = new EnumMap<>(DigMode.class);
     private WidgetButtonExtended selectorButton;
 

@@ -31,7 +31,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityPneumaticDoor extends TileEntityTickableBase {
+public class TileEntityPneumaticDoor extends AbstractTickingBlockEntity {
     @DescSynced
     @LazySynced
     public float rotationAngle;

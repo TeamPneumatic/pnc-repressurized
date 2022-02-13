@@ -57,7 +57,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
+public class TileEntityElectrostaticCompressor extends AbstractAirHandlingBlockEntity
         implements IRedstoneControl<TileEntityElectrostaticCompressor>, MenuProvider
 {
     private static final List<RedstoneMode<TileEntityElectrostaticCompressor>> REDSTONE_MODES = ImmutableList.of(

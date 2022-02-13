@@ -33,7 +33,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import java.util.List;
 
-public class TileEntityPressureChamberWall extends TileEntityTickableBase
+public class TileEntityPressureChamberWall extends AbstractTickingBlockEntity
         implements IManoMeasurable, IInfoForwarder {
 
     private TileEntityPressureChamberValve teValve;

@@ -59,7 +59,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityGasLift extends TileEntityPneumaticBase implements
+public class TileEntityGasLift extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<TileEntityGasLift>, ISerializableTanks,
         IAutoFluidEjecting, MenuProvider
 {

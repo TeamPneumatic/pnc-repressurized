@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 
-public abstract class AbstractTileModelRenderer<T extends TileEntityBase> implements BlockEntityRenderer<T> {
+public abstract class AbstractTileModelRenderer<T extends AbstractPneumaticCraftBlockEntity> implements BlockEntityRenderer<T> {
     AbstractTileModelRenderer(BlockEntityRendererProvider.Context ctx) {
     }
 

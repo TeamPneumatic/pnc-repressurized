@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.core.BlockPos;
@@ -39,7 +39,7 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class RemoteMenu extends AbstractPneumaticCraftMenu<TileEntityBase> {
+public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> {
     private final List<String> syncedVars;
     private final BlockPos[] lastValues;
     private final InteractionHand hand;

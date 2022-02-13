@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory.slot;
 
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
@@ -26,9 +26,9 @@ import net.minecraftforge.items.SlotItemHandler;
 import javax.annotation.Nonnull;
 
 public class SlotUpgrade extends SlotItemHandler {
-    private final TileEntityBase te;
+    private final AbstractPneumaticCraftBlockEntity te;
 
-    public SlotUpgrade(TileEntityBase te, int index, int xPosition, int yPosition) {
+    public SlotUpgrade(AbstractPneumaticCraftBlockEntity te, int index, int xPosition, int yPosition) {
         super(te.getUpgradeHandler(), index, xPosition, yPosition);
         this.te = te;
     }

@@ -34,7 +34,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.BiPredicate;
 
-public class TileEntityHeatPipe extends TileEntityTickableBase implements CamouflageableBlockEntity, IHeatExchangingTE {
+public class TileEntityHeatPipe extends AbstractTickingBlockEntity implements CamouflageableBlockEntity, IHeatExchangingTE {
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 

@@ -66,7 +66,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase implements
+public class TileEntityThermopneumaticProcessingPlant extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<TileEntityThermopneumaticProcessingPlant>, ISerializableTanks,
         IAutoFluidEjecting, MenuProvider, IComparatorSupport, IHeatExchangingTE {
 

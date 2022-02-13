@@ -45,13 +45,13 @@ import java.util.*;
  * Base class for all PNC tile entities which handle air. Provides one default air handler; machines with multiple
  * air handlers can add extra handlers in their subclass.
  */
-public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
+public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBlockEntity {
     @GuiSynced
     protected final IAirHandlerMachine airHandler;
     private final LazyOptional<IAirHandlerMachine> airHandlerCap;
     private final Map<IAirHandlerMachine, List<Direction>> airHandlerMap = new IdentityHashMap<>();
 
-    public TileEntityPneumaticBase(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier pressureTier, int volume, int upgradeSlots) {
+    public AbstractAirHandlingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier pressureTier, int volume, int upgradeSlots) {
         super(type, pos, state, upgradeSlots);
 
         this.airHandler = PneumaticRegistry.getInstance().getAirHandlerMachineFactory().createAirHandler(pressureTier, volume);

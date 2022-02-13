@@ -68,7 +68,7 @@ import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements
+public class TileEntityUniversalSensor extends AbstractAirHandlingBlockEntity implements
         IGUITextFieldSensitive, IMinWorkingPressure, IRangedTE,
         IRedstoneControl<TileEntityUniversalSensor>, MenuProvider {
 

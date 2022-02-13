@@ -29,7 +29,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class TileEntityDisplayTable extends TileEntityBase implements IComparatorSupport {
+public class TileEntityDisplayTable extends AbstractPneumaticCraftBlockEntity implements IComparatorSupport {
     private final DisplayItemHandler inventory = new DisplayItemHandler(this, 1);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     public ItemStack displayedStack = ItemStack.EMPTY;

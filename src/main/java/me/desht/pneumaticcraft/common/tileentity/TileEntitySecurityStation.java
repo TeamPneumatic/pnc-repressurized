@@ -89,7 +89,7 @@ import java.util.stream.Stream;
 import static me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation.GRID_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TileEntitySecurityStation extends TileEntityTickableBase implements
+public class TileEntitySecurityStation extends AbstractTickingBlockEntity implements
         IRedstoneControl<TileEntitySecurityStation>, MenuProvider, IRangedTE
 {
     private static final List<RedstoneMode<TileEntitySecurityStation>> REDSTONE_MODES = ImmutableList.of(

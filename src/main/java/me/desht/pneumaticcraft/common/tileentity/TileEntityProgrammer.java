@@ -59,7 +59,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityProgrammer extends TileEntityTickableBase implements IGUITextFieldSensitive, MenuProvider {
+public class TileEntityProgrammer extends AbstractTickingBlockEntity implements IGUITextFieldSensitive, MenuProvider {
     private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;
 

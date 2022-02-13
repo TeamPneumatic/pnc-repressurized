@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer.DigMode;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -33,7 +33,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class JackhammerSetupMenu extends AbstractPneumaticCraftMenu<TileEntityBase> {
+public class JackhammerSetupMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> {
     private final ItemJackHammer.DrillBitHandler drillBitHandler;
     private final ItemJackHammer.EnchantmentHandler enchantmentHandler;
     private final InteractionHand hand;

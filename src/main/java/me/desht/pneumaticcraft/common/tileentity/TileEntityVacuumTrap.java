@@ -78,7 +78,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
+public class TileEntityVacuumTrap extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, MenuProvider, ISerializableTanks, IRangedTE {
     static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
     public static final int MEMORY_ESSENCE_AMOUNT = 100;

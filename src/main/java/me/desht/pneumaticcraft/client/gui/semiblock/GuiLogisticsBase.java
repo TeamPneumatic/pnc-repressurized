@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -52,7 +52,7 @@ import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<LogisticsMenu, TileEntityBase> {
+public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<LogisticsMenu, AbstractPneumaticCraftBlockEntity> {
     protected final L logistics;
     private GuiItemSearcher itemSearchGui;
     private GuiLogisticsLiquidFilter fluidSearchGui;

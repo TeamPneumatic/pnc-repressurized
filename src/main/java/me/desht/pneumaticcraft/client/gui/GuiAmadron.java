@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu.EnumProblemState;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -48,7 +48,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAmadron extends GuiPneumaticContainerBase<AmadronMenu,TileEntityBase> {
+public class GuiAmadron extends GuiPneumaticContainerBase<AmadronMenu, AbstractPneumaticCraftBlockEntity> {
     private static final int ROWS = 4;
     public static final int OFFERS_PER_PAGE = ROWS * 2;
 

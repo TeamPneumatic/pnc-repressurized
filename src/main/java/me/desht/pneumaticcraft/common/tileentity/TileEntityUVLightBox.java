@@ -58,7 +58,7 @@ import java.util.List;
 //import elucent.albedo.lighting.Light;
 
 //@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
-public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
+public class TileEntityUVLightBox extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<TileEntityUVLightBox>, MenuProvider /*,ILightProvider */ {
     private static final String NBT_EXPOSURE = "pneumaticcraft:uv_exposure";
 

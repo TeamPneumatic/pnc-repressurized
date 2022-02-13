@@ -60,7 +60,7 @@ public interface CamouflageableBlockEntity {
      *
      * @param te the tile entity
      */
-    static void syncToClient(TileEntityBase te) {
+    static void syncToClient(AbstractPneumaticCraftBlockEntity te) {
         if (te.getLevel() != null && !te.getLevel().isClientSide) {
             te.sendDescriptionPacket();
             te.setChanged();

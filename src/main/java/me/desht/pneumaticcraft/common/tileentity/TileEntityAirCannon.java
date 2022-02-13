@@ -75,7 +75,7 @@ import java.util.Map.Entry;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TileEntityAirCannon extends TileEntityPneumaticBase
+public class TileEntityAirCannon extends AbstractAirHandlingBlockEntity
         implements IMinWorkingPressure, IRedstoneControl<TileEntityAirCannon>, IGUIButtonSensitive, MenuProvider {
 
     private static final String FP_NAME = "[Air Cannon]";

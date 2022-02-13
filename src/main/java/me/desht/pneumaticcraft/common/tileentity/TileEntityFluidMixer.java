@@ -60,7 +60,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
+public class TileEntityFluidMixer extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<TileEntityFluidMixer>, MenuProvider,
         ISerializableTanks, IAutoFluidEjecting
 {

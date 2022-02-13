@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
+import me.desht.pneumaticcraft.common.tileentity.AbstractFluidTankBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -139,7 +139,7 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
             if (rtr.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult brtr = (BlockHitResult) rtr;
                 if (brtr.getBlockPos().equals(pos)) {
-                    TileEntityFluidTank te = getTankAt(world, pos);
+                    AbstractFluidTankBlockEntity te = getTankAt(world, pos);
                     if (te != null) {
                         double y = brtr.getLocation().y - (int) brtr.getLocation().y;
                         return tryToggleConnection(te, y >= 0.5 ? Direction.UP : Direction.DOWN);
@@ -152,10 +152,10 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         }
     }
 
-    private boolean tryToggleConnection(TileEntityFluidTank thisTank, Direction dir) {
+    private boolean tryToggleConnection(AbstractFluidTankBlockEntity thisTank, Direction dir) {
         BlockState state = thisTank.getBlockState();
         Level level = thisTank.nonNullLevel();
-        TileEntityFluidTank neighbourTank = getTankAt(level, thisTank.getBlockPos().relative(dir));
+        AbstractFluidTankBlockEntity neighbourTank = getTankAt(level, thisTank.getBlockPos().relative(dir));
         if (neighbourTank == null) return false;
         BlockState stateOther = neighbourTank.getBlockState();
         boolean isConnected = state.getValue(connectionProperty(dir));
@@ -174,9 +174,9 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         return false;
     }
 
-    private TileEntityFluidTank getTankAt(Level world, BlockPos pos) {
+    private AbstractFluidTankBlockEntity getTankAt(Level world, BlockPos pos) {
         BlockEntity te = world.getBlockEntity(pos);
-        return te instanceof TileEntityFluidTank ? (TileEntityFluidTank) te : null;
+        return te instanceof AbstractFluidTankBlockEntity ? (AbstractFluidTankBlockEntity) te : null;
     }
 
     @Nullable
@@ -239,10 +239,10 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
     }
 
     public enum Size {
-        SMALL(32000, TileEntityFluidTank.Small::new),
-        MEDIUM(64000, TileEntityFluidTank.Medium::new),
-        LARGE(128000, TileEntityFluidTank.Large::new),
-        HUGE(512000, TileEntityFluidTank.Huge::new);
+        SMALL(32000, AbstractFluidTankBlockEntity.Small::new),
+        MEDIUM(64000, AbstractFluidTankBlockEntity.Medium::new),
+        LARGE(128000, AbstractFluidTankBlockEntity.Large::new),
+        HUGE(512000, AbstractFluidTankBlockEntity.Huge::new);
 
         private final int capacity;
         private final BiFunction<BlockPos,BlockState,BlockEntity> beFactory;

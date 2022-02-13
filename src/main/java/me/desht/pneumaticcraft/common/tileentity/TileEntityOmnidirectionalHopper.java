@@ -51,7 +51,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<TileEntityOmnidirectionalHopper> {
+public class TileEntityOmnidirectionalHopper extends AbstractHopperBlockEntity<TileEntityOmnidirectionalHopper> {
     public static final int INVENTORY_SIZE = 5;
 
     private final ComparatorItemStackHandler itemHandler = new ComparatorItemStackHandler(this, getInvSize());

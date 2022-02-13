@@ -85,10 +85,10 @@ public class TileEntitySerializerFunction extends LootItemConditionalFunction {
             ((IRedstoneControl<?>) te).getRedstoneController().serialize(subTag);
         }
 
-        if (te instanceof TileEntityBase teB) {
+        if (te instanceof AbstractPneumaticCraftBlockEntity teB) {
             if (teB.shouldPreserveStateOnBreak()) {
                 // upgrades (only when wrenched)
-                TileEntityBase.UpgradeHandler upgradeHandler = teB.getUpgradeHandler();
+                AbstractPneumaticCraftBlockEntity.UpgradeHandler upgradeHandler = teB.getUpgradeHandler();
                 for (int i = 0; i < upgradeHandler.getSlots(); i++) {
                     if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
                         // store creative status directly since it's queried for item model rendering (performance)

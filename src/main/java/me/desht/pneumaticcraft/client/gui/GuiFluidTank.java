@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.common.inventory.FluidTankMenu;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
+import me.desht.pneumaticcraft.common.tileentity.AbstractFluidTankBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class GuiFluidTank extends GuiPneumaticContainerBase<FluidTankMenu, TileEntityFluidTank> {
+public class GuiFluidTank extends GuiPneumaticContainerBase<FluidTankMenu, AbstractFluidTankBlockEntity> {
     public GuiFluidTank(FluidTankMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
     }

@@ -54,7 +54,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public abstract class TileEntityFluidTank extends TileEntityTickableBase
+public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockEntity
         implements ISerializableTanks, MenuProvider, IComparatorSupport {
     private static final int INVENTORY_SIZE = 2;
     private static final int INPUT_SLOT = 0;
@@ -75,7 +75,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
 
-    TileEntityFluidTank(BlockEntityType<?> type, BlockPos pos, BlockState state, FluidTankBlock.Size tankSize) {
+    AbstractFluidTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, FluidTankBlock.Size tankSize) {
         super(type, pos, state, 4);
 
         this.tank = new StackableTank(tankSize.getCapacity());
@@ -102,8 +102,8 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
                 BlockState other = nonNullLevel().getBlockState(worldPosition.relative(dir));
                 if (other.getBlock() instanceof FluidTankBlock && other.getValue(AbstractPneumaticCraftBlock.connectionProperty(dir.getOpposite()))) {
                     BlockEntity teOther = getCachedNeighbor(dir);
-                    if (teOther instanceof TileEntityFluidTank) {
-                        FluidUtil.tryFluidTransfer(((TileEntityFluidTank) teOther).getTank(), tank, tank.getCapacity() / 32, true);
+                    if (teOther instanceof AbstractFluidTankBlockEntity) {
+                        FluidUtil.tryFluidTransfer(((AbstractFluidTankBlockEntity) teOther).getTank(), tank, tank.getCapacity() / 32, true);
                     }
                 }
             }
@@ -156,15 +156,15 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
 
     public boolean isNeighbourCompatible(FluidStack stack, Direction dir) {
         BlockState state = getBlockState();
-        TileEntityFluidTank curTank = this;
+        AbstractFluidTankBlockEntity curTank = this;
         while (state.getBlock() instanceof FluidTankBlock) {
             if (!state.getValue(AbstractPneumaticCraftBlock.connectionProperty(dir))) {
                 // no connection? no problem
                 return true;
             }
             BlockEntity teOther = curTank.getCachedNeighbor(dir);
-            if (teOther instanceof TileEntityFluidTank) {
-                curTank = (TileEntityFluidTank) teOther;
+            if (teOther instanceof AbstractFluidTankBlockEntity) {
+                curTank = (AbstractFluidTankBlockEntity) teOther;
                 state = curTank.getBlockState();
                 if (!isFluidCompatible(stack, curTank.getTank())) {
                     return false;
@@ -183,7 +183,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
 
     public class StackableTank extends SmartSyncTank {
         StackableTank(int capacity) {
-            super(TileEntityFluidTank.this, capacity);
+            super(AbstractFluidTankBlockEntity.this, capacity);
         }
 
         @Override
@@ -197,25 +197,25 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
         return tank.isEmpty() ? 0 : 1 + (tank.getFluidAmount() * 14) / tank.getCapacity();
     }
 
-    public static class Small extends TileEntityFluidTank {
+    public static class Small extends AbstractFluidTankBlockEntity {
         public Small(BlockPos pos, BlockState state) {
             super(ModBlockEntities.TANK_SMALL.get(), pos, state, FluidTankBlock.Size.SMALL);
         }
     }
 
-    public static class Medium extends TileEntityFluidTank {
+    public static class Medium extends AbstractFluidTankBlockEntity {
         public Medium(BlockPos pos, BlockState state) {
             super(ModBlockEntities.TANK_MEDIUM.get(), pos, state, FluidTankBlock.Size.MEDIUM);
         }
     }
 
-    public static class Large extends TileEntityFluidTank {
+    public static class Large extends AbstractFluidTankBlockEntity {
         public Large(BlockPos pos, BlockState state) {
             super(ModBlockEntities.TANK_LARGE.get(), pos, state, FluidTankBlock.Size.LARGE);
         }
     }
 
-    public static class Huge extends TileEntityFluidTank {
+    public static class Huge extends AbstractFluidTankBlockEntity {
         public Huge(BlockPos pos, BlockState state) {
             super(ModBlockEntities.TANK_HUGE.get(), pos, state, FluidTankBlock.Size.HUGE);
         }

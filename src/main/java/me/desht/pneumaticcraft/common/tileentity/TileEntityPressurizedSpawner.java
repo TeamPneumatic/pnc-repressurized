@@ -50,7 +50,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implements
+public class TileEntityPressurizedSpawner extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<TileEntityPressurizedSpawner>,
         MenuProvider, IRangedTE
 {

@@ -130,14 +130,14 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<TileEntityEtchingTank>> ETCHING_TANK
             = register("etching_tank", () -> new BlockEntityType<>(TileEntityEtchingTank::new, ImmutableSet.of(ModBlocks.ETCHING_TANK.get()),
     null));
-    public static final RegistryObject<BlockEntityType<TileEntityFluidTank.Small>> TANK_SMALL
-            = register("small_tank", () -> new BlockEntityType<>(TileEntityFluidTank.Small::new, ImmutableSet.of(ModBlocks.TANK_SMALL.get()), null));
-    public static final RegistryObject<BlockEntityType<TileEntityFluidTank.Medium>> TANK_MEDIUM
-            = register("medium_tank", () -> new BlockEntityType<>(TileEntityFluidTank.Medium::new, ImmutableSet.of(ModBlocks.TANK_MEDIUM.get()), null));
-    public static final RegistryObject<BlockEntityType<TileEntityFluidTank.Large>> TANK_LARGE
-            = register("large_tank", () -> new BlockEntityType<>(TileEntityFluidTank.Large::new, ImmutableSet.of(ModBlocks.TANK_LARGE.get()), null));
-    public static final RegistryObject<BlockEntityType<TileEntityFluidTank.Huge>> TANK_HUGE
-            = register("huge_tank", () -> new BlockEntityType<>(TileEntityFluidTank.Huge::new, ImmutableSet.of(ModBlocks.TANK_HUGE.get()), null));
+    public static final RegistryObject<BlockEntityType<AbstractFluidTankBlockEntity.Small>> TANK_SMALL
+            = register("small_tank", () -> new BlockEntityType<>(AbstractFluidTankBlockEntity.Small::new, ImmutableSet.of(ModBlocks.TANK_SMALL.get()), null));
+    public static final RegistryObject<BlockEntityType<AbstractFluidTankBlockEntity.Medium>> TANK_MEDIUM
+            = register("medium_tank", () -> new BlockEntityType<>(AbstractFluidTankBlockEntity.Medium::new, ImmutableSet.of(ModBlocks.TANK_MEDIUM.get()), null));
+    public static final RegistryObject<BlockEntityType<AbstractFluidTankBlockEntity.Large>> TANK_LARGE
+            = register("large_tank", () -> new BlockEntityType<>(AbstractFluidTankBlockEntity.Large::new, ImmutableSet.of(ModBlocks.TANK_LARGE.get()), null));
+    public static final RegistryObject<BlockEntityType<AbstractFluidTankBlockEntity.Huge>> TANK_HUGE
+            = register("huge_tank", () -> new BlockEntityType<>(AbstractFluidTankBlockEntity.Huge::new, ImmutableSet.of(ModBlocks.TANK_HUGE.get()), null));
     public static final RegistryObject<BlockEntityType<TileEntityReinforcedChest>> REINFORCED_CHEST
             = register("reinforced_chest", () -> new BlockEntityType<>(TileEntityReinforcedChest::new, ImmutableSet.of(ModBlocks.REINFORCED_CHEST.get()),null));
     public static final RegistryObject<BlockEntityType<TileEntitySmartChest>> SMART_CHEST

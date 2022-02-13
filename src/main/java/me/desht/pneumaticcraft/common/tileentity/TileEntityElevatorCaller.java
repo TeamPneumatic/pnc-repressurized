@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityElevatorCaller extends TileEntityTickableBase implements CamouflageableBlockEntity, IRedstoneControl<TileEntityElevatorCaller> {
+public class TileEntityElevatorCaller extends AbstractTickingBlockEntity implements CamouflageableBlockEntity, IRedstoneControl<TileEntityElevatorCaller> {
     private ElevatorButton[] floors = new ElevatorButton[0];
     private int thisFloor;
     private boolean emittingRedstone;

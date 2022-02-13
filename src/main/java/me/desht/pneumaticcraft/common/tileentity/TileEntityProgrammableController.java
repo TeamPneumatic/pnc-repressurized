@@ -98,7 +98,7 @@ import java.util.*;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class TileEntityProgrammableController extends TileEntityPneumaticBase
+public class TileEntityProgrammableController extends AbstractAirHandlingBlockEntity
         implements IMinWorkingPressure, IDroneBase, ISideConfigurable, MenuProvider {
     private static final int INVENTORY_SIZE = 1;
     private static final String FALLBACK_NAME = "[ProgController]";

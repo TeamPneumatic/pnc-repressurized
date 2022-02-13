@@ -80,7 +80,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.Function;
 
-public class TileEntityAerialInterface extends TileEntityPneumaticBase
+public class TileEntityAerialInterface extends AbstractAirHandlingBlockEntity
         implements IMinWorkingPressure, IRedstoneControl<TileEntityAerialInterface>, IComparatorSupport, ISideConfigurable, MenuProvider {
 
     private static final UUID NO_PLAYER = new UUID(0L, 0L);

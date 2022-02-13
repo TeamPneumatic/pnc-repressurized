@@ -62,7 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-public class TileEntityRefineryController extends TileEntityTickableBase
+public class TileEntityRefineryController extends AbstractTickingBlockEntity
         implements IRedstoneControl<TileEntityRefineryController>, IComparatorSupport, ISerializableTanks,
         MenuProvider, IHeatExchangingTE
 {

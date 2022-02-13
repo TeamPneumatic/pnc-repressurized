@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantomUnstackable;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -42,7 +42,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class LogisticsMenu extends AbstractPneumaticCraftMenu<TileEntityBase> implements ISyncableSemiblockItem {
+public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> implements ISyncableSemiblockItem {
     public final EntityLogisticsFrame logistics;
     private final boolean itemContainer;  // true if GUI opened from held item, false if from in-world entity
 

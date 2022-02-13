@@ -48,7 +48,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityAirCompressor extends TileEntityPneumaticBase implements IRedstoneControl<TileEntityAirCompressor>, MenuProvider {
+public class TileEntityAirCompressor extends AbstractAirHandlingBlockEntity implements IRedstoneControl<TileEntityAirCompressor>, MenuProvider {
     private static final int INVENTORY_SIZE = 1;
 
     private final AirCompressorFuelHandler itemHandler = new AirCompressorFuelHandler();

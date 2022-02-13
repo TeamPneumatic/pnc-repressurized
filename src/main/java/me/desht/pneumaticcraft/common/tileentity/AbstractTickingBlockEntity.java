@@ -26,12 +26,12 @@ import net.minecraft.world.level.block.state.BlockState;
  * Note that the superclass, TileEntityBase, contains an implementation of tick() which
  * is used by default.
  */
-public abstract class TileEntityTickableBase extends TileEntityBase {
-    public TileEntityTickableBase(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+public abstract class AbstractTickingBlockEntity extends AbstractPneumaticCraftBlockEntity {
+    public AbstractTickingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         this(type, pos, state, 0);
     }
 
-    public TileEntityTickableBase(BlockEntityType<?> type, BlockPos pos, BlockState state, int upgradeSize) {
+    public AbstractTickingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, int upgradeSize) {
         super(type, pos, state, upgradeSize);
     }
 

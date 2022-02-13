@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -61,7 +61,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AmadronMenu extends AbstractPneumaticCraftMenu<TileEntityBase> {
+public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> {
     public static final int HARD_MAX_STACKS = 36;
     public static final int HARD_MAX_MB = 576_000;
 

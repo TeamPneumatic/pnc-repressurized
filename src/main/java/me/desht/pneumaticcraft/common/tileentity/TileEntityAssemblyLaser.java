@@ -31,7 +31,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 
-public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
+public class TileEntityAssemblyLaser extends AbstractAssemblyRobotBlockEntity {
     @DescSynced
     public boolean isLaserOn;
     private int laserStep; //used to progressively draw a circle.

@@ -79,7 +79,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class GuiPneumaticContainerBase<C extends AbstractPneumaticCraftMenu<T>, T extends TileEntityBase> extends AbstractContainerScreen<C> {
+public abstract class GuiPneumaticContainerBase<C extends AbstractPneumaticCraftMenu<T>, T extends AbstractPneumaticCraftBlockEntity> extends AbstractContainerScreen<C> {
     public final T te;
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
     private WidgetAnimatedStat pressureStat;
@@ -101,7 +101,7 @@ public abstract class GuiPneumaticContainerBase<C extends AbstractPneumaticCraft
         super.init();
 
         lastLeftStat = lastRightStat = null;
-        if (shouldAddPressureTab() && te instanceof TileEntityPneumaticBase) {
+        if (shouldAddPressureTab() && te instanceof AbstractAirHandlingBlockEntity) {
             pressureStat = this.addAnimatedStat(xlate("pneumaticcraft.gui.tab.pressure"), new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFF00AA00, false);
             pressureStat.setForegroundColor(0xFF000000);
         }
@@ -128,9 +128,9 @@ public abstract class GuiPneumaticContainerBase<C extends AbstractPneumaticCraft
             if (shouldAddSideConfigTabs()) {
                 addSideConfiguratorTabs();
             }
-            if (te instanceof TileEntityPneumaticBase) {
+            if (te instanceof AbstractAirHandlingBlockEntity) {
                 // ensure all handlers are known, so we can get their upgrades right
-                ((TileEntityPneumaticBase) te).initializeHullAirHandlers();
+                ((AbstractAirHandlingBlockEntity) te).initializeHullAirHandlers();
             }
         }
     }
@@ -355,7 +355,7 @@ public abstract class GuiPneumaticContainerBase<C extends AbstractPneumaticCraft
         if (pressureStat != null) {
             PointXY gaugeLocation = getGaugeLocation();
             if (gaugeLocation != null) {
-                TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
+                AbstractAirHandlingBlockEntity pneu = (AbstractAirHandlingBlockEntity) te;
                 float minWorking = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE;
                 PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x() - leftPos, gaugeLocation.y() - topPos);
             }
@@ -526,7 +526,7 @@ public abstract class GuiPneumaticContainerBase<C extends AbstractPneumaticCraft
     protected void addProblems(List<Component> curInfo) {
         if (te instanceof IMinWorkingPressure) {
             float min = ((IMinWorkingPressure) te).getMinWorkingPressure();
-            float pressure = ((TileEntityPneumaticBase) te).getPressure();
+            float pressure = ((AbstractAirHandlingBlockEntity) te).getPressure();
             if (min > 0 && pressure < min) {
                 curInfo.add(xlate("pneumaticcraft.gui.tab.problems.notEnoughPressure"));
                 curInfo.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", min));

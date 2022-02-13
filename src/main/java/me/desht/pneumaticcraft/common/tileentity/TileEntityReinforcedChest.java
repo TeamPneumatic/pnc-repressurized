@@ -45,7 +45,7 @@ import net.minecraftforge.items.wrapper.RecipeWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityReinforcedChest extends TileEntityBase implements MenuProvider, IComparatorSupport {
+public class TileEntityReinforcedChest extends AbstractPneumaticCraftBlockEntity implements MenuProvider, IComparatorSupport {
     public static final int CHEST_SIZE = 36;
 
     public static final String NBT_ITEMS = "Items";

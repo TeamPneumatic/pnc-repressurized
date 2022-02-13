@@ -29,7 +29,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import static net.minecraftforge.fluids.FluidAttributes.BUCKET_VOLUME;
 
 interface IAutoFluidEjecting {
-    default void autoExportFluid(TileEntityBase te) {
+    default void autoExportFluid(AbstractPneumaticCraftBlockEntity te) {
         te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(handler -> {
             FluidStack toDrain = handler.drain(BUCKET_VOLUME, FluidAction.SIMULATE);
             if (!toDrain.isEmpty()) {
@@ -46,7 +46,7 @@ interface IAutoFluidEjecting {
         });
     }
 
-    default int tryEjectLiquid(TileEntityBase te, IFluidHandler handler, Direction dir, int amount) {
+    default int tryEjectLiquid(AbstractPneumaticCraftBlockEntity te, IFluidHandler handler, Direction dir, int amount) {
         BlockEntity teNeighbour = te.getCachedNeighbor(dir);
         if (teNeighbour != null) {
             return teNeighbour.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).map(destHandler -> {

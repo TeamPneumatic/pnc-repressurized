@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddCustom;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -60,7 +60,7 @@ import static me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu.INPUT
 import static me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu.OUTPUT_SLOT;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<AmadronAddTradeMenu, TileEntityBase> {
+public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<AmadronAddTradeMenu, AbstractPneumaticCraftBlockEntity> {
     private GuiItemSearcher searchGui;
     private GuiInventorySearcher invSearchGui;
     private GuiInventorySearcher gpsSearchGui;

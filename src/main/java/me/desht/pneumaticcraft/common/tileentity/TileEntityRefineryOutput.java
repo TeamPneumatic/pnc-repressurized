@@ -47,7 +47,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityRefineryOutput extends TileEntityTickableBase implements
+public class TileEntityRefineryOutput extends AbstractTickingBlockEntity implements
         IRedstoneControl<TileEntityRefineryOutput>, IComparatorSupport, ISerializableTanks,
         MenuProvider, IHeatExchangingTE {
 

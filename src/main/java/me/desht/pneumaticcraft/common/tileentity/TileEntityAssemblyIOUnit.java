@@ -41,7 +41,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Collection;
 
-public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
+public class TileEntityAssemblyIOUnit extends AbstractAssemblyRobotBlockEntity {
     private static final byte SLEEP_TICKS = 50;
 
     private static final byte STATE_IDLE = 0;
@@ -447,7 +447,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
      * @return the placement slot, or -1 when the item can't be placed / accessed
      */
     private static int getPlacementSlot(ItemStack exportedItem, BlockEntity te) {
-        if (te == null || te instanceof TileEntityAssemblyRobot) return -1;
+        if (te == null || te instanceof AbstractAssemblyRobotBlockEntity) return -1;
 
         return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).map(handler -> {
             for (int slot = 0; slot < handler.getSlots(); slot++) {

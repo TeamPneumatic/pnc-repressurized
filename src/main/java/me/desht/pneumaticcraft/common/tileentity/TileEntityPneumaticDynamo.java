@@ -47,7 +47,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implements
+public class TileEntityPneumaticDynamo extends AbstractAirHandlingBlockEntity implements
         IRedstoneControl<TileEntityPneumaticDynamo>, IMinWorkingPressure,
         MenuProvider, IHeatExchangingTE {
 

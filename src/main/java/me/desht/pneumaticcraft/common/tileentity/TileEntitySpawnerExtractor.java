@@ -67,7 +67,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 
-public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implements IMinWorkingPressure, MenuProvider {
+public class TileEntitySpawnerExtractor extends AbstractAirHandlingBlockEntity implements IMinWorkingPressure, MenuProvider {
 
     private static final int MAX_ENTITY_RANGE = 6;
     private Entity cachedEntity;
