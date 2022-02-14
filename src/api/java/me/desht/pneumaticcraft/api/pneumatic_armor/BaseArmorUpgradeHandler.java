@@ -19,6 +19,12 @@ package me.desht.pneumaticcraft.api.pneumatic_armor;
 
 import org.apache.commons.lang3.Validate;
 
+/**
+ * Convenience base class which armor handlers can extend, rather than implementing {@link IArmorUpgradeHandler}
+ * directly.
+ *
+ * @param <T> extension data type (use {@link IArmorExtensionData} if you don't have specific player-specific data}
+ */
 public abstract class BaseArmorUpgradeHandler<T extends IArmorExtensionData> implements IArmorUpgradeHandler<T> {
     int idx = -1;
 

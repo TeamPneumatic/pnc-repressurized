@@ -92,7 +92,7 @@ public final class PneumaticRegistry {
 
         IHeatRegistry getHeatRegistry();
 
-        IClientRegistry getGuiRegistry();
+        IClientRegistry getClientRegistry();
 
         ISensorRegistry getSensorRegistry();
 

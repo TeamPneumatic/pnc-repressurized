@@ -130,7 +130,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
     }
 
     /**
-     * Called when an upgrade is toggle on/off by the player
+     * Called when an upgrade is toggled on/off by the player
      * @param commonArmorHandler the armor handler object
      * @param newState the new state of the upgrade
      */

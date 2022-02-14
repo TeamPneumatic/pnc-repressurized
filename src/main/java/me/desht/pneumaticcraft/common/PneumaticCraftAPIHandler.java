@@ -112,7 +112,7 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
-    public IClientRegistry getGuiRegistry() {
+    public IClientRegistry getClientRegistry() {
         return ClientRegistryImpl.getInstance();
     }
 

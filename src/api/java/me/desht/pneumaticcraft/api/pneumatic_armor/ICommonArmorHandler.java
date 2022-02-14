@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.api.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Provides some methods for upgrade handlers to easily retrieve information about the player's equipped armor
@@ -79,7 +79,7 @@ public interface ICommonArmorHandler {
     boolean isArmorEnabled();
 
     /**
-     * CHeck if the given upgrade handler is actually usable right now. Validates that the upgrade is installed,
+     * Check if the given upgrade handler is actually usable right now. Validates that the upgrade is installed,
      * and that the corresponding armor piece is initialized and has sufficient pressure.
      *
      * @param handler the upgrade handler to check
