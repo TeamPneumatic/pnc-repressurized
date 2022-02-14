@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
-import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
+import me.desht.pneumaticcraft.client.gui.AphorismTileScreen;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.AphorismTileBlock;
 import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
@@ -55,7 +55,7 @@ public class AphorismTileRenderer implements BlockEntityRenderer<AphorismTileBlo
 
         int fh = font.lineHeight;
 
-        GuiAphorismTile editor = Minecraft.getInstance().screen instanceof GuiAphorismTile g && g.tile == te ? g : null;
+        AphorismTileScreen editor = Minecraft.getInstance().screen instanceof AphorismTileScreen g && g.tile == te ? g : null;
 
         String[] textLines = te.getTextLines();
         int lineWidth = te.getMaxLineWidth(editor != null);

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.gui.GuiAmadron;
+import me.desht.pneumaticcraft.client.gui.AmadronScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import net.minecraft.network.FriendlyByteBuf;
@@ -58,7 +58,7 @@ public class PacketAmadronOrderResponse {
             Player player = ClientUtils.getClientPlayer();
             if (player.containerMenu instanceof AmadronMenu) {
                 ((AmadronMenu) player.containerMenu).updateBasket(offerId, amount);
-                GuiAmadron.basketUpdated();
+                AmadronScreen.basketUpdated();
             }
         });
         ctx.get().setPacketHandled(true);

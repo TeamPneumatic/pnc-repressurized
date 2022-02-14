@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.client.gui.GuiSecurityStationInventory;
+import me.desht.pneumaticcraft.client.gui.SecurityStationInventoryScreen;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotItemSpecific;
@@ -60,7 +60,7 @@ public class SecurityStationMainMenu extends AbstractPneumaticCraftMenu<Security
         public void setChanged() {
             super.setChanged();
 
-            if (te != null && te.nonNullLevel().isClientSide) GuiSecurityStationInventory.reinitConnectionRendering();
+            if (te != null && te.nonNullLevel().isClientSide) SecurityStationInventoryScreen.reinitConnectionRendering();
         }
     }
 }

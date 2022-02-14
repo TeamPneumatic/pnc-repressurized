@@ -44,16 +44,16 @@ public class ModMenuTypes {
             = register("assembly_controller", AssemblyControllerMenu::new);
     public static final RegistryObject<MenuType<ChargingStationMenu>> CHARGING_STATION
             = register("charging_station", ChargingStationMenu::new);
-    public static final RegistryObject<MenuType<ChStUpgradeManagerMenu>> CHARGING_MINIGUN
-            = register("charging_minigun", ChStUpgradeManagerMenu::createMinigunContainer);
-    public static final RegistryObject<MenuType<ChStUpgradeManagerMenu>> CHARGING_DRONE
-            = register("charging_drone", ChStUpgradeManagerMenu::createDroneContainer);
-    public static final RegistryObject<MenuType<ChStUpgradeManagerMenu>> CHARGING_ARMOR
-            = register("charging_armor", ChStUpgradeManagerMenu::createArmorContainer);
-    public static final RegistryObject<MenuType<ChStUpgradeManagerMenu>> CHARGING_JACKHAMMER
-            = register("charging_jackhammer", ChStUpgradeManagerMenu::createJackhammerContainer);
-    public static final RegistryObject<MenuType<ChStUpgradeManagerMenu>> CHARGING_AMADRON
-            = register("charging_amadron", ChStUpgradeManagerMenu::createAmadronContainer);
+    public static final RegistryObject<MenuType<ChargingStationUpgradeManagerMenu>> CHARGING_MINIGUN
+            = register("charging_minigun", ChargingStationUpgradeManagerMenu::createMinigunContainer);
+    public static final RegistryObject<MenuType<ChargingStationUpgradeManagerMenu>> CHARGING_DRONE
+            = register("charging_drone", ChargingStationUpgradeManagerMenu::createDroneContainer);
+    public static final RegistryObject<MenuType<ChargingStationUpgradeManagerMenu>> CHARGING_ARMOR
+            = register("charging_armor", ChargingStationUpgradeManagerMenu::createArmorContainer);
+    public static final RegistryObject<MenuType<ChargingStationUpgradeManagerMenu>> CHARGING_JACKHAMMER
+            = register("charging_jackhammer", ChargingStationUpgradeManagerMenu::createJackhammerContainer);
+    public static final RegistryObject<MenuType<ChargingStationUpgradeManagerMenu>> CHARGING_AMADRON
+            = register("charging_amadron", ChargingStationUpgradeManagerMenu::createAmadronContainer);
     public static final RegistryObject<MenuType<CreativeCompressorMenu>> CREATIVE_COMPRESSOR
             = register("creative_compressor", CreativeCompressorMenu::new);
     public static final RegistryObject<MenuType<ElectrostaticCompressorMenu>> ELECTROSTATIC_COMPRESSOR

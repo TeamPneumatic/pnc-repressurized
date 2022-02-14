@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
-import me.desht.pneumaticcraft.client.gui.GuiUniversalSensor;
+import me.desht.pneumaticcraft.client.gui.UniversalSensorScreen;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
@@ -239,7 +239,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     private void setSensorSetting(String sensorPath) {
         sensorSetting = sensorPath;
         if (getLevel() != null && getLevel().isClientSide) {
-            GuiUniversalSensor.maybeUpdateButtons();
+            UniversalSensorScreen.maybeUpdateButtons();
         }
     }
 
@@ -358,7 +358,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
             positions.addAll(gpsPositions);
             outOfRange = posList.size() - gpsPositions.size();
         }
-        if (getLevel() != null && getLevel().isClientSide) GuiUniversalSensor.maybeUpdateButtons();
+        if (getLevel() != null && getLevel().isClientSide) UniversalSensorScreen.maybeUpdateButtons();
     }
 
     @Override

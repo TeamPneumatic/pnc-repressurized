@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.CoreComponentsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -79,7 +79,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     public void onTriggered(ICommonArmorHandler armorHandler) {
         Minecraft mc = Minecraft.getInstance();
         if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(mc.player)) {
-            mc.setScreen(GuiArmorMainScreen.getInstance());
+            mc.setScreen(ArmorMainScreen.getInstance());
         }
     }
 
@@ -182,7 +182,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
             pressureButtons.clear();
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 14, 18, 18, TextComponent.EMPTY) ;
-                ItemStack stack = GuiArmorMainScreen.ARMOR_STACKS[slot.getIndex()];
+                ItemStack stack = ArmorMainScreen.ARMOR_STACKS[slot.getIndex()];
                 pressureButton.setVisible(false);
                 pressureButton.setRenderStacks(stack);
                 powerStat.addSubWidget(pressureButton);

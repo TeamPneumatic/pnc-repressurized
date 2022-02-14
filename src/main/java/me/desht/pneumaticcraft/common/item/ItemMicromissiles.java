@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.client.gui.GuiMicromissile;
+import me.desht.pneumaticcraft.client.gui.MicromissileScreen;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -98,7 +98,7 @@ public class ItemMicromissiles extends Item {
 
         if (playerIn.isShiftKeyDown()) {
             if (worldIn.isClientSide) {
-                GuiMicromissile.openGui(stack.getHoverName(), handIn);
+                MicromissileScreen.openGui(stack.getHoverName(), handIn);
             }
             return InteractionResultHolder.success(stack);
         }

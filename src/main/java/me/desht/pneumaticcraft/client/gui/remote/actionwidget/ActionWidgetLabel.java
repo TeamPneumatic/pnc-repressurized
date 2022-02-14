@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
-import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
-import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteOptionBase;
+import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.remote.BasicRemoteOptionScreen;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
@@ -69,8 +69,8 @@ public class ActionWidgetLabel extends ActionWidget<WidgetLabelVariable> impleme
     }
 
     @Override
-    public Screen getGui(GuiRemoteEditor guiRemote) {
-        return new GuiRemoteOptionBase<>(this, guiRemote);
+    public Screen getGui(RemoteEditorScreen guiRemote) {
+        return new BasicRemoteOptionScreen<>(this, guiRemote);
     }
 
     @Override

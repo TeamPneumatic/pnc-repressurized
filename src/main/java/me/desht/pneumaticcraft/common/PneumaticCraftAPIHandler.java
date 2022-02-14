@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
-import me.desht.pneumaticcraft.client.GuiRegistry;
+import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.SmartChestBlockEntity;
@@ -113,7 +113,7 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
 
     @Override
     public IClientRegistry getGuiRegistry() {
-        return GuiRegistry.getInstance();
+        return ClientRegistryImpl.getInstance();
     }
 
     @Override

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei.ghost;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsBase;
+import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
@@ -31,9 +31,9 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.Collections;
 import java.util.List;
 
-public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGhostIngredientHandler<GuiLogisticsBase<T>> {
+public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGhostIngredientHandler<AbstractLogisticsScreen<T>> {
     @Override
-    public <I> List<Target<I>> getTargets(GuiLogisticsBase<T> gui, I ingredient, boolean doStart) {
+    public <I> List<Target<I>> getTargets(AbstractLogisticsScreen<T> gui, I ingredient, boolean doStart) {
         if (ingredient instanceof ItemStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getMenu().slots) {
@@ -58,7 +58,7 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
     public void onComplete() {
     }
 
-    private record ItemStackTarget(SlotPhantom slot, GuiLogisticsBase<?> gui) implements Target<ItemStack> {
+    private record ItemStackTarget(SlotPhantom slot, AbstractLogisticsScreen<?> gui) implements Target<ItemStack> {
         @Override
         public Rect2i getArea() {
             return new Rect2i(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
@@ -70,7 +70,7 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
         }
     }
 
-    private record FluidStackTarget(int slotNumber, GuiLogisticsBase<?> gui) implements Target<FluidStack> {
+    private record FluidStackTarget(int slotNumber, AbstractLogisticsScreen<?> gui) implements Target<FluidStack> {
         @Override
         public Rect2i getArea() {
             PointXY p = gui.getFluidSlotPos(slotNumber);

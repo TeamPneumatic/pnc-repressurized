@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
+import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
@@ -134,6 +134,6 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
     public void removed(Player playerIn) {
         super.removed(playerIn);
 
-        if (playerIn.level.isClientSide) GuiProgrammer.onCloseFromContainer();
+        if (playerIn.level.isClientSide) ProgrammerScreen.onCloseFromContainer();
     }
 }

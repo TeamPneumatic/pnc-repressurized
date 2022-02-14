@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.ChestplateLauncherOptions;
-import me.desht.pneumaticcraft.client.render.RenderProgressBar;
+import me.desht.pneumaticcraft.client.render.ProgressBarRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChestplateLauncher;
@@ -100,7 +100,7 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
         }
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-60));
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / MAX_PROGRESS);
-        RenderProgressBar.render2d(matrixStack, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
+        ProgressBarRenderer.render2d(matrixStack, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);
         RenderSystem.enableTexture();
         matrixStack.popPose();

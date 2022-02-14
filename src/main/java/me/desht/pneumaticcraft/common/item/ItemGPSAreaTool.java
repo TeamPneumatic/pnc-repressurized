@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.item;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
+import me.desht.pneumaticcraft.client.gui.areatool.GPSAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -73,7 +73,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider, IGPSTool
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (worldIn.isClientSide) {
-            GuiGPSAreaTool.showGUI(stack, handIn, 0);
+            GPSAreaToolScreen.showGUI(stack, handIn, 0);
         }
         return InteractionResultHolder.success(stack);
     }
@@ -252,7 +252,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider, IGPSTool
         @SubscribeEvent
         public static void onLeftClickAir(PlayerInteractEvent.LeftClickEmpty event) {
             if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                GuiGPSAreaTool.showGUI(event.getItemStack(), event.getHand(), 1);
+                GPSAreaToolScreen.showGUI(event.getItemStack(), event.getHand(), 1);
             }
         }
     }

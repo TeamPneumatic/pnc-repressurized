@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
+import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.handlers.IGuiProperties;
@@ -30,11 +30,11 @@ class Helpers {
                 .setTextureSize(16, 64).build();
     }
 
-    static IGuiProperties getGuiProperties(GuiPneumaticScreenBase gui) {
+    static IGuiProperties getGuiProperties(AbstractPneumaticCraftScreen gui) {
         return gui.width == 0 || gui.height == 0 ? null : new GuiProps(gui);
     }
 
-    private record GuiProps(GuiPneumaticScreenBase gui) implements IGuiProperties {
+    private record GuiProps(AbstractPneumaticCraftScreen gui) implements IGuiProperties {
         @Override
         public Class<? extends Screen> getScreenClass() {
             return gui.getClass();

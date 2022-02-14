@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
-import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
+import me.desht.pneumaticcraft.client.gui.tubemodule.AbstractTubeModuleScreen;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
@@ -220,7 +220,7 @@ public abstract class AbstractTubeModule {
 
     public boolean onActivated(Player player, InteractionHand hand) {
         if (player.level.isClientSide && hasGui()) {
-            GuiTubeModule.openGuiForModule(this);
+            AbstractTubeModuleScreen.openGuiForModule(this);
         }
         return true;
     }

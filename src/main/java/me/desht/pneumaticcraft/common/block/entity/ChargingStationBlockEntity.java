@@ -26,8 +26,8 @@ import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRe
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.inventory.ChStUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
+import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
@@ -387,7 +387,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
             // if any other player has a gui open for the previous item, force a reopen of the charging station gui
             for (Player player : teCS.nonNullLevel().players()) {
                 if (player instanceof ServerPlayer sp
-                        && player.containerMenu instanceof ChStUpgradeManagerMenu manager
+                        && player.containerMenu instanceof ChargingStationUpgradeManagerMenu manager
                         && manager.te == te) {
                     NetworkHooks.openGui(sp, ChargingStationBlockEntity.this, getBlockPos());
                 }

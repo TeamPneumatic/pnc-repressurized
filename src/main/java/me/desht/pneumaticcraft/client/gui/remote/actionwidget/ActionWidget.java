@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
-import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
+import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Log;
@@ -73,7 +73,7 @@ public abstract class ActionWidget<W extends AbstractWidget> {
 
     public abstract String getId();
 
-    public Screen getGui(GuiRemoteEditor guiRemote) {
+    public Screen getGui(RemoteEditorScreen guiRemote) {
         return null;
     }
 

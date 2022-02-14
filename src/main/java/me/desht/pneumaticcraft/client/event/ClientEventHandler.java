@@ -24,10 +24,10 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
+import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
+import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.IDrawAfterRender;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -158,7 +158,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onGuiDrawPost(ScreenEvent.DrawScreenEvent.Post event) {
-        if (event.getScreen() instanceof GuiPneumaticContainerBase || event.getScreen() instanceof GuiPneumaticScreenBase) {
+        if (event.getScreen() instanceof AbstractPneumaticCraftContainerScreen || event.getScreen() instanceof AbstractPneumaticCraftScreen) {
             List<IDrawAfterRender> toDraw = event.getScreen().children().stream()
                     .filter(l -> l instanceof IDrawAfterRender)
                     .map(l -> (IDrawAfterRender) l)
@@ -192,7 +192,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onClientConnect(ClientPlayerNetworkEvent.LoggedInEvent event) {
-        GuiArmorMainScreen.initHelmetCoreComponents();
+        ArmorMainScreen.initHelmetCoreComponents();
     }
 }
 

@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.RenderProgressBar;
+import me.desht.pneumaticcraft.client.render.ProgressBarRenderer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -98,7 +98,7 @@ public class PneumaticArmorHUDOverlay implements IIngameOverlay {
             RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            RenderProgressBar.render2d(matrixStack, mw.getGuiScaledWidth() / 2f, yOffset,
+            ProgressBarRenderer.render2d(matrixStack, mw.getGuiScaledWidth() / 2f, yOffset,
                     mw.getGuiScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
                     progress, 0xAAFFC000, 0xAA00FF00);
             RenderSystem.disableBlend();

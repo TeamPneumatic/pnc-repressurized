@@ -21,7 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
-import me.desht.pneumaticcraft.client.GuiRegistry;
+import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.AssemblyPlatformBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -106,7 +106,7 @@ public class AssemblyPlatformRenderer extends AbstractBlockEntityModelRenderer<A
         float clawTrans;
         IAssemblyRenderOverriding renderOverride = null;
         if (!heldStack.isEmpty()) {
-            renderOverride = GuiRegistry.renderOverrides.get(heldStack.getItem().getRegistryName());
+            renderOverride = ClientRegistryImpl.renderOverrides.get(heldStack.getItem().getRegistryName());
             if (renderOverride != null) {
                 clawTrans = renderOverride.getPlatformClawShift(heldStack);
             } else {

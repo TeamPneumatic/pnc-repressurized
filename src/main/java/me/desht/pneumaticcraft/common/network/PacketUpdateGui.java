@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
+import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -63,8 +63,8 @@ public class PacketUpdateGui {
                 if (container instanceof AbstractPneumaticCraftMenu) {
                     ((AbstractPneumaticCraftMenu<?>) container).updateField(syncId, value);
                 }
-                if (Minecraft.getInstance().screen instanceof GuiPneumaticContainerBase) {
-                    ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().screen).onGuiUpdate();
+                if (Minecraft.getInstance().screen instanceof AbstractPneumaticCraftContainerScreen) {
+                    ((AbstractPneumaticCraftContainerScreen<?,?>) Minecraft.getInstance().screen).onGuiUpdate();
                 }
             }
         });

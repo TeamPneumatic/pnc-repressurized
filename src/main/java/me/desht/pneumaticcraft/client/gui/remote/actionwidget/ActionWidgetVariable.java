@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
-import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
-import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteVariable;
+import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteVariableOptionScreen;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.CompoundTag;
@@ -55,8 +55,8 @@ public abstract class ActionWidgetVariable<W extends AbstractWidget> extends Act
     }
 
     @Override
-    public Screen getGui(GuiRemoteEditor guiRemote) {
-        return new GuiRemoteVariable<>(this, guiRemote);
+    public Screen getGui(RemoteEditorScreen guiRemote) {
+        return new RemoteVariableOptionScreen<>(this, guiRemote);
     }
 
     public abstract void onActionPerformed();

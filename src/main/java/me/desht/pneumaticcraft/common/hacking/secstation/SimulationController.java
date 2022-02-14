@@ -43,7 +43,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * This is done on both client and server side.  Both sides will be ticked but the server will periodically sync
  * its state to the client, so client is using dead reckoning with periodic updates from the server.  Only the
  * server state actually matters for security station hacking, of course; the client state is purely for display
- * by GuiSecurityStationHacking.
+ * by SecurityStationHackingScreen.
  */
 public class SimulationController implements ISimulationController {
     private final SecurityStationBlockEntity te;

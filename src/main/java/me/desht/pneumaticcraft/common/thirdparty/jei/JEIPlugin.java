@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.*;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetItemFilter;
-import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsBase;
+import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetItemFilterScreen;
+import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -173,19 +173,19 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(GuiAssemblyController.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
-        CustomRecipeClickArea.add(registration, GuiRefineryController.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
-        CustomRecipeClickArea.add(registration, GuiThermopneumaticProcessingPlant.class, 30, 36, 48, 30, ModCategoryUid.THERMO_PLANT);
-        CustomRecipeClickArea.add(registration, GuiFluidMixer.class, 50, 40, 47, 24, ModCategoryUid.FLUID_MIXER);
+        registration.addRecipeClickArea(AssemblyControllerScreen.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
+        registration.addRecipeClickArea(PressureChamberScreen.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
+        CustomRecipeClickArea.add(registration, RefineryControllerScreen.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
+        CustomRecipeClickArea.add(registration, ThermopneumaticProcessingPlantScreen.class, 30, 36, 48, 30, ModCategoryUid.THERMO_PLANT);
+        CustomRecipeClickArea.add(registration, FluidMixerScreen.class, 50, 40, 47, 24, ModCategoryUid.FLUID_MIXER);
 
-        registration.addGenericGuiContainerHandler(GuiPneumaticContainerBase.class, new GuiTabHandler());
+        registration.addGenericGuiContainerHandler(AbstractPneumaticCraftContainerScreen.class, new GuiTabHandler());
 
-        registration.addGuiScreenHandler(GuiProgWidgetItemFilter.class, Helpers::getGuiProperties);
+        registration.addGuiScreenHandler(ProgWidgetItemFilterScreen.class, Helpers::getGuiProperties);
 
-        registration.addGhostIngredientHandler(GuiAmadronAddTrade.class, new AmadronAddTradeGhost());
-        registration.addGhostIngredientHandler(GuiLogisticsBase.class, new LogisticsFilterGhost());
-        registration.addGhostIngredientHandler(GuiProgWidgetItemFilter.class, new ProgWidgetItemFilterGhost());
+        registration.addGhostIngredientHandler(AmadronAddTradeScreen.class, new AmadronAddTradeGhost());
+        registration.addGhostIngredientHandler(AbstractLogisticsScreen.class, new LogisticsFilterGhost());
+        registration.addGhostIngredientHandler(ProgWidgetItemFilterScreen.class, new ProgWidgetItemFilterGhost());
     }
 
     @Override
@@ -200,9 +200,9 @@ public class JEIPlugin implements IModPlugin {
         return RL("default");
     }
 
-    public static class GuiTabHandler implements IGuiContainerHandler<GuiPneumaticContainerBase<?,?>> {
+    public static class GuiTabHandler implements IGuiContainerHandler<AbstractPneumaticCraftContainerScreen<?,?>> {
         @Override
-        public List<Rect2i> getGuiExtraAreas(GuiPneumaticContainerBase<?,?> containerScreen) {
+        public List<Rect2i> getGuiExtraAreas(AbstractPneumaticCraftContainerScreen<?,?> containerScreen) {
             return containerScreen.getTabRectangles();
         }
     }

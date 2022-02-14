@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.client.gui.GuiSecurityStationHacking;
+import me.desht.pneumaticcraft.client.gui.SecurityStationHackingScreen;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -61,7 +61,7 @@ public class ItemNetworkComponent extends Item implements IProgrammable {
         super.appendHoverText(stack, worldIn, curInfo, extraInfo);
 
         if (worldIn != null && worldIn.isClientSide) {
-            GuiSecurityStationHacking.addExtraHackInfoStatic(curInfo);
+            SecurityStationHackingScreen.addExtraHackInfoStatic(curInfo);
         }
     }
 

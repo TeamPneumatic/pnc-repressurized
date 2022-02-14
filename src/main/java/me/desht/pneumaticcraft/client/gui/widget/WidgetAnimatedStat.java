@@ -23,8 +23,8 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Matrix3f;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
+import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
+import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -326,7 +326,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         int availableWidth;
         if (gui instanceof AbstractContainerScreen<?> screen) {
             availableWidth = Math.min(Math.max(minExpandedWidth, screen.getXSize()), leftSided ? screen.getGuiLeft() : screen.width - (screen.getGuiLeft() + screen.getXSize()));
-        } else if (gui instanceof GuiPneumaticScreenBase screen) {
+        } else if (gui instanceof AbstractPneumaticCraftScreen screen) {
             availableWidth = Math.min(Math.max(minExpandedWidth, screen.xSize), leftSided ? screen.guiLeft : screen.xSize - (screen.guiLeft + screen.xSize));
         } else {
             availableWidth = leftSided ? x : Minecraft.getInstance().getWindow().getGuiScaledWidth() - x;
@@ -593,9 +593,9 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     private void toggle() {
         isClicked = !isClicked;
-        if (isClicked && gui instanceof GuiPneumaticContainerBase) {
+        if (isClicked && gui instanceof AbstractPneumaticCraftContainerScreen) {
             // close any other open stat on the same side of the gui
-            List<IGuiAnimatedStat> otherStats = ((GuiPneumaticContainerBase<?,?>) gui).getStatWidgets();
+            List<IGuiAnimatedStat> otherStats = ((AbstractPneumaticCraftContainerScreen<?,?>) gui).getStatWidgets();
             otherStats.stream()
                     .filter(stat -> this != stat && stat.isLeftSided() == isLeftSided())
                     .forEach(IGuiAnimatedStat::closeStat);

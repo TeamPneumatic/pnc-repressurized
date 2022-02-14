@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
+import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.ProgrammerWidgetAreaRenderer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
@@ -82,7 +82,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     public void populateGui(IGuiScreen gui) {
         showStart = new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.gui.progWidget.debug.showStart"),
-                b -> programmerUnit.gotoPiece(GuiProgrammer.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class)));
+                b -> programmerUnit.gotoPiece(ProgrammerScreen.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class)));
         gui.addWidget(showStart);
 
         showActive = new WidgetButtonExtended(30, 150, 150, 20,
@@ -103,7 +103,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                 new Rect2i(programmingStartX, PROGRAMMING_START_Y, programmingWidth, programmingHeight),
                 0, 0, 0);
         if (isDroneValid()) {
-            programmerUnit.gotoPiece(GuiProgrammer.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class));
+            programmerUnit.gotoPiece(ProgrammerScreen.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class));
         }
     }
 

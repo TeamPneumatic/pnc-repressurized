@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
+import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.recipe.IFocusFactory;
@@ -44,7 +44,7 @@ import java.util.List;
  * if advanced tooltips are on - F3+H)
  */
 public class CustomRecipeClickArea {
-    static <T extends GuiPneumaticContainerBase<?,?>> void add(IGuiHandlerRegistration reg, Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
+    static <T extends AbstractPneumaticCraftContainerScreen<?,?>> void add(IGuiHandlerRegistration reg, Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
         reg.addGuiContainerHandler(guiContainerClass, new IGuiContainerHandler<T>() {
             @Override
             public Collection<IGuiClickableArea> getGuiClickableAreas(T gui, double mouseX, double mouseY) {
@@ -53,7 +53,7 @@ public class CustomRecipeClickArea {
         });
     }
 
-    private static <T extends GuiPneumaticContainerBase<?,?>> IGuiClickableArea createClickableArea(T gui, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
+    private static <T extends AbstractPneumaticCraftContainerScreen<?,?>> IGuiClickableArea createClickableArea(T gui, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
         Rect2i area = new Rect2i(xPos, yPos, width, height);
         List<ResourceLocation> recipeCategoryUidList = ImmutableList.copyOf(recipeCategoryUids);
         return new IGuiClickableArea() {

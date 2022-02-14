@@ -31,15 +31,15 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeyHandler {
+public enum KeyHandler {
+    INSTANCE;
+
     private static final String DESCRIPTION_ARMOR_OPTIONS = "pneumaticcraft.armor.options";
     private static final String DESCRIPTION_HELMET_HACK = "pneumaticcraft.helmet.hack";
     private static final String DESCRIPTION_HELMET_DEBUGGING_DRONE = "pneumaticcraft.helmet.debugging.drone";
     private static final String DESCRIPTION_BOOTS_KICK = "pneumaticcraft.boots.kick";
     private static final String DESCRIPTION_LAUNCHER = "pneumaticcraft.chestplate.launcher";
     private static final String DESCRIPTION_JET_BOOTS = "pneumaticcraft.boots.jet_boots";
-
-    private static final KeyHandler INSTANCE = new KeyHandler();
 
     public final KeyMapping keybindOpenOptions;
     public final KeyMapping keybindHack;
@@ -54,7 +54,7 @@ public class KeyHandler {
         return INSTANCE;
     }
 
-    private KeyHandler() {
+    KeyHandler() {
         registerKeyListener(HUDHandler.getInstance());
 
         keybindOpenOptions = registerKeyBinding(new KeyMapping(KeyHandler.DESCRIPTION_ARMOR_OPTIONS, KeyConflictContext.IN_GAME,

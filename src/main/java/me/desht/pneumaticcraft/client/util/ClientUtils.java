@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
-import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
+import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
+import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -128,8 +128,8 @@ public class ClientUtils {
         Minecraft.getInstance().setScreen(parentScreen);
         if (parentScreen instanceof AbstractContainerScreen) {
             getClientPlayer().containerMenu = ((AbstractContainerScreen<?>) parentScreen).getMenu();
-        } else if (parentScreen instanceof GuiProgWidgetOptionBase) {
-            getClientPlayer().containerMenu = ((GuiProgWidgetOptionBase<?>) parentScreen).getProgrammerContainer();
+        } else if (parentScreen instanceof AbstractProgWidgetScreen) {
+            getClientPlayer().containerMenu = ((AbstractProgWidgetScreen<?>) parentScreen).getProgrammerContainer();
         }
     }
 
@@ -210,8 +210,8 @@ public class ClientUtils {
     }
 
     public static boolean isGuiOpen(BlockEntity te) {
-        if (Minecraft.getInstance().screen instanceof GuiPneumaticContainerBase) {
-            return ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().screen).te == te;
+        if (Minecraft.getInstance().screen instanceof AbstractPneumaticCraftContainerScreen) {
+            return ((AbstractPneumaticCraftContainerScreen<?,?>) Minecraft.getInstance().screen).te == te;
         } else {
             return false;
         }

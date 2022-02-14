@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
+import me.desht.pneumaticcraft.client.gui.AphorismTileScreen;
 import me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -143,7 +143,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
             PneumaticCraftUtils.getTileEntityAt(world, pos, AphorismTileBlockEntity.class).ifPresent(teAT -> {
                 CompoundTag tag = iStack.getTagElement(BLOCK_ENTITY_TAG);
                 if (tag != null) teAT.readFromPacket(tag);
-                GuiAphorismTile.openGui(teAT, true);
+                AphorismTileScreen.openGui(teAT, true);
                 if (entityLiving instanceof Player) sendEditorMessage((Player) entityLiving);
             });
         }
@@ -182,7 +182,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     }
 
     private InteractionResult openEditorGui(Player player, AphorismTileBlockEntity teAT) {
-        GuiAphorismTile.openGui(teAT, false);
+        AphorismTileScreen.openGui(teAT, false);
         sendEditorMessage(player);
         return InteractionResult.SUCCESS;
     }

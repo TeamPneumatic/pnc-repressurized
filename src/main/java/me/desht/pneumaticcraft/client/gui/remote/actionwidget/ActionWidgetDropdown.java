@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
-import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
-import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteDropdown;
+import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteDropdownOptionScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -169,7 +169,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     @Override
-    public Screen getGui(GuiRemoteEditor guiRemote) {
-        return new GuiRemoteDropdown(this, guiRemote);
+    public Screen getGui(RemoteEditorScreen guiRemote) {
+        return new RemoteDropdownOptionScreen(this, guiRemote);
     }
 }

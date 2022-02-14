@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.DroneDe
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.render.RenderProgressBar;
+import me.desht.pneumaticcraft.client.render.ProgressBarRenderer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderDroneAI;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -161,7 +161,7 @@ public class RenderEntityTarget {
 
         float targetAcquireProgress = ((ticksExisted + partialTicks - 50) / 0.7F);
         if (ticksExisted > 50 && ticksExisted <= 120) {
-            RenderProgressBar.render3d(matrixStack, buffer, 0F, 0.4F, 1.8F, 0.7F, 0, targetAcquireProgress,  0xD0FFFF00, 0xD000FF00);
+            ProgressBarRenderer.render3d(matrixStack, buffer, 0F, 0.4F, 1.8F, 0.7F, 0, targetAcquireProgress,  0xD0FFFF00, 0xD000FF00);
         }
 
         matrixStack.scale(STAT_SCALE, STAT_SCALE, STAT_SCALE);

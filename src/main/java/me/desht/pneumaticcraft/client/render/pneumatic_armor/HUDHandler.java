@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.IKeyListener;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorColors;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorColoringScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
@@ -305,7 +305,7 @@ public enum HUDHandler implements IKeyListener {
         ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlot.HEAD);
         int eyepieceColor = stack.getItem() instanceof ItemPneumaticArmor helmet ?
                 helmet.getEyepieceColor(stack) :
-                GuiArmorColors.SelectorType.EYEPIECE.getDefaultColor();
+                ArmorColoringScreen.SelectorType.EYEPIECE.getDefaultColor();
         return (eyepieceColor & 0x00FFFFFF) | 0x30000000;
     }
 

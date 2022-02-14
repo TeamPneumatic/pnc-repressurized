@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import com.mojang.datafixers.util.Either;
-import me.desht.pneumaticcraft.client.gui.GuiRemote;
+import me.desht.pneumaticcraft.client.gui.RemoteScreen;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
@@ -90,7 +90,7 @@ public class PacketSetGlobalVariable {
             value.ifLeft(pos -> GlobalVariableHelper.setPos(p.getUUID(), varName, pos))
                     .ifRight(stack -> GlobalVariableHelper.setStack(p.getUUID(), varName, stack));
             if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-                GuiRemote.maybeHandleVariableChange(varName);
+                RemoteScreen.maybeHandleVariableChange(varName);
                 AreaRenderManager.getInstance().clearPosProviderCache();
             }
         });

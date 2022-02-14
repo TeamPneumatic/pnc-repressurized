@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
+import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -92,7 +92,7 @@ public class ItemMinigun extends ItemPressurizable implements
 
     @Override
     public void initializeClient(Consumer<IItemRenderProperties> consumer) {
-        consumer.accept(new RenderItemMinigun.RenderProperties());
+        consumer.accept(new MinigunItemRenderer.RenderProperties());
     }
 
     @Nonnull

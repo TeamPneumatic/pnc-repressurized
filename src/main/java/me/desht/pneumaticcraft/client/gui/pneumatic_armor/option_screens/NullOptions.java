@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import net.minecraft.network.chat.MutableComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -38,7 +38,7 @@ public class NullOptions implements IOptionPage {
         this.screen = screen;
     }
 
-    public static NullOptions get(GuiArmorMainScreen guiArmorMainScreen) {
+    public static NullOptions get(ArmorMainScreen guiArmorMainScreen) {
         if (instance == null) {
             instance = new NullOptions(guiArmorMainScreen);
         }

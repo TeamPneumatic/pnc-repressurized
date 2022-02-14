@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
+import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 
 import java.util.HashMap;
@@ -34,13 +34,13 @@ public class ProgWidgetGuiManager {
         return widgetToGuiMap.containsKey(widget.getClass());
     }
 
-    public static <T extends IProgWidget> GuiProgWidgetOptionBase<T> getGui(T widget, GuiProgrammer programmer) {
+    public static <T extends IProgWidget> AbstractProgWidgetScreen<T> getGui(T widget, ProgrammerScreen programmer) {
         @SuppressWarnings("unchecked") ProgWidgetGuiFactory<T> factory = (ProgWidgetGuiFactory<T>) widgetToGuiMap.get(widget.getClass());
         return factory == null ? null : factory.createGui(widget, programmer);
     }
 
     @FunctionalInterface
     public interface ProgWidgetGuiFactory<T extends IProgWidget> {
-        GuiProgWidgetOptionBase<T> createGui(T progWidget, GuiProgrammer programmer);
+        AbstractProgWidgetScreen<T> createGui(T progWidget, ProgrammerScreen programmer);
     }
 }

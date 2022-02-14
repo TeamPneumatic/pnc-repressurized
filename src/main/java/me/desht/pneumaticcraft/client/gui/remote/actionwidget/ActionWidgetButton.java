@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
-import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
-import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteButton;
+import me.desht.pneumaticcraft.client.gui.RemoteEditorScreen;
+import me.desht.pneumaticcraft.client.gui.remote.RemoteButtonOptionScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
@@ -90,8 +90,8 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
     }
 
     @Override
-    public Screen getGui(GuiRemoteEditor guiRemote) {
-        return new GuiRemoteButton(this, guiRemote);
+    public Screen getGui(RemoteEditorScreen guiRemote) {
+        return new RemoteButtonOptionScreen(this, guiRemote);
     }
 
     @Override

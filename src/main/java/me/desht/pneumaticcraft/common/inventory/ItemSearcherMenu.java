@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
+import me.desht.pneumaticcraft.client.gui.ItemSearcherScreen;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantomUnstackable;
@@ -35,14 +35,14 @@ public class ItemSearcherMenu extends AbstractContainerMenu {
 
     // list of ALL items in this container, updated by GuiSearcher#updateCreativeSearch
     public final NonNullList<ItemStack> itemList = NonNullList.create();
-    private GuiItemSearcher gui;
+    private ItemSearcherScreen gui;
 
     @SuppressWarnings("unused")
     public ItemSearcherMenu(int windowId, Inventory inv, FriendlyByteBuf data) {
         super(ModMenuTypes.ITEM_SEARCHER.get(), windowId);
     }
 
-    public void init(GuiItemSearcher gui) {
+    public void init(ItemSearcherScreen gui) {
         this.gui = gui;
 
         for (int i = 0; i < SEARCH_ROWS; ++i) {
