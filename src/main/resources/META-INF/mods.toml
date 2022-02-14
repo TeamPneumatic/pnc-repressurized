@@ -36,6 +36,6 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
 [[dependencies.pneumaticcraft]]
     modId="jei"
     mandatory=false
-    versionRange="[9.3.3)"
+    versionRange="[9.3.3,)"
     ordering="NONE"
     side="BOTH"
