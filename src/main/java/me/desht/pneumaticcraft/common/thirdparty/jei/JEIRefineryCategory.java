@@ -75,29 +75,6 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
         }
     }
 
-//    @Override
-//    public void setIngredients(RefineryRecipe recipe, IIngredients ingredients) {
-//        ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInput().getFluidStacks()));
-//        ingredients.setOutputs(VanillaTypes.FLUID, recipe.getOutputs());
-//    }
-//
-//    @Override
-//    public void setRecipe(IRecipeLayout recipeLayout, RefineryRecipe recipe, IIngredients ingredients) {
-//        FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
-//
-//        recipeLayout.getFluidStacks().init(0, true, 2, 10, 16, 64, in.getAmount(), true, Helpers.makeTankOverlay(64));
-//        recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-//
-//        int n = 1;
-//        for (List<FluidStack> out : ingredients.getOutputs(VanillaTypes.FLUID)) {
-//            int h = out.get(0).getAmount() * 64 / in.getAmount();
-//            int yOff = 64 - h;
-//            recipeLayout.getFluidStacks().init(n, false, 69 + n * 20, 18 - n * 4 + yOff, 16, h, out.get(0).getAmount(), true, Helpers.makeTankOverlay(h));
-//            recipeLayout.getFluidStacks().set(n, out);
-//            n++;
-//        }
-//    }
-
     @Override
     public void draw(RefineryRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),

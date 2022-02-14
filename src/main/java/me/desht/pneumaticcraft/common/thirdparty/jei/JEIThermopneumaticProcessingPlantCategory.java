@@ -98,55 +98,6 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
         }
     }
 
-//    @Override
-//    public void setIngredients(ThermoPlantRecipe recipe, IIngredients ingredients) {
-//        if (!recipe.getInputFluid().isEmpty()) {
-//            ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInputFluid().getFluidStacks()));
-//        }
-//        if (!recipe.getInputItem().isEmpty()) {
-//            ingredients.setInputIngredients(Collections.singletonList(recipe.getInputItem()));
-//        }
-//        if (!recipe.getOutputFluid().isEmpty()) {
-//            ingredients.setOutput(VanillaTypes.FLUID, recipe.getOutputFluid());
-//        }
-//        if (!recipe.getOutputItem().isEmpty()) {
-//            ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutputItem());
-//        }
-//    }
-//
-//    @Override
-//    public void setRecipe(IRecipeLayout recipeLayout, ThermoPlantRecipe recipe, IIngredients ingredients) {
-//        FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).isEmpty() ? FluidStack.EMPTY : ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
-//
-//        int inH = 64, outH = 64;
-//        FluidStack out = FluidStack.EMPTY;
-//        if (!recipe.getOutputFluid().isEmpty()) {
-//            out = ingredients.getOutputs(VanillaTypes.FLUID).get(0).get(0);
-//            if (in.getAmount() > out.getAmount()) {
-//                outH = Math.min(64, out.getAmount() * 64 / in.getAmount());
-//            } else {
-//                inH = Math.min(64, in.getAmount() * 64 / out.getAmount());
-//            }
-//        }
-//
-//        if (!recipe.getInputFluid().isEmpty()) {
-//            recipeLayout.getFluidStacks().init(0, true, 8, 3 + (64 - inH), 16, inH, in.getAmount(), false, Helpers.makeTankOverlay(inH));
-//            recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-//        }
-//        if (!recipe.getInputItem().isEmpty()) {
-//            recipeLayout.getItemStacks().init(0, true, 32, 2);
-//            recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-//        }
-//        if (!recipe.getOutputFluid().isEmpty()) {
-//            recipeLayout.getFluidStacks().init(1, false, 74, 3 + (64 - outH), 16, outH, out.getAmount(), false, Helpers.makeTankOverlay(outH));
-//            recipeLayout.getFluidStacks().set(1, recipe.getOutputFluid());
-//        }
-//        if (!recipe.getOutputItem().isEmpty()) {
-//            recipeLayout.getItemStacks().init(1, false, 47, 50);
-//            recipeLayout.getItemStacks().set(1, recipe.getOutputItem());
-//        }
-//    }
-
     @Override
     public void draw(ThermoPlantRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() != 0) {

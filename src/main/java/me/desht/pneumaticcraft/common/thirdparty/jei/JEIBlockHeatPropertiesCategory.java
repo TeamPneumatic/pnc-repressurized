@@ -108,20 +108,6 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         }
     }
 
-//    @Override
-//    public void setIngredients(HeatPropertiesRecipe recipe, IIngredients ingredients) {
-//        setInputIngredient(recipe.getBlock(), ingredients);
-//
-//        List<ItemStack> items = new ArrayList<>();
-//        List<FluidStack> fluids = new ArrayList<>();
-//
-//        collectOutputs(recipe.getTransformCold(), items, fluids);
-//        collectOutputs(recipe.getTransformHot(), items, fluids);
-//
-//        ingredients.setOutputLists(VanillaTypes.ITEM, items.stream().map(Collections::singletonList).collect(Collectors.toList()));
-//        ingredients.setOutputLists(VanillaTypes.FLUID, fluids.stream().map(Collections::singletonList).collect(Collectors.toList()));
-//    }
-
     private void collectOutputs(BlockState state, List<ItemStack> items, List<FluidStack> fluids) {
         if (state != null) {
             if (state.getBlock() instanceof LiquidBlock l) {
@@ -152,23 +138,6 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
             builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addItemStack(new ItemStack(block));
         }
     }
-
-//    @Override
-//    public void setRecipe(IRecipeLayout layout, HeatPropertiesRecipe recipe, IIngredients ingredients) {
-//        List<List<FluidStack>> in = ingredients.getInputs(VanillaTypes.FLUID);
-//        if (!in.isEmpty()) {
-//            layout.getFluidStacks().init(0, true, INPUT_AREA.getX() + 2, INPUT_AREA.getY() - 1);
-//            layout.getFluidStacks().set(0, in.get(0));
-//        }
-//
-//        List<List<FluidStack>> out = ingredients.getOutputs(VanillaTypes.FLUID);
-//        for (int idx = 0; idx < out.size(); idx++) {
-//            if (!out.get(idx).isEmpty() && !out.get(idx).get(0).isEmpty()) {
-//                layout.getFluidStacks().init(idx, false, OUTPUT_AREAS[idx].getX() + 2, OUTPUT_AREAS[idx].getY() - 1);
-//                layout.getFluidStacks().set(idx, out.get(idx).get(0));
-//            }
-//        }
-//    }
 
     @Override
     public void draw(HeatPropertiesRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
