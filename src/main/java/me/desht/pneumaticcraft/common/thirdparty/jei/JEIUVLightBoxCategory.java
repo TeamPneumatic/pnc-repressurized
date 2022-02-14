@@ -63,8 +63,8 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, UVLightBoxRecipe recipe, List<? extends IFocus<?>> focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(recipe.getIn());
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1).addItemStack(recipe.getOut());
+        builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(recipe.in());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1).addItemStack(recipe.out());
     }
 
     @Override
