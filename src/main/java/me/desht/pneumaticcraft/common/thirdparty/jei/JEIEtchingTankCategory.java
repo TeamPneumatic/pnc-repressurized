@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -25,16 +24,19 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -52,29 +54,19 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
     }
 
     @Override
-    public void setIngredients(EtchingTankRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputIngredients(Collections.singletonList(recipe.input));
-        ingredients.setInput(VanillaTypes.FLUID, new FluidStack(ModFluids.ETCHING_ACID.get(), 1000));
-        ingredients.setOutputs(VanillaTypes.ITEM, ImmutableList.of(recipe.output, recipe.failed));
+    public void setRecipe(IRecipeLayoutBuilder builder, EtchingTankRecipe recipe, List<? extends IFocus<?>> focuses) {
+        builder.addSlot(RecipeIngredientRole.INPUT, 1, 13)
+                .addIngredients(recipe.input);
+        builder.addSlot(RecipeIngredientRole.INPUT, 26, 13)
+                .addIngredients(VanillaTypes.FLUID, Collections.singletonList(new FluidStack(ModFluids.ETCHING_ACID.get(), 1000)));
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 1)
+                .addItemStack(recipe.output);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 25)
+                .addItemStack(recipe.failed);
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, EtchingTankRecipe recipe, IIngredients ingredients) {
-        recipeLayout.getItemStacks().init(0, true, 0, 12);
-        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-
-        recipeLayout.getFluidStacks().init(1, true, 26, 13);
-        recipeLayout.getFluidStacks().set(1, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-
-        recipeLayout.getItemStacks().init(2, false, 65, 0);
-        recipeLayout.getItemStacks().set(2, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
-
-        recipeLayout.getItemStacks().init(3, false, 65, 24);
-        recipeLayout.getItemStacks().set(3, ingredients.getOutputs(VanillaTypes.ITEM).get(1));
-    }
-
-    @Override
-    public void draw(EtchingTankRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(EtchingTankRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 20, 0);
     }
 
@@ -85,24 +77,14 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
             UVLightBoxBlockEntity.setExposureProgress(input[i], 25 + 25 * i);
         }
 
-        return Collections.singletonList(
-                new EtchingTankRecipe(
-                        Ingredient.of(input),
-                        new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
-                        new ItemStack(ModItems.FAILED_PCB.get())
-                )
+        return Collections.singletonList(new EtchingTankRecipe(
+                Ingredient.of(input),
+                new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
+                new ItemStack(ModItems.FAILED_PCB.get()))
         );
     }
 
-    static class EtchingTankRecipe {
-        final Ingredient input;
-        final ItemStack output;
-        final ItemStack failed;
-
-        EtchingTankRecipe(Ingredient input, ItemStack output, ItemStack failed) {
-            this.input = input;
-            this.output = output;
-            this.failed = failed;
-        }
+    // pseudo-recipe
+    record EtchingTankRecipe(Ingredient input, ItemStack output, ItemStack failed) {
     }
 }

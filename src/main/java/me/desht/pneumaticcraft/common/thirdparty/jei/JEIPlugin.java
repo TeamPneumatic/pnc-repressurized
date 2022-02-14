@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.ProgWidgetItemFilterG
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -42,6 +43,7 @@ import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -50,6 +52,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 @JeiPlugin
@@ -57,6 +61,7 @@ public class JEIPlugin implements IModPlugin {
     static IJeiHelpers jeiHelpers;
     static IRecipeManager recipeManager;
     static IRecipesGui recipesGui;
+    static IJeiRuntime jeiRuntime;
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
@@ -185,6 +190,7 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        JEIPlugin.jeiRuntime = jeiRuntime;
         recipeManager = jeiRuntime.getRecipeManager();
         recipesGui = jeiRuntime.getRecipesGui();
     }
@@ -194,4 +200,10 @@ public class JEIPlugin implements IModPlugin {
         return RL("default");
     }
 
+    public static class GuiTabHandler implements IGuiContainerHandler<GuiPneumaticContainerBase<?,?>> {
+        @Override
+        public List<Rect2i> getGuiExtraAreas(GuiPneumaticContainerBase<?,?> containerScreen) {
+            return containerScreen.getTabRectangles();
+        }
+    }
 }

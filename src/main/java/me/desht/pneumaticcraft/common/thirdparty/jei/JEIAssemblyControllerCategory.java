@@ -24,17 +24,16 @@ import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -53,47 +52,26 @@ public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyR
     }
 
     @Override
-    public void setIngredients(AssemblyRecipe recipe, IIngredients ingredients) {
-        List<Ingredient> input = new ArrayList<>();
-        input.add(recipe.getInput());
-        input.add(Ingredient.of(ItemAssemblyProgram.fromProgramType(recipe.getProgramType())));
-        Arrays.stream(getMachinesFromEnum(AssemblyProgram.fromRecipe(recipe).getRequiredMachines()))
-                .map(Ingredient::of)
-                .forEach(input::add);
-        ingredients.setInputIngredients(input);
-        ingredients.setOutput(VanillaTypes.ITEM, recipe.getOutput());
-    }
+    public void setRecipe(IRecipeLayoutBuilder builder, AssemblyRecipe recipe, List<? extends IFocus<?>> focuses) {
+        builder.addSlot(RecipeIngredientRole.INPUT, 29, 56)
+                .addIngredients(recipe.getInput());
+        builder.addSlot(RecipeIngredientRole.CATALYST, 133, 22)
+                .addItemStack(new ItemStack(ItemAssemblyProgram.fromProgramType(recipe.getProgramType())));
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 56)
+                .addItemStack(recipe.getOutput());
 
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, AssemblyRecipe recipe, IIngredients ingredients) {
-        recipeLayout.getItemStacks().init(0, true, 28, 55);
-        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-        recipeLayout.getItemStacks().init(2, true, 132, 21);
-        recipeLayout.getItemStacks().set(2, ingredients.getInputs(VanillaTypes.ITEM).get(1));
-
-        int l = ingredients.getInputs(VanillaTypes.ITEM).size() - 2;  // -2 for the input item & program
-        for (int i = 0; i < l; i++) {
-            recipeLayout.getItemStacks().init(i + 3, true, 5 + i * 18, 25);
-            recipeLayout.getItemStacks().set(i + 3, ingredients.getInputs(VanillaTypes.ITEM).get(i + 2));
+        int xPos = 5;
+        for (AssemblyProgram.EnumMachine machine : AssemblyProgram.fromRecipe(recipe).getRequiredMachines()) {
+            builder.addSlot(RecipeIngredientRole.CATALYST, xPos, 25).addItemStack(new ItemStack(machine.getMachineBlock()));
+            xPos += 18;
         }
-
-        recipeLayout.getItemStacks().init(1, false, 95, 55);
-        recipeLayout.getItemStacks().set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
     }
 
     @Override
-    public void draw(AssemblyRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(AssemblyRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 68, 65);
         Font fontRenderer = Minecraft.getInstance().font;
         fontRenderer.draw(matrixStack, "Required Machines", 5, 15, 0xFF404040);
         fontRenderer.draw(matrixStack, "Prog.", 129, 9, 0xFF404040);
-    }
-
-    private ItemStack[] getMachinesFromEnum(AssemblyProgram.EnumMachine[] requiredMachines) {
-        ItemStack[] machineStacks = new ItemStack[requiredMachines.length];
-        for (int i = 0; i < requiredMachines.length; i++) {
-            machineStacks[i] = new ItemStack(requiredMachines[i].getMachineBlock());
-        }
-        return machineStacks;
     }
 }

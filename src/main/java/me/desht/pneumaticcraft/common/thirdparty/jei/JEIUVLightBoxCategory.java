@@ -22,19 +22,18 @@ import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.machine.UVLightBoxRecipe;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
-import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.resources.language.I18n;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,40 +55,27 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
         super(ModCategoryUid.UV_LIGHT_BOX, UVLightBoxRecipe.class,
                 xlate(ModBlocks.UV_LIGHT_BOX.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
-                guiHelper().createDrawableIngredient(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.UV_LIGHT_BOX.get()))
         );
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
         progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
     }
 
     @Override
-    public void setIngredients(UVLightBoxRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputIngredients(Collections.singletonList(recipe.getIn()));
-        ingredients.setOutput(VanillaTypes.ITEM, recipe.getOut());
+    public void setRecipe(IRecipeLayoutBuilder builder, UVLightBoxRecipe recipe, List<? extends IFocus<?>> focuses) {
+        builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(recipe.getIn());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1).addItemStack(recipe.getOut());
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, UVLightBoxRecipe recipe, IIngredients ingredients) {
-        recipeLayout.getItemStacks().init(0, true, 0, 0);
-        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-
-        recipeLayout.getItemStacks().init(1, false, 64, 0);
-        recipeLayout.getItemStacks().set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
-    }
-
-    @Override
-    public void draw(UVLightBoxRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(UVLightBoxRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         progressBar.draw(matrixStack, 22, 0);
         getIcon().draw(matrixStack, 30, -2);
     }
 
     @Override
-    public List<Component> getTooltipStrings(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
-        List<Component> res = new ArrayList<>();
-        if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.nei.recipe.uvLightBox")));
-        }
-        return res;
+    public List<Component> getTooltipStrings(UVLightBoxRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        return positionalTooltip(mouseX, mouseY, (x, y) -> x >= 23 && x <= 60, "pneumaticcraft.gui.nei.recipe.uvLightBox");
     }
 
     static Collection<UVLightBoxRecipe> getAllRecipes() {

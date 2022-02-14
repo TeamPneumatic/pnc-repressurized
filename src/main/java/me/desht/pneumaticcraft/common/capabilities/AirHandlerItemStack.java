@@ -28,6 +28,7 @@ import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class AirHandlerItemStack extends IAirHandlerItem.Provider {
     public static final String AIR_NBT_KEY = "pneumaticcraft:air";
@@ -81,7 +82,7 @@ public class AirHandlerItemStack extends IAirHandlerItem.Provider {
         } else {
             // no air in item: clean up NBT for item stackability purposes
             if (container.hasTag()) {
-                container.getTag().remove(AIR_NBT_KEY);
+                Objects.requireNonNull(container.getTag()).remove(AIR_NBT_KEY);
                 if (container.getTag().isEmpty()) {
                     container.setTag(null);
                 }

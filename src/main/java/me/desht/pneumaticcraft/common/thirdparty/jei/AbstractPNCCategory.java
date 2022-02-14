@@ -17,11 +17,18 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiPredicate;
 
 public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
     private final Component localizedName;
@@ -65,5 +72,11 @@ public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
 
     static IGuiHelper guiHelper() {
         return JEIPlugin.jeiHelpers.getGuiHelper();
+    }
+
+    List<Component> positionalTooltip(double mouseX, double mouseY, BiPredicate<Double,Double> predicate, String translationKey, Object... args) {
+        return predicate.test(mouseX, mouseY) ?
+                ImmutableList.copyOf(PneumaticCraftUtils.splitStringComponent(I18n.get(translationKey, args))) :
+                Collections.emptyList();
     }
 }

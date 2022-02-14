@@ -26,9 +26,11 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -55,30 +57,49 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     }
 
     @Override
-    public void setIngredients(RefineryRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInput().getFluidStacks()));
-        ingredients.setOutputs(VanillaTypes.FLUID, recipe.getOutputs());
-    }
-
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, RefineryRecipe recipe, IIngredients ingredients) {
-        FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
-
-        recipeLayout.getFluidStacks().init(0, true, 2, 10, 16, 64, in.getAmount(), true, Helpers.makeTankOverlay(64));
-        recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
+    public void setRecipe(IRecipeLayoutBuilder builder, RefineryRecipe recipe, List<? extends IFocus<?>> focuses) {
+        builder.addSlot(RecipeIngredientRole.INPUT, 2, 10)
+                .addIngredients(VanillaTypes.FLUID, recipe.getInput().getFluidStacks())
+                .setFluidRenderer(recipe.getInput().getAmount(), true, 16, 64)
+                .setOverlay(Helpers.makeTankOverlay(64), 0, 0);
 
         int n = 1;
-        for (List<FluidStack> out : ingredients.getOutputs(VanillaTypes.FLUID)) {
-            int h = out.get(0).getAmount() * 64 / in.getAmount();
+        for (FluidStack out : recipe.getOutputs()) {
+            int h = out.getAmount() * 64 / recipe.getInput().getAmount();
             int yOff = 64 - h;
-            recipeLayout.getFluidStacks().init(n, false, 69 + n * 20, 18 - n * 4 + yOff, 16, h, out.get(0).getAmount(), true, Helpers.makeTankOverlay(h));
-            recipeLayout.getFluidStacks().set(n, out);
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 69 + n * 20, 18 - n * 4 + yOff)
+                    .addIngredient(VanillaTypes.FLUID, out)
+                    .setFluidRenderer(out.getAmount(), true, 16, h)
+                    .setOverlay(Helpers.makeTankOverlay(h), 0, 0);
             n++;
         }
     }
 
+//    @Override
+//    public void setIngredients(RefineryRecipe recipe, IIngredients ingredients) {
+//        ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(recipe.getInput().getFluidStacks()));
+//        ingredients.setOutputs(VanillaTypes.FLUID, recipe.getOutputs());
+//    }
+//
+//    @Override
+//    public void setRecipe(IRecipeLayout recipeLayout, RefineryRecipe recipe, IIngredients ingredients) {
+//        FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
+//
+//        recipeLayout.getFluidStacks().init(0, true, 2, 10, 16, 64, in.getAmount(), true, Helpers.makeTankOverlay(64));
+//        recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
+//
+//        int n = 1;
+//        for (List<FluidStack> out : ingredients.getOutputs(VanillaTypes.FLUID)) {
+//            int h = out.get(0).getAmount() * 64 / in.getAmount();
+//            int yOff = 64 - h;
+//            recipeLayout.getFluidStacks().init(n, false, 69 + n * 20, 18 - n * 4 + yOff, 16, h, out.get(0).getAmount(), true, Helpers.makeTankOverlay(h));
+//            recipeLayout.getFluidStacks().set(n, out);
+//            n++;
+//        }
+//    }
+
     @Override
-    public void draw(RefineryRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(RefineryRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                 id -> WidgetTemperature.fromOperatingRange(26, 18, recipe.getOperatingTemp()));
         w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
@@ -86,7 +107,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     }
 
     @Override
-    public List<Component> getTooltipStrings(RefineryRecipe recipe, double mouseX, double mouseY) {
+    public List<Component> getTooltipStrings(RefineryRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
             return ImmutableList.of(HeatUtil.formatHeatString(recipe.getOperatingTemp().asString(TemperatureScale.CELSIUS)));

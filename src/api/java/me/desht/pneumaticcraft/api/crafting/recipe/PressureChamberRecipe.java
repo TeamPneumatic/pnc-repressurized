@@ -37,26 +37,12 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * Returns the minimum pressure required to craft the recipe. Negative pressures are also acceptable; in this
      * case the pressure chamber's pressure must be <strong>lower</strong> than the required pressure.
      *
-     * @deprecated don't override this; override {@link #getCraftingPressure(IItemHandler, List)} instead
-     * @return threshold pressure
-     */
-    @Deprecated
-    public float getCraftingPressure() {
-        return 0f;
-    }
-
-    /**
-     * Returns the minimum pressure required to craft the recipe. Negative pressures are also acceptable; in this
-     * case the pressure chamber's pressure must be <strong>lower</strong> than the required pressure.
-     *
      * @param chamberHandler what's currently in the pressure chamber
      * @param ingredientSlots a list of slots in {@code chamberHandler} (as returned by {@link #findIngredients(IItemHandler)})
      *                        where the ingredients can be found
      * @return threshold pressure
      */
-    public float getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots) {
-        return getCraftingPressure();
-    }
+    public abstract float getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots);
 
     /**
      * Get the required crafting pressure for the items specified by {@link #getInputsForDisplay()}, for display
@@ -66,7 +52,7 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
 
     /**
      * When called (by the pressure chamber BE when it detects a change in the chamber contents), try to find the
-     * ingredients for this recipe in the given item handler, which represents all of the items currently in the
+     * ingredients for this recipe in the given item handler, which represents all the items currently in the
      * pressure chamber. You must return a collection of slot indices into the item handler which contain the matching
      * ingredients; those indices will be passed promptly to {@link #getCraftingPressure(IItemHandler, List)} and
      * {@link #craftRecipe(IItemHandler, List, boolean)} by the pressure chamber.
@@ -74,7 +60,8 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * change in the meantime.</p>
      *
      * @param chamberHandler what's currently in the pressure chamber
-     * @return if this recipe is valid, a list of slots in the item handler where the ingredients can be found; otherwise, an empty list
+     * @return if this recipe is valid, a list of slots in the item handler where the ingredients can be found;
+     *         otherwise, an empty list
      */
     public abstract Collection<Integer> findIngredients(@Nonnull IItemHandler chamberHandler);
 
@@ -131,21 +118,21 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * @return Synchronizations for the given slot cycle
      */
     public Map<RecipeSlot, List<Integer>> getSyncForDisplay(SlotCycle focusedSlotCycle) {
-        RecipeSlot focusedSlot = focusedSlotCycle.getSlot();
+        RecipeSlot focusedSlot = focusedSlotCycle.slot();
         return getSyncGroupsForDisplay().stream()
                 // Find group that contains the focused slot
                 .filter(set -> set.contains(focusedSlot))
                 .findAny()
                 // Create a mapping from slot to cycle, using the focused slot's cycle
                 .map(set -> set.stream()
-                        .collect(ImmutableMap.toImmutableMap(slot -> slot, slot -> (List<Integer>) focusedSlotCycle.getCycle()))
+                        .collect(ImmutableMap.toImmutableMap(slot -> slot, slot -> (List<Integer>) focusedSlotCycle.cycle()))
                 )
                 .orElseGet(ImmutableMap::of);
     }
 
     /**
      * Check if the given item is a valid input item for this recipe.  This should also be true even if the number of
-     * items in the passed item stack is smaller than the number required by the recipe; this is testing for item type,
+     * items in the given item stack is smaller than the number required by the recipe; this is testing for item type,
      * not item count.
      *
      * @param stack item stack to check
@@ -171,48 +158,23 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
 
     /**
      * Return a translation key for a supplementary tooltip to be displayed on the ingredient or resulting item.  For
-     * use in recipe display systems such as JEI.
+     * use in recipe display systems such as JEI (PNC's JEI integration names slots as "in{N}" and "out{N}" where n >= 0)
      *
      * @param input true if this is an input item, false if an output item
-     * @param slot the slot number
+     * @param slotName a unique slot name
      * @return a tooltip translation key, or "" for no tooltip
      */
-    public String getTooltipKey(boolean input, int slot) {
+    public String getTooltipKey(boolean input, String slotName) {
         return "";
     }
 
     /**
      * Data object for type of slot and the index of the slot.
+     *
+     * @param input true iff this is an input slot
+     * @param index index of the slot in the recipe
      */
-    public static final class RecipeSlot {
-        private final boolean input;
-        private final int index;
-
-        /**
-         * Create a data object to store the type of slot and the index of the slot.
-         *
-         * @param input true iff this is an input slot
-         * @param index index of the slot in the recipe
-         */
-        public RecipeSlot(boolean input, int index) {
-            this.input = input;
-            this.index = index;
-        }
-
-        /**
-         * Checks if this is an input slot.
-         */
-        public boolean isInput() {
-            return input;
-        }
-
-        /**
-         * Get the index of the slot.
-         */
-        public int getIndex() {
-            return index;
-        }
-
+    public record RecipeSlot(boolean input, int index) {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -228,35 +190,11 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     }
 
     /**
-     * Data object for storing a {@link RecipeSlot} and a cycle represented as a list indices for the slot.
+     * Data object for storing a {@link RecipeSlot} and a cycle represented as a list of indices for the slot.
+     *
+     * @param slot  Type of slot and the index of the slot
+     * @param cycle A cycle represented as a list of indices
      */
-    public static final class SlotCycle {
-        private final RecipeSlot slot;
-        private final ImmutableList<Integer> cycle;
-
-        /**
-         * Create a data object to store a {@link RecipeSlot} and a cycle represented as a list of indices for the slot.
-         *
-         * @param slot  Type of slot and the index of the slot
-         * @param cycle A cycle represented as a list of indices
-         */
-        public SlotCycle(RecipeSlot slot, ImmutableList<Integer> cycle) {
-            this.slot = slot;
-            this.cycle = cycle;
-        }
-
-        /**
-         * Get the {@link RecipeSlot} that this cycle belongs to.
-         */
-        public RecipeSlot getSlot() {
-            return slot;
-        }
-
-        /**
-         * Get the cycle represented as a list of indices.
-         */
-        public ImmutableList<Integer> getCycle() {
-            return cycle;
-        }
+    public record SlotCycle(RecipeSlot slot, ImmutableList<Integer> cycle) {
     }
 }

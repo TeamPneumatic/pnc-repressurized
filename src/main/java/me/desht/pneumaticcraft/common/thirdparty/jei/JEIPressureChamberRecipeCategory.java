@@ -29,10 +29,13 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -59,18 +62,18 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
      *
      * @return empty iff no match was found in a slot with more than one stack, or the matching slot cycle otherwise.
      */
-    protected static Optional<SlotCycle> getMatchingCycle(IIngredients ingredients, IFocus<ItemStack> focus) {
+    protected static Optional<SlotCycle> getMatchingCycle(PressureChamberRecipe recipe, IFocus<ItemStack> focus) {
         if (focus == null) return Optional.empty();
         List<List<ItemStack>> slots;
-        IFocus.Mode mode = focus.getMode();
-        if (mode == IFocus.Mode.INPUT) {
-            slots = ingredients.getInputs(VanillaTypes.ITEM);
-        } else if (mode == IFocus.Mode.OUTPUT) {
-            slots = ingredients.getOutputs(VanillaTypes.ITEM);
+        RecipeIngredientRole role = focus.getRole();
+        if (role == RecipeIngredientRole.INPUT) {
+            slots = recipe.getInputsForDisplay().stream().map(ingr -> Arrays.asList(ingr.getItems())).toList();
+        } else if (role == RecipeIngredientRole.OUTPUT) {
+            slots = new ArrayList<>(recipe.getResultsForDisplay());
         } else {
             return Optional.empty();
         }
-        ItemStack needle = focus.getValue();
+        ItemStack needle = focus.getTypedValue().getIngredient();
         // For each slot
         for (int slot = 0; slot < slots.size(); slot++) {
             List<ItemStack> stacks = slots.get(slot);
@@ -86,7 +89,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
                 ImmutableList<Integer> matches = builder.build();
                 if (matches.size() > 0) {
                     // Return the first slot that has matches
-                    return Optional.of(new SlotCycle(new RecipeSlot(mode == IFocus.Mode.INPUT, slot), matches));
+                    return Optional.of(new SlotCycle(new RecipeSlot(role == RecipeIngredientRole.INPUT, slot), matches));
                 }
             }
         }
@@ -115,47 +118,62 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
     }
 
     @Override
-    public void setIngredients(PressureChamberRecipe recipe, IIngredients ingredients) {
-        ingredients.setInputIngredients(recipe.getInputsForDisplay());
-        ingredients.setOutputLists(VanillaTypes.ITEM, recipe.getResultsForDisplay());
-    }
-
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, PressureChamberRecipe recipe, IIngredients ingredients) {
-        Map<RecipeSlot, List<Integer>> overrides = getMatchingCycle(ingredients, recipeLayout.getFocus(VanillaTypes.ITEM))
+    public void setRecipe(IRecipeLayoutBuilder builder, PressureChamberRecipe recipe, List<? extends IFocus<?>> focuses) {
+        IFocus<ItemStack> focus = getItemStackFocus(focuses);
+        Map<RecipeSlot, List<Integer>> overrides = getMatchingCycle(recipe, focus)
                 .map(recipe::getSyncForDisplay)
                 .orElseGet(ImmutableMap::of);
-        List<List<ItemStack>> inputs = applyOverrides(true, ingredients.getInputs(VanillaTypes.ITEM), overrides);
+        List<List<ItemStack>> l = recipe.getInputsForDisplay().stream().map(i -> Arrays.asList(i.getItems())).toList();
+        List<List<ItemStack>> inputs = applyOverrides(true, l, overrides);
         for (int i = 0; i < inputs.size(); i++) {
-            int posX = 18 + i % 3 * 17;
-            int posY = 78 - i / 3 * 17;
-            recipeLayout.getItemStacks().init(i, true, posX, posY);
-            recipeLayout.getItemStacks().set(i, inputs.get(i));
+            int posX = 19 + i % 3 * 17;
+            int posY = 79 - i / 3 * 17;
+            builder.addSlot(RecipeIngredientRole.INPUT, posX, posY)
+                    .setSlotName("in" + i)
+                    .addIngredients(VanillaTypes.ITEM, inputs.get(i))
+                    .addTooltipCallback(new Tooltip(recipe));
         }
-        List<List<ItemStack>> outputs = applyOverrides(false, ingredients.getOutputs(VanillaTypes.ITEM), overrides);
+
+        List<List<ItemStack>> outputs = applyOverrides(false, recipe.getResultsForDisplay(), overrides);
         for (int i = 0; i < outputs.size(); i++) {
-            recipeLayout.getItemStacks().init(inputs.size() + i, false, 100 + i % 3 * 18, 58 + i / 3 * 18);
-            recipeLayout.getItemStacks().set(inputs.size() + i, outputs.get(i));
+            builder.addSlot(RecipeIngredientRole.OUTPUT, 101 + i % 3 * 18, 59 + i / 3 * 18)
+                    .setSlotName("out" + i)
+                    .addItemStacks(outputs.get(i))
+                    .addTooltipCallback(new Tooltip(recipe));;
         }
-        recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-            String tooltipKey = recipe.getTooltipKey(input, slotIndex);
+    }
+
+    private record Tooltip(PressureChamberRecipe recipe) implements IRecipeSlotTooltipCallback {
+        @Override
+        public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+            String tooltipKey = recipe.getTooltipKey(
+                    recipeSlotView.getRole() == RecipeIngredientRole.INPUT,
+                    recipeSlotView.getSlotName().orElse("")
+            );
             if (!tooltipKey.isEmpty()) {
                 tooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get(tooltipKey)));
             }
-        });
+        }
+    }
+
+    private IFocus<ItemStack> getItemStackFocus(List<? extends IFocus<?>> focuses) {
+        //noinspection unchecked
+        return (IFocus<ItemStack>) focuses.stream()
+                .filter(f -> f.getRole() == RecipeIngredientRole.INPUT)
+                .filter(f -> f.getTypedValue().getIngredient() instanceof ItemStack)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
-    public void draw(PressureChamberRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(PressureChamberRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         float pressure = recipe.getCraftingPressureForDisplay() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
         PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressureForDisplay(), pressure, 130, 27);
     }
 
     @Override
-    public List<Component> getTooltipStrings(PressureChamberRecipe recipe, double mouseX, double mouseY) {
-        if (mouseX >= 100 && mouseY >= 7 && mouseX <= 140 && mouseY <= 47) {
-            return ImmutableList.of(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getCraftingPressureForDisplay()));
-        }
-        return Collections.emptyList();
+    public List<Component> getTooltipStrings(PressureChamberRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        return positionalTooltip(mouseX, mouseY, (x, y) -> x >= 100 && y >= 7 && x <= 140 && y <= 47,
+                "pneumaticcraft.gui.tooltip.pressure", recipe.getCraftingPressureForDisplay());
     }
 }

@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.Locale;
@@ -72,12 +72,11 @@ public abstract class AssemblyRecipe extends PneumaticCraftRecipe {
         }
 
         public ResourceLocation getRecipeType() {
-            switch (this) {
-                case DRILL: return RL(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL);
-                case LASER: return RL(PneumaticCraftRecipeTypes.ASSEMBLY_LASER);
-                case DRILL_LASER: return RL(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL_LASER);
-                default: throw new IllegalStateException("unknown type: " + this);
-            }
+            return switch (this) {
+                case DRILL -> RL(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL);
+                case LASER -> RL(PneumaticCraftRecipeTypes.ASSEMBLY_LASER);
+                case DRILL_LASER -> RL(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL_LASER);
+            };
         }
     }
 }

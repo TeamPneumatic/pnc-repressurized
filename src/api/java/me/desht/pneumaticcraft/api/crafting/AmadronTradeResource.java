@@ -52,7 +52,7 @@ import java.util.stream.IntStream;
  * Represents an Amadron trade resource. The input and output may be either an item or a fluid.
  */
 public class AmadronTradeResource {
-    public enum Type { ITEM, FLUID }
+    private enum Type { ITEM, FLUID }
 
     private final Either<ItemStack,FluidStack> resource;
 
@@ -96,20 +96,38 @@ public class AmadronTradeResource {
         };
     }
 
+    /**
+     * Get the item for this trade resource
+     * @return the itemstack, or ItemStack.EMPTY if the resource is a fluid
+     */
     public ItemStack getItem() {
         return resource.left().orElse(ItemStack.EMPTY);
     }
 
+    /**
+     * Get the fluid for this trade resource
+     * @return the fluidstack, or FluidStack.EMPTY if the resource is an item
+     */
     public FluidStack getFluid() {
         return resource.right().orElse(FluidStack.EMPTY);
     }
 
-    public void accept(Consumer<ItemStack> cStack, Consumer<FluidStack> cFluid) {
-        resource.ifLeft(cStack).ifRight(cFluid);
+    /**
+     * Run something against the resource, dependent on whether it's an item or a fluid
+     * @param cItemStack consumer which is called when the resource is an item
+     * @param cFluidStack consumer which is called when the resource is a fluid
+     */
+    public void accept(Consumer<ItemStack> cItemStack, Consumer<FluidStack> cFluidStack) {
+        resource.ifLeft(cItemStack).ifRight(cFluidStack);
     }
 
-    public <T> T apply(Function<ItemStack,T> fStack, Function<FluidStack,T> fFluid) {
-        return resource.map(fStack, fFluid);
+    /**
+     * Run something against the resource, dependent on whether it's an item or a fluid, returning a result
+     * @param fItemStack function which is called when the resource is an item
+     * @param fFluidStack function which is called when the resource is a fluid
+     */
+    public <T> T apply(Function<ItemStack,T> fItemStack, Function<FluidStack,T> fFluidStack) {
+        return resource.map(fItemStack, fFluidStack);
     }
 
     /**

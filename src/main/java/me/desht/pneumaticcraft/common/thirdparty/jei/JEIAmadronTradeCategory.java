@@ -23,9 +23,12 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -54,47 +57,23 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     }
 
     @Override
-    public void setIngredients(AmadronRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayoutBuilder builder, AmadronRecipe recipe, List<? extends IFocus<?>> focuses) {
+        IRecipeSlotBuilder inputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 6, 15);
         recipe.getInput().accept(
-                itemStack -> ingredients.setInput(VanillaTypes.ITEM, itemStack),
-                fluidStack -> ingredients.setInput(VanillaTypes.FLUID, fluidStack)
+                inputSlot::addItemStack,
+                fluidStack -> inputSlot.addIngredient(VanillaTypes.FLUID, fluidStack)
+                        .setOverlay(new FluidTextOverlay(fluidStack), 0, 0)
         );
+        IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 51, 15);
         recipe.getOutput().accept(
-                itemStack -> ingredients.setOutput(VanillaTypes.ITEM, itemStack),
-                fluidStack -> ingredients.setOutput(VanillaTypes.FLUID, fluidStack)
+                outputSlot::addItemStack,
+                fluidStack -> outputSlot.addIngredient(VanillaTypes.FLUID, fluidStack)
+                        .setOverlay(new FluidTextOverlay(fluidStack), 0, 0)
         );
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, AmadronRecipe recipe, IIngredients ingredients) {
-        recipe.getInput().accept(
-                itemStack -> {
-                    recipeLayout.getItemStacks().init(0, true, 5, 14);
-                    recipeLayout.getItemStacks().set(0, itemStack);
-                },
-                fluidStack -> {
-                    recipeLayout.getFluidStacks().init(0, true, 6, 15, 16, 16,
-                            1000, false, new FluidTextOverlay(fluidStack));
-                    recipeLayout.getFluidStacks().set(0, fluidStack);
-                }
-        );
-
-        recipe.getOutput().accept(
-                itemStack -> {
-                    recipeLayout.getItemStacks().init(1, false, 50, 14);
-                    recipeLayout.getItemStacks().set(1, itemStack);
-                },
-                fluidStack -> {
-                    recipeLayout.getFluidStacks().init(1, false, 51, 15, 16, 16,
-                            1000, false, new FluidTextOverlay(fluidStack));
-                    recipeLayout.getFluidStacks().set(1, fluidStack);
-                }
-        );
-
-    }
-
-    @Override
-    public void draw(AmadronRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(AmadronRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         Font fr = Minecraft.getInstance().font;
         int x = (getBackground().getWidth() - fr.width(recipe.getVendorName())) / 2;
         if (recipe.isLocationLimited()) {
@@ -104,7 +83,7 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     }
 
     @Override
-    public List<Component> getTooltipStrings(AmadronRecipe recipe, double mouseX, double mouseY) {
+    public List<Component> getTooltipStrings(AmadronRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         List<Component> res = new ArrayList<>();
         if (mouseX >= 22 && mouseX <= 51) {
             WidgetAmadronOffer.addTooltip(recipe, res, -1);

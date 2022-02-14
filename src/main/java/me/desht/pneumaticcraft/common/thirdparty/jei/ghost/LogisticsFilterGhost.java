@@ -58,15 +58,7 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
     public void onComplete() {
     }
 
-    private static class ItemStackTarget implements Target<ItemStack> {
-        final SlotPhantom slot;
-        final GuiLogisticsBase<?> gui;
-
-        ItemStackTarget(SlotPhantom slot, GuiLogisticsBase<?> gui) {
-            this.slot = slot;
-            this.gui = gui;
-        }
-
+    private record ItemStackTarget(SlotPhantom slot, GuiLogisticsBase<?> gui) implements Target<ItemStack> {
         @Override
         public Rect2i getArea() {
             return new Rect2i(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
@@ -78,15 +70,7 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
         }
     }
 
-    private static class FluidStackTarget implements Target<FluidStack> {
-        final int slotNumber;
-        final GuiLogisticsBase<?> gui;
-
-        FluidStackTarget(int slotNumber, GuiLogisticsBase<?> gui) {
-            this.slotNumber = slotNumber;
-            this.gui = gui;
-        }
-
+    private record FluidStackTarget(int slotNumber, GuiLogisticsBase<?> gui) implements Target<FluidStack> {
         @Override
         public Rect2i getArea() {
             PointXY p = gui.getFluidSlotPos(slotNumber);

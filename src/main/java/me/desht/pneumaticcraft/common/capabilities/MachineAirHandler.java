@@ -41,7 +41,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -169,13 +168,6 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         if (actualLeakDir != null && getAir() != 0) {
             handleAirLeak(ownerTE, actualLeakDir);
         }
-    }
-
-    private Direction anyClearDirection(Level world, BlockPos pos) {
-        for (Direction d : DirectionUtil.VALUES) {
-            if (!Block.canSupportCenter(world, pos.relative(d), d.getOpposite())) return d;
-        }
-        return Direction.UP; // arbitrary
     }
 
     private Direction anyConnectedFace() {

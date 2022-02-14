@@ -33,7 +33,6 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 public abstract class AssemblyProgram {
     public enum EnumAssemblyProblem {
@@ -54,14 +53,14 @@ public abstract class AssemblyProgram {
             this.blockSupplier = blockSupplier;
         }
 
-        @Override
-        public String getTranslationKey() {
-            return "block.pneumaticcraft.assembly_" + this.toString().toLowerCase(Locale.ROOT);
-        }
-
         public Block getMachineBlock() {
             //noinspection unchecked
             return blockSupplier.get();
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return getMachineBlock().getDescriptionId();
         }
     }
 

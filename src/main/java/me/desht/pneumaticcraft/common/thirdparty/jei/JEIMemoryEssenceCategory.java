@@ -27,17 +27,24 @@ import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotView;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssenceCategory.MemoryEssenceRecipe> {
     public JEIMemoryEssenceCategory() {
@@ -49,43 +56,36 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
     }
 
     @Override
-    public void setIngredients(MemoryEssenceRecipe recipe, IIngredients ingredients) {
-        if (recipe.input2.isEmpty()) {
-            ingredients.setInput(VanillaTypes.ITEM, recipe.input1);
-        } else {
-            ingredients.setInputs(VanillaTypes.ITEM, ImmutableList.of(recipe.input1, recipe.input2));
-        }
-        ingredients.setOutput(VanillaTypes.FLUID, new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000));
-    }
-
-    @Override
-    public void setRecipe(IRecipeLayout recipeLayout, MemoryEssenceRecipe recipe, IIngredients ingredients) {
-        recipeLayout.getItemStacks().init(0, true, 53, 28);
-        recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-
+    public void setRecipe(IRecipeLayoutBuilder builder, MemoryEssenceRecipe recipe, List<? extends IFocus<?>> focuses) {
+        builder.addSlot(RecipeIngredientRole.INPUT, 54, 29)
+                .addItemStack(recipe.input1)
+                .addTooltipCallback(new Tooltip(recipe, 0));
         if (!recipe.input2.isEmpty()) {
-            recipeLayout.getItemStacks().init(1, true, 75, 28);
-            recipeLayout.getItemStacks().set(1, ingredients.getInputs(VanillaTypes.ITEM).get(1));
+            builder.addSlot(RecipeIngredientRole.INPUT, 76, 29)
+                    .addItemStack(recipe.input2)
+                    .addTooltipCallback(new Tooltip(recipe, 1));
         }
-
-        recipeLayout.getFluidStacks().init(0, false, 112, 29);
-        recipeLayout.getFluidStacks().set(0, new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000));
-
-        recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
-            String tooltipKey = recipe.getTooltipKey(slotIndex);
-            if (!tooltipKey.isEmpty()) {
-                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(ChatFormatting.GREEN + I18n.get(tooltipKey)));
-            }
-        });
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 112, 29)
+                .addIngredients(VanillaTypes.FLUID, Collections.singletonList(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000)));
     }
 
     @Override
-    public void draw(MemoryEssenceRecipe recipe, PoseStack matrixStack, double mouseX, double mouseY) {
+    public void draw(MemoryEssenceRecipe recipe, IRecipeSlotsView recipeSlotsView, PoseStack matrixStack, double mouseX, double mouseY) {
         Font fr = Minecraft.getInstance().font;
         int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
         String s = "1 XP = " + ratio + " mB";
         int w = fr.width(s);
         Minecraft.getInstance().font.draw(matrixStack, s, (getBackground().getWidth() - w) / 2f, 0, 0x404040);
+    }
+
+    private record Tooltip(MemoryEssenceRecipe recipe, int slot) implements IRecipeSlotTooltipCallback {
+        @Override
+        public void onTooltip(IRecipeSlotView recipeSlotView, List<Component> tooltip) {
+            String tooltipKey = recipe.getTooltipKey(slot);
+            if (!tooltipKey.isEmpty()) {
+                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(ChatFormatting.GREEN + I18n.get(tooltipKey)));
+            }
+        }
     }
 
     static Collection<MemoryEssenceRecipe> getAllRecipes() {

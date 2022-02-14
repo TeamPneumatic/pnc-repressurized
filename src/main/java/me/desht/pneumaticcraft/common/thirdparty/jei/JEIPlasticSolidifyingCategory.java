@@ -21,19 +21,17 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.ingredients.IIngredients;
-import net.minecraft.client.resources.language.I18n;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -48,35 +46,21 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
     }
 
     @Override
-    public void setIngredients(PlasticSolidifyingRecipe recipe, IIngredients ingredients) {
-        if (recipe.input instanceof FluidIngredient) {
-            ingredients.setInputLists(VanillaTypes.FLUID, Collections.singletonList(((FluidIngredient)recipe.input).getFluidStacks()));
+    public void setRecipe(IRecipeLayoutBuilder builder, PlasticSolidifyingRecipe recipe, List<? extends IFocus<?>> focuses) {
+        if (recipe.input instanceof FluidIngredient f) {
+            builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+                    .addIngredients(VanillaTypes.FLUID, f.getFluidStacks());
         } else {
-            ingredients.setInputIngredients(Collections.singletonList(recipe.input));
+            builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
+                    .addIngredients(recipe.input);
         }
-        ingredients.setOutput(VanillaTypes.ITEM, recipe.output);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1)
+                .addItemStack(recipe.output);
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, PlasticSolidifyingRecipe recipe, IIngredients ingredients) {
-        if (recipe.input instanceof FluidIngredient) {
-            recipeLayout.getFluidStacks().init(0, true, 1, 1);
-            recipeLayout.getFluidStacks().set(0, ingredients.getInputs(VanillaTypes.FLUID).get(0));
-        } else {
-            recipeLayout.getItemStacks().init(0, true, 0, 0);
-            recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
-        }
-        recipeLayout.getItemStacks().init(1, false, 64, 0);
-        recipeLayout.getItemStacks().set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
-    }
-
-    @Override
-    public List<Component> getTooltipStrings(PlasticSolidifyingRecipe recipe, double mouseX, double mouseY) {
-        List<Component> res = new ArrayList<>();
-        if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.jei.tooltip.plasticSolidifying")));
-        }
-        return res;
+    public List<Component> getTooltipStrings(PlasticSolidifyingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        return positionalTooltip(mouseX, mouseY, (x, y) -> x >= 23 && x <= 60, "pneumaticcraft.gui.jei.tooltip.plasticSolidifying");
     }
 
     public static Collection<PlasticSolidifyingRecipe> getAllRecipes() {
@@ -92,13 +76,6 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
         );
     }
 
-    static class PlasticSolidifyingRecipe {
-        final Ingredient input;
-        final ItemStack output;
-
-        PlasticSolidifyingRecipe(Ingredient input, ItemStack output) {
-            this.input = input;
-            this.output = output;
-        }
+    record PlasticSolidifyingRecipe(Ingredient input, ItemStack output) {
     }
 }

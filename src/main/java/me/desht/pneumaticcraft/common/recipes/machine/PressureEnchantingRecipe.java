@@ -137,14 +137,14 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public String getTooltipKey(boolean input, int slot) {
-        switch (slot) {
-            case 0: return "pneumaticcraft.gui.nei.tooltip.pressureEnchantItem";
-            case 1: return "pneumaticcraft.gui.nei.tooltip.pressureEnchantBook";
-            case 2: return "pneumaticcraft.gui.nei.tooltip.pressureEnchantItemOut";
-            case 3: return "pneumaticcraft.gui.nei.tooltip.pressureEnchantBookOut";
-            default: return "";
-        }
+    public String getTooltipKey(boolean input, String slotName) {
+        return switch (slotName) {
+            case "in0" -> "pneumaticcraft.gui.nei.tooltip.pressureEnchantItem";
+            case "in1" -> "pneumaticcraft.gui.nei.tooltip.pressureEnchantBook";
+            case "out0" -> "pneumaticcraft.gui.nei.tooltip.pressureEnchantItemOut";
+            case "out1" -> "pneumaticcraft.gui.nei.tooltip.pressureEnchantBookOut";
+            default -> "";
+        };
     }
 
     @Override

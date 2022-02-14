@@ -32,6 +32,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public class FluidItemWrapper implements ICapabilityProvider {
@@ -77,7 +78,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
          } else {
              tag.remove(NBTKeys.NBT_SAVED_TANKS);
              if (tag.isEmpty()) {
-                 newStack.getTag().remove(NBTKeys.BLOCK_ENTITY_TAG);
+                 Objects.requireNonNull(newStack.getTag()).remove(NBTKeys.BLOCK_ENTITY_TAG);
                  if (newStack.getTag().isEmpty()) {
                      newStack.setTag(null);
                  }
