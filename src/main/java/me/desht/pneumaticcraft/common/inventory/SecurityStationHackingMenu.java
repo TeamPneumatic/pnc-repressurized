@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
 import me.desht.pneumaticcraft.common.hacking.secstation.SimulationController;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotUntouchable;
+import me.desht.pneumaticcraft.common.inventory.slot.UntouchableSlot;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -49,7 +49,7 @@ public class SecurityStationHackingMenu extends AbstractPneumaticCraftMenu<Secur
         //add the network slots
         for (int i = 0; i < SecurityStationBlockEntity.INV_ROWS; i++) {
             for (int j = 0; j < SecurityStationBlockEntity.INV_COLS; j++) {
-                SlotUntouchable slot = (SlotUntouchable) addSlot(new SlotUntouchable(te.getPrimaryInventory(), j + i * 5, 8 + j * NODE_SPACING, 22 + i * NODE_SPACING));
+                UntouchableSlot slot = (UntouchableSlot) addSlot(new UntouchableSlot(te.getPrimaryInventory(), j + i * 5, 8 + j * NODE_SPACING, 22 + i * NODE_SPACING));
                 slot.setEnabled(slot.hasItem());
             }
         }

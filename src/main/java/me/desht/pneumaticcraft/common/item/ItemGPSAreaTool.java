@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.item;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.client.gui.areatool.GPSAreaToolScreen;
+import me.desht.pneumaticcraft.client.gui.GPSAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;

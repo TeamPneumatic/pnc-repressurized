@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
+import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
@@ -278,7 +278,7 @@ public class AbstractLogisticsScreen<L extends EntityLogisticsFrame> extends Abs
 
     @Override
     protected void slotClicked(Slot slot, int slotId, int clickedButton, ClickType clickType) {
-        if (slot instanceof SlotPhantom
+        if (slot instanceof PhantomSlot
                 && menu.getCarried().isEmpty()
                 && !slot.hasItem()
                 && (clickedButton == 0 || clickedButton == 1)) {

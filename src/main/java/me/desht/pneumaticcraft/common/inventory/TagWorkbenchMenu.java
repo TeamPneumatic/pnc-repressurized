@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
+import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -31,7 +31,7 @@ public class TagWorkbenchMenu extends AbstractPneumaticCraftMenu<TagWorkbenchBlo
 
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 8, 18));
         addSlot(new SlotItemHandler(te.getPrimaryInventory(), 1, 123, 18));
-        addSlot(new SlotOutput(te.getPrimaryInventory(), 2, 206, 18));
+        addSlot(new OutputOnlySlot(te.getPrimaryInventory(), 2, 206, 18));
 
         addPlayerSlots(inv, 34, 174);
     }

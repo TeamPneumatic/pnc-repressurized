@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei.ghost;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.AmadronAddTradeScreen;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
+import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
@@ -36,18 +36,18 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<AmadronAddT
         if (ingredient instanceof ItemStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getMenu().slots) {
-                if (slot instanceof SlotPhantom) {
+                if (slot instanceof PhantomSlot) {
                     //noinspection unchecked
-                    builder.add((Target<I>) new ItemStackTarget((SlotPhantom) slot, gui));
+                    builder.add((Target<I>) new ItemStackTarget((PhantomSlot) slot, gui));
                 }
             }
             return builder.build();
         } else if (ingredient instanceof FluidStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getMenu().slots) {
-                if (slot instanceof SlotPhantom) {
+                if (slot instanceof PhantomSlot) {
                     //noinspection unchecked
-                    builder.add((Target<I>) new FluidStackTarget((SlotPhantom) slot, gui));
+                    builder.add((Target<I>) new FluidStackTarget((PhantomSlot) slot, gui));
                 }
             }
             return builder.build();
@@ -60,10 +60,10 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<AmadronAddT
     }
 
     private static abstract class TargetImpl<I> implements Target<I> {
-        final SlotPhantom slot;
+        final PhantomSlot slot;
         final AmadronAddTradeScreen gui;
 
-        TargetImpl(SlotPhantom slot, AmadronAddTradeScreen gui) {
+        TargetImpl(PhantomSlot slot, AmadronAddTradeScreen gui) {
             this.slot = slot;
             this.gui = gui;
         }
@@ -75,7 +75,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<AmadronAddT
     }
 
     private static class FluidStackTarget extends TargetImpl<FluidStack> {
-        FluidStackTarget(SlotPhantom slot, AmadronAddTradeScreen gui) {
+        FluidStackTarget(PhantomSlot slot, AmadronAddTradeScreen gui) {
             super(slot, gui);
         }
 
@@ -86,7 +86,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<AmadronAddT
     }
 
     private static class ItemStackTarget extends TargetImpl<ItemStack> {
-        ItemStackTarget(SlotPhantom slot, AmadronAddTradeScreen gui) {
+        ItemStackTarget(PhantomSlot slot, AmadronAddTradeScreen gui) {
             super(slot, gui);
         }
 

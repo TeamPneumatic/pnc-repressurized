@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.inventory.slot.IPhantomSlot;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotPlayer;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotUpgrade;
+import me.desht.pneumaticcraft.common.inventory.slot.PlayerEquipmentSlot;
+import me.desht.pneumaticcraft.common.inventory.slot.UpgradeSlot;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.core.BlockPos;
@@ -149,7 +149,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
 
     protected void addUpgradeSlots(int xBase, int yBase) {
         for (int i = 0; i < te.getUpgradeHandler().getSlots(); i++) {
-            addSlot(new SlotUpgrade(te, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
+            addSlot(new UpgradeSlot(te, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
         }
     }
 
@@ -163,12 +163,12 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     @SuppressWarnings("SameParameterValue")
     void addArmorSlots(Inventory inventoryPlayer, int xBase, int yBase) {
         for (int i = 0; i < 4; ++i) {
-            this.addSlot(new SlotPlayer(inventoryPlayer, ArmorUpgradeRegistry.ARMOR_SLOTS[i], xBase, yBase + i * 18));
+            this.addSlot(new PlayerEquipmentSlot(inventoryPlayer, ArmorUpgradeRegistry.ARMOR_SLOTS[i], xBase, yBase + i * 18));
         }
     }
 
     void addOffhandSlot(Inventory inventory, int x, int y) {
-        this.addSlot(new SlotPlayer(inventory, EquipmentSlot.OFFHAND, x, y));
+        this.addSlot(new PlayerEquipmentSlot(inventory, EquipmentSlot.OFFHAND, x, y));
     }
 
     @Override

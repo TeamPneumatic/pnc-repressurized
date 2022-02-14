@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEn
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantomUnstackable;
+import me.desht.pneumaticcraft.common.inventory.slot.UnstackablePhantomSlot;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,8 +42,8 @@ public class AmadronAddTradeMenu extends AbstractPneumaticCraftMenu<AbstractPneu
     AmadronAddTradeMenu(int windowId, Inventory playerInventory) {
         super(ModMenuTypes.AMADRON_ADD_TRADE.get(), windowId, playerInventory);
 
-        addSlot(new SlotPhantomUnstackable(inv, INPUT_SLOT, 37, 90));
-        addSlot(new SlotPhantomUnstackable(inv, OUTPUT_SLOT, 126, 90));
+        addSlot(new UnstackablePhantomSlot(inv, INPUT_SLOT, 37, 90));
+        addSlot(new UnstackablePhantomSlot(inv, OUTPUT_SLOT, 126, 90));
     }
 
     public AmadronAddTradeMenu(int windowId, Inventory invPlayer, FriendlyByteBuf extraData) {

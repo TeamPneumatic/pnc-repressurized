@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.client.gui.ItemSearcherScreen;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantomUnstackable;
+import me.desht.pneumaticcraft.common.inventory.slot.UnstackablePhantomSlot;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -47,11 +47,11 @@ public class ItemSearcherMenu extends AbstractContainerMenu {
 
         for (int i = 0; i < SEARCH_ROWS; ++i) {
             for (int j = 0; j < SEARCH_COLS; ++j) {
-                addSlot(new SlotPhantomUnstackable(gui.getInventory(), i * SEARCH_COLS + j, SEARCH_COLS + j * 18, 52 + i * 18));
+                addSlot(new UnstackablePhantomSlot(gui.getInventory(), i * SEARCH_COLS + j, SEARCH_COLS + j * 18, 52 + i * 18));
             }
         }
 
-        addSlot(new SlotPhantomUnstackable(gui.getInventory(), 48, 148, 12));
+        addSlot(new UnstackablePhantomSlot(gui.getInventory(), 48, 148, 12));
         scrollTo(0.0F);
     }
 

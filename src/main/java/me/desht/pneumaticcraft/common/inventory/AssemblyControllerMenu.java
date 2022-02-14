@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotItemSpecific;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemFilteredSlot;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -33,7 +33,7 @@ public class AssemblyControllerMenu extends AbstractPneumaticCraftMenu<AssemblyC
     public AssemblyControllerMenu(int i, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.ASSEMBLY_CONTROLLER.get(), i, playerInventory, pos);
 
-        addSlot(new SlotItemSpecific(te.getPrimaryInventory(), stack -> stack.getItem() instanceof ItemAssemblyProgram, 0, 74, 38));
+        addSlot(new ItemFilteredSlot(te.getPrimaryInventory(), stack -> stack.getItem() instanceof ItemAssemblyProgram, 0, 74, 38));
 
         addUpgradeSlots(13, 30);
 

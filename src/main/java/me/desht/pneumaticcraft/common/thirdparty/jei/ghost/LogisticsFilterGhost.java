@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
+import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
@@ -37,9 +37,9 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
         if (ingredient instanceof ItemStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getMenu().slots) {
-                if (slot instanceof SlotPhantom) {
+                if (slot instanceof PhantomSlot) {
                     //noinspection unchecked
-                    builder.add((Target<I>) new ItemStackTarget((SlotPhantom) slot, gui));
+                    builder.add((Target<I>) new ItemStackTarget((PhantomSlot) slot, gui));
                 }
             }
             return builder.build();
@@ -58,7 +58,7 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
     public void onComplete() {
     }
 
-    private record ItemStackTarget(SlotPhantom slot, AbstractLogisticsScreen<?> gui) implements Target<ItemStack> {
+    private record ItemStackTarget(PhantomSlot slot, AbstractLogisticsScreen<?> gui) implements Target<ItemStack> {
         @Override
         public Rect2i getArea() {
             return new Rect2i(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);

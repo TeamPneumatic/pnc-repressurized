@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.client.gui.SecurityStationInventoryScreen;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotItemSpecific;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemFilteredSlot;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -51,7 +51,7 @@ public class SecurityStationMainMenu extends AbstractPneumaticCraftMenu<Security
         addPlayerSlots(playerInventory, 157);
     }
 
-    private class SlotSecurityNode extends SlotItemSpecific {
+    private class SlotSecurityNode extends ItemFilteredSlot {
         SlotSecurityNode(IItemHandler handler, Predicate<ItemStack> itemAllowed, int index, int x, int y) {
             super(handler, itemAllowed, index, x, y);
         }

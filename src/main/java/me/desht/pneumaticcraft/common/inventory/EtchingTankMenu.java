@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.block.entity.EtchingTankBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
+import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -41,8 +41,8 @@ public class EtchingTankMenu extends AbstractPneumaticCraftMenu<EtchingTankBlock
             addSlot(new SlotPCB(te.getPrimaryInventory(), i, x, y));
         }
 
-        addSlot(new SlotOutput(te.getOutputHandler(), 0, 104, 18));
-        addSlot(new SlotOutput(te.getFailedHandler(), 0, 104, 90));
+        addSlot(new OutputOnlySlot(te.getOutputHandler(), 0, 104, 18));
+        addSlot(new OutputOnlySlot(te.getFailedHandler(), 0, 104, 90));
 
         addPlayerSlots(playerInv, 125);
 

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.block.entity.AirCannonBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotItemSpecific;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemFilteredSlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -40,7 +40,7 @@ public class AirCannonMenu extends AbstractPneumaticCraftMenu<AirCannonBlockEnti
         addUpgradeSlots(8, 29);
 
         // add the gps slot
-        addSlot(new SlotItemSpecific(te.getPrimaryInventory(), itemStack -> {
+        addSlot(new ItemFilteredSlot(te.getPrimaryInventory(), itemStack -> {
             if (!(itemStack.getItem() instanceof IPositionProvider pp)) return false;
             List<BlockPos> l = pp.getStoredPositions(playerInventory.player.getUUID(), itemStack);
             return !l.isEmpty() && l.get(0) != null;

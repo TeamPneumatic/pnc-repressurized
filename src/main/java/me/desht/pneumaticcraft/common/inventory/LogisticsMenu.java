@@ -21,8 +21,8 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantom;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotPhantomUnstackable;
+import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
+import me.desht.pneumaticcraft.common.inventory.slot.UnstackablePhantomSlot;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.lib.Log;
@@ -69,8 +69,8 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
             for (int y = 0; y < 3; y++) {
                 for (int x = 0; x < 9; x++) {
                     addSlot(logistics.canFilterStack() ?
-                            new SlotPhantom(requests, y * 9 + x, x * 18 + 8, y * 18 + 29) :
-                            new SlotPhantomUnstackable(requests, y * 9 + x, x * 18 + 8, y * 18 + 29));
+                            new PhantomSlot(requests, y * 9 + x, x * 18 + 8, y * 18 + 29) :
+                            new UnstackablePhantomSlot(requests, y * 9 + x, x * 18 + 8, y * 18 + 29));
                 }
             }
 

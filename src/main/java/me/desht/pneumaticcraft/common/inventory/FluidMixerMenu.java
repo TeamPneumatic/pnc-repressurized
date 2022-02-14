@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotOutput;
-import me.desht.pneumaticcraft.common.inventory.slot.SlotUpgrade;
+import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
+import me.desht.pneumaticcraft.common.inventory.slot.UpgradeSlot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -29,10 +29,10 @@ public class FluidMixerMenu extends AbstractPneumaticCraftMenu<FluidMixerBlockEn
     public FluidMixerMenu(int windowId, Inventory inv, BlockPos pos) {
         super(ModMenuTypes.FLUID_MIXER.get(), windowId, inv, pos);
 
-        addSlot(new SlotOutput(te.getPrimaryInventory(), 0, 73, 67));
+        addSlot(new OutputOnlySlot(te.getPrimaryInventory(), 0, 73, 67));
 
         for (int i = 0; i < 4; i++) {
-            addSlot(new SlotUpgrade(te, i, 98 + i * 18, 106));
+            addSlot(new UpgradeSlot(te, i, 98 + i * 18, 106));
         }
         addPlayerSlots(inv, 130);
     }

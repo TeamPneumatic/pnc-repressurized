@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.*;
-import me.desht.pneumaticcraft.client.gui.charging.*;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
 import me.desht.pneumaticcraft.client.gui.semiblock.LogisticsProviderScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.LogisticsRequesterScreen;
@@ -11,6 +10,7 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.AirGrateModuleScreen;
 import me.desht.pneumaticcraft.client.gui.tubemodule.LogisticsModuleScreen;
 import me.desht.pneumaticcraft.client.gui.tubemodule.PressureGaugeModuleScreen;
 import me.desht.pneumaticcraft.client.gui.tubemodule.RedstoneModuleScreen;
+import me.desht.pneumaticcraft.client.gui.upgrademanager.*;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
