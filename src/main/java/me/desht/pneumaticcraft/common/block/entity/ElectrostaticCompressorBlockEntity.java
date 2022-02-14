@@ -49,7 +49,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.items.IItemHandler;
@@ -131,7 +130,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
             for (int y = getBlockPos().getY() + 5; y > getBlockPos().getY() - 5; y--) {
                 BlockPos hitPos = new BlockPos(x, y, z);
                 BlockState state = level.getBlockState(hitPos);
-                if (state.getBlock() instanceof ElectrostaticCompressorBlock || state.getBlock() == Blocks.IRON_BARS) {
+                if (state.getBlock() instanceof ElectrostaticCompressorBlock || isValidGridBlock(state.getBlock())) {
                     Set<BlockPos> gridSet = new ObjectOpenHashSet<>(MAX_ELECTROSTATIC_GRID_SIZE);
                     Set<ElectrostaticCompressorBlockEntity> compressorSet = new ObjectOpenHashSet<>(20);
                     getElectrostaticGrid(gridSet, compressorSet, hitPos);
