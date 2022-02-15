@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
-import me.desht.pneumaticcraft.common.item.ItemRemote;
+import me.desht.pneumaticcraft.common.item.RemoteItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateRemoteLayout;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -82,7 +82,7 @@ public class RemoteEditorScreen extends RemoteScreen {
         }
 
         if (invSearchGui != null && invSearchGui.getSearchStack().getItem() == ModItems.REMOTE.get()) {
-            if (ItemRemote.hasSameSecuritySettings(remote, invSearchGui.getSearchStack())) {
+            if (RemoteItem.hasSameSecuritySettings(remote, invSearchGui.getSearchStack())) {
                 remoteLayout = new RemoteLayout(invSearchGui.getSearchStack(), leftPos, topPos);
             } else {
                 ClientUtils.getClientPlayer().displayClientMessage(new TextComponent("pneumaticcraft.gui.remote.differentSecuritySettings"), false);

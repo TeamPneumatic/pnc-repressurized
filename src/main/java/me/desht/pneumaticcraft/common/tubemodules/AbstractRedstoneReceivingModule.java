@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -27,7 +27,7 @@ import java.util.List;
 public abstract class AbstractRedstoneReceivingModule extends AbstractTubeModule {
     private int redstoneLevel;
 
-    AbstractRedstoneReceivingModule(ItemTubeModule item) {
+    AbstractRedstoneReceivingModule(TubeModuleItem item) {
         super(item);
     }
 

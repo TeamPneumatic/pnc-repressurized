@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.UnstackablePhantomSlot;
-import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
+import me.desht.pneumaticcraft.common.item.logistics.AbstractLogisticsFrameItem;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundTag;
@@ -83,9 +83,9 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
     }
 
     private ItemStack getHeldLogisticsFrame(Player player) {
-        if (player.getMainHandItem().getItem() instanceof ItemLogisticsFrame) {
+        if (player.getMainHandItem().getItem() instanceof AbstractLogisticsFrameItem) {
             return player.getMainHandItem();
-        } else if (player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ItemLogisticsFrame) {
+        } else if (player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof AbstractLogisticsFrameItem) {
             return player.getItemInHand(InteractionHand.OFF_HAND);
         } else {
             return ItemStack.EMPTY;

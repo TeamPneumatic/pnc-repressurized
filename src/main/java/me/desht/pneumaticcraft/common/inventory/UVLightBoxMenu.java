@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import me.desht.pneumaticcraft.common.inventory.slot.UpgradeSlot;
-import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
+import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -59,7 +59,7 @@ public class UVLightBoxMenu extends AbstractPneumaticCraftMenu<UVLightBoxBlockEn
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem() == ModItems.EMPTY_PCB.get() && ItemEmptyPCB.getEtchProgress(stack) == 0;
+            return stack.getItem() == ModItems.EMPTY_PCB.get() && EmptyPCBItem.getEtchProgress(stack) == 0;
         }
 
         @Override

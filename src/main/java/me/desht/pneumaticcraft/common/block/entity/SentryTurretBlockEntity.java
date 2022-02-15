@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.SentryTurretMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
+import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -141,7 +141,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     private void clearEmptyAmmo() {
         for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if (stack.getItem() instanceof ItemGunAmmo && stack.getDamageValue() >= stack.getMaxDamage()) {
+            if (stack.getItem() instanceof AbstractGunAmmoItem && stack.getDamageValue() >= stack.getMaxDamage()) {
                 inventory.setStackInSlot(i, ItemStack.EMPTY);
             }
         }
@@ -259,7 +259,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemGunAmmo;
+            return itemStack.isEmpty() || itemStack.getItem() instanceof AbstractGunAmmoItem;
         }
     }
 
@@ -293,7 +293,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     private void recalculateRange() {
         range = 16 + Math.min(16, getUpgrades(ModUpgrades.RANGE.get()));
         ItemStack ammoStack = getMinigun().getAmmoStack();
-        if (ammoStack.getItem() instanceof ItemGunAmmo ammo) {
+        if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammo) {
             range *= ammo.getRangeMultiplier(ammoStack);
         }
         rangeSq = range * range;

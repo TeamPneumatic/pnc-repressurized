@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
-import me.desht.pneumaticcraft.common.item.ItemTagFilter;
+import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -78,11 +78,11 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
                 outputStack = new ItemStack(ModItems.TAG_FILTER.get());
             }
             if (!outputStack.isEmpty()) {
-                Set<ResourceLocation> tags = ItemTagFilter.getConfiguredTagList(outputStack);
+                Set<ResourceLocation> tags = TagFilterItem.getConfiguredTagList(outputStack);
                 for (String s : data) {
                     tags.add(new ResourceLocation(s));
                 }
-                ItemTagFilter.setConfiguredTagList(outputStack, tags);
+                TagFilterItem.setConfiguredTagList(outputStack, tags);
                 inventory.setStackInSlot(OUTPUT_SLOT, outputStack);
             }
         }

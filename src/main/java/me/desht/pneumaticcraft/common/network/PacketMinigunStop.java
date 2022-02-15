@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
@@ -50,7 +50,7 @@ public class PacketMinigunStop {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             Player player = ClientUtils.getClientPlayer();
-            Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
+            Minigun minigun = ((MinigunItem) stack.getItem()).getMinigun(stack, player);
             minigun.setMinigunSpeed(0);
             minigun.setMinigunActivated(false);
             minigun.setMinigunTriggerTimeOut(0);

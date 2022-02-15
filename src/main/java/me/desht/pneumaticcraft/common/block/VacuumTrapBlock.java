@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
+import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -177,7 +177,7 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
             if (tag != null && tag.contains("Items")) {
                 ItemStackHandler handler = new ItemStackHandler(1);
                 handler.deserializeNBT(tag.getCompound("Items"));
-                if (handler.getStackInSlot(0).getItem() instanceof ItemSpawnerCore) {
+                if (handler.getStackInSlot(0).getItem() instanceof SpawnerCoreItem) {
                     tooltip.add(xlate("pneumaticcraft.message.vacuum_trap.coreInstalled").withStyle(ChatFormatting.YELLOW));
                 }
             }

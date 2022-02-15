@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.dispenser;
 
-import me.desht.pneumaticcraft.common.item.ItemDrone;
+import me.desht.pneumaticcraft.common.item.DroneItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
@@ -30,7 +30,7 @@ public class DroneDispenseBehavior extends DefaultDispenseItemBehavior {
     protected ItemStack execute(BlockSource source, ItemStack stack){
         Direction facing = source.getBlockState().getValue(DispenserBlock.FACING);
         BlockPos placePos = source.getPos().relative(facing);
-        ((ItemDrone)stack.getItem()).spawnDrone(null, source.getLevel(), null, null, placePos, stack);
+        ((DroneItem)stack.getItem()).spawnDrone(null, source.getLevel(), null, null, placePos, stack);
         
         stack.shrink(1);
         return stack;

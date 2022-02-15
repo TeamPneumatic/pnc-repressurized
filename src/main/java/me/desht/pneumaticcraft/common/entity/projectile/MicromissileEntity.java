@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.entity.projectile;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.nbt.CompoundTag;
@@ -78,14 +78,14 @@ public class MicromissileEntity extends ThrowableProjectile {
 
         if (iStack.hasTag()) {
             CompoundTag tag = Objects.requireNonNull(iStack.getTag());
-            entityFilter = EntityFilter.fromString(tag.getString(ItemMicromissiles.NBT_FILTER));
-            fireMode = FireMode.fromString(tag.getString(ItemMicromissiles.NBT_FIRE_MODE));
+            entityFilter = EntityFilter.fromString(tag.getString(MicromissilesItem.NBT_FILTER));
+            fireMode = FireMode.fromString(tag.getString(MicromissilesItem.NBT_FIRE_MODE));
             switch (fireMode) {
                 case SMART -> {
-                    accel = Math.max(1.02f, 1.0f + tag.getFloat(ItemMicromissiles.NBT_TOP_SPEED) / 10f);
-                    maxVelocitySq = (float) Math.pow(0.25 + tag.getFloat(ItemMicromissiles.NBT_TOP_SPEED) * 3.75f, 2);
-                    turnSpeed = 0.4f * tag.getFloat(ItemMicromissiles.NBT_TURN_SPEED);
-                    explosionPower = Math.max(1f, 5 * tag.getFloat(ItemMicromissiles.NBT_DAMAGE));
+                    accel = Math.max(1.02f, 1.0f + tag.getFloat(MicromissilesItem.NBT_TOP_SPEED) / 10f);
+                    maxVelocitySq = (float) Math.pow(0.25 + tag.getFloat(MicromissilesItem.NBT_TOP_SPEED) * 3.75f, 2);
+                    turnSpeed = 0.4f * tag.getFloat(MicromissilesItem.NBT_TURN_SPEED);
+                    explosionPower = Math.max(1f, 5 * tag.getFloat(MicromissilesItem.NBT_DAMAGE));
                 }
                 case DUMB -> {
                     accel = 1.5f;

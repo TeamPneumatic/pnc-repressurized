@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
 import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
@@ -85,7 +85,7 @@ public class DroneDebugger {
     }
 
     public void updateDebuggingPlayers() {
-        debuggingPlayers.removeIf(player -> !player.isAlive() || !ItemPneumaticArmor.isPlayerDebuggingDrone(player, drone));
+        debuggingPlayers.removeIf(player -> !player.isAlive() || !PneumaticArmorItem.isPlayerDebuggingDrone(player, drone));
     }
 
     public Collection<ServerPlayer> getDebuggingPlayers() {

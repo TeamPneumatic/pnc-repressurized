@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -29,7 +29,7 @@ public class FlowDetectorModule extends AbstractRedstoneEmittingModule implement
     private int flow;
     private int oldFlow;
 
-    public FlowDetectorModule(ItemTubeModule item) {
+    public FlowDetectorModule(TubeModuleItem item) {
         super(item);
     }
 

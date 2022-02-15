@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorColors;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -72,10 +72,10 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack stack = player.getItemBySlot(slot);
             int idx = slot.getIndex();
-            if (stack.getItem() instanceof ItemPneumaticArmor) {
-                origColors[idx][0] = colors[idx][0] = ((ItemPneumaticArmor) stack.getItem()).getColor(stack);
-                origColors[idx][1] = colors[idx][1] = ((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack);
-                origColors[idx][2] = colors[idx][2] = ((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack);
+            if (stack.getItem() instanceof PneumaticArmorItem) {
+                origColors[idx][0] = colors[idx][0] = ((PneumaticArmorItem) stack.getItem()).getColor(stack);
+                origColors[idx][1] = colors[idx][1] = ((PneumaticArmorItem) stack.getItem()).getSecondaryColor(stack);
+                origColors[idx][2] = colors[idx][2] = ((PneumaticArmorItem) stack.getItem()).getEyepieceColor(stack);
             }
         }
     }
@@ -160,7 +160,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
     private void updateClientSideArmor(EquipmentSlot slot) {
         Player player = ClientUtils.getClientPlayer();
         ItemStack stack = player.getItemBySlot(slot);
-        if (stack.getItem() instanceof ItemPneumaticArmor armor) {
+        if (stack.getItem() instanceof PneumaticArmorItem armor) {
             armor.setColor(stack, colors[slot.getIndex()][SelectorType.PRIMARY.ordinal()]);
             armor.setSecondaryColor(stack, colors[slot.getIndex()][SelectorType.SECONDARY.ordinal()]);
             if (slot == EquipmentSlot.HEAD) {
@@ -281,9 +281,9 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
     }
 
     public enum SelectorType {
-        PRIMARY(0, "1", ItemPneumaticArmor.DEFAULT_PRIMARY_COLOR),
-        SECONDARY(22, "2", ItemPneumaticArmor.DEFAULT_SECONDARY_COLOR),
-        EYEPIECE(44, "E", ItemPneumaticArmor.DEFAULT_EYEPIECE_COLOR);
+        PRIMARY(0, "1", PneumaticArmorItem.DEFAULT_PRIMARY_COLOR),
+        SECONDARY(22, "2", PneumaticArmorItem.DEFAULT_SECONDARY_COLOR),
+        EYEPIECE(44, "E", PneumaticArmorItem.DEFAULT_EYEPIECE_COLOR);
 
         private final int xOffset;
         private final String label;
@@ -318,7 +318,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
             this.gui = gui;
             this.slot = slot;
             this.selectorType = selectorType;
-            visible = selectorType.showButton(slot) && ItemPneumaticArmor.isPneumaticArmorPiece(ClientUtils.getClientPlayer(), slot);
+            visible = selectorType.showButton(slot) && PneumaticArmorItem.isPneumaticArmorPiece(ClientUtils.getClientPlayer(), slot);
 
             if (selectorType == SelectorType.PRIMARY) {
                 setRenderStacks(ClientUtils.getClientPlayer().getItemBySlot(slot));

@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
 import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
+import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
+import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
@@ -130,7 +130,7 @@ public class HackSimulation {
     }
 
     public void addNode(int slot, ItemStack stack) {
-        addNode(slot, ItemNetworkComponent.getType(stack), controller == null ? 1 : stack.getCount());
+        addNode(slot, NetworkComponentItem.getType(stack), controller == null ? 1 : stack.getCount());
     }
 
     private boolean isDummy() {

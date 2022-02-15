@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 
 public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
-    public PressureGaugeModule(ItemTubeModule item) {
+    public PressureGaugeModule(TubeModuleItem item) {
         super(item);
         lowerBound = 0;
         higherBound = 7.5F;

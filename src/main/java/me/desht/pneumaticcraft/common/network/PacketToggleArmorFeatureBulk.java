@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.network.FriendlyByteBuf;
@@ -61,7 +61,7 @@ public class PacketToggleArmorFeatureBulk {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 features.forEach(f -> {
                     if (f.featureIndex >= 0 && f.featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(f.slot).size()
-                        && ItemPneumaticArmor.isPneumaticArmorPiece(player, f.slot))
+                        && PneumaticArmorItem.isPneumaticArmorPiece(player, f.slot))
                     {
                         handler.setUpgradeEnabled(f.slot, f.featureIndex, f.state);
                     }

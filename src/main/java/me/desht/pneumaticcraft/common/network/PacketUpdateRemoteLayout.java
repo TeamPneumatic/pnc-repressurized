@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.item.ItemRemote;
+import me.desht.pneumaticcraft.common.item.RemoteItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -53,7 +53,7 @@ public class PacketUpdateRemoteLayout {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ItemStack remote = ctx.get().getSender().getItemInHand(hand);
-            if (remote.getItem() instanceof ItemRemote) {
+            if (remote.getItem() instanceof RemoteItem) {
                 CompoundTag tag = remote.getTag();
                 if (tag == null) {
                     tag = new CompoundTag();

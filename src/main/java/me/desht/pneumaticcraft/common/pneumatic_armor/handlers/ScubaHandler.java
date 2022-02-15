@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -70,7 +70,7 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
 
             ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
 
-            int baseVol = ((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume();
+            int baseVol = ((PneumaticArmorItem) helmetStack.getItem()).getBaseVolume();
             int vol = PressureHelper.getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.VOLUME.get()));
             float airInHelmet = commonArmorHandler.getArmorPressure(EquipmentSlot.HEAD) * vol;
             int playerAir = (int) Math.min(300 - player.getAirSupply(), airInHelmet / ConfigHelper.common().armor.scubaMultiplier.get());

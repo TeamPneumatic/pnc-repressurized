@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.MinigunMagazineMenu;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -68,8 +68,8 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
         super.containerTick();
 
         ItemStack gunStack = Minecraft.getInstance().player.getItemInHand(menu.getHand());
-        if (gunStack.getItem() instanceof ItemMinigun) {
-            lockedSlot = ItemMinigun.getLockedSlot(gunStack);
+        if (gunStack.getItem() instanceof MinigunItem) {
+            lockedSlot = MinigunItem.getLockedSlot(gunStack);
         }
     }
 

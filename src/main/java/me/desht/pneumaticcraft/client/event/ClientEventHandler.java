@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -64,7 +64,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void screenTilt(EntityViewRenderEvent.CameraSetup event) {
         if (event.getCamera().getEntity() instanceof Player player) {
-            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.isOnGround()) {
+            if (PneumaticArmorItem.isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.isOnGround()) {
                 float targetRoll;
                 float div = 50F;
                 JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);

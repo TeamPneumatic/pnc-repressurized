@@ -28,9 +28,9 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
-import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
-import me.desht.pneumaticcraft.common.item.ItemJackHammer;
+import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
+import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
+import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
@@ -149,11 +149,11 @@ public enum AreaRenderManager {
 
     private void maybeRenderAreaTool(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
         ItemStack curItem = getHeldPositionProvider(player);
-        if (curItem.getItem() instanceof ItemGPSAreaTool) {
+        if (curItem.getItem() instanceof GPSAreaToolItem) {
             // show the raw P1/P2 positions; the area is shown by getHeldPositionProvider()
-            ItemGPSAreaTool.getGPSLocation(player, curItem, 0)
+            GPSAreaToolItem.getGPSLocation(player, curItem, 0)
                     .ifPresent(pos -> AreaRenderer.builder().withColor(0x80FF6060).xray().build(pos).render(matrixStack, buffer));
-            ItemGPSAreaTool.getGPSLocation(player, curItem, 1)
+            GPSAreaToolItem.getGPSLocation(player, curItem, 1)
                     .ifPresent(pos -> AreaRenderer.builder().withColor(0x8060FF60).xray().build(pos).render(matrixStack, buffer));
         }
     }
@@ -216,7 +216,7 @@ public enum AreaRenderManager {
     }
 
     private void maybeRenderCamo(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
-        if (!(player.getMainHandItem().getItem() instanceof ItemCamoApplicator)) {
+        if (!(player.getMainHandItem().getItem() instanceof CamoApplicatorItem)) {
             return;
         }
         if (lastPlayerPos == null || camoPositionShower == null || player.distanceToSqr(lastPlayerPos.getX(), lastPlayerPos.getY(), lastPlayerPos.getZ()) > 9) {
@@ -246,12 +246,12 @@ public enum AreaRenderManager {
 
     private void maybeRenderJackhammer(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player) {
         if (level == null
-                || !(player.getMainHandItem().getItem() instanceof ItemJackHammer)
+                || !(player.getMainHandItem().getItem() instanceof JackHammerItem)
                 || !((Minecraft.getInstance().hitResult) instanceof BlockHitResult)) {
             return;
         }
-        ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(player.getMainHandItem());
-        if (digMode == ItemJackHammer.DigMode.MODE_1X1) return;
+        JackHammerItem.DigMode digMode = JackHammerItem.getDigMode(player.getMainHandItem());
+        if (digMode == JackHammerItem.DigMode.MODE_1X1) return;
 
         BlockHitResult brtr = (BlockHitResult) Minecraft.getInstance().hitResult;
         if (!level.isLoaded(brtr.getBlockPos()) || level.getBlockState(brtr.getBlockPos()).isAir()) return;
@@ -259,7 +259,7 @@ public enum AreaRenderManager {
         if (!lastJackhammerDetails.matches(brtr.getBlockPos(), brtr.getDirection(), digMode)) {
             BlockState state = level.getBlockState(brtr.getBlockPos());
             Set<BlockPos> posSet = level.getBlockEntity(brtr.getBlockPos()) == null && !(state.getBlock() instanceof LiquidBlock) ?
-                    ItemJackHammer.getBreakPositions(level, brtr.getBlockPos(), brtr.getDirection(), player.getDirection(), digMode) :
+                    JackHammerItem.getBreakPositions(level, brtr.getBlockPos(), brtr.getDirection(), player.getDirection(), digMode) :
                     Collections.emptySet();
             if (!posSet.isEmpty()) posSet.add(brtr.getBlockPos());
             AreaRenderer.Builder b = AreaRenderer.builder().withColor(0x20FFFFFF).withSize(1.01f).disableWriteMask();
@@ -306,9 +306,9 @@ public enum AreaRenderManager {
      * Used to determine when the jackhammer preview area needs to be recalculated.
      */
     private record LastJackhammerDetails(BlockPos pos, Direction face,
-                                         ItemJackHammer.DigMode digMode) {
+                                         JackHammerItem.DigMode digMode) {
 
-        private boolean matches(BlockPos pos, Direction face, ItemJackHammer.DigMode digMode) {
+        private boolean matches(BlockPos pos, Direction face, JackHammerItem.DigMode digMode) {
             return face == this.face && digMode == this.digMode && pos.equals(this.pos);
         }
     }

@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
@@ -85,7 +85,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         }
 
         ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
-        String filterStr = helmetStack.isEmpty() ? "" : ItemPneumaticArmor.getEntityFilter(helmetStack);
+        String filterStr = helmetStack.isEmpty() ? "" : PneumaticArmorItem.getEntityFilter(helmetStack);
         if (!entityFilter.toString().equals(filterStr)) {
             EntityFilter newFilter = EntityFilter.fromString(filterStr);
             if (newFilter != null) {

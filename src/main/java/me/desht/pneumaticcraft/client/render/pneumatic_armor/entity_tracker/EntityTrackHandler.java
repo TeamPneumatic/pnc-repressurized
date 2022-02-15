@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Hac
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -137,7 +137,7 @@ public class EntityTrackHandler {
             Player player = ClientUtils.getClientPlayer();
             if (DroneDebugClientHandler.enabledForPlayer(player)) {
                 Component debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);
-                if (ItemPneumaticArmor.isPlayerDebuggingDrone(player, droneBase)) {
+                if (PneumaticArmorItem.isPlayerDebuggingDrone(player, droneBase)) {
                     curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging").withStyle(ChatFormatting.GOLD));
                     Component optionsKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions);
                     curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging.key", optionsKey).withStyle(ChatFormatting.GOLD));

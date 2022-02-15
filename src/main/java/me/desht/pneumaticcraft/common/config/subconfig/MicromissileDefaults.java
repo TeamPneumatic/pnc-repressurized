@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.config.subconfig;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -123,13 +123,13 @@ public class MicromissileDefaults extends AuxConfigJson {
 
         public CompoundTag toNBT() {
             CompoundTag tag = new CompoundTag();
-            tag.putFloat(ItemMicromissiles.NBT_TOP_SPEED, topSpeed);
-            tag.putFloat(ItemMicromissiles.NBT_TURN_SPEED, turnSpeed);
-            tag.putFloat(ItemMicromissiles.NBT_DAMAGE, damage);
-            tag.putString(ItemMicromissiles.NBT_FILTER, entityFilter);
-            tag.putInt(ItemMicromissiles.NBT_PX, p.x());
-            tag.putInt(ItemMicromissiles.NBT_PY, p.y());
-            tag.putString(ItemMicromissiles.NBT_FIRE_MODE, fireMode.toString());
+            tag.putFloat(MicromissilesItem.NBT_TOP_SPEED, topSpeed);
+            tag.putFloat(MicromissilesItem.NBT_TURN_SPEED, turnSpeed);
+            tag.putFloat(MicromissilesItem.NBT_DAMAGE, damage);
+            tag.putString(MicromissilesItem.NBT_FILTER, entityFilter);
+            tag.putInt(MicromissilesItem.NBT_PX, p.x());
+            tag.putInt(MicromissilesItem.NBT_PY, p.y());
+            tag.putString(MicromissilesItem.NBT_FIRE_MODE, fireMode.toString());
             return tag;
         }
     }

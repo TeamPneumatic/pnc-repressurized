@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -108,6 +108,6 @@ public class PneumaticArmorUpgradeScreen extends AbstractUpgradeManagerScreen {
 
     @Override
     protected int getDefaultVolume() {
-        return ((ItemPneumaticArmor) itemStack.getItem()).getBaseVolume();
+        return ((PneumaticArmorItem) itemStack.getItem()).getBaseVolume();
     }
 }

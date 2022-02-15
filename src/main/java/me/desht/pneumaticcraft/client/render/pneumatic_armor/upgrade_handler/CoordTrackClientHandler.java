@@ -35,7 +35,7 @@ import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -107,7 +107,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
-        trackedPos = ItemPneumaticArmor.getCoordTrackerPos(ClientUtils.getWornArmor(EquipmentSlot.HEAD), armorHandler.getPlayer().level);
+        trackedPos = PneumaticArmorItem.getCoordTrackerPos(ClientUtils.getWornArmor(EquipmentSlot.HEAD), armorHandler.getPlayer().level);
         worldKey = armorHandler.getPlayer().level.dimension();
         if (trackedPos != null) {
             navigator = new RenderNavigator(trackedPos);
@@ -208,9 +208,9 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                 if (event.getFace() != null) {
                     handler.reset();
                     GlobalPos gPos = GlobalPosHelper.makeGlobalPos(event.getWorld(), event.getPos().relative(event.getFace()));
-                    ItemPneumaticArmor.setCoordTrackerPos(helmetStack, gPos);
+                    PneumaticArmorItem.setCoordTrackerPos(helmetStack, gPos);
                     CompoundTag tag = new CompoundTag();
-                    tag.put(ItemPneumaticArmor.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
+                    tag.put(PneumaticArmorItem.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
                     NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, handler.getCommonHandler().getID()));
                     HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.selectedTarget", PneumaticCraftUtils.posToString(gPos.pos())), Collections.emptyList(), 60, 0x8000AA00);
                 }

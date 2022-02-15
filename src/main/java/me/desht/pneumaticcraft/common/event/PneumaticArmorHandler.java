@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
 import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
@@ -59,7 +59,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
+import static me.desht.pneumaticcraft.common.item.PneumaticArmorItem.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
@@ -103,7 +103,7 @@ public class PneumaticArmorHandler {
     public void onPlayerFall(LivingFallEvent event) {
         if (event.getDistance() > 3.0F && event.getEntity() instanceof Player player) {
             ItemStack stack = player.getItemBySlot(EquipmentSlot.FEET);
-            if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
+            if (!(stack.getItem() instanceof PneumaticArmorItem)) {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
@@ -192,7 +192,7 @@ public class PneumaticArmorHandler {
     public void onPlayerJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntityLiving() instanceof Player player) {
             ItemStack stack = player.getItemBySlot(EquipmentSlot.LEGS);
-            if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
+            if (!(stack.getItem() instanceof PneumaticArmorItem)) {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
@@ -202,7 +202,7 @@ public class PneumaticArmorHandler {
                 return;
             }
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)) {
-                float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
+                float power = PneumaticArmorItem.getIntData(stack, PneumaticArmorItem.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.JUMPING.get(),
                         player.isShiftKeyDown() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);
@@ -266,7 +266,7 @@ public class PneumaticArmorHandler {
             handleJetbootsPose(event.player);
         } else if (event.player instanceof ServerPlayer
                 && event.player.level.getGameTime() % 20 == 0
-                && ItemPneumaticArmor.isPneumaticArmorPiece(event.player, EquipmentSlot.HEAD)) {
+                && PneumaticArmorItem.isPneumaticArmorPiece(event.player, EquipmentSlot.HEAD)) {
             handleTargetWarnings((ServerPlayer) event.player);
         }
     }
@@ -301,7 +301,7 @@ public class PneumaticArmorHandler {
 
     @SubscribeEvent
     public void onArmorRepair(AnvilUpdateEvent event) {
-        if (event.getLeft().getItem() instanceof ItemPneumaticArmor
+        if (event.getLeft().getItem() instanceof PneumaticArmorItem
                 && PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON.contains(event.getRight().getItem()))
         {
             ItemStack repairedItem = event.getLeft().copy();

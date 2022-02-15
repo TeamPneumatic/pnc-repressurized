@@ -5,7 +5,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -33,9 +33,9 @@ public class MinigunItemRenderer extends BlockEntityWithoutLevelRenderer {
 
     @Override
     public void renderByItem(ItemStack stack, TransformType transformType, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        if (stack.getItem() instanceof ItemMinigun itemMinigun && stack.hasTag()) {
+        if (stack.getItem() instanceof MinigunItem itemMinigun && stack.hasTag()) {
             Minecraft mc = Minecraft.getInstance();
-            int id = Objects.requireNonNull(stack.getTag()).getInt(ItemMinigun.OWNING_PLAYER_ID);
+            int id = Objects.requireNonNull(stack.getTag()).getInt(MinigunItem.OWNING_PLAYER_ID);
             if (ClientUtils.getClientLevel().getEntity(id) instanceof Player player) {
                 Minigun minigun = itemMinigun.getMinigun(stack, player);
                 matrixStack.pushPose();

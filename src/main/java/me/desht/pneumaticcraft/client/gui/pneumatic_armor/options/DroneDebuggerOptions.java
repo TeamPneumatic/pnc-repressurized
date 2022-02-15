@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
@@ -71,7 +71,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     public DroneDebuggerOptions(IGuiScreen screen, DroneDebugClientHandler upgradeHandler) {
         super(screen, upgradeHandler);
 
-        selectedDrone = ItemPneumaticArmor.getDebuggedDrone();
+        selectedDrone = PneumaticArmorItem.getDebuggedDrone();
     }
 
     public static void clearAreaShowWidgetId() {

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.recipes.assembly;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -115,8 +115,8 @@ public abstract class AssemblyProgram {
     }
 
     public static AssemblyProgram fromRecipe(AssemblyRecipe recipe) {
-        return ItemAssemblyProgram.fromProgramType(recipe.getProgramType()).getProgram();
+        return AssemblyProgramItem.fromProgramType(recipe.getProgramType()).getProgram();
     }
 
-    public abstract ItemAssemblyProgram getItem();
+    public abstract AssemblyProgramItem getItem();
 }

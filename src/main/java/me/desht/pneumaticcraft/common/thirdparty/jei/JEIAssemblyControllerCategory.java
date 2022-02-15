@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
@@ -56,7 +56,7 @@ public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyR
         builder.addSlot(RecipeIngredientRole.INPUT, 29, 56)
                 .addIngredients(recipe.getInput());
         builder.addSlot(RecipeIngredientRole.CATALYST, 133, 22)
-                .addItemStack(new ItemStack(ItemAssemblyProgram.fromProgramType(recipe.getProgramType())));
+                .addItemStack(new ItemStack(AssemblyProgramItem.fromProgramType(recipe.getProgramType())));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 56)
                 .addItemStack(recipe.getOutput());
 

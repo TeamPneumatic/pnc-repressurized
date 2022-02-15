@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
@@ -132,12 +132,12 @@ public class ProgWidgetAreaScreen extends ProgWidgetAreaShowScreen<ProgWidgetAre
 
     private void openInvSearchGUI(int which) {
         ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
-        ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gpsStack, progWidget.getPos(which).orElse(BlockPos.ZERO));
+        GPSToolItem.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gpsStack, progWidget.getPos(which).orElse(BlockPos.ZERO));
         ClientUtils.openContainerGui(ModMenuTypes.INVENTORY_SEARCHER.get(), new TextComponent("Inventory Searcher (GPS)"));
         if (minecraft.screen instanceof InventorySearcherScreen) {
             invSearchGui = (InventorySearcherScreen) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
-            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack).isPresent() ? gpsStack : ItemStack.EMPTY);
+            invSearchGui.setSearchStack(GPSToolItem.getGPSLocation(gpsStack).isPresent() ? gpsStack : ItemStack.EMPTY);
         }
         pointSearched = which;
     }

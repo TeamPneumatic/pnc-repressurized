@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -100,13 +100,13 @@ public class PacketUpdateMicromissileSettings {
         if (!stack.hasTag()) stack.setTag(new CompoundTag());
 
         CompoundTag tag = Objects.requireNonNull(stack.getTag());
-        tag.putFloat(ItemMicromissiles.NBT_TURN_SPEED, accel);
-        tag.putFloat(ItemMicromissiles.NBT_TOP_SPEED, topSpeed);
-        tag.putFloat(ItemMicromissiles.NBT_DAMAGE, damage);
-        tag.putInt(ItemMicromissiles.NBT_PX, point.x());
-        tag.putInt(ItemMicromissiles.NBT_PY, point.y());
-        tag.putString(ItemMicromissiles.NBT_FILTER, entityFilter);
-        tag.putString(ItemMicromissiles.NBT_FIRE_MODE, fireMode.toString());
+        tag.putFloat(MicromissilesItem.NBT_TURN_SPEED, accel);
+        tag.putFloat(MicromissilesItem.NBT_TOP_SPEED, topSpeed);
+        tag.putFloat(MicromissilesItem.NBT_DAMAGE, damage);
+        tag.putInt(MicromissilesItem.NBT_PX, point.x());
+        tag.putInt(MicromissilesItem.NBT_PY, point.y());
+        tag.putString(MicromissilesItem.NBT_FILTER, entityFilter);
+        tag.putString(MicromissilesItem.NBT_FIRE_MODE, fireMode.toString());
 
         if (saveDefault) {
             // TODO 1.17 player capability would be a better way to handle this

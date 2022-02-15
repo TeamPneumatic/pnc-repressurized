@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticsModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
@@ -55,8 +55,8 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     private int ticksUntilNextCycle;
     private boolean powered;
 
-    public LogisticsModule(ItemTubeModule itemTubeModule) {
-        super(itemTubeModule);
+    public LogisticsModule(TubeModuleItem tubeModuleItem) {
+        super(tubeModuleItem);
     }
 
     public int getTicksSinceAction() {

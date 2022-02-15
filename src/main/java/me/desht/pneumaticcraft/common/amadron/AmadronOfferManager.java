@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
-import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
@@ -150,7 +150,7 @@ public enum AmadronOfferManager {
     private void maybeNotifyPlayerOfUpdates(Player player) {
         CombinedInvWrapper inv = new CombinedInvWrapper(new PlayerMainInvWrapper(player.getInventory()), new PlayerOffhandInvWrapper(player.getInventory()));
         for (int i = 0; i < inv.getSlots(); i++) {
-            if (inv.getStackInSlot(i).getItem() instanceof ItemAmadronTablet) {
+            if (inv.getStackInSlot(i).getItem() instanceof AmadronTabletItem) {
                 player.displayClientMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"), false);
                 break;
             }

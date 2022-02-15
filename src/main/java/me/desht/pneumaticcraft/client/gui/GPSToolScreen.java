@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
@@ -59,7 +59,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
 
     public static void showGUI(ItemStack stack, InteractionHand handIn, BlockPos pos) {
         Minecraft.getInstance().setScreen(
-                new GPSToolScreen(stack.getHoverName(), handIn, pos != null ? pos : BlockPos.ZERO, ItemGPSTool.getVariable(stack))
+                new GPSToolScreen(stack.getHoverName(), handIn, pos != null ? pos : BlockPos.ZERO, GPSToolItem.getVariable(stack))
         );
     }
 

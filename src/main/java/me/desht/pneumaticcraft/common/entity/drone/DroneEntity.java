@@ -43,10 +43,10 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
-import me.desht.pneumaticcraft.common.item.ItemDrone;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
-import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
+import me.desht.pneumaticcraft.common.item.DroneItem;
+import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
+import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
@@ -276,7 +276,7 @@ public class DroneEntity extends AbstractDroneEntity implements
      * @param droneStack the drone itemstack
      */
     public void readFromItemStack(ItemStack droneStack) {
-        Validate.isTrue(droneStack.getItem() instanceof ItemDrone);
+        Validate.isTrue(droneStack.getItem() instanceof DroneItem);
 
         CompoundTag stackTag = droneStack.getTag();
         if (stackTag != null) {
@@ -284,7 +284,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             stackEnchants.putAll(EnchantmentHelper.getEnchantments(droneStack));
             int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getAir();
             getAirHandler().addAir(air);
-            ItemDrone droneItem = (ItemDrone) droneStack.getItem();
+            DroneItem droneItem = (DroneItem) droneStack.getItem();
             if (droneItem.canProgram(droneStack)) {
                 progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(stackTag);
                 ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
@@ -304,11 +304,11 @@ public class DroneEntity extends AbstractDroneEntity implements
      * @param droneStack the drone itemstack
      */
     private void writeToItemStack(ItemStack droneStack) {
-        Validate.isTrue(droneStack.getItem() instanceof ItemDrone);
+        Validate.isTrue(droneStack.getItem() instanceof DroneItem);
 
         CompoundTag tag = new CompoundTag();
         tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
-        if (((ItemDrone) droneStack.getItem()).canProgram(droneStack)) {
+        if (((DroneItem) droneStack.getItem()).canProgram(droneStack)) {
             ProgrammerBlockEntity.putWidgetsToNBT(progWidgets, tag);
         }
         tag.putInt("color", getDroneColor());
@@ -675,7 +675,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private void setAmmoColor(ItemStack ammoStack) {
-        int color = ammoStack.getItem() instanceof ItemGunAmmo ammo ? ammo.getAmmoColor(ammoStack) : 0xFFFF0000;
+        int color = ammoStack.getItem() instanceof AbstractGunAmmoItem ammo ? ammo.getAmmoColor(ammoStack) : 0xFFFF0000;
         entityData.set(AMMO, color);
     }
 
@@ -755,7 +755,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
             if (!level.isClientSide) {
-                return ItemGPSTool.getGPSLocation(player.getUUID(), stack).map(gpsPos -> {
+                return GPSToolItem.getGPSLocation(player.getUUID(), stack).map(gpsPos -> {
                     getNavigation().moveTo(gpsPos.getX(), gpsPos.getY(), gpsPos.getZ(), 0.1D);
                     return InteractionResult.SUCCESS;
                 }).orElse(InteractionResult.PASS);
@@ -1367,7 +1367,7 @@ public class DroneEntity extends AbstractDroneEntity implements
      */
     public int getSlotForAmmo() {
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
-            if (droneItemHandler.getStackInSlot(i).getItem() instanceof ItemGunAmmo) {
+            if (droneItemHandler.getStackInSlot(i).getItem() instanceof AbstractGunAmmoItem) {
                 return i;
             }
         }

@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
-import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
+import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -159,7 +159,7 @@ public class TOPInfoProvider {
 
     private static void handleCamo(ProbeMode mode, IProbeInfo probeInfo, BlockState camo) {
         if (camo != null) {
-            probeInfo.text(xlate("pneumaticcraft.waila.camo", ItemCamoApplicator.getCamoStateDisplayName(camo)));
+            probeInfo.text(xlate("pneumaticcraft.waila.camo", CamoApplicatorItem.getCamoStateDisplayName(camo)));
         }
     }
 

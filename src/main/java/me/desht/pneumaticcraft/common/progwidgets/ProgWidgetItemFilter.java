@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.item.ItemTagFilter;
+import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
@@ -121,7 +121,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel").withStyle(ChatFormatting.AQUA)
                     .append(": ").append(filter.getHoverName()));
             if (filter.getItem() == ModItems.TAG_FILTER.get()) {
-                curTooltip.addAll(ItemTagFilter.getConfiguredTagList(filter).stream()
+                curTooltip.addAll(TagFilterItem.getConfiguredTagList(filter).stream()
                         .map(s -> Symbols.bullet().append(new TextComponent(s.toString()).withStyle(ChatFormatting.YELLOW)))
                         .collect(Collectors.toList()));
             }

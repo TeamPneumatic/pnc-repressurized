@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.PressurizedSpawnerMenu;
-import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
+import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -57,7 +57,7 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
     public static final int BASE_SPAWN_INTERVAL = 200;
     private static final int MAX_NEARBY_ENTITIES = 32;
 
-    private final ItemSpawnerCore.SpawnerCoreItemHandler inventory = new ItemSpawnerCore.SpawnerCoreItemHandler(this);
+    private final SpawnerCoreItem.SpawnerCoreItemHandler inventory = new SpawnerCoreItem.SpawnerCoreItemHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     @GuiSynced
     public VacuumTrapBlockEntity.Problems problem = VacuumTrapBlockEntity.Problems.OK;

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
@@ -33,7 +33,7 @@ import net.minecraftforge.items.SlotItemHandler;
 import javax.annotation.Nonnull;
 
 public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> {
-    private final ItemMinigun.MagazineHandler gunInv;
+    private final MinigunItem.MagazineHandler gunInv;
     private final InteractionHand hand;
 
     public MinigunMagazineMenu(int i, Inventory playerInventory, @SuppressWarnings("unused") FriendlyByteBuf buffer) {
@@ -44,7 +44,7 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
         super(ModMenuTypes.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
         this.hand = hand;
 
-        ItemMinigun minigun = (ItemMinigun) playerInventory.player.getItemInHand(hand).getItem();
+        MinigunItem minigun = (MinigunItem) playerInventory.player.getItemInHand(hand).getItem();
         gunInv = minigun.getMagazine(playerInventory.player.getItemInHand(hand));
         for (int i = 0; i < gunInv.getSlots(); i++) {
             addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
@@ -68,15 +68,15 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
     @Nonnull
     @Override
     public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
-        if (clickType == ClickType.CLONE && dragType == 2 && slotId >= 0 && slotId < ItemMinigun.MAGAZINE_SIZE) {
+        if (clickType == ClickType.CLONE && dragType == 2 && slotId >= 0 && slotId < MinigunItem.MAGAZINE_SIZE) {
             // middle-click to lock a slot
             ItemStack gunStack = player.getItemInHand(hand);
-            if (gunStack.getItem() instanceof ItemMinigun) {
-                int slot = ItemMinigun.getLockedSlot(gunStack);
+            if (gunStack.getItem() instanceof MinigunItem) {
+                int slot = MinigunItem.getLockedSlot(gunStack);
                 if (slot == slotId) {
-                    NBTUtils.removeTag(gunStack, ItemMinigun.NBT_LOCKED_SLOT);
+                    NBTUtils.removeTag(gunStack, MinigunItem.NBT_LOCKED_SLOT);
                 } else {
-                    NBTUtils.setInteger(gunStack, ItemMinigun.NBT_LOCKED_SLOT, slotId);
+                    NBTUtils.setInteger(gunStack, MinigunItem.NBT_LOCKED_SLOT, slotId);
                 }
                 if (player.level.isClientSide) {
                     player.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1.0f);

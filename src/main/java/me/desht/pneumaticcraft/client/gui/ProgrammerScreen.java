@@ -38,8 +38,8 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.inventory.ProgrammerMenu;
-import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
+import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
@@ -1118,7 +1118,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     private boolean mouseClickedWithPosProvider(double mouseX, double mouseY, IProgWidget hovered, ItemStack heldItem) {
-        ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof ItemGPSAreaTool ? ItemGPSAreaTool.getArea(minecraft.player, heldItem) : null;
+        ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof GPSAreaToolItem ? GPSAreaToolItem.getArea(minecraft.player, heldItem) : null;
         if (hovered != null) {
             // clicked an existing widget: update any area or coordinate widgets from the held item
             if (areaToolWidget != null && hovered instanceof ProgWidgetArea) {
@@ -1132,12 +1132,12 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 if (hovered instanceof ProgWidgetCoordinate) {
                     ((ProgWidgetCoordinate) hovered).loadFromGPSTool(heldItem);
                 } else if (hovered instanceof ProgWidgetArea areaHovered) {
-                    ItemGPSTool.getGPSLocation(ClientUtils.getClientPlayer().getUUID(), heldItem).ifPresent(gpsPos -> {
+                    GPSToolItem.getGPSLocation(ClientUtils.getClientPlayer().getUUID(), heldItem).ifPresent(gpsPos -> {
                         areaHovered.setPos(0, gpsPos);
                         areaHovered.setPos(1, gpsPos);
                     });
-                    areaHovered.setVarName(0, ItemGPSTool.getVariable(heldItem));
-                    areaHovered.setVarName(1, ItemGPSTool.getVariable(heldItem));
+                    areaHovered.setVarName(0, GPSToolItem.getVariable(heldItem));
+                    areaHovered.setVarName(1, GPSToolItem.getVariable(heldItem));
                 }
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
             }
@@ -1153,8 +1153,8 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 }
             } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                 if (Screen.hasShiftDown()) {
-                    ProgWidgetArea areaWidget = ProgWidgetArea.fromPosition(ItemGPSTool.getGPSLocation(heldItem).orElse(BlockPos.ZERO));
-                    String var = ItemGPSTool.getVariable(heldItem);
+                    ProgWidgetArea areaWidget = ProgWidgetArea.fromPosition(GPSToolItem.getGPSLocation(heldItem).orElse(BlockPos.ZERO));
+                    String var = GPSToolItem.getVariable(heldItem);
                     if (!var.isEmpty()) areaWidget.setVarName(0, var);
                     toCreate.add(areaWidget);
                 } else {

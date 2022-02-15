@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.DroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.DroneDebugHandler;
@@ -98,7 +98,7 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     public static boolean enabledForPlayer(Player player) {
-        if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
+        if (PneumaticArmorItem.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             return handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.DISPENSER.get()) > 0;
         } else {

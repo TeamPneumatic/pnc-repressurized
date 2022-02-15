@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinate;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.resources.language.I18n;
@@ -103,8 +103,8 @@ public class ProgWidgetCoordinateScreen extends ProgWidgetAreaShowScreen<ProgWid
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             BlockPos coord = progWidget.getRawCoordinate().orElse(BlockPos.ZERO);
             ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
-            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gpsStack, coord);
-            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack).isPresent() ? gpsStack : ItemStack.EMPTY);
+            GPSToolItem.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gpsStack, coord);
+            invSearchGui.setSearchStack(GPSToolItem.getGPSLocation(gpsStack).isPresent() ? gpsStack : ItemStack.EMPTY);
         }
     }
 

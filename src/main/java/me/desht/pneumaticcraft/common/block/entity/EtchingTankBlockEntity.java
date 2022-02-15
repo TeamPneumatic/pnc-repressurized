@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.EtchingTankMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
+import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
@@ -106,9 +106,9 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
                 for (int i = 0; i < ETCHING_SLOTS; i++) {
                     ItemStack stack = itemHandler.getStackInSlot(i);
                     if (!stack.isEmpty()) {
-                        int etchProgress = ItemEmptyPCB.getEtchProgress(stack);
+                        int etchProgress = EmptyPCBItem.getEtchProgress(stack);
                         if (etchProgress < 100) {
-                            ItemEmptyPCB.setEtchProgress(stack, etchProgress + 1);
+                            EmptyPCBItem.setEtchProgress(stack, etchProgress + 1);
                             didWork = true;
                         } else if (!isOutputFull() && !isFailedOutputFull()) {
                             int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);

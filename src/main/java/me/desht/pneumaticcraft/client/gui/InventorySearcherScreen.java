@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.InventorySearcherMenu;
-import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
+import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -139,7 +139,7 @@ public class InventorySearcherScreen extends AbstractContainerScreen<InventorySe
     }
 
     private int getPosIdx(ItemStack stack) {
-        if (stack.getItem() instanceof ItemGPSAreaTool) {
+        if (stack.getItem() instanceof GPSAreaToolItem) {
             // for gps area tool, RMB is idx 0, LMB is idx 1
             return switch (clickedMouseButton) {
                 case 0 -> 1;  // LMB

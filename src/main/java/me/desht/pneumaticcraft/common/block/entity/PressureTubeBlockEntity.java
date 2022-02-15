@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.IInfluenceDispersing;
@@ -131,8 +131,8 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundTag moduleTag = moduleList.getCompound(i);
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(moduleTag.getString("type")));
-            if (item instanceof ItemTubeModule) {
-                AbstractTubeModule module = ((ItemTubeModule) item).createModule();
+            if (item instanceof TubeModuleItem) {
+                AbstractTubeModule module = ((TubeModuleItem) item).createModule();
                 module.readFromNBT(moduleTag);
                 AbstractTubeModule oldModule = getModule(module.getDirection());
                 if (oldModule != null && !oldModule.getType().equals(module.getType())) {

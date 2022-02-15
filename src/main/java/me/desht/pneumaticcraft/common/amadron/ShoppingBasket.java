@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu.EnumProblemState;
-import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderResponse;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
@@ -113,8 +113,8 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
 
         EnumProblemState problem = EnumProblemState.NO_PROBLEMS;
 
-        LazyOptional<IItemHandler> itemCap = ItemAmadronTablet.getItemCapability(tablet);
-        LazyOptional<IFluidHandler> fluidCap = ItemAmadronTablet.getFluidCapability(tablet);
+        LazyOptional<IItemHandler> itemCap = AmadronTabletItem.getItemCapability(tablet);
+        LazyOptional<IFluidHandler> fluidCap = AmadronTabletItem.getFluidCapability(tablet);
 
         CountedItemStacks itemAmounts = itemCap.map(CountedItemStacks::new).orElse(new CountedItemStacks());
         Map<Fluid, Integer> fluidAmounts = countFluids(fluidCap);

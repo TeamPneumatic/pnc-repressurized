@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.HackOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.HackHandler;
@@ -91,7 +91,7 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
     }
 
     public static boolean enabledForPlayer(Player player) {
-        return ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)
+        return PneumaticArmorItem.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)
                 && CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.SECURITY.get()) > 0;
     }
 

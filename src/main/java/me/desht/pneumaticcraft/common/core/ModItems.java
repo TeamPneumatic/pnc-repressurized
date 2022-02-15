@@ -25,8 +25,10 @@ import me.desht.pneumaticcraft.common.core.ModUpgrades.BuiltinUpgrade;
 import me.desht.pneumaticcraft.common.entity.drone.*;
 import me.desht.pneumaticcraft.common.fluid.FluidPlastic;
 import me.desht.pneumaticcraft.common.item.*;
-import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
+import me.desht.pneumaticcraft.common.item.DrillBitItem.DrillBitType;
+import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;
+import me.desht.pneumaticcraft.common.item.logistics.*;
+import me.desht.pneumaticcraft.common.item.minigun.*;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.tubemodules.*;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -65,8 +67,8 @@ public class ModItems {
     public static final RegistryObject<Item> WHEAT_FLOUR = register("wheat_flour");
     public static final RegistryObject<Item> SOURDOUGH = register("sourdough");
     public static final RegistryObject<Item> SPAWNER_CORE_SHELL = register("spawner_core_shell");
-    public static final RegistryObject<Item> REINFORCED_CHEST_KIT = register("reinforced_chest_kit", ItemChestUpgradeKit.ItemReinforcedChestKit::new);
-    public static final RegistryObject<Item> SMART_CHEST_KIT = register("smart_chest_kit", ItemChestUpgradeKit.ItemSmartChestKit::new);
+    public static final RegistryObject<Item> REINFORCED_CHEST_KIT = register("reinforced_chest_kit", AbstractChestUpgradeKitItem.Reinforced::new);
+    public static final RegistryObject<Item> SMART_CHEST_KIT = register("smart_chest_kit", AbstractChestUpgradeKitItem.Smart::new);
     public static final RegistryObject<Item> RAW_SALMON_TEMPURA = register("raw_salmon_tempura");
     public static final RegistryObject<Item> UNASSEMBLED_NETHERITE_DRILL_BIT = register("unassembled_netherite_drill_bit");
 
@@ -75,100 +77,100 @@ public class ModItems {
     public static final RegistryObject<Item> COD_N_CHIPS = registerFood("cod_n_chips", ModFoods.COD_N_CHIPS);
     public static final RegistryObject<Item> SALMON_TEMPURA = registerFood("salmon_tempura", ModFoods.SALMON_TEMPURA);
 
-    public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool", ItemGPSTool::new);
-    public static final RegistryObject<ItemGPSAreaTool> GPS_AREA_TOOL = register("gps_area_tool", ItemGPSAreaTool::new);
-    public static final RegistryObject<ItemRemote> REMOTE = register("remote", ItemRemote::new);
-    public static final RegistryObject<ItemSeismicSensor> SEISMIC_SENSOR = register("seismic_sensor", ItemSeismicSensor::new);
-    public static final RegistryObject<ItemMicromissiles> MICROMISSILES = register("micromissiles", ItemMicromissiles::new);
-    public static final RegistryObject<ItemMemoryStick> MEMORY_STICK = register("memory_stick", ItemMemoryStick::new);
-    public static final RegistryObject<ItemTagFilter> TAG_FILTER = register("tag_filter", ItemTagFilter::new);
-    public static final RegistryObject<ItemGlycerol> GLYCEROL = register("glycerol", ItemGlycerol::new);
-    public static final RegistryObject<ItemBandage> BANDAGE = register("bandage", ItemBandage::new);
-    public static final RegistryObject<ItemSpawnerCore> SPAWNER_CORE = register("spawner_core", ItemSpawnerCore::new);
+    public static final RegistryObject<GPSToolItem> GPS_TOOL = register("gps_tool", GPSToolItem::new);
+    public static final RegistryObject<GPSAreaToolItem> GPS_AREA_TOOL = register("gps_area_tool", GPSAreaToolItem::new);
+    public static final RegistryObject<RemoteItem> REMOTE = register("remote", RemoteItem::new);
+    public static final RegistryObject<SeismicSensorItem> SEISMIC_SENSOR = register("seismic_sensor", SeismicSensorItem::new);
+    public static final RegistryObject<MicromissilesItem> MICROMISSILES = register("micromissiles", MicromissilesItem::new);
+    public static final RegistryObject<MemoryStickItem> MEMORY_STICK = register("memory_stick", MemoryStickItem::new);
+    public static final RegistryObject<TagFilterItem> TAG_FILTER = register("tag_filter", TagFilterItem::new);
+    public static final RegistryObject<GlycerolItem> GLYCEROL = register("glycerol", GlycerolItem::new);
+    public static final RegistryObject<BandageItem> BANDAGE = register("bandage", BandageItem::new);
+    public static final RegistryObject<SpawnerCoreItem> SPAWNER_CORE = register("spawner_core", SpawnerCoreItem::new);
 
-    public static final RegistryObject<ItemPressurizable> AIR_CANISTER = register("air_canister",
-            ItemAirCanister.Basic::new);
-    public static final RegistryObject<ItemPressurizable> REINFORCED_AIR_CANISTER = register("reinforced_air_canister",
-            ItemAirCanister.Reinforced::new);
-    public static final RegistryObject<ItemVortexCannon> VORTEX_CANNON = register("vortex_cannon",
-            ItemVortexCannon::new);
-    public static final RegistryObject<ItemPneumaticWrench> PNEUMATIC_WRENCH = register("pneumatic_wrench",
-            ItemPneumaticWrench::new);
-    public static final RegistryObject<ItemManometer> MANOMETER = register("manometer",
-            ItemManometer::new);
-    public static final RegistryObject<ItemLogisticsConfigurator> LOGISTICS_CONFIGURATOR = register("logistics_configurator",
-            ItemLogisticsConfigurator::new);
-    public static final RegistryObject<ItemAmadronTablet> AMADRON_TABLET = register("amadron_tablet",
-            ItemAmadronTablet::new);
-    public static final RegistryObject<ItemMinigun> MINIGUN = register("minigun",
-            ItemMinigun::new);
-    public static final RegistryObject<ItemCamoApplicator> CAMO_APPLICATOR = register("camo_applicator",
-            ItemCamoApplicator::new);
-    public static final RegistryObject<ItemJackHammer> JACKHAMMER = register("jackhammer",
-            ItemJackHammer::new);
+    public static final RegistryObject<PressurizableItem> AIR_CANISTER = register("air_canister",
+            AbstractAirCanisterItem.Basic::new);
+    public static final RegistryObject<PressurizableItem> REINFORCED_AIR_CANISTER = register("reinforced_air_canister",
+            AbstractAirCanisterItem.Reinforced::new);
+    public static final RegistryObject<VortexCannonItem> VORTEX_CANNON = register("vortex_cannon",
+            VortexCannonItem::new);
+    public static final RegistryObject<PneumaticWrenchItem> PNEUMATIC_WRENCH = register("pneumatic_wrench",
+            PneumaticWrenchItem::new);
+    public static final RegistryObject<ManometerItem> MANOMETER = register("manometer",
+            ManometerItem::new);
+    public static final RegistryObject<LogisticsConfiguratorItem> LOGISTICS_CONFIGURATOR = register("logistics_configurator",
+            LogisticsConfiguratorItem::new);
+    public static final RegistryObject<AmadronTabletItem> AMADRON_TABLET = register("amadron_tablet",
+            AmadronTabletItem::new);
+    public static final RegistryObject<MinigunItem> MINIGUN = register("minigun",
+            MinigunItem::new);
+    public static final RegistryObject<CamoApplicatorItem> CAMO_APPLICATOR = register("camo_applicator",
+            CamoApplicatorItem::new);
+    public static final RegistryObject<JackHammerItem> JACKHAMMER = register("jackhammer",
+            JackHammerItem::new);
 
     public static final RegistryObject<Item> COMPRESSED_IRON_HELMET = register("compressed_iron_helmet",
-            () -> new ItemCompressedIronArmor(EquipmentSlot.HEAD));
+            () -> new CompressedIronArmorItem(EquipmentSlot.HEAD));
     public static final RegistryObject<Item> COMPRESSED_IRON_CHESTPLATE = register("compressed_iron_chestplate",
-            () -> new ItemCompressedIronArmor(EquipmentSlot.CHEST));
+            () -> new CompressedIronArmorItem(EquipmentSlot.CHEST));
     public static final RegistryObject<Item> COMPRESSED_IRON_LEGGINGS = register("compressed_iron_leggings",
-            () -> new ItemCompressedIronArmor(EquipmentSlot.LEGS));
+            () -> new CompressedIronArmorItem(EquipmentSlot.LEGS));
     public static final RegistryObject<Item> COMPRESSED_IRON_BOOTS = register("compressed_iron_boots",
-            () -> new ItemCompressedIronArmor(EquipmentSlot.FEET));
+            () -> new CompressedIronArmorItem(EquipmentSlot.FEET));
 
-    public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_HELMET = register("pneumatic_helmet",
-            () -> new ItemPneumaticArmor(EquipmentSlot.HEAD));
-    public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_CHESTPLATE = register("pneumatic_chestplate",
-            () -> new ItemPneumaticArmor(EquipmentSlot.CHEST));
-    public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_LEGGINGS = register("pneumatic_leggings",
-            () -> new ItemPneumaticArmor(EquipmentSlot.LEGS));
-    public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_BOOTS = register("pneumatic_boots",
-            () -> new ItemPneumaticArmor(EquipmentSlot.FEET));
+    public static final RegistryObject<PneumaticArmorItem> PNEUMATIC_HELMET = register("pneumatic_helmet",
+            () -> new PneumaticArmorItem(EquipmentSlot.HEAD));
+    public static final RegistryObject<PneumaticArmorItem> PNEUMATIC_CHESTPLATE = register("pneumatic_chestplate",
+            () -> new PneumaticArmorItem(EquipmentSlot.CHEST));
+    public static final RegistryObject<PneumaticArmorItem> PNEUMATIC_LEGGINGS = register("pneumatic_leggings",
+            () -> new PneumaticArmorItem(EquipmentSlot.LEGS));
+    public static final RegistryObject<PneumaticArmorItem> PNEUMATIC_BOOTS = register("pneumatic_boots",
+            () -> new PneumaticArmorItem(EquipmentSlot.FEET));
 
-    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_LASER = register(AssemblyRecipe.AssemblyProgramType.LASER);
-    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL = register(AssemblyRecipe.AssemblyProgramType.DRILL);
-    public static final RegistryObject<ItemAssemblyProgram> ASSEMBLY_PROGRAM_DRILL_LASER = register(AssemblyRecipe.AssemblyProgramType.DRILL_LASER);
+    public static final RegistryObject<AssemblyProgramItem> ASSEMBLY_PROGRAM_LASER = register(AssemblyRecipe.AssemblyProgramType.LASER);
+    public static final RegistryObject<AssemblyProgramItem> ASSEMBLY_PROGRAM_DRILL = register(AssemblyRecipe.AssemblyProgramType.DRILL);
+    public static final RegistryObject<AssemblyProgramItem> ASSEMBLY_PROGRAM_DRILL_LASER = register(AssemblyRecipe.AssemblyProgramType.DRILL_LASER);
 
-    public static final RegistryObject<ItemEmptyPCB> EMPTY_PCB = register("empty_pcb",
-            ItemEmptyPCB::new);
-    public static final RegistryObject<ItemNonDespawning> UNASSEMBLED_PCB = register("unassembled_pcb",
-            ItemNonDespawning::new);
-    public static final RegistryObject<ItemNonDespawning> FAILED_PCB = register("failed_pcb",
-            ItemNonDespawning::new);
+    public static final RegistryObject<EmptyPCBItem> EMPTY_PCB = register("empty_pcb",
+            EmptyPCBItem::new);
+    public static final RegistryObject<NonDespawningItem> UNASSEMBLED_PCB = register("unassembled_pcb",
+            NonDespawningItem::new);
+    public static final RegistryObject<NonDespawningItem> FAILED_PCB = register("failed_pcb",
+            NonDespawningItem::new);
 
-    public static final RegistryObject<ItemNetworkComponent> DIAGNOSTIC_SUBROUTINE = register(NetworkComponentType.DIAGNOSTIC_SUBROUTINE);
-    public static final RegistryObject<ItemNetworkComponent> NETWORK_API = register(NetworkComponentType.NETWORK_API);
-    public static final RegistryObject<ItemNetworkComponent> NETWORK_DATA_STORAGE = register(NetworkComponentType.NETWORK_DATA_STORAGE);
-    public static final RegistryObject<ItemNetworkComponent> NETWORK_IO_PORT = register(NetworkComponentType.NETWORK_IO_PORT);
-    public static final RegistryObject<ItemNetworkComponent> NETWORK_REGISTRY = register(NetworkComponentType.NETWORK_REGISTRY);
-    public static final RegistryObject<ItemNetworkComponent> NETWORK_NODE = register(NetworkComponentType.NETWORK_NODE);
+    public static final RegistryObject<NetworkComponentItem> DIAGNOSTIC_SUBROUTINE = register(NetworkComponentType.DIAGNOSTIC_SUBROUTINE);
+    public static final RegistryObject<NetworkComponentItem> NETWORK_API = register(NetworkComponentType.NETWORK_API);
+    public static final RegistryObject<NetworkComponentItem> NETWORK_DATA_STORAGE = register(NetworkComponentType.NETWORK_DATA_STORAGE);
+    public static final RegistryObject<NetworkComponentItem> NETWORK_IO_PORT = register(NetworkComponentType.NETWORK_IO_PORT);
+    public static final RegistryObject<NetworkComponentItem> NETWORK_REGISTRY = register(NetworkComponentType.NETWORK_REGISTRY);
+    public static final RegistryObject<NetworkComponentItem> NETWORK_NODE = register(NetworkComponentType.NETWORK_NODE);
 
-    public static final RegistryObject<ItemDrillBit> IRON_DRILL_BIT = register(DrillBitType.IRON);
-    public static final RegistryObject<ItemDrillBit> COMPRESSED_IRON_DRILL_BIT = register(DrillBitType.COMPRESSED_IRON);
-    public static final RegistryObject<ItemDrillBit> DIAMOND_DRILL_BIT = register(DrillBitType.DIAMOND);
-    public static final RegistryObject<ItemDrillBit> NETHERITE_DRILL_BIT = register(DrillBitType.NETHERITE);
+    public static final RegistryObject<DrillBitItem> IRON_DRILL_BIT = register(DrillBitType.IRON);
+    public static final RegistryObject<DrillBitItem> COMPRESSED_IRON_DRILL_BIT = register(DrillBitType.COMPRESSED_IRON);
+    public static final RegistryObject<DrillBitItem> DIAMOND_DRILL_BIT = register(DrillBitType.DIAMOND);
+    public static final RegistryObject<DrillBitItem> NETHERITE_DRILL_BIT = register(DrillBitType.NETHERITE);
 
-    public static final RegistryObject<ItemDrone> DRONE = register("drone",
-            () -> new ItemDrone(DroneEntity::new, true, DyeColor.WHITE));
-    public static final RegistryObject<ItemDrone> LOGISTICS_DRONE = register("logistics_drone",
-            () -> new ItemDrone(LogisticsDroneEntity::new, false, DyeColor.RED));
-    public static final RegistryObject<ItemDrone> HARVESTING_DRONE = register("harvesting_drone",
-            () -> new ItemDrone(HarvestingDroneEntity::new, false, DyeColor.GREEN));
-    public static final RegistryObject<ItemDrone> GUARD_DRONE = register("guard_drone",
-            () -> new ItemDrone(GuardDroneEntity::new, false, DyeColor.BLUE));
-    public static final RegistryObject<ItemDrone> COLLECTOR_DRONE = register("collector_drone",
-            () -> new ItemDrone(CollectorDroneEntity::new, false, DyeColor.YELLOW));
+    public static final RegistryObject<DroneItem> DRONE = register("drone",
+            () -> new DroneItem(DroneEntity::new, true, DyeColor.WHITE));
+    public static final RegistryObject<DroneItem> LOGISTICS_DRONE = register("logistics_drone",
+            () -> new DroneItem(LogisticsDroneEntity::new, false, DyeColor.RED));
+    public static final RegistryObject<DroneItem> HARVESTING_DRONE = register("harvesting_drone",
+            () -> new DroneItem(HarvestingDroneEntity::new, false, DyeColor.GREEN));
+    public static final RegistryObject<DroneItem> GUARD_DRONE = register("guard_drone",
+            () -> new DroneItem(GuardDroneEntity::new, false, DyeColor.BLUE));
+    public static final RegistryObject<DroneItem> COLLECTOR_DRONE = register("collector_drone",
+            () -> new DroneItem(CollectorDroneEntity::new, false, DyeColor.YELLOW));
 
-    public static final RegistryObject<ItemLogisticsFrameRequester> LOGISTICS_FRAME_REQUESTER = register("logistics_frame_requester",
-            ItemLogisticsFrameRequester::new);
-    public static final RegistryObject<ItemLogisticsFrameStorage> LOGISTICS_FRAME_STORAGE = register("logistics_frame_storage",
-            ItemLogisticsFrameStorage::new);
-    public static final RegistryObject<ItemLogisticsFrameDefaultStorage> LOGISTICS_FRAME_DEFAULT_STORAGE = register("logistics_frame_default_storage",
-            ItemLogisticsFrameDefaultStorage::new);
-    public static final RegistryObject<ItemLogisticsFramePassiveProvider> LOGISTICS_FRAME_PASSIVE_PROVIDER = register("logistics_frame_passive_provider",
-            ItemLogisticsFramePassiveProvider::new);
-    public static final RegistryObject<ItemLogisticsFrameActiveProvider> LOGISTICS_FRAME_ACTIVE_PROVIDER = register("logistics_frame_active_provider",
-            ItemLogisticsFrameActiveProvider::new);
+    public static final RegistryObject<LogisticsFrameRequesterItem> LOGISTICS_FRAME_REQUESTER = register("logistics_frame_requester",
+            LogisticsFrameRequesterItem::new);
+    public static final RegistryObject<LogisticsFrameStorageItem> LOGISTICS_FRAME_STORAGE = register("logistics_frame_storage",
+            LogisticsFrameStorageItem::new);
+    public static final RegistryObject<LogisticsFrameDefaultStorageItem> LOGISTICS_FRAME_DEFAULT_STORAGE = register("logistics_frame_default_storage",
+            LogisticsFrameDefaultStorageItem::new);
+    public static final RegistryObject<LogisticsFramePassiveProviderItem> LOGISTICS_FRAME_PASSIVE_PROVIDER = register("logistics_frame_passive_provider",
+            LogisticsFramePassiveProviderItem::new);
+    public static final RegistryObject<LogisticsFrameActiveProviderItem> LOGISTICS_FRAME_ACTIVE_PROVIDER = register("logistics_frame_active_provider",
+            LogisticsFrameActiveProviderItem::new);
 
     public static final RegistryObject<SemiblockItem> HEAT_FRAME = register("heat_frame",
             SemiblockItem::new);
@@ -179,35 +181,35 @@ public class ModItems {
     public static final RegistryObject<SemiblockItem> TRANSFER_GADGET = register("transfer_gadget",
             SemiblockItem::new);
 
-    public static final RegistryObject<ItemGunAmmoStandard> GUN_AMMO = register("gun_ammo",
-            ItemGunAmmoStandard::new);
-    public static final RegistryObject<ItemGunAmmoIncendiary> GUN_AMMO_INCENDIARY = register("gun_ammo_incendiary",
-            ItemGunAmmoIncendiary::new);
-    public static final RegistryObject<ItemGunAmmoWeighted> GUN_AMMO_WEIGHTED = register("gun_ammo_weighted",
-            ItemGunAmmoWeighted::new);
-    public static final RegistryObject<ItemGunAmmoArmorPiercing> GUN_AMMO_AP = register("gun_ammo_ap",
-            ItemGunAmmoArmorPiercing::new);
-    public static final RegistryObject<ItemGunAmmoExplosive> GUN_AMMO_EXPLOSIVE = register("gun_ammo_explosive",
-            ItemGunAmmoExplosive::new);
-    public static final RegistryObject<ItemGunAmmoFreezing> GUN_AMMO_FREEZING = register("gun_ammo_freezing",
-            ItemGunAmmoFreezing::new);
+    public static final RegistryObject<StandardGunAmmoItem> GUN_AMMO = register("gun_ammo",
+            StandardGunAmmoItem::new);
+    public static final RegistryObject<IncendiaryGunAmmoItem> GUN_AMMO_INCENDIARY = register("gun_ammo_incendiary",
+            IncendiaryGunAmmoItem::new);
+    public static final RegistryObject<WeightedGunAmmoItem> GUN_AMMO_WEIGHTED = register("gun_ammo_weighted",
+            WeightedGunAmmoItem::new);
+    public static final RegistryObject<ArmorPiercingGunAmmoItem> GUN_AMMO_AP = register("gun_ammo_ap",
+            ArmorPiercingGunAmmoItem::new);
+    public static final RegistryObject<ExplosiveGunAmmoItem> GUN_AMMO_EXPLOSIVE = register("gun_ammo_explosive",
+            ExplosiveGunAmmoItem::new);
+    public static final RegistryObject<FreezingGunAmmoItem> GUN_AMMO_FREEZING = register("gun_ammo_freezing",
+            FreezingGunAmmoItem::new);
 
-    public static final RegistryObject<ItemTubeModule> SAFETY_TUBE_MODULE = register("safety_tube_module",
-            () -> new ItemTubeModule(SafetyValveModule::new));
-    public static final RegistryObject<ItemTubeModule> PRESSURE_GAUGE_MODULE = register("pressure_gauge_module",
-            () -> new ItemTubeModule(PressureGaugeModule::new));
-    public static final RegistryObject<ItemTubeModule> FLOW_DETECTOR_MODULE = register("flow_detector_module",
-            () -> new ItemTubeModule(FlowDetectorModule::new));
-    public static final RegistryObject<ItemTubeModule> AIR_GRATE_MODULE = register("air_grate_module",
-            () -> new ItemTubeModule(AirGrateModule::new));
-    public static final RegistryObject<ItemTubeModule> REGULATOR_TUBE_MODULE = register("regulator_tube_module",
-            () -> new ItemTubeModule(RegulatorModule::new));
-    public static final RegistryObject<ItemTubeModule> CHARGING_MODULE = register("charging_module",
-            () -> new ItemTubeModule(ChargingModule::new));
-    public static final RegistryObject<ItemTubeModule> LOGISTICS_MODULE = register("logistics_module",
-            () -> new ItemTubeModule(LogisticsModule::new));
-    public static final RegistryObject<ItemTubeModule> REDSTONE_MODULE = register("redstone_module",
-            () -> new ItemTubeModule(RedstoneModule::new));
+    public static final RegistryObject<TubeModuleItem> SAFETY_TUBE_MODULE = register("safety_tube_module",
+            () -> new TubeModuleItem(SafetyValveModule::new));
+    public static final RegistryObject<TubeModuleItem> PRESSURE_GAUGE_MODULE = register("pressure_gauge_module",
+            () -> new TubeModuleItem(PressureGaugeModule::new));
+    public static final RegistryObject<TubeModuleItem> FLOW_DETECTOR_MODULE = register("flow_detector_module",
+            () -> new TubeModuleItem(FlowDetectorModule::new));
+    public static final RegistryObject<TubeModuleItem> AIR_GRATE_MODULE = register("air_grate_module",
+            () -> new TubeModuleItem(AirGrateModule::new));
+    public static final RegistryObject<TubeModuleItem> REGULATOR_TUBE_MODULE = register("regulator_tube_module",
+            () -> new TubeModuleItem(RegulatorModule::new));
+    public static final RegistryObject<TubeModuleItem> CHARGING_MODULE = register("charging_module",
+            () -> new TubeModuleItem(ChargingModule::new));
+    public static final RegistryObject<TubeModuleItem> LOGISTICS_MODULE = register("logistics_module",
+            () -> new TubeModuleItem(LogisticsModule::new));
+    public static final RegistryObject<TubeModuleItem> REDSTONE_MODULE = register("redstone_module",
+            () -> new TubeModuleItem(RedstoneModule::new));
 
     public static final RegistryObject<BucketItem> OIL_BUCKET = registerBucket("oil_bucket",
             ModFluids.OIL);
@@ -285,16 +287,16 @@ public class ModItems {
         return ITEMS.register(name, sup);
     }
 
-    private static RegistryObject<ItemNetworkComponent> register(final NetworkComponentType type) {
-        return register(type.getRegistryName(), () -> new ItemNetworkComponent(type));
+    private static RegistryObject<NetworkComponentItem> register(final NetworkComponentType type) {
+        return register(type.getRegistryName(), () -> new NetworkComponentItem(type));
     }
 
-    private static RegistryObject<ItemAssemblyProgram> register(final AssemblyProgramType type) {
-        return register(type.getRegistryName(), () -> new ItemAssemblyProgram(type));
+    private static RegistryObject<AssemblyProgramItem> register(final AssemblyProgramType type) {
+        return register(type.getRegistryName(), () -> new AssemblyProgramItem(type));
     }
 
-    private static RegistryObject<ItemDrillBit> register(final DrillBitType type) {
-        return register(type.getRegistryName(), () -> new ItemDrillBit(type));
+    private static RegistryObject<DrillBitItem> register(final DrillBitType type) {
+        return register(type.getRegistryName(), () -> new DrillBitItem(type));
     }
 
     private static RegistryObject<Item> register(final String name) {
@@ -314,7 +316,7 @@ public class ModItems {
                 tier -> {
                     String baseName = upgradeDetails.getName() + "_upgrade";
                     String itemName = upgradeDetails.getMaxTier() > 1 ? baseName + "_" + tier : baseName;
-                    register(itemName, () -> new ItemUpgrade(upgrade, tier));
+                    register(itemName, () -> new UpgradeItem(upgrade, tier));
                 }
         );
     }

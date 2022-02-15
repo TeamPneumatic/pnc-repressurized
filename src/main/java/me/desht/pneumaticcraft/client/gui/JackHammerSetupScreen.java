@@ -23,10 +23,10 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.JackhammerSetupMenu;
-import me.desht.pneumaticcraft.common.item.ItemDrillBit;
-import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
-import me.desht.pneumaticcraft.common.item.ItemJackHammer;
-import me.desht.pneumaticcraft.common.item.ItemJackHammer.DigMode;
+import me.desht.pneumaticcraft.common.item.DrillBitItem;
+import me.desht.pneumaticcraft.common.item.DrillBitItem.DrillBitType;
+import me.desht.pneumaticcraft.common.item.JackHammerItem;
+import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -57,7 +57,7 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
 
         ItemStack hammerStack = ClientUtils.getClientPlayer().getItemInHand(menu.getHand());
 
-        DigMode digMode = ItemJackHammer.getDigMode(hammerStack);
+        DigMode digMode = JackHammerItem.getDigMode(hammerStack);
 
         if (digMode != null) {
             addRenderableWidget(selectorButton = new WidgetButtonExtended(leftPos + 127, topPos + 67, 20, 20,
@@ -106,12 +106,12 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
 
     private void updateDigModeButtons() {
         ItemStack drillStack = menu.getSlot(0).getItem();
-        DrillBitType bitType = drillStack.getItem() instanceof ItemDrillBit ?
-                ((ItemDrillBit) drillStack.getItem()).getType() :
+        DrillBitType bitType = drillStack.getItem() instanceof DrillBitItem ?
+                ((DrillBitItem) drillStack.getItem()).getType() :
                 DrillBitType.NONE;
 
         ItemStack hammerStack = ClientUtils.getClientPlayer().getItemInHand(menu.getHand());
-        DigMode digMode = ItemJackHammer.getDigMode(hammerStack);
+        DigMode digMode = JackHammerItem.getDigMode(hammerStack);
         if (digMode == null) digMode = DigMode.MODE_1X1;
 
         typeButtons.forEach((dm, button) -> button.active = bitType.getHarvestLevel() >= dm.getBitType().getHarvestLevel());

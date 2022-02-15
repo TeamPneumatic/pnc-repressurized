@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
@@ -168,10 +168,10 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         Player player = commonArmorHandler.getPlayer();
         ItemStack armorStack = player.getItemBySlot(EquipmentSlot.FEET);
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
-        jbLocal.flightStabilizers = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, false);
-        jbLocal.jetBootsPower = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, 100, 0, 100) / 100f;
-        jbLocal.smartHover = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_SMART_HOVER, false);
-        boolean jetBootsBuilderMode = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_BUILDER_MODE, false);
+        jbLocal.flightStabilizers = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, false);
+        jbLocal.jetBootsPower = PneumaticArmorItem.getIntData(armorStack, PneumaticArmorItem.NBT_JET_BOOTS_POWER, 100, 0, 100) / 100f;
+        jbLocal.smartHover = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_SMART_HOVER, false);
+        boolean jetBootsBuilderMode = PneumaticArmorItem.getBooleanData(armorStack, PneumaticArmorItem.NBT_BUILDER_MODE, false);
         JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
         JetBootsStateTracker.getTracker(player).setJetBootsState(player, jbState.isEnabled(), jbState.isActive(), jetBootsBuilderMode);
     }
@@ -190,13 +190,13 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         Player player = commonArmorHandler.getPlayer();
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
         switch (tagName) {
-            case ItemPneumaticArmor.NBT_BUILDER_MODE ->
+            case PneumaticArmorItem.NBT_BUILDER_MODE ->
                     JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(((ByteTag) inbt).getAsByte() == 1);
-            case ItemPneumaticArmor.NBT_JET_BOOTS_POWER ->
+            case PneumaticArmorItem.NBT_JET_BOOTS_POWER ->
                     jbLocal.jetBootsPower = Mth.clamp(((IntTag) inbt).getAsInt() / 100f, 0f, 1f);
-            case ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS ->
+            case PneumaticArmorItem.NBT_FLIGHT_STABILIZERS ->
                     jbLocal.flightStabilizers = ((ByteTag) inbt).getAsByte() == 1;
-            case ItemPneumaticArmor.NBT_SMART_HOVER ->
+            case PneumaticArmorItem.NBT_SMART_HOVER ->
                     jbLocal.smartHover = ((ByteTag) inbt).getAsByte() == 1;
         }
     }

@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
@@ -469,7 +469,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
                 requireArgs(args, 4, "slot, x, y, z");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                 if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-                    ItemGPSTool.setGPSLocation(null, stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
+                    GPSToolItem.setGPSLocation(null, stack, new BlockPos((Double) args[1], (Double) args[2], (Double) args[3]));
                     return new Object[]{true};
                 } else {
                     return new Object[]{false};
@@ -483,7 +483,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
                 requireArgs(args, 1, "upgrade_slot");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                 if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-                    return ItemGPSTool.getGPSLocation(stack)
+                    return GPSToolItem.getGPSLocation(stack)
                             .map(pos -> new Object[]{pos.getX(), pos.getY(), pos.getZ()})
                             .orElse(new Object[]{0, 0, 0});
                 } else {

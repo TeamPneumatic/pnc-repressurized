@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.item.ItemGunAmmoStandard;
+import me.desht.pneumaticcraft.common.item.minigun.StandardGunAmmoItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -60,7 +60,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
         if (ammo.isEmpty() || potion.isEmpty()) return ItemStack.EMPTY;
 
         ammo = ammo.copy();
-        ItemGunAmmoStandard.setPotion(ammo, potion);
+        StandardGunAmmoItem.setPotion(ammo, potion);
         return ammo;
     }
 

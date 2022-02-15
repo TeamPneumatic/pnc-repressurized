@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.slot.UnstackablePhantomSlot;
-import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -81,7 +81,7 @@ public class AmadronAddTradeMenu extends AbstractPneumaticCraftMenu<AbstractPneu
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer playerIn) {
        if (tag.equals("showAmadron")) {
-           ItemAmadronTablet.openGui(playerIn, getHand(playerIn));
+           AmadronTabletItem.openGui(playerIn, getHand(playerIn));
        }
     }
 

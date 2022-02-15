@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -186,10 +186,10 @@ public class TooltipEventHandler {
     @SubscribeEvent
     public static void gatherComponents(RenderTooltipEvent.GatherComponents event) {
         ItemStack stack = event.getItemStack();
-        if (stack.getItem() instanceof ItemMicromissiles
+        if (stack.getItem() instanceof MicromissilesItem
                 && stack.hasTag()
-                && ItemMicromissiles.getFireMode(stack) == ItemMicromissiles.FireMode.SMART) {
-            event.getTooltipElements().add(Either.right(new ItemMicromissiles.Tooltip(stack)));
+                && MicromissilesItem.getFireMode(stack) == MicromissilesItem.FireMode.SMART) {
+            event.getTooltipElements().add(Either.right(new MicromissilesItem.Tooltip(stack)));
         }
     }
 }

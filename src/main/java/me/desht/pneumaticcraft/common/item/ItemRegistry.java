@@ -89,7 +89,7 @@ public enum ItemRegistry implements IItemRegistry {
 
     @Override
     public Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier) {
-        return new ItemUpgrade(upgrade, tier);
+        return new UpgradeItem(upgrade, tier);
     }
 
     @Override
@@ -131,8 +131,8 @@ public enum ItemRegistry implements IItemRegistry {
 
     @Override
     public ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack) {
-        Validate.isTrue(stack.getItem() instanceof ItemSpawnerCore, "item is not a Spawner Core!");
-        return ItemSpawnerCore.SpawnerCoreStats.forItemStack(stack);
+        Validate.isTrue(stack.getItem() instanceof SpawnerCoreItem, "item is not a Spawner Core!");
+        return SpawnerCoreItem.SpawnerCoreStats.forItemStack(stack);
     }
 
     @Override

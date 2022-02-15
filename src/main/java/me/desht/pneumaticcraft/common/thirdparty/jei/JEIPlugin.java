@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
-import me.desht.pneumaticcraft.common.item.ItemPressurizable;
+import me.desht.pneumaticcraft.common.item.PressurizableItem;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.AmadronAddTradeGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.LogisticsFilterGhost;
@@ -66,7 +66,7 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
-            if (item.get() instanceof ItemPressurizable) {
+            if (item.get() instanceof PressurizableItem) {
                 registration.registerSubtypeInterpreter(item.get(),
                         (s, ctx) -> s.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                                 .map(h2 -> String.valueOf(h2.getPressure()))

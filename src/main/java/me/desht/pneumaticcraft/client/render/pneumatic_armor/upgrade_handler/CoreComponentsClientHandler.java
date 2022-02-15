@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.ChatFormatting;
@@ -78,7 +78,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     @Override
     public void onTriggered(ICommonArmorHandler armorHandler) {
         Minecraft mc = Minecraft.getInstance();
-        if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(mc.player)) {
+        if (PneumaticArmorItem.isPlayerWearingAnyPneumaticArmor(mc.player)) {
             mc.setScreen(ArmorMainScreen.getInstance());
         }
     }
@@ -93,7 +93,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
                 needUpdate = true;
             }
             ItemStack stack = armorHandler.getPlayer().getItemBySlot(slot);
-            pressureButtons.get(i).setRenderStacks(stack.getItem() instanceof ItemPneumaticArmor ? stack : ItemStack.EMPTY);
+            pressureButtons.get(i).setRenderStacks(stack.getItem() instanceof PneumaticArmorItem ? stack : ItemStack.EMPTY);
         }
         if (needUpdate) {
             List<Component> l = Arrays.stream(ArmorUpgradeRegistry.ARMOR_SLOTS)
@@ -127,7 +127,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     }
 
     private Component getPressureStr(ICommonArmorHandler handler, EquipmentSlot slot) {
-        if (!ItemPneumaticArmor.isPneumaticArmorPiece(handler.getPlayer(), slot))
+        if (!PneumaticArmorItem.isPneumaticArmorPiece(handler.getPlayer(), slot))
             return NO_ARMOR;
         float pressure = handler.getArmorPressure(slot);
         if (pressure <= LOW_PRESSURE && ClientUtils.getClientLevel().getGameTime() % 20 < 5) {

@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Blo
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
@@ -59,7 +59,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
+import static me.desht.pneumaticcraft.common.item.PneumaticArmorItem.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
@@ -89,7 +89,7 @@ public enum HUDHandler implements IKeyListener {
         Player player = mc.player;
 
         if (player == null || mc.options.hideGui || mc.screen != null
-                || !ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)
+                || !PneumaticArmorItem.isPneumaticArmorPiece(player, EquipmentSlot.HEAD)
                 || WidgetKeybindCheckBox.getCoreComponents() == null
                 || !WidgetKeybindCheckBox.getCoreComponents().checked) {
             return;
@@ -303,7 +303,7 @@ public enum HUDHandler implements IKeyListener {
     public int getStatOverlayColor() {
         // based on the eyepiece color but with the alpha locked to 3/16
         ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlot.HEAD);
-        int eyepieceColor = stack.getItem() instanceof ItemPneumaticArmor helmet ?
+        int eyepieceColor = stack.getItem() instanceof PneumaticArmorItem helmet ?
                 helmet.getEyepieceColor(stack) :
                 ArmorColoringScreen.SelectorType.EYEPIECE.getDefaultColor();
         return (eyepieceColor & 0x00FFFFFF) | 0x30000000;

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu;
-import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -71,9 +71,9 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
                     NetworkHandler.sendToAll(this);
                 }
                 if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
-                    ItemAmadronTablet.openGui(player, InteractionHand.MAIN_HAND);
+                    AmadronTabletItem.openGui(player, InteractionHand.MAIN_HAND);
                 } else if (player.getOffhandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
-                    ItemAmadronTablet.openGui(player, InteractionHand.OFF_HAND);
+                    AmadronTabletItem.openGui(player, InteractionHand.OFF_HAND);
                 }
             } else {
                 player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);

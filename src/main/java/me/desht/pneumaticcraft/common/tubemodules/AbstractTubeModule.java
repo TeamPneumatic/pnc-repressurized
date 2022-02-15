@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.tubemodules;
 import me.desht.pneumaticcraft.client.gui.tubemodule.AbstractTubeModuleScreen;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -45,7 +45,7 @@ import static me.desht.pneumaticcraft.common.block.PressureTubeBlock.CORE_MIN;
 
 public abstract class AbstractTubeModule {
     public static final float MAX_VALUE = 30;
-    private final ItemTubeModule item;
+    private final TubeModuleItem item;
 
     protected PressureTubeBlockEntity pressureTube;
     protected Direction dir = Direction.UP;
@@ -56,7 +56,7 @@ public abstract class AbstractTubeModule {
     public boolean advancedConfig;
     public boolean shouldDrop;
 
-    public AbstractTubeModule(ItemTubeModule item) {
+    public AbstractTubeModule(TubeModuleItem item) {
         this.item = item;
 
         double w = getWidth() / 2;

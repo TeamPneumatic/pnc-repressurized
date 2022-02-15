@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -188,9 +188,9 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
     
     public void loadFromGPSTool(ItemStack gpsTool){
-        String variable = ItemGPSTool.getVariable(gpsTool);
+        String variable = GPSToolItem.getVariable(gpsTool);
         if (variable.isEmpty()) {
-            setCoordinate(ItemGPSTool.getGPSLocation(gpsTool).orElse(BlockPos.ZERO));
+            setCoordinate(GPSToolItem.getGPSLocation(gpsTool).orElse(BlockPos.ZERO));
             setUsingVariable(false);
         } else {
             setVariable(variable);

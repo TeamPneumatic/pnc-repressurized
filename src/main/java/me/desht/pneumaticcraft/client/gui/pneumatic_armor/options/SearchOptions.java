@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Sea
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchItem;
 import net.minecraft.client.Minecraft;
@@ -59,9 +59,9 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
         if (searchGui != null && !player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
             ItemStack helmetStack = ClientUtils.getWornArmor(EquipmentSlot.HEAD);
             Item newSearchedItem = searchGui.getSearchStack().getItem();
-            Item oldSearchedItem = ItemPneumaticArmor.getSearchedItem(helmetStack);
+            Item oldSearchedItem = PneumaticArmorItem.getSearchedItem(helmetStack);
             if (newSearchedItem != oldSearchedItem) {
-                ItemPneumaticArmor.setSearchedItem(helmetStack, newSearchedItem);
+                PneumaticArmorItem.setSearchedItem(helmetStack, newSearchedItem);
                 NetworkHandler.sendToServer(new PacketUpdateSearchItem(newSearchedItem));
             }
         }
@@ -72,7 +72,7 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
         if (Minecraft.getInstance().screen instanceof ItemSearcherScreen) {
             searchGui = (ItemSearcherScreen) Minecraft.getInstance().screen;
             if (!player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
-                Item searchItem = ItemPneumaticArmor.getSearchedItem(player.getItemBySlot(EquipmentSlot.HEAD));
+                Item searchItem = PneumaticArmorItem.getSearchedItem(player.getItemBySlot(EquipmentSlot.HEAD));
                 if (searchItem != null) searchGui.setSearchStack(new ItemStack(searchItem));
             }
         }

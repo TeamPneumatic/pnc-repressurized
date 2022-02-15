@@ -30,8 +30,8 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import me.desht.pneumaticcraft.common.item.ItemUpgrade;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
@@ -169,7 +169,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     public void tickArmorPiece(EquipmentSlot slot) {
         ItemStack armorStack = player.getItemBySlot(slot);
         boolean armorActive = false;
-        if (armorStack.getItem() instanceof ItemPneumaticArmor) {
+        if (armorStack.getItem() instanceof PneumaticArmorItem) {
             airHandlers.set(slot.getIndex(), armorStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY));
             if (ticksSinceEquip[slot.getIndex()] == 0) {
                 initArmorInventory(slot);
@@ -288,7 +288,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         // record the number of upgrades of every type
         upgradeMatrix.get(slot.getIndex()).clear();
         for (ItemStack stack : upgradeStacks) {
-            if (stack.getItem() instanceof ItemUpgrade upgrade) {
+            if (stack.getItem() instanceof UpgradeItem upgrade) {
                 upgradeMatrix.get(slot.getIndex()).put(upgrade.getUpgradeType(), stack.getCount() * upgrade.getUpgradeTier());
             }
         }

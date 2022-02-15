@@ -28,8 +28,8 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateMicromissileSettings;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
@@ -79,12 +79,12 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
 
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
         if (stack.getItem() == ModItems.MICROMISSILES.get() && stack.hasTag()) {
-            topSpeed = NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED);
-            turnSpeed = NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED);
-            damage = NBTUtils.getFloat(stack, ItemMicromissiles.NBT_DAMAGE);
-            entityFilter = NBTUtils.getString(stack, ItemMicromissiles.NBT_FILTER);
-            point = new PointXY(NBTUtils.getInteger(stack,ItemMicromissiles.NBT_PX), NBTUtils.getInteger(stack, ItemMicromissiles.NBT_PY));
-            fireMode = FireMode.fromString(NBTUtils.getString(stack, ItemMicromissiles.NBT_FIRE_MODE));
+            topSpeed = NBTUtils.getFloat(stack, MicromissilesItem.NBT_TOP_SPEED);
+            turnSpeed = NBTUtils.getFloat(stack, MicromissilesItem.NBT_TURN_SPEED);
+            damage = NBTUtils.getFloat(stack, MicromissilesItem.NBT_DAMAGE);
+            entityFilter = NBTUtils.getString(stack, MicromissilesItem.NBT_FILTER);
+            point = new PointXY(NBTUtils.getInteger(stack, MicromissilesItem.NBT_PX), NBTUtils.getInteger(stack, MicromissilesItem.NBT_PY));
+            fireMode = FireMode.fromString(NBTUtils.getString(stack, MicromissilesItem.NBT_FIRE_MODE));
             this.hand = hand;
         } else {
             topSpeed = turnSpeed = damage = 1/3f;

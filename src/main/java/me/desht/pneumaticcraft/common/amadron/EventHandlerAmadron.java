@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity.AmadronAction;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
-import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronStockUpdate;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
@@ -122,7 +122,7 @@ public class EventHandlerAmadron {
         ItemStack usedTablet = drone.getUsedTablet();
         offer.getOutput().accept(
                 itemStack -> {
-                    GlobalPos itemPos = ItemAmadronTablet.getItemProvidingLocation(usedTablet);
+                    GlobalPos itemPos = AmadronTabletItem.getItemProvidingLocation(usedTablet);
                     if (itemPos != null) {
                         int toDeliver = itemStack.getCount() * drone.getOfferTimes();
                         List<ItemStack> stacks = new ArrayList<>();
@@ -135,7 +135,7 @@ public class EventHandlerAmadron {
                     }
                 },
                 fluidStack -> {
-                    GlobalPos fluidPos = ItemAmadronTablet.getFluidProvidingLocation(usedTablet);
+                    GlobalPos fluidPos = AmadronTabletItem.getFluidProvidingLocation(usedTablet);
                     if (fluidPos != null) {
                         FluidStack offeringFluid = fluidStack.copy();
                         offeringFluid.setAmount(offeringFluid.getAmount() * drone.getOfferTimes());

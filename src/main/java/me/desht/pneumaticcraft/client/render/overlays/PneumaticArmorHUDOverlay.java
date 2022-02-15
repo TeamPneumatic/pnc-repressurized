@@ -12,7 +12,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
+import static me.desht.pneumaticcraft.common.item.PneumaticArmorItem.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.CRITICAL_PRESSURE;
 import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.LOW_PRESSURE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -42,7 +42,7 @@ public class PneumaticArmorHUDOverlay implements IIngameOverlay {
         Player player = mc.player;
 
         if (player == null || mc.options.hideGui || mc.screen != null
-                || !ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
+                || !PneumaticArmorItem.isPlayerWearingAnyPneumaticArmor(player)) {
             return;
         }
 
@@ -53,7 +53,7 @@ public class PneumaticArmorHUDOverlay implements IIngameOverlay {
         boolean anyArmorInInit = false;
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack armorStack = player.getItemBySlot(slot);
-            if (armorStack.getItem() instanceof ItemPneumaticArmor && comHudHandler.getArmorPressure(slot) >= 0.0001f
+            if (armorStack.getItem() instanceof PneumaticArmorItem && comHudHandler.getArmorPressure(slot) >= 0.0001f
                     && !comHudHandler.isArmorReady(slot)) {
                 anyArmorInInit = true;
                 break;
@@ -62,7 +62,7 @@ public class PneumaticArmorHUDOverlay implements IIngameOverlay {
 
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack armorStack = player.getItemBySlot(slot);
-            if (armorStack.getItem() instanceof ItemPneumaticArmor && comHudHandler.getArmorPressure(slot) >= 0.0001F) {
+            if (armorStack.getItem() instanceof PneumaticArmorItem && comHudHandler.getArmorPressure(slot) >= 0.0001F) {
                 if (anyArmorInInit) {
                     // draw initialization progress bar(s)
                     renderInitProgressBarForSlot(matrixStack, partialTicks, mw, comHudHandler, slot, armorStack);

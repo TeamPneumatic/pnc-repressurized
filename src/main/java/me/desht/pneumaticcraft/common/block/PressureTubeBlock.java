@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ReinforcedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
@@ -280,8 +280,8 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         if (tePT == null) return false;
 
         ItemStack heldStack = player.getItemInHand(hand);
-        if (heldStack.getItem() instanceof ItemTubeModule) {
-            AbstractTubeModule module = ((ItemTubeModule) heldStack.getItem()).createModule();
+        if (heldStack.getItem() instanceof TubeModuleItem) {
+            AbstractTubeModule module = ((TubeModuleItem) heldStack.getItem()).createModule();
             if (tePT.mayPlaceModule(module, side)) {
                 if (simulate) module.markFake();
                 tePT.setModule(side, module);

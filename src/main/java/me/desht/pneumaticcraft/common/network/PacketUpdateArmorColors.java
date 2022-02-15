@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,14 +39,14 @@ public class PacketUpdateArmorColors {
     public PacketUpdateArmorColors() {
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(slot);
-            if (stack.getItem() instanceof ItemPneumaticArmor) {
-                cols[slot.getIndex()][0] = ((ItemPneumaticArmor) stack.getItem()).getColor(stack);
-                cols[slot.getIndex()][1] = ((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack);
+            if (stack.getItem() instanceof PneumaticArmorItem) {
+                cols[slot.getIndex()][0] = ((PneumaticArmorItem) stack.getItem()).getColor(stack);
+                cols[slot.getIndex()][1] = ((PneumaticArmorItem) stack.getItem()).getSecondaryColor(stack);
             }
         }
         ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlot.HEAD);
-        if (stack.getItem() instanceof ItemPneumaticArmor) {
-            eyepiece = ((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack);
+        if (stack.getItem() instanceof PneumaticArmorItem) {
+            eyepiece = ((PneumaticArmorItem) stack.getItem()).getEyepieceColor(stack);
         } else {
             eyepiece = 0;
         }
@@ -74,14 +74,14 @@ public class PacketUpdateArmorColors {
             if (player != null) {
                 for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                     ItemStack stack = player.getItemBySlot(slot);
-                    if (stack.getItem() instanceof ItemPneumaticArmor) {
-                        ((ItemPneumaticArmor) stack.getItem()).setColor(stack, cols[slot.getIndex()][0]);
-                        ((ItemPneumaticArmor) stack.getItem()).setSecondaryColor(stack, cols[slot.getIndex()][1]);
+                    if (stack.getItem() instanceof PneumaticArmorItem) {
+                        ((PneumaticArmorItem) stack.getItem()).setColor(stack, cols[slot.getIndex()][0]);
+                        ((PneumaticArmorItem) stack.getItem()).setSecondaryColor(stack, cols[slot.getIndex()][1]);
                     }
                 }
                 ItemStack stack = player.getItemBySlot(EquipmentSlot.HEAD);
-                if (stack.getItem() instanceof ItemPneumaticArmor) {
-                    ((ItemPneumaticArmor) stack.getItem()).setEyepieceColor(stack, eyepiece);
+                if (stack.getItem() instanceof PneumaticArmorItem) {
+                    ((PneumaticArmorItem) stack.getItem()).setEyepieceColor(stack, eyepiece);
                 }
             }
         });

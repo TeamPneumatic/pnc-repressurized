@@ -41,9 +41,9 @@ import me.desht.pneumaticcraft.client.sound.MovingSoundJackhammer;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
-import me.desht.pneumaticcraft.common.item.ItemDrillBit;
-import me.desht.pneumaticcraft.common.item.ItemJackHammer;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
+import me.desht.pneumaticcraft.common.item.DrillBitItem;
+import me.desht.pneumaticcraft.common.item.JackHammerItem;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -101,7 +101,7 @@ public class ClientSetup {
         OverlayRegistry.registerOverlayTop("pneumatic_armor", new PneumaticArmorHUDOverlay());
         OverlayRegistry.registerOverlayTop("minigun", new MinigunOverlay());
 
-        MinecraftForgeClient.registerTooltipComponentFactory(ItemMicromissiles.Tooltip.class, MicromissileClientTooltip::new);
+        MinecraftForgeClient.registerTooltipComponentFactory(MicromissilesItem.Tooltip.class, MicromissileClientTooltip::new);
 
         event.enqueueWork(ClientSetup::initLate);
     }
@@ -189,8 +189,8 @@ public class ClientSetup {
 
     private static void registerItemModelProperties() {
         ItemProperties.register(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity, seed) -> {
-            ItemDrillBit.DrillBitType type = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
-            if (type == ItemDrillBit.DrillBitType.NONE) return 0f;
+            DrillBitItem.DrillBitType type = ((JackHammerItem) stack.getItem()).getDrillBit(stack);
+            if (type == DrillBitItem.DrillBitType.NONE) return 0f;
             if (world == null || !(entity instanceof Player)) return 0.99f;
             long l = MovingSoundJackhammer.lastJackHammerTime((Player) entity);
             if (l <= 20) return Mth.sin((world.getGameTime() % 4 / 4f) * 3.141529f);

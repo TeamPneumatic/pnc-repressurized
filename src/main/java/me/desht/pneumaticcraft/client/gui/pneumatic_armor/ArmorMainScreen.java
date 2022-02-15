@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
@@ -162,7 +162,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
                 if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, i) || slot == EquipmentSlot.HEAD && i == 0) {
                     IArmorUpgradeHandler<?> handler = upgradeHandlers.get(i);
                     if (inInitPhase
-                            || ItemPneumaticArmor.isPneumaticArmorPiece(ClientUtils.getClientPlayer(), slot)
+                            || PneumaticArmorItem.isPneumaticArmorPiece(ClientUtils.getClientPlayer(), slot)
                             || handler instanceof CoreComponentsHandler) {
                         IArmorUpgradeClientHandler<?> clientHandler = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler.getID());
                         IOptionPage optionPage = clientHandler.getGuiOptionsPage(this);

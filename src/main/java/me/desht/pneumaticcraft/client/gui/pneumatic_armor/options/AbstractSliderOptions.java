@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -71,7 +71,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
         int initVal = range.getRight();
         if (Minecraft.getInstance().player != null) {
             ItemStack stack = Minecraft.getInstance().player.getItemBySlot(getSlot());
-            initVal = ItemPneumaticArmor.getIntData(stack, getTagName(), range.getRight());
+            initVal = PneumaticArmorItem.getIntData(stack, getTagName(), range.getRight());
         }
         PointXY pos = getSliderPos();
         slider = new Slider(pos.x(), pos.y(), 150, 20,  getPrefix(), getSuffix(),

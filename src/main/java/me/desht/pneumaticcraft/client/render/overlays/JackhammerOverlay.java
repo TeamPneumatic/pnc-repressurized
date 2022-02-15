@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.overlays;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.item.ItemJackHammer;
+import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.util.Mth;
@@ -16,12 +16,12 @@ public class JackhammerOverlay implements IIngameOverlay {
     @Override
     public void render(ForgeIngameGui gui, PoseStack mStack, float partialTicks, int width, int height) {
         Player player = Minecraft.getInstance().player;
-        if (player == null || !(player.getMainHandItem().getItem() instanceof ItemJackHammer)
+        if (player == null || !(player.getMainHandItem().getItem() instanceof JackHammerItem)
                 || !Minecraft.getInstance().options.getCameraType().isFirstPerson())
             return;
-        long timeDelta = player.level.getGameTime() - ItemJackHammer.getLastModeSwitchTime();
-        ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(player.getMainHandItem());
-        if (digMode != null && (digMode.atLeast(ItemJackHammer.DigMode.MODE_1X2) || timeDelta < 30 || player.isCrouching())) {
+        long timeDelta = player.level.getGameTime() - JackHammerItem.getLastModeSwitchTime();
+        JackHammerItem.DigMode digMode = JackHammerItem.getDigMode(player.getMainHandItem());
+        if (digMode != null && (digMode.atLeast(JackHammerItem.DigMode.MODE_1X2) || timeDelta < 30 || player.isCrouching())) {
             GuiUtils.bindTexture(digMode.getGuiIcon());
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.inventory.AssemblyControllerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
@@ -54,7 +54,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemAssemblyProgram;
+            return itemStack.isEmpty() || itemStack.getItem() instanceof AssemblyProgramItem;
         }
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
@@ -96,7 +96,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
         ItemStack programStack = itemHandler.getStackInSlot(PROGRAM_SLOT);
 
         // curProgram must be available on the client, or we can't show program-problems in the GUI
-        AssemblyProgram newProgram = ItemAssemblyProgram.getProgram(programStack);
+        AssemblyProgram newProgram = AssemblyProgramItem.getProgram(programStack);
         if (curProgram == null && !goingToHomePosition && newProgram != null) {
             curProgram = newProgram;
         } else if (curProgram != null && newProgram == null) {
@@ -217,7 +217,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
         displayedText = tag.getString("displayedText");
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         if (!itemHandler.getStackInSlot(PROGRAM_SLOT).isEmpty()) {
-            curProgram = ItemAssemblyProgram.getProgram(itemHandler.getStackInSlot(PROGRAM_SLOT));
+            curProgram = AssemblyProgramItem.getProgram(itemHandler.getStackInSlot(PROGRAM_SLOT));
             if (curProgram != null) curProgram.readFromNBT(tag);
         }
     }

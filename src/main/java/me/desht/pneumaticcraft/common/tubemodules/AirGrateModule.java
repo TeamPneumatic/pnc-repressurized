@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.block.entity.HeatSinkBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.RangeManager;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
@@ -70,8 +70,8 @@ public class AirGrateModule extends AbstractTubeModule {
     private LazyOptional<IItemHandler> itemInsertionCap = null; // null = "unknown", LazyOptional.empty() = "known absent"
     private LazyOptional<IFluidHandler> fluidInsertionCap = null;
 
-    public AirGrateModule(ItemTubeModule itemTubeModule) {
-        super(itemTubeModule);
+    public AirGrateModule(TubeModuleItem tubeModuleItem) {
+        super(tubeModuleItem);
     }
 
     @Override

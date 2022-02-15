@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.render.tube_module.AbstractTubeModuleRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -53,11 +53,11 @@ public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureT
             return;
         }
 
-        ItemTubeModule moduleItem;
+        TubeModuleItem moduleItem;
         Player player = ClientUtils.getClientPlayer();
-        if (player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof ItemTubeModule m) {
+        if (player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof TubeModuleItem m) {
             moduleItem = m;
-        } else if (player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof ItemTubeModule m) {
+        } else if (player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof TubeModuleItem m) {
             moduleItem = m;
         } else {
             moduleItem = null;

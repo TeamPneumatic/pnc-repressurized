@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.network.FriendlyByteBuf;
@@ -59,7 +59,7 @@ public class PacketUpdateSearchItem {
                 ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
                 Item searchedItem = ForgeRegistries.ITEMS.getValue(itemId);
                 if (searchedItem != null && searchedItem != Items.AIR) {
-                    ItemPneumaticArmor.setSearchedItem(helmetStack, searchedItem);
+                    PneumaticArmorItem.setSearchedItem(helmetStack, searchedItem);
                 }
             }
         });

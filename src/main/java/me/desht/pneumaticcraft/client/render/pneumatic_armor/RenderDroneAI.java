@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -80,7 +80,7 @@ public class RenderDroneAI {
             wireframe.getKey().render(matrixStack, buffer, partialTicks);
         }
 
-        if (ItemPneumaticArmor.isPlayerDebuggingDrone(ClientUtils.getClientPlayer(), drone)) {
+        if (PneumaticArmorItem.isPlayerDebuggingDrone(ClientUtils.getClientPlayer(), drone)) {
             IProgWidget activeWidget = getActiveWidget(drone);
             if (activeWidget != null) {
                 double x, y, z;

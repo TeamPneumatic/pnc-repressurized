@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
@@ -60,8 +60,8 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     public float lastExtension;
     private boolean comparatorInput;  // input acts like a vanilla comparator?
 
-    public RedstoneModule(ItemTubeModule itemTubeModule) {
-        super(itemTubeModule);
+    public RedstoneModule(TubeModuleItem tubeModuleItem) {
+        super(tubeModuleItem);
     }
 
     @Override

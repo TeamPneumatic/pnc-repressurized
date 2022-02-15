@@ -39,7 +39,7 @@ import me.desht.pneumaticcraft.common.event.*;
 import me.desht.pneumaticcraft.common.fluid.FluidSetup;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
-import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
+import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -107,7 +107,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(new PneumaticArmorHandler());
         forgeBus.register(new UniversalSensorHandler());
         forgeBus.register(new DroneSpecialVariableHandler());
-        forgeBus.register(ItemGPSAreaTool.EventHandler.class);
+        forgeBus.register(GPSAreaToolItem.EventHandler.class);
         forgeBus.register(HackTickHandler.instance());
         forgeBus.addListener(VillageStructures::addMechanicHouse);
 

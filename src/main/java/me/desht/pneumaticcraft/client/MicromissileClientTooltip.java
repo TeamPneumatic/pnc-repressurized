@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
+import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public record MicromissileClientTooltip(ItemMicromissiles.Tooltip component) implements ClientTooltipComponent {
+public record MicromissileClientTooltip(MicromissilesItem.Tooltip component) implements ClientTooltipComponent {
     @Override
     public void renderText(Font pFont, int pX, int pY, Matrix4f pMatrix4f, MultiBufferSource.BufferSource pBufferSource) {
         @SuppressWarnings("ConstantConditions") int col = ChatFormatting.GRAY.getColor();
@@ -35,9 +35,9 @@ public record MicromissileClientTooltip(ItemMicromissiles.Tooltip component) imp
         int barW = getWidth(pFont) - width - 10;
         pPoseStack.pushPose();
         pPoseStack.translate(pMouseX, pMouseY, pBlitOffset);
-        drawLine(pPoseStack, barX, barY, barW, NBTUtils.getFloat(component.stack(), ItemMicromissiles.NBT_TOP_SPEED));
-        drawLine(pPoseStack, barX, barY + vSpace, barW, NBTUtils.getFloat(component.stack(), ItemMicromissiles.NBT_TURN_SPEED));
-        drawLine(pPoseStack, barX, barY + 2 * vSpace, barW, NBTUtils.getFloat(component.stack(), ItemMicromissiles.NBT_DAMAGE));
+        drawLine(pPoseStack, barX, barY, barW, NBTUtils.getFloat(component.stack(), MicromissilesItem.NBT_TOP_SPEED));
+        drawLine(pPoseStack, barX, barY + vSpace, barW, NBTUtils.getFloat(component.stack(), MicromissilesItem.NBT_TURN_SPEED));
+        drawLine(pPoseStack, barX, barY + 2 * vSpace, barW, NBTUtils.getFloat(component.stack(), MicromissilesItem.NBT_DAMAGE));
         pPoseStack.popPose();
     }
 

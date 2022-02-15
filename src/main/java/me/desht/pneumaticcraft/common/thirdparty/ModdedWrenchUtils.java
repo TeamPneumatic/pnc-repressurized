@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
+import me.desht.pneumaticcraft.common.item.PneumaticWrenchItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
@@ -71,13 +71,13 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
 
     @Override
     public boolean isModdedWrench(@Nonnull ItemStack stack) {
-        return !(stack.getItem() instanceof ItemPneumaticWrench) &&
+        return !(stack.getItem() instanceof PneumaticWrenchItem) &&
                 (PneumaticCraftTags.Items.WRENCHES.contains(stack.getItem()) || wrenches.contains(stack.getItem().getRegistryName()));
     }
 
     @Override
     public boolean isWrench(@Nonnull ItemStack stack) {
-        return stack.getItem() instanceof ItemPneumaticWrench || isModdedWrench(stack);
+        return stack.getItem() instanceof PneumaticWrenchItem || isModdedWrench(stack);
     }
 
     @Override

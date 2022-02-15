@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Ent
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
@@ -63,7 +63,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
 
         textField = new EditBox(gui.getFontRenderer(), 35, 60, 140, 10, TextComponent.EMPTY);
         if (Minecraft.getInstance().player != null) {
-            textField.setValue(ItemPneumaticArmor.getEntityFilter(Minecraft.getInstance().player.getItemBySlot(EquipmentSlot.HEAD)));
+            textField.setValue(PneumaticArmorItem.getEntityFilter(Minecraft.getInstance().player.getItemBySlot(EquipmentSlot.HEAD)));
         }
         textField.setResponder(s -> {
             if (validateEntityFilter(textField.getValue())) {
@@ -109,7 +109,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     public void tick() {
         if (sendTimer > 0 && --sendTimer == 0) {
             CompoundTag tag = new CompoundTag();
-            tag.putString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getValue());
+            tag.putString(PneumaticArmorItem.NBT_ENTITY_FILTER, textField.getValue());
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, getClientUpgradeHandler().getCommonHandler().getID()));
         }
     }

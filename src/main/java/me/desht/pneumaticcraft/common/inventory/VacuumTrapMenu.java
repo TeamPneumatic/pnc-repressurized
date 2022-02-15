@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
+import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -51,7 +51,7 @@ public class VacuumTrapMenu extends AbstractPneumaticCraftMenu<VacuumTrapBlockEn
 
         @Override
         public boolean mayPlace(@Nonnull ItemStack stack) {
-            return stack.getItem() instanceof ItemSpawnerCore;
+            return stack.getItem() instanceof SpawnerCoreItem;
         }
 
         @Override

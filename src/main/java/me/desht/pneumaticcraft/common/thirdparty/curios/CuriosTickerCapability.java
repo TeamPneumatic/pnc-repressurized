@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.curios;
 
-import me.desht.pneumaticcraft.common.item.ItemMemoryStick;
-import me.desht.pneumaticcraft.common.item.ItemMemoryStick.MemoryStickLocator;
+import me.desht.pneumaticcraft.common.item.MemoryStickItem;
+import me.desht.pneumaticcraft.common.item.MemoryStickItem.MemoryStickLocator;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -50,8 +50,8 @@ public class CuriosTickerCapability {
 
             @Override
             public void curioTick(String identifier, int index, LivingEntity livingEntity) {
-                if (ItemMemoryStick.shouldAbsorbXPOrbs(event.getObject()) && livingEntity instanceof Player) {
-                    ItemMemoryStick.cacheMemoryStickLocation((Player) livingEntity, MemoryStickLocator.namedInv(identifier, index));
+                if (MemoryStickItem.shouldAbsorbXPOrbs(event.getObject()) && livingEntity instanceof Player) {
+                    MemoryStickItem.cacheMemoryStickLocation((Player) livingEntity, MemoryStickLocator.namedInv(identifier, index));
                 }
             }
         }));

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.item.ItemDrone;
+import me.desht.pneumaticcraft.common.item.DroneItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -64,7 +64,7 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
     }
 
     private boolean isBasicDrone(ItemStack stack) {
-        return stack.getItem() instanceof ItemDrone && !((ItemDrone) stack.getItem()).canProgram(stack);
+        return stack.getItem() instanceof DroneItem && !((DroneItem) stack.getItem()).canProgram(stack);
     }
 
     @Override

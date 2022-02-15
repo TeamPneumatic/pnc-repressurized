@@ -37,7 +37,7 @@ import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
 import me.desht.pneumaticcraft.common.network.PacketUpdateDebuggingDrone;
@@ -109,7 +109,7 @@ public class RenderEntityTarget {
             player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundSource.PLAYERS, 0.1F, 1.0F, true);
         }
 
-        boolean tagged = entity instanceof AbstractDroneEntity && ItemPneumaticArmor.isPlayerDebuggingDrone(player, (AbstractDroneEntity) entity);
+        boolean tagged = entity instanceof AbstractDroneEntity && PneumaticArmorItem.isPlayerDebuggingDrone(player, (AbstractDroneEntity) entity);
         circle1.setRenderingAsTagged(tagged);
         circle2.setRenderingAsTagged(tagged);
         circle1.tick();
@@ -233,7 +233,7 @@ public class RenderEntityTarget {
         if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof AbstractDroneEntity) {
             DroneDebuggerOptions.clearAreaShowWidgetId();
             Player player = ClientUtils.getClientPlayer();
-            if (ItemPneumaticArmor.isPlayerDebuggingDrone(player, (AbstractDroneEntity) entity)) {
+            if (PneumaticArmorItem.isPlayerDebuggingDrone(player, (AbstractDroneEntity) entity)) {
                 NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(-1));
                 player.playSound(ModSounds.SCI_FI.get(), 1.0f, 2.0f);
             } else {

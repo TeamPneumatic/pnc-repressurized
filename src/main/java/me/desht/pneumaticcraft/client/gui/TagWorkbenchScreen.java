@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.TagWorkbenchBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
-import me.desht.pneumaticcraft.common.item.ItemTagFilter;
+import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -125,7 +125,7 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
         ItemStack stack1 = menu.getSlot(1).getItem();
         if (!ItemStack.matches(stack1, lastPaperStack)) {
             if (stack1.getItem() == ModItems.TAG_FILTER.get()) {
-                Set<ResourceLocation> s = ItemTagFilter.getConfiguredTagList(stack1);
+                Set<ResourceLocation> s = TagFilterItem.getConfiguredTagList(stack1);
                 s.addAll(selectedList.getLines());
                 selectedList.clear();
                 s.forEach(rl -> selectedList.add(rl));

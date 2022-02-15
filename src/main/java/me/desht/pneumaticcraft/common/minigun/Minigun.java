@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
+import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
@@ -39,6 +39,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -148,7 +150,7 @@ public abstract class Minigun {
     public abstract float getParticleScale();
 
     protected int getAmmoColor(@Nonnull ItemStack stack) {
-        return stack.getItem() instanceof ItemGunAmmo a ? a.getAmmoColor(stack) : 0xFF313131;
+        return stack.getItem() instanceof AbstractGunAmmoItem a ? a.getAmmoColor(stack) : 0xFF313131;
     }
 
     public LazyOptional<? extends IAirHandler> getAirCapability() {
@@ -231,7 +233,7 @@ public abstract class Minigun {
             setMinigunTriggerTimeOut(10);
             if (!world.isClientSide && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 HitResult rtr = null;
-                ItemGunAmmo ammoItem = (ItemGunAmmo) ammoStack.getItem();
+                AbstractGunAmmoItem ammoItem = (AbstractGunAmmoItem) ammoStack.getItem();
                 if (!requiresTarget) {
                     rtr = RayTraceUtils.getMouseOverServer(player, getRange());
                     target = rtr instanceof EntityHitResult e ? e.getEntity() : null;
@@ -254,7 +256,8 @@ public abstract class Minigun {
                     roundsUsed = ammoItem.onBlockHit(this, ammoStack, brtr);
                 }
                 int ammoCost = roundsUsed * ammoItem.getAmmoCost(ammoStack);
-                lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayer ? (ServerPlayer) player : null);
+                lastShotOfAmmo = ammoStack.hurt(ammoCost, rand, player instanceof ServerPlayer ? (ServerPlayer) player : null)
+                        && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.UNBREAKING, ammoStack) == 0;
             }
         }
         return lastShotOfAmmo;
@@ -344,7 +347,7 @@ public abstract class Minigun {
     }
 
     public double getRange() {
-        double mul = getAmmoStack().getItem() instanceof ItemGunAmmo a ? a.getRangeMultiplier(ammoStack) : 1;
+        double mul = getAmmoStack().getItem() instanceof AbstractGunAmmoItem a ? a.getRangeMultiplier(ammoStack) : 1;
         return (ConfigHelper.common().minigun.baseRange.get() + 5 * getUpgrades(ModUpgrades.RANGE.get())) * mul;
     }
 

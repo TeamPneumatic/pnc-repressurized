@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
+import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -319,7 +319,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || itemStack.getItem() instanceof ItemEmptyPCB && ItemEmptyPCB.getEtchProgress(itemStack) == 0;
+            return itemStack.isEmpty() || itemStack.getItem() instanceof EmptyPCBItem && EmptyPCBItem.getEtchProgress(itemStack) == 0;
         }
     }
 

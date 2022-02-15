@@ -22,7 +22,7 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
-import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
+import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -33,7 +33,7 @@ public class CamoProvider {
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
             BlockEntity te = blockAccessor.getBlockEntity();
             if (te instanceof CamouflageableBlockEntity camo && camo.getCamouflage() != null) {
-                net.minecraft.network.chat.Component str = ItemCamoApplicator.getCamoStateDisplayName(camo.getCamouflage());
+                net.minecraft.network.chat.Component str = CamoApplicatorItem.getCamoStateDisplayName(camo.getCamouflage());
                 iTooltip.add(xlate("pneumaticcraft.waila.camo", str));
             }
         }

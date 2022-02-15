@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetAreaToolScreen;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
+import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
@@ -48,13 +48,13 @@ public class GPSAreaToolScreen extends GPSToolScreen {
 
     private GPSAreaToolScreen(ItemStack stack, InteractionHand hand, int index) {
         super(stack.getDisplayName(), hand,
-                ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, index).orElse(ClientUtils.getClientPlayer().blockPosition()),
-                ItemGPSAreaTool.getVariable(Minecraft.getInstance().player, stack, index));
+                GPSAreaToolItem.getGPSLocation(Minecraft.getInstance().player, stack, index).orElse(ClientUtils.getClientPlayer().blockPosition()),
+                GPSAreaToolItem.getVariable(Minecraft.getInstance().player, stack, index));
 
         this.index = index;
         for (int i = 0; i <= 1; i++) {
-            p1p2Pos[i] = ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, i).orElse(ClientUtils.getClientPlayer().blockPosition());
-            vars[i] = ItemGPSAreaTool.getVariable(Minecraft.getInstance().player, stack, i);
+            p1p2Pos[i] = GPSAreaToolItem.getGPSLocation(Minecraft.getInstance().player, stack, i).orElse(ClientUtils.getClientPlayer().blockPosition());
+            vars[i] = GPSAreaToolItem.getVariable(Minecraft.getInstance().player, stack, i);
             playerGlobals[i] = !vars[i].startsWith("%");
             vars[i] = GlobalVariableHelper.stripVarPrefix(vars[i]);
         }
@@ -75,7 +75,7 @@ public class GPSAreaToolScreen extends GPSToolScreen {
         int y = yMiddle + 100;
         addRenderableWidget(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, xlate("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
             ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
-            ProgWidgetArea area = ItemGPSAreaTool.getArea(ClientUtils.getClientPlayer(), stack);
+            ProgWidgetArea area = GPSAreaToolItem.getArea(ClientUtils.getClientPlayer(), stack);
             minecraft.setScreen(new ProgWidgetAreaToolScreen(area, hand, () -> minecraft.setScreen(new GPSAreaToolScreen(stack, hand, index))));
         }));
 
@@ -102,8 +102,8 @@ public class GPSAreaToolScreen extends GPSToolScreen {
 
     private boolean changed(int index) {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
-        BlockPos p = ItemGPSAreaTool.getGPSLocation(ClientUtils.getClientPlayer(), stack, index).orElse(PneumaticCraftUtils.invalidPos());
-        String var = ItemGPSAreaTool.getVariable(ClientUtils.getClientPlayer(), stack, index);
+        BlockPos p = GPSAreaToolItem.getGPSLocation(ClientUtils.getClientPlayer(), stack, index).orElse(PneumaticCraftUtils.invalidPos());
+        String var = GPSAreaToolItem.getVariable(ClientUtils.getClientPlayer(), stack, index);
         String var2 = GlobalVariableHelper.getPrefixedVar(vars[index], playerGlobals[index]);
         return !p.equals(p1p2Pos[index]) || !var.equals(var2);
     }
@@ -116,7 +116,7 @@ public class GPSAreaToolScreen extends GPSToolScreen {
 
     private void toggleP1P2(Button b) {
         ItemStack stack = ClientUtils.getClientPlayer().getItemInHand(hand);
-        if (stack.getItem() instanceof ItemGPSAreaTool) {
+        if (stack.getItem() instanceof GPSAreaToolItem) {
             p1p2Pos[index] = new BlockPos(textFields[0].getIntValue(), textFields[1].getIntValue(), textFields[2].getIntValue());
             vars[index] = variableField.getValue();
 

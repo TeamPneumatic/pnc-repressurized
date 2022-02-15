@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.recipes.assembly;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
+import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -88,7 +88,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
     }
 
     @Override
-    public ItemAssemblyProgram getItem() {
+    public AssemblyProgramItem getItem() {
         return ModItems.ASSEMBLY_PROGRAM_DRILL_LASER.get();
     }
 }

@@ -23,7 +23,8 @@ import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
-import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
+import me.desht.pneumaticcraft.common.item.TagFilterItem;
+import me.desht.pneumaticcraft.common.item.logistics.AbstractLogisticsFrameItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
@@ -413,7 +414,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         if (player.isShiftKeyDown()) {
             NonNullList<ItemStack> drops = getDrops();
             if (!drops.isEmpty()) {
-                ItemLogisticsFrame.addLogisticsTooltip(drops.get(0), player.level, new ArrayList<>(), true).forEach(curInfo);
+                AbstractLogisticsFrameItem.addLogisticsTooltip(drops.get(0), player.level, new ArrayList<>(), true).forEach(curInfo);
             }
         }
     }
@@ -542,7 +543,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
 
         /**
          * Match against a filter stack. It's important that the filter stack is passed <em>first</em> here; since if
-         * it's a {@link me.desht.pneumaticcraft.common.item.ItemTagFilter}, it will have some special handling.
+         * it's a {@link TagFilterItem}, it will have some special handling.
          *
          * @param filterStack the stack to filter against, which is treated specially if it's a Tag Filter - beware
          * @param stack the stack being tested

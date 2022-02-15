@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
@@ -31,8 +31,8 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
 
     private LazyOptional<IAirHandlerMachine> neighbourCap = null;
 
-    public RegulatorModule(ItemTubeModule itemTubeModule) {
-        super(itemTubeModule);
+    public RegulatorModule(TubeModuleItem tubeModuleItem) {
+        super(tubeModuleItem);
     }
 
     @Override

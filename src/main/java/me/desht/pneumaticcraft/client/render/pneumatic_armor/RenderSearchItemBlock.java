@@ -22,8 +22,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
@@ -54,7 +54,7 @@ public class RenderSearchItemBlock {
             cachedAmount = 0;
             IOHelper.getInventoryForTE(world.getBlockEntity(pos)).ifPresent(handler -> {
                 int itemCount = 0;
-                Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
+                Item searchedItem = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
                 if (searchedItem != null) {
                     for (int l = 0; l < handler.getSlots(); l++) {
                         if (!handler.getStackInSlot(l).isEmpty()) {

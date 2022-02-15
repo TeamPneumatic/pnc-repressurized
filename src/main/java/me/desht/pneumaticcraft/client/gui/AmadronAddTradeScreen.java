@@ -28,8 +28,8 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEn
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.inventory.AmadronAddTradeMenu;
-import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
+import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeAddCustom;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
@@ -91,7 +91,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
         } else if (fluidGui != null) {
             setFluid(settingSlot, fluidGui.getFilter());
         } else if (gpsSearchGui != null) {
-            ItemGPSTool.getGPSLocation(gpsSearchGui.getSearchStack()).ifPresent(pos -> positions[settingSlot] = pos);
+            GPSToolItem.getGPSLocation(gpsSearchGui.getSearchStack()).ifPresent(pos -> positions[settingSlot] = pos);
         }
         openingSubGUI = false;
         searchGui = null;
@@ -258,8 +258,8 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
             settingSlot = slot;
             ItemStack gps = new ItemStack(ModItems.GPS_TOOL.get());
             GlobalPos gPos = getPosition(slot);
-            if (gPos != null) ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gps, gPos.pos());
-            gpsSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps).isPresent() ? gps : ItemStack.EMPTY);
+            if (gPos != null) GPSToolItem.setGPSLocation(ClientUtils.getClientPlayer().getUUID(), gps, gPos.pos());
+            gpsSearchGui.setSearchStack(GPSToolItem.getGPSLocation(gps).isPresent() ? gps : ItemStack.EMPTY);
         }
     }
 
@@ -284,9 +284,9 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
             return GlobalPosHelper.makeGlobalPos(ClientUtils.getClientLevel(), positions[slot]);
         }
         if (!menu.getStack(slot).isEmpty()) {
-            return ItemAmadronTablet.getItemProvidingLocation(ClientUtils.getClientPlayer().getMainHandItem());
+            return AmadronTabletItem.getItemProvidingLocation(ClientUtils.getClientPlayer().getMainHandItem());
         } else if (fluidFilters[slot].getFluid() != Fluids.EMPTY) {
-            return ItemAmadronTablet.getFluidProvidingLocation(ClientUtils.getClientPlayer().getMainHandItem());
+            return AmadronTabletItem.getFluidProvidingLocation(ClientUtils.getClientPlayer().getMainHandItem());
         } else {
             return null;
         }

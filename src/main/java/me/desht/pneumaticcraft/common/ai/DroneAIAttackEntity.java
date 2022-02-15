@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
+import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -41,8 +41,8 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
         float rangeMult = 1.0f;
         if (isRanged) {
             ItemStack stack = attacker.getMinigun().getAmmoStack();
-            if (stack.getItem() instanceof ItemGunAmmo) {
-                rangeMult = ((ItemGunAmmo) stack.getItem()).getRangeMultiplier(stack);
+            if (stack.getItem() instanceof AbstractGunAmmoItem) {
+                rangeMult = ((AbstractGunAmmoItem) stack.getItem()).getRangeMultiplier(stack);
             }
         }
         rangedAttackRange = (16 + Math.min(16, attacker.getUpgrades(ModUpgrades.RANGE.get()))) * rangeMult;

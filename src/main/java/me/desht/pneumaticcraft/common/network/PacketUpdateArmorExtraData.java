@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -50,14 +50,14 @@ public class PacketUpdateArmorExtraData {
         Arrays.stream(ArmorUpgradeRegistry.ARMOR_SLOTS)
                 .<Map<String, Integer>>map(slot -> new HashMap<>())
                 .forEach(VALID_KEYS::add);
-        addKey(EquipmentSlot.HEAD, ItemPneumaticArmor.NBT_ENTITY_FILTER, Tag.TAG_STRING);
-        addKey(EquipmentSlot.HEAD, ItemPneumaticArmor.NBT_COORD_TRACKER, Tag.TAG_COMPOUND);
-        addKey(EquipmentSlot.LEGS, ItemPneumaticArmor.NBT_SPEED_BOOST, Tag.TAG_INT);
-        addKey(EquipmentSlot.LEGS, ItemPneumaticArmor.NBT_JUMP_BOOST, Tag.TAG_INT);
-        addKey(EquipmentSlot.FEET, ItemPneumaticArmor.NBT_BUILDER_MODE, Tag.TAG_BYTE);
-        addKey(EquipmentSlot.FEET, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, Tag.TAG_INT);
-        addKey(EquipmentSlot.FEET, ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, Tag.TAG_BYTE);
-        addKey(EquipmentSlot.FEET, ItemPneumaticArmor.NBT_SMART_HOVER, Tag.TAG_BYTE);
+        addKey(EquipmentSlot.HEAD, PneumaticArmorItem.NBT_ENTITY_FILTER, Tag.TAG_STRING);
+        addKey(EquipmentSlot.HEAD, PneumaticArmorItem.NBT_COORD_TRACKER, Tag.TAG_COMPOUND);
+        addKey(EquipmentSlot.LEGS, PneumaticArmorItem.NBT_SPEED_BOOST, Tag.TAG_INT);
+        addKey(EquipmentSlot.LEGS, PneumaticArmorItem.NBT_JUMP_BOOST, Tag.TAG_INT);
+        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_BUILDER_MODE, Tag.TAG_BYTE);
+        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_JET_BOOTS_POWER, Tag.TAG_INT);
+        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, Tag.TAG_BYTE);
+        addKey(EquipmentSlot.FEET, PneumaticArmorItem.NBT_SMART_HOVER, Tag.TAG_BYTE);
     }
 
     private final EquipmentSlot slot;
@@ -85,7 +85,7 @@ public class PacketUpdateArmorExtraData {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             ItemStack stack = player.getItemBySlot(slot);
-            if (stack.getItem() instanceof ItemPneumaticArmor) {
+            if (stack.getItem() instanceof PneumaticArmorItem) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 NBTUtils.initNBTTagCompound(stack);
                 for (String key : data.getAllKeys()) {

@@ -19,13 +19,13 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 
 public class SafetyValveModule extends AbstractRedstoneReceivingModule {
     private boolean shouldAddVenting = false;
 
-    public SafetyValveModule(ItemTubeModule item) {
+    public SafetyValveModule(TubeModuleItem item) {
         super(item);
     }
 

@@ -33,8 +33,8 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlo
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.SearchHandler;
@@ -89,7 +89,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
             totalSearchedItemCount = itemSearchCount + blockSearchCount;
         }
 
-        Item item = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
+        Item item = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
         List<Component> textList = new ArrayList<>();
         if (item == null || item == Items.AIR) {
             textList.add(xlate("pneumaticcraft.armor.search.configure", I18n.get(KeyHandler.getInstance().keybindOpenOptions.saveString())));
@@ -152,7 +152,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         searchedItems.clear();
         itemSearchCount = 0;
 
-        Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
+        Item searchedItem = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
         if (searchedItem == null || searchedItem == Items.AIR) return;
 
         List<ItemEntity> items = player.level.getEntitiesOfClass(ItemEntity.class, EntityTrackerClientHandler.getAABBFromRange(player, rangeUpgrades));
@@ -189,7 +189,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         if (!handlerEnabled) {
             trackedInventories.clear();
         } else {
-            Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
+            Item searchedItem = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
             if (searchedItem != null) {
                 te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face).ifPresent(handler -> {
                     if (checkForItems(handler, searchedItem)) {

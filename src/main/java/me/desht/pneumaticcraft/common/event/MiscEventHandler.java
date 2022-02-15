@@ -35,8 +35,8 @@ import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -268,15 +268,15 @@ public class MiscEventHandler {
                 // sync any variable values in this position provider item to the client for rendering purposes
                 ((IPositionProvider) event.getTo().getItem()).syncVariables(player, event.getTo());
             } else if (event.getSlot() == EquipmentSlot.MAINHAND) {
-                if (event.getTo().getItem() instanceof ItemMinigun) {
-                    ((ItemMinigun) event.getTo().getItem()).onEquipmentChange(player, event.getTo(), true);
-                } else if (event.getFrom().getItem() instanceof ItemMinigun) {
-                    ((ItemMinigun) event.getFrom().getItem()).onEquipmentChange(player, event.getFrom(), false);
+                if (event.getTo().getItem() instanceof MinigunItem) {
+                    ((MinigunItem) event.getTo().getItem()).onEquipmentChange(player, event.getTo(), true);
+                } else if (event.getFrom().getItem() instanceof MinigunItem) {
+                    ((MinigunItem) event.getFrom().getItem()).onEquipmentChange(player, event.getFrom(), false);
                 }
             } else if (event.getSlot().getType() == EquipmentSlot.Type.ARMOR) {
                 // trigger the "compressed iron man" advancement if wearing a full suit
                 for (ItemStack stack : player.getArmorSlots()) {
-                    if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
+                    if (!(stack.getItem() instanceof PneumaticArmorItem)) {
                         return;
                     }
                 }

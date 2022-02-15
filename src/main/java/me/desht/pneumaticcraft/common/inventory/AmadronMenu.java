@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity.AmadronAction;
-import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
@@ -118,7 +118,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
 
         if (invPlayer.player instanceof ServerPlayer player) {
             ItemStack tablet = player.getItemInHand(hand);
-            ShoppingBasket savedBasket = ItemAmadronTablet.loadShoppingCart(tablet);
+            ShoppingBasket savedBasket = AmadronTabletItem.loadShoppingCart(tablet);
 
             ShoppingBasket availableOffers = new ShoppingBasket();
             activeOffers.forEach(offer -> availableOffers.setOffer(offer.getId(), Math.max(savedBasket.getUnits(offer.getId()), 1)));
@@ -266,7 +266,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
     }
 
     private boolean takeOrder(ServerPlayer player, ItemStack amadronTablet) {
-        if (!(amadronTablet.getItem() instanceof ItemAmadronTablet)) return false;
+        if (!(amadronTablet.getItem() instanceof AmadronTabletItem)) return false;
 
         String playerName = player.getName().getString();
         boolean orderPlaced = false;
@@ -275,8 +275,8 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
             if (AmadronOfferManager.getInstance().isActive(offerId) && amount > 0) {
                 AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(offerId);
                 if (offer.isUsableByPlayer(player)) {
-                    GlobalPos itemGPos = ItemAmadronTablet.getItemProvidingLocation(amadronTablet);
-                    GlobalPos fluidGPos = ItemAmadronTablet.getFluidProvidingLocation(amadronTablet);
+                    GlobalPos itemGPos = AmadronTabletItem.getItemProvidingLocation(amadronTablet);
+                    GlobalPos fluidGPos = AmadronTabletItem.getFluidProvidingLocation(amadronTablet);
                     AmadroneEntity drone = retrieveOrder(playerName, offer, amount, itemGPos, fluidGPos);
                     if (drone != null) {
                         drone.setHandlingOffer(offer.getId(), amount, amadronTablet, playerName, AmadronAction.TAKING_PAYMENT);
@@ -313,7 +313,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
             }
             offer.returnStock();
-            ItemAmadronTablet.openGui(player, hand);
+            AmadronTabletItem.openGui(player, hand);
         }
     }
 
@@ -380,7 +380,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
     public void removed(Player player) {
         super.removed(player);
         if (!player.level.isClientSide && player.getItemInHand(hand).getItem() == ModItems.AMADRON_TABLET.get()) {
-            ItemAmadronTablet.saveShoppingCart(player.getItemInHand(hand), shoppingBasket);
+            AmadronTabletItem.saveShoppingCart(player.getItemInHand(hand), shoppingBasket);
         }
     }
 

@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.hacking.secstation;
 
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SecurityStationHackingMenu;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
+import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
+import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncHackSimulationUpdate;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
@@ -156,7 +156,7 @@ public class SimulationController implements ISimulationController {
         if (!(hacker.containerMenu instanceof SecurityStationHackingMenu) && !playerSimulation.isHackComplete()) {
             // hacker closed their window before hack complete: AI wins
             for (int slot = 0; slot < HackSimulation.GRID_SIZE; slot++) {
-                if (ItemNetworkComponent.getType(te.getPrimaryInventory().getStackInSlot(slot)) == NetworkComponentType.NETWORK_IO_PORT) {
+                if (NetworkComponentItem.getType(te.getPrimaryInventory().getStackInSlot(slot)) == NetworkComponentType.NETWORK_IO_PORT) {
                     aiSimulation.getNodeAt(slot).setHackProgress(slot, 1F, true);
                     break;
                 }

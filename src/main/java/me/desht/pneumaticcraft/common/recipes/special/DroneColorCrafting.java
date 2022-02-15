@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.recipes.special;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import me.desht.pneumaticcraft.common.item.ItemDrone;
+import me.desht.pneumaticcraft.common.item.DroneItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -55,7 +55,7 @@ public class DroneColorCrafting extends ShapelessRecipe {
         DyeColor dye = null;
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack stack = inv.getItem(i);
-            if (stack.getItem() instanceof ItemDrone) {
+            if (stack.getItem() instanceof DroneItem) {
                 if (!drone.isEmpty()) return null;
                 drone = stack.copy();
             } else if (dye == null) {

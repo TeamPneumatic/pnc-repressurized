@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -32,7 +32,7 @@ public class MinigunOverlay implements IIngameOverlay {
     public void render(ForgeIngameGui gui, PoseStack matrixStack, float partialTicks, int width, int height) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        if (player == null || !(player.getMainHandItem().getItem() instanceof ItemMinigun itemMinigun) || !Minecraft.getInstance().options.getCameraType().isFirstPerson())
+        if (player == null || !(player.getMainHandItem().getItem() instanceof MinigunItem itemMinigun) || !Minecraft.getInstance().options.getCameraType().isFirstPerson())
             return;
         ItemStack heldStack = player.getMainHandItem();
         Minigun minigun = itemMinigun.getMinigun(heldStack, player);
@@ -94,7 +94,7 @@ public class MinigunOverlay implements IIngameOverlay {
         public static void crosshairsEvent(RenderGameOverlayEvent.PreLayer event) {
             boolean firstPerson = Minecraft.getInstance().options.getCameraType().isFirstPerson();
             if (event.getOverlay() == ForgeIngameGui.CROSSHAIR_ELEMENT
-                    && ClientUtils.getClientPlayer().getMainHandItem().getItem() instanceof ItemMinigun
+                    && ClientUtils.getClientPlayer().getMainHandItem().getItem() instanceof MinigunItem
                     && firstPerson) {
                 event.setCanceled(true);
             }

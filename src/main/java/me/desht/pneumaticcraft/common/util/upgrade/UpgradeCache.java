@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.util.upgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.item.ItemUpgrade;
+import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -104,7 +104,7 @@ public class UpgradeCache {
 
     private void handleExtraData(ItemStack stack, PNCUpgrade type) {
         if (type == ModUpgrades.DISPENSER.get() && stack.hasTag()) {
-            ejectDirection = Direction.byName(NBTUtils.getString(stack, ItemUpgrade.NBT_DIRECTION));
+            ejectDirection = Direction.byName(NBTUtils.getString(stack, UpgradeItem.NBT_DIRECTION));
         }
     }
 }

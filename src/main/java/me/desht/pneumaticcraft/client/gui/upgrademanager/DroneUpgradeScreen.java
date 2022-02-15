@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.upgrademanager;
 
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
-import me.desht.pneumaticcraft.common.item.ItemDrone;
+import me.desht.pneumaticcraft.common.item.DroneItem;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
@@ -36,7 +36,7 @@ public class DroneUpgradeScreen extends AbstractUpgradeManagerScreen {
     public void init() {
         super.init();
 
-        if (!(itemStack.getItem() instanceof ItemDrone)) {
+        if (!(itemStack.getItem() instanceof DroneItem)) {
             return; // should never happen...
         }
 

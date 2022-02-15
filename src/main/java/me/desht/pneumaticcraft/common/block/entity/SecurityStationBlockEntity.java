@@ -32,8 +32,8 @@ import me.desht.pneumaticcraft.common.hacking.secstation.SimulationController;
 import me.desht.pneumaticcraft.common.inventory.SecurityStationHackingMenu;
 import me.desht.pneumaticcraft.common.inventory.SecurityStationMainMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
-import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
+import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
+import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -462,7 +462,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
     public int findComponent(NetworkComponentType type) {
         for (int i = 0; i < GRID_SIZE; i++) {
-            if (ItemNetworkComponent.getType(inventory.getStackInSlot(i)) == type) {
+            if (NetworkComponentItem.getType(inventory.getStackInSlot(i)) == type) {
                 return i;
             }
         }
@@ -514,7 +514,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         int subroutineSlot = -1;
         for (int i = 0; i < INVENTORY_SIZE; i++) {
             if (!inventory.getStackInSlot(i).isEmpty()) {
-                NetworkComponentType type = ItemNetworkComponent.getType(inventory.getStackInSlot(i));
+                NetworkComponentType type = NetworkComponentItem.getType(inventory.getStackInSlot(i));
                 assert type != null;
                 switch (type) {
                     case DIAGNOSTIC_SUBROUTINE -> {
