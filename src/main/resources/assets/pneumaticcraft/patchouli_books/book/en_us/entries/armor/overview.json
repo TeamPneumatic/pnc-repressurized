@@ -52,6 +52,11 @@
     },
     {
       "type": "spotlight",
+      "item": "pneumaticcraft:gilded_upgrade",
+      "text": "A $(l:base_concepts/upgrades#gilded)Gilded Upgrade/$ can be installed in any armor piece, and fools $(thing)Piglins/$ into believing that you're actually wearing $(thing)Gold Armor/$. Silly Piglins."
+    },
+    {
+      "type": "spotlight",
       "flag": "mod:mekanism",
       "title": "Mekanism Radiation",
       "item": "pneumaticcraft:radiation_shielding_upgrade",

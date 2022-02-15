@@ -27,9 +27,9 @@
       "type": "relations",
       "title": "Chargeable Items",
       "entries": [
-        "tools/air_canister",
+        "components/air_canister",
         "tools/pneumatic_wrench",
-        "tools/logistics_configurator",
+        "logistics/logistics_configurator",
         "tools/camo_applicator",
         "tools/vortex_cannon",
         "tools/minigun",

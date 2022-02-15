@@ -5,11 +5,16 @@
   "pages": [
     {
       "type": "text",
-      "text": "$(pncr) currently has two $(thing)tiers/$ for pneumatic machines:$(p)$(li)$(thing)Tier one/$ machines are capable of nominally resisting 5 bar of pressure.$(li)$(thing)Tier two/$ machines can resist up to 20 bar."
+      "text": "$(pncr) currently has three $(thing)tiers/$ for pneumatic machines:$(li)$(thing)Tier one/$ machines are capable of nominally resisting 5 bar of pressure.$(li)$(thing)Tier one-point-five/$ machines can resist up to 10 bar.$(li)$(thing)Tier two/$ machines can resist up to 20 bar."
     },
     {
       "type": "text",
-      "text": "Note that $(thing)bar/$ as used by $(pncr) represents the pressure $(bold)above/$ normal atmospheric pressure, so 0 bar is unpressurized air, and -1 bar is a vacuum."
+      "text": "Tier 1.5 is a new \"tier\" added in the MC 1.18 release of $(pncr). It's an optional tier, mainly intended to access some functionality which was previously tier 2 only:$(li)Charging tools to 10 bar$(li)Obtaining a $(item)Diamond Drill Bit/$ (which allows 3x3 block breaking; this used to require a $(item)Netherite Drill Bit/$)"
+    },
+    {
+      "type": "text",
+      "title": "Gauge Pressure",
+      "text": "Note that $(thing)bar/$ as used by $(pncr) represents the pressure $(bold)above/$ normal atmospheric pressure, so 0 bar is unpressurized air, and -1 bar is a vacuum. This is also known as $(thing)Gauge Pressure/$."
     }
   ]
 }

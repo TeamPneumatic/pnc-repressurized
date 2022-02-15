@@ -64,6 +64,11 @@
       "type": "spotlight",
       "item": "pneumaticcraft:scuba_upgrade",
       "text": "The $(l:base_concepts/upgrades#scuba)SCUBA Upgrade/$ allows you to breathe underwater, using air from the helmet's reserve to provide you with air. As an added bonus, it provides a face mask which allows far clearer underwater vision; the views can be quite spectacular in conjuction with a $(l:base_concepts/upgrades#night_vision)Night Vision Upgrade/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:ender_visor_upgrade",
+      "text": "The $(l:base_concepts/upgrades#ender_visor)Ender Visor Upgrade/$ is based on advanced $(thing)pumpkin/$ research, and provides a toggleable means to avoid $(thing)Enderman/$ aggro, while mitigating the visual difficulties normally associated with shoving your head in an actual pumpkin."
     }
   ]
 }
