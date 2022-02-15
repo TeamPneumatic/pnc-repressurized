@@ -27,7 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.Nullable;
 
-public class PressureChamberGlassBlock extends AbstractPressureWallBlock implements EntityBlockPneumaticCraft {
+public class PressureChamberGlassBlock extends AbstractPressureWallBlock implements PneumaticCraftEntityBlock {
     public PressureChamberGlassBlock() {
         super(IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
     }

@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class SpawnerExtractorBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class SpawnerExtractorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE = Stream.of(
             Block.box(10, 12, 2, 11, 31, 3),
             Block.box(-0.5, -2.5, 13.5, 16.5, 0.5, 16.5),

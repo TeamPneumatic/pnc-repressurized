@@ -30,7 +30,7 @@ class DroneAICC extends Goal {
     private final ProgWidgetCC widget;
     private Goal curAction;
     private boolean curActionActive;
-    private final TileEntityDroneInterface droneInterface;
+    private final DroneInterfaceBlockEntity droneInterface;
     private boolean newAction;
 
     DroneAICC(DroneEntity drone, ProgWidgetCC widget, boolean targetAI) {
@@ -39,8 +39,8 @@ class DroneAICC extends Goal {
         Set<BlockPos> area = widget.getInterfaceArea();
         for (BlockPos pos : area) {
             BlockEntity te = drone.level.getBlockEntity(pos);
-            if (te instanceof TileEntityDroneInterface) {
-                TileEntityDroneInterface interfaceTE = (TileEntityDroneInterface) te;
+            if (te instanceof DroneInterfaceBlockEntity) {
+                DroneInterfaceBlockEntity interfaceTE = (DroneInterfaceBlockEntity) te;
                 if (targetAI) {
                     if (interfaceTE.getDrone() == drone) {
                         droneInterface = interfaceTE;

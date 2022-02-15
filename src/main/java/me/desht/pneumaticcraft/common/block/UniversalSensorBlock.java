@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public class UniversalSensorBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class UniversalSensorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE = Shapes.join(
             Block.box(4, 2, 4, 12, 7, 12),
             Block.box(1, 0, 1, 15, 2, 15),

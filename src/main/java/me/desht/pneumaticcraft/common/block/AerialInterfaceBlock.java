@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.FakePlayer;
 import org.jetbrains.annotations.Nullable;
 
-public class AerialInterfaceBlock extends AbstractPneumaticCraftBlock implements IBlockComparatorSupport, EntityBlockPneumaticCraft {
+public class AerialInterfaceBlock extends AbstractPneumaticCraftBlock implements IBlockComparatorSupport, PneumaticCraftEntityBlock {
     public AerialInterfaceBlock() {
         super(ModBlocks.defaultProps());
     }

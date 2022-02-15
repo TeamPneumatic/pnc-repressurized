@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
-import me.desht.pneumaticcraft.common.block.EntityBlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.block.PneumaticCraftEntityBlock;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.core.BlockPos;
@@ -36,10 +36,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
-public class BlockDroneInterface extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class DroneInterfaceBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     static final BooleanProperty CONNECTED = BooleanProperty.create("connected");
 
-    public BlockDroneInterface() {
+    public DroneInterfaceBlock() {
         super(ModBlocks.defaultProps());
 
         registerDefaultState(getStateDefinition().any().setValue(CONNECTED, false));
@@ -77,6 +77,6 @@ public class BlockDroneInterface extends AbstractPneumaticCraftBlock implements 
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityDroneInterface(pPos, pState);
+        return new DroneInterfaceBlockEntity(pPos, pState);
     }
 }

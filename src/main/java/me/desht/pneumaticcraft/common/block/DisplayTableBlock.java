@@ -30,7 +30,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft, IBlockComparatorSupport {
+public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock, IBlockComparatorSupport {
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[16];
 
     private static final BooleanProperty NE = BooleanProperty.create("ne");

@@ -44,7 +44,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class SmartChestBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft, IBlockComparatorSupport {
+public class SmartChestBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock, IBlockComparatorSupport {
     private static final VoxelShape SHAPE = box(1, 0, 1, 15, 15, 15);
 
     public SmartChestBlock() {

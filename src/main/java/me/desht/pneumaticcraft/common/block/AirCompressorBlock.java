@@ -36,7 +36,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public class AirCompressorBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class AirCompressorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(1.5, 11, 9.25, 3.5, 13, 10.25),
             Block.box(11.5, 12, 10, 12.5, 13, 11),

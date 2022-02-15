@@ -44,7 +44,7 @@ import java.util.stream.Stream;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 
-public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements SimpleWaterloggedBlock, EntityBlockPneumaticCraft {
+public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE_N_OPEN = Stream.of(
             Block.box(3, 1, 0, 13, 11, 16),
             Block.box(4, 0, 1, 12, 1, 15),

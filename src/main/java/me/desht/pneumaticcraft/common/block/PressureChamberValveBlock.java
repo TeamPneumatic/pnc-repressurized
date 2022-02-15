@@ -39,7 +39,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, EntityBlockPneumaticCraft {
+public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, PneumaticCraftEntityBlock {
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
 
     public PressureChamberValveBlock() {

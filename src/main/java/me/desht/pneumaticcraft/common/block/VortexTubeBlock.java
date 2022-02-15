@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class VortexTubeBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.IHeatTintable, EntityBlockPneumaticCraft {
+public class VortexTubeBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.IHeatTintable, PneumaticCraftEntityBlock {
 
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(12, 4, 15, 13, 12, 16),

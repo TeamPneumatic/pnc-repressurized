@@ -60,7 +60,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public class FluidTankBlock extends AbstractPneumaticCraftBlock
-        implements EntityBlockPneumaticCraft, IBlockComparatorSupport
+        implements PneumaticCraftEntityBlock, IBlockComparatorSupport
 {
     // TODO: Fix VoxelShapes to show the top/bottom when available is possible. Otherwise update this to be a full block
     private static final VoxelShape SHAPE = Stream.of(

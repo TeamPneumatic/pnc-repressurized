@@ -59,7 +59,7 @@ import java.util.Optional;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
-        implements SimpleWaterloggedBlock, EntityBlockPneumaticCraft {
+        implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[16];
     private static final VoxelShape MOSTLY_FULL = Block.box(0.5, 0, 0.5, 15.5, 16, 15.5);
 

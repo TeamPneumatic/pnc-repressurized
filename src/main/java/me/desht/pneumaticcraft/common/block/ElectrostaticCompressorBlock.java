@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class ElectrostaticCompressorBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class ElectrostaticCompressorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE = Stream.of(
             Block.box(0, 0, 0, 16, 11, 16),
             Block.box(3, 11, 3, 13, 16, 13),

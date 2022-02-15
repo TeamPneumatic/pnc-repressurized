@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
-public interface EntityBlockPneumaticCraft extends EntityBlock {
+public interface PneumaticCraftEntityBlock extends EntityBlock {
     @Nullable
     @Override
     default <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {

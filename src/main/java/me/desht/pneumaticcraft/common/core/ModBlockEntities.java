@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.core;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.entity.*;
-import me.desht.pneumaticcraft.common.thirdparty.computer_common.TileEntityDroneInterface;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.DroneInterfaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -145,8 +145,8 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<DisplayTableBlockEntity>> DISPLAY_TABLE
             = register("display_table", () -> new BlockEntityType<>(DisplayTableBlockEntity::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.DISPLAY_SHELF.get()),
             null));
-    public static final RegistryObject<BlockEntityType<TileEntityDroneInterface>> DRONE_INTERFACE
-            = register("drone_interface", () -> new BlockEntityType<>(TileEntityDroneInterface::new, ImmutableSet.of(ModBlocks.DRONE_INTERFACE.get()),
+    public static final RegistryObject<BlockEntityType<DroneInterfaceBlockEntity>> DRONE_INTERFACE
+            = register("drone_interface", () -> new BlockEntityType<>(DroneInterfaceBlockEntity::new, ImmutableSet.of(ModBlocks.DRONE_INTERFACE.get()),
         null));
     public static final RegistryObject<BlockEntityType<FluidMixerBlockEntity>> FLUID_MIXER
             = register("fluid_mixer", () -> new BlockEntityType<>(FluidMixerBlockEntity::new, ImmutableSet.of(ModBlocks.FLUID_MIXER.get()), null));

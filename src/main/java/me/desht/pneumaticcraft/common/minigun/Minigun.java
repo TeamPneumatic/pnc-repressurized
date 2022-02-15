@@ -148,9 +148,7 @@ public abstract class Minigun {
     public abstract float getParticleScale();
 
     protected int getAmmoColor(@Nonnull ItemStack stack) {
-        return stack.getItem() instanceof ItemGunAmmo ?
-                ((ItemGunAmmo) stack.getItem()).getAmmoColor(stack) :
-                0xFF313131;
+        return stack.getItem() instanceof ItemGunAmmo a ? a.getAmmoColor(stack) : 0xFF313131;
     }
 
     public LazyOptional<? extends IAirHandler> getAirCapability() {
@@ -236,7 +234,7 @@ public abstract class Minigun {
                 ItemGunAmmo ammoItem = (ItemGunAmmo) ammoStack.getItem();
                 if (!requiresTarget) {
                     rtr = RayTraceUtils.getMouseOverServer(player, getRange());
-                    target = rtr instanceof EntityHitResult ? ((EntityHitResult) rtr).getEntity() : null;
+                    target = rtr instanceof EntityHitResult e ? e.getEntity() : null;
                 }
                 airCapability.ifPresent(airHandler -> {
                     int usage = (int) Math.ceil(airUsage * ammoItem.getAirUsageMultiplier(this, ammoStack));
@@ -346,7 +344,7 @@ public abstract class Minigun {
     }
 
     public double getRange() {
-        double mul = getAmmoStack().getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack) : 1;
+        double mul = getAmmoStack().getItem() instanceof ItemGunAmmo a ? a.getRangeMultiplier(ammoStack) : 1;
         return (ConfigHelper.common().minigun.baseRange.get() + 5 * getUpgrades(ModUpgrades.RANGE.get())) * mul;
     }
 

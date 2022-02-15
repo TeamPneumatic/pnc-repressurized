@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.Stream;
 
 public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
-        implements EntityBlockPneumaticCraft, IBlockComparatorSupport
+        implements PneumaticCraftEntityBlock, IBlockComparatorSupport
 {
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(0, 0, 0, 16, 1, 16),

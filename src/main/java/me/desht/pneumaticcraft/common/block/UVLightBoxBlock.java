@@ -21,7 +21,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
-public class UVLightBoxBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.ITintableBlock, EntityBlockPneumaticCraft {
+public class UVLightBoxBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.ITintableBlock, PneumaticCraftEntityBlock {
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 

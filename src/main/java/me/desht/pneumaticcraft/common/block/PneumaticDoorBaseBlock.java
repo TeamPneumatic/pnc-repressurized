@@ -38,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements EntityBlockPneumaticCraft {
+public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(0, 0, 0, 16, 12, 16),
             Block.box(0, 12, 14, 16, 16, 16),

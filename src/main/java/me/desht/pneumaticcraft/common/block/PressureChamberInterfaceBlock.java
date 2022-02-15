@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumMap;
 
 public class PressureChamberInterfaceBlock extends AbstractPneumaticCraftBlock
-        implements IBlockPressureChamber, EntityBlockPneumaticCraft
+        implements IBlockPressureChamber, PneumaticCraftEntityBlock
 {
     private static final EnumMap<Axis,VoxelShape> SHAPES = new EnumMap<>(Axis.class);
     private static final EnumMap<Direction,VoxelShape> DOORS = new EnumMap<>(Direction.class);

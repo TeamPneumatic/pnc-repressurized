@@ -50,7 +50,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
-        implements ColorHandlers.ITintableBlock, EntityBlockPneumaticCraft, IBlockComparatorSupport
+        implements ColorHandlers.ITintableBlock, PneumaticCraftEntityBlock, IBlockComparatorSupport
 {
     private static final VoxelShape MIDDLE_SHAPE = Block.box(4, 4, 4, 12, 10, 12);
     private static final VoxelShape INPUT_SHAPE = Block.box(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D);

@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft, IBlockComparatorSupport {
+public class ReinforcedChestBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock, IBlockComparatorSupport {
     private static final VoxelShape SHAPE = box(1, 0, 1, 15, 15, 15);
 
     public ReinforcedChestBlock() {

@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class PressurizedSpawnerBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class PressurizedSpawnerBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     public PressurizedSpawnerBlock() {
         super(ModBlocks.defaultProps().noOcclusion());
     }

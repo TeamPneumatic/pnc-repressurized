@@ -108,7 +108,7 @@ public enum ArmorUpgradeRegistry {
         return IArmorUpgradeHandler.getStringKey(id);
     }
 
-    <T extends IArmorUpgradeHandler<?>> T registerUpgradeHandler(T handler) {
+    private <T extends IArmorUpgradeHandler<?>> T registerUpgradeHandler(T handler) {
         List<IArmorUpgradeHandler<?>> l = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
         handler.setIndex(l.size());
         byID.put(handler.getID(), handler);

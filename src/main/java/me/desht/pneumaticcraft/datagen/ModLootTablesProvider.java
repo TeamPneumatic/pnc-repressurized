@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.datagen;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
-import me.desht.pneumaticcraft.common.block.EntityBlockPneumaticCraft;
+import me.desht.pneumaticcraft.common.block.PneumaticCraftEntityBlock;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.datagen.loot.TileEntitySerializerFunction;
@@ -82,7 +82,7 @@ public class ModLootTablesProvider extends LootTableProvider {
         protected void addTables() {
             for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
                 Block b = ro.get();
-                if (b instanceof EntityBlockPneumaticCraft
+                if (b instanceof PneumaticCraftEntityBlock
 //                        && b.hasTileEntity(b.defaultBlockState())
                         && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
                     addStandardSerializedDrop(b);

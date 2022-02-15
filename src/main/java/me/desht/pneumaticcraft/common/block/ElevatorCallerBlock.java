@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class ElevatorCallerBlock extends AbstractCamouflageBlock implements EntityBlockPneumaticCraft {
+public class ElevatorCallerBlock extends AbstractCamouflageBlock implements PneumaticCraftEntityBlock {
     public ElevatorCallerBlock() {
         super(ModBlocks.defaultProps().noOcclusion());
     }

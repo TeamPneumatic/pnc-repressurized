@@ -33,7 +33,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class ProgrammableControllerBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class ProgrammableControllerBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
 
     public ProgrammableControllerBlock() {
         super(ModBlocks.defaultProps());

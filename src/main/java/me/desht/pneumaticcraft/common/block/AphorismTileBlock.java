@@ -68,7 +68,7 @@ import static me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntit
 import static me.desht.pneumaticcraft.common.block.entity.AphorismTileBlockEntity.NBT_BORDER_COLOR;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.ITintableBlock, EntityBlockPneumaticCraft {
+public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.ITintableBlock, PneumaticCraftEntityBlock {
     public static final float APHORISM_TILE_THICKNESS = 1 / 16F;
     public static final BooleanProperty INVISIBLE = BooleanProperty.create("invisible");
 

@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
-public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWaterloggedBlock, EntityBlockPneumaticCraft {
+public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
     private static final VoxelShape CORE = Block.box(4, 4, 4, 12, 12, 12);
     private static final VoxelShape[] SIDES = {
             Block.box(4, 0, 4, 12, 4, 12),

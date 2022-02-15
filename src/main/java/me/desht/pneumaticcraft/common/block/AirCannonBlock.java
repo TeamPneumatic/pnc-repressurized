@@ -28,7 +28,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class AirCannonBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class AirCannonBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 3, 15);
 
     public AirCannonBlock() {

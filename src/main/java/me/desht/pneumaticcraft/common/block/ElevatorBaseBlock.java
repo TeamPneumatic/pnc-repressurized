@@ -36,7 +36,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class ElevatorBaseBlock extends AbstractCamouflageBlock implements EntityBlockPneumaticCraft {
+public class ElevatorBaseBlock extends AbstractCamouflageBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape BASE = box(0, 0, 0, 16, 1, 16);
     private static final VoxelShape TOP  = box(0, 15, 0, 16, 16, 16);
     private static final VoxelShape CORE = box(3, 1, 3, 13, 15, 13);

@@ -36,7 +36,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public class PneumaticDynamoBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class PneumaticDynamoBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
 
     private static final VoxelShape SHAPE_UP = Stream.of(
             Block.box(0, 0, 0, 16, 10, 16),

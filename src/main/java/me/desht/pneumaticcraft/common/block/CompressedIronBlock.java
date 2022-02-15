@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class CompressedIronBlock extends AbstractPneumaticCraftBlock
-        implements ColorHandlers.IHeatTintable, EntityBlockPneumaticCraft, IBlockComparatorSupport
+        implements ColorHandlers.IHeatTintable, PneumaticCraftEntityBlock, IBlockComparatorSupport
 {
     public CompressedIronBlock() {
         super(ModBlocks.defaultProps());

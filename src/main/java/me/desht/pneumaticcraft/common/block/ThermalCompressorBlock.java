@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.Stream;
 
 public class ThermalCompressorBlock extends AbstractPneumaticCraftBlock
-        implements ColorHandlers.IHeatTintable, EntityBlockPneumaticCraft
+        implements ColorHandlers.IHeatTintable, PneumaticCraftEntityBlock
 {
     private static final VoxelShape BOUNDS = Stream.of(
             Block.box(3, 3, 0, 13, 13, 1),

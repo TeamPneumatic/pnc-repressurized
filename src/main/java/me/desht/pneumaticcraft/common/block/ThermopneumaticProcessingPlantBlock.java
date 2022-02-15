@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.Stream;
 
 public class ThermopneumaticProcessingPlantBlock extends AbstractPneumaticCraftBlock
-        implements EntityBlockPneumaticCraft, IBlockComparatorSupport
+        implements PneumaticCraftEntityBlock, IBlockComparatorSupport
 {
     private static final VoxelShape SHAPE_N = Stream.of(
             Block.box(2, 11, 0.5, 4, 12, 1.5),

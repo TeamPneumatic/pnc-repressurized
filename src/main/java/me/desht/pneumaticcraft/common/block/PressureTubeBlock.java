@@ -78,7 +78,7 @@ import static me.desht.pneumaticcraft.common.util.DirectionUtil.HORIZONTALS;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class PressureTubeBlock extends AbstractCamouflageBlock
-        implements SimpleWaterloggedBlock, EntityBlockPneumaticCraft {
+        implements SimpleWaterloggedBlock, PneumaticCraftEntityBlock {
 
     private static final int TUBE_WIDTH = 2;
     public static final int CORE_MIN = 8 - TUBE_WIDTH;

@@ -40,7 +40,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nullable;
 
-public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements EntityBlockPneumaticCraft {
+public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements PneumaticCraftEntityBlock {
     public LiquidHopperBlock() {
         super();
     }

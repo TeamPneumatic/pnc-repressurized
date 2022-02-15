@@ -39,7 +39,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
-public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.IHeatTintable, EntityBlockPneumaticCraft {
+public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorHandlers.IHeatTintable, PneumaticCraftEntityBlock {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
         Block.box(0, 0, 0, 16,  8, 16),

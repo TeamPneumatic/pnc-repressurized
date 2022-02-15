@@ -56,7 +56,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class TileEntityDroneInterface extends AbstractTickingBlockEntity
+public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
         implements ILuaMethodProvider {
 
     private final LuaMethodRegistry luaMethodRegistry = new LuaMethodRegistry(this);
@@ -69,7 +69,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
     private IProgWidget curAction;
     private int droneId; // track drone ID client-side
 
-    public TileEntityDroneInterface(BlockPos pos, BlockState state) {
+    public DroneInterfaceBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.DRONE_INTERFACE.get(), pos, state);
     }
 
@@ -99,13 +99,13 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
                 ringSendCooldown = ringSendQueue.size() > 10 ? 1 : 5;
                 NetworkHandler.sendToAllTracking(new PacketSpawnRing(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, drone, ringSendQueue.poll()), this);
             }
-            if (!getBlockState().getValue(BlockDroneInterface.CONNECTED)) {
-                nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockDroneInterface.CONNECTED, true));
+            if (!getBlockState().getValue(DroneInterfaceBlock.CONNECTED)) {
+                nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(DroneInterfaceBlock.CONNECTED, true));
             }
         } else {
-            if (getBlockState().getValue(BlockDroneInterface.CONNECTED)) {
-                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), TileEntityDroneInterface.this);
-                nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockDroneInterface.CONNECTED, false));
+            if (getBlockState().getValue(DroneInterfaceBlock.CONNECTED)) {
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), DroneInterfaceBlockEntity.this);
+                nonNullLevel().setBlockAndUpdate(worldPosition, getBlockState().setValue(DroneInterfaceBlock.CONNECTED, false));
             }
         }
     }
@@ -270,7 +270,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
                 requireNoArgs(args);
                 Set<BlockPos> area = new HashSet<>();
                 getWidget().getArea(area);
-                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos(), area), TileEntityDroneInterface.this);
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos(), area), DroneInterfaceBlockEntity.this);
                 return null;
             }
         });
@@ -279,7 +279,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), TileEntityDroneInterface.this);
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getBlockPos()), DroneInterfaceBlockEntity.this);
                 return null;
             }
         });

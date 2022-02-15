@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.*;
-import me.desht.pneumaticcraft.common.thirdparty.computer_common.BlockDroneInterface;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.DroneInterfaceBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
@@ -189,8 +189,8 @@ public class ModBlocks {
             DisplayTableBlock::new);
     public static final RegistryObject<DisplayTableBlock.Shelf> DISPLAY_SHELF = register("display_shelf",
             DisplayTableBlock.Shelf::new);
-    public static final RegistryObject<BlockDroneInterface> DRONE_INTERFACE = register("drone_interface",
-            BlockDroneInterface::new);
+    public static final RegistryObject<DroneInterfaceBlock> DRONE_INTERFACE = register("drone_interface",
+            DroneInterfaceBlock::new);
     public static final RegistryObject<ThermalLaggingBlock> THERMAL_LAGGING = register("thermal_lagging",
             ThermalLaggingBlock::new);
     public static final RegistryObject<FluidMixerBlock> FLUID_MIXER = register("fluid_mixer",

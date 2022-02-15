@@ -44,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class SentryTurretBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     private final VoxelShape BOUNDS = Stream.of(
             Block.box(4, 8, 4, 12, 14, 12),
             Block.box(3, 1, 3, 13, 5, 13),

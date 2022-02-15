@@ -44,7 +44,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
-public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     private static final VoxelShape SHAPE_NS = Stream.of(
             Block.box(5, 0, 5, 11, 1, 11),
             Block.box(5, 9, 5, 11, 10, 11),

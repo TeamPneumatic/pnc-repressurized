@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
-public class ChargingStationBlock extends AbstractCamouflageBlock implements EntityBlockPneumaticCraft {
+public class ChargingStationBlock extends AbstractCamouflageBlock implements PneumaticCraftEntityBlock {
     public static final BooleanProperty CHARGE_PAD = BooleanProperty.create("charge_pad");
 
     private static final VoxelShape CHARGING_STATION_N = Stream.of(

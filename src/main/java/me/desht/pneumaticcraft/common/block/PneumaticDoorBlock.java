@@ -58,7 +58,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements EntityBlockPneumaticCraft {
+public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     public static final BooleanProperty TOP_DOOR = BooleanProperty.create("top_door");
 
     public PneumaticDoorBlock() {
