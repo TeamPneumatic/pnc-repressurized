@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.inventory.MinigunMagazineMenu;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -85,6 +86,7 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
 
             PoseStack matrixStack = event.getPoseStack();
             BufferBuilder wr = Tesselator.getInstance().getBuilder();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
             GuiUtils.drawUntexturedQuad(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 50);
             RenderSystem.lineWidth(3.0F);
             GuiUtils.drawOutline(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 255);
