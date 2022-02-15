@@ -1217,6 +1217,7 @@ public class ModRecipeProvider extends RecipeProvider {
         // plastic bricks & wall lamps
         for (DyeColor dye : DyeColor.values()) {
             plasticBrick(dye, dye.getTag()).save(consumer);
+            smoothPlasticBrick(dye).save(consumer);
             wallLamp(dye, false, dye.getTag()).save(consumer);
             wallLamp(dye, true, dye.getTag()).save(consumer);
         }
@@ -1245,6 +1246,10 @@ public class ModRecipeProvider extends RecipeProvider {
                         0f, 100)
                 .unlockedBy("has_plastic", has(ModItems.PLASTIC.get()))
                 .save(consumer, RL("plastic_sheet_from_brick"));
+        SimpleCookingRecipeBuilder.smelting(Ingredient.of(PneumaticCraftTags.Items.SMOOTH_PLASTIC_BRICKS), ModItems.PLASTIC.get(),
+                        0f, 100)
+                .unlockedBy("has_plastic", has(ModItems.PLASTIC.get()))
+                .save(consumer, RL("plastic_sheet_from_smooth_brick"));
         SimpleCookingRecipeBuilder.smelting(Ingredient.of(ModItems.SOURDOUGH.get()), ModItems.SOURDOUGH_BREAD.get(),
                         0.35f, 100)
                 .unlockedBy("has_dough", has(ModItems.SOURDOUGH.get()))
@@ -1658,6 +1663,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 "PPP/PDP/PPP",
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'D', dyeIngredient);
+    }
+
+    private ShapelessRecipeBuilder smoothPlasticBrick(DyeColor color) {
+        Item smoothBrick = ModBlocks.smoothPlasticBrick(color).get().asItem();
+        Item brick = ModBlocks.plasticBrick(color).get().asItem();
+        return shapeless(smoothBrick, ModItems.PLASTIC.get(), brick);
     }
 
     private ShapedRecipeBuilder wallLamp(DyeColor color, boolean inverted, Tag<Item> dyeIngredient) {

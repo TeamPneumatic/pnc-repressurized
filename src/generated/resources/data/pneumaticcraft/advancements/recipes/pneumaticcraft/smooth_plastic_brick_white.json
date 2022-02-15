@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:smooth_plastic_brick_white"
+    ]
+  },
+  "criteria": {
+    "has_plastic": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:plastic"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:smooth_plastic_brick_white"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_plastic",
+      "has_the_recipe"
+    ]
+  ]
+}

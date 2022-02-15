@@ -1,0 +1,13 @@
+{
+  "multipart": [
+    { "when": { "x_part": "none", "z_part": "none" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_none_none"} },
+    { "when": { "x_part": "none", "z_part": "left" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_none_left"} },
+    { "when": { "x_part": "none", "z_part": "right" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_none_right"} },
+    { "when": { "x_part": "left", "z_part": "none" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_left_none"} },
+    { "when": { "x_part": "left", "z_part": "left" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_left_left"} },
+    { "when": { "x_part": "left", "z_part": "right" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_left_right"} },
+    { "when": { "x_part": "right", "z_part": "none" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_right_none"} },
+    { "when": { "x_part": "right", "z_part": "left" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_right_left"} },
+    { "when": { "x_part": "right", "z_part": "right" }, "apply": { "model": "pneumaticcraft:block/plastic_brick_right_right"} }
+  ]
+}

@@ -43,11 +43,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
@@ -62,7 +64,11 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
     private final int tintColor;
 
     public PlasticBrickBlock(DyeColor dyeColor) {
-        super(ModBlocks.defaultProps().sound(SoundType.WOOD).strength(2f));
+        this(ModBlocks.defaultProps().sound(SoundType.WOOD).strength(2f), dyeColor);
+    }
+
+    PlasticBrickBlock(BlockBehaviour.Properties props, DyeColor dyeColor) {
+        super(props);
 
         this.dyeColor = dyeColor;
         this.tintColor = PneumaticCraftUtils.getDyeColorAsRGB(dyeColor);
@@ -91,6 +97,14 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
         return COLLISION_SHAPE;
     }
 
+    public VoxelShape getBlockSupportShape(BlockState pState, BlockGetter pReader, BlockPos pPos) {
+        return Shapes.block();
+    }
+
+    public VoxelShape getVisualShape(BlockState pState, BlockGetter pReader, BlockPos pPos, CollisionContext pContext) {
+        return Shapes.block();
+    }
+
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
@@ -102,6 +116,10 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         return calcParts(worldIn, currentPos, stateIn);
+    }
+
+    protected boolean hurtsToStepOn() {
+        return true;
     }
 
     private BlockState calcParts(LevelAccessor world, BlockPos pos, BlockState stateIn) {
@@ -130,11 +148,11 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
 
     @Override
     public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn) {
-        if (entityIn instanceof LivingEntity) {
-            ItemStack stack = ((LivingEntity) entityIn).getItemBySlot(EquipmentSlot.FEET);
+        if (hurtsToStepOn() && entityIn instanceof LivingEntity livingEntity) {
+            ItemStack stack = livingEntity.getItemBySlot(EquipmentSlot.FEET);
             if (stack.isEmpty()) {
                 entityIn.hurt(DamageSourcePneumaticCraft.PLASTIC_BLOCK, 3);
-                ((LivingEntity) entityIn).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));
+                livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));
             }
         }
     }

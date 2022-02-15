@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.DroneInterfaceBlock;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
@@ -39,11 +38,11 @@ public class ModBlocks {
     }
 
     private static Supplier<BlockItem> itemDefault(final RegistryObject<? extends Block> block) {
-        return item(block, ModItems.ItemGroups.PNC_CREATIVE_TAB);
+        return item(block);
     }
 
-    private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final CreativeModeTab itemGroup) {
-        return () -> new BlockItem(block.get(), new Item.Properties().tab(itemGroup));
+    private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block) {
+        return () -> new BlockItem(block.get(), new Item.Properties().tab(ModItems.ItemGroups.PNC_CREATIVE_TAB));
     }
 
     public static Block.Properties defaultProps() {
@@ -205,12 +204,15 @@ public class ModBlocks {
             PressurizedSpawnerBlock::new);
 
     public static final List<RegistryObject<PlasticBrickBlock>> PLASTIC_BRICKS = new ArrayList<>();
+    public static final List<RegistryObject<SmoothPlasticBrickBlock>> SMOOTH_PLASTIC_BRICKS = new ArrayList<>();
     public static final List<RegistryObject<WallLampBlock>> WALL_LAMPS = new ArrayList<>();
     public static final List<RegistryObject<WallLampBlock>> WALL_LAMPS_INVERTED = new ArrayList<>();
     static {
         for (DyeColor color : DyeColor.values()) {
             PLASTIC_BRICKS.add(register("plastic_brick_" + color.getName(), () -> new PlasticBrickBlock(color),
                     block -> () -> new PlasticBrickBlock.ItemPlasticBrick(block.get())));
+            SMOOTH_PLASTIC_BRICKS.add(register("smooth_plastic_brick_" + color.getName(), () -> new SmoothPlasticBrickBlock(color),
+                    block -> () -> new SmoothPlasticBrickBlock.SmoothPlasticBrickItem(block.get())));
             WALL_LAMPS.add(register("wall_lamp_" + color.getName(), () -> new WallLampBlock(color, false),
                     block -> () -> new WallLampBlock.ItemWallLamp(block.get())));
             WALL_LAMPS_INVERTED.add(register("wall_lamp_inverted_" + color.getName(), () -> new WallLampBlock(color, true),
@@ -281,10 +283,12 @@ public class ModBlocks {
     public static final RegistryObject<LiquidBlock> BIODIESEL = registerNoItem("biodiesel",
             () -> new LiquidBlock(() -> (FlowingFluid) ModFluids.BIODIESEL.get(), fluidProps()));
 
-
-
     public static RegistryObject<PlasticBrickBlock> plasticBrick(DyeColor color) {
         return PLASTIC_BRICKS.get(color.getId());
+    }
+
+    public static RegistryObject<SmoothPlasticBrickBlock> smoothPlasticBrick(DyeColor color) {
+        return SMOOTH_PLASTIC_BRICKS.get(color.getId());
     }
 
     public static RegistryObject<WallLampBlock> wallLamp(DyeColor color, boolean inverted) {

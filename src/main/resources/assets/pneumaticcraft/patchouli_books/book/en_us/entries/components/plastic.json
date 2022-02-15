@@ -45,12 +45,25 @@
       "type": "spotlight",
       "title": "Plastic Construction Brick™",
       "item": "pneumaticcraft:plastic_brick_red",
-      "text": "These bricks are formed with $(item)Plastic Sheets/$ and any dye, and are suitable for building with. Don't walk on these with bare feet, because it hurts an unreasonable amount!$(p)$(italic)Compatible with other leading brands of construction brick./$"
+      "text": "These bricks are formed with $(item)Plastic Sheets/$ and any dye, and are suitable for building with.$(p)Don't walk on these with bare feet, because it hurts an unreasonable amount!$(p)$(italic)Compatible with other leading brands of construction brick./$"
+    },
+    {
+      "type": "spotlight",
+      "title": "Smooth Plastic Construction Brick™",
+      "item": "pneumaticcraft:smooth_plastic_brick_red",
+      "text": "The smooth version of the $(item)Plastic Construction Brick/$ is also suitable for building with.$(p)These bricks also have the advantage of making excellent flooring, since they will increase your walk speed!"
     },
     {
       "type": "crafting",
       "recipe": "pneumaticcraft:plastic_brick_red",
+      "recipe2": "pneumaticcraft:smooth_plastic_brick_red",
       "text": "You can guess the recipes for the other colours"
+    },
+    {
+      "type": "smelting",
+      "recipe": "pneumaticcraft:plastic_sheet_from_brick",
+      "recipe2": "pneumaticcraft:plastic_sheet_from_smooth_brick",
+      "text": "You can smelt bricks back into plastic sheets"
     }
   ]
 }

@@ -34,6 +34,7 @@ public class PneumaticCraftTags {
         public static final Tag.Named<Block> DOORS = modTag("doors");
         public static final Tag.Named<Block> WALLS = modTag("walls");
         public static final Tag.Named<Block> PLASTIC_BRICKS = modTag("plastic_bricks");
+        public static final Tag.Named<Block> SMOOTH_PLASTIC_BRICKS = modTag("smooth_plastic_bricks");
         public static final Tag.Named<Block> FLUID_TANKS = modTag("fluid_tanks");
         public static final Tag.Named<Block> CHESTS = modTag("chests");
         public static final Tag.Named<Block> REINFORCED_STONE = modTag("reinforced_stone");
@@ -68,6 +69,7 @@ public class PneumaticCraftTags {
         public static final Tag.Named<Item> DOORS = modTag("doors");
         public static final Tag.Named<Item> WALLS = modTag("walls");
         public static final Tag.Named<Item> PLASTIC_BRICKS = modTag("plastic_bricks");
+        public static final Tag.Named<Item> SMOOTH_PLASTIC_BRICKS = modTag("smooth_plastic_bricks");
         public static final Tag.Named<Item> WALL_LAMPS = modTag("wall_lamps");
         public static final Tag.Named<Item> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
         public static final Tag.Named<Item> FLUID_TANKS = modTag("fluid_tanks");
