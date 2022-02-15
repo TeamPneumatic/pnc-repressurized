@@ -38,13 +38,13 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.network.NetworkHooks;
 
-public class EntityVortex extends ThrowableProjectile {
+public class VortexEntity extends ThrowableProjectile {
     private int hitCounter = 0;
 
     // clientside: rendering X offset of vortex, depends on which hand the vortex was fired from
     private float renderOffsetX = -Float.MAX_VALUE;
 
-    public EntityVortex(EntityType<? extends EntityVortex> type, Level world) {
+    public VortexEntity(EntityType<? extends VortexEntity> type, Level world) {
         super(type, world);
     }
 

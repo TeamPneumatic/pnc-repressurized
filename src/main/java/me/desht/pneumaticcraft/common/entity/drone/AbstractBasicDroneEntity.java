@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.entity.living;
+package me.desht.pneumaticcraft.common.entity.drone;
 
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
@@ -33,13 +33,13 @@ import net.minecraft.world.level.Level;
  * @author MineMaarten
  *
  */
-abstract class EntityBasicDrone extends EntityDrone {
+abstract class AbstractBasicDroneEntity extends DroneEntity {
 
-    EntityBasicDrone(EntityType<? extends EntityDrone> type, Level world, Player player) {
+    AbstractBasicDroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
         super(type, world, player);
     }
 
-    EntityBasicDrone(EntityType<? extends EntityDrone> type, Level world) {
+    AbstractBasicDroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world);
     }
 

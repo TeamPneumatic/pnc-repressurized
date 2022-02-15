@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -66,13 +66,13 @@ public class ProgWidgetStandby extends ProgWidget {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIStandby((EntityDrone) drone);
+        return new DroneAIStandby((DroneEntity) drone);
     }
 
     public static class DroneAIStandby extends Goal {
-        private final EntityDrone drone;
+        private final DroneEntity drone;
 
-        DroneAIStandby(EntityDrone drone) {
+        DroneAIStandby(DroneEntity drone) {
             this.drone = drone;
         }
 

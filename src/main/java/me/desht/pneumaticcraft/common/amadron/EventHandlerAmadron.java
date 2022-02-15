@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
-import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
+import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
+import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity.AmadronAction;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -49,8 +49,8 @@ public class EventHandlerAmadron {
 
     @SubscribeEvent
     public void onDroneSuicide(DroneSuicideEvent event) {
-        if (event.drone instanceof EntityAmadrone) {
-            EntityAmadrone drone = (EntityAmadrone) event.drone;
+        if (event.drone instanceof AmadroneEntity) {
+            AmadroneEntity drone = (AmadroneEntity) event.drone;
             AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(drone.getHandlingOffer());
             if (offer != null) {
                 offer.getInput().accept(
@@ -81,7 +81,7 @@ public class EventHandlerAmadron {
         }
     }
 
-    private void onAmadronFailure(EntityAmadrone drone, AmadronRecipe offer) {
+    private void onAmadronFailure(AmadroneEntity drone, AmadronRecipe offer) {
         // order failed - Amadrone didn't get enough of the purchase price (maybe player removed items after placing order?)
         if (offer instanceof AmadronPlayerOffer || offer.getMaxStock() >= 0) {
             // restore stock to previous level (we reduced stock in AmadronMenu#retrieveOrderItems())
@@ -93,7 +93,7 @@ public class EventHandlerAmadron {
 
     @SubscribeEvent
     public void onAmadronSuccess(AmadronRetrievalEvent event) {
-        EntityAmadrone drone = (EntityAmadrone) event.drone;
+        AmadroneEntity drone = (AmadroneEntity) event.drone;
 
         AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(drone.getHandlingOffer());
 
@@ -118,7 +118,7 @@ public class EventHandlerAmadron {
         }
     }
 
-    private void doDelivery(EntityAmadrone drone, AmadronRecipe offer) {
+    private void doDelivery(AmadroneEntity drone, AmadronRecipe offer) {
         ItemStack usedTablet = drone.getUsedTablet();
         offer.getOutput().accept(
                 itemStack -> {

@@ -35,8 +35,8 @@ import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
-import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.ProgrammableControllerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
@@ -130,7 +130,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     private final ControllerNavigator controllerNavigator = new ControllerNavigator();
 
-    private EntityProgrammableController drone;
+    private ProgrammableControllerEntity drone;
     private DroneAIManager aiManager;
     private DroneFakePlayer fakePlayer;
     private final List<IProgWidget> progWidgets = new ArrayList<>();
@@ -195,7 +195,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @SubscribeEvent
     public void onSemiblockEvent(SemiblockEvent event) {
-        if (!event.getWorld().isClientSide && event.getWorld() == getLevel() && event.getSemiblock() instanceof EntityLogisticsFrame) {
+        if (!event.getWorld().isClientSide && event.getWorld() == getLevel() && event.getSemiblock() instanceof AbstractLogisticsFrameEntity) {
             logisticsManager = null;
         }
     }

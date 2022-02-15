@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidExport;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
@@ -62,7 +62,7 @@ public class DroneAILogistics extends Goal {
             if (!area.isEmpty()) {
                 AABB aabb = widget.getAreaExtents();
                 Stream<ISemiBlock> semiBlocksInArea = SemiblockTracker.getInstance().getSemiblocksInArea(drone.world(), aabb);
-                Stream<EntityLogisticsFrame> logisticFrames = StreamUtils.ofType(EntityLogisticsFrame.class, semiBlocksInArea);
+                Stream<AbstractLogisticsFrameEntity> logisticFrames = StreamUtils.ofType(AbstractLogisticsFrameEntity.class, semiBlocksInArea);
                 LogisticsManager manager = new LogisticsManager();
                 logisticFrames.filter(frame -> area.contains(frame.getBlockPos())).forEach(manager::addLogisticFrame);
                 drone.setLogisticsManager(manager);

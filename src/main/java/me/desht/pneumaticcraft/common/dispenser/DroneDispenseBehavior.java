@@ -25,7 +25,7 @@ import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.DispenserBlock;
 
-public class BehaviorDispenseDrone extends DefaultDispenseItemBehavior {
+public class DroneDispenseBehavior extends DefaultDispenseItemBehavior {
     @Override
     protected ItemStack execute(BlockSource source, ItemStack stack){
         Direction facing = source.getBlockState().getValue(DispenserBlock.FACING);

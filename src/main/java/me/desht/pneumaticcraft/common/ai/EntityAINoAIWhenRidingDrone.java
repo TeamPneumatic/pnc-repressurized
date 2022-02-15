@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
@@ -40,6 +40,6 @@ public class EntityAINoAIWhenRidingDrone extends Goal {
     
     @Override
     public boolean canUse(){
-        return entity.getVehicle() instanceof EntityDrone;
+        return entity.getVehicle() instanceof DroneEntity;
     }
 }

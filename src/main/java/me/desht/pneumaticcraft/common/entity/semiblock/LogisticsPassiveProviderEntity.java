@@ -22,24 +22,24 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 
-public class EntityLogisticsDefaultStorage extends EntityLogisticsStorage {
-    public EntityLogisticsDefaultStorage(EntityType<?> entityTypeIn, Level worldIn) {
+public class LogisticsPassiveProviderEntity extends LogisticsActiveProviderEntity {
+    public LogisticsPassiveProviderEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
     @Override
     public int getColor() {
-        return 0xFF008800;
+        return 0xFFFF0000;
     }
 
     @Override
-    public int getPriority() {
-        return 1;
+    public boolean shouldProvideTo(int level) {
+        return level > 2;
     }
 
     @Override
     public ResourceLocation getTexture() {
-        return Textures.MODEL_LOGISTICS_FRAME_DEFAULT_STORAGE;  // TODO ridanisaurus
+        return Textures.MODEL_LOGISTICS_FRAME_PASSIVE_PROVIDER;  // TODO ridanisaurus
     }
 
 }

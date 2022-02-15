@@ -37,9 +37,9 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
@@ -301,14 +301,14 @@ public class ItemPneumaticArmor extends ArmorItem implements
         return NBTUtils.getString(helmetStack, NBT_ENTITY_FILTER);
     }
 
-    public static boolean isPlayerDebuggingDrone(Player player, EntityDroneBase e) {
+    public static boolean isPlayerDebuggingDrone(Player player, AbstractDroneEntity e) {
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.getItem() != ModItems.PNEUMATIC_HELMET.get()) return false;
-        if (e instanceof EntityDrone) {
+        if (e instanceof DroneEntity) {
             return NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getId();
-        } else if (e instanceof EntityProgrammableController) {
+        } else if (e instanceof ProgrammableControllerEntity) {
             CompoundTag tag = helmet.getTagElement(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
-            return tag != null && NbtUtils.readBlockPos(tag).equals(((EntityProgrammableController) e).getControllerPos());
+            return tag != null && NbtUtils.readBlockPos(tag).equals(((ProgrammableControllerEntity) e).getControllerPos());
         } else {
             return false;
         }
@@ -317,8 +317,8 @@ public class ItemPneumaticArmor extends ArmorItem implements
     public static boolean isPlayerDebuggingDrone(Player player, IDroneBase e) {
         ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
         if (helmet.getItem() != ModItems.PNEUMATIC_HELMET.get()) return false;
-        if (e instanceof EntityDrone) {
-            return NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == ((EntityDrone)e).getId();
+        if (e instanceof DroneEntity) {
+            return NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == ((DroneEntity)e).getId();
         } else if (e instanceof ProgrammableControllerBlockEntity) {
             CompoundTag tag = helmet.getTagElement(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
             return tag != null && NbtUtils.readBlockPos(tag).equals(((ProgrammableControllerBlockEntity) e).getBlockPos());

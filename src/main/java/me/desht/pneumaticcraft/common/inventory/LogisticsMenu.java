@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.UnstackablePhantomSlot;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
@@ -43,7 +43,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nonnull;
 
 public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraftBlockEntity> implements ISyncableSemiblockItem {
-    public final EntityLogisticsFrame logistics;
+    public final AbstractLogisticsFrameEntity logistics;
     private final boolean itemContainer;  // true if GUI opened from held item, false if from in-world entity
 
     public LogisticsMenu(MenuType<?> containerType, int i, Inventory playerInventory, int entityId) {
@@ -52,12 +52,12 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
         Level world = playerInventory.player.level;
         if (entityId == -1) {
             // opening container from held item; no in-world entity so fake one up from the held item NBT
-            this.logistics = EntityLogisticsFrame.fromItemStack(world, playerInventory.player, getHeldLogisticsFrame(playerInventory.player));
+            this.logistics = AbstractLogisticsFrameEntity.fromItemStack(world, playerInventory.player, getHeldLogisticsFrame(playerInventory.player));
             this.itemContainer = true;
         } else {
             Entity e = world.getEntity(entityId);
-            if (e instanceof EntityLogisticsFrame) {
-                this.logistics = (EntityLogisticsFrame) e;
+            if (e instanceof AbstractLogisticsFrameEntity) {
+                this.logistics = (AbstractLogisticsFrameEntity) e;
             } else {
                 this.logistics = null;
                 Log.error("no logistics frame entity for id %d!", entityId);

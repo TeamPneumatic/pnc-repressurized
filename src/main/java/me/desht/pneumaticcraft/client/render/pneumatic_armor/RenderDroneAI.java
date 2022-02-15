@@ -21,9 +21,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.client.Minecraft;
@@ -39,12 +39,12 @@ import java.util.Iterator;
 import java.util.List;
 
 public class RenderDroneAI {
-    private final EntityDroneBase drone;
+    private final AbstractDroneEntity drone;
     private final List<Pair<RenderCoordWireframe, Integer>> blackListWireframes = new ArrayList<>();
     private float progress = 0;
     private BlockPos oldPos, pos;
 
-    public RenderDroneAI(EntityDroneBase drone) {
+    public RenderDroneAI(AbstractDroneEntity drone) {
         this.drone = drone;
         tick();
     }
@@ -104,11 +104,11 @@ public class RenderDroneAI {
         }
     }
 
-    private IProgWidget getActiveWidget(EntityDroneBase droneBase) {
-        if (droneBase instanceof EntityDrone) {
-            return ((EntityDrone) droneBase).getActiveWidget();
-        } else if (droneBase instanceof EntityProgrammableController) {
-            return ((EntityProgrammableController) droneBase).getController().getActiveWidget();
+    private IProgWidget getActiveWidget(AbstractDroneEntity droneBase) {
+        if (droneBase instanceof DroneEntity) {
+            return ((DroneEntity) droneBase).getActiveWidget();
+        } else if (droneBase instanceof ProgrammableControllerEntity) {
+            return ((ProgrammableControllerEntity) droneBase).getController().getActiveWidget();
         } else {
             return null;
         }

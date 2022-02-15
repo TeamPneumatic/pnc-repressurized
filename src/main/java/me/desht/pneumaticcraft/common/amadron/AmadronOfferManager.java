@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
-import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
+import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -204,11 +204,11 @@ public enum AmadronOfferManager {
                     fluidStack -> offer.getOutput().countTradesInTank(IOHelper.getFluidHandlerForTE(provider))
             );
             if (possiblePickups > 0) {
-                EntityAmadrone drone = AmadronMenu.retrieveOrder(null, offer.getReversedOffer(), possiblePickups,
+                AmadroneEntity drone = AmadronMenu.retrieveOrder(null, offer.getReversedOffer(), possiblePickups,
                         offer.getProvidingPos(), offer.getProvidingPos());
                 if (drone != null) {
                     drone.setHandlingOffer(reversed.getId(), possiblePickups, ItemStack.EMPTY,
-                            "Restock", EntityAmadrone.AmadronAction.RESTOCKING);
+                            "Restock", AmadroneEntity.AmadronAction.RESTOCKING);
                 }
             }
             if (offer.payout()) needSave = true;

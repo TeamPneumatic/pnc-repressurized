@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIAttackEntity;
 import me.desht.pneumaticcraft.common.ai.DroneAINearestAttackableTarget;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaTypeBox;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -67,12 +67,12 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIAttackEntity((EntityDrone) drone, 1.0D, false);
+        return new DroneAIAttackEntity((DroneEntity) drone, 1.0D, false);
     }
 
     @Override
     public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAINearestAttackableTarget((EntityDrone) drone, false, (ProgWidget) widget);
+        return new DroneAINearestAttackableTarget((DroneEntity) drone, false, (ProgWidget) widget);
     }
 
     @Override

@@ -24,7 +24,7 @@ import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
@@ -62,7 +62,7 @@ public class SemiblockProvider {
                 try {
                     int entityId = Integer.parseInt(name);
                     ISemiBlock entity = ISemiBlock.byTrackingId(blockAccessor.getLevel(), entityId);
-                    if (entity instanceof EntitySemiblockBase) {
+                    if (entity instanceof AbstractSemiblockEntity) {
                         if (!(entity instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) entity).getSide() == blockAccessor.getSide()) {
                             MutableComponent title = new TextComponent("[")
                                     .append(entity.getDisplayName()).append("]").withStyle(ChatFormatting.YELLOW);

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
+import me.desht.pneumaticcraft.common.entity.projectile.VortexEntity;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -57,7 +57,7 @@ public class ItemVortexCannon extends ItemPressurizable {
         } else {
             if (airHandler.getPressure() > 0.1f) {
                 world.playSound(playerIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), ModSounds.AIR_CANNON.get(), SoundSource.PLAYERS, 1.0F, 0.7F + factor * 0.2F);
-                EntityVortex vortex = ModEntityTypes.VORTEX.get().create(world);
+                VortexEntity vortex = ModEntityTypes.VORTEX.get().create(world);
                 if (vortex != null) {
                     Vec3 directionVec = playerIn.getLookAngle().normalize().scale(playerIn.isSprinting() ? -0.35 : -0.15);
                     Vec3 vortexPos = playerIn.position().add(0, playerIn.getEyeHeight() / 2, 0).add(directionVec);

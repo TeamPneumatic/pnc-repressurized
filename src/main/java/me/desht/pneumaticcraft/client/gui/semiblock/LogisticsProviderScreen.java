@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsPassiveProvider;
+import me.desht.pneumaticcraft.common.entity.semiblock.LogisticsPassiveProviderEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
-public class LogisticsProviderScreen extends AbstractLogisticsScreen<EntityLogisticsPassiveProvider> {
+public class LogisticsProviderScreen extends AbstractLogisticsScreen<LogisticsPassiveProviderEntity> {
     public LogisticsProviderScreen(LogisticsMenu menu, Inventory inv, Component displayString) {
         super(menu, inv, displayString);
     }

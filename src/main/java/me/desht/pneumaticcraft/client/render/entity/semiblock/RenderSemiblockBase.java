@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -33,7 +33,7 @@ import net.minecraft.world.phys.Vec3;
 
 import static net.minecraft.core.Direction.*;
 
-abstract class RenderSemiblockBase<T extends EntitySemiblockBase> extends EntityRenderer<T> {
+abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity> extends EntityRenderer<T> {
     // not the usual enum order: down last because it's the least likely candidate
     private static final Direction[] LIGHTING_DIRS = new Direction[] {
             UP, NORTH, SOUTH, WEST, EAST, DOWN

@@ -28,19 +28,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 
-public class EntityRing extends Entity {
+public class RingEntity extends Entity {
     public ProgressingLine ring, oldRing;
     private final Entity targetEntity;
     public final int color;
 
-    public EntityRing(EntityType<EntityRing> type, Level world) {
+    public RingEntity(EntityType<RingEntity> type, Level world) {
         super(type, world);
 
         targetEntity = null;
         color = 0;
     }
 
-    public EntityRing(Level par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
+    public RingEntity(Level par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
         super(ModEntityTypes.RING.get(), par1World);
 
         setPos(startX, startY, startZ);

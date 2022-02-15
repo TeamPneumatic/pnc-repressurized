@@ -18,12 +18,11 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
-import me.desht.pneumaticcraft.common.entity.EntityRing;
-import me.desht.pneumaticcraft.common.entity.living.*;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
+import me.desht.pneumaticcraft.common.entity.RingEntity;
+import me.desht.pneumaticcraft.common.entity.drone.*;
+import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
+import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
+import me.desht.pneumaticcraft.common.entity.projectile.VortexEntity;
 import me.desht.pneumaticcraft.common.entity.semiblock.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -40,56 +39,56 @@ import java.util.function.Supplier;
 public class ModEntityTypes {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITIES, Names.MOD_ID);
 
-    public static final RegistryObject<EntityType<EntityDrone>> DRONE
+    public static final RegistryObject<EntityType<DroneEntity>> DRONE
             = register("drone", ModEntityTypes::drone);
-    public static final RegistryObject<EntityType<EntityLogisticsDrone>> LOGISTICS_DRONE
+    public static final RegistryObject<EntityType<LogisticsDroneEntity>> LOGISTICS_DRONE
             = register("logistics_drone", ModEntityTypes::logisticsDrone);
-    public static final RegistryObject<EntityType<EntityHarvestingDrone>> HARVESTING_DRONE
+    public static final RegistryObject<EntityType<HarvestingDroneEntity>> HARVESTING_DRONE
             = register("harvesting_drone", ModEntityTypes::harvestingDrone);
-    public static final RegistryObject<EntityType<EntityGuardDrone>> GUARD_DRONE
+    public static final RegistryObject<EntityType<GuardDroneEntity>> GUARD_DRONE
             = register("guard_drone", ModEntityTypes::guardDrone);
-    public static final RegistryObject<EntityType<EntityCollectorDrone>> COLLECTOR_DRONE
+    public static final RegistryObject<EntityType<CollectorDroneEntity>> COLLECTOR_DRONE
             = register("collector_drone", ModEntityTypes::collectorDrone);
 
-    public static final RegistryObject<EntityType<EntityAmadrone>> AMADRONE
+    public static final RegistryObject<EntityType<AmadroneEntity>> AMADRONE
             = register("amadrone", ModEntityTypes::amadrone);
-    public static final RegistryObject<EntityType<EntityProgrammableController>> PROGRAMMABLE_CONTROLLER
+    public static final RegistryObject<EntityType<ProgrammableControllerEntity>> PROGRAMMABLE_CONTROLLER
             = register("programmable_controller", ModEntityTypes::programmableController);
 
-    public static final RegistryObject<EntityType<EntityVortex>> VORTEX
+    public static final RegistryObject<EntityType<VortexEntity>> VORTEX
             = register("vortex", ModEntityTypes::vortex);
-    public static final RegistryObject<EntityType<EntityMicromissile>> MICROMISSILE
+    public static final RegistryObject<EntityType<MicromissileEntity>> MICROMISSILE
             = register("micromissile", ModEntityTypes::micromissile);
-    public static final RegistryObject<EntityType<EntityTumblingBlock>> TUMBLING_BLOCK
+    public static final RegistryObject<EntityType<TumblingBlockEntity>> TUMBLING_BLOCK
             = register("tumbling_block", ModEntityTypes::tumblingBlock);
-    public static final RegistryObject<EntityType<EntityRing>> RING
+    public static final RegistryObject<EntityType<RingEntity>> RING
             = register("ring", ModEntityTypes::ring);
 
-    public static final RegistryObject<EntityType<EntityCropSupport>> CROP_SUPPORT
+    public static final RegistryObject<EntityType<CropSupportEntity>> CROP_SUPPORT
             = register("crop_support", ModEntityTypes::cropSupport);
-    public static final RegistryObject<EntityType<EntitySpawnerAgitator>> SPAWNER_AGITATOR
+    public static final RegistryObject<EntityType<SpawnerAgitatorEntity>> SPAWNER_AGITATOR
             = register("spawner_agitator", ModEntityTypes::spawnerAgitator);
-    public static final RegistryObject<EntityType<EntityHeatFrame>> HEAT_FRAME
+    public static final RegistryObject<EntityType<HeatFrameEntity>> HEAT_FRAME
             = register("heat_frame", ModEntityTypes::heatFrame);
-    public static final RegistryObject<EntityType<EntityTransferGadget>> TRANSFER_GADGET
+    public static final RegistryObject<EntityType<TransferGadgetEntity>> TRANSFER_GADGET
             = register("transfer_gadget", ModEntityTypes::transferGadget);
-    public static final RegistryObject<EntityType<EntityLogisticsActiveProvider>> LOGISTICS_FRAME_ACTIVE_PROVIDER
+    public static final RegistryObject<EntityType<LogisticsActiveProviderEntity>> LOGISTICS_FRAME_ACTIVE_PROVIDER
             = register("logistics_frame_active_provider", ModEntityTypes::activeProvider);
-    public static final RegistryObject<EntityType<EntityLogisticsPassiveProvider>> LOGISTICS_FRAME_PASSIVE_PROVIDER
+    public static final RegistryObject<EntityType<LogisticsPassiveProviderEntity>> LOGISTICS_FRAME_PASSIVE_PROVIDER
             = register("logistics_frame_passive_provider", ModEntityTypes::passiveProvider);
-    public static final RegistryObject<EntityType<EntityLogisticsStorage>> LOGISTICS_FRAME_STORAGE
+    public static final RegistryObject<EntityType<LogisticsStorageEntity>> LOGISTICS_FRAME_STORAGE
             = register("logistics_frame_storage", ModEntityTypes::storage);
-    public static final RegistryObject<EntityType<EntityLogisticsDefaultStorage>> LOGISTICS_FRAME_DEFAULT_STORAGE
+    public static final RegistryObject<EntityType<LogisticsDefaultStorageEntity>> LOGISTICS_FRAME_DEFAULT_STORAGE
             = register("logistics_frame_default_storage", ModEntityTypes::defaultStorage);
-    public static final RegistryObject<EntityType<EntityLogisticsRequester>> LOGISTICS_FRAME_REQUESTER
+    public static final RegistryObject<EntityType<LogisticsRequesterEntity>> LOGISTICS_FRAME_REQUESTER
             = register("logistics_frame_requester", ModEntityTypes::requester);
 
     private static <E extends Entity> RegistryObject<EntityType<E>> register(final String name, final Supplier<EntityType.Builder<E>> sup) {
         return ENTITY_TYPES.register(name, () -> sup.get().build(name));
     }
 
-    private static EntityType.Builder<EntityVortex> vortex() {
-        return EntityType.Builder.of(EntityVortex::new, MobCategory.MISC)
+    private static EntityType.Builder<VortexEntity> vortex() {
+        return EntityType.Builder.of(VortexEntity::new, MobCategory.MISC)
                 .sized(0.25f, 0.25f)
                 .fireImmune()
                 .setTrackingRange(4)
@@ -98,8 +97,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityDrone> drone() {
-        return EntityType.Builder.<EntityDrone>of(EntityDrone::new, MobCategory.CREATURE)
+    private static EntityType.Builder<DroneEntity> drone() {
+        return EntityType.Builder.<DroneEntity>of(DroneEntity::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -107,8 +106,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityAmadrone> amadrone() {
-        return EntityType.Builder.of(EntityAmadrone::new, MobCategory.CREATURE)
+    private static EntityType.Builder<AmadroneEntity> amadrone() {
+        return EntityType.Builder.of(AmadroneEntity::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -116,8 +115,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityLogisticsDrone> logisticsDrone() {
-        return EntityType.Builder.<EntityLogisticsDrone>of(EntityLogisticsDrone::new, MobCategory.CREATURE)
+    private static EntityType.Builder<LogisticsDroneEntity> logisticsDrone() {
+        return EntityType.Builder.<LogisticsDroneEntity>of(LogisticsDroneEntity::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -125,8 +124,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityHarvestingDrone> harvestingDrone() {
-        return EntityType.Builder.<EntityHarvestingDrone>of(EntityHarvestingDrone::new, MobCategory.CREATURE)
+    private static EntityType.Builder<HarvestingDroneEntity> harvestingDrone() {
+        return EntityType.Builder.<HarvestingDroneEntity>of(HarvestingDroneEntity::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -134,8 +133,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityGuardDrone> guardDrone() {
-        return EntityType.Builder.<EntityGuardDrone>of(EntityGuardDrone::new, MobCategory.CREATURE)
+    private static EntityType.Builder<GuardDroneEntity> guardDrone() {
+        return EntityType.Builder.<GuardDroneEntity>of(GuardDroneEntity::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -143,8 +142,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityCollectorDrone> collectorDrone() {
-        return EntityType.Builder.<EntityCollectorDrone>of(EntityCollectorDrone::new, MobCategory.CREATURE)
+    private static EntityType.Builder<CollectorDroneEntity> collectorDrone() {
+        return EntityType.Builder.<CollectorDroneEntity>of(CollectorDroneEntity::new, MobCategory.CREATURE)
                 .sized(0.7f, 0.35f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -152,8 +151,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityProgrammableController> programmableController() {
-        return EntityType.Builder.of(EntityProgrammableController::new, MobCategory.CREATURE)
+    private static EntityType.Builder<ProgrammableControllerEntity> programmableController() {
+        return EntityType.Builder.of(ProgrammableControllerEntity::new, MobCategory.CREATURE)
                 .sized(0.35f, 0.175f)
                 .setTrackingRange(32)
                 .setUpdateInterval(3)
@@ -161,8 +160,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityMicromissile> micromissile() {
-        return EntityType.Builder.<EntityMicromissile>of(EntityMicromissile::new, MobCategory.MISC)
+    private static EntityType.Builder<MicromissileEntity> micromissile() {
+        return EntityType.Builder.<MicromissileEntity>of(MicromissileEntity::new, MobCategory.MISC)
                 .sized(0.5f, 0.5f)
                 .fireImmune()
                 .setTrackingRange(4)
@@ -171,8 +170,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityTumblingBlock> tumblingBlock() {
-        return EntityType.Builder.<EntityTumblingBlock>of(EntityTumblingBlock::new, MobCategory.MISC)
+    private static EntityType.Builder<TumblingBlockEntity> tumblingBlock() {
+        return EntityType.Builder.<TumblingBlockEntity>of(TumblingBlockEntity::new, MobCategory.MISC)
                 .sized(0.5f, 0.5f)
                 .fireImmune()
                 .setTrackingRange(4)
@@ -181,8 +180,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityRing> ring() {
-        return EntityType.Builder.<EntityRing>of(EntityRing::new, MobCategory.MISC)
+    private static EntityType.Builder<RingEntity> ring() {
+        return EntityType.Builder.<RingEntity>of(RingEntity::new, MobCategory.MISC)
                 .sized(0.5f, 0.5f)
                 .fireImmune()
                 .setTrackingRange(4)
@@ -191,8 +190,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(true);
     }
 
-    private static EntityType.Builder<EntityCropSupport> cropSupport() {
-        return EntityType.Builder.of(EntityCropSupport::new, MobCategory.MISC)
+    private static EntityType.Builder<CropSupportEntity> cropSupport() {
+        return EntityType.Builder.of(CropSupportEntity::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -201,8 +200,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    private static EntityType.Builder<EntitySpawnerAgitator> spawnerAgitator() {
-        return EntityType.Builder.of(EntitySpawnerAgitator::new, MobCategory.MISC)
+    private static EntityType.Builder<SpawnerAgitatorEntity> spawnerAgitator() {
+        return EntityType.Builder.of(SpawnerAgitatorEntity::new, MobCategory.MISC)
                 .sized(1F, 1F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -211,8 +210,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    private static EntityType.Builder<EntityHeatFrame> heatFrame() {
-        return EntityType.Builder.of(EntityHeatFrame::new, MobCategory.MISC)
+    private static EntityType.Builder<HeatFrameEntity> heatFrame() {
+        return EntityType.Builder.of(HeatFrameEntity::new, MobCategory.MISC)
                 .sized(1F, 1F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -221,8 +220,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    private static EntityType.Builder<EntityTransferGadget> transferGadget() {
-        return EntityType.Builder.of(EntityTransferGadget::new, MobCategory.MISC)
+    private static EntityType.Builder<TransferGadgetEntity> transferGadget() {
+        return EntityType.Builder.of(TransferGadgetEntity::new, MobCategory.MISC)
                 .sized(1F, 1F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -231,8 +230,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    private static EntityType.Builder<EntityLogisticsActiveProvider> activeProvider() {
-        return EntityType.Builder.of(EntityLogisticsActiveProvider::new, MobCategory.MISC)
+    private static EntityType.Builder<LogisticsActiveProviderEntity> activeProvider() {
+        return EntityType.Builder.of(LogisticsActiveProviderEntity::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -241,8 +240,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    private static EntityType.Builder<EntityLogisticsPassiveProvider> passiveProvider() {
-        return EntityType.Builder.of(EntityLogisticsPassiveProvider::new, MobCategory.MISC)
+    private static EntityType.Builder<LogisticsPassiveProviderEntity> passiveProvider() {
+        return EntityType.Builder.of(LogisticsPassiveProviderEntity::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -251,8 +250,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    private static EntityType.Builder<EntityLogisticsStorage> storage() {
-        return EntityType.Builder.of(EntityLogisticsStorage::new, MobCategory.MISC)
+    private static EntityType.Builder<LogisticsStorageEntity> storage() {
+        return EntityType.Builder.of(LogisticsStorageEntity::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -261,8 +260,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    private static EntityType.Builder<EntityLogisticsDefaultStorage> defaultStorage() {
-        return EntityType.Builder.of(EntityLogisticsDefaultStorage::new, MobCategory.MISC)
+    private static EntityType.Builder<LogisticsDefaultStorageEntity> defaultStorage() {
+        return EntityType.Builder.of(LogisticsDefaultStorageEntity::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -271,8 +270,8 @@ public class ModEntityTypes {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    private static EntityType.Builder<EntityLogisticsRequester> requester() {
-        return EntityType.Builder.of(EntityLogisticsRequester::new, MobCategory.MISC)
+    private static EntityType.Builder<LogisticsRequesterEntity> requester() {
+        return EntityType.Builder.of(LogisticsRequesterEntity::new, MobCategory.MISC)
                 .sized(10 / 16F, 9 / 16F)
                 .fireImmune()
                 .setTrackingRange(3)
@@ -285,13 +284,13 @@ public class ModEntityTypes {
     public static class Listener {
         @SubscribeEvent
         public static void registerGlobalAttributes(EntityAttributeCreationEvent event) {
-            event.put(ModEntityTypes.DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntityTypes.AMADRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntityTypes.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntityTypes.GUARD_DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntityTypes.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntityTypes.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().build());
-            event.put(ModEntityTypes.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().build());
+            event.put(ModEntityTypes.DRONE.get(), DroneEntity.prepareAttributes().build());
+            event.put(ModEntityTypes.AMADRONE.get(), DroneEntity.prepareAttributes().build());
+            event.put(ModEntityTypes.COLLECTOR_DRONE.get(), DroneEntity.prepareAttributes().build());
+            event.put(ModEntityTypes.GUARD_DRONE.get(), DroneEntity.prepareAttributes().build());
+            event.put(ModEntityTypes.HARVESTING_DRONE.get(), DroneEntity.prepareAttributes().build());
+            event.put(ModEntityTypes.LOGISTICS_DRONE.get(), DroneEntity.prepareAttributes().build());
+            event.put(ModEntityTypes.PROGRAMMABLE_CONTROLLER.get(), DroneEntity.prepareAttributes().build());
         }
     }
 }

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.entity.projectile;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles.FireMode;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
@@ -51,13 +51,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class EntityMicromissile extends ThrowableProjectile {
+public class MicromissileEntity extends ThrowableProjectile {
     private static final double SEEK_RANGE = 24;
 
-    private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(EntityMicromissile.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> MAX_VEL_SQ = SynchedEntityData.defineId(EntityMicromissile.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> ACCEL = SynchedEntityData.defineId(EntityMicromissile.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> TURN_SPEED = SynchedEntityData.defineId(EntityMicromissile.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(MicromissileEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> MAX_VEL_SQ = SynchedEntityData.defineId(MicromissileEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> ACCEL = SynchedEntityData.defineId(MicromissileEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> TURN_SPEED = SynchedEntityData.defineId(MicromissileEntity.class, EntityDataSerializers.FLOAT);
 
     private Entity targetEntity = null;
 
@@ -69,11 +69,11 @@ public class EntityMicromissile extends ThrowableProjectile {
     private boolean outOfFuel = false;
     private FireMode fireMode = FireMode.SMART;
 
-    public EntityMicromissile(EntityType<EntityMicromissile> type, Level worldIn) {
+    public MicromissileEntity(EntityType<MicromissileEntity> type, Level worldIn) {
         super(type, worldIn);
     }
 
-    public EntityMicromissile(Level worldIn, LivingEntity thrower, ItemStack iStack) {
+    public MicromissileEntity(Level worldIn, LivingEntity thrower, ItemStack iStack) {
         super(ModEntityTypes.MICROMISSILE.get(), thrower, worldIn);
 
         if (iStack.hasTag()) {
@@ -200,7 +200,7 @@ public class EntityMicromissile extends ThrowableProjectile {
         if (thrower != null) {
             if (e.equals(thrower)
                     || e instanceof TamableAnimal && thrower.equals(((TamableAnimal) e).getOwner())
-                    || e instanceof EntityDrone && thrower.getUUID().equals(((EntityDrone) e).getOwnerUUID())
+                    || e instanceof DroneEntity && thrower.getUUID().equals(((DroneEntity) e).getOwnerUUID())
                     || e instanceof Horse && thrower.getUUID().equals(((Horse) e).getOwnerUUID())) {
                 return false;
             }

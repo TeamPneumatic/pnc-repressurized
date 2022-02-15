@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticleTrail;
@@ -46,14 +46,14 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPathNavigator {
-    private final EntityDrone droneEntity;
+    private final DroneEntity droneEntity;
     private boolean forceTeleport;
     private int teleportCounter = -1;
     private BlockPos telPos;
     private static final int TELEPORT_TICKS = 120;
     private int stuckTicks = 0;
 
-    public EntityPathNavigateDrone(EntityDrone droneEntity, Level world) {
+    public EntityPathNavigateDrone(DroneEntity droneEntity, Level world) {
         super(droneEntity, world);
         this.droneEntity = droneEntity;
     }

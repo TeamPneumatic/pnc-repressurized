@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.block.entity.HeatSinkBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.RangeManager;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
@@ -215,7 +215,7 @@ public class AirGrateModule extends AbstractTubeModule {
             return false;
         }
         // don't touch semiblocks, at all
-        return !entity.isPushable() || entity instanceof EntitySemiblockBase;
+        return !entity.isPushable() || entity instanceof AbstractSemiblockEntity;
     }
 
     private boolean rayTraceOK(Entity entity, Vec3 traceVec) {

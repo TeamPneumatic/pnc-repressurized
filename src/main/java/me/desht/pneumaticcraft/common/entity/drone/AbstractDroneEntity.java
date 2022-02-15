@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.entity.living;
+package me.desht.pneumaticcraft.common.entity.drone;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -27,13 +27,13 @@ import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
-public abstract class EntityDroneBase extends PathfinderMob {
+public abstract class AbstractDroneEntity extends PathfinderMob {
     public float oldPropRotation;
     public float propRotation;
     public float laserExtension; // How far the laser comes out of the drone. 1F is fully extended
     public float oldLaserExtension;
 
-    public EntityDroneBase(EntityType<? extends PathfinderMob> type, Level world) {
+    public AbstractDroneEntity(EntityType<? extends PathfinderMob> type, Level world) {
         super(type, world);
     }
 

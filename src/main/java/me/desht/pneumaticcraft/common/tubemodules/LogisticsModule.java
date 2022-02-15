@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticsModule;
@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 public class LogisticsModule extends AbstractTubeModule implements INetworkedModule {
-    private EntityLogisticsFrame cachedFrame;
+    private AbstractLogisticsFrameEntity cachedFrame;
     private int colorChannel;
     private int ticksSinceAction = -1; // client sided timer used to display the blue color when doing a logistic task.
     private int ticksSinceNotEnoughAir = -1;
@@ -118,11 +118,11 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
         colorChannel = nbt.getByte("colorChannel");
     }
 
-    public EntityLogisticsFrame getFrame() {
+    public AbstractLogisticsFrameEntity getFrame() {
         if (cachedFrame == null) {
             ISemiBlock semiBlock = SemiblockTracker.getInstance().getSemiblock(getTube().getLevel(), getTube().getBlockPos().relative(dir), dir.getOpposite());
-            if (semiBlock instanceof EntityLogisticsFrame) {
-                cachedFrame = (EntityLogisticsFrame) semiBlock;
+            if (semiBlock instanceof AbstractLogisticsFrameEntity) {
+                cachedFrame = (AbstractLogisticsFrameEntity) semiBlock;
             }
         }
         return cachedFrame;

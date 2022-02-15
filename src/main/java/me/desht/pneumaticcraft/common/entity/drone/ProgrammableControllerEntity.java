@@ -15,10 +15,9 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.entity;
+package me.desht.pneumaticcraft.common.entity.drone;
 
 import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -31,11 +30,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 /**
  * Special client-only entity used for rendering the programmable controller's "minidrone".
  */
-public class EntityProgrammableController extends EntityDroneBase {
+public class ProgrammableControllerEntity extends AbstractDroneEntity {
     private ProgrammableControllerBlockEntity controller;
     private float propSpeed = 0f;
 
-    public EntityProgrammableController(EntityType<EntityProgrammableController> type, Level world) {
+    public ProgrammableControllerEntity(EntityType<ProgrammableControllerEntity> type, Level world) {
         super(type, world);
 
         this.blocksBuilding = false;

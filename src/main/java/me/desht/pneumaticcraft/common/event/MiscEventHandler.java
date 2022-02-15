@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -289,7 +289,7 @@ public class MiscEventHandler {
     public void entityMounting(EntityMountEvent event) {
         if (event.isMounting()) {
             // prevent minecarts/boats which have just been dropped by drones from immediately picking up the drone
-            if (event.getEntityMounting() instanceof EntityDrone
+            if (event.getEntityMounting() instanceof DroneEntity
                     && (event.getEntityBeingMounted() instanceof AbstractMinecart || event.getEntityBeingMounted() instanceof Boat)) {
                 if (!event.getEntityBeingMounted().isOnGround()) {
                     event.setCanceled(true);

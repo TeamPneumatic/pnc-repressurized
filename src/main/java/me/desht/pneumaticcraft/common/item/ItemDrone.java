@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -58,15 +58,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
-import static me.desht.pneumaticcraft.common.entity.living.EntityDrone.NBT_DRONE_COLOR;
+import static me.desht.pneumaticcraft.common.entity.drone.DroneEntity.NBT_DRONE_COLOR;
 
 public class ItemDrone extends ItemPressurizable implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor, ColorHandlers.ITintableItem {
-    private final BiFunction<Level, Player, EntityDrone> droneCreator;
+    private final BiFunction<Level, Player, DroneEntity> droneCreator;
     private final boolean programmable;
     private final DyeColor defaultColor;
 
-    public ItemDrone(BiFunction<Level, Player, EntityDrone> droneCreator, boolean programmable, DyeColor defaultColor) {
-        super((int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
+    public ItemDrone(BiFunction<Level, Player, DroneEntity> droneCreator, boolean programmable, DyeColor defaultColor) {
+        super(ModItems.defaultProps(), (int)(PneumaticValues.DRONE_MAX_PRESSURE * PneumaticValues.DRONE_VOLUME), PneumaticValues.DRONE_VOLUME);
         this.droneCreator = droneCreator;
         this.programmable = programmable;
         this.defaultColor = defaultColor;
@@ -119,7 +119,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     }
 
     public void spawnDrone(Player player, Level world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
-        EntityDrone drone = droneCreator.apply(world, player);
+        DroneEntity drone = droneCreator.apply(world, player);
 
         drone.setPos(placePos.getX() + 0.5, placePos.getY() + 0.5, placePos.getZ() + 0.5);
         drone.readFromItemStack(iStack);

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
+import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetEntityMotion;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -128,7 +128,7 @@ public class ItemLaunching {
             }
         }
         if (fallingBlocks && item instanceof BlockItem) {
-            return new EntityTumblingBlock(world, player, 0, 0, 0, stack);
+            return new TumblingBlockEntity(world, player, 0, 0, 0, stack);
         } else {
             ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
             e.setPickUpDelay(20);

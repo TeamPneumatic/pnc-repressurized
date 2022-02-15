@@ -21,7 +21,7 @@ import blusunrize.immersiveengineering.api.Lib;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
@@ -44,7 +44,7 @@ public class ElectricAttackHandler {
     public static void onElectricalAttack(LivingHurtEvent event) {
         if (!event.getSource().getMsgId().equals(Lib.DMG_WireShock)) return;
 
-        if (event.getEntityLiving() instanceof EntityDrone drone) {
+        if (event.getEntityLiving() instanceof DroneEntity drone) {
             if (drone.getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
                 float dmg = event.getAmount();
                 drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).addAir((int)(-50 * dmg));

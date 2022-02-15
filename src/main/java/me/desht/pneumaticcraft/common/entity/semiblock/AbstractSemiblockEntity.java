@@ -67,9 +67,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Collection;
 
-public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, IGUIButtonSensitive {
-    private static final EntityDataAccessor<Integer> TIME_SINCE_HIT = SynchedEntityData.defineId(EntitySemiblockBase.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> DAMAGE_TAKEN = SynchedEntityData.defineId(EntitySemiblockBase.class, EntityDataSerializers.FLOAT);
+public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlock, IGUIButtonSensitive {
+    private static final EntityDataAccessor<Integer> TIME_SINCE_HIT = SynchedEntityData.defineId(AbstractSemiblockEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> DAMAGE_TAKEN = SynchedEntityData.defineId(AbstractSemiblockEntity.class, EntityDataSerializers.FLOAT);
 
     private static final float MAX_HEALTH = 40.0F;
 
@@ -80,7 +80,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     private Vec3 dropOffset = Vec3.ZERO;
     private Block lastBlock;  // to detect if the underlying block has changed
 
-    EntitySemiblockBase(EntityType<?> entityTypeIn, Level worldIn) {
+    AbstractSemiblockEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityHeatFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.HeatFrameEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class ModelSpawnerAgitator extends EntityModel<EntityHeatFrame> {
+public class ModelSpawnerAgitator extends EntityModel<HeatFrameEntity> {
     private final ModelPart top1;
     private final ModelPart top2;
     private final ModelPart top3;
@@ -135,7 +135,7 @@ public class ModelSpawnerAgitator extends EntityModel<EntityHeatFrame> {
     }
 
     @Override
-    public void setupAnim(EntityHeatFrame entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(HeatFrameEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {

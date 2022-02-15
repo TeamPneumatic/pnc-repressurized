@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
+import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -38,13 +38,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 
-public class RenderTumblingBlock extends EntityRenderer<EntityTumblingBlock> {
+public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
     public RenderTumblingBlock(EntityRendererProvider.Context ctx) {
         super(ctx);
     }
 
     @Override
-    public void render(EntityTumblingBlock entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(TumblingBlockEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         ItemStack stack = entity.getStack();
         if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) {
             return;
@@ -78,7 +78,7 @@ public class RenderTumblingBlock extends EntityRenderer<EntityTumblingBlock> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityTumblingBlock entity) {
+    public ResourceLocation getTextureLocation(TumblingBlockEntity entity) {
         return null;
     }
 }

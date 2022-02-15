@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -38,10 +37,6 @@ import javax.annotation.Nullable;
 public class ItemPressurizable extends Item implements IPressurizableItem, Vanishable {
     private final int volume;
     private final float maxPressure;
-
-    public ItemPressurizable(int maxAir, int volume) {
-        this(ModItems.defaultProps(), maxAir, volume);
-    }
 
     public ItemPressurizable(Item.Properties props, int maxAir, int volume) {
         super(props);

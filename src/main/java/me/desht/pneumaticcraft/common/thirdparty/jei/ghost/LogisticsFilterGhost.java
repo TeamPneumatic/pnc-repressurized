@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei.ghost;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import net.minecraft.client.renderer.Rect2i;
@@ -31,7 +31,7 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.Collections;
 import java.util.List;
 
-public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGhostIngredientHandler<AbstractLogisticsScreen<T>> {
+public class LogisticsFilterGhost<T extends AbstractLogisticsFrameEntity> implements IGhostIngredientHandler<AbstractLogisticsScreen<T>> {
     @Override
     public <I> List<Target<I>> getTargets(AbstractLogisticsScreen<T> gui, I ingredient, boolean doStart) {
         if (ingredient instanceof ItemStack) {
@@ -45,7 +45,7 @@ public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGh
             return builder.build();
         } else if (ingredient instanceof FluidStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
-            for (int i = 0; i < EntityLogisticsFrame.FLUID_FILTER_SLOTS; i++) {
+            for (int i = 0; i < AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS; i++) {
                 //noinspection unchecked
                 builder.add((Target<I>) new FluidStackTarget(i, gui));
             }

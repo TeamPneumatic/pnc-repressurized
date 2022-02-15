@@ -28,11 +28,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 
-public class EntityLogisticsStorage extends EntityLogisticsFrame implements ISpecificProvider, ISpecificRequester {
+public class LogisticsStorageEntity extends AbstractLogisticsFrameEntity implements ISpecificProvider, ISpecificRequester {
     private int minItems = 1;
     private int minFluid = 1;
 
-    public EntityLogisticsStorage(EntityType<?> entityTypeIn, Level worldIn) {
+    public LogisticsStorageEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 

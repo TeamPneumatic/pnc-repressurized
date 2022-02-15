@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.entity.living;
+package me.desht.pneumaticcraft.common.entity.drone;
 
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.progwidgets.*;
@@ -29,22 +29,27 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class EntityLogisticsDrone extends EntityBasicDrone {
-    public EntityLogisticsDrone(EntityType<EntityLogisticsDrone> type, Level world) {
+public class GuardDroneEntity extends AbstractBasicDroneEntity {
+    public GuardDroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world);
     }
 
-    public EntityLogisticsDrone(Level world, Player player) {
-        super(ModEntityTypes.LOGISTICS_DRONE.get(), world, player);
+    public GuardDroneEntity(Level world, Player player) {
+        super(ModEntityTypes.GUARD_DRONE.get(), world, player);
     }
 
     @Override
     public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
-        builder.add(new ProgWidgetLogistics(), standard16x16x16Area(pos));
-        builder.add(new ProgWidgetWait(), ProgWidgetText.withText("1s"));  // be kind to server
+        // no item filter because we don't know what type of sword or ammo could be in the inventory
+        builder.add(new ProgWidgetInventoryImport(), ProgWidgetArea.fromPosition(clickPos));
+        builder.add(new ProgWidgetEntityAttack(),
+                ProgWidgetArea.fromPositions(clickPos.offset(-16, -5, -16), clickPos.offset(16, 8, 16)),
+                ProgWidgetText.withText("@mob")
+        );
         maybeAddStandbyInstruction(builder, droneStack);
+        builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10"));
         widgets.addAll(builder.build());
 
         return true;

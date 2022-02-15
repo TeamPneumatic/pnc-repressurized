@@ -47,19 +47,19 @@ import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class EntityTransferGadget extends EntitySemiblockBase implements IDirectionalSemiblock {
+public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDirectionalSemiblock {
     private static final int TRANSFER_INTERVAL = 40;
 
     private static final double INDENT = 1/16D;
     private static final double THICKNESS = 1/32D;
     private static final double ANTI_Z_FIGHT = 0.001D;
 
-    private static final EntityDataAccessor<Integer> IO_MODE = SynchedEntityData.defineId(EntityTransferGadget.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> SIDE = SynchedEntityData.defineId(EntityTransferGadget.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> IO_MODE = SynchedEntityData.defineId(TransferGadgetEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> SIDE = SynchedEntityData.defineId(TransferGadgetEntity.class, EntityDataSerializers.INT);
 
     private int counter;
 
-    public EntityTransferGadget(EntityType<?> entityTypeIn, Level worldIn) {
+    public TransferGadgetEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 

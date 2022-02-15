@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
 import net.minecraft.world.level.pathfinder.Node;
@@ -28,7 +28,7 @@ public class NodeProcessorDrone extends FlyNodeEvaluator {
     @Nullable
     @Override
     protected Node getNode(int x, int y, int z) {
-        return ((EntityDrone) mob).isBlockValidPathfindBlock(new BlockPos(x, y, z)) ? super.getNode(x, y, z) : null;
+        return ((DroneEntity) mob).isBlockValidPathfindBlock(new BlockPos(x, y, z)) ? super.getNode(x, y, z) : null;
     }
 
     /**

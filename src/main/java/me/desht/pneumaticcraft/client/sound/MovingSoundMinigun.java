@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModParticleTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
@@ -48,7 +48,7 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
         super(ModSounds.MINIGUN.get(), SoundSource.NEUTRAL);
         this.entity = entity;
         this.tileEntity = null;
-        init(entity instanceof EntityDrone ?
+        init(entity instanceof DroneEntity ?
                 ConfigHelper.client().sound.minigunVolumeDrone.get().floatValue() :
                 ConfigHelper.client().sound.minigunVolumeHeld.get().floatValue());
     }
@@ -85,7 +85,7 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
                     if (curItem.getItem() == ModItems.MINIGUN.get()) {
                         minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
                     }
-                } else if (entity instanceof EntityDrone drone) {
+                } else if (entity instanceof DroneEntity drone) {
                     minigun = drone.getMinigun();
                 }
 

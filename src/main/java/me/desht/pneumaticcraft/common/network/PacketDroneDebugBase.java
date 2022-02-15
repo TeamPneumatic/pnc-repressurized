@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammableControllerBlockEntity;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
@@ -36,8 +36,8 @@ public abstract class PacketDroneDebugBase {
     final BlockPos pos;
 
     public PacketDroneDebugBase(IDroneBase drone) {
-        if (drone instanceof EntityDrone) {
-            entityId = ((EntityDrone) drone).getId();
+        if (drone instanceof DroneEntity) {
+            entityId = ((DroneEntity) drone).getId();
             pos = null;
         } else if (drone instanceof ProgrammableControllerBlockEntity) {
             pos = ((ProgrammableControllerBlockEntity) drone).getBlockPos();
@@ -78,7 +78,7 @@ public abstract class PacketDroneDebugBase {
             Player player =  ctx.get().getSender() == null ? ClientUtils.getClientPlayer() : ctx.get().getSender();
             if (entityId >= 0) {
                 Entity entity = world.getEntity(entityId);
-                if (entity instanceof EntityDrone) {
+                if (entity instanceof DroneEntity) {
                     handle(player, (IDroneBase) entity);
                 }
             } else if (pos != null) {

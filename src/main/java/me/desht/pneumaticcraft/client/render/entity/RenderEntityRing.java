@@ -19,20 +19,20 @@ package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.entity.EntityRing;
+import me.desht.pneumaticcraft.common.entity.RingEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class RenderEntityRing extends EntityRenderer<EntityRing> {
+public class RenderEntityRing extends EntityRenderer<RingEntity> {
     public RenderEntityRing(EntityRendererProvider.Context ctx) {
         super(ctx);
     }
 
     @Override
-    public void render(EntityRing ring, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(RingEntity ring, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         if (ring.oldRing != null) {
             float yaw = Mth.lerp(partialTicks, ring.yRotO, ring.getYRot());
             float pitch = Mth.lerp(partialTicks, ring.xRotO, ring.getXRot());
@@ -41,7 +41,7 @@ public class RenderEntityRing extends EntityRenderer<EntityRing> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityRing entity) {
+    public ResourceLocation getTextureLocation(RingEntity entity) {
         return null;
     }
 }

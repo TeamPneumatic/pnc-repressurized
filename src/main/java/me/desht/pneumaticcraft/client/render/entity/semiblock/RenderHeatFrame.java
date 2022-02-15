@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelHeatFrame;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityHeatFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.HeatFrameEntity;
 import me.desht.pneumaticcraft.common.heat.TemperatureCategory;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 
-public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
+public class RenderHeatFrame extends RenderSemiblockBase<HeatFrameEntity> {
     private static final ResourceLocation[] TEXTURES = new ResourceLocation[TemperatureCategory.values().length];
     static {
         for (TemperatureCategory tc : TemperatureCategory.values()) {
@@ -31,7 +31,7 @@ public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
     }
 
     @Override
-    public void render(EntityHeatFrame entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(HeatFrameEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         AABB aabb = entityIn.getBoundingBox();
 
         matrixStackIn.pushPose();
@@ -48,8 +48,8 @@ public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityHeatFrame entityHeatFrame) {
-        TemperatureCategory tc = TemperatureCategory.forTemperature(entityHeatFrame.getSyncedTemperature());
+    public ResourceLocation getTextureLocation(HeatFrameEntity heatFrameEntity) {
+        TemperatureCategory tc = TemperatureCategory.forTemperature(heatFrameEntity.getSyncedTemperature());
         return TEXTURES[tc.getIndex()];
     }
 }

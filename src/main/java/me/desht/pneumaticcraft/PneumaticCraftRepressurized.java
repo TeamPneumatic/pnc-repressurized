@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.common.commands.ModCommands;
 import me.desht.pneumaticcraft.common.config.ConfigHolder;
 import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.core.*;
-import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
+import me.desht.pneumaticcraft.common.dispenser.DroneDispenseBehavior;
 import me.desht.pneumaticcraft.common.event.*;
 import me.desht.pneumaticcraft.common.fluid.FluidSetup;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
@@ -158,9 +158,9 @@ public class PneumaticCraftRepressurized {
             ModWorldGen.registerConfiguredFeatures();
             AdvancementTriggers.registerTriggers();
 
-            DispenserBlock.registerBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
-            DispenserBlock.registerBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
-            DispenserBlock.registerBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
+            DispenserBlock.registerBehavior(ModItems.DRONE.get(), new DroneDispenseBehavior());
+            DispenserBlock.registerBehavior(ModItems.LOGISTICS_DRONE.get(), new DroneDispenseBehavior());
+            DispenserBlock.registerBehavior(ModItems.HARVESTING_DRONE.get(), new DroneDispenseBehavior());
 
             ThirdPartyManager.instance().postInit();
         });

@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsStorage;
+import me.desht.pneumaticcraft.common.entity.semiblock.LogisticsStorageEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
-public class LogisticsStorageScreen extends AbstractLogisticsScreen<EntityLogisticsStorage> {
+public class LogisticsStorageScreen extends AbstractLogisticsScreen<LogisticsStorageEntity> {
     public LogisticsStorageScreen(LogisticsMenu menu, Inventory inv, Component displayString) {
         super(menu, inv, displayString);
     }

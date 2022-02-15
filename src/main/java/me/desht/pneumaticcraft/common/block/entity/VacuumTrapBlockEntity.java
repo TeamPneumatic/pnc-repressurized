@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.inventory.VacuumTrapMenu;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -180,7 +180,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     private boolean isApplicable(LivingEntity e) {
         return e.canChangeDimensions()
-                && !(e instanceof EntityDrone)
+                && !(e instanceof DroneEntity)
                 && !(e instanceof TamableAnimal && ((TamableAnimal) e).isTame())
                 && !isEntityBlacklisted(e.getType());
     }

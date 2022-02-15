@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Dro
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -107,8 +107,8 @@ public class EntityTrackHandler {
 
         @Override
         public boolean isApplicable(Entity entity) {
-            if (entity instanceof EntityDroneBase) {
-                droneAIRenderer = new RenderDroneAI((EntityDroneBase) entity);
+            if (entity instanceof AbstractDroneEntity) {
+                droneAIRenderer = new RenderDroneAI((AbstractDroneEntity) entity);
                 return true;
             } else {
                 return false;
@@ -131,7 +131,7 @@ public class EntityTrackHandler {
 
         @Override
         public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
-            EntityDroneBase droneBase = (EntityDroneBase) entity;
+            AbstractDroneEntity droneBase = (AbstractDroneEntity) entity;
             curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", droneBase.getOwnerName().getString()));
             curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.routine", droneBase.getLabel()));
             Player player = ClientUtils.getClientPlayer();

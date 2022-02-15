@@ -24,7 +24,7 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -36,15 +36,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class DroneDigLaserLayer extends RenderLayer<EntityDroneBase, ModelDrone> {
+public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
     private static final float LASER_SIZE = 0.4f;
 
-    DroneDigLaserLayer(RenderLayerParent<EntityDroneBase, ModelDrone> entityRendererIn) {
+    DroneDigLaserLayer(RenderLayerParent<AbstractDroneEntity, ModelDrone> entityRendererIn) {
         super(entityRendererIn);
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, EntityDroneBase entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, AbstractDroneEntity entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         BlockPos diggingPos = entityIn.getDugBlock();
         if (diggingPos != null) {
             matrixStackIn.pushPose();
@@ -67,7 +67,7 @@ public class DroneDigLaserLayer extends RenderLayer<EntityDroneBase, ModelDrone>
     }
 
     @SuppressWarnings("SameParameterValue")
-    private void renderLaser(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, EntityDroneBase drone, double x1, double y1, double z1, double x2, double y2, double z2) {
+    private void renderLaser(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, AbstractDroneEntity drone, double x1, double y1, double z1, double x2, double y2, double z2) {
         float laserLength = (float) PneumaticCraftUtils.distBetween(x1, y1, z1, x2, y2, z2);
 
         matrixStack.pushPose();

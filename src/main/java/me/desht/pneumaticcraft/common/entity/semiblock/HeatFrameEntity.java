@@ -55,9 +55,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
-public class EntityHeatFrame extends EntitySemiblockBase {
-    private static final EntityDataAccessor<Byte> STATUS = SynchedEntityData.defineId(EntityHeatFrame.class, EntityDataSerializers.BYTE);
-    private static final EntityDataAccessor<Integer> TEMPERATURE = SynchedEntityData.defineId(EntityHeatFrame.class, EntityDataSerializers.INT);
+public class HeatFrameEntity extends AbstractSemiblockEntity {
+    private static final EntityDataAccessor<Byte> STATUS = SynchedEntityData.defineId(HeatFrameEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> TEMPERATURE = SynchedEntityData.defineId(HeatFrameEntity.class, EntityDataSerializers.INT);
 
     private static final int MIN_COOKING_TEMP = 373;
 
@@ -75,7 +75,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
     private final SyncedTemperature syncedTemperature = new SyncedTemperature(logic);
 
-    public EntityHeatFrame(EntityType<?> entityTypeIn, Level worldIn) {
+    public HeatFrameEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
 
         heatCap = LazyOptional.of(() -> logic);
@@ -156,12 +156,8 @@ public class EntityHeatFrame extends EntitySemiblockBase {
             if ((tickCount & 0x3) == 0) {
                 byte status = getStatus();
                 switch (status) {
-                    case COOKING:
-                        ClientUtils.emitParticles(level, getBlockPos(), level.random.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
-                        break;
-                    case COOLING:
-                        ClientUtils.emitParticles(level, getBlockPos(), ParticleTypes.SPIT);
-                        break;
+                    case COOKING -> ClientUtils.emitParticles(level, getBlockPos(), level.random.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
+                    case COOLING -> ClientUtils.emitParticles(level, getBlockPos(), ParticleTypes.SPIT);
                 }
             }
         }
@@ -249,10 +245,10 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
         if (recipe != null) {
             boolean extractedOK;
-            if (recipe.getInput() instanceof FluidIngredient) {
+            if (recipe.getInput() instanceof FluidIngredient fluidIngredient) {
                 if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
                 extractedOK = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(fluidHandler -> {
-                    int toDrain = ((FluidIngredient) recipe.getInput()).getAmount();
+                    int toDrain = fluidIngredient.getAmount();
                     if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
                         ItemStack containerStack = fluidHandler.getContainer().copy();
                         handler.extractItem(slot, 1, false);
@@ -268,7 +264,6 @@ public class EntityHeatFrame extends EntitySemiblockBase {
                 ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
                 ItemHandlerHelper.insertItem(handler, result, false);
                 lastValidSlot = slot;
-                return true;
             }
             return extractedOK;
         }

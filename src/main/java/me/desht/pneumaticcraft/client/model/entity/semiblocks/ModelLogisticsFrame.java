@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class ModelLogisticsFrame extends EntityModel<EntityLogisticsFrame> {
+public class ModelLogisticsFrame extends EntityModel<AbstractLogisticsFrameEntity> {
 	private final ModelPart frame;
 	private final ModelPart face;
 
@@ -45,7 +45,7 @@ public class ModelLogisticsFrame extends EntityModel<EntityLogisticsFrame> {
 
 
 	@Override
-	public void setupAnim(EntityLogisticsFrame entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setupAnim(AbstractLogisticsFrameEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 		//previously the render function, render code was moved to a method below
 	}
 

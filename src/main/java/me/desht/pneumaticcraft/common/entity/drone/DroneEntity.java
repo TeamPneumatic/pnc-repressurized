@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.entity.living;
+package me.desht.pneumaticcraft.common.entity.drone;
 
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
@@ -42,7 +42,7 @@ import me.desht.pneumaticcraft.common.capabilities.BasicAirHandler;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
@@ -147,26 +147,26 @@ import java.util.*;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class EntityDrone extends EntityDroneBase implements
+public class DroneEntity extends AbstractDroneEntity implements
         IManoMeasurable, IPneumaticWrenchable, IEntityAdditionalSpawnData,
         IHackableEntity, IDroneBase, FlyingAnimal, IUpgradeHolder {
 
     private static final float LASER_EXTEND_SPEED = 0.05F;
 
-    private static final EntityDataAccessor<Boolean> ACCELERATING = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Float> PRESSURE = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<String> PROGRAM_KEY = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<BlockPos> DUG_POS = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BLOCK_POS);
-    private static final EntityDataAccessor<Boolean> GOING_TO_OWNER = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> DRONE_COLOR = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> MINIGUN_ACTIVE = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> HAS_MINIGUN = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<String> LABEL = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<Integer> ACTIVE_WIDGET = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<BlockPos> TARGET_POS = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.BLOCK_POS);
-    private static final EntityDataAccessor<ItemStack> HELD_ITEM = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.ITEM_STACK);
-    private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(EntityDrone.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> ACCELERATING = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> PRESSURE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<String> PROGRAM_KEY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<BlockPos> DUG_POS = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<Boolean> GOING_TO_OWNER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> DRONE_COLOR = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> MINIGUN_ACTIVE = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> HAS_MINIGUN = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> AMMO = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<String> LABEL = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Integer> ACTIVE_WIDGET = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<BlockPos> TARGET_POS = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<ItemStack> HELD_ITEM = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
 
     private static final TextComponent DEF_DRONE_NAME = new TextComponent("Drone");
 
@@ -231,13 +231,13 @@ public class EntityDrone extends EntityDroneBase implements
     private LogisticsManager logisticsManager;
     private final Map<Enchantment,Integer> stackEnchants = new HashMap<>();
 
-    public EntityDrone(EntityType<? extends EntityDrone> type, Level world) {
+    public DroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world);
         moveControl = new DroneMovementController(this);
         goalSelector.addGoal(1, chargeAI = new DroneGoToChargingStation(this));
     }
 
-    EntityDrone(EntityType<? extends EntityDrone> type, Level world, Player player) {
+    DroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
         this(type, world);
         if (player != null) {
             ownerUUID = player.getGameProfile().getId();
@@ -248,14 +248,14 @@ public class EntityDrone extends EntityDroneBase implements
         }
     }
 
-    public EntityDrone(Level world, Player player) {
+    public DroneEntity(Level world, Player player) {
         this(ModEntityTypes.DRONE.get(), world, player);
     }
 
     @SubscribeEvent
     public void onSemiblockEvent(SemiblockEvent event) {
         if (!event.getWorld().isClientSide && event.getWorld() == getCommandSenderWorld()
-                && event.getSemiblock() instanceof EntityLogisticsFrame) {
+                && event.getSemiblock() instanceof AbstractLogisticsFrameEntity) {
             // semiblock has been added or removed; clear the cached logistics manager
             // next DroneAILogistics operation will search the area again
             logisticsManager = null;
@@ -1513,19 +1513,19 @@ public class EntityDrone extends EntityDroneBase implements
 
         @Override
         public MovingSoundFocus getSoundSource() {
-            return MovingSoundFocus.of(EntityDrone.this);
+            return MovingSoundFocus.of(DroneEntity.this);
         }
 
         @Override
         public boolean isMinigunActivated() {
-            return EntityDrone.this.isMinigunActivated();
+            return DroneEntity.this.isMinigunActivated();
         }
 
         @Override
         public void setMinigunActivated(boolean activated) {
             if (!world.isClientSide) {
                 // only set server-side; drone sync's the activation state to client
-                EntityDrone.this.setMinigunActivated(activated);
+                DroneEntity.this.setMinigunActivated(activated);
             }
         }
 
@@ -1539,7 +1539,7 @@ public class EntityDrone extends EntityDroneBase implements
 
         @Override
         public int getAmmoColor() {
-            return EntityDrone.this.getAmmoColor();
+            return DroneEntity.this.getAmmoColor();
         }
 
         @Override
@@ -1571,7 +1571,7 @@ public class EntityDrone extends EntityDroneBase implements
 
         @Override
         public boolean isValid() {
-            return EntityDrone.this.isAlive();
+            return DroneEntity.this.isAlive();
         }
     }
 

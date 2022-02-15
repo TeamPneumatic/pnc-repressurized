@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.entity.living;
+package me.desht.pneumaticcraft.common.entity.drone;
 
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -37,12 +37,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class EntityCollectorDrone extends EntityBasicDrone {
-    public EntityCollectorDrone(EntityType<? extends EntityDrone> type, Level world) {
+public class CollectorDroneEntity extends AbstractBasicDroneEntity {
+    public CollectorDroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world);
     }
 
-    public EntityCollectorDrone(Level world, Player player) {
+    public CollectorDroneEntity(Level world, Player player) {
         super(ModEntityTypes.COLLECTOR_DRONE.get(), world, player);
     }
 

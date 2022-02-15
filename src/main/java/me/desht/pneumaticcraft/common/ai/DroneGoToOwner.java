@@ -17,15 +17,15 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 
 public class DroneGoToOwner extends Goal {
-    private final EntityDrone drone;
+    private final DroneEntity drone;
 
-    public DroneGoToOwner(EntityDrone drone) {
+    public DroneGoToOwner(DroneEntity drone) {
         this.drone = drone;
     }
 

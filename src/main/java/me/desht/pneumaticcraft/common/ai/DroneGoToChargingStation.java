@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -35,12 +35,12 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class DroneGoToChargingStation extends Goal {
-    private final EntityDrone drone;
+    private final DroneEntity drone;
     public boolean isExecuting;
     private ChargingStationBlockEntity curCharger;
     private int chargingTime;
 
-    public DroneGoToChargingStation(EntityDrone drone) {
+    public DroneGoToChargingStation(DroneEntity drone) {
         this.drone = drone;
         setFlags(EnumSet.allOf(Flag.class)); // exclusive to all other AI tasks.
     }

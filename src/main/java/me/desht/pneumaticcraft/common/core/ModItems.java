@@ -22,12 +22,12 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgra
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.core.ModUpgrades.BuiltinUpgrade;
-import me.desht.pneumaticcraft.common.entity.living.*;
+import me.desht.pneumaticcraft.common.entity.drone.*;
 import me.desht.pneumaticcraft.common.fluid.FluidPlastic;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
-import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
+import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.tubemodules.*;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
@@ -149,15 +149,15 @@ public class ModItems {
     public static final RegistryObject<ItemDrillBit> NETHERITE_DRILL_BIT = register(DrillBitType.NETHERITE);
 
     public static final RegistryObject<ItemDrone> DRONE = register("drone",
-            () -> new ItemDrone(EntityDrone::new, true, DyeColor.WHITE));
+            () -> new ItemDrone(DroneEntity::new, true, DyeColor.WHITE));
     public static final RegistryObject<ItemDrone> LOGISTICS_DRONE = register("logistics_drone",
-            () -> new ItemDrone(EntityLogisticsDrone::new, false, DyeColor.RED));
+            () -> new ItemDrone(LogisticsDroneEntity::new, false, DyeColor.RED));
     public static final RegistryObject<ItemDrone> HARVESTING_DRONE = register("harvesting_drone",
-            () -> new ItemDrone(EntityHarvestingDrone::new, false, DyeColor.GREEN));
+            () -> new ItemDrone(HarvestingDroneEntity::new, false, DyeColor.GREEN));
     public static final RegistryObject<ItemDrone> GUARD_DRONE = register("guard_drone",
-            () -> new ItemDrone(EntityGuardDrone::new, false, DyeColor.BLUE));
+            () -> new ItemDrone(GuardDroneEntity::new, false, DyeColor.BLUE));
     public static final RegistryObject<ItemDrone> COLLECTOR_DRONE = register("collector_drone",
-            () -> new ItemDrone(EntityCollectorDrone::new, false, DyeColor.YELLOW));
+            () -> new ItemDrone(CollectorDroneEntity::new, false, DyeColor.YELLOW));
 
     public static final RegistryObject<ItemLogisticsFrameRequester> LOGISTICS_FRAME_REQUESTER = register("logistics_frame_requester",
             ItemLogisticsFrameRequester::new);
@@ -170,14 +170,14 @@ public class ModItems {
     public static final RegistryObject<ItemLogisticsFrameActiveProvider> LOGISTICS_FRAME_ACTIVE_PROVIDER = register("logistics_frame_active_provider",
             ItemLogisticsFrameActiveProvider::new);
 
-    public static final RegistryObject<ItemSemiBlock> HEAT_FRAME = register("heat_frame",
-            ItemSemiBlock::new);
-    public static final RegistryObject<ItemSemiBlock> SPAWNER_AGITATOR = register("spawner_agitator",
-            ItemSemiBlock::new);
-    public static final RegistryObject<ItemSemiBlock> CROP_SUPPORT = register("crop_support",
-            ItemSemiBlock::new);
-    public static final RegistryObject<ItemSemiBlock> TRANSFER_GADGET = register("transfer_gadget",
-            ItemSemiBlock::new);
+    public static final RegistryObject<SemiblockItem> HEAT_FRAME = register("heat_frame",
+            SemiblockItem::new);
+    public static final RegistryObject<SemiblockItem> SPAWNER_AGITATOR = register("spawner_agitator",
+            SemiblockItem::new);
+    public static final RegistryObject<SemiblockItem> CROP_SUPPORT = register("crop_support",
+            SemiblockItem::new);
+    public static final RegistryObject<SemiblockItem> TRANSFER_GADGET = register("transfer_gadget",
+            SemiblockItem::new);
 
     public static final RegistryObject<ItemGunAmmoStandard> GUN_AMMO = register("gun_ammo",
             ItemGunAmmoStandard::new);

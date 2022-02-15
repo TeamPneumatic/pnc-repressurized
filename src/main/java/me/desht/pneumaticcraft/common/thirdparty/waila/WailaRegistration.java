@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -39,7 +39,7 @@ public class WailaRegistration implements IWailaPlugin {
         iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), AbstractPneumaticCraftBlockEntity.class);
         iRegistrar.registerBlockDataProvider(new TubeModuleProvider.Data(), PressureTubeBlockEntity.class);
         iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), LivingEntity.class);
-        iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), EntitySemiblockBase.class);
+        iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), AbstractSemiblockEntity.class);
 
         iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, Block.class);
         iRegistrar.registerComponentProvider(new SemiblockProvider.Component(), TooltipPosition.BODY, Block.class);
@@ -47,7 +47,7 @@ public class WailaRegistration implements IWailaPlugin {
         iRegistrar.registerComponentProvider(new TubeModuleProvider.Component(), TooltipPosition.BODY, PressureTubeBlock.class);
         iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, LivingEntity.class);
 //        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.HEAD, EntitySemiblockBase.class);
-        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, EntitySemiblockBase.class);
+        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.BODY, AbstractSemiblockEntity.class);
 //        iRegistrar.registerComponentProvider(new EntityProvider.Component(), TooltipPosition.TAIL, EntitySemiblockBase.class);
         iRegistrar.registerComponentProvider(new CamoProvider.Component(), TooltipPosition.BODY, AbstractPneumaticCraftBlock.class);
     }

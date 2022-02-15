@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.entity.EntityRing;
+import me.desht.pneumaticcraft.common.entity.RingEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -64,7 +64,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
             Entity entity = world.getEntity(targetEntityId);
             if (entity != null) {
                 for (int color : colors) {
-                    ClientUtils.spawnEntityClientside(new EntityRing(world, x, y, z, entity, color));
+                    ClientUtils.spawnEntityClientside(new RingEntity(world, x, y, z, entity, color));
                 }
             }
         });

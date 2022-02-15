@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityTransferGadget;
+import me.desht.pneumaticcraft.common.entity.semiblock.TransferGadgetEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class ModelTransferGadget extends EntityModel<EntityTransferGadget> {
+public class ModelTransferGadget extends EntityModel<TransferGadgetEntity> {
     private final ModelPart inPart1;
     private final ModelPart inPart2;
     private final ModelPart betweenPart;
@@ -57,7 +57,7 @@ public class ModelTransferGadget extends EntityModel<EntityTransferGadget> {
 
 
     @Override
-    public void setupAnim(EntityTransferGadget entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(TransferGadgetEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override

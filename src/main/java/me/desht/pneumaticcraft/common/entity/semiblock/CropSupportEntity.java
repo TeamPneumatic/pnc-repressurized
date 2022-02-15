@@ -36,10 +36,10 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.IPlantable;
 
-public class EntityCropSupport extends EntitySemiblockBase {
+public class CropSupportEntity extends AbstractSemiblockEntity {
     private static final AABB BOUNDS = new AABB(3 / 16D, 0D, 3 / 16D, 13 / 16D, 9 / 16D, 13 / 16D);
 
-    public EntityCropSupport(EntityType<?> entityTypeIn, Level worldIn) {
+    public CropSupportEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 

@@ -55,24 +55,24 @@ import org.apache.commons.lang3.Validate;
 import javax.annotation.Nonnull;
 
 /**
- * A bit like an EntityFallingBlock but tumbles as it flies, and tries to form a block on impact with any other
+ * A bit like a FallingBlockEntity but tumbles as it flies, and tries to form a block on impact with any other
  * block, not just when it lands on top of another block.
  */
-public class EntityTumblingBlock extends ThrowableProjectile {
-    private static final EntityDataAccessor<BlockPos> ORIGIN = SynchedEntityData.defineId(EntityTumblingBlock.class, EntityDataSerializers.BLOCK_POS);
-    private static final EntityDataAccessor<ItemStack> STATE_STACK = SynchedEntityData.defineId(EntityTumblingBlock.class, EntityDataSerializers.ITEM_STACK);
+public class TumblingBlockEntity extends ThrowableProjectile {
+    private static final EntityDataAccessor<BlockPos> ORIGIN = SynchedEntityData.defineId(TumblingBlockEntity.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<ItemStack> STATE_STACK = SynchedEntityData.defineId(TumblingBlockEntity.class, EntityDataSerializers.ITEM_STACK);
     private static FakePlayer fakePlayer;
 
     private static final Vec3 Y_POS = new Vec3(0, 1, 0);
 
     public final Vector3f tumbleVec;  // used for rendering
 
-    public EntityTumblingBlock(EntityType<EntityTumblingBlock> type, Level worldIn) {
+    public TumblingBlockEntity(EntityType<TumblingBlockEntity> type, Level worldIn) {
         super(type, worldIn);
         this.tumbleVec = makeTumbleVec(worldIn, null);
     }
 
-    public EntityTumblingBlock(Level worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
+    public TumblingBlockEntity(Level worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
         super(ModEntityTypes.TUMBLING_BLOCK.get(), worldIn);
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 

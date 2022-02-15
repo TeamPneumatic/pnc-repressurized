@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
+import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -43,7 +43,7 @@ public class ProgrammedDroneUtils {
         Arrays.stream(deliveredStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(),
                 "You can't supply an empty stack to be delivered!"));
 
-        EntityAmadrone drone = EntityAmadrone.makeAmadrone(world, deliveryPos);
+        AmadroneEntity drone = AmadroneEntity.makeAmadrone(world, deliveryPos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -63,7 +63,7 @@ public class ProgrammedDroneUtils {
         return drone;
     }
 
-    private static ProgWidgetArea makeDropArea(BlockPos deliveryPos, EntityAmadrone drone) {
+    private static ProgWidgetArea makeDropArea(BlockPos deliveryPos, AmadroneEntity drone) {
         // this is just a suitable place to drop items at if for any reason they can't be delivered
         // (inventory full, missing, etc.)
         if (drone.isBlockValidPathfindBlock(deliveryPos)) {
@@ -100,7 +100,7 @@ public class ProgrammedDroneUtils {
         Validate.notNull(deliveredFluid, "Can't deliver a null FluidStack");
         Validate.isTrue(deliveredFluid.getAmount() > 0, "Can't deliver a FluidStack with an amount of <= 0");
 
-        EntityAmadrone drone = EntityAmadrone.makeAmadrone(world, pos);
+        AmadroneEntity drone = AmadroneEntity.makeAmadrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -125,7 +125,7 @@ public class ProgrammedDroneUtils {
         Validate.isTrue(queriedStacks.length > 0 && queriedStacks.length <= 36, "Must retrieve between 1 & 36 itemstacks!");
         Arrays.stream(queriedStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(), "Cannot retrieve an empty stack!"));
 
-        EntityAmadrone drone = EntityAmadrone.makeAmadrone(world, pos);
+        AmadroneEntity drone = AmadroneEntity.makeAmadrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -154,7 +154,7 @@ public class ProgrammedDroneUtils {
         Validate.notNull(queriedFluid, "Can't retrieve a null FluidStack");
         Validate.isTrue(queriedFluid.getAmount() > 0, "Can't retrieve a FluidStack with an amount of <= 0");
 
-        EntityAmadrone drone = EntityAmadrone.makeAmadrone(world, pos);
+        AmadroneEntity drone = AmadroneEntity.makeAmadrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();

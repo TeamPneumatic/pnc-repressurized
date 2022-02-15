@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.entity.living;
+package me.desht.pneumaticcraft.common.entity.drone;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
@@ -43,7 +43,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class EntityAmadrone extends EntityDrone {
+public class AmadroneEntity extends DroneEntity {
     private static ItemStack amadroneStack = ItemStack.EMPTY;
 
     public enum AmadronAction { TAKING_PAYMENT, RESTOCKING }
@@ -54,14 +54,14 @@ public class EntityAmadrone extends EntityDrone {
     private String buyingPlayer;
     private AmadronAction amadronAction;
 
-    public EntityAmadrone(EntityType<? extends EntityDrone> type, Level world) {
+    public AmadroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world, null);
 
         setCustomName(new TranslatableComponent("pneumaticcraft.drone.amadronDeliveryDrone"));
     }
 
-    public static EntityAmadrone makeAmadrone(Level world, BlockPos pos) {
-        EntityAmadrone drone = new EntityAmadrone(ModEntityTypes.AMADRONE.get(), world);
+    public static AmadroneEntity makeAmadrone(Level world, BlockPos pos) {
+        AmadroneEntity drone = new AmadroneEntity(ModEntityTypes.AMADRONE.get(), world);
         drone.readFromItemStack(getAmadroneStack());
 
         List<Integer> offsets = ConfigHelper.common().amadron.amadroneSpawnLocation.get();

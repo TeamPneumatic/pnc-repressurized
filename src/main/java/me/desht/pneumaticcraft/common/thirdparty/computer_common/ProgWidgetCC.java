@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.recipes.CraftingRecipeCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -105,12 +105,12 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAICC((EntityDrone) drone, (ProgWidgetCC) widget, false);
+        return new DroneAICC((DroneEntity) drone, (ProgWidgetCC) widget, false);
     }
 
     @Override
     public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAICC((EntityDrone) drone, (ProgWidgetCC) widget, true);
+        return new DroneAICC((DroneEntity) drone, (ProgWidgetCC) widget, true);
     }
 
     Set<BlockPos> getInterfaceArea() {

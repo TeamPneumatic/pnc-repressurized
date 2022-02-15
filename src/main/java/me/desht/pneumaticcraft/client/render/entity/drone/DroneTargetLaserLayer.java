@@ -23,20 +23,20 @@ import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 
-public class DroneTargetLaserLayer extends RenderLayer<EntityDroneBase, ModelDrone> {
+public class DroneTargetLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
     DroneTargetLaserLayer(RenderDrone rendererer) {
         super(rendererer);
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, EntityDroneBase entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entitylivingbaseIn instanceof EntityDrone drone) {
+    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, AbstractDroneEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        if (entitylivingbaseIn instanceof DroneEntity drone) {
             ProgressingLine targetLine = drone.getTargetLine();
             ProgressingLine oldTargetLine = drone.getOldTargetLine();
             if (targetLine != null && oldTargetLine != null) {

@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -58,7 +58,7 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
 
     @Override
     protected int getCount(IDroneBase d, IProgWidget widget) {
-        EntityDrone drone = (EntityDrone) d;
+        DroneEntity drone = (DroneEntity) d;
         int count = 0;
         for (Entity e : drone.getPassengers()) {
             if (((IEntityProvider) widget).isEntityValid(e)) count++;

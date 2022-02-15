@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelSpawnerAgitator;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntitySpawnerAgitator;
+import me.desht.pneumaticcraft.common.entity.semiblock.SpawnerAgitatorEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class RenderSpawnerAgitator extends RenderSemiblockBase<EntitySpawnerAgitator> {
+public class RenderSpawnerAgitator extends RenderSemiblockBase<SpawnerAgitatorEntity> {
     private static final float BRIGHTNESS = 0.2F;
 
     private final ModelSpawnerAgitator model;
@@ -26,7 +26,7 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<EntitySpawnerAgit
     }
 
     @Override
-    public void render(EntitySpawnerAgitator entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(SpawnerAgitatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         float g = 0.1f * Mth.sin((entity.level.getGameTime() + partialTicks) / 12f);
 
         matrixStackIn.pushPose();
@@ -42,7 +42,7 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<EntitySpawnerAgit
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntitySpawnerAgitator entity) {
+    public ResourceLocation getTextureLocation(SpawnerAgitatorEntity entity) {
         return Textures.MODEL_SPAWNER_AGITATOR;
     }
 }

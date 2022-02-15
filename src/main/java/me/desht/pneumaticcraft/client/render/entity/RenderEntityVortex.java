@@ -23,7 +23,7 @@ import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityVortex;
+import me.desht.pneumaticcraft.common.entity.projectile.VortexEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -34,7 +34,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 
-public class RenderEntityVortex extends EntityRenderer<EntityVortex> {
+public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
     private static final int CIRCLE_POINTS = 20;
     private static final float TEX_SCALE = 0.07F;
     private static final double RADIUS = 0.5D;
@@ -44,12 +44,12 @@ public class RenderEntityVortex extends EntityRenderer<EntityVortex> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityVortex entity) {
+    public ResourceLocation getTextureLocation(VortexEntity entity) {
         return Textures.VORTEX_ENTITY;
     }
 
     @Override
-    public void render(EntityVortex entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(VortexEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         if (!entity.hasRenderOffsetX()) {
             entity.setRenderOffsetX(calculateXoffset());
         }

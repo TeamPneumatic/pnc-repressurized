@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.MicromissileScreen;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
+import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.ChatFormatting;
@@ -103,7 +103,7 @@ public class ItemMicromissiles extends Item {
             return InteractionResultHolder.success(stack);
         }
 
-        EntityMicromissile missile = new EntityMicromissile(worldIn, playerIn, stack);
+        MicromissileEntity missile = new MicromissileEntity(worldIn, playerIn, stack);
         Vec3 newPos = missile.position().add(playerIn.getLookAngle().normalize());
         missile.setPos(newPos.x, newPos.y, newPos.z);
         missile.shootFromRotation(playerIn, playerIn.getXRot(), playerIn.getYRot(), 0.0F, getInitialVelocity(stack), 0.0F);

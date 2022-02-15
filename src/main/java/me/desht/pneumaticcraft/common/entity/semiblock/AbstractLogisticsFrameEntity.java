@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
-import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
+import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -70,7 +70,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 
-public abstract class EntityLogisticsFrame extends EntitySemiblockBase implements IDirectionalSemiblock {
+public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEntity implements IDirectionalSemiblock {
     public static final String NBT_INVISIBLE = "invisible";
     public static final String NBT_MATCH_NBT = "matchNBT";
     public static final String NBT_MATCH_DURABILITY = "matchDurability";
@@ -84,8 +84,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     private static final int ITEM_FILTER_SLOTS = 27;
     public static final int FLUID_FILTER_SLOTS = 9;
 
-    private static final EntityDataAccessor<Boolean> INVISIBLE = SynchedEntityData.defineId(EntityLogisticsFrame.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Direction> SIDE = SynchedEntityData.defineId(EntityLogisticsFrame.class, EntityDataSerializers.DIRECTION);
+    private static final EntityDataAccessor<Boolean> INVISIBLE = SynchedEntityData.defineId(AbstractLogisticsFrameEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Direction> SIDE = SynchedEntityData.defineId(AbstractLogisticsFrameEntity.class, EntityDataSerializers.DIRECTION);
     private static final float FRAME_WIDTH = 1 / 32f;
 
     private final Map<ItemStack, Integer> incomingStacks = new HashMap<>();
@@ -99,7 +99,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     private boolean fluidWhiteList = true;
     private int alpha = 255;
 
-    EntityLogisticsFrame(EntityType<?> entityTypeIn, Level worldIn) {
+    AbstractLogisticsFrameEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
@@ -111,21 +111,21 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
      * @param stack the item stack
      * @return a logistics entity
      */
-    public static EntityLogisticsFrame fromItemStack(Level world, @Nullable Player player, @Nonnull ItemStack stack) {
-        if (stack.getItem() instanceof ItemSemiBlock) {
-            EntitySemiblockBase logistics = ((ItemSemiBlock) stack.getItem()).createEntity(world, stack, player, BlockPos.ZERO);
-            if (logistics instanceof EntityLogisticsFrame) {
+    public static AbstractLogisticsFrameEntity fromItemStack(Level world, @Nullable Player player, @Nonnull ItemStack stack) {
+        if (stack.getItem() instanceof SemiblockItem semiblockItem) {
+            AbstractSemiblockEntity semiblock = semiblockItem.createEntity(world, stack, player, BlockPos.ZERO);
+            if (semiblock instanceof AbstractLogisticsFrameEntity logisticsFrame) {
                 if (world.isClientSide && stack.hasTag()) {
                     // client-side entity creation doesn't load in NBT from the itemstack; we need to do it ourselves in this case
                     // see EntityType#applyItemNBT()
-                    CompoundTag compoundnbt = logistics.saveWithoutId(new CompoundTag());
-                    UUID uuid = logistics.getUUID();
+                    CompoundTag tag = logisticsFrame.saveWithoutId(new CompoundTag());
+                    UUID uuid = logisticsFrame.getUUID();
                     //noinspection ConstantConditions
-                    compoundnbt.merge(stack.getTag().getCompound(NBTKeys.ENTITY_TAG));
-                    logistics.setUUID(uuid);
-                    logistics.load(compoundnbt);
+                    tag.merge(stack.getTag().getCompound(NBTKeys.ENTITY_TAG));
+                    logisticsFrame.setUUID(uuid);
+                    logisticsFrame.load(tag);
                 }
-                return (EntityLogisticsFrame) logistics;
+                return logisticsFrame;
             }
         }
         return null;
@@ -154,16 +154,15 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
 
     @Override
     protected AABB calculateBlockBounds() {
-        AABB bounds = super.calculateBlockBounds();
-        switch (getSide()) {
-            case DOWN:  bounds = new AABB(bounds.minX, bounds.minY - FRAME_WIDTH, bounds.minZ, bounds.maxX, bounds.minY, bounds.maxZ); break;
-            case UP:    bounds = new AABB(bounds.minX, bounds.maxY, bounds.minZ, bounds.maxX, bounds.maxY + FRAME_WIDTH, bounds.maxZ); break;
-            case NORTH: bounds = new AABB(bounds.minX, bounds.minY, bounds.minZ - FRAME_WIDTH, bounds.maxX, bounds.maxY, bounds.minZ); break;
-            case SOUTH: bounds = new AABB(bounds.minX, bounds.minY, bounds.maxZ, bounds.maxX, bounds.maxY, bounds.maxZ + FRAME_WIDTH); break;
-            case WEST:  bounds = new AABB(bounds.minX - FRAME_WIDTH, bounds.minY, bounds.minZ, bounds.minX, bounds.maxY, bounds.maxZ); break;
-            case EAST:  bounds = new AABB(bounds.maxX, bounds.minY, bounds.minZ, bounds.maxX + FRAME_WIDTH, bounds.maxY, bounds.maxZ); break;
-        }
-        return bounds;
+        AABB bb = super.calculateBlockBounds();
+        return switch (getSide()) {
+            case DOWN -> new AABB(bb.minX, bb.minY - FRAME_WIDTH, bb.minZ, bb.maxX, bb.minY, bb.maxZ);
+            case UP -> new AABB(bb.minX, bb.maxY, bb.minZ, bb.maxX, bb.maxY + FRAME_WIDTH, bb.maxZ);
+            case NORTH -> new AABB(bb.minX, bb.minY, bb.minZ - FRAME_WIDTH, bb.maxX, bb.maxY, bb.minZ);
+            case SOUTH -> new AABB(bb.minX, bb.minY, bb.maxZ, bb.maxX, bb.maxY, bb.maxZ + FRAME_WIDTH);
+            case WEST -> new AABB(bb.minX - FRAME_WIDTH, bb.minY, bb.minZ, bb.minX, bb.maxY, bb.maxZ);
+            case EAST -> new AABB(bb.maxX, bb.minY, bb.minZ, bb.maxX + FRAME_WIDTH, bb.maxY, bb.maxZ);
+        };
     }
 
     @Override
@@ -350,9 +349,9 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         }
         setSide(tag.contains(NBT_SIDE) ? Direction.from3DDataValue(tag.getInt(NBT_SIDE)) : Direction.UP);
 
-        if (this instanceof ISpecificRequester) {
-            ((ISpecificRequester) this).setMinItemOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_ITEMS)));
-            ((ISpecificRequester) this).setMinFluidOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_FLUID)));
+        if (this instanceof ISpecificRequester spr) {
+            spr.setMinItemOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_ITEMS)));
+            spr.setMinFluidOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_FLUID)));
         }
     }
 
@@ -369,9 +368,9 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         tag.putBoolean(NBT_ITEM_WHITELIST, isItemWhiteList());
         tag.putBoolean(NBT_FLUID_WHITELIST, isFluidWhiteList());
         if (getSide() != null) tag.putInt(NBT_SIDE, getSide().get3DDataValue());
-        if (this instanceof ISpecificRequester) {
-            tag.putInt(ISpecificRequester.NBT_MIN_ITEMS, ((ISpecificRequester) this).getMinItemOrderSize());
-            tag.putInt(ISpecificRequester.NBT_MIN_FLUID, ((ISpecificRequester) this).getMinFluidOrderSize());
+        if (this instanceof ISpecificRequester spr) {
+            tag.putInt(ISpecificRequester.NBT_MIN_ITEMS, spr.getMinItemOrderSize());
+            tag.putInt(ISpecificRequester.NBT_MIN_FLUID, spr.getMinFluidOrderSize());
         }
 
         return tag;
@@ -449,7 +448,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         ItemStack stack = player.getMainHandItem();
         return (stack.getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()
                 || stack.getItem() == ModItems.LOGISTICS_DRONE.get()
-                || stack.getItem() instanceof ItemSemiBlock);
+                || stack.getItem() instanceof SemiblockItem);
     }
 
     public boolean supportsBlacklisting() {
@@ -472,9 +471,9 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
             payload.writeItem(itemFilterHandler.getStackInSlot(i));
         }
         fluidFilters.write(payload);
-        if (this instanceof ISpecificRequester) {
-            payload.writeVarInt(((ISpecificRequester) this).getMinItemOrderSize());
-            payload.writeVarInt(((ISpecificRequester) this).getMinFluidOrderSize());
+        if (this instanceof ISpecificRequester spr) {
+            payload.writeVarInt(spr.getMinItemOrderSize());
+            payload.writeVarInt(spr.getMinFluidOrderSize());
         }
     }
 
@@ -494,9 +493,9 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
             itemFilterHandler.setStackInSlot(i, payload.readItem());
         }
         fluidFilters = new FluidFilter(payload);
-        if (this instanceof ISpecificRequester) {
-            ((ISpecificRequester) this).setMinItemOrderSize(payload.readVarInt());
-            ((ISpecificRequester) this).setMinFluidOrderSize(payload.readVarInt());
+        if (this instanceof ISpecificRequester spr) {
+            spr.setMinItemOrderSize(payload.readVarInt());
+            spr.setMinFluidOrderSize(payload.readVarInt());
         }
     }
 
@@ -509,7 +508,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     public static class Listener {
         @SubscribeEvent
         public static void onPlayerLeftClick(AttackEntityEvent event) {
-            if (event.getTarget() instanceof EntityLogisticsFrame frame) {
+            if (event.getTarget() instanceof AbstractLogisticsFrameEntity frame) {
                 // pass a left-click on invisible logistics frame through to the block it's on
                 if (frame.isSemiblockInvisible()) {
                     frame.getBlockState().attack(frame.getWorld(), frame.getBlockPos(), event.getPlayer());
@@ -530,22 +529,15 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         }
 
         boolean match(ItemStack stack) {
-            for (ItemStack filterStack : filterStacks) {
-                if (matchOneItem(filterStack, stack)) {
-                    return true;
-                }
-            }
-            return false;
+            return filterStacks.stream()
+                    .anyMatch(filterStack -> matchOneItem(filterStack, stack));
         }
 
         int getMatchedCount(ItemStack stack) {
-            int count = 0;
-            for (ItemStack filterStack : filterStacks) {
-                if (matchOneItem(filterStack, stack)) {
-                    count += filterStack.getCount();
-                }
-            }
-            return count;
+            return filterStacks.stream()
+                    .filter(filterStack -> matchOneItem(filterStack, stack))
+                    .mapToInt(ItemStack::getCount)
+                    .sum();
         }
 
         /**

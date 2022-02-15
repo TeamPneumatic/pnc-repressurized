@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,11 +30,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class DroneAIAttackEntity extends MeleeAttackGoal {
-    private final EntityDrone attacker;
+    private final DroneEntity attacker;
     private final boolean isRanged;
     private final double rangedAttackRange;
 
-    public DroneAIAttackEntity(EntityDrone attacker, double speed, boolean useLongMemory) {
+    public DroneAIAttackEntity(DroneEntity attacker, double speed, boolean useLongMemory) {
         super(attacker, speed, useLongMemory);
         this.attacker = attacker;
         isRanged = attacker.hasMinigun();

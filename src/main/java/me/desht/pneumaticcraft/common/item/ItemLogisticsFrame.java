@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
-import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
+import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -47,7 +47,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.misc.Symbols.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ItemLogisticsFrame extends ItemSemiBlock {
+public abstract class ItemLogisticsFrame extends SemiblockItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
@@ -77,28 +77,28 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock {
     }
 
     public static List<Component> addLogisticsTooltip(ItemStack stack, Level world, List<Component> curInfo, boolean sneaking) {
-        if (stack.getTag() != null && stack.getTag().contains(NBTKeys.ENTITY_TAG) && stack.getItem() instanceof ItemSemiBlock) {
+        if (stack.getTag() != null && stack.getTag().contains(NBTKeys.ENTITY_TAG) && stack.getItem() instanceof SemiblockItem) {
             if (sneaking) {
                 CompoundTag tag = stack.getTag().getCompound(NBTKeys.ENTITY_TAG);
-                if (tag.getBoolean(EntityLogisticsFrame.NBT_INVISIBLE)) {
+                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_INVISIBLE)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.invisible")).withStyle(ChatFormatting.YELLOW));
                 }
-                if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_DURABILITY)) {
+                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_DURABILITY)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchDurability")).withStyle(ChatFormatting.YELLOW));
                 }
-                if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_NBT)) {
+                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_NBT)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchNBT")).withStyle(ChatFormatting.YELLOW));
                 }
-                if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_MODID)) {
+                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_MODID)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchModId")).withStyle(ChatFormatting.YELLOW));
                 }
 
-                boolean whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_ITEM_WHITELIST);
+                boolean whitelist = tag.getBoolean(AbstractLogisticsFrameEntity.NBT_ITEM_WHITELIST);
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "itemWhitelist" : "itemBlacklist"))
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
                 ItemStackHandler handler = new ItemStackHandler();
-                handler.deserializeNBT(tag.getCompound(EntityLogisticsFrame.NBT_ITEM_FILTERS));
+                handler.deserializeNBT(tag.getCompound(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
                 ItemStack[] stacks = new ItemStack[handler.getSlots()];
                 for (int i = 0; i < handler.getSlots(); i++) {
                     stacks[i] = handler.getStackInSlot(i);
@@ -109,12 +109,12 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock {
                 l = curInfo.size();
 
 
-                whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_FLUID_WHITELIST);
+                whitelist = tag.getBoolean(AbstractLogisticsFrameEntity.NBT_FLUID_WHITELIST);
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
-                EntityLogisticsFrame.FluidFilter fluidFilter = new EntityLogisticsFrame.FluidFilter();
-                fluidFilter.deserializeNBT(tag.getCompound(EntityLogisticsFrame.NBT_FLUID_FILTERS));
+                AbstractLogisticsFrameEntity.FluidFilter fluidFilter = new AbstractLogisticsFrameEntity.FluidFilter();
+                fluidFilter.deserializeNBT(tag.getCompound(AbstractLogisticsFrameEntity.NBT_FLUID_FILTERS));
                 for (int i = 0; i < fluidFilter.size(); i++) {
                     FluidStack fluid = fluidFilter.get(i);
                     if (!fluid.isEmpty()) {

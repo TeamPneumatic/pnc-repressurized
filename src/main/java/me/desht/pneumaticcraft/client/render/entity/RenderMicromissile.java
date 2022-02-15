@@ -22,7 +22,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
+import me.desht.pneumaticcraft.common.entity.projectile.MicromissileEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -32,13 +32,13 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class RenderMicromissile extends EntityRenderer<EntityMicromissile> {
+public class RenderMicromissile extends EntityRenderer<MicromissileEntity> {
     public RenderMicromissile(EntityRendererProvider.Context ctx) {
         super(ctx);
     }
 
     @Override
-    public void render(EntityMicromissile entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(MicromissileEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         // mostly lifted from ArrowRenderer
         matrixStackIn.pushPose();
 
@@ -82,7 +82,7 @@ public class RenderMicromissile extends EntityRenderer<EntityMicromissile> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityMicromissile entity) {
+    public ResourceLocation getTextureLocation(MicromissileEntity entity) {
         return Textures.MICROMISSILE_ENTITY;
     }
 }

@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -94,7 +94,7 @@ public class ClientUtils {
         return getClientPlayer().getItemBySlot(slot);
     }
 
-    public static void addDroneToHudHandler(EntityDrone drone, BlockPos pos) {
+    public static void addDroneToHudHandler(DroneEntity drone, BlockPos pos) {
         ArmorUpgradeClientRegistry.getInstance()
                 .getClientHandler(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, EntityTrackerClientHandler.class)
                 .getTargetsStream()

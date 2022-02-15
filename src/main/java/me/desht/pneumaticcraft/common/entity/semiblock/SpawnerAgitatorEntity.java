@@ -25,8 +25,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 
-public class EntitySpawnerAgitator extends EntitySemiblockBase {
-    public EntitySpawnerAgitator(EntityType<?> entityTypeIn, Level worldIn) {
+public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
+    public SpawnerAgitatorEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 

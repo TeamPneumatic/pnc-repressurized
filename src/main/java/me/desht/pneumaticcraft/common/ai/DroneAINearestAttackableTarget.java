@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IMaxActions;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
@@ -31,7 +31,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class DroneAINearestAttackableTarget extends TargetGoal {
-    private final EntityDrone drone;
+    private final DroneEntity drone;
     private final ProgWidget widget;
 
     /**
@@ -41,11 +41,11 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
 
     private LivingEntity targetEntity;
 
-    public DroneAINearestAttackableTarget(EntityDrone drone, boolean checkSight, ProgWidget widget) {
+    public DroneAINearestAttackableTarget(DroneEntity drone, boolean checkSight, ProgWidget widget) {
         this(drone, checkSight, false, widget);
     }
 
-    public DroneAINearestAttackableTarget(EntityDrone drone, boolean checkSight, boolean easyTargetsOnly,
+    public DroneAINearestAttackableTarget(DroneEntity drone, boolean checkSight, boolean easyTargetsOnly,
                                           ProgWidget widget) {
         super(drone, checkSight, easyTargetsOnly);
         this.drone = drone;

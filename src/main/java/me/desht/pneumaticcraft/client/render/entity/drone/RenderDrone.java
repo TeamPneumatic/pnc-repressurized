@@ -3,14 +3,14 @@ package me.desht.pneumaticcraft.client.render.entity.drone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
+public class RenderDrone extends MobRenderer<AbstractDroneEntity, ModelDrone> {
     private final ResourceLocation texture;
     private final float scale;
 
@@ -56,7 +56,7 @@ public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
     }
 
     @Override
-    public void render(EntityDroneBase entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(AbstractDroneEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         matrixStackIn.pushPose();
 //        matrixStackIn.translate(entityIn.getWidth() / 2, entityIn.getHeight() / 2, entityIn.getWidth() / 2);
         matrixStackIn.scale(scale, scale, scale);
@@ -66,7 +66,7 @@ public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityDroneBase entity) {
+    public ResourceLocation getTextureLocation(AbstractDroneEntity entity) {
         return texture;
     }
 }

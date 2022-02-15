@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelCropSupport;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityCropSupport;
+import me.desht.pneumaticcraft.common.entity.semiblock.CropSupportEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 
-public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
+public class RenderCropSupport extends RenderSemiblockBase<CropSupportEntity> {
     private final ModelCropSupport model;
 
     public RenderCropSupport(EntityRendererProvider.Context ctx) {
@@ -24,7 +24,7 @@ public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
     }
 
     @Override
-    public void render(EntityCropSupport entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(CropSupportEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
         AABB aabb = entityIn.getBoundingBox();
 
@@ -42,7 +42,7 @@ public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityCropSupport entity) {
+    public ResourceLocation getTextureLocation(CropSupportEntity entity) {
         return Textures.MODEL_CROP_SUPPORT;
     }
 }

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.model.entity.drone;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class ModelDroneCore extends EntityModel<EntityDroneBase> {
+public class ModelDroneCore extends EntityModel<AbstractDroneEntity> {
     private final ModelPart drone;
 
     private static final String DRONE = "drone";
@@ -35,7 +35,7 @@ public class ModelDroneCore extends EntityModel<EntityDroneBase> {
     }
 
     @Override
-    public void setupAnim(EntityDroneBase drone, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(AbstractDroneEntity drone, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override

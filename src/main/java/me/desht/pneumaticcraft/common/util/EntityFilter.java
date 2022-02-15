@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.util;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import joptsimple.internal.Strings;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetText;
@@ -60,7 +60,7 @@ public class EntityFilter implements Predicate<Entity> {
             .put("living", e -> e instanceof LivingEntity)
             .put("player", e -> e instanceof Player)
             .put("item", e -> e instanceof ItemEntity)
-            .put("drone", e -> e instanceof EntityDrone)
+            .put("drone", e -> e instanceof DroneEntity)
             .put("boat", e -> e instanceof Boat)
             .put("minecart", e -> e instanceof AbstractMinecart)
             .put("painting", e -> e instanceof Painting)

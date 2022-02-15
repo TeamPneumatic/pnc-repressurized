@@ -17,16 +17,16 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import net.minecraft.world.entity.ai.control.MoveControl;
 
 public class DroneMovementController extends MoveControl {
-    private final EntityDroneBase entity;
+    private final AbstractDroneEntity entity;
     private double x, y, z, speed;
     private int timeoutTimer;
     private int timeoutCounter;//counts the times the drone timed out.
 
-    public DroneMovementController(EntityDroneBase par1EntityLiving) {
+    public DroneMovementController(AbstractDroneEntity par1EntityLiving) {
         super(par1EntityLiving);
         entity = par1EntityLiving;
         x = entity.getX();

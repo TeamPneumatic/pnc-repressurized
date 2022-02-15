@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.DroneRedstoneEmitterBlockEntity;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
@@ -52,9 +52,9 @@ public class DroneRedstoneEmitterBlock extends AirBlock implements EntityBlock {
     @Override
     public int getSignal(BlockState state, BlockGetter blockAccess, BlockPos pos, Direction side) {
         if (blockAccess instanceof EntityGetter entityGetter) {
-            List<EntityDrone> drones = entityGetter.getEntitiesOfClass(EntityDrone.class, new AABB(pos, pos.offset(1, 1, 1)));
+            List<DroneEntity> drones = entityGetter.getEntitiesOfClass(DroneEntity.class, new AABB(pos, pos.offset(1, 1, 1)));
             int signal = 0;
-            for (EntityDrone drone : drones) {
+            for (DroneEntity drone : drones) {
                 signal = Math.max(signal, drone.getEmittingRedstone(side.getOpposite()));
             }
             return signal;

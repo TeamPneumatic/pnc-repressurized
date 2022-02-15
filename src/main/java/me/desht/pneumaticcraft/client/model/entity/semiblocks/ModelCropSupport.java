@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityCropSupport;
+import me.desht.pneumaticcraft.common.entity.semiblock.CropSupportEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -11,7 +11,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
-public class ModelCropSupport extends EntityModel<EntityCropSupport> {
+public class ModelCropSupport extends EntityModel<CropSupportEntity> {
     private final ModelPart stick1;
     private final ModelPart stick2;
     private final ModelPart stick3;
@@ -89,7 +89,7 @@ public class ModelCropSupport extends EntityModel<EntityCropSupport> {
 
 
     @Override
-    public void setupAnim(EntityCropSupport entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(CropSupportEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override

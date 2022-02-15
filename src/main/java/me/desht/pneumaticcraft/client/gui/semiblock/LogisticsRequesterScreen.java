@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui.semiblock;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsRequester;
+import me.desht.pneumaticcraft.common.entity.semiblock.LogisticsRequesterEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -28,7 +28,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class LogisticsRequesterScreen extends AbstractLogisticsScreen<EntityLogisticsRequester> {
+public class LogisticsRequesterScreen extends AbstractLogisticsScreen<LogisticsRequesterEntity> {
     private WidgetCheckBox aeIntegration;
 
     public LogisticsRequesterScreen(LogisticsMenu menu, Inventory inv, Component displayString) {

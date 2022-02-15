@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelTransferGadget;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityTransferGadget;
+import me.desht.pneumaticcraft.common.entity.semiblock.TransferGadgetEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadget> {
+public class RenderTransferGadget extends RenderSemiblockBase<TransferGadgetEntity> {
     private final ModelTransferGadget model;
 
     public RenderTransferGadget(EntityRendererProvider.Context ctx) {
@@ -26,7 +26,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
     }
 
     @Override
-    public void render(EntityTransferGadget entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(TransferGadgetEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         if (entity.isAir()) {
             return;
         }
@@ -60,7 +60,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
     }
 
     @Override
-    public Vec3 getRenderOffset(EntityTransferGadget entityIn, float partialTicks) {
+    public Vec3 getRenderOffset(TransferGadgetEntity entityIn, float partialTicks) {
         VoxelShape shape = entityIn.getBlockState().getShape(entityIn.getWorld(), entityIn.getBlockPos());
         double yOff = (shape.max(Axis.Y) - shape.min(Axis.Y)) / 2.0;
         return switch (entityIn.getSide()) {
@@ -74,7 +74,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityTransferGadget entityTransferGadget) {
+    public ResourceLocation getTextureLocation(TransferGadgetEntity entityTransferGadget) {
         return entityTransferGadget.getIOMode().getTexture();
     }
 }

@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowArea;
 import me.desht.pneumaticcraft.common.network.PacketSpawnRing;
@@ -61,7 +61,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
 
     private final LuaMethodRegistry luaMethodRegistry = new LuaMethodRegistry(this);
 
-    private EntityDrone drone;
+    private DroneEntity drone;
     public float rotationYaw;
     public float rotationPitch = (float) Math.toRadians(-42);
     private final ConcurrentLinkedQueue<Integer> ringSendQueue = new ConcurrentLinkedQueue<>();
@@ -77,7 +77,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
     public void tickClient() {
         super.tickClient();
 
-        drone = nonNullLevel().getEntity(droneId) instanceof EntityDrone eDrone ? eDrone : null;
+        drone = nonNullLevel().getEntity(droneId) instanceof DroneEntity eDrone ? eDrone : null;
 
         if (drone != null) {
             double dx = drone.getX() - (getBlockPos().getX() + 0.5);
@@ -136,7 +136,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
         droneId = pkt.getTag().getInt("drone");
     }
 
-    private EntityDrone validateAndGetDrone() {
+    private DroneEntity validateAndGetDrone() {
         if (drone == null) throw new IllegalStateException("There's no connected Drone!");
         return drone;
     }
@@ -178,7 +178,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
-                EntityDrone drone = ModEntityTypes.DRONE.get().create(nonNullLevel());
+                DroneEntity drone = ModEntityTypes.DRONE.get().create(nonNullLevel());
                 for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
                     IProgWidget widget = IProgWidget.create(type);
                     if (widget.canBeRunByComputers(drone, getWidget())) {
@@ -193,7 +193,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                EntityDrone d = validateAndGetDrone();
+                DroneEntity d = validateAndGetDrone();
                 return new Double[]{d.getX(), d.getY(), d.getZ()};
             }
         });
@@ -666,7 +666,7 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, new int[]{2,4}, "<string> var_name, true/false OR <string> var_name, <int> x, <int> y, <int> z");
-                EntityDrone d = validateAndGetDrone();
+                DroneEntity d = validateAndGetDrone();
                 String varName = (String) args[0];
                 int x = args[1] instanceof Double ? ((Double) args[1]).intValue() : (Boolean) args[1] ? 1 : 0;
                 int y = 0;
@@ -754,14 +754,14 @@ public class TileEntityDroneInterface extends AbstractTickingBlockEntity
         return null;
     }
 
-    public void setDrone(EntityDrone drone) {
+    public void setDrone(DroneEntity drone) {
         this.drone = drone;
         ComputerEventManager.getInstance().sendEvents(this, drone != null ? "droneConnected" : "droneDisconnected");
         BlockState state = nonNullLevel().getBlockState(getBlockPos());
         nonNullLevel().sendBlockUpdated(getBlockPos(), state, state, Block.UPDATE_ALL);
     }
 
-    public EntityDrone getDrone() {
+    public DroneEntity getDrone() {
         return drone;
     }
 

@@ -37,8 +37,8 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
-public class EntityLogisticsRequester extends EntityLogisticsFrame implements ISpecificRequester, IProvidingInventoryListener {
-    private static final EntityDataAccessor<Boolean> AE2_ENABLED = SynchedEntityData.defineId(EntityLogisticsRequester.class, EntityDataSerializers.BOOLEAN);
+public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity implements ISpecificRequester, IProvidingInventoryListener {
+    private static final EntityDataAccessor<Boolean> AE2_ENABLED = SynchedEntityData.defineId(LogisticsRequesterEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final String NBT_AE2_INTEGRATION = "AE2_Integration";
 
@@ -47,7 +47,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
 
     private AE2RequesterIntegration ae2requester = null;
 
-    public EntityLogisticsRequester(EntityType<?> entityTypeIn, Level worldIn) {
+    public LogisticsRequesterEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 

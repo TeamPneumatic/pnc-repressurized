@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener;
 import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener.TileEntityAndFace;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
@@ -40,7 +40,7 @@ import java.util.stream.IntStream;
 public class LogisticsManager {
     private static final int N_PRIORITIES = 4;
 
-    private final List<List<EntityLogisticsFrame>> logistics = new ArrayList<>();
+    private final List<List<AbstractLogisticsFrameEntity>> logistics = new ArrayList<>();
 
     public LogisticsManager() {
         for (int i = 0; i < N_PRIORITIES; i++) {
@@ -48,7 +48,7 @@ public class LogisticsManager {
         }
     }
 
-    public void addLogisticFrame(EntityLogisticsFrame frame) {
+    public void addLogisticFrame(AbstractLogisticsFrameEntity frame) {
         logistics.get(frame.getPriority()).add(frame);
     }
 
@@ -57,10 +57,10 @@ public class LogisticsManager {
         FluidStack fluid = holdingStack instanceof FluidStack ? (FluidStack) holdingStack : FluidStack.EMPTY;
         PriorityQueue<LogisticsTask> tasks = new PriorityQueue<>();
         for (int priority = logistics.size() - 1; priority >= 0; priority--) {
-            for (EntityLogisticsFrame requester : logistics.get(priority)) {
+            for (AbstractLogisticsFrameEntity requester : logistics.get(priority)) {
                 if (droneAccess && requester.isObstructed(PathComputationType.AIR)) continue;
                 for (int i = 0; i < priority; i++) {
-                    for (EntityLogisticsFrame provider : logistics.get(i)) {
+                    for (AbstractLogisticsFrameEntity provider : logistics.get(i)) {
                         if (droneAccess && provider.isObstructed(PathComputationType.AIR)) continue;
                         if (provider.shouldProvideTo(priority)) {
                             if (!item.isEmpty()) {
@@ -92,7 +92,7 @@ public class LogisticsManager {
         return tasks;
     }
 
-    private void tryProvide(EntityLogisticsFrame provider, EntityLogisticsFrame requester, PriorityQueue<LogisticsTask> tasks, boolean tryItems, boolean tryFluids) {
+    private void tryProvide(AbstractLogisticsFrameEntity provider, AbstractLogisticsFrameEntity requester, PriorityQueue<LogisticsTask> tasks, boolean tryItems, boolean tryFluids) {
         if (provider.getCachedTileEntity() == null) return;
 
         if (tryItems) {
@@ -132,7 +132,7 @@ public class LogisticsManager {
         }
     }
 
-    private static int getRequestedAmount(EntityLogisticsFrame requester, ItemStack providingStack, boolean honourMin) {
+    private static int getRequestedAmount(AbstractLogisticsFrameEntity requester, ItemStack providingStack, boolean honourMin) {
         BlockEntity te = requester.getCachedTileEntity();
         if (te == null) return 0;
 
@@ -149,7 +149,7 @@ public class LogisticsManager {
         return providingStack.getCount() < minOrderSize ? 0 : Math.max(providingStack.getCount(), 0);
     }
 
-    private static int getRequestedAmount(EntityLogisticsFrame requester, FluidStack providingStack, boolean honourMin) {
+    private static int getRequestedAmount(AbstractLogisticsFrameEntity requester, FluidStack providingStack, boolean honourMin) {
         BlockEntity te = requester.getCachedTileEntity();
         if (te == null) return 0;
 
@@ -172,18 +172,18 @@ public class LogisticsManager {
     }
 
     public static class LogisticsTask implements Comparable<LogisticsTask> {
-        public final EntityLogisticsFrame provider, requester;
+        public final AbstractLogisticsFrameEntity provider, requester;
         public final ItemStack transportingItem;
         public final FluidStack transportingFluid;
 
-        LogisticsTask(EntityLogisticsFrame provider, EntityLogisticsFrame requester, @Nonnull ItemStack transportingItem) {
+        LogisticsTask(AbstractLogisticsFrameEntity provider, AbstractLogisticsFrameEntity requester, @Nonnull ItemStack transportingItem) {
             this.provider = provider;
             this.requester = requester;
             this.transportingItem = transportingItem;
             this.transportingFluid = FluidStack.EMPTY;
         }
 
-        LogisticsTask(EntityLogisticsFrame provider, EntityLogisticsFrame requester,
+        LogisticsTask(AbstractLogisticsFrameEntity provider, AbstractLogisticsFrameEntity requester,
                       FluidStack transportingFluid) {
             this.provider = provider;
             this.requester = requester;

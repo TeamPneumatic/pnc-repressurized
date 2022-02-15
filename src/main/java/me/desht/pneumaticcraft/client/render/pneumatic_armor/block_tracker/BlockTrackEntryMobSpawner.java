@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntitySpawnerAgitator;
+import me.desht.pneumaticcraft.common.entity.semiblock.SpawnerAgitatorEntity;
 import me.desht.pneumaticcraft.common.hacking.block.HackableMobSpawner;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -89,7 +89,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     }
 
     private boolean hasAgitator(Level world, BlockPos pos) {
-        return SemiblockTracker.getInstance().getSemiblock(world, pos) instanceof EntitySpawnerAgitator;
+        return SemiblockTracker.getInstance().getSemiblock(world, pos) instanceof SpawnerAgitatorEntity;
     }
 
     @Override

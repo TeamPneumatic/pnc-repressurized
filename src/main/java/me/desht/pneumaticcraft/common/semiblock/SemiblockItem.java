@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.semiblock;
 
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,8 +33,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ItemSemiBlock extends Item {
-    public ItemSemiBlock() {
+public class SemiblockItem extends Item {
+    public SemiblockItem() {
         super(ModItems.defaultProps());
     }
 
@@ -57,14 +57,14 @@ public class ItemSemiBlock extends Item {
      * @param pos block the entity will be placed at (pass BlockPos.ZERO) if you don't plan to add the entity to the world
      * @return the semiblock entity, not added to the world
      */
-    public EntitySemiblockBase createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
+    public AbstractSemiblockEntity createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
         EntityType<?> type = ForgeRegistries.ENTITIES.getValue(getRegistryName());
         if (type != null) {
             Entity e = type.create(world);
             if (e != null) {
                 e.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
                 EntityType.updateCustomEntityTag(world, player, e, stack.getTag());
-                return e instanceof EntitySemiblockBase ? (EntitySemiblockBase) e : null;
+                return e instanceof AbstractSemiblockEntity ? (AbstractSemiblockEntity) e : null;
             }
         }
         return null;
@@ -77,7 +77,7 @@ public class ItemSemiBlock extends Item {
         Direction direction = context.getClickedFace();
         Player player = context.getPlayer();
 
-        EntitySemiblockBase eSemi = createEntity(context.getLevel(), itemstack, context.getPlayer(), blockpos);
+        AbstractSemiblockEntity eSemi = createEntity(context.getLevel(), itemstack, context.getPlayer(), blockpos);
         if (eSemi != null) {
             if (!eSemi.canPlace(direction)) {
                 // if the semiblock can't go in the clicked pos, maybe it can go adjacent to it?

@@ -17,48 +17,29 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
-import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
 
-public class EntityLogisticsActiveProvider extends EntityLogisticsFrame implements ISpecificProvider {
-    public EntityLogisticsActiveProvider(EntityType<?> entityTypeIn, Level worldIn) {
+public class LogisticsDefaultStorageEntity extends LogisticsStorageEntity {
+    public LogisticsDefaultStorageEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
 
     @Override
     public int getColor() {
-        return 0xFF93228C;
-    }
-
-    @Override
-    public ResourceLocation getTexture() {
-        return Textures.MODEL_LOGISTICS_FRAME_ACTIVE_PROVIDER;  // TODO ridanisaurus
+        return 0xFF008800;
     }
 
     @Override
     public int getPriority() {
-        return 0;
+        return 1;
     }
 
     @Override
-    protected MenuType<?> getContainerType() {
-        return ModMenuTypes.LOGISTICS_FRAME_PROVIDER.get();
+    public ResourceLocation getTexture() {
+        return Textures.MODEL_LOGISTICS_FRAME_DEFAULT_STORAGE;  // TODO ridanisaurus
     }
 
-    @Override
-    public boolean canProvide(ItemStack providingStack) {
-        return passesFilter(providingStack);
-    }
-
-    @Override
-    public boolean canProvide(FluidStack providingStack) {
-        return passesFilter(providingStack.getFluid());
-    }
 }

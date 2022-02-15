@@ -15,41 +15,47 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.entity.living;
+package me.desht.pneumaticcraft.common.entity.drone;
 
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 
-public class EntityGuardDrone extends EntityBasicDrone {
-    public EntityGuardDrone(EntityType<? extends EntityDrone> type, Level world) {
+public class HarvestingDroneEntity extends AbstractBasicDroneEntity {
+    public HarvestingDroneEntity(EntityType<HarvestingDroneEntity> type, Level world) {
         super(type, world);
     }
 
-    public EntityGuardDrone(Level world, Player player) {
-        super(ModEntityTypes.GUARD_DRONE.get(), world, player);
+    public HarvestingDroneEntity(Level world, Player player) {
+        super(ModEntityTypes.HARVESTING_DRONE.get(), world, player);
     }
 
     @Override
     public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
+        BlockEntity te = level.getBlockEntity(clickPos);
+        ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
+        harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
+        harvestPiece.setOrder(Ordering.HIGH_TO_LOW);
+        
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
-        // no item filter because we don't know what type of sword or ammo could be in the inventory
+        // No item filter, because we cannot guarantee we won't filter away modded hoes...
         builder.add(new ProgWidgetInventoryImport(), ProgWidgetArea.fromPosition(clickPos));
-        builder.add(new ProgWidgetEntityAttack(),
-                ProgWidgetArea.fromPositions(clickPos.offset(-16, -5, -16), clickPos.offset(16, 8, 16)),
-                ProgWidgetText.withText("@mob")
-        );
+        builder.add(harvestPiece, ProgWidgetArea.fromPosition(clickPos, 16, 16, 16));
         maybeAddStandbyInstruction(builder, droneStack);
-        builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10"));
+        // Wait 10 seconds for performance reasons.
+        builder.add(new ProgWidgetWait(), ProgWidgetText.withText("10s"));
         widgets.addAll(builder.build());
 
         return true;

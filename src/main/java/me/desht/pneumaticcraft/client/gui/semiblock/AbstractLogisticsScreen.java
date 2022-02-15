@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -52,7 +52,7 @@ import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class AbstractLogisticsScreen<L extends EntityLogisticsFrame> extends AbstractPneumaticCraftContainerScreen<LogisticsMenu, AbstractPneumaticCraftBlockEntity> {
+public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> extends AbstractPneumaticCraftContainerScreen<LogisticsMenu, AbstractPneumaticCraftBlockEntity> {
     protected final L logistics;
     private ItemSearcherScreen itemSearchGui;
     private LogisticsLiquidFilterScreen fluidSearchGui;
@@ -123,7 +123,7 @@ public class AbstractLogisticsScreen<L extends EntityLogisticsFrame> extends Abs
         updateLabels();
 
         fluidWidgets.clear();
-        IntStream.range(0, EntityLogisticsFrame.FLUID_FILTER_SLOTS).forEach(i -> {
+        IntStream.range(0, AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS).forEach(i -> {
             FluidStack stack = logistics.getFluidFilter(i);
             PointXY p = getFluidSlotPos(i);
             fluidWidgets.add(new WidgetFluidStack(p.x(), p.y(), stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)).setAdjustable());
