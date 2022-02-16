@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 /**
  * Received on: SERVER
- * Part of a multipart mesage from client (whole message too big to send at once)
+ * Part of a multipart message from client (whole message too big to send at once)
  */
 public class PacketMultiPart {
     private final byte[] payload;

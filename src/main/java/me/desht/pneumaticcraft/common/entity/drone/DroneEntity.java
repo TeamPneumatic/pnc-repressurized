@@ -1086,8 +1086,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public boolean doHurtTarget(Entity entity) {
         getFakePlayer().attack(entity);
-        if (entity instanceof LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity) entity;
+        if (entity instanceof LivingEntity livingEntity) {
             if (livingEntity.isAlive() && livingEntity.getLastHurtByMob() == getFakePlayer()) {
                 livingEntity.setLastHurtByMob(this);
             }

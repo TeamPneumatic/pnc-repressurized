@@ -49,7 +49,7 @@ public class PacketUpdateTextfield {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PacketUtil.getTE(ctx.get().getSender(), BlockEntity.class).ifPresent(te -> {
+            PacketUtil.getBlockEntity(ctx.get().getSender(), BlockEntity.class).ifPresent(te -> {
                 if (te instanceof IGUITextFieldSensitive) {
                     ((IGUITextFieldSensitive) te).setText(textFieldID, text);
                 }

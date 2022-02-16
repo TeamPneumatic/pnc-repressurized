@@ -42,7 +42,6 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraftBlockEntity> extends AbstractContainerMenu implements IGUIButtonSensitive {
     public final T te;
@@ -116,7 +115,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
             final AbstractPneumaticCraftMenu<?> self = this;
             List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers().stream()
                     .filter(p -> p.containerMenu == self)
-                    .collect(Collectors.toList());
+                    .toList();
             if (!players.isEmpty()) {
                 toUpdate.forEach(idx ->
                         players.forEach(player ->

@@ -28,7 +28,7 @@ import net.minecraftforge.energy.EnergyStorage;
 
 public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBlockEntity> extends Abstract4SlotMenu<T> {
 
-    private AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, FriendlyByteBuf buffer) {
+    AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, FriendlyByteBuf buffer) {
         this(type, i, playerInventory, getTilePos(buffer));
     }
 

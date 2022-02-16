@@ -66,8 +66,7 @@ public class NetworkUtils {
                 int filteredIndex = field.getAnnotation(FilteredSynced.class) != null ? field.getAnnotation(FilteredSynced.class).index() : -1;
                 field.setAccessible(true);
                 o = field.get(te);
-                if (o instanceof int[]) {
-                    int[] array = (int[]) o;
+                if (o instanceof int[] array) {
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedInt(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
@@ -77,8 +76,7 @@ public class NetworkUtils {
                     }
                     return syncedFields;
                 }
-                if (o instanceof float[]) {
-                    float[] array = (float[]) o;
+                if (o instanceof float[] array) {
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedFloat(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
@@ -88,8 +86,7 @@ public class NetworkUtils {
                     }
                     return syncedFields;
                 }
-                if (o instanceof double[]) {
-                    double[] array = (double[]) o;
+                if (o instanceof double[] array) {
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedDouble(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
@@ -99,8 +96,7 @@ public class NetworkUtils {
                     }
                     return syncedFields;
                 }
-                if (o instanceof boolean[]) {
-                    boolean[] array = (boolean[]) o;
+                if (o instanceof boolean[] array) {
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedBoolean(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
@@ -110,8 +106,7 @@ public class NetworkUtils {
                     }
                     return syncedFields;
                 }
-                if (o instanceof String[]) {
-                    String[] array = (String[]) o;
+                if (o instanceof String[] array) {
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedString(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
@@ -132,8 +127,7 @@ public class NetworkUtils {
                     }
                     return syncedFields;
                 }
-                if (o instanceof ItemStack[]) {
-                    ItemStack[] array = (ItemStack[]) o;
+                if (o instanceof ItemStack[] array) {
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
@@ -143,22 +137,20 @@ public class NetworkUtils {
                     }
                     return syncedFields;
                 }
-                if (o instanceof FluidStack[]) {
+                if (o instanceof FluidStack[] array) {
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
-                        FluidStack[] array = (FluidStack[]) o;
                         for (int i = 0; i < array.length; i++) {
                             syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
                     return syncedFields;
                 }
-                if (o instanceof ItemStackHandler[]) {
+                if (o instanceof ItemStackHandler[] array) {
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
-                        ItemStackHandler[] array = (ItemStackHandler[]) o;
                         for (int i = 0; i < array.length; i++) {
                             syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }

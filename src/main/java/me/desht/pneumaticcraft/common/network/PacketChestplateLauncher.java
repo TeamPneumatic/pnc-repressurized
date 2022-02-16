@@ -71,8 +71,7 @@ public class PacketChestplateLauncher {
             Entity launchedEntity = ItemLaunching.getEntityToLaunch(player.getCommandSenderWorld(), toFire, player,true, true);
             int upgrades = handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.DISPENSER.get(), PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
 
-            if (launchedEntity instanceof AbstractArrow) {
-                AbstractArrow arrow = (AbstractArrow) launchedEntity;
+            if (launchedEntity instanceof AbstractArrow arrow) {
                 arrow.pickup = player.isCreative() ? AbstractArrow.Pickup.CREATIVE_ONLY : AbstractArrow.Pickup.ALLOWED;
                 arrow.setBaseDamage(arrow.getBaseDamage() + 0.25 * upgrades * amount);
             }

@@ -76,9 +76,6 @@ public class NetworkHandler {
         return det++;
     }
 
-    /*
-     * The integer is the ID of the message, the Side is the side this message will be handled (received) on!
-     */
     public static void init() {
 		registerMessage(PacketAphorismTileUpdate.class,
 				PacketAphorismTileUpdate::toBytes, PacketAphorismTileUpdate::new, PacketAphorismTileUpdate::handle, PLAY_TO_SERVER);
@@ -172,8 +169,6 @@ public class NetworkHandler {
 				PacketSetEntityMotion::toBytes, PacketSetEntityMotion::new, PacketSetEntityMotion::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketDebugBlock.class,
 				PacketDebugBlock::toBytes, PacketDebugBlock::new, PacketDebugBlock::handle, PLAY_TO_CLIENT);
-//		registerMessage(PacketAmadronInvSync.class,
-//				PacketAmadronInvSync::toBytes, PacketAmadronInvSync::new, PacketAmadronInvSync::handle, PLAY_TO_SERVER);
 		registerMessage(PacketMultiHeader.class,
 				PacketMultiHeader::toBytes, PacketMultiHeader::new, PacketMultiHeader::handle);
 		registerMessage(PacketMultiPart.class,

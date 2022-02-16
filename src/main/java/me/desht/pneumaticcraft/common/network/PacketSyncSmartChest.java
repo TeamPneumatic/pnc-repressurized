@@ -71,7 +71,7 @@ public class PacketSyncSmartChest extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            PacketUtil.getTE(ctx.get().getSender(), pos, SmartChestBlockEntity.class).ifPresent(te -> {
+            PacketUtil.getBlockEntity(ctx.get().getSender(), pos, SmartChestBlockEntity.class).ifPresent(te -> {
                 te.setLastSlot(lastSlot);
                 te.setFilter(filter);
             });

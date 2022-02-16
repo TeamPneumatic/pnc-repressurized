@@ -62,7 +62,7 @@ public class PacketUpdateLogisticsModule extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> PacketUtil.getTE(ctx.get().getSender(), pos, PressureTubeBlockEntity.class).ifPresent(te -> {
+        ctx.get().enqueueWork(() -> PacketUtil.getBlockEntity(ctx.get().getSender(), pos, PressureTubeBlockEntity.class).ifPresent(te -> {
             AbstractTubeModule module = te.getModule(Direction.from3DDataValue(side));
             if (module instanceof LogisticsModule) {
                 ((LogisticsModule) module).onUpdatePacket(status, colorIndex);

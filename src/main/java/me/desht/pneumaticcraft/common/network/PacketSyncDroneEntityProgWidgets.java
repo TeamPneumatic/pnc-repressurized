@@ -25,6 +25,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Received on: CLIENT
@@ -40,7 +41,7 @@ public class PacketSyncDroneEntityProgWidgets extends PacketDroneDebugBase {
 
     PacketSyncDroneEntityProgWidgets(FriendlyByteBuf buffer) {
         super(buffer);
-        progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(buffer.readNbt());
+        progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(Objects.requireNonNull(buffer.readNbt()));
     }
 
     public void toBytes(FriendlyByteBuf buf) {

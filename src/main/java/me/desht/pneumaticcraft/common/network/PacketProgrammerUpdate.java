@@ -86,7 +86,7 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     }
 
     private void updateTE(Player player) {
-        PacketUtil.getTE(player, pos, ProgrammerBlockEntity.class).ifPresent(te -> te.setProgWidgets(widgets, player));
+        PacketUtil.getBlockEntity(player, pos, ProgrammerBlockEntity.class).ifPresent(te -> te.setProgWidgets(widgets, player));
     }
 
     @Override

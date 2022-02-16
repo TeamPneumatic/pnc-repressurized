@@ -159,15 +159,6 @@ public class PacketDescription extends LocationIntPacket {
         return !fields.isEmpty() || !extraData.isEmpty();
     }
 
-    private static class IndexedField {
-        final int idx;
-        final byte type;
-        final Object value;
-
-        IndexedField(int idx, byte type, Object value) {
-            this.idx = idx;
-            this.type = type;
-            this.value = value;
-        }
+    private record IndexedField(int idx, byte type, Object value) {
     }
 }

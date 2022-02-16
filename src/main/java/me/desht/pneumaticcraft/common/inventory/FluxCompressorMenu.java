@@ -25,7 +25,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class FluxCompressorMenu extends AbstractForgeEnergyMenu<FluxCompressorBlockEntity> {
     public FluxCompressorMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        super(ModMenuTypes.FLUX_COMPRESSOR.get(), i, playerInventory, getTilePos(buffer));
+        super(ModMenuTypes.FLUX_COMPRESSOR.get(), i, playerInventory, buffer);
     }
 
     public FluxCompressorMenu(int i, Inventory playerInventory, BlockPos pos) {

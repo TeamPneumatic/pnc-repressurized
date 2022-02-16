@@ -25,7 +25,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class AerialInterfaceMenu extends AbstractForgeEnergyMenu<AerialInterfaceBlockEntity> {
     public AerialInterfaceMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        super(ModMenuTypes.AERIAL_INTERFACE.get(), i, playerInventory, getTilePos(buffer));
+        super(ModMenuTypes.AERIAL_INTERFACE.get(), i, playerInventory, buffer);
     }
 
     public AerialInterfaceMenu(int i, Inventory playerInventory, BlockPos tilePos) {

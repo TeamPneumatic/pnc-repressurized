@@ -25,7 +25,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class PneumaticDynamoMenu extends AbstractForgeEnergyMenu<PneumaticDynamoBlockEntity> {
     public PneumaticDynamoMenu(int i, Inventory playerInventory, FriendlyByteBuf buffer) {
-        super(ModMenuTypes.PNEUMATIC_DYNAMO.get(), i, playerInventory, getTilePos(buffer));
+        super(ModMenuTypes.PNEUMATIC_DYNAMO.get(), i, playerInventory, buffer);
     }
 
     public PneumaticDynamoMenu(int i, Inventory playerInventory, BlockPos tilePos) {

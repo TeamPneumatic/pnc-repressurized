@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Registry;
@@ -64,10 +64,10 @@ public class PacketUtil {
      * @return the relevant block entity, or Optional.empty() if none can be found
      */
     @Nonnull
-    public static <T extends BlockEntity> Optional<T> getTE(Player player, BlockPos pos, Class<T> cls) {
+    public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, BlockPos pos, Class<T> cls) {
         if (player == null) {
             // client-side: we trust the blockpos the server sends
-            Level w = ClientUtils.getClientLevel();
+            Level w = Minecraft.getInstance().level;
             if (w != null) {
                 return PneumaticCraftUtils.getTileEntityAt(w, pos, cls);
             }
@@ -86,16 +86,16 @@ public class PacketUtil {
     }
 
     /**
-     * Server-only variant of {@link #getTE(PlayerEntity, BlockPos, Class)}
+     * Server-only variant of {@link #getBlockEntity(Player, BlockPos, Class)}
      *
      * @param player the player
      * @param cls the desired block entity class
      * @return the relevant block entity, or Optional.empty() if none can be found
      */
     @Nonnull
-    public static <T extends BlockEntity> Optional<T> getTE(Player player, Class<T> cls) {
+    public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, Class<T> cls) {
         if (player.level.isClientSide) throw new RuntimeException("don't call this method client side!");
-        return getTE(player, null, cls);
+        return getBlockEntity(player, null, cls);
     }
 
     /**
