@@ -18,14 +18,14 @@
     {
       "type": "relations",
       "entries": [
-        "tubes/safety_module",
-        "tubes/pressure_gauge_module",
-        "tubes/flow_detector_module",
-        "tubes/air_grate_module",
-        "tubes/regulator_module",
-        "tubes/charging_module",
-        "tubes/logistics_module",
-        "tubes/redstone_module"
+        "pneumaticcraft:tubes/safety_module",
+        "pneumaticcraft:tubes/pressure_gauge_module",
+        "pneumaticcraft:tubes/flow_detector_module",
+        "pneumaticcraft:tubes/air_grate_module",
+        "pneumaticcraft:tubes/regulator_module",
+        "pneumaticcraft:tubes/charging_module",
+        "pneumaticcraft:tubes/logistics_module",
+        "pneumaticcraft:tubes/redstone_module"
       ]
     }
   ]

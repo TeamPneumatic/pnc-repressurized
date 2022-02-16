@@ -13,11 +13,11 @@
       "anchor": "entity_filter",
       "title": "As Entity Filters",
       "entries": [
-        "programming/entity_attack",
-        "programming/entity_right_click",
-        "programming/entity_import",
-        "programming/entity_export",
-        "programming/drone_condition_entity"
+        "pneumaticcraft:programming/entity_attack",
+        "pneumaticcraft:programming/entity_right_click",
+        "pneumaticcraft:programming/entity_import",
+        "pneumaticcraft:programming/entity_export",
+        "pneumaticcraft:programming/drone_condition_entity"
       ],
       "text": "You can place the $(thing)Text/$ widget on the $(italic)left/$ of these widgets to create a blacklist filter."
     },
@@ -25,12 +25,12 @@
       "type": "relations",
       "title": "For Other Widgets",
       "entries": [
-        "programming/edit_sign",
-        "programming/rename",
-        "programming/jump",
-        "programming/label",
-        "programming/wait",
-        "programming/conditions"
+        "pneumaticcraft:programming/edit_sign",
+        "pneumaticcraft:programming/rename",
+        "pneumaticcraft:programming/jump",
+        "pneumaticcraft:programming/label",
+        "pneumaticcraft:programming/wait",
+        "pneumaticcraft:programming/conditions"
       ]
     },
     {

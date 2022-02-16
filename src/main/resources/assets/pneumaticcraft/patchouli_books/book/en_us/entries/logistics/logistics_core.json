@@ -11,9 +11,9 @@
     {
       "type": "relations",
       "entries": [
-        "logistics/frames",
-        "logistics/logistics_drone",
-        "tubes/logistics_module"
+        "pneumaticcraft:logistics/frames",
+        "pneumaticcraft:logistics/logistics_drone",
+        "pneumaticcraft:tubes/logistics_module"
       ]
     },
     {

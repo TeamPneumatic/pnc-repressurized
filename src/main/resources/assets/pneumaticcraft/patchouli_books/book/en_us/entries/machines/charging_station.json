@@ -27,28 +27,28 @@
       "type": "relations",
       "title": "Chargeable Items",
       "entries": [
-        "components/air_canister",
-        "tools/pneumatic_wrench",
-        "logistics/logistics_configurator",
-        "tools/camo_applicator",
-        "tools/vortex_cannon",
-        "tools/minigun",
-        "tools/manometer",
-        "armor/pneumatic_helmet",
-        "armor/pneumatic_chestplate",
-        "armor/pneumatic_leggings",
-        "armor/pneumatic_boots"
+        "pneumaticcraft:components/air_canister",
+        "pneumaticcraft:tools/pneumatic_wrench",
+        "pneumaticcraft:logistics/logistics_configurator",
+        "pneumaticcraft:tools/camo_applicator",
+        "pneumaticcraft:tools/vortex_cannon",
+        "pneumaticcraft:tools/minigun",
+        "pneumaticcraft:tools/manometer",
+        "pneumaticcraft:armor/pneumatic_helmet",
+        "pneumaticcraft:armor/pneumatic_chestplate",
+        "pneumaticcraft:armor/pneumatic_leggings",
+        "pneumaticcraft:armor/pneumatic_boots"
       ]
     },
     {
       "type": "relations",
       "title": "Chargeable Items (cont.)",
       "entries": [
-        "tools/drone",
-        "tools/collector_drone",
-        "tools/guard_drone",
-        "tools/harvesting_drone",
-        "logistics/logistics_drone"
+        "pneumaticcraft:tools/drone",
+        "pneumaticcraft:tools/collector_drone",
+        "pneumaticcraft:tools/guard_drone",
+        "pneumaticcraft:tools/harvesting_drone",
+        "pneumaticcraft:logistics/logistics_drone"
       ]
     },
     {

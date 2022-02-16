@@ -1,7 +1,7 @@
 {
   "name": "Fluid Import Widget",
   "icon": "pneumaticcraft:textures/progwidgets/liquid_import_piece.png",
-  "category": "pneumaticcraft:widget_other",
+  "category": "pneumaticcraft:widget_interact",
   "advancement": "pneumaticcraft:programmer",
   "pages": [
     {

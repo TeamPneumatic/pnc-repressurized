@@ -17,10 +17,10 @@
     {
       "type": "relations",
       "entries": [
-        "machines/air_cannon",
-        "machines/universal_sensor",
-        "programming/programmer",
-        "tools/amadron_tablet"
+        "pneumaticcraft:machines/air_cannon",
+        "pneumaticcraft:machines/universal_sensor",
+        "pneumaticcraft:programming/programmer",
+        "pneumaticcraft:tools/amadron_tablet"
       ],
       "text": "Machines and tools that make use of the $(item)GPS Tool/$."
     },

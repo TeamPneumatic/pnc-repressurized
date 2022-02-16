@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "$(l:tools/drone)Drones/$ have an internal buffer of 100,000 FE (Forge Energy).  Using this widget, you can import energy from an energy-providing block (e.g. a $((item)Thermal Expansion Energy Cell/$ or $(item)Immersive Engineering Capacitor/$) to the drone's internal storage.$(p)$(italic)Despite its name, this widget imports FE (Forge Energy), not RF (Redstone Flux). The name is historical./$"
+      "text": "$(l:tools/drone)Drones/$ have an internal buffer of 100,000 FE (Forge Energy).  Using this widget, you can import energy from an energy-providing block (e.g. a $(item)Thermal Expansion Energy Cell/$ or $(item)Immersive Engineering Capacitor/$) to the drone's internal storage.$(p)$(italic)Despite its name, this widget imports FE (Forge Energy), not RF (Redstone Flux). The name is historical./$"
     },
     {
       "type": "image",

@@ -37,12 +37,12 @@
     {
       "type": "relations",
       "entries": [
-        "tools/micromissiles",
-        "tubes/air_grate_module",
-        "armor/pneumatic_helmet",
-        "machines/sentry_turret",
-        "machines/universal_sensor",
-        "programming/text"
+        "pneumaticcraft:tools/micromissiles",
+        "pneumaticcraft:tubes/air_grate_module",
+        "pneumaticcraft:armor/pneumatic_helmet",
+        "pneumaticcraft:machines/sentry_turret",
+        "pneumaticcraft:machines/universal_sensor",
+        "pneumaticcraft:programming/text"
       ],
       "text": "$(italic)Machines & tools which use entity filtering/$"
     }

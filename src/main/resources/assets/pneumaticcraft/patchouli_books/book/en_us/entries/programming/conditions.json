@@ -37,36 +37,36 @@
     {
       "type": "text",
       "title": "Condition Types",
-      "text": "Conditions can be divided into two categories: $(thing)Basic Conditions/$ and $(thing)Drone Conditions/$.$(p)Basic Conditions are used to check for things in the world, e.g. does a $(item)Chest/$ have a certain number of items, or does a block exist somewhere?$(p)$(thing)Drone Conditions/$ specifically target the $(l:tools/drone)Drone/$, e.g. does the Drone have a certain item, or have a certain pressure?"
+      "text": "Conditions can be divided into two categories: $(thing)World Conditions/$ and $(thing)Drone Conditions/$.$(p)World Conditions are used to check for things in the world, e.g. does a $(item)Chest/$ have a certain number of items, or does a block exist somewhere?$(p)$(thing)Drone Conditions/$ specifically target the $(l:tools/drone)Drone/$, e.g. does the Drone have a certain item, or have a certain pressure?"
     },
     {
       "type": "text",
-      "text": "All block-based $(thing)Basic Conditions/$ have an $(thing)Any/All/$ block option. This is used when you're checking multiple blocks at a time.$(li)In $(thing)Any/$ mode, only $(italic)one/$ of the blocks in the selected $(l:programming/area)area/$ needs to match for the condition to be $(thing)true/$.$(li)In $(thing)All/$ mode, $(italic)all/$ blocks must match for the condition to be $(thing)true/$."
+      "text": "All block-based $(thing)World Conditions/$ have an $(thing)Any/All/$ block option. This is used when you're checking multiple blocks at a time.$(li)In $(thing)Any/$ mode, only $(italic)one/$ of the blocks in the selected $(l:programming/area)area/$ needs to match for the condition to be $(thing)true/$.$(li)In $(thing)All/$ mode, $(italic)all/$ blocks must match for the condition to be $(thing)true/$."
     },
     {
       "type": "relations",
-      "title": "Basic Conditions",
+      "title": "World Conditions",
       "entries": [
-        "programming/condition_block",
-        "programming/condition_coordinate",
-        "programming/condition_entity",
-        "programming/condition_item_filter",
-        "programming/condition_item_inventory",
-        "programming/condition_liquid_inventory",
-        "programming/condition_pressure",
-        "programming/condition_redstone",
-        "programming/condition_rf"
+        "pneumaticcraft:programming/condition_block",
+        "pneumaticcraft:programming/condition_coordinate",
+        "pneumaticcraft:programming/condition_entity",
+        "pneumaticcraft:programming/condition_item_filter",
+        "pneumaticcraft:programming/condition_item_inventory",
+        "pneumaticcraft:programming/condition_liquid_inventory",
+        "pneumaticcraft:programming/condition_pressure",
+        "pneumaticcraft:programming/condition_redstone",
+        "pneumaticcraft:programming/condition_rf"
       ]
     },
     {
       "type": "relations",
       "title": "Drone Conditions",
       "entries": [
-        "programming/drone_condition_item",
-        "programming/drone_condition_liquid",
-        "programming/drone_condition_entity",
-        "programming/drone_condition_pressure",
-        "programming/drone_condition_rf"
+        "pneumaticcraft:programming/drone_condition_item",
+        "pneumaticcraft:programming/drone_condition_liquid",
+        "pneumaticcraft:programming/drone_condition_entity",
+        "pneumaticcraft:programming/drone_condition_pressure",
+        "pneumaticcraft:programming/drone_condition_rf"
       ]
     }
   ]
