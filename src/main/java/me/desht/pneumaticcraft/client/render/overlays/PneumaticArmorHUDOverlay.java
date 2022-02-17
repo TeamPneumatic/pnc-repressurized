@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.client.render.ProgressBarRenderer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -103,7 +102,7 @@ public class PneumaticArmorHUDOverlay implements IIngameOverlay {
                     progress, 0xAAFFC000, 0xAA00FF00);
             RenderSystem.disableBlend();
             RenderSystem.enableTexture();
-            GuiUtils.renderItemStack(matrixStack, armorStack, xLeft + 2, yOffset);
+            Minecraft.getInstance().getItemRenderer().renderGuiItem(armorStack, xLeft + 2, yOffset);
         }
     }
 

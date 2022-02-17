@@ -418,9 +418,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     protected PointXY getGaugeLocation() {
-        int xStart = (width - imageWidth) / 2;
-        int yStart = (height - imageHeight) / 2;
-        return new PointXY(xStart + imageWidth * 3 / 4, yStart + imageHeight / 4 + 4);
+        return new PointXY(getGuiLeft() + imageWidth * 3 / 4, getGuiTop() + imageHeight / 4 + 4);
     }
 
     protected int getTitleColor() { return 0x404040; }

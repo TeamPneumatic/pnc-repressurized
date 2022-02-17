@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.BlockItem;
@@ -179,7 +180,7 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
             RenderSystem.enableTexture();
             blit(matrixStack, guiLeft + itemX, guiTop + 51, 186, 0, 18, 18);
             if (!progWidget.getRawFilter().isEmpty()) {
-                GuiUtils.renderItemStack(matrixStack, progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
                 if (mouseX >= guiLeft + itemX && mouseX <= guiLeft + itemX + 16 && mouseY >= guiTop + 51 && mouseY <= guiTop + 67) {
                     renderTooltip(matrixStack, progWidget.getRawFilter(), mouseX, mouseY);
                 }

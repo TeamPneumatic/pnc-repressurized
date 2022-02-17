@@ -41,7 +41,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.InteractionHand;
@@ -127,7 +126,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void guiContainerForeground(ContainerScreenEvent.DrawForeground event) {
         // general extra rendering
-        if (Minecraft.getInstance().screen instanceof IExtraGuiHandling e) {
+        if (event.getContainerScreen() instanceof IExtraGuiHandling e) {
             e.drawExtras(event);
         }
 

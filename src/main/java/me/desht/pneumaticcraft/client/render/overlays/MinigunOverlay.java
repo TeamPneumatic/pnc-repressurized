@@ -43,7 +43,7 @@ public class MinigunOverlay implements IIngameOverlay {
 
         ItemStack ammo = minigun.getAmmoStack();
         if (!ammo.isEmpty()) {
-            GuiUtils.renderItemStack(matrixStack, ammo,width / 2 + 16, height / 2 - 7);
+            Minecraft.getInstance().getItemRenderer().renderGuiItem(ammo,width / 2 + 16, height / 2 - 7);
             int remaining = ammo.getMaxDamage() - ammo.getDamageValue();
             matrixStack.pushPose();
             matrixStack.translate(width / 2f + 32, height / 2f - 1, 0);

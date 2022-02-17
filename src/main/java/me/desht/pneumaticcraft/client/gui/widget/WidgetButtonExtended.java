@@ -188,9 +188,9 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
             if (renderedStacks != null) {
                 int startX = getIconX();
                 for (int i = renderedStacks.length - 1; i >= 0; i--) {
-                    GuiUtils.renderItemStack(matrixStack, renderedStacks[i], startX + i * iconSpacing, this.y + 2);
+                    Minecraft.getInstance().getItemRenderer().renderGuiItem(renderedStacks[i], startX + i * iconSpacing, this.y + 2);
                     if (renderStackSize) {
-                        GuiUtils.renderItemStackOverlay(matrixStack, Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.y + 2, null);
+                        Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(Minecraft.getInstance().font, renderedStacks[i], startX + i * iconSpacing, this.y + 2, null);
                     }
                 }
             }

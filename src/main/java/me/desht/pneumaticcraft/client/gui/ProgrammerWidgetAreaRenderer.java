@@ -36,6 +36,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -222,6 +223,18 @@ public class ProgrammerWidgetAreaRenderer {
 
         if (showInfo) {
             for (IProgWidget widget : progWidgets) {
+                // Set up necessary model view stack translations so item rendering happens in the right place
+                PoseStack posestack = RenderSystem.getModelViewStack();
+                posestack.pushPose();
+                posestack.translate(translatedX, translatedY, 0);
+                posestack.scale(getScale(), getScale(), 1);
+                posestack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+                posestack.scale(0.5f, 0.5f, 1.0f);
+                RenderSystem.applyModelViewMatrix();
+                ProgWidgetRenderer.doItemRendering2d(widget);
+                posestack.popPose();
+                RenderSystem.applyModelViewMatrix();
+
                 matrixStack.pushPose();
                 matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
                 matrixStack.scale(0.5f, 0.5f, 1.0f);
@@ -288,20 +301,21 @@ public class ProgrammerWidgetAreaRenderer {
         RenderSystem.lineWidth(1);
         RenderSystem.disableTexture();
 
+        RenderSystem.setShader(GameRenderer::getPositionShader);
         BufferBuilder wr = Tesselator.getInstance().getBuilder();
         wr.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION);
 
         Map<String, List<IProgWidget>> labelWidgets = new HashMap<>();
         for (IProgWidget w : progWidgets) {
-            if (w instanceof ILabel) {
-                labelWidgets.computeIfAbsent(((ILabel) w).getLabel(), k -> new ArrayList<>()).add(w);
+            if (w instanceof ILabel l) {
+                labelWidgets.computeIfAbsent(l.getLabel(), k -> new ArrayList<>()).add(w);
             }
         }
 
         Matrix4f posMat = matrixStack.last().pose();
         for (IProgWidget widget : progWidgets) {
-            if (widget instanceof IJump) {
-                for (String jumpLocation : ((IJump) widget).getPossibleJumpLocations()) {
+            if (widget instanceof IJump jump) {
+                for (String jumpLocation : jump.getPossibleJumpLocations()) {
                     for (IProgWidget labelWidget : labelWidgets.getOrDefault(jumpLocation, Collections.emptyList())) {
                         int x1 = widget.getX() + widget.getWidth() / 4;
                         int y1 = widget.getY() + widget.getHeight() / 4;

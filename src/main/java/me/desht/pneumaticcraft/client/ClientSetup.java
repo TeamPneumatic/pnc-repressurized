@@ -199,8 +199,8 @@ public class ClientSetup {
     }
 
     private static void registerProgWidgetExtraRenderers() {
-        ProgWidgetRenderer.registerExtraRenderer(ModProgWidgets.CRAFTING.get(), ProgWidgetRenderer::renderCraftingExtras);
-        ProgWidgetRenderer.registerExtraRenderer(ModProgWidgets.ITEM_FILTER.get(), ProgWidgetRenderer::renderItemFilterExtras);
+        ProgWidgetRenderer.registerItemRenderer(ModProgWidgets.CRAFTING.get(), ProgWidgetRenderer::renderCraftingItem);
+        ProgWidgetRenderer.registerItemRenderer(ModProgWidgets.ITEM_FILTER.get(), ProgWidgetRenderer::renderItemFilterItem);
     }
 
     private static void setBlockRenderLayers() {

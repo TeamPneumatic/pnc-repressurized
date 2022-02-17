@@ -41,11 +41,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
 import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithTypeAndFinish;
 
 public class ProgWidgetRenderer {
+    private static final Map<ResourceLocation, Consumer<IProgWidget>> ITEM_RENDERERS = new HashMap<>();
     private static final Map<ResourceLocation, BiConsumer<PoseStack, IProgWidget>> EXTRA_RENDERERS = new HashMap<>();
 
     /**
@@ -103,10 +105,23 @@ public class ProgWidgetRenderer {
         EXTRA_RENDERERS.getOrDefault(widget.getTypeID(), ProgWidgetRenderer::renderGenericExtras).accept(matrixStack, widget);
     }
 
+    public static void doItemRendering2d(IProgWidget widget) {
+        ITEM_RENDERERS.getOrDefault(widget.getTypeID(), w -> {}).accept(widget);
+    }
+
     public static <P extends IProgWidget> void registerExtraRenderer(ProgWidgetType<P> type, BiConsumer<PoseStack, P> consumer) {
         EXTRA_RENDERERS.put(type.getRegistryName(), (BiConsumer<PoseStack, IProgWidget>) consumer);
     }
 
+    public static <P extends IProgWidget> void registerItemRenderer(ProgWidgetType<P> type, Consumer<P> consumer) {
+        ITEM_RENDERERS.put(type.getRegistryName(), (Consumer<IProgWidget>) consumer);
+    }
+
+    /**
+     * Handle general drawing, string rendering etc.
+     * @param matrixStack the matrix stack
+     * @param progWidget the widget to draw for
+     */
     public static void renderGenericExtras(PoseStack matrixStack, IProgWidget progWidget) {
         List<Component> info = progWidget.getExtraStringInfo();
         if (!info.isEmpty()) {
@@ -126,22 +141,18 @@ public class ProgWidgetRenderer {
         }
     }
 
-    public static void renderCraftingExtras(PoseStack matrixStack, ProgWidgetCrafting progWidget) {
+    public static void renderCraftingItem(ProgWidgetCrafting progWidget) {
         ItemStack recipe = progWidget.getRecipeResult(ClientUtils.getClientLevel());
         if (recipe != null) {
-            GuiUtils.renderItemStack(matrixStack, recipe, 8, progWidget.getHeight() / 2 - 8);
-            GuiUtils.renderItemStackOverlay(matrixStack, Minecraft.getInstance().font, recipe, 8, progWidget.getHeight() / 2 - 8, Integer.toString(recipe.getCount()));
+            Minecraft.getInstance().getItemRenderer().renderGuiItem(recipe, 8 , progWidget.getHeight() / 2 - 8);
+            Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(Minecraft.getInstance().font,  recipe,8 , progWidget.getHeight() / 2 - 8, Integer.toString(recipe.getCount()));
         }
     }
 
-    public static void renderItemFilterExtras(PoseStack matrixStack, ProgWidgetItemFilter progWidget) {
-        if (progWidget.getVariable().isEmpty()) {
-            if (!progWidget.getFilter().isEmpty()) {
-                GuiUtils.renderItemStack(matrixStack, progWidget.getFilter(), 10, 2);
-                GuiUtils.renderItemStackOverlay(matrixStack, Minecraft.getInstance().font, progWidget.getFilter(), 10, 2, "");
-            }
-        } else {
-            renderGenericExtras(matrixStack, progWidget);
+    public static void renderItemFilterItem(ProgWidgetItemFilter progWidget) {
+        if (progWidget.getVariable().isEmpty() && !progWidget.getFilter().isEmpty()) {
+            Minecraft.getInstance().getItemRenderer().renderGuiItem(progWidget.getFilter(), 10, 2);
+            Minecraft.getInstance().getItemRenderer().renderGuiItemDecorations(Minecraft.getInstance().font, progWidget.getFilter(), 10, 2, "");
         }
     }
 }

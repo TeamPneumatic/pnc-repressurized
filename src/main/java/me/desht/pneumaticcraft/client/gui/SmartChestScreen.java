@@ -38,6 +38,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -246,7 +247,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                 int sy = 18 + (slot / N_COLS) * 18;
                 matrixStack.pushPose();
                 ItemStack stack = p.getRight();
-                GuiUtils.renderItemStack(matrixStack, stack, sx, sy);
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, sx, sy);
                 String label = "[" + stack.getCount() + "]";
                 matrixStack.translate(0, 0, 300);
                 if (!menu.slots.get(slot).hasItem()) {

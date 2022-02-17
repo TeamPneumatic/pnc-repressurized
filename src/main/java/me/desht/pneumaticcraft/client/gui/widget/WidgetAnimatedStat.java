@@ -492,11 +492,17 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
                 }
             }
 
-            matrixStack.pushPose();
-            matrixStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
+            // Set up necessary translations so subwidgets render in the right place
+            // While our own matrix stack is passed to widget.render, we also need to modify the model view stack so
+            //  widgets which render itemstacks do it in the right place
+            PoseStack poseStack = RenderSystem.getModelViewStack();
+            poseStack.pushPose();
+            poseStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
             RenderSystem.enableTexture();
+            RenderSystem.applyModelViewMatrix();
             subWidgets.forEach(widget -> widget.render(matrixStack, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
-            matrixStack.popPose();
+            poseStack.popPose();
+            RenderSystem.applyModelViewMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
             statIcon.render(matrixStack, renderBaseX, renderAffectedY, leftSided);
@@ -821,7 +827,6 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             texture.ifLeft(stack -> Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, x - (leftSided ? 16 : 0), y))
-//            texture.ifLeft(stack ->  GuiUtils.renderItemStack(matrixStack, stack, x - (leftSided ? 16 : 0), y))
                     .ifRight(resLoc -> GuiUtils.drawTexture(matrixStack, resLoc, x - (leftSided ? 16 : 0), y));
             RenderSystem.disableBlend();
         }

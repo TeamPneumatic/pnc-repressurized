@@ -18,8 +18,6 @@
 package me.desht.pneumaticcraft.client.util;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -30,25 +28,20 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -72,89 +65,8 @@ public class GuiUtils {
     private static final int TEX_HEIGHT = 16;
     public static final String TRANSLATION_LINE_BREAK = "${br}";
 
-    /**
-     * Like {@link ItemRenderer#renderGuiItem(ItemStack, int, int)} but takes a MatrixStack
-     * @param matrixStack the matrix stack
-     * @param stack the item
-     * @param x X pos
-     * @param y Y pos
-     */
-    public static void renderItemStack(PoseStack matrixStack, ItemStack stack, int x, int y) {
-        if (!stack.isEmpty()) {
-            BakedModel bakedmodel = itemRenderer.getModel(stack, null, Minecraft.getInstance().player, 0);
-
-            matrixStack.pushPose();
-
-            Minecraft.getInstance().textureManager.getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
-            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            matrixStack.translate((float)x, (float)y, 150F);
-            matrixStack.translate(8.0F, 8.0F, 0.0F);
-            matrixStack.scale(1.0F, -1.0F, 1.0F);
-            matrixStack.scale(16.0F, 16.0F, 16.0F);
-            MultiBufferSource.BufferSource buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-            boolean flag = !bakedmodel.usesBlockLight();
-            if (!bakedmodel.usesBlockLight()) {
-                Lighting.setupForFlatItems();
-            }
-            itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, matrixStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
-            buffer.endBatch();
-            RenderSystem.enableDepthTest();
-            if (flag) {
-                Lighting.setupFor3DItems();
-            }
-
-            matrixStack.popPose();
-        }
-    }
-
-    public static void renderItemStackOverlay(PoseStack matrixStack, Font fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text) {
-        if (!stack.isEmpty()) {
-            matrixStack.pushPose();
-            if (stack.getCount() != 1 || text != null) {
-                String s = text == null ? String.valueOf(stack.getCount()) : text;
-                matrixStack.translate(0.0D, 0.0D, 250F);
-                MultiBufferSource.BufferSource buffer = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-                fr.drawInBatch(s, (float)(xPosition + 19 - 2 - fr.width(s)), (float)(yPosition + 6 + 3), 16777215, true, matrixStack.last().pose(), buffer, false, 0, 15728880);
-                buffer.endBatch();
-            }
-
-            if (stack.getItem().isBarVisible(stack)) {
-                RenderSystem.disableDepthTest();
-                RenderSystem.disableTexture();
-//                RenderSystem.disableAlphaTest();
-                RenderSystem.disableBlend();
-                Tesselator tessellator = Tesselator.getInstance();
-                BufferBuilder bufferbuilder = tessellator.getBuilder();
-                int barWidth = stack.getItem().getBarWidth(stack);
-                int barColor = stack.getItem().getBarColor(stack);
-                drawUntexturedQuad(matrixStack, bufferbuilder, xPosition + 2, yPosition + 13, 0F, 13, 2, 0, 0, 0, 255);
-                drawUntexturedQuad(matrixStack, bufferbuilder, xPosition + 2, yPosition + 13, 0F, barWidth, 1, barColor >> 16 & 255, barColor >> 8 & 255, barColor & 255, 255);
-                RenderSystem.enableBlend();
-//                RenderSystem.enableAlphaTest();
-                RenderSystem.enableTexture();
-                RenderSystem.enableDepthTest();
-            }
-
-            LocalPlayer player = Minecraft.getInstance().player;
-            float f3 = player == null ? 0.0F : player.getCooldowns().getCooldownPercent(stack.getItem(), Minecraft.getInstance().getFrameTime());
-            if (f3 > 0.0F) {
-                RenderSystem.disableDepthTest();
-                RenderSystem.disableTexture();
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                Tesselator tessellator1 = Tesselator.getInstance();
-                BufferBuilder bufferbuilder1 = tessellator1.getBuilder();
-                drawUntexturedQuad(matrixStack, bufferbuilder1, xPosition, yPosition + Mth.floor(16.0F * (1.0F - f3)), 0F, 16, Mth.ceil(16.0F * f3), 255, 255, 255, 127);
-                RenderSystem.enableTexture();
-                RenderSystem.enableDepthTest();
-            }
-            matrixStack.popPose();
-        }
-    }
-
     public static void renderBlockInGui(PoseStack matrixStack, BlockState block, float x, float y, float z, float rotate, float scale) {
+        // FIXME lighting angle isn't right
         final Minecraft mc = Minecraft.getInstance();
         matrixStack.pushPose();
         matrixStack.translate(x, y, z);
@@ -177,7 +89,14 @@ public class GuiUtils {
         matrixStack.popPose();
     }
 
-    public static void drawFluid(PoseStack matrixStack, final Rect2i bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
+    /**
+     * Draw a fluid texture, tiling as appropriate
+     * @param poseStack the pose stack
+     * @param bounds bounds in which to draw
+     * @param fluidStack the fluid to draw
+     * @param tank a fluid tank; if non-null, fluid Y size is scaled according to the tank's capacity
+     */
+    public static void drawFluid(PoseStack poseStack, final Rect2i bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
         if (fluidStack == null || fluidStack.getFluid() == null) {
             return;
         }
@@ -218,7 +137,7 @@ public class GuiUtils {
                     int maskTop = TEX_HEIGHT - h;
                     int maskRight = TEX_WIDTH - w;
 
-                    drawFluidTexture(matrixStack, x, y, fluidStillSprite, maskTop, maskRight, 100, cols);
+                    drawFluidTexture(poseStack, x, y, fluidStillSprite, maskTop, maskRight, 100, cols);
                 }
             }
         }
@@ -253,9 +172,9 @@ public class GuiUtils {
         int boxWidth = l.stream().max(Comparator.comparingInt(fontRenderer::width)).map(fontRenderer::width).orElse(0);
 
         int x, y;
-        if (screen instanceof AbstractContainerScreen) {
-            x = (((AbstractContainerScreen<?>) screen).getXSize() - boxWidth) / 2;
-            y = (((AbstractContainerScreen<?>) screen).getYSize() - boxHeight) / 2;
+        if (screen instanceof AbstractContainerScreen a) {
+            x = (a.getXSize() - boxWidth) / 2;
+            y = (a.getYSize() - boxHeight) / 2;
         } else {
             x = (screen.width - boxWidth) / 2;
             y = (screen.height - boxHeight) / 2;
@@ -265,7 +184,7 @@ public class GuiUtils {
         drawPanel(matrixStack, x, y, boxHeight, boxWidth);
 
         for (FormattedCharSequence line : l) {
-            fontRenderer.draw(matrixStack, line, x, y, 0xFFE0E0E0);  // draw reordering processor w/o drop shadow
+            fontRenderer.draw(matrixStack, line, x, y, 0xFFE0E0E0);
             y += lineSpacing;
             if (maxLines-- == 0) break;
         }
@@ -279,7 +198,6 @@ public class GuiUtils {
         GuiComponent.fill(matrixStack,x - 4, y - 4, x - 3, y + panelHeight + 8, 0xFF808080);
         GuiComponent.fill(matrixStack,x + panelWidth + 8, y - 4, x + panelWidth + 9, y + panelHeight + 8, 0xFF808080);
     }
-
 
     public static void drawTexture(PoseStack matrixStack, ResourceLocation texture, int x, int y) {
         bindTexture(texture);
@@ -311,19 +229,8 @@ public class GuiUtils {
         renderer.vertex(posMat, x, y + height, z).color(red, green, blue, alpha).endVertex();
         renderer.vertex(posMat, x + width, y + height, z).color(red, green, blue, alpha).endVertex();
         renderer.vertex(posMat, x + width,  y, z).color(red, green, blue, alpha).endVertex();
+        renderer.vertex(posMat, x, y, z).color(red, green, blue, alpha).endVertex();
         Tesselator.getInstance().end();
-    }
-
-    /**
-     * Set the colour from a 32-bit int
-     * @param color the colour to use, in ARGB format
-     */
-    public static void glColorHex(int color) {
-        float alpha = (color >> 24 & 255) / 255F;
-        float red = (color >> 16 & 255) / 255F;
-        float green = (color >> 8 & 255) / 255F;
-        float blue = (color & 255) / 255F;
-        RenderSystem.setShaderColor(red, green, blue, alpha);
     }
 
     public static void drawScaledText(PoseStack matrixStack, Font fr, String text, int x, int y, int color, float scale) {

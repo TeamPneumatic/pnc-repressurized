@@ -29,7 +29,6 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.JetBootsOption
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -154,19 +153,19 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
             int iconX = xr - 30;
             if (builderMode) {
-                GuiUtils.renderItemStack(matrixStack, PICK, iconX, jbStat.getBaseY());
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(PICK, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (flightStabilizers) {
-                GuiUtils.renderItemStack(matrixStack, ROTOR, iconX, jbStat.getBaseY());
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(ROTOR, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (ClientUtils.getClientPlayer().isFallFlying()) {
-                GuiUtils.renderItemStack(matrixStack, ELYTRA, iconX, jbStat.getBaseY());
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(ELYTRA, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (smartHover) {
-                GuiUtils.renderItemStack(matrixStack, FEATHER, iconX, jbStat.getBaseY());
+                Minecraft.getInstance().getItemRenderer().renderGuiItem(FEATHER, iconX, jbStat.getBaseY());
 //                iconX -= 16;
             }
         }
