@@ -62,7 +62,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
         getCraftingGrid(); // to set up usingVariables
 
-        if (!usingVariables && getRecipeResult(ClientUtils.getClientLevel()) == null) {
+        if (!usingVariables && getRecipeResult(ClientUtils.getClientLevel()).isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.crafting.error.noCraftingRecipe"));
         }
     }
@@ -74,6 +74,9 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         ItemStack stack = getRecipeResult(ClientUtils.getClientLevel());
         if (!stack.isEmpty()) {
             curTooltip.add(stack.getHoverName().copy().withStyle(ChatFormatting.YELLOW));
+        }
+        if (useCount()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", getCount()));
         }
     }
 
