@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 
 import java.util.Optional;
 
-public interface ICraftingWidget {
+public interface ICraftingWidget extends ICountWidget {
     CraftingInventory getCraftingGrid();
 
     Optional<ICraftingRecipe> getRecipe(World world, CraftingInventory grid);

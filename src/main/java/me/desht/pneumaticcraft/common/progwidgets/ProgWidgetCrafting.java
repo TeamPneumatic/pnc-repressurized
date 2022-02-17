@@ -59,18 +59,10 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-//        boolean usingVariables = false;
 
         getCraftingGrid(); // to set up usingVariables
 
-//        for (int y = 0; y < 3; y++) {
-//            ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter) getConnectedParameters()[y];
-//            for (int x = 0; x < 3 && itemFilter != null; x++) {
-//                if (!itemFilter.getVariable().equals("")) usingVariables = true;
-//                itemFilter = (ProgWidgetItemFilter) itemFilter.getConnectedParameters()[0];
-//            }
-//        }
-        if (!usingVariables && getRecipeResult(ClientUtils.getClientWorld()) == null) {
+        if (!usingVariables && getRecipeResult(ClientUtils.getClientWorld()).isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.crafting.error.noCraftingRecipe"));
         }
     }
@@ -82,6 +74,9 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
         ItemStack stack = getRecipeResult(ClientUtils.getClientWorld());
         if (!stack.isEmpty()) {
             curTooltip.add(stack.getHoverName().copy().withStyle(TextFormatting.YELLOW));
+        }
+        if (useCount()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", getCount()));
         }
     }
 
