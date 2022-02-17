@@ -10,6 +10,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
+* PNC:R 2.15.1 and later *require* Patchouli 1.16.4-50 or later.
+* If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
+
+## 2.15.3-??? (unreleased)
+
+### Updates
+* Bandages can be now configured in pneumaticcraft-common.toml
+  * Cooldown, use time and heal amount are all configurable
+
+### Fixes
+* Fixed Crafting progwidget ignoring the "Use Count" setting
+* Fixed Pressure Chamber Interface sometimes rendering items in the wrong place
+* Fixed Mekanism dependency in mods.toml; PNC will now exit on game startup if Mekanism 10.0.x is installed, instead of crashing during the game
+  * Reminder: if Mekanism is installed, then Mekanism version 10.1.x+ is *required*
 
 ## 2.15.2-303 (4th Feb 2022)
 
