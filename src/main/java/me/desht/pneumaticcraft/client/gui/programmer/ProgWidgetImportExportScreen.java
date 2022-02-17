@@ -57,7 +57,7 @@ public class ProgWidgetImportExportScreen<P extends IProgWidget & ISidedWidget &
         WidgetCheckBox useItemCount = new WidgetCheckBox(guiLeft + 8, guiTop + (showSides() ? 115 : 30), 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.itemFilter.useItemCount"),
                 b -> { progWidget.setUseCount(b.checked); textField.setEditable(b.checked); }
-        ).setTooltipKey("pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip").setChecked(progWidget.useCount());
+        ).setTooltipKey(countTooltipKey()).setChecked(progWidget.useCount());
         addRenderableWidget(useItemCount);
 
         textField = new WidgetTextFieldNumber(font, guiLeft + 10, guiTop + (showSides() ? 128 : 43), 50, 11).setRange(0, Integer.MAX_VALUE);
@@ -65,7 +65,10 @@ public class ProgWidgetImportExportScreen<P extends IProgWidget & ISidedWidget &
         textField.setEditable(useItemCount.checked);
         textField.setResponder(s -> progWidget.setCount(textField.getIntValue()));
         addRenderableWidget(textField);
+    }
 
+    protected String countTooltipKey() {
+        return "pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip";
     }
 
     protected boolean showSides() {

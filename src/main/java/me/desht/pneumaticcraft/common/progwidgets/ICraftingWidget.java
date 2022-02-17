@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
-public interface ICraftingWidget {
+public interface ICraftingWidget extends ICountWidget {
     CraftingContainer getCraftingGrid();
 
     Optional<CraftingRecipe> getRecipe(Level world, CraftingContainer grid);

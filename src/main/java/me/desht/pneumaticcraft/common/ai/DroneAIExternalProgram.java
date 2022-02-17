@@ -84,7 +84,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                 ItemStack stack = inv.getStackInSlot(curSlot);
                 if (curProgramTag.equals(stack.getTag())) {
                     subAI.onUpdateTasks();
-                    if (subAI.isIdling() || isRunningSameProgram(subAI.getCurrentAI())) {
+                    if (subAI.isIdling() || isRunningSameProgram(subAI.getCurrentGoal())) {
                         curProgramTag = null;
                         curSlot++;
                     }
@@ -97,8 +97,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
         } else {
             while (curSlot < inv.getSlots()) {
                 ItemStack stack = inv.getStackInSlot(curSlot);
-                if (stack.getItem() instanceof IProgrammable) {
-                    IProgrammable programmable = (IProgrammable) stack.getItem();
+                if (stack.getItem() instanceof IProgrammable programmable) {
                     if (programmable.canProgram(stack) && programmable.usesPieces(stack)) {
                         List<IProgWidget> widgets = ProgrammerBlockEntity.getProgWidgets(stack);
                         ProgrammerBlockEntity.updatePuzzleConnections(widgets);
@@ -120,9 +119,9 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
         }
     }
 
-    //Prevent a memory leak, as a result of the same External program recursively calling itself.
+    // Prevent a memory leak, as a result of the same External program recursively calling itself.
     private boolean isRunningSameProgram(Goal ai) {
-        return ai instanceof DroneAIExternalProgram && curProgramTag.equals(((DroneAIExternalProgram) ai).curProgramTag);
+        return ai instanceof DroneAIExternalProgram ext && this.curProgramTag.equals(ext.curProgramTag);
     }
 
     DroneAIManager getRunningAI() {

@@ -26,7 +26,16 @@ public class ProgWidgetCraftingScreen extends ProgWidgetImportExportScreen<ProgW
     }
 
     @Override
+    protected String countTooltipKey() {
+        return "pneumaticcraft.gui.progWidget.itemFilter.useItemCount.craftingTooltip";
+    }
+
+    @Override
     protected boolean showSides() {
+        return false;
+    }
+
+    public boolean displayShowAreaButtons() {
         return false;
     }
 }

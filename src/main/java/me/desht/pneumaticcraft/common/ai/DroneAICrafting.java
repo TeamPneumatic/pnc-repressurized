@@ -36,14 +36,22 @@ import java.util.List;
 public class DroneAICrafting extends Goal {
     private final ICraftingWidget widget;
     private final IDroneBase drone;
+    private final int maxActions;
+    private int actionCount;
 
     public DroneAICrafting(IDroneBase drone, ICraftingWidget widget) {
         this.drone = drone;
         this.widget = widget;
+        this.maxActions = widget.useCount() ? widget.getCount() : 0;
+        this.actionCount = 0;
     }
 
     @Override
     public boolean canUse() {
+        if (maxActions > 0 && actionCount >= maxActions) {
+            return false;
+        }
+
         CraftingContainer craftingGrid = widget.getCraftingGrid();
         return widget.getRecipe(drone.world(), craftingGrid).map(recipe -> {
             List<List<ItemStack>> equivalentsList = buildEquivalentsList(craftingGrid);
@@ -56,6 +64,7 @@ public class DroneAICrafting extends Goal {
                     craftMatrix.setItem(i, stack);
                 }
                 if (recipe.matches(craftMatrix, drone.world()) && doCrafting(recipe.assemble(craftMatrix), craftMatrix)) {
+                    actionCount++;
                     return true;
                 }
             } while (count(equivIndices, equivalentsList));

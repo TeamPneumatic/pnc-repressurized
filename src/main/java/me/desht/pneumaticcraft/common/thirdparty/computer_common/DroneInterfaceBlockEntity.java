@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
-import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
+import me.desht.pneumaticcraft.common.ai.DroneAIManager.WrappedGoal;
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ILuaMethodProvider;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
@@ -93,6 +93,9 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     public void tickServer() {
         super.tickServer();
 
+        if (drone != null && !drone.isAlive()) {
+            setDrone(null);
+        }
         if (drone != null) {
             if (ringSendCooldown > 0) ringSendCooldown--;
             if (!ringSendQueue.isEmpty() && ringSendCooldown <= 0) {
@@ -771,9 +774,9 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
 
     private DroneAICC getAI() {
         if (drone != null) {
-            for (EntityAITaskEntry task : drone.getRunningTasks()) {
-                if (task.goal instanceof DroneAICC) {
-                    return (DroneAICC) task.goal;
+            for (WrappedGoal wrappedGoal : drone.getRunningTasks()) {
+                if (wrappedGoal.goal() instanceof DroneAICC) {
+                    return (DroneAICC) wrappedGoal.goal();
                 }
             }
         }
