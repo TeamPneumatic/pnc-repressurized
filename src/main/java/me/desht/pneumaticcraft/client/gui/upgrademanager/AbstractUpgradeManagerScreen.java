@@ -191,7 +191,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
                             break;
                         }
                     }
-                    IGuiAnimatedStat stat = addAnimatedStat(upgradeStack.getHoverName(), upgradeStack, 0xFF244BB3, leftSided).setText(text);
+                    IGuiAnimatedStat stat = addAnimatedStat(upgradeStack.getHoverName(), upgradeStack, 0xFF1C53A8, leftSided).setText(text);
                     stat.setForegroundColor(0xFF000000);
                     if (upgrade.getMaxTier() > 1) cycleTabs.put(upgrade, stat);
                     leftSided = !leftSided;

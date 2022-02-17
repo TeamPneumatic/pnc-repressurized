@@ -237,7 +237,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
                     }
                 });
         if (!text.isEmpty()) {
-            addAnimatedStat(xlate("pneumaticcraft.gui.tab.upgrades"), Textures.GUI_UPGRADES_LOCATION, 0xFF244BB3, true)
+            addAnimatedStat(xlate("pneumaticcraft.gui.tab.upgrades"), Textures.GUI_UPGRADES_LOCATION, 0xFF1C53A8, true)
                     .setText(text).setForegroundColor(0xFF000000);
         }
     }

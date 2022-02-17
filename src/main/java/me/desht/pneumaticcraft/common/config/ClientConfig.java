@@ -78,9 +78,9 @@ public class ClientConfig {
                 .translation("pneumaticcraft.config.client.general.fancy_armor_models")
                 .defineEnum("programmer_difficulty", WidgetDifficulty.EASY);
         general.topShowsFluids = builder
-                .comment("Show tank fluids with the The One Probe. Note that TOP also has support for showing tanks, which may or may not be enabled.")
+                .comment("Show tank fluids with the The One Probe when sneaking? Note that TOP has its own support for showing tanks, which by default requires a Probe to be held, or a Probe-enabled helmet to be worn.")
                 .translation("pneumaticcraft.config.client.general.top_shows_fluids")
-                .define("top_shows_fluids", true);
+                .define("top_shows_fluids", false);
         general.logisticsGuiTint = builder
                 .comment("Tint Logistics configuration GUI backgrounds according to the colour of the logistics frame you are configuring.")
                 .translation("pneumaticcraft.config.client.general.logistics_gui_tint")
@@ -186,7 +186,7 @@ public class ClientConfig {
         sound.jackhammerVolume = builder
                 .comment("Volume level of the Jackhammer")
                 .translation("pneumaticcraft.config.client.sound.jackhammer_volume")
-                .defineInRange("jackhammer_volume", 1.0d, 0d, 2d);
+                .defineInRange("jackhammer_volume", 0.7d, 0d, 2d);
     }
 
     /**
