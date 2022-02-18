@@ -5,6 +5,7 @@
 		"all": "pneumaticcraft:block/aphorism_tile",
 		"border": "pneumaticcraft:block/aphorism_tile_border"
 	},
+	"gui_light": "front",
 	"elements": [
 		{
 			"from": [0, 0, 7.5],
