@@ -25,7 +25,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Transformation;
-import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import net.minecraft.client.Minecraft;
@@ -261,9 +260,8 @@ public class FluidItemModel implements IDynamicBakedModel {
         @Nullable
         @Override
         public BakedModel resolve(BakedModel original, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
-            if (stack.getItem() instanceof IFluidRendered) {
-                IFluidItemRenderInfoProvider infoProvider = ((IFluidRendered) stack.getItem()).getFluidItemRenderer();
-                modelIn.tanksToRender = infoProvider.getTanksToRender(stack);
+            if (stack.getItem() instanceof IFluidRendered r) {
+                modelIn.tanksToRender = r.getFluidItemRenderer().getTanksToRender(stack);
             }
             return modelIn;
         }

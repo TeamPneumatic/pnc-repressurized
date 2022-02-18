@@ -45,7 +45,7 @@ public class DisplayTableRenderer implements BlockEntityRenderer<DisplayTableBlo
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 1, 0.5);
         Block b = te.getBlockState().getBlock();
-        double yOff = b instanceof DisplayTableBlock.Shelf ? 1d - (((DisplayTableBlock.Shelf) b).getTableHeight()): 0d;
+        double yOff = b instanceof DisplayTableBlock.Shelf shelf ? 1d - shelf.getTableHeight() : 0d;
         renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, te.displayedStack, 0d, yOff, 0d, 0.5f, te.getRotation());
         matrixStackIn.popPose();
     }

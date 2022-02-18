@@ -25,6 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -59,9 +60,8 @@ public class RenderFluidTank extends AbstractFluidTER<AbstractFluidTankBlockEnti
     public static class ItemRenderInfoProvider implements IFluidItemRenderInfoProvider {
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {
-            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
-                    .map(h -> Collections.singletonList(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
-                    .orElse(Collections.emptyList());
+            IFluidHandler h = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new);
+            return Collections.singletonList(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE));
         }
     }
 
@@ -77,16 +77,15 @@ public class RenderFluidTank extends AbstractFluidTER<AbstractFluidTankBlockEnti
 
         @Override
         public boolean shouldRender(Direction face) {
-            switch (face) {
-                case UP: return up
+            return switch (face) {
+                case UP -> up
                         || getTank().getFluid().getAmount() < getTank().getCapacity()
                         && !getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
-                case DOWN: return down
+                case DOWN -> down
                         || getTank().getFluid().getAmount() < getTank().getCapacity()
                         && getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
-                default:
-                    return true;
-            }
+                default -> true;
+            };
         }
     }
 }

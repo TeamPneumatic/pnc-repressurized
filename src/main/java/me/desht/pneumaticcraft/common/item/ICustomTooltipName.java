@@ -28,16 +28,12 @@ public interface ICustomTooltipName {
     String getCustomTooltipTranslationKey();
 
     static String getTranslationKey(ItemStack stack, boolean brief) {
-        String key = "gui.tooltip." + (stack.getItem() instanceof ICustomTooltipName ?
-                ((ICustomTooltipName) stack.getItem()).getCustomTooltipTranslationKey() :
+        String key = "gui.tooltip." + (stack.getItem() instanceof ICustomTooltipName c ?
+                c.getCustomTooltipTranslationKey() :
                 stack.getDescriptionId());
 
         // brief version (if exists) is used for item/block tooltips
         // long/default version is used in JEI info tab and GUI side tab
-        if (brief && I18n.exists(key + ".brief")) {
-            return key + ".brief";
-        } else {
-            return key;
-        }
+        return brief && I18n.exists(key + ".brief") ? key + ".brief" : key;
     }
 }

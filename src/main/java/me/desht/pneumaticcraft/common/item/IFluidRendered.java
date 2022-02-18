@@ -19,6 +19,9 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.client.render.fluid.IFluidItemRenderInfoProvider;
 
+/**
+ * For items which can render contained fluids in their item model
+ */
 public interface IFluidRendered {
     IFluidItemRenderInfoProvider getFluidItemRenderer();
 }

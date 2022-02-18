@@ -95,15 +95,10 @@ public class RenderedItemModel implements IDynamicBakedModel {
 
     @Override
     public BakedModel handlePerspective(ItemTransforms.TransformType cameraTransformType, PoseStack mat) {
-        switch (cameraTransformType) {
-            case GROUND:
-            case HEAD:
-            case NONE:
-            case GUI:
-            case FIXED:
-                return bakedBaseModel.handlePerspective(cameraTransformType, mat);
-        }
-        return this;
+        return switch (cameraTransformType) {
+            case GROUND, HEAD, NONE, GUI, FIXED -> bakedBaseModel.handlePerspective(cameraTransformType, mat);
+            default -> this;
+        };
     }
 
     private static class Geometry implements IModelGeometry<Geometry> {
