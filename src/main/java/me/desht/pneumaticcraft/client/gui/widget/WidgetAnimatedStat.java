@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Matrix3f;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
@@ -41,7 +41,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -269,7 +268,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
                 bgColorLo = bgColorHi;
             }
         } else {
-            bgColorLo = bgColorHi = TintColor.BLACK;
+            bgColorLo = bgColorHi = new TintColor(color).darker().darker();
         }
     }
 
@@ -451,25 +450,21 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         int renderAffectedY = (int) Mth.lerp(partialTicks, prevEffectiveY, effectiveY);
         int renderWidth = (int) Mth.lerp(partialTicks, prevWidth, width);
         int renderHeight = (int) Mth.lerp(partialTicks, prevHeight, height);
+        int xOff = 1;
 
-        if (leftSided) renderWidth *= -1;
+        if (leftSided) {
+            renderWidth *= -1;
+            xOff = -1;
+        }
         GuiComponent.fill(matrixStack, renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
-        RenderSystem.disableTexture();
-        RenderSystem.lineWidth(3.0F);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferBuilder wr = Tesselator.getInstance().getBuilder();
-        wr.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
-        float[] c2 = bgColorHi.getComponents(null);
-        float[] c3 = leftSided ? bgColorHi.getComponents(null) : bgColorLo.getComponents(null);
-        float[] c4 = bgColorLo.getComponents(null);
-        wr.vertex(renderBaseX, renderAffectedY, zLevel).color(c1[0], c1[1], c1[2], c1[3]).endVertex();
-        wr.vertex(renderBaseX + renderWidth, renderAffectedY, zLevel).color(c2[0], c2[1], c2[2], c2[3]).endVertex();
-        wr.vertex(renderBaseX + renderWidth, renderAffectedY + renderHeight, zLevel).color(c3[0], c3[1], c3[2],c3[3]).endVertex();
-        wr.vertex(renderBaseX, renderAffectedY + renderHeight, zLevel).color(c4[0], c4[1], c4[2], c4[3]).endVertex();
-        wr.vertex(renderBaseX, renderAffectedY, zLevel).color(c1[0], c1[1], c1[2], c1[3]).endVertex();
-        Tesselator.getInstance().end();
-        RenderSystem.enableTexture();
+        int sideU = bgColorHi.getRGB();
+        int sideD = bgColorLo.getRGB();
+        int sideL = leftSided ? sideD : sideU;
+        int sideR = leftSided ? sideU : sideD;
+        GuiComponent.fill(matrixStack, renderBaseX, renderAffectedY - 1, renderBaseX + renderWidth, renderAffectedY, sideU);
+        GuiComponent.fill(matrixStack, renderBaseX + renderWidth, renderAffectedY, renderBaseX + renderWidth + xOff, renderAffectedY + renderHeight, sideR);
+        GuiComponent.fill(matrixStack, renderBaseX, renderAffectedY + renderHeight, renderBaseX + renderWidth, renderAffectedY + renderHeight + 1, sideD);
+        GuiComponent.fill(matrixStack, renderBaseX - xOff, renderAffectedY, renderBaseX, renderAffectedY + renderHeight, sideL);
         if (leftSided) renderWidth *= -1;
 
         // if done expanding, draw the information
