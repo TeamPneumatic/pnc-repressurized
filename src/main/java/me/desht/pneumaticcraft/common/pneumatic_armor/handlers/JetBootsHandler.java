@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.Tag;
@@ -48,6 +49,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.Supplier;
 
@@ -109,7 +111,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 }
                 if (player.isInWater()) jetbootsAirUsage *= 4;
                 jbLocal.tickActive();
-            } else if (jbState.isEnabled() && !player.isOnGround() && !player.isFallFlying()) {
+            } else if (jbState.isEnabled() && !isOnGround(player) && !player.isFallFlying()) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
                 // and bring player to complete halt if flight stabilizers and not actively moving forward/sideways
                 boolean reallyHovering = !jbLocal.isSmartHover() || jbLocal.isHovering();
@@ -124,7 +126,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 if (reallyHovering) player.fallDistance = 0;
                 jetbootsAirUsage = reallyHovering ? (int) (ConfigHelper.common().armor.jetBootsAirUsage.get() * (player.isShiftKeyDown() ? 0.25F : 0.5F)) : 0;
                 jbLocal.resetAccel();
-            } else if (player.isOnGround()) {
+            } else if (isOnGround(player)) {
                 jbLocal.setHovering(false);
             } else {
                 jbLocal.resetAccel();
@@ -161,6 +163,20 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             commonArmorHandler.addAir(EquipmentSlot.FEET, -jetbootsAirUsage);
         }
         jbLocal.setPrevJetBootsAirUsage(jetbootsAirUsage);
+    }
+
+    private boolean isOnGround(Player player) {
+        if (player.isOnGround()) return true;
+        if (!player.level.isClientSide) {
+            // isOnGround() on server can be unreliable, especially if player flew into the ground
+            // this little kludge makes sure jetboots properly switch off on both client and server
+            BlockPos pos = player.getOnPos();
+            VoxelShape shape = player.level.getBlockState(pos).getCollisionShape(player.level, pos);
+            if (!shape.isEmpty()) {
+                return player.getBoundingBox().move(0, -0.01, 0).intersects(shape.bounds().move(pos));
+            }
+        }
+        return false;
     }
 
     @Override
