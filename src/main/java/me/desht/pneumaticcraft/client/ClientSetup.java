@@ -462,5 +462,6 @@ public class ClientSetup {
         cr.registerHandler(r.jetBootsHandler, new JetBootsClientHandler());
         cr.registerHandler(r.stepAssistHandler, new StepAssistClientHandler());
         cr.registerHandler(r.kickHandler, new KickClientHandler());
+        cr.registerHandler(r.stompHandler, new StompClientHandler());
     }
 }

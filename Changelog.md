@@ -12,8 +12,9 @@ This release is based on the latest 1.16.5 code, with the following changes and 
 
 ### New and Updated Gameplay Features
 * New armor upgrades:
-  * Ender Visor: Pneumatic Helmet upgrade to prevent Enderman aggro
+  * Ender Visor: Pneumatic Helmet upgrade (toggleable) to prevent Enderman aggro
   * Gilded: Pneumatic Armor upgrade (any slot) to prevent Piglin aggro
+  * Stomp: Pneumatic Boots upgrade: when active, if you hit the ground hard enough to engage the normal fall damage reduction, you also damage nearby mobs proportional to how fast you were moving (uses extra air per mob damaged)
 * There are now two types of global variable (as used by Drones, GPS Tools, Universal Sensors & Remotes)
   * Player-global variables, prefixed with a "#", are individual to each player on a server
   * Server-global variable, prefixed with a "%", are common to *all* players (this is how global variables worked in 1.16.5)

@@ -64,6 +64,7 @@ public enum ArmorUpgradeRegistry {
     public final JetBootsHandler jetBootsHandler;
     public final StepAssistHandler stepAssistHandler;
     public final KickHandler kickHandler;
+    public final StompHandler stompHandler;
 
     public static ArmorUpgradeRegistry getInstance() {
         return INSTANCE;
@@ -98,6 +99,7 @@ public enum ArmorUpgradeRegistry {
         jetBootsHandler = registerUpgradeHandler(new JetBootsHandler());
         stepAssistHandler = registerUpgradeHandler(new StepAssistHandler());
         kickHandler = registerUpgradeHandler(new KickHandler());
+        stompHandler = registerUpgradeHandler(new StompHandler());
     }
 
     public static void init() {
