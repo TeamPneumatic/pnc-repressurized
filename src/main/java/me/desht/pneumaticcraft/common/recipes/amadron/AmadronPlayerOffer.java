@@ -104,7 +104,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public void updatePlayerId() {
-        Player player = PneumaticCraftUtils.getPlayerFromName(offeringPlayerName);
+        ServerPlayer player = PneumaticCraftUtils.getPlayerFromName(offeringPlayerName);
         if (player != null) offeringPlayerId = player.getGameProfile().getId();
     }
 
@@ -123,9 +123,9 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     @Override
     public void onTrade(int tradingAmount, String buyingPlayer) {
-        Player player = PneumaticCraftUtils.getPlayerFromId(offeringPlayerId);
+        ServerPlayer player = PneumaticCraftUtils.getPlayerFromId(offeringPlayerId);
         if (player != null && ConfigHelper.common().amadron.notifyOfDealMade.get()) {
-            NetworkHandler.sendToPlayer(new PacketAmadronTradeNotifyDeal(this, tradingAmount, buyingPlayer), (ServerPlayer) player);
+            NetworkHandler.sendToPlayer(new PacketAmadronTradeNotifyDeal(this, tradingAmount, buyingPlayer), player);
         }
     }
 
@@ -135,7 +135,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public void notifyRestock() {
-        Player player = PneumaticCraftUtils.getPlayerFromId(getPlayerId());
+        ServerPlayer player = PneumaticCraftUtils.getPlayerFromId(getPlayerId());
         if (player != null) {
             player.displayClientMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked", getDescription(), getStock()), false);
         }

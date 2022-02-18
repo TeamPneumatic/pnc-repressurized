@@ -36,6 +36,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -391,11 +392,11 @@ public class PneumaticCraftUtils {
         stack.setCount(0);
     }
 
-    public static Player getPlayerFromId(UUID uuid) {
+    public static ServerPlayer getPlayerFromId(UUID uuid) {
         return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid);
     }
 
-    public static Player getPlayerFromName(String name) {
+    public static ServerPlayer getPlayerFromName(String name) {
         return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(name);
     }
 

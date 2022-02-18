@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class WidgetTextField extends EditBox implements ITooltipProvider {
-
     private final List<Component> tooltip = new ArrayList<>();
     private boolean passwordBox;
 

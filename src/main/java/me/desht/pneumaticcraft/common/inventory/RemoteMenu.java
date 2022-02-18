@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.core.BlockPos;
@@ -107,9 +108,9 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
             BlockPos newValue = GlobalVariableHelper.getPos(playerId, varName);
             if (newValue != null && !newValue.equals(lastValues[i])) {
                 lastValues[i] = newValue;
-                for (Object o : containerListeners) {
-                    if (o instanceof ServerPlayer sp)
-                        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), sp);
+                ServerPlayer serverPlayer = PneumaticCraftUtils.getPlayerFromId(playerId);
+                if (serverPlayer != null) {
+                    NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), serverPlayer);
                 }
             }
         }

@@ -168,6 +168,8 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
 
         return textField.keyPressed(keyCode, scanCode, modifiers)
                 || textField.canConsumeInput()
+                || comboBox.keyPressed(keyCode, scanCode, modifiers)
+                || comboBox.canConsumeInput()
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -258,11 +260,13 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
                     textField.setWidth(98);
                 }
                 textField.changeFocus(true);
+                setFocused(textField);
             } else {
                 comboBox.setElements(textOptions);
                 comboBox.setShouldSort(true);
                 comboBox.setFixedOptions(sensor.strictComboBox());
                 comboBox.setFocus(true);
+                setFocused(comboBox);
             }
         }
     }
@@ -287,7 +291,6 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
         } else if (comboBox.isVisible()) {
             te.setText(0, comboBox.getValue());
         }
-        te.setText(0, textField.getValue());
         NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
     }
 
