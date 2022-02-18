@@ -18,19 +18,25 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * Player-global variables, prefixed with a "#", are individual to each player on a server
   * Server-global variable, prefixed with a "%", are common to *all* players (this is how global variables worked in 1.16.5)
 * Drone programming: Foreach Coordinate widget no longer uses the special pos (0,0,0) to break the loop
-  * This was always dubious, since (0,0,0) could be valid in a void world, but even more so now in 1.18+ with altered build height limits
+  * This was always dubious, since (0,0,0) could be valid in a void world, but even more so now in 1.18+ with the new build height limits
   * Now, setting the control variable to any position outside the world build height breaks out of the foreach loop
 * There is a new pressure tier, informally known as "tier 1.5"
   * Danger air pressure of 10 bar, hard maximum of 12 bar
-  * This is available right away, but Reinforced Pressure Tubes need plastic to make
+  * This is available early on, but Reinforced Pressure Tubes need plastic to make
   * The Thermal Compressor is now a tier 1.5 compressor
-  * The Thermopneumatic Processing Plant is now a tier 1.5 machine
+  * The Thermopneumatic Processing Plant is now a tier 1.5 machine (but of course still works fine with tier 1 compressors)
   * Note that the Charging Station is still a tier 2 machine
     * Which means with a tier 1.5 Thermal Compressor, it is now possible to charge items to 10 bar before tier 2 is unlocked
   * Some default recipes have changed:
     * Diamond Drill Bit now needs 7.5 bar in the TPP (but can now mine 3x3, which previously required the Netherite Drill Bit)
-    * Netherite Drill Biot now requires a Diamond Drill Bit as well as a Netherite Ingot
+    * Netherite Drill Bit now requires a Diamond Drill Bit to craft, in addition to a Netherite Ingot
 * Minigun Item Life upgrades now restore ammo quite a bit faster (but air usage is increased to match)
+  * If you add the Unbreaking (any level) enchantment to your ammo item, it will no longer disappear when used up, allowing it to be repaired
+* New block: Smooth Plastic Construction Brick™
+  * Comes in the usual 16 dye colors
+  * Shapeless craft from standard Plastic Construction Brick™ (smelt to convert back to Plastic Sheets)
+  * Good for building
+  * Doesn't hurt to walk on; in fact, it increases your walk speed!
 
 ### QoL improvements
 * "Used by" tooltip for upgrades now scrolls if over 12 lines
