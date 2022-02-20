@@ -49,6 +49,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -169,6 +170,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()), ModCategoryUid.SPAWNER_EXTRACTION);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.HEAT_PIPE.get()), ModCategoryUid.HEAT_PROPERTIES);
         registration.addRecipeCatalyst(new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()), ModCategoryUid.MEMORY_ESSENCE);
+        registration.addRecipeCatalyst(new ItemStack(Blocks.TNT), ModCategoryUid.EXPLOSION_CRAFTING);
     }
 
     @Override
