@@ -28,8 +28,8 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
+import me.desht.pneumaticcraft.common.amadron.AmadronEventListener;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.amadron.EventHandlerAmadron;
 import me.desht.pneumaticcraft.common.commands.ModCommands;
 import me.desht.pneumaticcraft.common.config.ConfigHolder;
 import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
@@ -103,7 +103,7 @@ public class PneumaticCraftRepressurized {
         ModLootFunctions.init();
 
         forgeBus.register(new MiscEventHandler());
-        forgeBus.register(new EventHandlerAmadron());
+        forgeBus.register(new AmadronEventListener());
         forgeBus.register(new PneumaticArmorHandler());
         forgeBus.register(new UniversalSensorHandler());
         forgeBus.register(new DroneSpecialVariableHandler());

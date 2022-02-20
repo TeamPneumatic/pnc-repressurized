@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
@@ -121,8 +120,8 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
             ShoppingBasket savedBasket = AmadronTabletItem.loadShoppingCart(tablet);
 
             ShoppingBasket availableOffers = new ShoppingBasket();
-            activeOffers.forEach(offer -> availableOffers.setOffer(offer.getId(), Math.max(savedBasket.getUnits(offer.getId()), 1)));
-            availableOffers.cap(tablet, false);
+            activeOffers.forEach(offer -> availableOffers.setUnits(offer.getId(), Math.max(savedBasket.getUnits(offer.getId()), 1)));
+            availableOffers.validate(tablet, false);
 
             for (int i = 0; i < activeOffers.size(); i++) {
                 ResourceLocation offerId = activeOffers.get(i).getId();
@@ -132,7 +131,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 affordableOffers[i] = availableUnits > 0;
 
                 if (wantedUnits > 0 && availableUnits > 0) {
-                    shoppingBasket.setOffer(offerId, Math.min(availableUnits, wantedUnits));
+                    shoppingBasket.setUnits(offerId, Math.min(availableUnits, wantedUnits));
                     // delay packet sending since clientside container not open yet
                     Objects.requireNonNull(player.getServer()).tell(new TickTask(player.getServer().getTickCount(), () ->
                             NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, availableUnits), player))
@@ -152,27 +151,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
 
     public void updateBasket(ResourceLocation offerId, int amount) {
         // called clientside when PacketAmadronOrderResponse is received
-        shoppingBasket.setOffer(offerId, amount);
-    }
-
-    private void validatePurchasesCanFit() {
-        AmadronOfferManager offerManager = AmadronOfferManager.getInstance();
-
-        // An Amadrone has 35 inv upgrades, allowing 36 stacks of items and/or 576000mB of fluid to be carried
-        // One Amadrone is sent per basket offer, so this is calculated on a per-offer basis
-        for (ResourceLocation offerId : shoppingBasket) {
-            if (offerManager.isActive(offerId)) {
-                AmadronRecipe offer = offerManager.getOffer(offerId);
-                AmadronTradeResource outputResource = offer.getOutput();
-                int total = outputResource.totalSpaceRequired(shoppingBasket.getUnits(offerId));
-                problemState = problemState.addProblem(outputResource.apply(
-                        stack -> total > HARD_MAX_STACKS ? EnumProblemState.TOO_MANY_ITEMS : EnumProblemState.NO_PROBLEMS,
-                        fluidStack -> total > HARD_MAX_MB ? EnumProblemState.TOO_MUCH_FLUID : EnumProblemState.NO_PROBLEMS
-                ));
-                // TODO shrink the basket unit count to fit
-                if (problemState != EnumProblemState.NO_PROBLEMS) return;
-            }
-        }
+        shoppingBasket.setUnits(offerId, amount);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -207,9 +186,9 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
     }
 
     /**
-     * Run server-side to handle an offer being clicked.
-     * @param offerId numeric offer id; an index into the live offers list
-     * @param mouseButton mouse button
+     * Called server-side via PacketAmadronOrderUpdate to handle an offer being clicked.
+     * @param offerId the offer id
+     * @param mouseButton which mouse button
      * @param shiftPressed true if shift-clicked
      * @param player the player
      */
@@ -221,28 +200,25 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 shoppingBasket.remove(offerId);
             } else if (shiftPressed) {
                 if (mouseButton == 0) {
-                    // sneak-left-click: halve amount
+                    // shift-left-click: halve amount
                     shoppingBasket.halve(offerId);
                 } else {
-                    // sneak right-click: double amount (or set to 1 if 0)
-                    int cur = shoppingBasket.getUnits(offerId);
-                    shoppingBasket.addUnitsToOffer(offerId, cur == 0 ? 1 : cur);
+                    // shift-right-click: double amount (or set to 1 if 0)
+                    int units = shoppingBasket.getUnits(offerId);
+                    shoppingBasket.addUnitsToOffer(offerId, units == 0 ? 1 : units);
                 }
             } else {
-                // left or right-click
-                if (mouseButton == 0) {
-                    shoppingBasket.addUnitsToOffer(offerId, -1);
-                } else {
-                    shoppingBasket.addUnitsToOffer(offerId, 1);
-                }
+                // left-click (-1) or right-click (+1)
+                shoppingBasket.addUnitsToOffer(offerId, mouseButton == 0 ? -1 : 1);
             }
-            problemState = shoppingBasket.cap(player.getItemInHand(hand), true);
+            problemState = shoppingBasket.validate(player.getItemInHand(hand), true);
             if (problemState != EnumProblemState.NO_PROBLEMS) {
+                // sync the whole basket; modifications have been made
                 shoppingBasket.syncToPlayer(player);
+            } else {
+                // just sync the order that was updated
+                NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, shoppingBasket.getUnits(offerId)), player);
             }
-            NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, shoppingBasket.getUnits(offerId)), player);
-
-            validatePurchasesCanFit();
         }
         basketEmpty = shoppingBasket.isEmpty();
     }

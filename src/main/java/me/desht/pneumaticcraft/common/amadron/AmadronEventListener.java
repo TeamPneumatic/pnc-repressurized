@@ -44,7 +44,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventHandlerAmadron {
+public class AmadronEventListener {
     private static long reshuffleCounter = 0;
 
     @SubscribeEvent

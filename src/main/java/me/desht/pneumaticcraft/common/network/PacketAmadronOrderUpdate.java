@@ -55,8 +55,8 @@ public class PacketAmadronOrderUpdate {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
-            if (player != null && player.containerMenu instanceof AmadronMenu) {
-                ((AmadronMenu) player.containerMenu).clickOffer(orderId, mouseButton, sneaking, player);
+            if (player != null && player.containerMenu instanceof AmadronMenu a) {
+                a.clickOffer(orderId, mouseButton, sneaking, player);
             }
         });
         ctx.get().setPacketHandled(true);
