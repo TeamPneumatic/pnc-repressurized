@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.amadron;
 
 import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
@@ -52,7 +53,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
         if (subTag != null) {
             for (String key : subTag.getAllKeys()) {
                 int count = subTag.getInt(key);
-                if (count > 0) res.setOffer(new ResourceLocation(key), count);
+                if (count > 0) res.setUnits(new ResourceLocation(key), count);
             }
         }
         return res;
@@ -70,7 +71,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
         return basket.getOrDefault(offerId, 0);
     }
 
-    public void setOffer(ResourceLocation offerId, int units) {
+    public void setUnits(ResourceLocation offerId, int units) {
         basket.put(offerId, units);
     }
 
@@ -102,8 +103,16 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
     }
 
     /**
-     * Go through all items & fluids in the basket and ensure that the providing inventory/tank contains enough
-     * resources to fund all of the offers.
+     * Go through all items & fluids in the basket and ensure that:
+     * <ol>
+     * <li>the providing inventory/tank exists</li>
+     * <li>there's enough of the offer in stock, where applicable</li>
+     * <li>the providing inventory/tank contains enough resources to fund all of the offers</li>
+     * <li>the Amadrone has space to carry all resources (36 itemstacks and/or 576000mB fluid)</li>
+     * <li>there's enough space in the output</li>
+     * </ol>
+     * <p>
+     * The basket may be modified to make the order(s) valid
      *
      * @param tablet    the Amadron tablet, to get the inventory/tank locations
      * @param allOffers true to check all offers as one, false to check each individually
@@ -111,13 +120,8 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
     public EnumProblemState cap(ItemStack tablet, boolean allOffers) {
         if (basket.isEmpty()) return EnumProblemState.NO_PROBLEMS;  // simple case
 
-        EnumProblemState problem = EnumProblemState.NO_PROBLEMS;
-
         LazyOptional<IItemHandler> itemCap = ItemAmadronTablet.getItemCapability(tablet);
         LazyOptional<IFluidHandler> fluidCap = ItemAmadronTablet.getFluidCapability(tablet);
-
-        CountedItemStacks itemAmounts = itemCap.map(CountedItemStacks::new).orElse(new CountedItemStacks());
-        Map<Fluid, Integer> fluidAmounts = countFluids(fluidCap);
 
         // make sure the inventory and/or tank are actually present for each available offer
         if (basket.keySet().removeIf(offerId -> {
@@ -125,17 +129,22 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
             boolean inputOk = offer.getInput().apply(itemStack -> itemCap.isPresent(), fluidStack -> fluidCap.isPresent());
             boolean outputOk = offer.getOutput().apply(itemStack -> itemCap.isPresent(), fluidStack -> fluidCap.isPresent());
             return !inputOk || !outputOk;
-        })) problem = EnumProblemState.NO_INVENTORY;
+        })) return EnumProblemState.NO_INVENTORY;
+
+        CountedItemStacks itemAmounts = itemCap.map(CountedItemStacks::new).orElse(new CountedItemStacks());
+        Map<Fluid, Integer> fluidAmounts = countFluids(fluidCap);
+
+        EnumProblemState problem = EnumProblemState.NO_PROBLEMS;
 
         for (ResourceLocation offerId : basket.keySet()) {
             AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(offerId);
 
             // check there's enough in stock, if the order has limited stock
-            int units0 = basket.get(offerId);
+            int units0 = getUnits(offerId);
             int units;
             if (offer.getMaxStock() >= 0 && units0 > offer.getStock()) {
                 units = offer.getStock();
-                basket.put(offerId, units);
+                setUnits(offerId, units);
                 problem = offer.getStock() == 0 ? EnumProblemState.OUT_OF_STOCK : EnumProblemState.NOT_ENOUGH_STOCK;
             } else {
                 units = units0;
@@ -148,7 +157,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
                         int needed = itemStack.getCount() * units;
                         if (allOffers) itemAmounts.put(itemStack, available - needed);
                         if (available < needed) {
-                            basket.put(offerId, available / itemStack.getCount());
+                            setUnits(offerId, available / itemStack.getCount());
                             return EnumProblemState.NOT_ENOUGH_ITEMS;
                         }
                         return EnumProblemState.NO_PROBLEMS;
@@ -158,19 +167,25 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
                         int needed = fluidStack.getAmount() * units;
                         if (allOffers) fluidAmounts.put(fluidStack.getFluid(), available / fluidStack.getAmount());
                         if (available < needed) {
-                            basket.put(offerId, available / fluidStack.getAmount());
+                            setUnits(offerId, available / fluidStack.getAmount());
                             return EnumProblemState.NOT_ENOUGH_FLUID;
                         }
                         return EnumProblemState.NO_PROBLEMS;
                     }
             ));
 
+            // check there's enough space in the Amadrone for the order
+            problem = verifyDroneSpace(problem, offerId, offer.getInput());
+            if (problem == EnumProblemState.NO_PROBLEMS) {
+                problem = verifyDroneSpace(problem, offerId, offer.getOutput());
+            }
+
             // check there's enough space for the returned item/fluid in the output inventory/tank
             problem = problem.addProblem(offer.getOutput().apply(
                     itemStack -> {
                         int availableSpace = offer.getOutput().findSpaceInItemOutput(itemCap, units);
                         if (availableSpace < units) {
-                            basket.put(offerId, availableSpace);
+                            setUnits(offerId, Math.min(getUnits(offerId), availableSpace));
                             return EnumProblemState.NOT_ENOUGH_ITEM_SPACE;
                         }
                         return EnumProblemState.NO_PROBLEMS;
@@ -181,7 +196,7 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
                                 offer.getOutput().findSpaceInFluidOutput(fluidCap, units)
                         );
                         if (availableTrades < units) {
-                            basket.put(offerId, availableTrades);
+                            setUnits(offerId, Math.min(getUnits(offerId), availableTrades));
                             return EnumProblemState.NOT_ENOUGH_FLUID_SPACE;
                         }
                         return EnumProblemState.NO_PROBLEMS;
@@ -192,6 +207,28 @@ public class ShoppingBasket implements Iterable<ResourceLocation> {
         basket.keySet().removeIf(offerId -> basket.get(offerId) == 0);
 
         return problem;
+    }
+
+    private EnumProblemState verifyDroneSpace(EnumProblemState curProb, ResourceLocation offerId, AmadronTradeResource resource) {
+        return curProb.addProblem(resource.apply(
+                itemStack -> {
+                    int stacks = resource.totalSpaceRequired(getUnits(offerId));
+                    if (stacks > ContainerAmadron.HARD_MAX_STACKS) {
+                        int maxItems = ContainerAmadron.HARD_MAX_STACKS * itemStack.getMaxStackSize();
+                        setUnits(offerId, maxItems / itemStack.getCount());
+                        return EnumProblemState.TOO_MANY_ITEMS;
+                    }
+                    return EnumProblemState.NO_PROBLEMS;
+                },
+                fluidStack -> {
+                    int space = resource.totalSpaceRequired(getUnits(offerId));
+                    if (space > ContainerAmadron.HARD_MAX_MB) {
+                        setUnits(offerId, ContainerAmadron.HARD_MAX_MB / fluidStack.getAmount());
+                        return EnumProblemState.TOO_MUCH_FLUID;
+                    }
+                    return EnumProblemState.NO_PROBLEMS;
+                }
+        ));
     }
 
     public void syncToPlayer(ServerPlayerEntity player) {

@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
@@ -122,7 +121,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             ShoppingBasket savedBasket = ItemAmadronTablet.loadShoppingCart(tablet);
 
             ShoppingBasket availableOffers = new ShoppingBasket();
-            activeOffers.forEach(offer -> availableOffers.setOffer(offer.getId(), Math.max(savedBasket.getUnits(offer.getId()), 1)));
+            activeOffers.forEach(offer -> availableOffers.setUnits(offer.getId(), Math.max(savedBasket.getUnits(offer.getId()), 1)));
             availableOffers.cap(tablet, false);
 
             for (int i = 0; i < activeOffers.size(); i++) {
@@ -133,7 +132,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 affordableOffers[i] = availableUnits > 0;
 
                 if (wantedUnits > 0 && availableUnits > 0) {
-                    shoppingBasket.setOffer(offerId, Math.min(availableUnits, wantedUnits));
+                    shoppingBasket.setUnits(offerId, Math.min(availableUnits, wantedUnits));
                     // delay packet sending since clientside container not open yet
                     Objects.requireNonNull(player.getServer()).tell(new TickDelayedTask(player.getServer().getTickCount(), () ->
                             NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, availableUnits), player))
@@ -153,27 +152,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
     public void updateBasket(ResourceLocation offerId, int amount) {
         // called clientside when PacketAmadronOrderResponse is received
-        shoppingBasket.setOffer(offerId, amount);
-    }
-
-    private void validatePurchasesCanFit() {
-        AmadronOfferManager offerManager = AmadronOfferManager.getInstance();
-
-        // An Amadrone has 35 inv upgrades, allowing 36 stacks of items and/or 576000mB of fluid to be carried
-        // One Amadrone is sent per basket offer, so this is calculated on a per-offer basis
-        for (ResourceLocation offerId : shoppingBasket) {
-            if (offerManager.isActive(offerId)) {
-                AmadronRecipe offer = offerManager.getOffer(offerId);
-                AmadronTradeResource outputResource = offer.getOutput();
-                int total = outputResource.totalSpaceRequired(shoppingBasket.getUnits(offerId));
-                problemState = problemState.addProblem(outputResource.apply(
-                        stack -> total > HARD_MAX_STACKS ? EnumProblemState.TOO_MANY_ITEMS : EnumProblemState.NO_PROBLEMS,
-                        fluidStack -> total > HARD_MAX_MB ? EnumProblemState.TOO_MUCH_FLUID : EnumProblemState.NO_PROBLEMS
-                ));
-                // TODO shrink the basket unit count to fit
-                if (problemState != EnumProblemState.NO_PROBLEMS) return;
-            }
-        }
+        shoppingBasket.setUnits(offerId, amount);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -241,9 +220,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             if (problemState != EnumProblemState.NO_PROBLEMS) {
                 shoppingBasket.syncToPlayer(player);
             }
-            NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, shoppingBasket.getUnits(offerId)), player);
 
-            validatePurchasesCanFit();
+            NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, shoppingBasket.getUnits(offerId)), player);
         }
         basketEmpty = shoppingBasket.isEmpty();
     }
