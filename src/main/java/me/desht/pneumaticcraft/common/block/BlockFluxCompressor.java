@@ -85,4 +85,9 @@ public class BlockFluxCompressor extends BlockPneumaticCraft {
         Direction d = state.getValue(directionProperty());
         return SHAPES[d.get2DDataValue()];
     }
+
+    @Override
+    public VoxelShape getBlockSupportShape(BlockState pState, IBlockReader pReader, BlockPos pPos) {
+        return VoxelShapes.block();
+    }
 }
