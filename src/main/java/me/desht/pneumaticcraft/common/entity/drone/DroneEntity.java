@@ -53,6 +53,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundF
 import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
+import me.desht.pneumaticcraft.common.progwidgets.WidgetSerializer;
 import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
@@ -286,7 +287,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             getAirHandler().addAir(air);
             DroneItem droneItem = (DroneItem) droneStack.getItem();
             if (droneItem.canProgram(droneStack)) {
-                progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(stackTag);
+                progWidgets = WidgetSerializer.getWidgetsFromNBT(stackTag);
                 ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
             }
             setDroneColor(droneItem.getDroneColor(droneStack).getId());
@@ -309,7 +310,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         CompoundTag tag = new CompoundTag();
         tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
         if (((DroneItem) droneStack.getItem()).canProgram(droneStack)) {
-            ProgrammerBlockEntity.putWidgetsToNBT(progWidgets, tag);
+            WidgetSerializer.putWidgetsToNBT(progWidgets, tag);
         }
         tag.putInt("color", getDroneColor());
         if (!fluidTank.isEmpty()) {
@@ -950,7 +951,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
 
-        ProgrammerBlockEntity.putWidgetsToNBT(progWidgets, tag);
+        WidgetSerializer.putWidgetsToNBT(progWidgets, tag);
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
         tag.putBoolean("disabledByHacking", disabledByHacking);
@@ -996,7 +997,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(tag);
+        progWidgets = WidgetSerializer.getWidgetsFromNBT(tag);
         ProgrammerBlockEntity.updatePuzzleConnections(progWidgets);
         propSpeed = tag.getFloat("propSpeed");
         disabledByHacking = tag.getBoolean("disabledByHacking");

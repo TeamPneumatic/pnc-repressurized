@@ -112,10 +112,10 @@ public interface IProgWidget extends IProgWidgetBase {
     IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets);
 
     /**
-     * For "auxiliary" widgets that are added onto the left or right of another widget, get the type of the widget
+     * For parameter widgets that are added onto the left or right of another widget, get the type of the widget
      * being connected to.
      *
-     * @return the widget being connected to, or null if this widget isn't an "auxiliary" widget.
+     * @return the widget being connected to, or null if this widget isn't a parameter widget.
      */
     ProgWidgetType<?> returnType();
 

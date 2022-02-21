@@ -32,12 +32,10 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -118,7 +116,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     public List<IProgWidget> mergeWidgetsFromNBT(CompoundTag tag) {
-        List<IProgWidget> mergedWidgets = getWidgetsFromNBT(tag);
+        List<IProgWidget> mergedWidgets = WidgetSerializer.getWidgetsFromNBT(tag);
         List<IProgWidget> result = new ArrayList<>(progWidgets);
 
         if (!progWidgets.isEmpty() && !mergedWidgets.isEmpty()) {
@@ -174,39 +172,12 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
 
     public void readProgWidgetsFromNBT(CompoundTag tag) {
         progWidgets.clear();
-        progWidgets.addAll(getWidgetsFromNBT(tag));
+        progWidgets.addAll(WidgetSerializer.getWidgetsFromNBT(tag));
         updatePuzzleConnections(progWidgets);
     }
 
     public CompoundTag writeProgWidgetsToNBT(CompoundTag tag) {
-        putWidgetsToNBT(progWidgets, tag);
-        return tag;
-    }
-
-    public static List<IProgWidget> getWidgetsFromNBT(CompoundTag tag) {
-        List<IProgWidget> newWidgets = new ArrayList<>();
-        ListTag widgetTags = tag.getList(IProgrammable.NBT_WIDGETS, Tag.TAG_COMPOUND);
-        for (int i = 0; i < widgetTags.size(); i++) {
-            IProgWidget addedWidget = ProgWidget.fromNBT(widgetTags.getCompound(i));
-            if (addedWidget != null) {
-                if (addedWidget.isAvailable()) {
-                    newWidgets.add(addedWidget);
-                } else {
-                    Log.warning("ignoring unavailable widget type: " + addedWidget.getType());
-                }
-            }
-        }
-        return newWidgets;
-    }
-
-    public static CompoundTag putWidgetsToNBT(List<IProgWidget> widgets, CompoundTag tag) {
-        ListTag widgetTags = new ListTag();
-        for (IProgWidget widget : widgets) {
-            CompoundTag widgetTag = new CompoundTag();
-            widget.writeToNBT(widgetTag);
-            widgetTags.add(widgetTags.size(), widgetTag);
-        }
-        tag.put(IProgrammable.NBT_WIDGETS, widgetTags);
+        WidgetSerializer.putWidgetsToNBT(progWidgets, tag);
         return tag;
     }
 
@@ -322,7 +293,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
         CompoundTag nbt = stack.isEmpty() ? null : stack.getTag();
         if (nbt != null) {
-            List<IProgWidget> widgets = merge ? mergeWidgetsFromNBT(nbt) : getWidgetsFromNBT(nbt);
+            List<IProgWidget> widgets = merge ? mergeWidgetsFromNBT(nbt) : WidgetSerializer.getWidgetsFromNBT(nbt);
             setProgWidgets(widgets, null);
         } else {
             if (!merge) setProgWidgets(Collections.emptyList(), null);
@@ -412,7 +383,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
 
     public static List<IProgWidget> getProgWidgets(ItemStack iStack) {
         if (NBTUtils.hasTag(iStack, IProgrammable.NBT_WIDGETS)) {
-            return ProgrammerBlockEntity.getWidgetsFromNBT(Objects.requireNonNull(iStack.getTag()));
+            return WidgetSerializer.getWidgetsFromNBT(Objects.requireNonNull(iStack.getTag()));
         } else {
             return new ArrayList<>();
         }

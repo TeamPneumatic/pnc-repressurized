@@ -18,14 +18,12 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import net.minecraft.nbt.CompoundTag;
+import me.desht.pneumaticcraft.common.progwidgets.WidgetSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Received on: CLIENT
@@ -39,14 +37,14 @@ public class PacketSyncDroneEntityProgWidgets extends PacketDroneDebugBase {
         progWidgets = drone.getProgWidgets();
     }
 
-    PacketSyncDroneEntityProgWidgets(FriendlyByteBuf buffer) {
-        super(buffer);
-        progWidgets = ProgrammerBlockEntity.getWidgetsFromNBT(Objects.requireNonNull(buffer.readNbt()));
+    PacketSyncDroneEntityProgWidgets(FriendlyByteBuf buf) {
+        super(buf);
+        progWidgets = WidgetSerializer.readWidgetsFromPacket(buf);
     }
 
     public void toBytes(FriendlyByteBuf buf) {
         super.toBytes(buf);
-        buf.writeNbt(ProgrammerBlockEntity.putWidgetsToNBT(progWidgets, new CompoundTag()));
+        WidgetSerializer.writeProgWidgetsToPacket(progWidgets, buf);
     }
 
     @Override

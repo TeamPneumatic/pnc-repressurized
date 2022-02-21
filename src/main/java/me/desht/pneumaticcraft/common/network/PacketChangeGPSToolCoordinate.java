@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.IGPSToolSync;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,7 +46,7 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
 
     public PacketChangeGPSToolCoordinate(FriendlyByteBuf buf) {
         super(buf);
-        variable = buf.readUtf(32767);
+        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
         index = buf.readByte();
         hand = buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
     }

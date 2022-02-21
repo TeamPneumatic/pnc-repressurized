@@ -20,13 +20,11 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
-import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.common.progwidgets.WidgetSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -46,38 +44,13 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
 
     public PacketProgrammerUpdate(FriendlyByteBuf buffer) {
         super(buffer);
-        widgets = readWidgetsFromPacket(buffer);
+        widgets = WidgetSerializer.readWidgetsFromPacket(buffer);
     }
 
     @Override
     public void toBytes(FriendlyByteBuf buffer) {
         super.toBytes(buffer);
-        writeProgWidgetsToPacket(buffer);
-    }
-
-    private void writeProgWidgetsToPacket(FriendlyByteBuf buf) {
-        buf.writeVarInt(widgets.size());
-        for (IProgWidget progWidget : widgets) {
-            progWidget.writeToPacket(buf);
-        }
-    }
-
-    private static List<IProgWidget> readWidgetsFromPacket(FriendlyByteBuf buf) {
-        List<IProgWidget> widgets = new ArrayList<>();
-        int nWidgets = buf.readVarInt();
-        for (int i = 0; i < nWidgets; i++) {
-            try {
-                IProgWidget widget = ProgWidget.fromPacket(buf);
-                if (!widget.isAvailable()) {
-                    Log.warning("ignoring unavailable widget type " + widget.getTypeID().toString());
-                } else {
-                    widgets.add(widget);
-                }
-            } catch (IllegalStateException e) {
-                Log.warning(e.getMessage());
-            }
-        }
-        return widgets;
+        WidgetSerializer.writeProgWidgetsToPacket(widgets, buffer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -100,4 +73,5 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     public void handleLargePayload(Player player) {
         updateTE(player);
     }
+
 }
