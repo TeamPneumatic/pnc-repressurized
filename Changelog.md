@@ -24,6 +24,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pressure Chamber Interface sometimes rendering items in the wrong place
 * Fixed Mekanism dependency in mods.toml; PNC will now exit on game startup if Mekanism 10.0.x is installed, instead of crashing during the game
   * Reminder: if Mekanism is installed, then Mekanism version 10.1.x+ is *required*
+* Fixed Amadron allowing certain excessively large orders to be placed (which couldn't be fulfilled)
+  * E.g. ordering 500 buckets of lubricant with the default "5 emeralds per bucket" recipe needs 2500 emeralds, which is more than an Amadrone can carry (36 stacks max)
+  * Such orders are now properly capped, e.g. 460 buckets of lubricant is the max that can be ordered at a time
+* Redstone can now be placed on top of a Flux Compressor again
+  * This changed in 2.15.0 since the Flux Compressor now has a non-full-cube shape
+  * NOTE: this should be considered backwards compatibility to help with existing builds, and is unlikely to be carried through to 1.18+
 
 ## 2.15.2-303 (4th Feb 2022)
 
