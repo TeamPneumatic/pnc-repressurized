@@ -22,14 +22,16 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * This was always dubious, since (0,0,0) could be valid in a void world, but even more so now in 1.18+ with the new build height limits
   * Now, setting the control variable to any position outside the world build height breaks out of the foreach loop
 * There is a new pressure tier, informally known as "tier 1.5"
+  * It's intended to be optional, in that it's not required for progression to tier 2 technology but can be useful to unlock a few features before tier 2
   * Danger air pressure of 10 bar, hard maximum of 12 bar
-  * This is available early on, but Reinforced Pressure Tubes need plastic to make
+  * Available early on, but Reinforced Pressure Tubes need plastic to make
   * The Thermal Compressor is now a tier 1.5 compressor
   * The Thermopneumatic Processing Plant is now a tier 1.5 machine (but of course still works fine with tier 1 compressors)
   * Note that the Charging Station is still a tier 2 machine
     * Which means with a tier 1.5 Thermal Compressor, it is now possible to charge items to 10 bar before tier 2 is unlocked
+    * Charging Machine now accepts pressure from below, so it can be placed on top of a Thermal Compressor (but using Reinforced Pressure Tubes will likely make for tidier builds)
   * Some default recipes have changed:
-    * Diamond Drill Bit now needs 7.5 bar in the TPP (but can now mine 3x3, which previously required the Netherite Drill Bit)
+    * Diamond Drill Bit now needs 7.5 bar in the TPP (but can now mine 3x3, which previously required the Netherite Drill Bit, only available after Printed Circuit Boards)
     * Netherite Drill Bit now requires a Diamond Drill Bit to craft, in addition to a Netherite Ingot
 * Minigun Item Life upgrades now restore ammo quite a bit faster (but air usage is increased to match)
   * If you add the Unbreaking (any level) enchantment to your ammo item, it will no longer disappear when used up, allowing it to be repaired
@@ -52,6 +54,9 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * "Looks like offset" means it's a coordinate that's being added to another coordinate with a variable that was set in the very first Coordinate of the program.
 * Maximum screen roll when flying with Jet Boots is now configurable in client config
   * Default max is 35 degrees - configurable from 0 (no roll) up to 90 (bring your travel sickness pills)
+* Villager houses now use Compressed Stone rather than Reinforced Stone in their construction
+  * This makes them look more like they used to (before the 2.15.0 retexture)
+* Wall Lamp blocks are now waterloggable
 
 ### Configuration and Management
 * All PneumaticCraft commands are now under the common `/pncr` root, e.g. `/pncr dump_nbt`
