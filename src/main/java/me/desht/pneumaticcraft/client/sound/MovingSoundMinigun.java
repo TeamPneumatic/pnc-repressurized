@@ -132,7 +132,7 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
             if (bullet != null) {
                 switch (r.nextInt(8)) {
                     case 0 -> bullet.setColor(0.1f, 0.1f, 0.1f);
-                    case 1,2,3,4,5 -> bullet.setColor(1f, 0.25f + r.nextFloat(0.75f), 0f);
+                    case 1,2,3 -> bullet.setColor(1f, 0.25f + r.nextFloat(0.75f), 0f);
                     default -> {
                         float[] rgb = RenderUtils.decomposeColorF(minigun.getAmmoColor());
                         bullet.setColor(rgb[1], rgb[2], rgb[3]);

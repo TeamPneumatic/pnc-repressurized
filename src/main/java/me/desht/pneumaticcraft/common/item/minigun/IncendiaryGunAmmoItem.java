@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.item.minigun;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +61,11 @@ public class IncendiaryGunAmmoItem extends AbstractGunAmmoItem {
     @Override
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
         if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.incendiaryAmmoBlockIgniteChance.get())) {
-            PneumaticCraftUtils.tryPlaceBlock(minigun.getWorld(), brtr.getBlockPos().relative(brtr.getDirection()), minigun.getPlayer(), brtr.getDirection(), Blocks.FIRE.defaultBlockState());
+            BlockPos firePos = brtr.getBlockPos().relative(brtr.getDirection());
+            if (minigun.getWorld().getBlockState(firePos).isAir()) {
+                PneumaticCraftUtils.tryPlaceBlock(minigun.getWorld(), firePos, minigun.getPlayer(), brtr.getDirection(),
+                        Blocks.FIRE.defaultBlockState());
+            }
         }
         return super.onBlockHit(minigun, ammo, brtr);
     }

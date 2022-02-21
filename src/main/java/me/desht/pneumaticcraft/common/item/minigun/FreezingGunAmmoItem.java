@@ -67,8 +67,7 @@ public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
 
     @Override
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
-        if (target instanceof LivingEntity) {
-            LivingEntity living = (LivingEntity) target;
+        if (target instanceof LivingEntity living) {
             living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, living.getRandom().nextInt(40) + 40, 3));
             if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoEntityIceChance.get())) {
                 createFreezeCloud(minigun, target);
