@@ -597,27 +597,26 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
             if (launchedEntity == null) {
                 shootingInventory = true;
                 launchedEntity = getPayloadEntity();
-                if (launchedEntity instanceof PrimedTnt) {
-                    ((PrimedTnt) launchedEntity).setFuse(400); // long fuse, but will explode on contact
-                    trackedTNT.add((PrimedTnt) launchedEntity);
+                if (launchedEntity instanceof PrimedTnt tnt) {
+                    tnt.setFuse(400); // long fuse, but will explode on contact
+                    trackedTNT.add(tnt);
                 }
-                if (launchedEntity instanceof ItemEntity) {
+                if (launchedEntity instanceof ItemEntity itemEntity) {
                     itemHandler.setStackInSlot(CANNON_SLOT, ItemStack.EMPTY);
                     if (getUpgrades(ModUpgrades.BLOCK_TRACKER.get()) > 0) {
-                        trackedItems.add((ItemEntity) launchedEntity);
+                        trackedItems.add(itemEntity);
                     }
-                    ((ItemEntity) launchedEntity).setPickUpDelay(20);
+                    itemEntity.setPickUpDelay(20);
                 } else {
                     itemHandler.extractItem(CANNON_SLOT, 1, false);
                 }
-            } else if (launchedEntity instanceof Player) {
-                ServerPlayer entityplayermp = (ServerPlayer) launchedEntity;
-                if (entityplayermp.connection.getConnection().isConnected()) {
+            } else if (launchedEntity instanceof ServerPlayer serverPlayer) {
+                if (serverPlayer.connection.getConnection().isConnected()) {
                     // This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
                     // triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
                     // todo 1.14 reflection
-                    entityplayermp.isChangingDimension = true;
-                    entityplayermp.teleportTo(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 1.8D, getBlockPos().getZ() + 0.5D);
+                    serverPlayer.isChangingDimension = true;
+                    serverPlayer.teleportTo(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 1.8D, getBlockPos().getZ() + 0.5D);
                 }
             }
 
@@ -634,11 +633,11 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     private Entity getPayloadEntity() {
         Entity e = ItemLaunching.getEntityToLaunch(getLevel(), itemHandler.getStackInSlot(CANNON_SLOT), getFakePlayer(),
                 getUpgrades(ModUpgrades.DISPENSER.get()) > 0, false);
-        if (e instanceof ItemEntity) {
+        if (e instanceof ItemEntity itemEntity) {
             // 1200 ticks left to live = 60s
-            ((ItemEntity) e).age = 4800; //setAgeToCreativeDespawnTime();
+            itemEntity.age = 4800; //setAgeToCreativeDespawnTime();
             // + 30s per item life upgrade, to a max of 5 mins
-            ((ItemEntity) e).lifespan += Math.min(getUpgrades(ModUpgrades.ITEM_LIFE.get()) * 600, 4800);
+            itemEntity.lifespan += Math.min(getUpgrades(ModUpgrades.ITEM_LIFE.get()) * 600, 4800);
         }
         return e;
     }

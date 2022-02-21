@@ -66,7 +66,6 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
         return SHAPE;
     }
 
-    @org.jetbrains.annotations.Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new SmartChestBlockEntity(pPos, pState);

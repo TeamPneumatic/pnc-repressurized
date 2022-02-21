@@ -72,7 +72,7 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
             Block.box(14.5, 1, 9.75, 15.5, 8, 10.75),
             Block.box(0.5, 1, 3.5, 2.5, 4, 5.5),
             Block.box(14.5, 11, 1.5, 15.5, 12, 14.5)
-    ).reduce((v1, v2) -> {return Shapes.join(v1, v2, BooleanOp.OR);}).get();
+    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
 
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
