@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: PNC:R Discord Server
+    url: https://discord.gg/Zf5XwbfBRj
+    about: You're welcome to come and discuss the mod on Discord, but note that actual bug reports and enhancement requests should be raised as an issue here.

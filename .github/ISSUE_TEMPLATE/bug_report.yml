@@ -1,0 +1,56 @@
+name: Bug report
+description: If you find a bug, including crashes, please report it here.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Provide a summary of the issue in the Title above; no need to "[Tag]" it.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: |
+        Please describe as best as possible.
+        Always use the most recent version for your Minecraft version from [curseforge](https://www.curseforge.com/minecraft/mc-mods/pneumaticcraft-repressurized), it might already be fixed.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce the bug
+      description: |
+        Please provide clear steps to reproduce the bug here.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: |
+        Please provide a clear description of what you expect to happen here.
+    validations:
+      required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional details
+      description: |
+        You can add extra optional information here.
+  - type: dropdown
+    id: minecraft
+    attributes:
+      label: Which Minecraft version are you using?
+      options:
+        - "1.18"
+        - "1.16"
+        - "1.12 - UNSUPPORTED"
+    validations:
+      required: true
+  - type: input
+    id: crashlog
+    attributes:
+      label: Crash log
+      description: |
+        Provide a link to a crashlog. E.g. on [Gist](https://gist.github.com/), [pastebin](https://pastebin.com/), or similar.
+        If it is not a crash report, you can leave this empty.
