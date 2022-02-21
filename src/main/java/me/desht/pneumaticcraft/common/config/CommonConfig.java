@@ -78,8 +78,8 @@ public class CommonConfig {
     public static class Integration {
         public ForgeConfigSpec.DoubleValue mekThermalEfficiencyFactor;
         public ForgeConfigSpec.DoubleValue mekThermalResistanceFactor;
-        public ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerRF;
-        public ForgeConfigSpec.IntValue ieExternalHeaterRFperTick;
+        public ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerFE;
+        public ForgeConfigSpec.IntValue ieExternalHeaterFEperTick;
         public ForgeConfigSpec.DoubleValue cofhHoldingMultiplier;
     }
     public static class Advanced {
@@ -522,14 +522,14 @@ public class CommonConfig {
         builder.pop();
 
         builder.push("Integration");
-        integration.ieExternalHeaterHeatPerRF = builder
-                .comment("Immersive Engineering: External Heater heat/RF.  The amount of PneumaticCraft heat added by 1 RF.")
-                .translation("pneumaticcraft.config.common.integration.ie_external_heater_heat_per_rf")
-                .defineInRange("ie_external_heater_heat_per_rf", 0.01, 0.0, Double.MAX_VALUE);
-        integration.ieExternalHeaterRFperTick = builder
-                .comment("Immersive Engineering: External Heater RF/t. Set to 0 to disable External Heater integration entirely.")
-                .translation("pneumaticcraft.config.common.integration.ie_external_heater_r_fper_tick")
-                .defineInRange("ie_external_heater_r_fper_tick", 100, 0, Integer.MAX_VALUE);
+        integration.ieExternalHeaterHeatPerFE = builder
+                .comment("Immersive Engineering: External Heater heat/FE.  The amount of PneumaticCraft heat added by using 1 FE in the heater.")
+                .translation("pneumaticcraft.config.common.integration.ie_external_heater_heat_per_fe")
+                .defineInRange("ie_external_heater_heat_per_fe", 0.01, 0.0, Double.MAX_VALUE);
+        integration.ieExternalHeaterFEperTick = builder
+                .comment("Immersive Engineering: External Heater FE/t. Set to 0 to disable External Heater integration entirely.")
+                .translation("pneumaticcraft.config.common.integration.ie_external_heater_fe_per_tick")
+                .defineInRange("ie_external_heater_fe_per_tick", 100, 0, Integer.MAX_VALUE);
         integration.mekThermalResistanceFactor = builder
                 .comment("Mekanism thermal resistance multiplier. Larger values mean slower heat transfer between Mekanism and PneumaticCraft blocks.")
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_resistance_factor")
@@ -539,14 +539,14 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_efficiency_factor")
                 .defineInRange("mek_thermal_conversion_efficiency", 0.01, 0.0, 2.0);
         integration.cofhHoldingMultiplier = builder
-                .comment("Volume boost multiplier for pressurizable items with the CoFH Holding enchantment; air volume is multiplied by (1 + level_of_holding_enchantment) x this value. Set to 0 to disallow pressurizable items by enchanted with the Holding enchantment at all.")
+                .comment("Volume boost multiplier for pressurizable items with the CoFH Holding enchantment; air volume is multiplied by (1 + level_of_holding_enchantment) x this value. Set to 0 to disallow pressurizable items being enchanted with the Holding enchantment at all.")
                 .translation("pneumaticcraft.config.common.integration.cofh_holding_multiplier")
                 .defineInRange("cofh_holding_multiplier", 1.0, 0.0, Double.MAX_VALUE);
         builder.pop();
 
         builder.push("Recipes");
         recipes.inWorldPlasticSolidification = builder
-                .comment("Does Molten Plastic solidify to Plastic Sheets when poured into the world? If set to false, then Heat Frame cooling is the only other default way to make Plastic Sheets.")
+                .comment("Does Molten Plastic solidify to Plastic Sheets when poured into the world? If set to false, then Heat Frame cooling is the only other way to make Plastic Sheets (by default).")
                 .translation("pneumaticcraft.config.common.recipes.in_world_plastic_solidification")
                 .define("in_world_plastic_solidification", true);
         recipes.inWorldYeastCrafting = builder
@@ -557,7 +557,7 @@ public class CommonConfig {
 
         builder.push("Amadron");
         amadron.numPeriodicOffers = builder
-                .comment("Number of periodic offers randomly selected for the 'live' offer list. Note: this a maximum, and the actual number chosen each time may be less.")
+                .comment("Number of periodic offers randomly selected for the 'live' offer list. Note: this a maximum, and the actual number chosen each time may be less. Periodic offers are those offers which have a static: false field in their recipe JSON.")
                 .translation("pneumaticcraft.config.common.amadron.num_periodic_offers")
                 .defineInRange("numPeriodicOffers", 10,0, Integer.MAX_VALUE);
         amadron.numVillagerOffers = builder
@@ -569,15 +569,15 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.amadron.reshuffle_interval")
                 .defineInRange("reshuffleInterval", 24000,1000, Integer.MAX_VALUE);
         amadron.maxTradesPerPlayer = builder
-                .comment("Max number of custom trades a player may add")
+                .comment("Max number of custom trades a (non-admin) player may add")
                 .translation("pneumaticcraft.config.common.amadron.max_trades_per_player")
                 .defineInRange("max_trades_per_player", 50, 0, Integer.MAX_VALUE);
         amadron.notifyOfTradeAddition = builder
-                .comment("Broadcast a notification when player adds a custom trade")
+                .comment("Broadcast a notification when any player adds a custom trade")
                 .translation("pneumaticcraft.config.common.amadron.notify_of_trade_addition")
                 .define("notify_of_trade_addition", true);
         amadron.notifyOfTradeRemoval = builder
-                .comment("Broadcast a notification when player removes a custom trade")
+                .comment("Broadcast a notification when any player removes a custom trade")
                 .translation("pneumaticcraft.config.common.amadron.notify_of_trade_removal")
                 .define("notify_of_trade_removal", true);
         amadron.notifyOfDealMade = builder

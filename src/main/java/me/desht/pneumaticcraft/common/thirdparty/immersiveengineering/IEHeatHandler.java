@@ -39,8 +39,8 @@ class IEHeatHandler {
         @Override
         public int doHeatTick(int energyAvailable, boolean redstone) {
             return blockEntity.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).map(handler -> {
-                int rfPerTick = ConfigHelper.common().integration.ieExternalHeaterRFperTick.get();
-                double heatPerRF = ConfigHelper.common().integration.ieExternalHeaterHeatPerRF.get();
+                int rfPerTick = ConfigHelper.common().integration.ieExternalHeaterFEperTick.get();
+                double heatPerRF = ConfigHelper.common().integration.ieExternalHeaterHeatPerFE.get();
                 if (energyAvailable >= rfPerTick) {
                     handler.addHeat(rfPerTick * heatPerRF);
                     return rfPerTick;

@@ -18,48 +18,47 @@
 package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
-import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
 import me.desht.pneumaticcraft.common.harvesting.HarvestHandlerCactusLike;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ImmersiveEngineering implements IThirdParty {
-    @SuppressWarnings("FieldMayBeFinal")
-    @ObjectHolder("immersiveengineering:hemp")
-    private static Block HEMP_BLOCK = null;
+    private static final ResourceLocation HEMP_BLOCK = new ResourceLocation("immersiveengineering:hemp");
 
     @Override
     public void init() {
         MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
+        MinecraftForge.EVENT_BUS.register(ExternalHeatCapListener.class);
+        FMLJavaModLoadingContext.get().getModEventBus().register(HarvestListener.class);
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class Listener {
+    public static class HarvestListener {
         @SubscribeEvent
         public static void registerHarvestHandler(RegistryEvent.Register<HarvestHandler> event) {
-            if (HEMP_BLOCK == null && ModList.get().isLoaded(ModIds.IMMERSIVE_ENGINEERING)) {
+            final Block hempBlock = ForgeRegistries.BLOCKS.getValue(HEMP_BLOCK);
+            if (hempBlock != null && hempBlock != Blocks.AIR) {
+                event.getRegistry().register(new HarvestHandlerCactusLike(state -> state.getBlock() == hempBlock)
+                        .setRegistryName(RL("ie_hemp")));
+            } else {
                 Log.error("block 'immersiveengineering:hemp' did not get registered? PneumaticCraft drone harvesting won't work!");
             }
-            event.getRegistry().register(new HarvestHandlerCactusLike(state -> HEMP_BLOCK != null && state.getBlock() == HEMP_BLOCK)
-                    .setRegistryName(RL("ie_hemp")));
         }
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
-    public static class ForgeListener {
+    public static class ExternalHeatCapListener {
         @SubscribeEvent
         public static void attachExternalHeatHandler(AttachCapabilitiesEvent<BlockEntity> event) {
             if (event.getObject() instanceof IHeatExchangingTE) {
