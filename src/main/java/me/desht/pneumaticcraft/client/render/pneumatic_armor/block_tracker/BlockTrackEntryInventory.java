@@ -26,21 +26,25 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.properties.ChestType;
 import net.minecraft.tileentity.ChestTileEntity;
+import net.minecraft.tileentity.EnderChestTileEntity;
+import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
     private static final ResourceLocation ID = RL("block_tracker.module.inventories");
@@ -54,12 +58,16 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
         return te != null
                 && !TrackerBlacklistManager.isInventoryBlacklisted(te)
-                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                && (te instanceof LockableLootTileEntity || te instanceof EnderChestTileEntity || IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
                 && !MinecraftForge.EVENT_BUS.post(new InventoryTrackEvent(te));
     }
 
     @Override
     public List<BlockPos> getServerUpdatePositions(TileEntity te) {
+        if (te instanceof LockableLootTileEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) {
+            // lootr chests can be like this
+            return Collections.emptyList();
+        }
         List<BlockPos> res = new ArrayList<>();
         if (te instanceof ChestTileEntity && te.getBlockState().getValue(ChestBlock.TYPE) == ChestType.LEFT) {
             Direction dir = ChestBlock.getConnectedDirection(te.getBlockState());
@@ -88,9 +96,8 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
                     inventoryStacks[i] = iStack;
                 }
                 if (empty) {
-                    infoList.add(new StringTextComponent("Contents: Empty"));
+                    infoList.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.ITALIC));
                 } else {
-                    infoList.add(new StringTextComponent("Contents:"));
                     List<ITextComponent> l = new ArrayList<>();
                     PneumaticCraftUtils.summariseItemStacks(l, inventoryStacks);
                     infoList.addAll(l);

@@ -85,6 +85,7 @@ public class RenderBlockTarget {
         ITextComponent title = stack.isEmpty() ? xlate(world.getBlockState(pos).getBlock().getDescriptionId()) : stack.getHoverName();
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, HUDHandler.getInstance().getStatOverlayColor(), null, false);
         stat.setMinimumContractedDimensions(0, 0);
+        stat.setMinimumExpandedDimensions(16, 16);
         stat.setAutoLineWrap(false);
     }
 
