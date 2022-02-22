@@ -49,6 +49,7 @@ import net.minecraft.util.IItemProvider;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
@@ -573,7 +574,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
         // no subwidget drawing in 3d rendering
 
-        if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
+        if (renderHeight >= 12 && renderWidth > 16 && statIcon != null) {
             statIcon.render3d(matrixStack, buffer, renderBaseX, renderEffectiveY);
         }
     }
@@ -811,9 +812,14 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
         public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, int x, int y) {
             texture.ifLeft(stack -> {
+                matrixStack.pushPose();
+                matrixStack.translate(x + 8 , y + 8, 0);
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
+                matrixStack.scale(15, 15, 1);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 IBakedModel ibakedmodel = itemRenderer.getModel(stack, ClientUtils.getClientWorld(), null);
-                itemRenderer.render(stack, ItemCameraTransforms.TransformType.FIXED, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                itemRenderer.render(stack, ItemCameraTransforms.TransformType.GUI, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                matrixStack.popPose();
             }).ifRight(resLoc ->
                     RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(resLoc),
                             (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, RenderUtils.FULL_BRIGHT)));
