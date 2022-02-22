@@ -23,7 +23,7 @@ import mcp.mobius.waila.api.IServerDataProvider;
 import mcp.mobius.waila.api.ITooltip;
 import mcp.mobius.waila.api.config.IPluginConfig;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -32,18 +32,18 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -63,8 +63,19 @@ public class PneumaticProvider {
                 beInfo = blockEntity;
             }
             if (beInfo != null) {
-                beInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
-                        .ifPresent(h -> compoundTag.putFloat("pressure", h.getPressure()));
+                Set<IAirHandlerMachine> set = new LinkedHashSet<>();
+                beInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(set::add);
+                for (Direction d : DirectionUtil.VALUES) {
+                    beInfo.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d).ifPresent(set::add);
+                }
+                ListTag l = new ListTag();
+                for (IAirHandlerMachine h : set) {
+                    ListTag l2 = new ListTag();
+                    l2.add(FloatTag.valueOf(h.getPressure()));
+                    l2.add(FloatTag.valueOf(h.getDangerPressure()));
+                    l.add(l2);
+                }
+                compoundTag.put("pressure", l);
 
                 if (beInfo.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
                     compoundTag.put("heatData", new TemperatureData(beInfo).toNBT());
@@ -87,16 +98,18 @@ public class PneumaticProvider {
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
             CompoundTag tag = blockAccessor.getServerData();
             BlockEntity te = blockAccessor.getBlockEntity();
-            if (te instanceof IInfoForwarder){
+            if (te instanceof IInfoForwarder) {
                 BlockPos infoPos = new BlockPos(tag.getInt("infoX"), tag.getInt("infoY"), tag.getInt("infoZ"));
                 te = blockAccessor.getLevel().getBlockEntity(infoPos);
             }
             if (te != null) {
-                te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
-                    if (h instanceof MachineAirHandler) {
-                        addTipToMachine(iTooltip, (MachineAirHandler) h, tag.getFloat("pressure"));
-                    }
-                });
+                ListTag l = tag.getList("pressure", Tag.TAG_LIST);
+                for (int i = 0; i < l.size(); i++) {
+                    ListTag l2 = l.getList(i);
+                    String pressureStr = PneumaticCraftUtils.roundNumberTo(l2.getFloat(0), 2);
+                    String dangerPressureStr = PneumaticCraftUtils.roundNumberTo(l2.getFloat(1), 1);
+                    iTooltip.add(xlate("pneumaticcraft.gui.tooltip.pressureMax", pressureStr, dangerPressureStr));
+                }
                 handleHeatData(iTooltip, tag);
                 if (blockAccessor.getPlayer().isCrouching()) {
                     handleFluidData(iTooltip, tag);
@@ -128,17 +141,6 @@ public class PneumaticProvider {
                 } else if (tempData.hasData(null)) {
                     tooltip.add(HeatUtil.formatHeatString((int) tempData.getTemperature(null)));
                 }
-            }
-        }
-
-        private void addTipToMachine(ITooltip tooltip, MachineAirHandler airHandler, float pressure) {
-            Map<String, String> values = new HashMap<>();
-
-            values.put("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 2));
-            values.put("pneumaticcraft.gui.tooltip.maxPressure", PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1));
-
-            for (Map.Entry<String, String> entry : values.entrySet()) {
-                tooltip.add(new TranslatableComponent(entry.getKey(), entry.getValue()));
             }
         }
     }

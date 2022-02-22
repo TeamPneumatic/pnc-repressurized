@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "tag": "pneumaticcraft:upgrade_components"
+    },
+    "X": {
+      "item": "minecraft:piston"
+    },
+    "C": {
+      "item": "minecraft:tnt"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:stomp_upgrade"
+  }
+}

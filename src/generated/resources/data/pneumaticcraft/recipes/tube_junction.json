@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IPI",
+    "PPP",
+    "IPI"
+  ],
+  "key": {
+    "I": {
+      "item": "pneumaticcraft:reinforced_brick_wall"
+    },
+    "P": {
+      "item": "pneumaticcraft:pressure_tube"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:tube_junction"
+  }
+}

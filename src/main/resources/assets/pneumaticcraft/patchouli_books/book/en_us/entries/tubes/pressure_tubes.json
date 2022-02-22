@@ -24,12 +24,16 @@
     },
     {
       "type": "text",
-      "text": "There are two $(l:base_concepts/pressure_tiers)tiers/$ of tube:$(br)$(li)Tier 1 tubes are very simple to craft. They can contain up to 5 bar of pressure, and have a capacity of 1000mL of air.$(li)Advanced Pressure Tubes require an $(l:manufacturing/assembly_system)Assembly Controller/$ to manufacture. They can contain up to 20 bar of pressure and have a capacity of 4000mL of air."
+      "text": "There are three $(l:base_concepts/pressure_tiers)tiers/$ of tube:$(br)$(li)Tier 1 tubes can contain up to 5 bar of pressure, and have a capacity of 1000mL of air.$(li)Tier 1.5 (Reinforced) tubes can handle up to 10 bar of pressure and also have a capacity of 1000mL.$(li)Tier 2 (Advanced) tubes can handle up to 20 bar of pressure and have a capacity of 4000mL of air."
     },
     {
       "type": "crafting",
       "text": "Crafting a Pressure Tube",
       "recipe": "pneumaticcraft:pressure_tube"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/reinforced_pressure_tube"
     },
     {
       "anchor": "advanced",

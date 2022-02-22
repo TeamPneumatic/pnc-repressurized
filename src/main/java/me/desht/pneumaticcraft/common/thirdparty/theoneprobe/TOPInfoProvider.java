@@ -23,6 +23,7 @@ import mcjty.theoneprobe.api.ProbeMode;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IRedstoneControl;
@@ -50,7 +51,9 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -59,14 +62,14 @@ public class TOPInfoProvider {
 
     static void handleBlock(ProbeMode mode, IProbeInfo probeInfo, Player player, Level world, IProbeHitData data) {
         BlockEntity te = world.getBlockEntity(data.getPos());
-        if (te instanceof IInfoForwarder) {
-            te = ((IInfoForwarder)te).getInfoBlockEntity();
+        if (te instanceof IInfoForwarder f) {
+            te = f.getInfoBlockEntity();
         }
 
         if (te == null) return;
 
         if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
-            handlePneumatic(mode, probeInfo, te);
+            handlePneumatic(mode, probeInfo, te, data);
         }
         if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
             handleHeat(mode, probeInfo, te);
@@ -98,22 +101,28 @@ public class TOPInfoProvider {
         }
     }
 
-    private static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, BlockEntity pneumaticMachine) {
-        pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
-            String pressure = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2);
-            String dangerPressure = PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1);
-            probeInfo.text(xlate("pneumaticcraft.gui.tooltip.maxPressure", dangerPressure).withStyle(COLOR));
-            if (mode == ProbeMode.EXTENDED) {
-                probeInfo.text(new TextComponent("Pressure:").withStyle(COLOR));
-                probeInfo.horizontal()
-                        .element(new ElementPressure(pneumaticMachine, airHandler))
-                        .vertical()
-                        .text(TextComponent.EMPTY)
-                        .text(new TextComponent(" " + Symbols.ARROW_LEFT_SHORT + " " + pressure + " bar"));
-            } else {
-                probeInfo.text(xlate("pneumaticcraft.gui.tooltip.pressure", pressure));
-            }
-        });
+    private static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, BlockEntity pneumaticMachine, IProbeHitData data) {
+        Set<IAirHandlerMachine> set = new LinkedHashSet<>();
+        pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(set::add);
+        for (Direction d : DirectionUtil.VALUES) {
+            pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d).ifPresent(set::add);
+        }
+        for (IAirHandlerMachine h : set) {
+            addPressureInfo(mode, probeInfo, pneumaticMachine, h);
+        }
+    }
+
+    private static void addPressureInfo(ProbeMode mode, IProbeInfo probeInfo, BlockEntity pneumaticMachine, IAirHandlerMachine airHandler) {
+        String pressure = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2);
+        String dangerPressure = PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 2);
+        probeInfo.text(xlate("pneumaticcraft.gui.tooltip.pressureMax", pressure, dangerPressure).withStyle(COLOR));
+        if (mode == ProbeMode.EXTENDED) {
+            probeInfo.horizontal()
+                    .element(new ElementPressure(pneumaticMachine, airHandler))
+                    .vertical()
+                    .text(TextComponent.EMPTY)
+                    .text(new TextComponent(" " + Symbols.ARROW_LEFT_SHORT + " " + pressure + " bar"));
+        }
     }
 
     private static void handleHeat(ProbeMode mode, IProbeInfo probeInfo, BlockEntity heatExchanger) {

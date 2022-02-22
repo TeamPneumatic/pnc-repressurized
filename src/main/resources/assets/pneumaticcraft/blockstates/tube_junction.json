@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "axis=y": { "model": "pneumaticcraft:block/tube_junction" },
+    "axis=z": { "model": "pneumaticcraft:block/tube_junction", "x":  90 },
+    "axis=x": { "model": "pneumaticcraft:block/tube_junction", "x":  90, "y": 90 }
+  }
+}

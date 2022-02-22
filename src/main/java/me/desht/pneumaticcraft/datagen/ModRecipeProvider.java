@@ -872,6 +872,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 Blocks.HOPPER, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).save(consumer);
 
+        shaped(ModBlocks.TUBE_JUNCTION.get(), ModBlocks.PRESSURE_TUBE.get(),
+                "IPI/PPP/IPI",
+                'I', ModBlocks.REINFORCED_BRICK_WALL.get(),
+                'P', ModBlocks.PRESSURE_TUBE.get()
+        ).save(consumer);
+
         shaped(ModItems.TURBINE_ROTOR.get(), ModItems.TURBINE_BLADE.get(),
                 " B / I /B B",
                 'B', ModItems.TURBINE_BLADE.get(),
@@ -971,6 +977,7 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(ModUpgrades.SPEED.get(), FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), Items.SUGAR).save(consumer);
         standardUpgrade(ModUpgrades.SPEED.get(), 2, FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), ModItems.GLYCEROL.get()).save(consumer, RL("speed_upgrade_from_glycerol"));
         standardUpgrade(ModUpgrades.STANDBY.get(), ItemTags.BEDS, Items.REDSTONE_TORCH).save(consumer);
+        standardUpgrade(ModUpgrades.STOMP.get(), Blocks.TNT, Blocks.PISTON).save(consumer);
         standardUpgrade(ModUpgrades.VOLUME.get(), ModItems.AIR_CANISTER.get(), PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
 
         // non-standard upgrade patterns

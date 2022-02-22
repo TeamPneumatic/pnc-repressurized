@@ -202,6 +202,8 @@ public class ModBlocks {
             EmptySpawnerBlock::new);
     public static final RegistryObject<PressurizedSpawnerBlock> PRESSURIZED_SPAWNER = register("pressurized_spawner",
             PressurizedSpawnerBlock::new);
+    public static final RegistryObject<TubeJunctionBlock> TUBE_JUNCTION = register("tube_junction",
+            TubeJunctionBlock::new);
 
     public static final List<RegistryObject<PlasticBrickBlock>> PLASTIC_BRICKS = new ArrayList<>();
     public static final List<RegistryObject<SmoothPlasticBrickBlock>> SMOOTH_PLASTIC_BRICKS = new ArrayList<>();

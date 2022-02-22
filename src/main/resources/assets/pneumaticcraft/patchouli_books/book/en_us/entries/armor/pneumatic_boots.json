@@ -41,7 +41,12 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:flippers_upgrade",
-      "text":  "With a Flippers Upgrade installed, you will enjoy a moderate benefit to your swim speed. This has no extra air cost, so is a much cheaper alternative to the Jet Boots when in the water."
+      "text":  "With a $(l:base_concepts/upgrades#flippers)Flippers Upgrade/$ installed, you will enjoy a moderate benefit to your swim speed. This has no extra air cost, so is a much cheaper alternative to the Jet Boots when in the water."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:stomp_upgrade",
+      "text":  "With a $(l:base_concepts/upgrades#stomp)Stomp Upgrade/$ installed and active, you can rain destruction down on your foes. If you hit the ground fast enough to take damage (even if that damage is absorbed by your boots), nearby mobs will be injured, proportionally to how fast you arrived. This uses up some air for each mob that was injured thus."
     }
   ]
 }

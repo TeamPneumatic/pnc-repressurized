@@ -213,6 +213,12 @@
             "anchor": "ender_visor",
             "recipe": "pneumaticcraft:ender_visor_upgrade",
             "text": "Crafting an Ender Visor Upgrade"
+        },
+        {
+            "type": "crafting",
+            "anchor": "stomp",
+            "recipe": "pneumaticcraft:stomp_upgrade",
+            "text": "Crafting a Stomp Upgrade"
         }
     ]
 }
