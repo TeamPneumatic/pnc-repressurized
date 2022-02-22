@@ -234,8 +234,8 @@ public class PneumaticCraftUtils {
      * @param textList string list to add information to
      * @param originalStacks array of item stacks to sort & combine
      */
-    public static void summariseItemStacks(List<Component> textList, ItemStack[] originalStacks) {
-        summariseItemStacks(textList, originalStacks, Symbols.bullet().getString());
+    public static List<Component> summariseItemStacks(List<Component> textList, ItemStack[] originalStacks) {
+        return summariseItemStacks(textList, originalStacks, Symbols.bullet().getString());
     }
 
     /**
@@ -247,7 +247,7 @@ public class PneumaticCraftUtils {
      * @param originalStacks array of item stacks to sort & combine
      * @param prefix prefix string to prepend to each line of output
      */
-    public static void summariseItemStacks(List<Component> textList, ItemStack[] originalStacks, String prefix) {
+    public static List<Component> summariseItemStacks(List<Component> textList, ItemStack[] originalStacks, String prefix) {
         ItemStack[] stacks = Arrays.copyOf(originalStacks, originalStacks.length);
 
         Arrays.sort(stacks, (o1, o2) -> o1.getHoverName().getString().compareToIgnoreCase(o2.getHoverName().getString()));
@@ -276,6 +276,7 @@ public class PneumaticCraftUtils {
             addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString());
             summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + Symbols.ARROW_DOWN_RIGHT + " ");
         }
+        return textList;
     }
 
     private static void addText(List<Component> l, String s) {

@@ -22,6 +22,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Matrix3f;
+import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
@@ -828,9 +829,14 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
         public void render3d(PoseStack matrixStack, MultiBufferSource buffer, int x, int y) {
             texture.ifLeft(stack -> {
+                matrixStack.pushPose();
+                matrixStack.translate(x + 8 , y + 8, 0);
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
+                matrixStack.scale(15, 15, 1);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                BakedModel bakedModel = itemRenderer.getModel(stack, ClientUtils.getClientLevel(), null, 0);
-                itemRenderer.render(stack, ItemTransforms.TransformType.FIXED, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, bakedModel);
+                BakedModel ibakedmodel = itemRenderer.getModel(stack, ClientUtils.getClientLevel(), null, 0);
+                itemRenderer.render(stack, ItemTransforms.TransformType.GUI, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                matrixStack.popPose();
             }).ifRight(resLoc ->
                     RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(resLoc),
                             (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, RenderUtils.FULL_BRIGHT)));

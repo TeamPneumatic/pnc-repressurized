@@ -54,12 +54,11 @@ public interface IBlockTrackEntry {
     boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te);
 
     /**
-     * This method controls whether the block should be updated by the server (at 5
-     * second intervals). This is specifically aimed at Tile Entities, as the server will
-     * send an NBT packet. Return an empty list if no updates are needed, otherwise a
-     * list of the block positions for which updates should be sent (in most cases,
-     * only the BE's own block pos, but potentially others for multiblocks like the
-     * vanilla double chest)
+     * This method controls whether to send server update requests, at 3 second intervals while the player is
+     * looking at the block. This is specifically aimed at Block Entities, as the server will send an NBT
+     * update packet in response. Return an empty list if no updates are needed, otherwise a (possibly immutable)
+     * list of the block positions for which updates should be requested (in most cases, only the BE's own block pos,
+     * but potentially others for multiblocks like the vanilla double chest)
      *
      * @param te the block entity at the currently checked location, may be null
      * @return a list of the block positions for which update request packets should be sent
@@ -78,7 +77,7 @@ public interface IBlockTrackEntry {
      * This method is called each client tick to retrieve the block's additional
      * information. The method behaves much the same as {@link net.minecraft.world.item.Item#appendHoverText(ItemStack, Level, List, TooltipFlag)}.
      * This method is only called if {@link #shouldTrackWithThisEntry(BlockGetter, BlockPos, BlockState, BlockEntity)}
-     * returned true, and the player is curently focused on the block.
+     * returned true, and the player is currently focused on the block.
      *
      * @param world    The world the block is in.
      * @param pos      The position the block is at.

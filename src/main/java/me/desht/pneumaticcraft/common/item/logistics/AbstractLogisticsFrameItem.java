@@ -105,9 +105,11 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                 }
                 int l = curInfo.size();
                 PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, ChatFormatting.GOLD + Symbols.BULLET + " ");
-                if (curInfo.size() == l) curInfo.add(bullet().withStyle(ChatFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_items").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC)));
+                if (curInfo.size() == l) {
+                    curInfo.add(bullet().withStyle(ChatFormatting.GOLD)
+                            .append(xlate("pneumaticcraft.gui.misc.no_items").withStyle(ChatFormatting.GOLD, ChatFormatting.ITALIC)));
+                }
                 l = curInfo.size();
-
 
                 whitelist = tag.getBoolean(AbstractLogisticsFrameEntity.NBT_FLUID_WHITELIST);
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
