@@ -33,3 +33,9 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
     versionRange="[1.18.1-64,1.19)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.pneumaticcraft]]
+    modId="mekanism"
+    mandatory=false
+    versionRange="[1.16.5-10.1,)"
+    ordering="NONE"
+    side="BOTH"
