@@ -299,6 +299,7 @@ public class ClientSetup {
         event.registerBlockEntityRenderer(ModBlockEntities.PROGRAMMER.get(), ProgrammerRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.REFINERY.get(), RenderRefineryController::new);
         event.registerBlockEntityRenderer(ModBlockEntities.REFINERY_OUTPUT.get(), RenderRefineryOutput::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.REINFORCED_PRESSURE_TUBE.get(), PressureTubeModuleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SENTRY_TURRET.get(), SentryTurretRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SPAWNER_EXTRACTOR.get(), SpawnerExtractorRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.TANK_SMALL.get(), RenderFluidTank::new);
