@@ -69,8 +69,7 @@ public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEven
 
     @Override
     public boolean equals(@Nullable IPeripheral other) {
-        // TODO verify this is sufficient
-        return this == other;
+        return other != null && this.getTarget() == other.getTarget();
     }
 
     @Override
@@ -86,5 +85,10 @@ public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEven
     @Override
     public void sendEvent(BlockEntity te, String name, Object... params) {
         attachedComputers.forEach(a -> a.queueEvent(name, params));
+    }
+
+    @Override
+    public Object getTarget() {
+        return provider;
     }
 }
