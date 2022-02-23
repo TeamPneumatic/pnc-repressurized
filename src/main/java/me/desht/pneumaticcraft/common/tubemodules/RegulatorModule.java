@@ -25,10 +25,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class RegulatorModule extends AbstractRedstoneReceivingModule implements IInfluenceDispersing {
-    public static boolean hasTicked;
-    public static boolean inLine;
-    public static boolean inverted;
-
     private LazyOptional<IAirHandlerMachine> neighbourCap = null;
 
     public RegulatorModule(TubeModuleItem tubeModuleItem) {

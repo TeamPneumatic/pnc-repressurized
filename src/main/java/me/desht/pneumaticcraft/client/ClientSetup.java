@@ -185,6 +185,7 @@ public class ClientSetup {
         event.registerLayerDefinition(PNCModelLayers.REDSTONE_MODULE, RedstoneRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.REGULATOR_MODULE, RegulatorRenderer::createBodyLayer);
         event.registerLayerDefinition(PNCModelLayers.SAFETY_VALVE_MODULE, SafetyValveRenderer::createBodyLayer);
+        event.registerLayerDefinition(PNCModelLayers.VACUUM_MODULE, VacuumRenderer::createBodyLayer);
     }
 
     private static void registerItemModelProperties() {
@@ -434,6 +435,7 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_CHARGING, ChargingRenderer::new);
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_FLOW_DETECTOR, FlowDetectorRenderer::new);
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_LOGISTICS, LogisticsRenderer::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_VACUUM, VacuumRenderer::new);
     }
 
     private static void registerArmorClientUpgradeHandlers() {

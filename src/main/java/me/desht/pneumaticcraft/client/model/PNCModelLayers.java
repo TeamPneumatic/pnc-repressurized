@@ -45,6 +45,7 @@ public class PNCModelLayers {
     public static final ModelLayerLocation REDSTONE_MODULE = register("redstone_module");
     public static final ModelLayerLocation REGULATOR_MODULE = register("regulator_module");
     public static final ModelLayerLocation SAFETY_VALVE_MODULE = register("safety_valve_module");
+    public static final ModelLayerLocation VACUUM_MODULE = register("vacuum_module");
 
     // =====================================================================
 

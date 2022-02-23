@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:vacuum_module"
+    ]
+  },
+  "criteria": {
+    "has_vacuum_pump": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:vacuum_pump"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:vacuum_module"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_vacuum_pump",
+      "has_the_recipe"
+    ]
+  ]
+}

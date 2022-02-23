@@ -33,6 +33,7 @@ public class Names {
     public static final ResourceLocation MODULE_CHARGING = RL("charging_module");
     public static final ResourceLocation MODULE_LOGISTICS = RL("logistics_module");
     public static final ResourceLocation MODULE_REDSTONE = RL("redstone_module");
+    public static final ResourceLocation MODULE_VACUUM = RL("vacuum_module");
 
     public static final String PNEUMATIC_KEYBINDING_CATEGORY_MAIN = "key.pneumaticcraft.category.main";
     public static final String PNEUMATIC_KEYBINDING_CATEGORY_UPGRADE_TOGGLES = "key.pneumaticcraft.category.upgrade_toggles";

@@ -60,6 +60,8 @@ public class Textures {
     public static final ResourceLocation MODEL_REGULATOR_MODULE_UPGRADED = tubeModuleTexture("regulator_upgraded.png");
     public static final ResourceLocation MODEL_REDSTONE_MODULE = tubeModuleTexture("redstone.png");
     public static final ResourceLocation MODEL_REDSTONE_MODULE_UPGRADED = tubeModuleTexture("redstone_upgraded.png");
+    public static final ResourceLocation MODEL_VACUUM_MODULE = tubeModuleTexture("vacuum.png");
+    public static final ResourceLocation MODEL_VACUUM_MODULE_UPGRADED = tubeModuleTexture("vacuum_upgraded.png");
 
     // Progwidget textures
     public static final ResourceLocation PROG_WIDGET_COMMENT = progWidgetTexture("comment_piece.png");

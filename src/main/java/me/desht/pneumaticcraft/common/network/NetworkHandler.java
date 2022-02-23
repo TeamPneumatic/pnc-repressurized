@@ -209,6 +209,8 @@ public class NetworkHandler {
 				PacketUpdateArmorColors::toBytes, PacketUpdateArmorColors::new, PacketUpdateArmorColors::handle, PLAY_TO_SERVER);
 		registerMessage(PacketMinigunStop.class,
 				PacketMinigunStop::toBytes, PacketMinigunStop::new, PacketMinigunStop::handle, PLAY_TO_CLIENT);
+		registerMessage(PacketUpdateVacuumModule.class,
+				PacketUpdateVacuumModule::toBytes, PacketUpdateVacuumModule::new, PacketUpdateVacuumModule::handle, PLAY_TO_CLIENT);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

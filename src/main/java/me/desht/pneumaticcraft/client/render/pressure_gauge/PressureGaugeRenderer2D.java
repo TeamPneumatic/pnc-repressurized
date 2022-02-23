@@ -123,8 +123,8 @@ public class PressureGaugeRenderer2D {
                 float y = Mth.sin(angle);
                 textScalers.add(new TextScaler(currentScale, (int) (x * RADIUS * 1.25D), (int) (y * RADIUS * 1.25D)));
                 currentScale--;
-                float r1 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 0.8F : 0.92F;
-                float r2 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 1.15F : 1.08F;
+                float r1 = maxPressure > 12 && textScalers.size() % 5 == 1 ? 0.8F : 0.92F;
+                float r2 = maxPressure > 12 && textScalers.size() % 5 == 1 ? 1.15F : 1.08F;
                 builder.vertex(posMat, x * RADIUS * r1 + xPos, y * RADIUS * r1 + yPos, 0F).color(0, 0, 0, 1).endVertex();
                 builder.vertex(posMat, x * RADIUS * r2 + xPos, y * RADIUS * r2 + yPos, 0F).color(0, 0, 0, 1).endVertex();
             }
@@ -136,9 +136,9 @@ public class PressureGaugeRenderer2D {
             if (textScalers.size() <= 14 || i % 5 == 0) {
                 TextScaler scaler = textScalers.get(i);
                 matrixStack.pushPose();
-                matrixStack.translate(xPos + scaler.x - 1.5, yPos + scaler.y - 1.5, 0);
+                matrixStack.translate(xPos + scaler.x() - 1.5, yPos + scaler.y() - 1.5, 0);
                 matrixStack.scale(0.5f, 0.5f, 1f);
-                fontRenderer.draw(matrixStack, Integer.toString(scaler.pressure), 0, 0, fgColor);
+                fontRenderer.draw(matrixStack, Integer.toString(scaler.pressure()), 0, 0, fgColor);
                 matrixStack.popPose();
             }
         }
@@ -189,15 +189,6 @@ public class PressureGaugeRenderer2D {
         }
     }
 
-    static class TextScaler {
-        final int pressure;
-        final int x;
-        final int y;
-
-        TextScaler(int pressure, int x, int y) {
-            this.pressure = pressure;
-            this.x = x;
-            this.y = y;
-        }
+    record TextScaler(int pressure, int x, int y) {
     }
 }

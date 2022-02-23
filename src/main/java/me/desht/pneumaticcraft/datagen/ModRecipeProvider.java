@@ -904,6 +904,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).save(consumer);
 
+        shaped(ModItems.VACUUM_MODULE.get(), ModBlocks.VACUUM_PUMP.get(),
+                "TVT",
+                'V', ModBlocks.VACUUM_PUMP.get(),
+                'T', ModBlocks.PRESSURE_TUBE.get()
+        ).save(consumer);
+
         shaped(ModBlocks.VACUUM_PUMP.get(), ModItems.TURBINE_ROTOR.get(),
                 "GRG/TRT/SSS",
                 'G', ModItems.PRESSURE_GAUGE.get(),

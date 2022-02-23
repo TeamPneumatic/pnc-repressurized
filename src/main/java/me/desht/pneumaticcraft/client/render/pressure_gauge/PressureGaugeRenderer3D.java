@@ -147,8 +147,8 @@ public class PressureGaugeRenderer3D {
                 float y = Mth.sin(angle);
                 textScalers.add(new TextScaler(currentScale, (int) (x * RADIUS * 1.3F), (int) (y * RADIUS * 1.3F)));
                 currentScale--;
-                float r1 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 0.8F : 0.92F;
-                float r2 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 1.15F : 1.08F;
+                float r1 = maxPressure > 12 && textScalers.size() % 5 == 1 ? 0.8F : 0.92F;
+                float r2 = maxPressure > 12 && textScalers.size() % 5 == 1 ? 1.15F : 1.08F;
                 float x1 = x * RADIUS * r1 + xPos;
                 float y1 = y * RADIUS * r1 + yPos;
                 float x2 = x * RADIUS * r2 + xPos;
@@ -177,12 +177,12 @@ public class PressureGaugeRenderer3D {
 
     private static void drawText(PoseStack matrixStack, MultiBufferSource buffer, int xPos, int yPos, int fgColor, List<TextScaler> textScalers) {
         for (int i = 0; i < textScalers.size(); i++) {
-            if (textScalers.size() <= 11 || i % 5 == 0) {
+            if (textScalers.size() <= 14 || i % 5 == 0) {
                 TextScaler scaler = textScalers.get(i);
                 matrixStack.pushPose();
-                matrixStack.translate(xPos + scaler.x - 1.5, yPos + scaler.y - 1.5, 0);
+                matrixStack.translate(xPos + scaler.x() - 1.5, yPos + scaler.y() - 1.5, 0);
                 matrixStack.scale(0.5f, 0.5f, 1f);
-                RenderUtils.renderString3d(new TextComponent(Integer.toString(scaler.pressure)), 0, 0, fgColor, matrixStack, buffer, false, false);
+                RenderUtils.renderString3d(new TextComponent(Integer.toString(scaler.pressure())), 0, 0, fgColor, matrixStack, buffer, false, false);
                 matrixStack.popPose();
             }
         }

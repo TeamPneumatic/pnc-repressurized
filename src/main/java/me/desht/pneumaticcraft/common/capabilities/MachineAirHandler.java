@@ -223,7 +223,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                             mx * speed, my * speed, mz * speed);
                 }
             } else if (getAir() < 0 && world.random.nextBoolean()) {
-                world.addParticle(AirParticleData.NORMAL, pos.getX() + 0.5D + mx, pos.getY() + 0.5D + my, pos.getZ() + 0.5D + mz, mx * speed, my * speed, mz * speed);
+                world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5D + mx, pos.getY() + 0.5D + my, pos.getZ() + 0.5D + mz, mx * speed, my * speed, mz * speed);
             }
             MovingSounds.playMovingSound(MovingSounds.Sound.AIR_LEAK, ownerTE.getBlockPos(), anyConnectedFace());
         }
