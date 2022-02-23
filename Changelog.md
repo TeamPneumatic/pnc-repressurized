@@ -15,6 +15,11 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * Ender Visor: Pneumatic Helmet upgrade (toggleable) to prevent Enderman aggro
   * Gilded: Pneumatic Armor upgrade (any slot) to prevent Piglin aggro
   * Stomp: Pneumatic Boots upgrade: when active, if you hit the ground hard enough to engage the normal fall damage reduction, you also damage nearby mobs proportional to how fast you were moving (uses extra air per mob damaged)
+* New Tube Junction block, which allows two separate lines of Pressure Tubes to cross without connecting to each other
+  * Tube Junction handles any tier of pressure tube
+* New Tube Module: the Vacuum Module
+  * Basically the Vacuum Pump in module form - useful for inserting onto a vertical tube section (where a full-size pump wouldn't fit)
+  * Not as upgradable as the Vacuum Pump in terms of speed or volume, but a Module Expansion Card (formerly Advanced PCB) does boost its speed somewhat
 * There are now two types of global variable (as used by Drones, GPS Tools, Universal Sensors & Remotes)
   * Player-global variables, prefixed with a "#", are individual to each player on a server
   * Server-global variable, prefixed with a "%", are common to *all* players (this is how global variables worked in 1.16.5)

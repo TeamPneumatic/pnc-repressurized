@@ -1,6 +1,6 @@
 name: Bug report
 description: If you find a bug, including crashes, please report it here.
-labels: ["bug"]
+labels: ["Bug"]
 body:
   - type: markdown
     attributes:
