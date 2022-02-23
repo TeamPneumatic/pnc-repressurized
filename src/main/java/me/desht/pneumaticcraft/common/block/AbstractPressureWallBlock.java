@@ -31,11 +31,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, PneumaticCraftEntityBlock {
+    public static final EnumProperty<PressureChamberWallBlock.EnumWallState> WALL_STATE = EnumProperty.create("wall_state", PressureChamberWallBlock.EnumWallState.class);
+
     AbstractPressureWallBlock(Properties props) {
         super(props);
     }
@@ -56,7 +59,10 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        if (world.isClientSide) return InteractionResult.PASS;
+        if (world.isClientSide) {
+            return !state.hasProperty(WALL_STATE) || state.getValue(WALL_STATE) == PressureChamberWallBlock.EnumWallState.NONE ?
+                    InteractionResult.PASS : InteractionResult.SUCCESS;
+        }
         // forward activation to the pressure chamber valve, which will open the GUI
         return PneumaticCraftUtils.getTileEntityAt(world, pos, PressureChamberWallBlockEntity.class).map(te -> {
             PressureChamberValveBlockEntity valve = te.getCore();

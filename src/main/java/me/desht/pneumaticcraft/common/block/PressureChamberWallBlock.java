@@ -25,7 +25,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 import java.util.Locale;
 
@@ -42,8 +41,6 @@ public class PressureChamberWallBlock extends AbstractPressureWallBlock {
     public PressureChamberWallBlock() {
         super(IBlockPressureChamber.pressureChamberBlockProps());
     }
-
-    private static final EnumProperty<EnumWallState> WALL_STATE = EnumProperty.create("wall_state", EnumWallState.class);
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
