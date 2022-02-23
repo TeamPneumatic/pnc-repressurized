@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
@@ -43,8 +42,6 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
     public BlockPressureChamberWall() {
         super(IBlockPressureChamber.pressureChamberBlockProps());
     }
-
-    private static final EnumProperty<EnumWallState> WALL_STATE = EnumProperty.create("wall_state", EnumWallState.class);
 
     @Override
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {

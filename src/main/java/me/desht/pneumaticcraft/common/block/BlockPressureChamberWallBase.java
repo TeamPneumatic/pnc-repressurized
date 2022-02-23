@@ -26,6 +26,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -35,6 +36,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft implements IBlockPressureChamber {
+    public static final EnumProperty<BlockPressureChamberWall.EnumWallState> WALL_STATE = EnumProperty.create("wall_state", BlockPressureChamberWall.EnumWallState.class);
+
     BlockPressureChamberWallBase(Properties props) {
         super(props);
     }
@@ -54,7 +57,11 @@ public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft i
 
     @Override
     public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (world.isClientSide) return ActionResultType.PASS;
+        if (world.isClientSide) {
+            return !state.hasProperty(WALL_STATE) || state.getValue(WALL_STATE) == BlockPressureChamberWall.EnumWallState.NONE ?
+                    ActionResultType.PASS : ActionResultType.SUCCESS;
+        }
+
         // forward activation to the pressure chamber valve, which will open the GUI
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(te -> {
             TileEntityPressureChamberValve valve = te.getCore();
