@@ -30,7 +30,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Logistics Module",
+      "text": "Crafting a Logistics Module",
       "recipe": "pneumaticcraft:logistics_module"
     }
   ]

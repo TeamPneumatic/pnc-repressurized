@@ -15,7 +15,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Vortex Tube",
+      "text": "Crafting a Vortex Tube",
       "recipe": "pneumaticcraft:vortex_tube"
     }
   ]

@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Cannon Barrel",
+      "text": "Crafting a Cannon Barrel",
       "recipe": "pneumaticcraft:cannon_barrel"
     }
   ]

@@ -18,7 +18,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Transfer Gadget",
+      "text": "Crafting a Transfer Gadget",
       "recipe": "pneumaticcraft:transfer_gadget"
     }
   ]

@@ -21,7 +21,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Liquid Hopper",
+      "text": "Crafting a Liquid Hopper",
       "recipe": "pneumaticcraft:liquid_hopper"
     }
   ]

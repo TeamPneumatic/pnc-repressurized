@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Stone Base",
+      "text": "Crafting a Stone Base",
       "recipe": "pneumaticcraft:stone_base"
     }
   ]

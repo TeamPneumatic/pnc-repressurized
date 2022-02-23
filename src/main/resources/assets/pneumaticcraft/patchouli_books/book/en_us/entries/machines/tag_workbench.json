@@ -19,7 +19,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Tag Workbench",
+      "text": "Crafting a Tag Workbench",
       "recipe": "pneumaticcraft:tag_workbench"
     }
   ]

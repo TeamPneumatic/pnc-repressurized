@@ -9,13 +9,13 @@
       "text": "This tube module allow you to charge (or discharge) pressurizable items in the inventory that it faces, e.g. a chest with your pneumatic tools, or $(l:components/air_canister)Air Canisters/$ for long-distance air transfer (perhaps through some kind of Ender inventory system).$(p)You can also point this module at an $(l:machines/aerial_interface)Aerial Interface/$ to charge items in your own player inventory."
     },
     {
-      "type": "text",
-      "title": "Module Expansion Card",
-      "text": "When you apply an $(l:tubes/module_expansion_card)Module Expansion Card/$ to the Charging Module, the module's charging rate increases from 10mL/tick (per item) to 100mL/tick (per item)"
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "Applying a $(l:tubes/module_expansion_card)Module Expansion Card/$ to the Charging Module increases the module's charging rate from 10mL/tick (per item) to 100mL/tick (per item)"
     },
     {
       "type": "crafting",
-      "text": "Creating the Charging Module",
+      "text": "Crafting a Charging Module",
       "recipe": "pneumaticcraft:charging_module"
     }
   ]

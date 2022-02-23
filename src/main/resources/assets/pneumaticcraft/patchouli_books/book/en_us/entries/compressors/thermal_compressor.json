@@ -42,7 +42,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a $(item)Thermal Compressor/$",
+      "text": "Crafting a $(item)Thermal Compressor/$",
       "recipe": "pneumaticcraft:thermal_compressor"
     }
   ]

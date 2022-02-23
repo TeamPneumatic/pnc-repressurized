@@ -26,7 +26,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the GPS Tool",
+      "text": "Crafting a GPS Tool",
       "recipe": "pneumaticcraft:gps_tool"
     }
   ]

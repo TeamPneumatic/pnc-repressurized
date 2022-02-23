@@ -30,7 +30,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Collector Drone",
+      "text": "Crafting a Collector Drone",
       "recipe": "pneumaticcraft:collector_drone"
     }
   ]

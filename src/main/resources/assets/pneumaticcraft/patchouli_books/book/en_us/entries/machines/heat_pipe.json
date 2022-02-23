@@ -18,7 +18,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Heat Pipe",
+      "text": "Crafting a Heat Pipe",
       "recipe": "pneumaticcraft:heat_pipe"
     }
   ]

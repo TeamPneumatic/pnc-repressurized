@@ -23,13 +23,13 @@
       "text": "An Air Grate Module can also be used to actively cool $(l:machines/heat_sink)Heat Sinks/$. The range in which Heat Sinks is cooled is a 3x3x3 cube in front of the Air Grate. This range is visualized when the module is placed down.$(p)The Air Grate will only cool Heat Sinks when it has a range of 3 blocks or more (so, 0.75 bar)."
     },
     {
-      "type": "text",
-      "title": "Module Expansion Card",
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
       "text": "When you apply an $(l:tubes/module_expansion_card)Module Expansion Card/$, you gain control over which entities are affected by the module.$(p)You could set it up, for example, so that only a certain player gets affected, or only Creepers, or only items. This can be done by right clicking the upgraded module to open a GUI allowing an $(l:base_concepts/entity_filter)entity filter/$ to be defined."
     },
     {
       "type": "crafting",
-      "text": "Creating the Air Grate Module",
+      "text": "Crafting a Air Grate Module",
       "recipe": "pneumaticcraft:air_grate_module"
     }
   ]

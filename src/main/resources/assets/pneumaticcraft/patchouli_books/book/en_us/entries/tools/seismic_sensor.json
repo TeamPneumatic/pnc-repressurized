@@ -14,7 +14,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Seismic Sensor",
+      "text": "Crafting a Seismic Sensor",
       "recipe": "pneumaticcraft:seismic_sensor"
     }
   ]

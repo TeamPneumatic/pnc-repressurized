@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Tube Junction",
+      "text": "Crafting a Tube Junction",
       "recipe": "pneumaticcraft:tube_junction"
     }
   ]

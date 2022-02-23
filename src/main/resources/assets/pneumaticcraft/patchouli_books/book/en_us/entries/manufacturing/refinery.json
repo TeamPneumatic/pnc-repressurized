@@ -45,7 +45,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Refinery",
+      "text": "Crafting a Refinery",
       "recipe": "pneumaticcraft:refinery",
       "recipe2": "pneumaticcraft:refinery_output"
     }

@@ -20,7 +20,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Pneumatic Generator",
+      "text": "Crafting a Pneumatic Generator",
       "recipe": "pneumaticcraft:pneumatic_generator"
     }
   ]

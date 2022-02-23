@@ -1,0 +1,27 @@
+{
+  "name": "Vacuum Module",
+  "icon": "pneumaticcraft:vacuum_module",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "The $(thing)Vacuum Module/$ does the same job as the $(l:machines/vacuum_pump)Vacuum Pump/$ - provide negative pressure - but in a slightly more compact way. It can be placed on a vertical tube, unlike the full-size pump, which can be only be oriented horizontally.$(p)The advantage is compactness; the disadvantage is more limited upgradeability in terms of speed and volume."
+    },
+    {
+      "type": "text",
+      "title": "Placement",
+      "text": "The Vacuum Module in an $(thing)inline/$ module. Place it on the end of the tube which should be the vacuum side. Providing positive pressure (2 bar minimum) to the $(#0f0)+/$ end of the tube will cause the module to spin, removing air from any tubes past the $(#f00)-/$ end.$(p)Applying a $(#f00)redstone signal/$ prevents the module running."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "A $(l:tubes/module_expansion_card)Module Expansion Card/$ boosts the module's speed, roughly equivalent to adding 4 $(l:base_concepts/upgrades#speed)Speed Upgrades/$ to a Vacuum Pump. Similar to adding Speed Upgrades, this comes with a reduction in efficiency in terms of air usage at the $(#0f0)+/$ side."
+    },
+    {
+      "type": "crafting",
+      "text": "Crafting a Vacuum Module",
+      "recipe": "pneumaticcraft:vacuum_module"
+    }
+  ]
+}

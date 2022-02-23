@@ -14,7 +14,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Smart Chest Upgrade Kit.$(p)Note that the Smart Chest must be completely empty and unconfigured.",
+      "text": "Crafting a Smart Chest Upgrade Kit.$(p)Note that the Smart Chest must be completely empty and unconfigured.",
       "recipe": "pneumaticcraft:smart_chest_kit"
     }
   ]

@@ -24,7 +24,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Vacuum Trap",
+      "text": "Crafting a Vacuum Trap",
       "recipe": "pneumaticcraft:vacuum_trap"
     }
   ]

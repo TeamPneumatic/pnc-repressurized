@@ -17,13 +17,13 @@
       "text": "Interestingly, the $(thing)Regulator Module/$ allows unrestricted flow of air in the opposite direction (from the narrow side to the wide side) regardless of the redstone signal; this means a regulator with a full redstone signal can be used as a one-way valve.$(p)Note that the $(thing)Regulator/$ does $(italic)not/$ actively reduce pressure on its narrow side; it only prevents air flow if the pressure would rise above the threshold."
     },
     {
-      "type": "text",
-      "title": "Module Expansion Card",
-      "text": "When you apply an $(l:tubes/module_expansion_card)Module Expansion Card/$ to the Regulator Module, the module gains a GUI providing far more control over the threshold level. You can set a precise threshold in the GUI, or with the $(bold)Advanced Config/$ checkbox, configure interpolated threshold levels based on the redstone signal. This functions exactly like the $(l:tubes/safety_module)Safety Module/$."
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "Applying a $(l:tubes/module_expansion_card)Module Expansion Card/$ to the Regulator Module unlocks a GUI providing far more control over the threshold level. You can set a precise threshold in the GUI, or (with the $(bold)Advanced Config/$ checkbox) configure interpolated threshold levels based on the redstone signal. This works exactly like the $(l:tubes/safety_module)Safety Module/$."
     },
     {
       "type": "crafting",
-      "text": "Creating the Regulator Module",
+      "text": "Crafting a Regulator Module",
       "recipe": "pneumaticcraft:regulator_tube_module"
     }
   ]

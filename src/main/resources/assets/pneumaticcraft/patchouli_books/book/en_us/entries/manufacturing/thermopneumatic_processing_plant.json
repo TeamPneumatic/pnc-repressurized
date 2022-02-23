@@ -22,7 +22,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Thermopneumatic Processing Plant",
+      "text": "Crafting a Thermopneumatic Processing Plant",
       "recipe": "pneumaticcraft:thermopneumatic_processing_plant"
     }
   ]

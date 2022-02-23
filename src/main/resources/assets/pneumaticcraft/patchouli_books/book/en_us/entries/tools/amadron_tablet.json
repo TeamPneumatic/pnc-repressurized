@@ -35,7 +35,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Amadron Tablet",
+      "text": "Crafting a Amadron Tablet",
       "recipe": "pneumaticcraft:amadron_tablet"
     }
   ]

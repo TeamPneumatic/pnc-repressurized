@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating an Air Canister",
+      "text": "Crafting an Air Canister",
       "recipe": "pneumaticcraft:air_canister"
     }
   ]

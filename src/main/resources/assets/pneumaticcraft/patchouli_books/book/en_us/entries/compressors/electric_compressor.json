@@ -19,7 +19,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating an $(item)Electric Compressor/$",
+      "text": "Crafting an $(item)Electric Compressor/$",
       "recipe": "pneumaticcraft:electric_compressor"
     }
   ]

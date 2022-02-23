@@ -15,7 +15,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating an Air Cannon",
+      "text": "Crafting an Air Cannon",
       "recipe": "pneumaticcraft:air_cannon"
     }
   ]

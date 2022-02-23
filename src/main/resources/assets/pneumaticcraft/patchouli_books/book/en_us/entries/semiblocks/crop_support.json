@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Crop Support",
+      "text": "Crafting a Crop Support",
       "recipe": "pneumaticcraft:crop_support"
     }
   ]

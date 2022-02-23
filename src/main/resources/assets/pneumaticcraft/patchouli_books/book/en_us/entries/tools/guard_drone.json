@@ -38,7 +38,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Guard Drone",
+      "text": "Crafting a Guard Drone",
       "recipe": "pneumaticcraft:guard_drone"
     }
   ]

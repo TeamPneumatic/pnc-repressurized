@@ -15,7 +15,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Pneumatic Dynamo",
+      "text": "Crafting a Pneumatic Dynamo",
       "recipe": "pneumaticcraft:pneumatic_dynamo"
     }
   ]

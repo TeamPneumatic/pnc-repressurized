@@ -15,7 +15,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Logistics Configurator",
+      "text": "Crafting a Logistics Configurator",
       "recipe": "pneumaticcraft:logistics_configurator"
     }
   ]

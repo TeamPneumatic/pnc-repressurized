@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Spawner Agitator",
+      "text": "Crafting a Spawner Agitator",
       "recipe": "pneumaticcraft:spawner_agitator"
     }
   ]

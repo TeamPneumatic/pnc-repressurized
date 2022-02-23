@@ -32,7 +32,7 @@
     },
     {
       "type": "text",
-      "text": "You can prefix a filter with '!' to negate the filter:$(li)$(#800)!@player/$ matches anything that is $(italic)not/$ a player$(li)$(#800)!Creeper;Zombie/$ matches anything that is neither a Creeper $(italic)nor/$ a Zombie$(li)$(#800)Creeper;!Zombie/$ is $(f00)invalid/$: '!' can only go right at the start of a filter/$$(p)$(bold)Note:/$ for $(l:tools/drone)Drone/$ entity filters using the $(l:programming/text)Text/$ programming widget, '!' is not supported; connect the Text widget on the left, as normal."
+      "text": "You can prefix a filter with '!' to negate the filter:$(li)$(#800)!@player/$ matches anything that is $(italic)not/$ a player$(li)$(#800)!Creeper;Zombie/$ matches anything that is neither a Creeper $(italic)nor/$ a Zombie$(li)$(#800)Creeper;!Zombie/$ is $(#f00)invalid/$: '!' can only go right at the start of a filter/$$(p)$(bold)Note:/$ for $(l:tools/drone)Drone/$ entity filters using the $(l:programming/text)Text/$ programming widget, '!' is not supported; connect the Text widget on the left, as normal."
     },
     {
       "type": "relations",

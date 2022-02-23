@@ -71,7 +71,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Security Station",
+      "text": "Crafting a Security Station",
       "recipe": "pneumaticcraft:security_station"
     }
   ]

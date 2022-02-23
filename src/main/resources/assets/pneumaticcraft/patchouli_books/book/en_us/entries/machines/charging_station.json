@@ -53,7 +53,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Charging Station",
+      "text": "Crafting a Charging Station",
       "recipe": "pneumaticcraft:charging_station"
     }
   ]

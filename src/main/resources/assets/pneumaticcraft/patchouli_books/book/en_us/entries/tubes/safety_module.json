@@ -13,13 +13,13 @@
       "text": "The default threshold level of the $(item)Safety Module/$ is 0.1 bar below the tube's danger level:$(li)4.9 bar for basic $(item)Pressure Tubes/$$(li)19.9 bar for $(item)Advanced Pressure Tubes/$$(p)Note that this has changed since 1.12.2, where a redstone signal was required to set the threshold."
     },
     {
-      "type": "text",
-      "title": "Module Expansion Card",
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
       "text": "When you apply an $(l:tubes/module_expansion_card)Module Expansion Card/$ to the Safety Module, the module gains a GUI (right-click) providing far more control over the threshold level. You can set a precise threshold in the GUI, or with the $(bold)Advanced Config/$ checkbox, configure interpolated threshold levels based on the signal. This functions very much like the $(l:tubes/pressure_gauge_module#img)Pressure Gauge GUI/$, but in reverse."
     },
     {
       "type": "crafting",
-      "text": "Creating the Safety Module",
+      "text": "Crafting a Safety Module",
       "recipe": "pneumaticcraft:safety_tube_module"
     }
   ]

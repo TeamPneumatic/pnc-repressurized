@@ -19,7 +19,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Spawner Core Shell. Used in crafting an actual $(item)Spawner Core/$.",
+      "text": "Crafting a Spawner Core Shell. Used in crafting an actual $(item)Spawner Core/$.",
       "recipe": "pneumaticcraft:spawner_core_shell"
     },
     {

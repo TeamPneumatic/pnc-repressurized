@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a $(item)Flux Compressor/$$(p)This generator must be $(l:base_concepts/heat)cooled/$, as its efficiency will drop as the temperature rises, up to the point where no air is generated at all.",
+      "text": "Crafting a $(item)Flux Compressor/$$(p)This generator must be $(l:base_concepts/heat)cooled/$, as its efficiency will drop as the temperature rises, up to the point where no air is generated at all.",
       "recipe": "pneumaticcraft:flux_compressor"
     }
   ]

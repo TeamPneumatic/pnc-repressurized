@@ -18,7 +18,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Kerosene Lamp",
+      "text": "Crafting a Kerosene Lamp",
       "recipe": "pneumaticcraft:kerosene_lamp"
     }
   ]

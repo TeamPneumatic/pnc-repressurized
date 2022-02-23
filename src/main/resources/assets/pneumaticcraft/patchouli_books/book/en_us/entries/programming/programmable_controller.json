@@ -33,7 +33,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Programmable Controller",
+      "text": "Crafting a Programmable Controller",
       "recipe": "pneumaticcraft:programmable_controller"
     }
   ]

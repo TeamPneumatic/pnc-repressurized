@@ -14,7 +14,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Flow Detector Module",
+      "text": "Crafting a Flow Detector Module",
       "recipe": "pneumaticcraft:flow_detector_module"
     }
   ]

@@ -40,7 +40,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating an $(item)Electrostatic Compressor/$",
+      "text": "Crafting an $(item)Electrostatic Compressor/$",
       "recipe": "pneumaticcraft:electrostatic_compressor"
     }
   ]

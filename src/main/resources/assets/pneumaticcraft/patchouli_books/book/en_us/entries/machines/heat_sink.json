@@ -23,7 +23,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Heat Sink",
+      "text": "Crafting a Heat Sink",
       "recipe": "pneumaticcraft:heat_sink"
     }
   ]

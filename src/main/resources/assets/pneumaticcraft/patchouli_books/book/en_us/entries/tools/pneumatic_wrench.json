@@ -14,7 +14,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Pneumatic Wrench",
+      "text": "Crafting a Pneumatic Wrench",
       "recipe": "pneumaticcraft:pneumatic_wrench"
     }
   ]

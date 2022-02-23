@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Fluid Mixer",
+      "text": "Crafting a Fluid Mixer",
       "recipe": "pneumaticcraft:fluid_mixer"
     }
   ]

@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Pneumatic Cylinder",
+      "text": "Crafting a Pneumatic Cylinder",
       "recipe": "pneumaticcraft:pneumatic_cylinder"
     }
   ]

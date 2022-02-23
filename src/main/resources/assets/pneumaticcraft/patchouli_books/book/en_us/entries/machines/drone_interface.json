@@ -281,7 +281,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Drone Interface",
+      "text": "Crafting a Drone Interface",
       "recipe": "pneumaticcraft:drone_interface"
     }
   ]

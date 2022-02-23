@@ -23,7 +23,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Gas Lift",
+      "text": "Crafting a Gas Lift",
       "recipe": "pneumaticcraft:gas_lift"
     }
   ]

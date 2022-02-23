@@ -18,7 +18,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Heat Frame",
+      "text": "Crafting a Heat Frame",
       "recipe": "pneumaticcraft:heat_frame"
     }
   ]

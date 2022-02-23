@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating an $(item)Advanced Liquid Compressor/$",
+      "text": "Crafting an $(item)Advanced Liquid Compressor/$",
       "recipe": "pneumaticcraft:advanced_liquid_compressor"
     }
   ]

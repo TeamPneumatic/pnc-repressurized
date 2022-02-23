@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Pressure Gauge",
+      "text": "Crafting a Pressure Gauge",
       "recipe": "pneumaticcraft:pressure_gauge"
     }
   ]

@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Reinforced Chest",
+      "text": "Crafting a Reinforced Chest",
       "recipe": "pneumaticcraft:reinforced_chest"
     }
   ]

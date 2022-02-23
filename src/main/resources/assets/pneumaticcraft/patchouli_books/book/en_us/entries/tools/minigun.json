@@ -15,7 +15,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Minigun",
+      "text": "Crafting a Minigun",
       "recipe": "pneumaticcraft:minigun"
     }
   ]

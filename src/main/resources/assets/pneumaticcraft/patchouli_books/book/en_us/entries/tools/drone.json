@@ -35,7 +35,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Drone",
+      "text": "Crafting a Drone",
       "recipe": "pneumaticcraft:drone"
     }
   ]

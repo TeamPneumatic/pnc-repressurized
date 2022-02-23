@@ -27,7 +27,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Sentry Turret",
+      "text": "Crafting a Sentry Turret",
       "recipe": "pneumaticcraft:sentry_turret"
     }
   ]

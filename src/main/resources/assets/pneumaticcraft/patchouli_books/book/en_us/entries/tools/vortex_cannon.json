@@ -15,7 +15,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Vortex Cannon",
+      "text": "Crafting a Vortex Cannon",
       "recipe": "pneumaticcraft:vortex_cannon"
     }
   ]

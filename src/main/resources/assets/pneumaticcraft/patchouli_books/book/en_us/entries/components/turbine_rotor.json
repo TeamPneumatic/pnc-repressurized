@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Turbine Rotor",
+      "text": "Crafting a Turbine Rotor",
       "recipe": "pneumaticcraft:turbine_rotor"
     }
   ]

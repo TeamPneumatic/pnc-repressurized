@@ -14,7 +14,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the GPS Area Tool",
+      "text": "Crafting a GPS Area Tool",
       "recipe": "pneumaticcraft:gps_area_tool"
     }
   ]

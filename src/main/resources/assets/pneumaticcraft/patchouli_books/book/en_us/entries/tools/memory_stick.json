@@ -20,7 +20,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Memory Stick",
+      "text": "Crafting a Memory Stick",
       "recipe": "pneumaticcraft:memory_stick"
     }
   ]

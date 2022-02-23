@@ -19,7 +19,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the UV Light Box",
+      "text": "Crafting a UV Light Box",
       "recipe": "pneumaticcraft:uv_light_box"
     }
   ]

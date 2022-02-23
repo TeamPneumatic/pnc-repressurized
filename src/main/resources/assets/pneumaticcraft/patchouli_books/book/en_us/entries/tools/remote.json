@@ -56,7 +56,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating the Remote",
+      "text": "Crafting a Remote",
       "recipe": "pneumaticcraft:remote"
     }
   ]

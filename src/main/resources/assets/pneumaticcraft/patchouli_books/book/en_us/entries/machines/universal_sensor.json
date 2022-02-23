@@ -25,7 +25,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Universal Sensor",
+      "text": "Crafting a Universal Sensor",
       "recipe": "pneumaticcraft:universal_sensor"
     }
   ]

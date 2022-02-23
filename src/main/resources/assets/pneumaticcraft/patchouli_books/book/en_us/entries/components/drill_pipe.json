@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating an Drill Pipe",
+      "text": "Crafting an Drill Pipe",
       "recipe": "pneumaticcraft:drill_pipe"
     }
   ]

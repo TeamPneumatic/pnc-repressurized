@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Reinforced Chest Upgrade Kit.$(p)Note that the Reinforced Chest must be completely empty.",
+      "text": "Crafting a Reinforced Chest Upgrade Kit.$(p)Note that the Reinforced Chest must be completely empty.",
       "recipe": "pneumaticcraft:reinforced_chest_kit"
     }
   ]

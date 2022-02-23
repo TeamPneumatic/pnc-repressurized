@@ -14,7 +14,7 @@
     },
     {
       "type": "crafting",
-      "text": "Creating a Pressurized Spawner.",
+      "text": "Crafting a Pressurized Spawner.",
       "recipe": "pneumaticcraft:pressurized_spawner"
     }
   ]
