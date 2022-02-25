@@ -118,6 +118,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
             final int idx = i;
             WidgetButtonExtended button = new WidgetButtonExtended(xPos, yPos, buttonWidth + 10, 20,
                     upgradeOptions.get(i).page.getPageName(), b -> setPage(idx));
+            button.setHighlightWhenInactive(true);
             button.setRenderStacks(upgradeOptions.get(i).icons).setIconPosition(WidgetButtonExtended.IconPosition.RIGHT).setIconSpacing(12);
             if (pageNumber == i) button.active = false;
             addRenderableWidget(button);

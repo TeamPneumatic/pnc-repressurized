@@ -76,6 +76,9 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * Default is just `minecraft:iron_bars`
 * Patchouli manual is now a resource-pack-based book (see https://vazkiimods.github.io/Patchouli/docs/upgrading/upgrade-guide-117#resource-pack-based-books)
   * This means modpack & resource pack makers can modify it more easily...
+* Vanilla loot chest modification is now done properly with Global Loot Modifiers
+  * The actual loot item list is fixed, but amounts are adjustable in datapacks, see `data/pneumaticcraft/loot_modifiers/dungeon_loot`
+  * Loot item list is larger than it used to be...
 
 # Minecraft 1.16.5
 

@@ -320,6 +320,8 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
             this.selectorType = selectorType;
             visible = selectorType.showButton(slot) && PneumaticArmorItem.isPneumaticArmorPiece(ClientUtils.getClientPlayer(), slot);
 
+            setHighlightWhenInactive(true);
+
             if (selectorType == SelectorType.PRIMARY) {
                 setRenderStacks(ClientUtils.getClientPlayer().getItemBySlot(slot));
                 setIconPosition(IconPosition.LEFT);

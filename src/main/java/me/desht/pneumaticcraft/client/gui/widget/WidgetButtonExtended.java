@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -43,7 +44,7 @@ import java.util.List;
 public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget, ITooltipProvider {
     private int iconSpacing = 18;
 
-    public enum IconPosition { MIDDLE, LEFT, RIGHT }
+    public enum IconPosition { MIDDLE, LEFT, RIGHT;}
     private ItemStack[] renderedStacks;
     private ResourceLocation resLoc;
     private final List<Component> tooltipText = new ArrayList<>();
@@ -52,6 +53,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     private IconPosition iconPosition = IconPosition.MIDDLE;
     private String tag = null;
     private boolean renderStackSize = false;
+    private boolean highlightInactive = false;
 
     public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, Component buttonText, Button.OnPress pressable) {
         super(startX, startY, xSize, ySize, buttonText, pressable);
@@ -153,6 +155,10 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return this;
     }
 
+    public void setHighlightWhenInactive(boolean highlight) {
+        this.highlightInactive = highlight;
+    }
+
     @Override
     public void addTooltip(double mouseX, double mouseY, List<Component> curTip, boolean shift) {
         curTip.addAll(tooltipText);
@@ -182,6 +188,10 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
 
     @Override
     public void renderButton(PoseStack matrixStack, int x, int y, float partialTicks) {
+        if (thisVisible && visible && !active && highlightInactive) {
+            Gui.fill(matrixStack, this.x - 1, this.y - 1, this.x + getWidth() + 1, this.y + getHeight() + 1, 0xFF00FFFF);
+        }
+
         if (thisVisible) super.renderButton(matrixStack, x, y, partialTicks);
 
         if (visible) {
