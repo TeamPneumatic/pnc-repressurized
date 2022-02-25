@@ -310,7 +310,6 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
             }
         } else if ((clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE) && (dragType == 0 || dragType == 1)) {
             // left or right-click...
-            Inventory playerInv = player.getInventory();
             slot.setChanged();
             ItemStack stackSlot = slot.getItem();
             ItemStack stackHeld = getCarried();

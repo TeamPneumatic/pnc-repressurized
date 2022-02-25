@@ -27,6 +27,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,11 +38,17 @@ public class LogisticsFilterGhost<T extends AbstractLogisticsFrameEntity> implem
         if (ingredient instanceof ItemStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getMenu().slots) {
-                if (slot instanceof PhantomSlot) {
+                if (slot instanceof PhantomSlot ps) {
                     //noinspection unchecked
-                    builder.add((Target<I>) new ItemStackTarget((PhantomSlot) slot, gui));
+                    builder.add((Target<I>) new ItemStackTarget(ps, gui));
                 }
             }
+            FluidUtil.getFluidContained((ItemStack) ingredient).ifPresent(fluidStack -> {
+                for (int i = 0; i < AbstractLogisticsFrameEntity.FLUID_FILTER_SLOTS; i++) {
+                    //noinspection unchecked
+                    builder.add((Target<I>) new FluidStackItemTarget(i, gui));
+                }
+            });
             return builder.build();
         } else if (ingredient instanceof FluidStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
@@ -80,6 +87,20 @@ public class LogisticsFilterGhost<T extends AbstractLogisticsFrameEntity> implem
         @Override
         public void accept(FluidStack ingredient) {
             gui.updateFluidFilter(slotNumber, ingredient.copy());
+        }
+    }
+
+    // for items which contain fluids
+    private record FluidStackItemTarget(int slotNumber, AbstractLogisticsScreen<?> gui) implements Target<ItemStack> {
+        @Override
+        public Rect2i getArea() {
+            PointXY p = gui.getFluidSlotPos(slotNumber);
+            return new Rect2i(p.x(), p.y(), 16, 16);
+        }
+
+        @Override
+        public void accept(ItemStack ingredient) {
+            FluidUtil.getFluidContained(ingredient).ifPresent(fluidStack -> gui.updateFluidFilter(slotNumber, fluidStack));
         }
     }
 }

@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> extends AbstractPneumaticCraftContainerScreen<LogisticsMenu, AbstractPneumaticCraftBlockEntity> {
@@ -168,9 +169,9 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
 
     @Override
     protected void doDelayedAction() {
-        if (logistics instanceof ISpecificRequester) {
-            ((ISpecificRequester) logistics).setMinItemOrderSize(minItemsField.getIntValue());
-            ((ISpecificRequester) logistics).setMinFluidOrderSize(minFluidField.getIntValue());
+        if (logistics instanceof ISpecificRequester s) {
+            s.setMinItemOrderSize(minItemsField.getIntValue());
+            s.setMinFluidOrderSize(minFluidField.getIntValue());
             syncToServer();
         }
     }
@@ -226,7 +227,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
 
     private void addFilterTab() {
         WidgetAnimatedStat filterTab = addAnimatedStat(xlate("pneumaticcraft.gui.logistics_frame.filter_settings"),
-                new ItemStack(Blocks.COBWEB), 0xFF106010, false);
+                RL("textures/gui/icon/gui_filter.png"), 0xFF106010, false);
         filterTab.setMinimumExpandedDimensions(80, 65);
 
         WidgetCheckBox matchDurability = new WidgetCheckBox(5, 20, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> {

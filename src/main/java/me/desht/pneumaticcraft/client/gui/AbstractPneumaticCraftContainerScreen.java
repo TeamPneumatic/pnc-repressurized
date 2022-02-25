@@ -412,7 +412,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         }
 
         if (!tooltip.isEmpty()) {
-            int max = 350; //Math.min(imageWidth, width * 3 / 4);
+            int max = Math.min(getXSize(), 350); //Math.min(imageWidth, width * 3 / 4);
             renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
         }
     }
