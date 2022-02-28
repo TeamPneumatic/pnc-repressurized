@@ -40,13 +40,17 @@ public class VillageStructures {
      *
      * With thanks to TelepathicGrunt: https://gist.github.com/TelepathicGrunt/4fdbc445ebcbcbeb43ac748f4b18f342
      */
-    private static void addBuildingToPool(MutableRegistry<JigsawPattern> templatePoolRegistry, ResourceLocation poolRL, String nbtPieceRL, int weight) {
+    private static void addPieceToPool(MutableRegistry<JigsawPattern> templatePoolRegistry, ResourceLocation poolRL, String nbtPieceRL, JigsawPattern.PlacementBehaviour projection, int weight) {
         // Grab the pool we want to add to
         JigsawPattern pool = templatePoolRegistry.get(poolRL);
         if (pool == null) return;
 
         // Grabs the nbt piece and creates a SingleJigsawPiece of it that we can add to a structure's pool.
-        SingleJigsawPiece piece = SingleJigsawPiece.single(nbtPieceRL).apply(JigsawPattern.PlacementBehaviour.RIGID);
+        // Note: street pieces are a legacy_single_pool_piece type, houses are single_pool_piece
+        SingleJigsawPiece piece = poolRL.getPath().endsWith("streets") ?
+                SingleJigsawPiece.legacy(nbtPieceRL).apply(projection) :
+                SingleJigsawPiece.single(nbtPieceRL).apply(projection);
+
 
         // AccessTransformer to make JigsawPattern's templates field public for us to see.
         // public net.minecraft.world.gen.feature.jigsaw.JigsawPattern templates #templates
@@ -69,13 +73,50 @@ public class VillageStructures {
         if (ConfigHelper.common().villagers.addMechanicHouse.get()) {
             MutableRegistry<JigsawPattern> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY);
 
-            for (String biome : new String[]{"plains", "desert", "savanna", "taiga", "snowy"}) {
-                addBuildingToPool(templatePoolRegistry,
-                        new ResourceLocation("village/" + biome + "/houses"),
-                        Names.MOD_ID + ":villages/mechanic_house_" + biome,
-                        8
-                );
+            for (VillageBiome v : VillageBiome.values()) {
+                // desert & snowy villages don't have street pieces large enough to support a PNC house
+                // in this case, we add a custom street with extra reserved space big enough for the house
+                // - the jigsaw pieces in that street use a custom pool in PNC's namespace which has only our house in it
+                if (v.needsCustomStreet()) {
+                    // note: in this case, our mechanic house is in the custom pneumaticcraft:village/<biome>/houses
+                    //   template pool JSON, so doesn't need to be added in code
+                    addPieceToPool(templatePoolRegistry,
+                            new ResourceLocation("village/" + v.getBiomeName() + "/streets"),
+                            Names.MOD_ID + ":villages/custom_street_" + v.getBiomeName(),
+                            JigsawPattern.PlacementBehaviour.TERRAIN_MATCHING, 2);
+                } else {
+                    // add the house to the vanilla minecraft:village/<biome>/houses pool
+                    addPieceToPool(templatePoolRegistry,
+                            new ResourceLocation("village/" + v.getBiomeName() + "/houses"),
+                            Names.MOD_ID + ":villages/mechanic_house_" + v.getBiomeName(),
+                            JigsawPattern.PlacementBehaviour.RIGID, 8
+                    );
+                }
             }
+        }
+    }
+
+    enum VillageBiome {
+        PLAINS("plains", false),
+        DESERT("desert", true),
+        SAVANNA("savanna", false),
+        TAIGA("taiga", false),
+        SNOWY("snowy", true);
+
+        private final String biomeName;
+        private final boolean needsCustomStreet;
+
+        VillageBiome(String biomeName, boolean needsCustomStreet) {
+            this.biomeName = biomeName;
+            this.needsCustomStreet = needsCustomStreet;
+        }
+
+        public String getBiomeName() {
+            return biomeName;
+        }
+
+        public boolean needsCustomStreet() {
+            return needsCustomStreet;
         }
     }
 }
