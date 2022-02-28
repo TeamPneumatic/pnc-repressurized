@@ -13,11 +13,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
-## 2.15.3-??? (unreleased)
+## 2.15.3-208 (28th Feb 2022)
 
 ### Updates
 * Bandages can be now configured in pneumaticcraft-common.toml
   * Cooldown, use time and heal amount are all configurable
+* The Block Tracker (Inventories category) can now find Lootr (https://www.curseforge.com/minecraft/mc-mods/lootr) chests
+  * Note that it won't show contents of those chests since Lootr does its own custom loot gen, but chests will at least show up
 
 ### Fixes
 * Fixed Crafting progwidget ignoring the "Use Count" setting
@@ -30,6 +32,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Redstone can now be placed on top of a Flux Compressor again
   * This changed in 2.15.0 since the Flux Compressor now has a non-full-cube shape
   * NOTE: this should be considered backwards compatibility to help with existing builds, and is unlikely to be carried through to 1.18+
+* Fixed the PneumaticCraft villager house not generating in Desert & Snowy villages
+  * Also, houses now generate using Compressed bricks, not Reinforced (so look more like pre-2.15.0 houses) - already-generated houses aren't changed, though
 
 ## 2.15.2-303 (4th Feb 2022)
 
