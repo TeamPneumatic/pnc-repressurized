@@ -214,6 +214,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get()
         ).save(consumer);
 
+        shapeless(ModItems.CLASSIFY_FILTER.get(), ModItems.LOGISTICS_CORE.get(),
+                ModItems.LOGISTICS_CORE.get(), ModItems.PLASTIC.get()
+        ).save(consumer);
+
         shaped(ModItems.COLLECTOR_DRONE.get(), ModItems.TURBINE_ROTOR.get(),
                 " R /RSR/ R ",
                 'S', Items.HOPPER,

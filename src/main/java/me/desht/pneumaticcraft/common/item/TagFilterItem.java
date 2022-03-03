@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.Sets;
-import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
+import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.ChatFormatting;
@@ -32,6 +32,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -40,7 +41,7 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TagFilterItem extends Item implements ITagFilteringItem {
+public class TagFilterItem extends Item implements IFilteringItem {
     private static final String NBT_TAG_LIST = "TagList";
 
     public TagFilterItem() {
@@ -62,26 +63,27 @@ public class TagFilterItem extends Item implements ITagFilteringItem {
     public static Set<ResourceLocation> getConfiguredTagList(ItemStack stack) {
         CompoundTag nbt = stack.getTag();
         if (nbt != null && nbt.contains(NBT_TAG_LIST)) {
-            ListTag l = nbt.getList("TagList", Tag.TAG_STRING);
+            ListTag l = nbt.getList(NBT_TAG_LIST, Tag.TAG_STRING);
             Set<ResourceLocation> res = new HashSet<>();
             for (int i = 0; i < l.size(); i++) {
                 res.add(new ResourceLocation(l.getString(i)));
             }
             return res;
         } else {
-            return new HashSet<>();
+            return Sets.newHashSet();
         }
     }
 
     public static void setConfiguredTagList(ItemStack stack, Set<ResourceLocation> tags) {
         ListTag l = new ListTag();
         tags.forEach(rl -> l.add(StringTag.valueOf(rl.toString())));
-        stack.getOrCreateTag().put("TagList", l);
+        stack.getOrCreateTag().put(NBT_TAG_LIST, l);
     }
 
     @Override
-    public boolean matchTags(ItemStack filterStack, Item item) {
+    public boolean matchFilter(ItemStack filterStack, ItemStack stack) {
+        Validate.isTrue(filterStack.getItem() instanceof TagFilterItem, "filtering itemstack is not a tag filter!");
         Set<ResourceLocation> tags = getConfiguredTagList(filterStack);
-        return !Sets.intersection(tags, item.getTags()).isEmpty();
+        return !Sets.intersection(tags, stack.getItem().getTags()).isEmpty();
     }
 }

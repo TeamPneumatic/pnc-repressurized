@@ -83,7 +83,7 @@ public interface IItemRegistry {
 
     /**
      * Convenience method to check if an item matches a given filter item. Note that the filtering item (the first
-     * parameter) could be a Tag Filter or other instance of {@link ITagFilteringItem}, so parameter order is important;
+     * parameter) could be a Tag Filter or other instance of {@link IFilteringItem}, so parameter order is important;
      * provide the filtering item first, and the item to check second.
      *
      * @param filterStack the item to check against

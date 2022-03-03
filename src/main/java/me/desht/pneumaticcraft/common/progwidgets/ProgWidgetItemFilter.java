@@ -43,7 +43,6 @@ import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -123,7 +122,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             if (filter.getItem() == ModItems.TAG_FILTER.get()) {
                 curTooltip.addAll(TagFilterItem.getConfiguredTagList(filter).stream()
                         .map(s -> Symbols.bullet().append(new TextComponent(s.toString()).withStyle(ChatFormatting.YELLOW)))
-                        .collect(Collectors.toList()));
+                        .toList());
             }
         }
         if (useModSimilarity) {
