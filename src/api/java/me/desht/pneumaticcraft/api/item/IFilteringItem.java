@@ -17,19 +17,18 @@
 
 package me.desht.pneumaticcraft.api.item;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Implement this on items which can be used to do a match by item tags.  E.g. the Tag Filter item.  Such items can
+ * Implement this on items which can be used to as filters.  E.g. the Tag Filter item.  Such items can
  * be passed as the first parameter to {@link IItemRegistry#doesItemMatchFilter(ItemStack, ItemStack, boolean, boolean, boolean)}
  */
-public interface ITagFilteringItem {
+public interface IFilteringItem {
     /**
-     * Does the given item's tags have a non-empty intersection with the given filter stack's configured tag list?
-     * @param filterStack the stack to filter against; should be of an item implementing this interface
+     * Does the given item's match the given filter stack's filtering criteria?
+     * @param filterStack the stack to filter against; <strong>must</strong> be of an item implementing this interface
      * @param item the item to check
-     * @return true if there's an intersection, false otherwise
+     * @return true if there's a match, false otherwise
      */
-    boolean matchTags(ItemStack filterStack, Item item);
+    boolean matchFilter(ItemStack filterStack, ItemStack item);
 }

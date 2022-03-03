@@ -49,8 +49,6 @@ public interface IProgWidget extends IProgWidgetBase {
 
     Pair<Float,Float> getMaxUV();
 
-    int getTextureSize();
-
     void getTooltip(List<Component> curTooltip);
 
     void addWarnings(List<Component> curInfo, List<IProgWidget> widgets);

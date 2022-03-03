@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.base.Splitter;
+import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
-import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.XPFluidManager;
@@ -345,8 +345,8 @@ public class PneumaticCraftUtils {
             return mod1.equals(mod2);
         }
 
-        if (filterStack.getItem() instanceof ITagFilteringItem f) {
-            return f.matchTags(filterStack, stack.getItem());
+        if (filterStack.getItem() instanceof IFilteringItem f) {
+            return f.matchFilter(filterStack, stack);
         }
 
         if (filterStack.getItem() != stack.getItem()) return false;

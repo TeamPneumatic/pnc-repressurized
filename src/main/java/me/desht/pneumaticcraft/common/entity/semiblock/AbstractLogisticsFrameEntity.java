@@ -307,13 +307,10 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     }
 
     public int getIncomingItems(ItemStack stack) {
-        int count = 0;
-        for (ItemStack s : incomingStacks.keySet()) {
-            if (itemFilterHandler.matchOneItem(stack, s)) {
-                count += s.getCount();
-            }
-        }
-        return count;
+        return incomingStacks.keySet().stream()
+                .filter(s -> itemFilterHandler.matchOneItem(stack, s))
+                .mapToInt(ItemStack::getCount)
+                .sum();
     }
 
     public void setItemFilter(int slot, ItemStack stack) {

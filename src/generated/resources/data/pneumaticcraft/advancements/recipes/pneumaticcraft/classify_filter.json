@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:classify_filter"
+    ]
+  },
+  "criteria": {
+    "has_logistics_core": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "pneumaticcraft:logistics_core"
+            ]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:classify_filter"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_logistics_core",
+      "has_the_recipe"
+    ]
+  ]
+}

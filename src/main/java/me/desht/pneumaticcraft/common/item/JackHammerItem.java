@@ -242,7 +242,7 @@ public class JackHammerItem extends PressurizableItem
         return super.onBlockStartBreak(itemstack, pos, player);
     }
 
-    // just like Block#harvest, except all items are dropped in the same place (the block that was mined)
+    // just like Block#playerDestroy, except all items are dropped in the same place (the block that was mined)
     private static void magnetHarvest(Block block, Level level, Player player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
         player.awardStat(Stats.BLOCK_MINED.get(block));
         player.causeFoodExhaustion(0.005F);

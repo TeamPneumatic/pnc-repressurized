@@ -63,7 +63,7 @@ import static net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT;
 import static net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER;
 
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "8";
+    private static final String PROTOCOL_VERSION = "9";
     private static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder
             .named(RL("main_channel"))
             .clientAcceptedVersions(PROTOCOL_VERSION::equals)
@@ -211,6 +211,8 @@ public class NetworkHandler {
 				PacketMinigunStop::toBytes, PacketMinigunStop::new, PacketMinigunStop::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketUpdateVacuumModule.class,
 				PacketUpdateVacuumModule::toBytes, PacketUpdateVacuumModule::new, PacketUpdateVacuumModule::handle, PLAY_TO_CLIENT);
+		registerMessage(PacketSyncClassifyFilter.class,
+				PacketSyncClassifyFilter::toBytes, PacketSyncClassifyFilter::new, PacketSyncClassifyFilter::handle, PLAY_TO_SERVER);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, FriendlyByteBuf> encoder, Function<FriendlyByteBuf, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
