@@ -1,6 +1,6 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/wip"
+      "layer0" : "pneumaticcraft:item/classify_filter"
    },
    "parent" : "item/generated"
 }
