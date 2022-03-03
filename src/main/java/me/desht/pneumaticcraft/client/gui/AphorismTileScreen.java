@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -37,7 +38,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.widget.Slider;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
@@ -46,7 +46,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class AphorismTileScreen extends Screen implements Slider.ISlider {
+public class AphorismTileScreen extends Screen implements PNCSlider.ISlider {
     private static final int PANEL_HEIGHT = 88;
     public final AphorismTileBlockEntity tile;
     private String[] textLines;
@@ -79,7 +79,7 @@ public class AphorismTileScreen extends Screen implements Slider.ISlider {
         minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
         int yPos = (height - PANEL_HEIGHT) / 2;
-        addRenderableWidget(new Slider(5, yPos, 90, 16,  new TextComponent("Margin: "), TextComponent.EMPTY,
+        addRenderableWidget(new PNCSlider(5, yPos, 90, 16,  new TextComponent("Margin: "), TextComponent.EMPTY,
                 0, 9, tile.getMarginSize(), false, true, b -> { }, this));
 
         WidgetCheckBox cb;
@@ -288,7 +288,7 @@ public class AphorismTileScreen extends Screen implements Slider.ISlider {
     }
 
     @Override
-    public void onChangeSliderValue(Slider slider) {
+    public void onChangeSliderValue(PNCSlider slider) {
         tile.setMarginSize((byte) slider.getValueInt());
     }
 }

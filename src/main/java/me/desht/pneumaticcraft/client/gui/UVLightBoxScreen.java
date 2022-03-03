@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.UVLightBoxBlock;
@@ -31,14 +32,13 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.gui.widget.Slider;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLightBoxMenu,UVLightBoxBlockEntity> implements Slider.ISlider {
-    private Slider slider;
+public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLightBoxMenu,UVLightBoxBlockEntity> implements PNCSlider.ISlider {
+    private PNCSlider slider;
 
     public UVLightBoxScreen(UVLightBoxMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -50,7 +50,7 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
     public void init() {
         super.init();
 
-        addRenderableWidget(slider = new Slider(leftPos + 10, topPos + 45, 95, 16,
+        addRenderableWidget(slider = new PNCSlider(leftPos + 10, topPos + 45, 95, 16,
                 xlate("pneumaticcraft.gui.uv_light_box.threshold").append(" "), new TextComponent("%"),
                 1, 100, te.getThreshold(), false, true, b -> { }, this));
     }
@@ -103,7 +103,7 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
     }
 
     @Override
-    public void onChangeSliderValue(Slider slider) {
+    public void onChangeSliderValue(PNCSlider slider) {
         sendDelayed(5);
     }
 

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -27,16 +28,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.client.gui.widget.Slider;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<KeroseneLampMenu,KeroseneLampBlockEntity> implements Slider.ISlider {
+public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<KeroseneLampMenu,KeroseneLampBlockEntity> implements PNCSlider.ISlider {
 
     private WidgetLabel rangeLabel;
-    private Slider slider;
+    private PNCSlider slider;
 
     public KeroseneLampScreen(KeroseneLampMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -49,7 +49,7 @@ public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<Ke
         addRenderableWidget(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
         addRenderableWidget(rangeLabel = new WidgetLabel(leftPos + 20, topPos + 55, TextComponent.EMPTY));
 
-        addRenderableWidget(slider = new Slider(leftPos + 7, topPos + 30, 118, 20,
+        addRenderableWidget(slider = new PNCSlider(leftPos + 7, topPos + 30, 118, 20,
                 xlate("pneumaticcraft.gui.keroseneLamp.maxRange").append(" "), TextComponent.EMPTY,
                 1, KeroseneLampBlockEntity.MAX_RANGE, te.getTargetRange(), false, true,
                 b -> { }, this));
@@ -69,7 +69,7 @@ public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<Ke
     }
 
     @Override
-    public void onChangeSliderValue(Slider slider) {
+    public void onChangeSliderValue(PNCSlider slider) {
         sendDelayed(5);
     }
 

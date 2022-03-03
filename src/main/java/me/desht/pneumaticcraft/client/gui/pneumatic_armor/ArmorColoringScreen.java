@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
+import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -42,7 +43,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.widget.Slider;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -51,7 +51,7 @@ import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements Slider.ISlider {
+public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements PNCSlider.ISlider {
     private boolean needSave = false;
     private final int[][] origColors = new int[4][SelectorType.values().length]; // primary & secondary for each slot
     private final int[][] colors = new int[4][SelectorType.values().length]; // primary & secondary for each slot
@@ -180,7 +180,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
         }
     }
 
-    private void updateSlider(Slider s, int val) {
+    private void updateSlider(RGBSlider s, int val) {
         s.setValue(val);
         s.setMessage(s.dispString.copy().append(Integer.toString(val)).append(s.suffix));
     }
@@ -241,7 +241,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
     }
 
     @Override
-    public void onChangeSliderValue(Slider slider) {
+    public void onChangeSliderValue(PNCSlider slider) {
         if (slider instanceof RGBSlider) {
             ColorComponent component = ((RGBSlider) slider).getColor();
             setCurrentColor((getCurrentColor() & ~component.mask) | (slider.getValueInt() << component.bitShift));
@@ -249,7 +249,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
         }
     }
 
-    private static class RGBSlider extends Slider {
+    private static class RGBSlider extends PNCSlider {
         private final ColorComponent color;
 
         public RGBSlider(ArmorColoringScreen gui, ColorComponent color, int xPos, int yPos, int width, int height, double currentVal) {
