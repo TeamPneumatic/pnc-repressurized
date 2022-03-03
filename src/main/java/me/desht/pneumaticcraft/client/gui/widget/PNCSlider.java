@@ -99,7 +99,7 @@ public class PNCSlider extends ExtendedButton {
             String val;
             if (showDecimal && precision > 0) {
                 val = new DecimalFormat("#." + Strings.repeat("#", precision))
-                        .format(Double.toString(Mth.lerp(sliderValue, minValue, maxValue)));
+                        .format(Mth.lerp(sliderValue, minValue, maxValue));
             } else {
                 val = Integer.toString((int) Math.round(Mth.lerp(sliderValue, minValue, maxValue)));
             }
