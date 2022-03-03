@@ -209,8 +209,6 @@ public class NetworkHandler {
 				PacketUpdateArmorColors::toBytes, PacketUpdateArmorColors::new, PacketUpdateArmorColors::handle, PLAY_TO_SERVER);
 		registerMessage(PacketMinigunStop.class,
 				PacketMinigunStop::toBytes, PacketMinigunStop::new, PacketMinigunStop::handle, PLAY_TO_CLIENT);
-		registerMessage(PacketUpdateVacuumModule.class,
-				PacketUpdateVacuumModule::toBytes, PacketUpdateVacuumModule::new, PacketUpdateVacuumModule::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketSyncClassifyFilter.class,
 				PacketSyncClassifyFilter::toBytes, PacketSyncClassifyFilter::new, PacketSyncClassifyFilter::handle, PLAY_TO_SERVER);
     }
