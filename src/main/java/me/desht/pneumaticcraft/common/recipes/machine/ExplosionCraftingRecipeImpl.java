@@ -84,7 +84,7 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     }
 
     public static NonNullList<ItemStack> tryToCraft(Level world, ItemStack stack) {
-        ExplosionCraftingRecipe recipe = PneumaticCraftRecipeType.EXPLOSION_CRAFTING.findFirst(world, r -> r.matches(stack));
+        ExplosionCraftingRecipe recipe = PneumaticCraftRecipeType.explosionCrafting.findFirst(world, r -> r.matches(stack));
         return recipe == null || recipe.getAmount() == 0 ? EMPTY_RESULT : createOutput(recipe, stack);
     }
 
@@ -129,12 +129,12 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.EXPLOSION_CRAFTING;
+        return PneumaticCraftRecipeType.explosionCrafting;
     }
 
     @Override
     public String getGroup() {
-        return PneumaticCraftRecipeType.EXPLOSION_CRAFTING.toString();
+        return PneumaticCraftRecipeType.explosionCrafting.toString();
     }
 
     @Override

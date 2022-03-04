@@ -79,6 +79,6 @@ public class BlockHeatProperties implements IRecipeManager<HeatPropertiesRecipe>
 
     @Override
     public RecipeType<HeatPropertiesRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.HEAT_PROPERTIES;
+        return PneumaticCraftRecipeType.heatProperties;
     }
 }

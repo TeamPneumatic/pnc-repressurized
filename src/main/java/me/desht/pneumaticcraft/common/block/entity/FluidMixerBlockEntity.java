@@ -196,7 +196,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     private FluidMixerRecipe findApplicableRecipe() {
-        for (FluidMixerRecipe recipe : PneumaticCraftRecipeType.FLUID_MIXER.getRecipes(level).values()) {
+        for (FluidMixerRecipe recipe : PneumaticCraftRecipeType.fluidMixer.getRecipes(level).values()) {
             if (recipe.matches(inputTank1.getFluid(), inputTank2.getFluid())) {
                 return recipe;
             }

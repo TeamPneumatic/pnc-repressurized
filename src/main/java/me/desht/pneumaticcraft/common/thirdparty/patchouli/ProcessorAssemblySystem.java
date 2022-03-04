@@ -36,11 +36,11 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER.getRecipe(Minecraft.getInstance().level, recipeId);
+        this.recipe = PneumaticCraftRecipeType.assemblyDrillLaser.getRecipe(Minecraft.getInstance().level, recipeId);
         if (recipe == null) {
-            this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipe(Minecraft.getInstance().level, recipeId);
+            this.recipe = PneumaticCraftRecipeType.assemblyDrill.getRecipe(Minecraft.getInstance().level, recipeId);
             if (recipe == null) {
-                this.recipe = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipe(Minecraft.getInstance().level, recipeId);
+                this.recipe = PneumaticCraftRecipeType.assemblyLaser.getRecipe(Minecraft.getInstance().level, recipeId);
             }
         }
     }
@@ -50,23 +50,18 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
         if (recipe == null) return null;
 
         ItemStack programStack = new ItemStack(AssemblyProgramItem.fromProgramType(recipe.getProgramType()));
-        switch (key) {
-            case "input":
-                return Patchouli.Util.getStacks(recipe.getInput());
-            case "output":
-                return IVariable.from(recipe.getOutput());
-            case "program":
-                return IVariable.from(programStack);
-            case "name":
-                return IVariable.wrap(recipe.getOutput().getHoverName().getString());
-            case "desc":
-                return IVariable.wrap(xlate("pneumaticcraft.patchouli.processor.assembly.desc",
-                        recipe.getOutput().getHoverName(),
-                        programStack.getHoverName()
-                ).getString());
-        }
+        return switch (key) {
+            case "input" -> Patchouli.Util.getStacks(recipe.getInput());
+            case "output" -> IVariable.from(recipe.getOutput());
+            case "program" -> IVariable.from(programStack);
+            case "name" -> IVariable.wrap(recipe.getOutput().getHoverName().getString());
+            case "desc" -> IVariable.wrap(xlate("pneumaticcraft.patchouli.processor.assembly.desc",
+                    recipe.getOutput().getHoverName(),
+                    programStack.getHoverName()
+            ).getString());
+            default -> null;
+        };
 
-        return null;
     }
 
 }

@@ -105,7 +105,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.PRESSURE_CHAMBER;
+        return PneumaticCraftRecipeType.pressureChamber;
     }
 
     @Override

@@ -48,6 +48,6 @@ public class AssemblyDrill implements IRecipeManager<AssemblyRecipe> {
 
     @Override
     public RecipeType<AssemblyRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.ASSEMBLY_DRILL;
+        return PneumaticCraftRecipeType.assemblyDrill;
     }
 }

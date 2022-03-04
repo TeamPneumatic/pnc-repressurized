@@ -63,7 +63,7 @@ public enum FuelRegistry implements IFuelRegistry {
         Set<Fluid> res = new HashSet<>(hotFluids.keySet());
 
         // recipes, from datapacks
-        for (FuelQualityRecipe recipe : PneumaticCraftRecipeType.FUEL_QUALITY.getRecipes(world).values()) {
+        for (FuelQualityRecipe recipe : PneumaticCraftRecipeType.fuelQuality.getRecipes(world).values()) {
             res.addAll(recipe.getFuel().getFluidStacks().stream()
                     .map(FluidStack::getFluid)
                     .filter(f -> f.isSource(f.defaultFluidState()))
@@ -92,7 +92,7 @@ public enum FuelRegistry implements IFuelRegistry {
         if (fe != null) return fe;
 
         // stuff from datapacks (override default registered stuff)
-        for (FuelQualityRecipe recipe : PneumaticCraftRecipeType.FUEL_QUALITY.getRecipes(world).values()) {
+        for (FuelQualityRecipe recipe : PneumaticCraftRecipeType.fuelQuality.getRecipes(world).values()) {
             if (recipe.matchesFluid(fluid)) {
                 return new FuelRecord(recipe.getAirPerBucket(), recipe.getBurnRate());
             }

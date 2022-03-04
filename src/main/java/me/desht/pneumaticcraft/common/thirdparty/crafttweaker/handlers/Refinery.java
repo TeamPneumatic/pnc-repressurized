@@ -49,6 +49,6 @@ public class Refinery implements IRecipeManager<RefineryRecipe> {
 
 	@Override
 	public RecipeType<RefineryRecipe> getRecipeType() {
-		return PneumaticCraftRecipeType.REFINERY;
+		return PneumaticCraftRecipeType.refinery;
 	}
 }

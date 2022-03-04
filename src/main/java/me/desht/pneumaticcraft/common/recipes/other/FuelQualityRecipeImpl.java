@@ -83,7 +83,7 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.FUEL_QUALITY;
+        return PneumaticCraftRecipeType.fuelQuality;
     }
 
     public static class Serializer<T extends FuelQualityRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {

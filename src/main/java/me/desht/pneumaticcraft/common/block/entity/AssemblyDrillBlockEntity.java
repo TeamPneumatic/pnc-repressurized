@@ -151,7 +151,7 @@ public class AssemblyDrillBlockEntity extends AbstractAssemblyRobotBlockEntity {
     }
 
     private ItemStack getDrilledOutputForItem(ItemStack input) {
-        return PneumaticCraftRecipeType.ASSEMBLY_DRILL.stream(level)
+        return PneumaticCraftRecipeType.assemblyDrill.stream(level)
                 .filter(recipe -> recipe.matches(input))
                 .findFirst()
                 .map(recipe -> recipe.getOutput().copy())

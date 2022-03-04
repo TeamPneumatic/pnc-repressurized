@@ -189,7 +189,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
             applicableRecipes.clear();
             final SizeLimitedItemHandlerWrapper h = new SizeLimitedItemHandlerWrapper(itemsInChamber);
             if (h.getSlots() > 0) {
-                PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(level).forEach(recipe -> {
+                PneumaticCraftRecipeType.pressureChamber.stream(level).forEach(recipe -> {
                     Collection<Integer> slots = recipe.findIngredients(h);
                     if (!slots.isEmpty()) {
                         applicableRecipes.add(new ApplicableRecipe(recipe, slots));

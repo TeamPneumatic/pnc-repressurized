@@ -65,11 +65,11 @@ public class ProgramDrillLaser extends AssemblyProgram {
     }
 
     private boolean canItemBeLasered(Level world, ItemStack item) {
-        return PneumaticCraftRecipeType.ASSEMBLY_LASER.stream(world).anyMatch(recipe -> recipe.matches(item));
+        return PneumaticCraftRecipeType.assemblyLaser.stream(world).anyMatch(recipe -> recipe.matches(item));
     }
 
     private boolean canItemBeDrilled(Level world, ItemStack item) {
-        return PneumaticCraftRecipeType.ASSEMBLY_DRILL.stream(world).anyMatch(recipe -> recipe.matches(item));
+        return PneumaticCraftRecipeType.assemblyDrill.stream(world).anyMatch(recipe -> recipe.matches(item));
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
 
     @Override
     public Collection<AssemblyRecipe> getRecipeList(Level world) {
-        return PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER.getRecipes(world).values();
+        return PneumaticCraftRecipeType.assemblyDrillLaser.getRecipes(world).values();
     }
 
     @Override

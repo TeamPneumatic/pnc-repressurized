@@ -141,7 +141,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.THERMO_PLANT;
+        return PneumaticCraftRecipeType.thermoPlant;
     }
 
     @Override

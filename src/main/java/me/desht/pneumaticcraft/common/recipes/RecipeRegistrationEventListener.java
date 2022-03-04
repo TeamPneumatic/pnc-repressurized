@@ -28,12 +28,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class RecipeRegistrationEventHandler {
+public class RecipeRegistrationEventListener {
     @SubscribeEvent
     public static void onRegister(RegistryEvent.Register<RecipeSerializer<?>> event) {
         // register our custom recipe and ingredient types
 
-        PneumaticCraftRecipeType.registerRecipeTypes(event.getRegistry());
+        PneumaticCraftRecipeType.registerRecipeTypes();
 
         CraftingHelper.register(FluidTagPresentCondition.Serializer.INSTANCE);
 

@@ -65,6 +65,6 @@ public class ExplosionCrafting implements IRecipeManager<ExplosionCraftingRecipe
 
     @Override
     public RecipeType<ExplosionCraftingRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.EXPLOSION_CRAFTING;
+        return PneumaticCraftRecipeType.explosionCrafting;
     }
 }

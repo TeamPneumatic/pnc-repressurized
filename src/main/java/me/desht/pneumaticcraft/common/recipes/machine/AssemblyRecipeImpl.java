@@ -99,9 +99,9 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
     @Override
     public RecipeType<?> getType() {
         return switch (getProgramType()) {
-            case DRILL -> PneumaticCraftRecipeType.ASSEMBLY_DRILL;
-            case LASER -> PneumaticCraftRecipeType.ASSEMBLY_LASER;
-            case DRILL_LASER -> PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER;
+            case DRILL -> PneumaticCraftRecipeType.assemblyDrill;
+            case LASER -> PneumaticCraftRecipeType.assemblyLaser;
+            case DRILL_LASER -> PneumaticCraftRecipeType.assemblyDrillLaser;
         };
     }
 

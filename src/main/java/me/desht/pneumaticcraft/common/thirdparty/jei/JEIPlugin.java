@@ -107,16 +107,16 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         // these all use recipes from the vanilla RecipeManager
-        addRecipeType(registration, PneumaticCraftRecipeType.PRESSURE_CHAMBER, ModCategoryUid.PRESSURE_CHAMBER);
-        addRecipeType(registration, PneumaticCraftRecipeType.HEAT_FRAME_COOLING, ModCategoryUid.HEAT_FRAME_COOLING);
-        addRecipeType(registration, PneumaticCraftRecipeType.REFINERY, ModCategoryUid.REFINERY);
-        addRecipeType(registration, PneumaticCraftRecipeType.THERMO_PLANT, ModCategoryUid.THERMO_PLANT);
-        addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_LASER, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_DRILL, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        addRecipeType(registration, PneumaticCraftRecipeType.AMADRON_OFFERS, ModCategoryUid.AMADRON_TRADE);
-        addRecipeType(registration, PneumaticCraftRecipeType.FLUID_MIXER, ModCategoryUid.FLUID_MIXER);
-        addRecipeType(registration, PneumaticCraftRecipeType.EXPLOSION_CRAFTING, ModCategoryUid.EXPLOSION_CRAFTING);
+        addRecipeType(registration, PneumaticCraftRecipeType.pressureChamber, ModCategoryUid.PRESSURE_CHAMBER);
+        addRecipeType(registration, PneumaticCraftRecipeType.heatFrameCooling, ModCategoryUid.HEAT_FRAME_COOLING);
+        addRecipeType(registration, PneumaticCraftRecipeType.refinery, ModCategoryUid.REFINERY);
+        addRecipeType(registration, PneumaticCraftRecipeType.thermoPlant, ModCategoryUid.THERMO_PLANT);
+        addRecipeType(registration, PneumaticCraftRecipeType.assemblyLaser, ModCategoryUid.ASSEMBLY_CONTROLLER);
+        addRecipeType(registration, PneumaticCraftRecipeType.assemblyDrill, ModCategoryUid.ASSEMBLY_CONTROLLER);
+        addRecipeType(registration, PneumaticCraftRecipeType.assemblyDrillLaser, ModCategoryUid.ASSEMBLY_CONTROLLER);
+        addRecipeType(registration, PneumaticCraftRecipeType.amadronOffers, ModCategoryUid.AMADRON_TRADE);
+        addRecipeType(registration, PneumaticCraftRecipeType.fluidMixer, ModCategoryUid.FLUID_MIXER);
+        addRecipeType(registration, PneumaticCraftRecipeType.explosionCrafting, ModCategoryUid.EXPLOSION_CRAFTING);
 
         // these have their own pseudo-recipes
         registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);

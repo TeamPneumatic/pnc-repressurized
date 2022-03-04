@@ -151,14 +151,14 @@ public class ThermopneumaticProcessingPlantScreen extends
 
     @Override
     public Collection<ItemStack> getTargetItems() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.THERMO_PLANT)
+        return getCurrentRecipe(PneumaticCraftRecipeType.thermoPlant)
                 .map(thermoPlantRecipe -> Collections.singletonList(thermoPlantRecipe.getOutputItem()))
                 .orElse(Collections.emptyList());
     }
 
     @Override
     public Collection<FluidStack> getTargetFluids() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.THERMO_PLANT)
+        return getCurrentRecipe(PneumaticCraftRecipeType.thermoPlant)
                 .map(thermoPlantRecipe -> Collections.singletonList(thermoPlantRecipe.getOutputFluid()))
                 .orElse(Collections.emptyList());
     }

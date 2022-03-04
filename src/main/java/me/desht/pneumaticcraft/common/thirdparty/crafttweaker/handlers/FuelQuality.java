@@ -47,6 +47,6 @@ public class FuelQuality implements IRecipeManager<FuelQualityRecipe> {
 
     @Override
     public RecipeType<FuelQualityRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.FUEL_QUALITY;
+        return PneumaticCraftRecipeType.fuelQuality;
     }
 }

@@ -48,6 +48,6 @@ public class AssemblyLaser implements IRecipeManager<AssemblyRecipe> {
 
     @Override
     public RecipeType<AssemblyRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.ASSEMBLY_LASER;
+        return PneumaticCraftRecipeType.assemblyLaser;
     }
 }

@@ -241,7 +241,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         ItemStack stack = handler.getStackInSlot(slot);
         if (stack.isEmpty()) return false;
 
-        HeatFrameCoolingRecipe recipe = PneumaticCraftRecipeType.HEAT_FRAME_COOLING.findFirst(level, r -> r.matches(stack));
+        HeatFrameCoolingRecipe recipe = PneumaticCraftRecipeType.heatFrameCooling.findFirst(level, r -> r.matches(stack));
 
         if (recipe != null) {
             boolean extractedOK;

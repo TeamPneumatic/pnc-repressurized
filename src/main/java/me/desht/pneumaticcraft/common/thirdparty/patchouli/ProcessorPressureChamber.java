@@ -39,7 +39,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = PneumaticCraftRecipeType.PRESSURE_CHAMBER.getRecipe(Minecraft.getInstance().level, recipeId);
+        this.recipe = PneumaticCraftRecipeType.pressureChamber.getRecipe(Minecraft.getInstance().level, recipeId);
         this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
     }
 

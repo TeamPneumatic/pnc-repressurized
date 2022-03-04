@@ -183,7 +183,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.HEAT_PROPERTIES;
+        return PneumaticCraftRecipeType.heatProperties;
     }
 
     @Override

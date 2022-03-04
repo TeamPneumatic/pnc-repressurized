@@ -36,7 +36,7 @@ public class ProcessorThermoPlant implements IComponentProcessor {
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = PneumaticCraftRecipeType.THERMO_PLANT.getRecipe(Minecraft.getInstance().level, recipeId);
+        this.recipe = PneumaticCraftRecipeType.thermoPlant.getRecipe(Minecraft.getInstance().level, recipeId);
         this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
     }
 

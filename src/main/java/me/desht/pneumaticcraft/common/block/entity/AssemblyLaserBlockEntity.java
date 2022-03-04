@@ -144,7 +144,7 @@ public class AssemblyLaserBlockEntity extends AbstractAssemblyRobotBlockEntity {
 
     @Nonnull
     private ItemStack getLaseredOutputForItem(ItemStack input) {
-        return PneumaticCraftRecipeType.ASSEMBLY_LASER.stream(level)
+        return PneumaticCraftRecipeType.assemblyLaser.stream(level)
                 .filter(recipe -> recipe.matches(input))
                 .findFirst()
                 .map(recipe -> recipe.getOutput().copy())

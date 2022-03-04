@@ -380,7 +380,7 @@ public enum AmadronOfferManager {
             staticOffers.clear();
             periodicOffers.clear();
 
-            PneumaticCraftRecipeType.AMADRON_OFFERS.getRecipes(world).values().forEach(offer -> {
+            PneumaticCraftRecipeType.amadronOffers.getRecipes(world).values().forEach(offer -> {
                 if (offer.isStaticOffer()) {
                     staticOffers.add(offer);
                 } else {

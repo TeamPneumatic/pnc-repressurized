@@ -107,7 +107,7 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.FLUID_MIXER;
+        return PneumaticCraftRecipeType.fluidMixer;
     }
 
     public static class Serializer<T extends FluidMixerRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {

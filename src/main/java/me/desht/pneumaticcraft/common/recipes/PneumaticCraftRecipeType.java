@@ -39,10 +39,8 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.*;
@@ -56,48 +54,52 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements RecipeType<T> {
     private static final List<PneumaticCraftRecipeType<? extends PneumaticCraftRecipe>> types = new ArrayList<>();
 
-    public static final PneumaticCraftRecipeType<AmadronRecipe> AMADRON_OFFERS
-            = registerType(PneumaticCraftRecipeTypes.AMADRON_OFFERS);
-    public static final PneumaticCraftRecipeType<AssemblyRecipe> ASSEMBLY_LASER
-            = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_LASER);
-    public static final PneumaticCraftRecipeType<AssemblyRecipe> ASSEMBLY_DRILL
-            = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL);
-    public static final PneumaticCraftRecipeType<AssemblyRecipe> ASSEMBLY_DRILL_LASER
-            = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL_LASER);
-    public static final PneumaticCraftRecipeType<ExplosionCraftingRecipe> EXPLOSION_CRAFTING
-            = registerType(PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING);
-    public static final PneumaticCraftRecipeType<HeatFrameCoolingRecipe> HEAT_FRAME_COOLING
-            = registerType(PneumaticCraftRecipeTypes.HEAT_FRAME_COOLING);
-    public static final PneumaticCraftRecipeType<PressureChamberRecipe> PRESSURE_CHAMBER
-            = registerType(PneumaticCraftRecipeTypes.PRESSURE_CHAMBER);
-    public static final PneumaticCraftRecipeType<RefineryRecipe> REFINERY
-            = registerType(PneumaticCraftRecipeTypes.REFINERY);
-    public static final PneumaticCraftRecipeType<ThermoPlantRecipe> THERMO_PLANT
-            = registerType(PneumaticCraftRecipeTypes.THERMO_PLANT);
-    public static final PneumaticCraftRecipeType<FluidMixerRecipe> FLUID_MIXER
-            = registerType(PneumaticCraftRecipeTypes.FLUID_MIXER);
-    public static final PneumaticCraftRecipeType<FuelQualityRecipe> FUEL_QUALITY
-            = registerType(PneumaticCraftRecipeTypes.FUEL_QUALITY);
-    public static final PneumaticCraftRecipeType<HeatPropertiesRecipe> HEAT_PROPERTIES
-            = registerType(PneumaticCraftRecipeTypes.HEAT_PROPERTIES);
+    public static PneumaticCraftRecipeType<AmadronRecipe> amadronOffers;
+    public static PneumaticCraftRecipeType<AssemblyRecipe> assemblyLaser;
+    public static PneumaticCraftRecipeType<AssemblyRecipe> assemblyDrill;
+    public static PneumaticCraftRecipeType<AssemblyRecipe> assemblyDrillLaser;
+    public static PneumaticCraftRecipeType<ExplosionCraftingRecipe> explosionCrafting;
+    public static PneumaticCraftRecipeType<HeatFrameCoolingRecipe> heatFrameCooling;
+    public static PneumaticCraftRecipeType<PressureChamberRecipe> pressureChamber;
+    public static PneumaticCraftRecipeType<RefineryRecipe> refinery;
+    public static PneumaticCraftRecipeType<ThermoPlantRecipe> thermoPlant;
+    public static PneumaticCraftRecipeType<FluidMixerRecipe> fluidMixer;
+    public static PneumaticCraftRecipeType<FuelQualityRecipe> fuelQuality;
+    public static PneumaticCraftRecipeType<HeatPropertiesRecipe> heatProperties;
+
+    private static CacheReloadListener cacheReloadListener;
 
     private final Map<ResourceLocation, T> cachedRecipes = new HashMap<>();
     private final ResourceLocation registryName;
-    private static CacheReloadListener cacheReloadListener;
+
+    private PneumaticCraftRecipeType(String name) {
+        this.registryName = RL(name);
+    }
+
+    /**
+     * Called from Forge RecipeSerializer registry event. Static RecipeType init no longer
+     * possible from 1.18.2 onward.
+     */
+    static void registerRecipeTypes() {
+        amadronOffers = registerType(PneumaticCraftRecipeTypes.AMADRON_OFFERS);
+        assemblyLaser = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_LASER);
+        assemblyDrill = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL);
+        assemblyDrillLaser = registerType(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL_LASER);
+        explosionCrafting = registerType(PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING);
+        heatFrameCooling = registerType(PneumaticCraftRecipeTypes.HEAT_FRAME_COOLING);
+        pressureChamber = registerType(PneumaticCraftRecipeTypes.PRESSURE_CHAMBER);
+        refinery = registerType(PneumaticCraftRecipeTypes.REFINERY);
+        thermoPlant = registerType(PneumaticCraftRecipeTypes.THERMO_PLANT);
+        fluidMixer = registerType(PneumaticCraftRecipeTypes.FLUID_MIXER);
+        fuelQuality = registerType(PneumaticCraftRecipeTypes.FUEL_QUALITY);
+        heatProperties = registerType(PneumaticCraftRecipeTypes.HEAT_PROPERTIES);
+    }
 
     private static <T extends PneumaticCraftRecipe> PneumaticCraftRecipeType<T> registerType(String name) {
         PneumaticCraftRecipeType<T> type = new PneumaticCraftRecipeType<>(name);
         types.add(type);
+        Registry.register(Registry.RECIPE_TYPE, type.registryName, type);
         return type;
-    }
-
-    // TODO: use a Forge registry if/when there is one for recipe types
-    static void registerRecipeTypes(IForgeRegistry<RecipeSerializer<?>> registry) {
-        types.forEach(type -> Registry.register(Registry.RECIPE_TYPE, type.registryName, type));
-    }
-
-    private PneumaticCraftRecipeType(String name) {
-        this.registryName = RL(name);
     }
 
     public static CacheReloadListener getCacheReloadListener() {
@@ -136,7 +138,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             }
             if (world == null) {
                 // still no world?  oh well
-                Log.error("detected someone trying to get recipes for %s with no world available - returning empty recipe list", registryName.toString());
+                Log.error("detected someone trying to get recipes for %s with no world available - returning empty recipe list", this);
                 return Collections.emptyMap();
             }
         }
@@ -146,11 +148,11 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             List<T> recipes = recipeManager.getRecipesFor(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), world);
             recipes.forEach(recipe -> cachedRecipes.put(recipe.getId(), recipe));
 
-            if (this == ASSEMBLY_DRILL_LASER) {
-                Collection<AssemblyRecipe> drillRecipes = PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipes(world).values();
-                Collection<AssemblyRecipe> laserRecipes = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipes(world).values();
+            if (this == assemblyDrillLaser) {
+                Collection<AssemblyRecipe> drillRecipes = PneumaticCraftRecipeType.assemblyDrill.getRecipes(world).values();
+                Collection<AssemblyRecipe> laserRecipes = PneumaticCraftRecipeType.assemblyLaser.getRecipes(world).values();
                 AssemblyRecipeImpl.calculateAssemblyChain(drillRecipes, laserRecipes).forEach((id, recipe) -> cachedRecipes.put(id, (T) recipe));
-            } else if (this == FLUID_MIXER) {
+            } else if (this == fluidMixer) {
                 List<FluidMixerRecipe> l = recipes.stream().filter(r -> r instanceof FluidMixerRecipe).map(r -> (FluidMixerRecipe)r).toList();
                 FluidMixerBlockEntity.cacheRecipeFluids(l);
             }

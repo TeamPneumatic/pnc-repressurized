@@ -37,12 +37,12 @@ public class ModBlocks {
         return BLOCKS.register(name, sup);
     }
 
-    private static Supplier<BlockItem> itemDefault(final RegistryObject<? extends Block> block) {
-        return item(block);
+    private static Supplier<BlockItem> itemDefault(final RegistryObject<? extends Block> blockSupplier) {
+        return item(blockSupplier);
     }
 
-    private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block) {
-        return () -> new BlockItem(block.get(), new Item.Properties().tab(ModItems.ItemGroups.PNC_CREATIVE_TAB));
+    private static Supplier<BlockItem> item(final RegistryObject<? extends Block> blockSupplier) {
+        return () -> new BlockItem(blockSupplier.get(), ModItems.defaultProps());
     }
 
     public static Block.Properties defaultProps() {

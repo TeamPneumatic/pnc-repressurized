@@ -88,7 +88,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
 	@Override
 	public RecipeType<?> getType() {
-		return PneumaticCraftRecipeType.REFINERY;
+		return PneumaticCraftRecipeType.refinery;
 	}
 
 	@Override

@@ -192,7 +192,7 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.AMADRON_OFFERS;
+        return PneumaticCraftRecipeType.amadronOffers;
     }
 
     @Override

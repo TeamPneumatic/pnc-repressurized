@@ -357,7 +357,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
         private boolean isValidItem(ItemStack stack) {
             if (PressureChamberInterfaceBlockEntity.this.interfaceMode == InterfaceDirection.IMPORT) {
                 return acceptedItemCache.isAcceptable(stack.getItem(), () ->
-                        PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(level)
+                        PneumaticCraftRecipeType.pressureChamber.stream(level)
                                 .anyMatch(recipe -> recipe.isValidInputItem(stack))
                 );
             } else return PressureChamberInterfaceBlockEntity.this.interfaceMode == InterfaceDirection.EXPORT;

@@ -57,7 +57,7 @@ public class ProgramDrill extends AssemblyProgram {
     }
 
     private boolean canItemBeDrilled(Level world, ItemStack item) {
-        return PneumaticCraftRecipeType.ASSEMBLY_DRILL.findFirst(world, r -> r.matches(item)) != null;
+        return PneumaticCraftRecipeType.assemblyDrill.findFirst(world, r -> r.matches(item)) != null;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ProgramDrill extends AssemblyProgram {
 
     @Override
     public Collection<AssemblyRecipe> getRecipeList(Level world) {
-        return PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipes(world).values();
+        return PneumaticCraftRecipeType.assemblyDrill.getRecipes(world).values();
     }
 
     @Override

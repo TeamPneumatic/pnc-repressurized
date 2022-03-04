@@ -161,7 +161,7 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
 
     @Override
     public Collection<FluidStack> getTargetFluids() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.REFINERY)
+        return getCurrentRecipe(PneumaticCraftRecipeType.refinery)
                 .map(RefineryRecipe::getOutputs)
                 .orElse(Collections.emptyList());
     }

@@ -65,6 +65,6 @@ public class PressureChamber implements IRecipeManager<PressureChamberRecipe> {
 
     @Override
     public RecipeType<PressureChamberRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.PRESSURE_CHAMBER;
+        return PneumaticCraftRecipeType.pressureChamber;
     }
 }

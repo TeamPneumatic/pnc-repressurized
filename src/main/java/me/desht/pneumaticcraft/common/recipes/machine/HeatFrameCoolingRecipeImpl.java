@@ -102,7 +102,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.HEAT_FRAME_COOLING;
+        return PneumaticCraftRecipeType.heatFrameCooling;
     }
 
     public static <T extends Recipe<?>> void cacheMaxThresholdTemp(Collection<T> recipes) {
@@ -118,7 +118,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
     public static int getMaxThresholdTemp(Level world) {
         if (maxThresholdTemp == Integer.MIN_VALUE) {
-            cacheMaxThresholdTemp(PneumaticCraftRecipeType.HEAT_FRAME_COOLING.getRecipes(world).values());
+            cacheMaxThresholdTemp(PneumaticCraftRecipeType.heatFrameCooling.getRecipes(world).values());
         }
         return maxThresholdTemp;
     }

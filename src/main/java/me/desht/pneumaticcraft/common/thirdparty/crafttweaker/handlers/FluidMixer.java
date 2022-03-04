@@ -52,6 +52,6 @@ public class FluidMixer implements IRecipeManager<FluidMixerRecipe> {
 
     @Override
     public RecipeType<FluidMixerRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.FLUID_MIXER;
+        return PneumaticCraftRecipeType.fluidMixer;
     }
 }

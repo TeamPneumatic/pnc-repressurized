@@ -73,7 +73,7 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
     }
 
     private void populateCustomHeatEntries(Level world) {
-        PneumaticCraftRecipeType.HEAT_PROPERTIES.getRecipes(world)
+        PneumaticCraftRecipeType.heatProperties.getRecipes(world)
                 .forEach((key, recipe) -> customHeatEntries.put(recipe.getBlock(), recipe));
 
         // give other mods a chance to programmatically add simple heat properties (no transitions, just temperature & resistance)

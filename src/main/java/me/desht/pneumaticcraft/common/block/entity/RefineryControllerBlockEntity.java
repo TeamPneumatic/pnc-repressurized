@@ -107,13 +107,13 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     }
 
     public static boolean isInputFluidValid(Level world, Fluid fluid, int size) {
-        RefineryRecipe recipe =  PneumaticCraftRecipeType.REFINERY
+        RefineryRecipe recipe =  PneumaticCraftRecipeType.refinery
                 .findFirst(world, r -> r.getOutputs().size() <= size && FluidUtils.matchFluid(r.getInput(), fluid, true));
         return recipe != null;
     }
 
     private RefineryRecipe getRecipeFor(FluidStack fluid) {
-        return PneumaticCraftRecipeType.REFINERY.stream(level)
+        return PneumaticCraftRecipeType.refinery.stream(level)
                 .filter(r -> r.getOutputs().size() <= outputCount)
                 .filter(r -> FluidUtils.matchFluid(r.getInput(), fluid, true))
                 .max(Comparator.comparingInt(r2 -> r2.getOutputs().size()))

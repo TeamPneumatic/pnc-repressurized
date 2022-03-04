@@ -118,14 +118,14 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
 
     @Override
     public Collection<ItemStack> getTargetItems() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.FLUID_MIXER)
+        return getCurrentRecipe(PneumaticCraftRecipeType.fluidMixer)
                 .map(recipe -> Collections.singletonList(recipe.getOutputItem()))
                 .orElse(Collections.emptyList());
     }
 
     @Override
     public Collection<FluidStack> getTargetFluids() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.FLUID_MIXER)
+        return getCurrentRecipe(PneumaticCraftRecipeType.fluidMixer)
                 .map(recipe -> Collections.singletonList(recipe.getOutputFluid()))
                 .orElse(Collections.emptyList());
     }

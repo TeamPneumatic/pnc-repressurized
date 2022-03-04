@@ -61,6 +61,6 @@ public class HeatFrameCooling implements IRecipeManager<HeatFrameCoolingRecipe> 
 
     @Override
     public RecipeType<HeatFrameCoolingRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.HEAT_FRAME_COOLING;
+        return PneumaticCraftRecipeType.heatFrameCooling;
     }
 }

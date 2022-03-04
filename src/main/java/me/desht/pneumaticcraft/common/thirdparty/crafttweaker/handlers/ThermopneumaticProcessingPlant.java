@@ -57,6 +57,6 @@ public class ThermopneumaticProcessingPlant implements IRecipeManager<ThermoPlan
 
     @Override
     public RecipeType<ThermoPlantRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.THERMO_PLANT;
+        return PneumaticCraftRecipeType.thermoPlant;
     }
 }

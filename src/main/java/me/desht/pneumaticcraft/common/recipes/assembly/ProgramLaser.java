@@ -61,7 +61,7 @@ public class ProgramLaser extends AssemblyProgram {
     }
 
     private boolean canItemBeLasered(Level world, ItemStack item) {
-        return PneumaticCraftRecipeType.ASSEMBLY_LASER.findFirst(world, r -> r.matches(item)) != null;
+        return PneumaticCraftRecipeType.assemblyLaser.findFirst(world, r -> r.matches(item)) != null;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ProgramLaser extends AssemblyProgram {
 
     @Override
     public Collection<AssemblyRecipe> getRecipeList(Level world) {
-        return PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipes(world).values();
+        return PneumaticCraftRecipeType.assemblyLaser.getRecipes(world).values();
     }
 
     @Override
