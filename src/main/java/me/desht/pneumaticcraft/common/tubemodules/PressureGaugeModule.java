@@ -33,16 +33,28 @@ public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
     public void tickServer() {
         super.tickServer();
 
-        pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
-            if (pressureTube.nonNullLevel().getGameTime() % 20 == 0)
-                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube());
-            if (setRedstone(getRedstone(h.getPressure()))) {
-                // force a recalc on next tick
-                pressureTube.tubeModules()
-                        .filter(tm -> tm instanceof RedstoneModule)
-                        .forEach(tm -> ((RedstoneModule) tm).setInputLevel(-1));
-            }
-        });
+        if (pressureTube.nonNullLevel().getGameTime() % 20 == 0) {
+            pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(pressureTube, null, h.getSideLeaking(), h.getAir()), pressureTube);
+            });
+        }
+        if (setRedstone(getRedstone(pressureTube.getPressure()))) {
+            // force a recalc on next tick
+            pressureTube.tubeModules()
+                    .filter(tm -> tm instanceof RedstoneModule)
+                    .forEach(tm -> ((RedstoneModule) tm).setInputLevel(-1));
+        }
+
+//        pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+//            if (pressureTube.nonNullLevel().getGameTime() % 20 == 0)
+//                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube());
+//            if (setRedstone(getRedstone(h.getPressure()))) {
+//                // force a recalc on next tick
+//                pressureTube.tubeModules()
+//                        .filter(tm -> tm instanceof RedstoneModule)
+//                        .forEach(tm -> ((RedstoneModule) tm).setInputLevel(-1));
+//            }
+//        });
     }
 
     private int getRedstone(float pressure) {

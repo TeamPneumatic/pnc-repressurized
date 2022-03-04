@@ -156,7 +156,7 @@ public class CommonConfig {
         public ForgeConfigSpec.IntValue maxVeinMinerRange;
     }
     public static class Villagers {
-        public ForgeConfigSpec.BooleanValue addMechanicHouse;
+        public ForgeConfigSpec.IntValue mechanicHouseWeight;
         public ForgeConfigSpec.EnumValue<VillagerTradesRegistration.WhichTrades> whichTrades;
     }
     public static class Drones {
@@ -652,11 +652,11 @@ public class CommonConfig {
         builder.pop();
 
         builder.push("Villagers");
-        villagers.addMechanicHouse = builder
-                .comment("Add a village house for the Pressure Mechanic? Note: setting this to false won't affect any already-generated houses, only disable new generation.")
-                .translation("pneumaticcraft.config.common.villagers.add_mechanic_house")
+        villagers.mechanicHouseWeight = builder
+                .comment("Frequency of PneumaticCraft village house generation? Default value of 8 tends to give 0-2 houses per village with no other mods present. Set to 0 to disable house generation entirely. May need to raise this value if there are many other mods also adding village houses. Note: changing this value won't affect any already-generated houses, only new generation.")
+                .translation("pneumaticcraft.config.common.villagers.mechanic_house_weight")
                 .worldRestart()
-                .define("addMechanicHouse", true);
+                .defineInRange("addMechanicHouse", 8, 0, Integer.MAX_VALUE);
         villagers.whichTrades = builder
                 .comment("Which trades should the Pressure Mechanic offer? ALL will offer all trades. PCB_BLUEPRINT will offer *only* the PCB Blueprint, an item required for normal progression through the mod. NONE will offer nothing (but the PCB Blueprint is also available via Amadron by default). Note that changing this won't affect any already-spawned Pressure Mechanics.")
                 .translation("pneumaticcraft.config.common.villagers.mechanic_trades")

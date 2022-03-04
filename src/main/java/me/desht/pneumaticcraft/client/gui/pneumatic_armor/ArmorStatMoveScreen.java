@@ -22,6 +22,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
+import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
@@ -36,7 +37,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraftforge.client.gui.widget.Slider;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     private final ArmorHUDLayout.LayoutType layoutItem;
 
     private WidgetCheckBox snapToGrid;
-    private Slider gridSlider;
+    private PNCSlider gridSlider;
 
     private static boolean snap = false;
     private static int gridSize = 4;
@@ -104,7 +104,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         snapToGrid.checked = snap;
         addRenderableWidget(snapToGrid);
 
-        gridSlider = new Slider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
+        gridSlider = new PNCSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
                 TextComponent.EMPTY, TextComponent.EMPTY, 1, 12, gridSize, false, true, b -> {}, null);
         addRenderableWidget(gridSlider);
     }

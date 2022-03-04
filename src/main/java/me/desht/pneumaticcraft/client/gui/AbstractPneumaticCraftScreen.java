@@ -22,21 +22,15 @@ import me.desht.pneumaticcraft.api.client.ITickableWidget;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.widget.Slider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractPneumaticCraftScreen extends Screen {
     public int guiLeft, guiTop, xSize, ySize;
-    private final List<Slider> sliders = new ArrayList<>();
 
     public AbstractPneumaticCraftScreen(Component title) {
         super(title);
@@ -57,25 +51,6 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
 
     protected WidgetLabel addLabel(Component text, int x, int y, WidgetLabel.Alignment alignment) {
         return addRenderableWidget(new WidgetLabel(x, y, text).setAlignment(alignment));
-    }
-
-    @Override
-    protected <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T pWidget) {
-        if (pWidget instanceof Slider s) sliders.add(s);
-        return super.addRenderableWidget(pWidget);
-    }
-
-    protected void removeWidget(AbstractWidget widget) {
-        super.removeWidget(widget);
-        if (widget instanceof Slider) sliders.remove(widget);
-    }
-
-    @Override
-    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
-        // if mouse is not over slider, then Slider#onRelease() won't get called to release any in-progress drag
-        sliders.forEach(slider -> slider.dragging = false);
-
-        return super.mouseReleased(pMouseX, pMouseY, pButton);
     }
 
     @Override

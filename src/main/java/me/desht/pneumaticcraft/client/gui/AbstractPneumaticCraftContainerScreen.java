@@ -56,8 +56,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
@@ -69,7 +67,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.client.gui.widget.Slider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
 
@@ -89,7 +86,6 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     boolean firstUpdate = true;
     private final List<IGuiAnimatedStat> statWidgets = new ArrayList<>();
     private int sendDelay = -1;
-    private final List<Slider> sliders = new ArrayList<>();
 
     public AbstractPneumaticCraftContainerScreen(C container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -163,12 +159,6 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         return addAnimatedStat(title, StatIcon.NONE, backgroundColor, leftSided);
     }
 
-    @Override
-    protected <T extends GuiEventListener & Widget & NarratableEntry> T addRenderableWidget(T pWidget) {
-        if (pWidget instanceof Slider s) sliders.add(s);
-        return super.addRenderableWidget(pWidget);
-    }
-
     protected WidgetLabel addLabel(Component text, int x, int y) {
         return addRenderableWidget(new WidgetLabel(x, y, text));
     }
@@ -180,7 +170,6 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     void removeWidget(AbstractWidget widget) {
         super.removeWidget(widget);
         if (widget instanceof IGuiAnimatedStat) statWidgets.remove(widget);
-        else if (widget instanceof Slider) sliders.remove(widget);
     }
 
     public List<IGuiAnimatedStat> getStatWidgets() {
@@ -374,14 +363,6 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     protected abstract ResourceLocation getGuiTexture();
 
     @Override
-    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton) {
-        // if mouse is not over slider, then Slider#onRelease() won't get called to release any in-progress drag
-        sliders.forEach(slider -> slider.dragging = false);
-
-        return super.mouseReleased(pMouseX, pMouseY, pButton);
-    }
-
-    @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
         for (IGuiAnimatedStat w : statWidgets) {
             if (w.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY)) {
@@ -412,7 +393,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         }
 
         if (!tooltip.isEmpty()) {
-            int max = 350; //Math.min(imageWidth, width * 3 / 4);
+            int max = Math.min(getXSize(), 350); //Math.min(imageWidth, width * 3 / 4);
             renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
         }
     }
@@ -564,22 +545,6 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     void sendGUIButtonPacketToServer(String tag) {
         NetworkHandler.sendToServer(new PacketGuiButton(tag));
     }
-
-//    void drawHoveringString(PoseStack matrixStack, List<? extends FormattedText> text, int x, int y, Font fontRenderer) {
-//        net.minecraftforge.client.gui.GuiUtils.drawHoveringText(matrixStack, text, x, y, width, height, -1, fontRenderer);
-//    }
-
-//    WidgetButtonExtended getButtonFromRectangle(String tag, Rect2i buttonSize, String buttonText, Button.OnPress pressable) {
-//        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), buttonText, pressable).withTag(tag);
-//    }
-//
-//    WidgetButtonExtended getInvisibleButtonFromRectangle(String tag, Rect2i buttonSize, Button.OnPress pressable) {
-//        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), TextComponent.EMPTY, pressable).withTag(tag);
-//    }
-//
-//    WidgetTextField getTextFieldFromRectangle(Rect2i textFieldSize) {
-//        return new WidgetTextField(font, textFieldSize.getX(), textFieldSize.getY(), textFieldSize.getWidth(), textFieldSize.getHeight());
-//    }
 
     @Override
     public int getGuiLeft() {

@@ -47,6 +47,7 @@ public abstract class ProgWidget implements IProgWidget {
     private IProgWidget[] connectedParameters;
     private IProgWidget outputStepConnection;
     private IProgWidget parent;
+    private Pair<Float,Float> maxUV = null;
 
     public ProgWidget(ProgWidgetType<?> type) {
         this.type = type;
@@ -156,25 +157,19 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public Pair<Float,Float> getMaxUV() {
-        int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);
-        int height = getHeight() + (hasStepOutput() ? 10 : 0);
-        int textureSize = getTextureSize();
-        float u = (float) width / textureSize;
-        float v = (float) height / textureSize;
-        return new ImmutablePair<>(u, v);
-    }
-
-    @Override
-    public int getTextureSize() {
-        int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);
-        int height = getHeight() + (hasStepOutput() ? 10 : 0);
-        int maxSize = Math.max(width, height);
-
-        int textureSize = 1;
-        while (textureSize < maxSize) {
-            textureSize *= 2;
+        if (maxUV == null) {
+            int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);
+            int height = getHeight() + (hasStepOutput() ? 10 : 0);
+            int maxSize = Math.max(width, height);
+            int textureSize = 1;
+            while (textureSize < maxSize) {
+                textureSize *= 2;
+            }
+            float u = (float) width / textureSize;
+            float v = (float) height / textureSize;
+            maxUV = new ImmutablePair<>(u, v);
         }
-        return textureSize;
+        return maxUV;
     }
 
     @Override

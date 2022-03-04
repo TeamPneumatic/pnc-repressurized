@@ -221,8 +221,9 @@ public abstract class AbstractTubeModule {
     public boolean onActivated(Player player, InteractionHand hand) {
         if (player.level.isClientSide && hasGui()) {
             AbstractTubeModuleScreen.openGuiForModule(this);
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**

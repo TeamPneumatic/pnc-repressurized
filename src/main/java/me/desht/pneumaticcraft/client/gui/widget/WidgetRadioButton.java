@@ -27,7 +27,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.lwjgl.opengl.GL11;
@@ -66,7 +65,7 @@ public class WidgetRadioButton extends AbstractWidget implements ITooltipProvide
         drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f, active ? 0xFFA0A0A0 : 0xFF999999);
         drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f - 1, active ? 0XFF202020 : 0xFFAAAAAA);
         if (checked) {
-            drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, 1, active ? 0xFFFFFFFF : 0xFFAAAAAA);
+            drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, 1, active ? 0xFF00C000 : 0xFFAAAAAA);
         }
         fontRenderer.draw(matrixStack, getMessage().getVisualOrderText(), x + 1 + BUTTON_WIDTH,
                 y + BUTTON_HEIGHT / 2f - fontRenderer.lineHeight / 2f, active ? color : 0xFF888888);
@@ -95,15 +94,11 @@ public class WidgetRadioButton extends AbstractWidget implements ITooltipProvide
         for (int i = 0; i < N_POINTS; i++) {
             float sin = Mth.sin(i / N_POINTS * (float) Math.PI * 2f);
             float cos = Mth.cos(i / N_POINTS * (float) Math.PI * 2f);
-            wr.vertex(posMat, x + sin * radius, y + cos * radius, 0f).color(cols[1], cols[2], cols[2], cols[0]).endVertex();
+            wr.vertex(posMat, x + sin * radius, y + cos * radius, 0f).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
         }
         Tesselator.getInstance().end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
-    }
-
-    public Rect2i getBounds() {
-        return new Rect2i(x, y, BUTTON_WIDTH + fontRenderer.width(getMessage()), BUTTON_HEIGHT);
     }
 
     @Override

@@ -64,13 +64,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.*;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
@@ -92,7 +92,6 @@ public class MiscEventHandler {
     @SubscribeEvent
     public void onWorldTickEnd(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END && !event.world.isClientSide) {
-
             DroneClaimManager.getInstance(event.world).tick();
 
             if (event.world.getGameTime() % 100 == 0) {
@@ -106,7 +105,7 @@ public class MiscEventHandler {
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
             ResourceLocation name = fluidStack.getFluid().getRegistryName();
-            if (Names.MOD_ID.equals(name.getNamespace())) {
+            if (name != null && Names.MOD_ID.equals(name.getNamespace())) {
                 int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(null, fluidStack.getFluid());
                 event.setBurnTime(value > 0 ? (int)(value * ConfigHelper.common().general.fuelBucketEfficiency.get()) : -1);
             }
@@ -122,14 +121,14 @@ public class MiscEventHandler {
         Iterator<Entity> iterator = event.getAffectedEntities().iterator();
         while (iterator.hasNext()) {
             Entity entity = iterator.next();
-            if (entity instanceof ItemEntity && entity.isAlive()) {
-                ItemStack stack = ((ItemEntity) entity).getItem();
+            if (entity instanceof ItemEntity itemEntity && entity.isAlive()) {
+                ItemStack stack = itemEntity.getItem();
                 if (!stack.isEmpty()) {
                     boolean firstItem = true;
                     for (ItemStack result : ExplosionCraftingRecipeImpl.tryToCraft(event.getWorld(), stack)) {
                         if (firstItem) {
                             // first item in result: just replace the existing entity
-                            ((ItemEntity) entity).setItem(result);
+                            itemEntity.setItem(result);
                             iterator.remove();
                             firstItem = false;
                         } else {
@@ -142,19 +141,10 @@ public class MiscEventHandler {
         }
     }
 
-//    private void checkForAdvancement(ExplosionEvent.Detonate event, ItemStack result) {
-//        if ((result.getItem() == ModItems.INGOT_IRON_COMPRESSED.get() || result.getItem() == ModBlocks.COMPRESSED_IRON_BLOCK.get().asItem())) {
-//            Vec3d exp = event.getExplosion().getPosition();
-//            for (PlayerEntity player : event.getWorld().getEntitiesWithinAABB(PlayerEntity.class, new AxisAlignedBB(exp.x - 32, exp.y - 32, exp.z - 32, exp.x + 32, exp.y + 32, exp.z + 32))) {
-//                AdvancementTriggers.EXPLODE_IRON.trigger((ServerPlayerEntity) player);
-//            }
-//        }
-//    }
-
     @SubscribeEvent
     public void onEntityConstruction(EntityConstructing event) {
-        if (event.getEntity() instanceof IDroneBase) {
-            MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent((IDroneBase) event.getEntity()));
+        if (event.getEntity() instanceof IDroneBase d) {
+            MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(d));
         }
     }
 
@@ -237,33 +227,8 @@ public class MiscEventHandler {
     }
 
     @SubscribeEvent
-    public void onLootTableLoad(LootTableLoadEvent event) {
-        if (ConfigHelper.common().general.enableDungeonLoot.get()) {
-            String prefix = "minecraft:chests/";
-            String name = event.getName().toString();
-            if (name.startsWith(prefix)) {
-                String file = name.substring(name.indexOf(prefix) + prefix.length());
-                switch (file) {
-                    case "abandoned_mineshaft", "desert_pyramid", "jungle_temple", "simple_dungeon", "stronghold_corridor", "village_blacksmith" -> event.getTable().addPool(buildLootPool("simple_dungeon_loot"));
-                    default -> {
-                    }
-                }
-            }
-        }
-    }
-
-    private LootPool buildLootPool(String name) {
-        return LootPool.lootPool()
-                .add(LootTableReference.lootTableReference(RL("inject/" + name)).setWeight(1))
-                .setBonusRolls(UniformGenerator.between(0, 1))
-                .name("pneumaticcraft_inject")
-                .build();
-    }
-
-    @SubscribeEvent
     public void onEquipmentChanged(LivingEquipmentChangeEvent event) {
-        if (event.getEntityLiving() instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) event.getEntityLiving();
+        if (event.getEntityLiving() instanceof ServerPlayer player) {
             if (event.getSlot().getType() == EquipmentSlot.Type.HAND && event.getTo().getItem() instanceof IPositionProvider) {
                 // sync any variable values in this position provider item to the client for rendering purposes
                 ((IPositionProvider) event.getTo().getItem()).syncVariables(player, event.getTo());

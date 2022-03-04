@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -31,12 +32,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.gui.widget.Slider;
 import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler<?>> extends IOptionPage.SimpleOptionPage<T>
-        implements Slider.ISlider {
-    private Slider slider;
+        implements PNCSlider.ISlider {
     private Integer pendingVal = null;
 
     AbstractSliderOptions(IGuiScreen screen, T handler) {
@@ -74,19 +73,19 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
             initVal = PneumaticArmorItem.getIntData(stack, getTagName(), range.getRight());
         }
         PointXY pos = getSliderPos();
-        slider = new Slider(pos.x(), pos.y(), 150, 20,  getPrefix(), getSuffix(),
-                range.getLeft(), range.getRight(), initVal, false, true, b -> { }, this);
-        gui.addWidget(slider);
+        gui.addWidget(new PNCSlider(pos.x(), pos.y(), 150, 20, getPrefix(), getSuffix(),
+                range.getLeft(), range.getRight(), initVal, false, true, b -> {
+        }, this));
     }
 
     @Override
-    public void onChangeSliderValue(Slider slider) {
+    public void onChangeSliderValue(PNCSlider slider) {
         pendingVal = slider.getValueInt();
     }
 
     @Override
     public void tick() {
-        if (pendingVal != null && !slider.dragging) {
+        if (pendingVal != null && !getGuiScreen().getScreen().isDragging()) {
             // avoid sending a stream of update packets if player is dragging slider
             CompoundTag tag = new CompoundTag();
             tag.putInt(getTagName(), pendingVal);

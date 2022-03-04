@@ -84,6 +84,7 @@ public class ModItems {
     public static final RegistryObject<MicromissilesItem> MICROMISSILES = register("micromissiles", MicromissilesItem::new);
     public static final RegistryObject<MemoryStickItem> MEMORY_STICK = register("memory_stick", MemoryStickItem::new);
     public static final RegistryObject<TagFilterItem> TAG_FILTER = register("tag_filter", TagFilterItem::new);
+    public static final RegistryObject<ClassifyFilterItem> CLASSIFY_FILTER = register("classify_filter", ClassifyFilterItem::new);
     public static final RegistryObject<GlycerolItem> GLYCEROL = register("glycerol", GlycerolItem::new);
     public static final RegistryObject<BandageItem> BANDAGE = register("bandage", BandageItem::new);
     public static final RegistryObject<SpawnerCoreItem> SPAWNER_CORE = register("spawner_core", SpawnerCoreItem::new);

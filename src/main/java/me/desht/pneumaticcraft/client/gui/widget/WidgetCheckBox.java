@@ -17,10 +17,9 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
+import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
@@ -70,31 +69,12 @@ public class WidgetCheckBox extends AbstractWidget implements ICheckboxWidget, I
         if (visible) {
             fill(matrixStack, x, y, x + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT, active ? 0xFFA0A0A0 : 0xFF999999);
             fill(matrixStack, x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, active ? 0xFF202020 : 0xFFAAAAAA);
-            if (checked) {
-                drawTick(matrixStack);
-            }
             Font fr = Minecraft.getInstance().font;
+            if (checked) {
+                fr.draw(matrixStack, Symbols.TICK_MARK,  x + 2, y + 2, 0xFF00C000);
+            }
             fr.draw(matrixStack, getMessage().getVisualOrderText(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - fr.lineHeight / 2f, active ? color : 0xFF888888);
         }
-    }
-
-    private void drawTick(PoseStack matrixStack) {
-        RenderSystem.disableTexture();
-        int r, g, b;
-        if (active) {
-            r = 128; g = 255; b = 128;
-        } else {
-            r = g = b = 192;
-        }
-        BufferBuilder wr = Tesselator.getInstance().getBuilder();
-        RenderSystem.lineWidth(3);
-        Matrix4f posMat = matrixStack.last().pose();
-        wr.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        wr.vertex(posMat, x + 2, y + 5, 0f).color(r, g, b, 255).endVertex();
-        wr.vertex(posMat, x + 5, y + 7, 0f).color(r, g, b, 255).endVertex();
-        wr.vertex(posMat, x + 8, y + 3, 0f).color(r, g, b, 255).endVertex();
-        Tesselator.getInstance().end();
-        RenderSystem.enableTexture();
     }
 
     @Override

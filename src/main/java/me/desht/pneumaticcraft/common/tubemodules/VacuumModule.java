@@ -21,10 +21,9 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketUpdateVacuumModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -41,7 +40,7 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     @Override
     public void tickCommon() {
         oldRotation = rotation;
-        rotation += lastAmount / 100F;
+        rotation += lastAmount / 5F;
     }
 
     @Override
@@ -76,7 +75,7 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
         }
 
         if (prevLast != lastAmount) {
-            NetworkHandler.sendToAllTracking(new PacketUpdateVacuumModule(this), tube.nonNullLevel(), tube.getBlockPos());
+            tube.sendDescriptionPacket();
         }
     }
 
@@ -119,5 +118,17 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
 
     @Override
     public void onAirDispersion(int amount) {
+    }
+
+    @Override
+    public void readFromNBT(CompoundTag tag) {
+        super.readFromNBT(tag);
+        lastAmount = tag.getInt("lastAmount");
+    }
+
+    @Override
+    public CompoundTag writeToNBT(CompoundTag tag) {
+        tag.putInt("lastAmount", lastAmount);
+        return super.writeToNBT(tag);
     }
 }

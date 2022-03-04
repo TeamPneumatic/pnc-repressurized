@@ -43,7 +43,7 @@ public class BulletParticle extends TextureSheetParticle {
 
         BlockPos pos = new BlockPos(x, y, z);
         BlockState state = level.getBlockState(pos);
-        if (!state.isAir() || onGround) {
+        if (!state.getCollisionShape(level, pos).isEmpty() || onGround) {
             if (level.random.nextBoolean()) {
                 ClipContext ctx = new ClipContext(new Vec3(x, y, z), new Vec3(x + xd, y + yd, z + zd), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null);
                 BlockHitResult res = level.clip(ctx);
