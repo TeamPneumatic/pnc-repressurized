@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.block.entity.ThermopneumaticProcessingPlan
 import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
-import me.desht.pneumaticcraft.common.item.SeismicSensorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
@@ -123,7 +122,6 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         ThermopneumaticProcessingPlantBlockEntity.clearCachedItemsAndFluids();
         AmadronOfferManager.getInstance().rebuildRequired();
         FuelRegistry.getInstance().clearCachedFuelFluids();
-        SeismicSensorItem.clearCachedFluids();
         BlockHeatProperties.getInstance().clear();
         CraftingRecipeCache.INSTANCE.clear();
         VacuumTrapBlockEntity.clearBlacklistCache();

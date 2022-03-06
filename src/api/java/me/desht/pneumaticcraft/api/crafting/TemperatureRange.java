@@ -109,7 +109,7 @@ public class TemperatureRange {
     }
 
     /**
-     * Read a temperature range from packet buffer, as written by {@link #write(PacketBuffer)}
+     * Read a temperature range from packet buffer, as written by {@link #write(FriendlyByteBuf)}
      * @param buffer the buffer
      * @return a new temperature range object
      */
@@ -214,11 +214,11 @@ public class TemperatureRange {
         }
 
         public float convertFromKelvin(float tempIn) {
-            switch (this) {
-                case CELSIUS: return tempIn - 273;
-                case FAHRENHEIT: return (tempIn - 273) * 1.8f + 32;
-                case KELVIN: default: return tempIn;
-            }
+            return switch (this) {
+                case CELSIUS -> tempIn - 273;
+                case FAHRENHEIT -> (tempIn - 273) * 1.8f + 32;
+                case KELVIN -> tempIn;
+            };
         }
 
         public String symbol() {

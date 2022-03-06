@@ -24,10 +24,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Cached vanilla crafting table recipe lookup, primarily for the benefit of drone crafting widget.
@@ -64,7 +61,7 @@ public enum CraftingRecipeCache {
             if (!stack.isEmpty()) {
                 c.add(i);
                 c.add(stack.getItem().hashCode());
-                if (stack.hasTag()) c.add(stack.getTag().hashCode());
+                if (stack.hasTag()) c.add(Objects.requireNonNull(stack.getTag()).hashCode());
             }
         }
         return Arrays.hashCode(c.toArray(new Integer[0]));

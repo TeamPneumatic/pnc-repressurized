@@ -114,8 +114,8 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
      * @param laserRecipes all known laser recipes
      * @return a map (recipeId -> recipe) of all synthetic laser/drill recipes
      */
-    public static Map<ResourceLocation, AssemblyRecipeImpl> calculateAssemblyChain(Collection<AssemblyRecipe> drillRecipes, Collection<AssemblyRecipe> laserRecipes) {
-        Map<ResourceLocation, AssemblyRecipeImpl> drillLaser = new HashMap<>();
+    public static Map<ResourceLocation, AssemblyRecipe> calculateAssemblyChain(Collection<AssemblyRecipe> drillRecipes, Collection<AssemblyRecipe> laserRecipes) {
+        Map<ResourceLocation, AssemblyRecipe> drillLaser = new HashMap<>();
         for (AssemblyRecipe r1 : drillRecipes) {
             for (AssemblyRecipe r2 : laserRecipes) {
                 if (r2.getInput().test(r1.getOutput())

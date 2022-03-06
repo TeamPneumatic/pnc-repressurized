@@ -61,8 +61,6 @@ public class CommonConfig {
         public ForgeConfigSpec.IntValue pneumaticPumpEfficiency;
         public ForgeConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
         public ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
-        public ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluids;
-        public ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluidTags;
         public ForgeConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
         public ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
     }
@@ -325,16 +323,6 @@ public class CommonConfig {
                 .comment("Fuel usage / heat gen multiplier per speed upgrade: usage mult = speedUpgradeUsageMultiplier ^ num_of_speed_upgrades")
                 .translation("pneumaticcraft.config.common.machine_properties.speed_upgrade_usage_multiplier")
                 .defineInRange("speed_upgrade_usage_multiplier", PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER, 1.0, 2.0);
-        machines.seismicSensorFluids = builder
-                .worldRestart()
-                .comment("Fluid registry ID's that the Seismic Sensor will search for. It's recommended to use 'seismicSensorFluidTags' where possible, but this setting can be used if you want to add fluids which don't have any associated fluid tags.")
-                .translation("pneumaticcraft.config.common.machines.seismic_sensor_fluids")
-                .define("seismic_sensor_fluids", Lists.newArrayList());
-        machines.seismicSensorFluidTags = builder
-                .worldRestart()
-                .comment("Fluid tag names that the Seismic Sensor will search for. Known vanilla tags are 'minecraft:water' and 'minecraft:lava'. Other available fluid tags are mod-dependent. By default, 'forge:crude_oil' is matched, allowing PneumaticCraft (and potentially other mods) crude oil.")
-                .translation("pneumaticcraft.config.common.machines.seismic_sensor_fluid_tags")
-                .define("seismic_sensor_fluid_tags", Lists.newArrayList("forge:crude_oil"));
         machines.disenchantingBlacklist = builder
                 .comment("Blacklist items from being allowed in the Pressure Chamber disenchanting system. This is a starts-with string match, so you can match by mod, or individual item names as you need. Blacklisted by default are Quark Ancient Tomes, and all Tetra items; both can lead to enchantment duping as they have special enchantment mechanics.")
                 .translation("pneumaticcraft.config.common.machines.disenchanting_blacklist")

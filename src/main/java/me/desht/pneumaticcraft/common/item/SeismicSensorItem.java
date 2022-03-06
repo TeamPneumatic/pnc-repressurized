@@ -17,14 +17,12 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import com.google.common.collect.Sets;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -34,19 +32,14 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class SeismicSensorItem extends Item {
     private static final int MAX_SEARCH = 500;
-
-    private static final Set<ResourceLocation> fluidsOfInterest = new HashSet<>();
-    private static boolean needRecache = true;  // recache on first startup & when tags are reloaded
 
     public SeismicSensorItem() {
         super(ModItems.defaultProps().stacksTo(1));
@@ -80,26 +73,8 @@ public class SeismicSensorItem extends Item {
     }
 
     private Fluid findFluid(Level world, BlockPos pos) {
-        if (needRecache) {
-            fluidsOfInterest.clear();
-            Set<ResourceLocation> tagsFromConfig = ConfigHelper.common().machines.seismicSensorFluidTags.get().stream()
-                    .map(ResourceLocation::new)
-                    .collect(Collectors.toSet());
-            Set<ResourceLocation> fluidsFromConfig = ConfigHelper.common().machines.seismicSensorFluids.get().stream()
-                    .map(ResourceLocation::new)
-                    .collect(Collectors.toSet());
-            for (Fluid f : ForgeRegistries.FLUIDS.getValues()) {
-                if (!Sets.intersection(f.getTags(), tagsFromConfig).isEmpty()) {
-                    fluidsOfInterest.add(f.getRegistryName());
-                } else if (fluidsFromConfig.contains(f.getRegistryName())) {
-                    fluidsOfInterest.add(f.getRegistryName());
-                }
-            }
-            needRecache = false;
-        }
-
         FluidState state = world.getFluidState(pos);
-        return fluidsOfInterest.contains(state.getType().getRegistryName()) ? state.getType() : null;
+        return PneumaticCraftTags.Fluids.SEISMIC.contains(state.getType()) ? state.getType() : null;
     }
 
     private Set<BlockPos> findLake(Level world, BlockPos searchPos, Fluid fluid) {
@@ -119,9 +94,5 @@ public class SeismicSensorItem extends Item {
             }
         }
         return fluidPositions;
-    }
-
-    public static void clearCachedFluids() {
-        needRecache = true;
     }
 }

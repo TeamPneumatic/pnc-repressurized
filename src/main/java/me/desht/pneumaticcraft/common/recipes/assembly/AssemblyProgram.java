@@ -99,14 +99,14 @@ public abstract class AssemblyProgram {
     @SuppressWarnings("incomplete-switch")
     public void addProgramProblem(List<Component> problemList) {
         switch (curProblem) {
-            case NO_INPUT:
+            case NO_INPUT -> {
                 problemList.add(new TextComponent(ChatFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron."));
                 problemList.add(new TextComponent(ChatFormatting.BLACK + "Place an inventory with a Block of Compressed Iron surrounding the IO Unit."));
-                break;
-            case NO_OUTPUT:
+            }
+            case NO_OUTPUT -> {
                 problemList.add(new TextComponent(ChatFormatting.GRAY + "The output IO Unit can't find an inventory to place the output in."));
                 problemList.add(new TextComponent(ChatFormatting.BLACK + "Place an inventory / make space in a connected inventory."));
-                break;
+            }
         }
     }
 

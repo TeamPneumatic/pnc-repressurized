@@ -122,6 +122,8 @@ public class PneumaticCraftTags {
         public static final Tag.Named<Fluid> PLASTIC = modTag("plastic");
         public static final Tag.Named<Fluid> YEAST_CULTURE = modTag("yeast_culture");
 
+        public static final Tag.Named<Fluid> SEISMIC = modTag("seismic_sensor_interesting");
+
         static Tag.Named<Fluid> tag(String modid, String name) {
             return FluidTags.bind(new ResourceLocation(modid, name).toString());
         }

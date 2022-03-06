@@ -50,6 +50,8 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
         createTag(PneumaticCraftTags.Fluids.PLANT_OIL, ModFluids.VEGETABLE_OIL);
         createTag(PneumaticCraftTags.Fluids.BIODIESEL, ModFluids.BIODIESEL);
         createTag(PneumaticCraftTags.Fluids.EXPERIENCE, ModFluids.MEMORY_ESSENCE);
+
+        createAndAppend(PneumaticCraftTags.Fluids.CRUDE_OIL, PneumaticCraftTags.Fluids.SEISMIC);
     }
 
     @Override
@@ -58,22 +60,22 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
     }
 
     @SafeVarargs
-    private final <T> T[] resolveAll(IntFunction<T[]> creator, Supplier<? extends T>... suppliers) {
+    private <T> T[] resolveAll(IntFunction<T[]> creator, Supplier<? extends T>... suppliers) {
         return Arrays.stream(suppliers).map(Supplier::get).toArray(creator);
     }
 
     @SafeVarargs
-    private final void createTag(Tag.Named<Fluid> tag, Supplier<? extends Fluid>... blocks) {
+    private void createTag(Tag.Named<Fluid> tag, Supplier<? extends Fluid>... blocks) {
         tag(tag).add(resolveAll(Fluid[]::new, blocks));
     }
 
     @SafeVarargs
-    private final void appendToTag(Tag.Named<Fluid> tag, Tag.Named<Fluid>... toAppend) {
+    private void appendToTag(Tag.Named<Fluid> tag, Tag.Named<Fluid>... toAppend) {
         tag(tag).addTags(toAppend);
     }
 
     @SafeVarargs
-    private final void createAndAppend(Tag.Named<Fluid> tag, Tag.Named<Fluid> to, Supplier<? extends Fluid>... fluids) {
+    private void createAndAppend(Tag.Named<Fluid> tag, Tag.Named<Fluid> to, Supplier<? extends Fluid>... fluids) {
         createTag(tag, fluids);
         appendToTag(to, tag);
     }
