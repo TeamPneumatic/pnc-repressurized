@@ -49,7 +49,7 @@ public class VacuumRenderer extends AbstractTubeModuleRenderer<VacuumModule> {
 
     @Override
     protected void render(VacuumModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, float alpha) {
-        mainPart.render(matrixStack, builder, combinedLight, combinedOverlay);
+        mainPart.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
 
         matrixStack.mulPose(Vector3f.XP.rotationDegrees(-90));
         float rotation = Mth.lerp(partialTicks, module.oldRotation, module.rotation);
@@ -60,7 +60,7 @@ public class VacuumRenderer extends AbstractTubeModuleRenderer<VacuumModule> {
             matrixStack.pushPose();
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(rotation * 2 + (i + 0.5F) / BLADE_COUNT * 360));
             matrixStack.translate(0, 0, 1D / 16D);
-            blade.render(matrixStack, builder, combinedLight, combinedOverlay);
+            blade.render(matrixStack, builder, combinedLight, combinedOverlay, 1f, 1f, 1f, alpha);
             matrixStack.popPose();
         }
         matrixStack.popPose();
