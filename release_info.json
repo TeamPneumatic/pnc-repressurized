@@ -1,42 +1,10 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized",
   "promos": {
-    "1.16.5-recommmended": "1.16.5-2.15.1-297",
-    "1.16.5-latest": "1.16.5-2.15.1-297"
+    "1.18.1-recommended": "1.18.1-3.0.0-53",
+    "1.18.1-latest": "1.18.1-3.0.0-53"
   },
-  "1.16.5": {
-    "1.16.4-2.9.3-120": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#293-120-17-jan-2021",
-    "1.16.5-2.9.4-126": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#294-126-26-jan-2021",
-    "1.16.5-2.9.5-128": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#295-128-26-jan-2021",
-    "1.16.5-2.10.0-134": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2100-134-6-feb-2021",
-    "1.16.5-2.10.1-140": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2101-140-23-feb-2021",
-    "1.16.5-2.10.2-148": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2102-148-4-mar-2021",
-    "1.16.5-2.10.3-149": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2103-149-6-mar-2021",
-    "1.16.5-2.11.0-155": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2110-155-17-mar-2021",
-    "1.16.5-2.11.1-163": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2111-163-22-mar-2021",
-    "1.16.5-2.11.2-167": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2112-167-26-mar-2021",
-    "1.16.5-2.11.2-168": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2113-168-26-mar-2021",
-    "1.16.5-2.11.4-170": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2114-170-31-mar-2021",
-    "1.16.5-2.12.0-177": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2120-177-16-apr-2021",
-    "1.16.5-2.12.1-184": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2121-184-3-may-2021",
-    "1.16.5-2.12.2-186": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2122-186-13-may-2021",
-    "1.16.5-2.12.3-187": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2123-187-17-may-2021",
-    "1.16.5-2.12.4-188": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2124-188-18-may-2021",
-    "1.16.5-2.12.5-190": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2125-190-25-may-2021",
-    "1.16.5-2.13.0-199": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2130-199-24-jun-2021",
-    "1.16.5-2.13.1-202": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2131-202-6-jul-2021",
-    "1.16.5-2.13.2-205": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2132-205-19-jul-2021",
-    "1.16.5-2.13.3-209": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2133-211-3-aug-2021",
-    "1.16.5-2.13.4-215": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2134-215-20-aug-2021",
-    "1.16.5-2.14.0-227": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2140-227-27-aug-2021",
-    "1.16.5-2.14.1-245": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2141-245-31-aug-2021",
-    "1.16.5-2.14.2-247": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2142-247-6-sep-2021",
-    "1.16.5-2.14.3-257": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2143-257-23-sep-2021",
-    "1.16.5-2.14.4-258": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2144-258-24-sep-2021",
-    "1.16.5-2.14.5-272": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2145-272-10-nov-2021",
-    "1.16.5-2.14.6-277": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2146-277-24-nov-2021",
-    "1.16.5-2.14.7-283": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2147-283-1-jan-2022",
-    "1.16.5-2.15.0-289": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2150-287-10-jan-2022",
-    "1.16.5-2.15.1-297": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2151-297-19-jan-2022"
+  "1.18.1": {
+    "1.18.1-3.0.0-53": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.18.1/Changelog.md#300-53-7-mar-2022"
   }
 }

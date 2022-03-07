@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.1
 
-## 3.0.0-??? (unreleased)
+## 3.0.0-53 (7 Mar 2022)
 
 This release is based on the latest 1.16.5 code, with the following changes and additions:
 
@@ -15,10 +15,10 @@ This release is based on the latest 1.16.5 code, with the following changes and 
   * Ender Visor: Pneumatic Helmet upgrade (toggleable) to prevent Enderman aggro
   * Gilded: Pneumatic Armor upgrade (any slot) to prevent Piglin aggro
   * Stomp: Pneumatic Boots upgrade: when active, if you hit the ground hard enough to engage the normal fall damage reduction, you also damage nearby mobs proportional to how fast you were moving (uses extra air per mob damaged)
-* New Tube Junction block, which allows two separate lines of Pressure Tubes to cross without connecting to each other
+* New Tube Junction block, allows two separate lines of Pressure Tubes to cross without connecting to each other
   * Tube Junction handles any tier of pressure tube
 * New Tube Module: the Vacuum Module
-  * Basically the Vacuum Pump in module form - useful for inserting onto a vertical tube section (where a full-size pump wouldn't fit)
+  * It's basically the Vacuum Pump in module form - useful for inserting onto a vertical tube section (where a full-size pump wouldn't fit)
   * Not as upgradable as the Vacuum Pump in terms of speed or volume, but a Module Expansion Card (formerly Advanced PCB) does boost its speed somewhat
 * There are now two types of global variable (as used by Drones, GPS Tools, Universal Sensors & Remotes)
   * Player-global variables, prefixed with a "#", are individual to each player on a server
@@ -64,6 +64,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
 * Wall Lamp blocks are now waterloggable
 
 ### Configuration and Management
+* PneumaticCraft: Repressurized dev builds are now built with [GitHub Actions](https://github.com/TeamPneumatic/pnc-repressurized/actions) rather than Jenkins
 * All PneumaticCraft commands are now under the common `/pncr` root:
   * `/pncr dump_nbt` to display held item NBT (needs admin privilege)
   * `/pncr amadrone_deliver` to force an Amadrone delivery (needs admin privilege)
@@ -82,7 +83,7 @@ This release is based on the latest 1.16.5 code, with the following changes and 
     * E.g. value of 25 means a 1 in 25 chance of trying to generate a lake in any given chunk
 * Electrostatic Compressor now looks at the `pneumaticcraft:electrostatic_grid` block tag to determine what blocks can be used for the grid
   * Default is just `minecraft:iron_bars`
-* Patchouli manual is now a resource-pack-based book (see https://vazkiimods.github.io/Patchouli/docs/upgrading/upgrade-guide-117#resource-pack-based-books)
+* Patchouli manual is now a [resource-pack-based book](https://vazkiimods.github.io/Patchouli/docs/upgrading/upgrade-guide-117#resource-pack-based-books)
   * This means modpack & resource pack makers can modify it more easily...
 * Vanilla loot chest modification is now done properly with Global Loot Modifiers
   * The actual loot item list is fixed, but amounts are adjustable in datapacks, see `data/pneumaticcraft/loot_modifiers/dungeon_loot`
