@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
+import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -71,5 +72,11 @@ public class RegulatorModule extends AbstractRedstoneReceivingModule implements 
             }
         }
         return neighbourCap;
+    }
+
+    @Override
+    public boolean isInlineAndFocused(PressureTubeBlock.TubeHitInfo hitInfo) {
+        // regulator module covers its end and the tube center
+        return hitInfo.dir() == getDirection() || hitInfo == PressureTubeBlock.TubeHitInfo.CENTER;
     }
 }

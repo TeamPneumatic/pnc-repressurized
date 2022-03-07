@@ -239,8 +239,8 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             VoxelShape res = CORE;
             for (Direction d : Direction.values()) {
                 switch (state.getValue(CONNECTION_PROPERTIES_3[d.get3DDataValue()])) {
-                    case CONNECTED: res = Shapes.join(res, ARM_CONNECTED[d.get3DDataValue()], BooleanOp.OR); break;
-                    case CLOSED: res = Shapes.join(res, ARM_CLOSED[d.get3DDataValue()], BooleanOp.OR); break;
+                    case CONNECTED -> res = Shapes.join(res, ARM_CONNECTED[d.get3DDataValue()], BooleanOp.OR);
+                    case CLOSED -> res = Shapes.join(res, ARM_CLOSED[d.get3DDataValue()], BooleanOp.OR);
                 }
             }
             SHAPE_CACHE[idx] = res;
@@ -400,7 +400,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             if (tm != null) {
                 AABB tubeAABB = tm.getShape().bounds();
                 brtr = AABB.clip(Collections.singletonList(tubeAABB), origin, direction, pos);
-                if (isCloserIntersection(origin, bestRTR, brtr)) {
+                if (isCloserIntersection(origin, bestRTR, brtr) || tm.isInlineAndFocused(hitInfo)) {
                     hitInfo = new TubeHitInfo(dir, TubeHitInfo.PartType.MODULE);  // tube module
                     bestRTR = brtr;
                 }
@@ -594,9 +594,9 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     /**
      * Stores information about the subpart of a pressure tube that is being looked at or interacted with.
      */
-    private record TubeHitInfo(Direction dir, PressureTubeBlock.TubeHitInfo.PartType type) {
+    public record TubeHitInfo(Direction dir, PressureTubeBlock.TubeHitInfo.PartType type) {
         static final TubeHitInfo NO_HIT = new TubeHitInfo(null, null);
-        static final TubeHitInfo CENTER = new TubeHitInfo(null, PartType.TUBE);
+        public static final TubeHitInfo CENTER = new TubeHitInfo(null, PartType.TUBE);
 
         enum PartType { TUBE, MODULE }
     }
@@ -627,6 +627,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         }
     }
 
-    private static record BlockHitInfo(BlockHitResult res, @Nonnull TubeHitInfo tubeHitInfo) {
+    private record BlockHitInfo(BlockHitResult res, @Nonnull TubeHitInfo tubeHitInfo) {
     }
 }

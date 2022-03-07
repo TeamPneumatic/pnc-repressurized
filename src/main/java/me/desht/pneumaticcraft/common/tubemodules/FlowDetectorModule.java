@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
+import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -91,5 +92,11 @@ public class FlowDetectorModule extends AbstractRedstoneEmittingModule implement
     @Override
     public boolean canUpgrade() {
         return false;
+    }
+
+    @Override
+    public boolean isInlineAndFocused(PressureTubeBlock.TubeHitInfo hitInfo) {
+        // flow detector is small and covers only the tube end it's installed on
+        return hitInfo.dir() == getDirection();
     }
 }
