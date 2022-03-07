@@ -36,7 +36,7 @@ public class PressureChamberInterfaceMenu extends AbstractPneumaticCraftMenu<Pre
         // add the transfer slot
         addSlot(new UntouchableSlot(te.getPrimaryInventory(), 0, 66, 35));
 
-        addUpgradeSlots(20, 26);
+        addUpgradeSlots(20, 31);
 
         addPlayerSlots(playerInventory, 84);
     }
