@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureChamberInterfaceBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ThermopneumaticProcessingPlantBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.VacuumTrapBlockEntity;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -124,7 +123,6 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         FuelRegistry.getInstance().clearCachedFuelFluids();
         BlockHeatProperties.getInstance().clear();
         CraftingRecipeCache.INSTANCE.clear();
-        VacuumTrapBlockEntity.clearBlacklistCache();
     }
 
     public Map<ResourceLocation, T> getRecipes(Level world) {

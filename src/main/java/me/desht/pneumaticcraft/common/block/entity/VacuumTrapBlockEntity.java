@@ -18,12 +18,10 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
-import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -34,20 +32,15 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -72,19 +65,18 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, MenuProvider, ISerializableTanks, IRangedTE {
     static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
     public static final int MEMORY_ESSENCE_AMOUNT = 100;
-
-    private static final Set<EntityType<?>> entityBlacklist = new ObjectOpenHashSet<>();
-    private static boolean needBlacklistRebuild = true;
 
     private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inv);
@@ -279,35 +271,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     private static boolean isEntityBlacklisted(EntityType<?> type) {
-        if (needBlacklistRebuild) {
-            for (String id : ConfigHelper.common().machines.vacuumTrapBlacklist.get()) {
-                try {
-                    if (id.startsWith("#")) {
-                        Tag<EntityType<?>> tag = EntityTypeTags.getAllTags().getTag(new ResourceLocation(id.substring(1)));
-                        if (tag != null) {
-                            entityBlacklist.addAll(tag.getValues());
-                        } else {
-                            Log.warning("unknown entity type tag '%s' in pneumaticcraft-common.toml / vacuum_trap_blacklist", id);
-                        }
-                    } else {
-                        ResourceLocation rl = new ResourceLocation(id);
-                        if (ForgeRegistries.ENTITIES.containsKey(rl)) {
-                            entityBlacklist.add(ForgeRegistries.ENTITIES.getValue(rl));
-                        } else {
-                            Log.warning("unknown entity type '%s' in pneumaticcraft-common.toml / vacuum_trap_blacklist", id);
-                        }
-                    }
-                } catch (ResourceLocationException e) {
-                    Log.error("bad resource location '%s' in pneumaticcraft-common.toml / vacuum_trap_blacklist", id);
-                }
-            }
-            needBlacklistRebuild = false;
-        }
-        return entityBlacklist.contains(type);
-    }
-
-    public static void clearBlacklistCache() {
-        needBlacklistRebuild = true;
+        return PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED.contains(type);
     }
 
     public enum Problems implements ITranslatableEnum {

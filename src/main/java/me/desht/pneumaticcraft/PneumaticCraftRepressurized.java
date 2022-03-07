@@ -207,6 +207,7 @@ public class PneumaticCraftRepressurized {
                 generator.addProvider(blockTagsProvider);
                 generator.addProvider(new ModItemTagsProvider(generator, blockTagsProvider, event.getExistingFileHelper()));
                 generator.addProvider(new ModFluidTagsProvider(generator, event.getExistingFileHelper()));
+                generator.addProvider(new ModEntityTypeTagsProvider(generator, event.getExistingFileHelper()));
                 generator.addProvider(new ModAdvancementProvider(generator));
                 generator.addProvider(new ModGLMProvider(generator));
             }

@@ -19,10 +19,8 @@ package me.desht.pneumaticcraft.common;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.*;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
@@ -137,15 +135,15 @@ public class PneumaticCraftTags {
         }
     }
 
-//    static <T extends Tag<?>> T tag(Function<ResourceLocation, T> creator, String modid, String name) {
-//        return creator.apply(new ResourceLocation(modid, name));
-//    }
-//
-//    static <T extends Tag<?>> T modTag(Function<ResourceLocation, T> creator, String name) {
-//        return tag(creator, Names.MOD_ID, name);
-//    }
-//
-//    static <T extends Tag<?>> T forgeTag(Function<ResourceLocation, T> creator, String name) {
-//        return tag(creator, "forge", name);
-//    }
+    public static class EntityTypes extends PneumaticCraftTags {
+        public static final Tag.Named<EntityType<?>> VACUUM_TRAP_BLACKLISTED = modTag("vacuum_trap_blacklisted");
+
+        static Tag.Named<EntityType<?>> tag(String modid, String name) {
+            return EntityTypeTags.bind(new ResourceLocation(modid, name).toString());
+        }
+
+        static Tag.Named<EntityType<?>> modTag(String name) {
+            return tag(Names.MOD_ID, name);
+        }
+    }
 }
