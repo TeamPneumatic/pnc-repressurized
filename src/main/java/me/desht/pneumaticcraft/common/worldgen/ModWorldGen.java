@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.core.ModFeatures;
 import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.data.BuiltinRegistries;
+import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.WorldGenLevel;
@@ -78,8 +78,7 @@ public class ModWorldGen {
     private static <C extends FeatureConfiguration, F extends Feature<C>> PlacedFeature registerPlacedFeature(String registryName,
                                                                                                               ConfiguredFeature<C, F> feature,
                                                                                                               PlacementModifier... placementModifiers) {
-        PlacedFeature placed = BuiltinRegistries.register(BuiltinRegistries.CONFIGURED_FEATURE, new ResourceLocation(registryName), feature)
-                .placed(placementModifiers);
+        PlacedFeature placed = FeatureUtils.register(registryName, feature).placed(placementModifiers);
         return PlacementUtils.register(registryName, placed);
     }
 
