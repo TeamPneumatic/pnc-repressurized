@@ -817,7 +817,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         while (iter.hasNext()) {
             Map.Entry<BlockPos, BlockState> entry = iter.next();
             BlockPos pos = entry.getKey();
-            if (!distCheck || pos.distSqr(getX(), getY(), getZ(), true) > 1) {
+            if (!distCheck || pos.distToCenterSqr(getX(), getY(), getZ()) > 1) {
                 if (level.isEmptyBlock(pos) || PneumaticCraftUtils.isBlockLiquid(level.getBlockState(pos).getBlock())) {
                     level.setBlock(pos, entry.getValue(), Block.UPDATE_ALL);
                 }

@@ -24,7 +24,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
@@ -89,12 +89,12 @@ public class ModItemTagsProvider extends ItemTagsProvider {
     }
 
     @SafeVarargs
-    private final void addItemsToTag(Tag.Named<Item> tag, Supplier<? extends ItemLike>... items) {
+    private void addItemsToTag(TagKey<Item> tag, Supplier<? extends ItemLike>... items) {
         tag(tag).add(Arrays.stream(items).map(Supplier::get).map(ItemLike::asItem).toArray(Item[]::new));
     }
 
     @SafeVarargs
-    private final void appendToTag(Tag.Named<Item> tag, Tag.Named<Item>... toAppend) {
+    private void appendToTag(TagKey<Item> tag, TagKey<Item>... toAppend) {
         tag(tag).addTags(toAppend);
     }
 

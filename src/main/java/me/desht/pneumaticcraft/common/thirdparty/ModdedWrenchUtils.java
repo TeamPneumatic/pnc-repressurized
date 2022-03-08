@@ -72,7 +72,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
     @Override
     public boolean isModdedWrench(@Nonnull ItemStack stack) {
         return !(stack.getItem() instanceof PneumaticWrenchItem) &&
-                (PneumaticCraftTags.Items.WRENCHES.contains(stack.getItem()) || wrenches.contains(stack.getItem().getRegistryName()));
+                (stack.is(PneumaticCraftTags.Items.WRENCHES) || wrenches.contains(stack.getItem().getRegistryName()));
     }
 
     @Override

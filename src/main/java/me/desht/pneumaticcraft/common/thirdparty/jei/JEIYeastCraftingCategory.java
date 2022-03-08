@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -48,7 +48,7 @@ public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCrafti
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, YeastCraftingRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, YeastCraftingRecipe recipe, IFocusGroup focuses) {
         List<FluidStack> yeastStack = recipe.fluidInput().getFluidStacks();
         List<FluidStack> waterStack = Collections.singletonList(new FluidStack(Fluids.WATER, 1000));
 

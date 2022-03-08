@@ -20,8 +20,7 @@ package me.desht.pneumaticcraft.common.recipes;
 import com.google.gson.JsonObject;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.crafting.conditions.ICondition;
@@ -49,8 +48,10 @@ public class FluidTagPresentCondition implements ICondition {
 
     @Override
     public boolean test() {
-        Tag<Fluid> tag = SerializationTags.getInstance().getOrEmpty(Registry.FLUID_REGISTRY).getTag(tagName);
-        return tag != null && !tag.getValues().isEmpty();
+        TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, tagName);
+        return Registry.FLUID.getTag(tagKey).isPresent();
+//        Tag<Fluid> tag = SerializationTags.getInstance().getOrEmpty(Registry.FLUID_REGISTRY).getTag(tagName);
+//        return tag != null && !tag.getValues().isEmpty();
     }
 
     public static class Serializer implements IConditionSerializer<FluidTagPresentCondition> {

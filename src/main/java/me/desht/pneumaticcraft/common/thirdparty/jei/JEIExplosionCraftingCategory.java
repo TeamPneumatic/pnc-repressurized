@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 
@@ -43,7 +43,7 @@ public class JEIExplosionCraftingCategory extends AbstractPNCCategory<ExplosionC
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, ExplosionCraftingRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, ExplosionCraftingRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(recipe.getInput());
         builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1).addItemStacks(recipe.getOutputs());
     }

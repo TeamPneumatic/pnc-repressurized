@@ -46,9 +46,9 @@ import java.util.function.Supplier;
 
 public abstract class AbstractChestUpgradeKitItem extends Item {
     private final Supplier<? extends Block> chestBlock;
-    private final Predicate<Block> blockPredicate;
+    private final Predicate<BlockState> blockPredicate;
 
-    private AbstractChestUpgradeKitItem(Properties properties, Supplier<? extends Block> chestBlock, Predicate<Block> blockPredicate) {
+    private AbstractChestUpgradeKitItem(Properties properties, Supplier<? extends Block> chestBlock, Predicate<BlockState> blockPredicate) {
         super(properties);
 
         this.chestBlock = chestBlock;
@@ -56,7 +56,7 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
     }
 
     protected void onUpgraded(BlockState oldState, UseOnContext context) {
-        if (Tags.Blocks.CHESTS_WOODEN.contains(oldState.getBlock())) {
+        if (oldState.is(Tags.Blocks.CHESTS_WOODEN)) {
             // give back one wooden chest, since the upgrade kit cost a chest to make
             PneumaticCraftUtils.dropItemOnGround(new ItemStack(oldState.getBlock()), context.getLevel(), context.getClickedPos().relative(context.getClickedFace()));
         }
@@ -67,7 +67,7 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
         final Level world = context.getLevel();
         final BlockPos pos = context.getClickedPos();
         final BlockState state = world.getBlockState(pos);
-        if (blockPredicate.test(state.getBlock())) {
+        if (blockPredicate.test(state)) {
             if (!world.isClientSide) {
                 Direction facing = state.hasProperty(HorizontalDirectionalBlock.FACING) ? state.getValue(HorizontalDirectionalBlock.FACING) : Direction.NORTH;
 
@@ -127,13 +127,13 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
 
     public static class Reinforced extends AbstractChestUpgradeKitItem {
         public Reinforced() {
-            super(ModItems.defaultProps(), ModBlocks.REINFORCED_CHEST, Tags.Blocks.CHESTS_WOODEN::contains);
+            super(ModItems.defaultProps(), ModBlocks.REINFORCED_CHEST, state -> state.is(Tags.Blocks.CHESTS_WOODEN));
         }
     }
 
     public static class Smart extends AbstractChestUpgradeKitItem {
         public Smart() {
-            super(ModItems.defaultProps(), ModBlocks.SMART_CHEST, b -> Tags.Blocks.CHESTS_WOODEN.contains(b) || b == ModBlocks.REINFORCED_CHEST.get());
+            super(ModItems.defaultProps(), ModBlocks.SMART_CHEST, state -> state.is(Tags.Blocks.CHESTS_WOODEN) || state.getBlock() == ModBlocks.REINFORCED_CHEST.get());
         }
 
         @Override

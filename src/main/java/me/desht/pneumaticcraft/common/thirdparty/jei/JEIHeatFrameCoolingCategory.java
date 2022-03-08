@@ -28,7 +28,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
@@ -59,7 +59,7 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, HeatFrameCoolingRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, HeatFrameCoolingRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(recipe.getInput());
         builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1).addItemStack(recipe.getOutput());
     }

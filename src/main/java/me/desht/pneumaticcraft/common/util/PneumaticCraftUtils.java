@@ -26,10 +26,7 @@ import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -37,6 +34,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -77,6 +75,7 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class PneumaticCraftUtils {
     // an impossible blockpos to indicate invalid positions
@@ -682,5 +681,12 @@ public class PneumaticCraftUtils {
             }
         }
         return newNBT.isEmpty() ? new CompoundTag() : newNBT;
+    }
+
+    public static Set<TagKey<Item>> itemTags(Item item) {
+        //noinspection deprecation
+        return Registry.ITEM.getHolderOrThrow(Registry.ITEM.getResourceKey(item).orElseThrow())
+                .tags()
+                .collect(Collectors.toSet());
     }
 }

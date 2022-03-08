@@ -35,6 +35,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
@@ -118,7 +119,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, PressureChamberRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, PressureChamberRecipe recipe, IFocusGroup focuses) {
         IFocus<ItemStack> focus = getItemStackFocus(focuses);
         Map<RecipeSlot, List<Integer>> overrides = getMatchingCycle(recipe, focus)
                 .map(recipe::getSyncForDisplay)
@@ -156,10 +157,9 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
         }
     }
 
-    private IFocus<ItemStack> getItemStackFocus(List<? extends IFocus<?>> focuses) {
+    private IFocus<ItemStack> getItemStackFocus(IFocusGroup focuses) {
         //noinspection unchecked
-        return (IFocus<ItemStack>) focuses.stream()
-                .filter(f -> f.getRole() == RecipeIngredientRole.INPUT)
+        return (IFocus<ItemStack>) focuses.getFocuses(RecipeIngredientRole.INPUT)
                 .filter(f -> f.getTypedValue().getIngredient() instanceof ItemStack)
                 .findFirst()
                 .orElse(null);

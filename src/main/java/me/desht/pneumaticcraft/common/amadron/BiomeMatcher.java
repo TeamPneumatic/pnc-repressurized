@@ -65,7 +65,7 @@ public class BiomeMatcher implements IPlayerMatcher {
 
     @Override
     public boolean test(Player playerEntity) {
-        return categories.isEmpty() || categories.contains(playerEntity.level.getBiome(playerEntity.blockPosition()).getBiomeCategory());
+        return categories.isEmpty() || categories.contains(playerEntity.level.getBiome(playerEntity.blockPosition()).value().getBiomeCategory());
     }
 
     public static class Factory implements MatcherFactory<BiomeMatcher> {

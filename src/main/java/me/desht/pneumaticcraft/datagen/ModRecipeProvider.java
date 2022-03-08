@@ -19,7 +19,7 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -1594,9 +1594,9 @@ public class ModRecipeProvider extends RecipeProvider {
     private <T extends ItemLike & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapeless(result, count);
         for (Object v : ingredients) {
-            if (v instanceof Tag<?>) {
+            if (v instanceof TagKey<?>) {
                 //noinspection unchecked
-                b.requires((Tag<Item>) v);
+                b.requires((TagKey<Item>) v);
             } else if (v instanceof ItemLike) {
                 b.requires((ItemLike) v);
             } else if (v instanceof Ingredient) {
@@ -1613,7 +1613,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shapeless(frame, frame, frame).save(consumer, frame.getRegistryName().toString() + "_self");
     }
 
-    private ShapedRecipeBuilder logisticsFrame(Item result, Tag.Named<Item> dye) {
+    private ShapedRecipeBuilder logisticsFrame(Item result, TagKey<Item> dye) {
         return shaped(result, 8, ModItems.LOGISTICS_CORE.get(),
                 "PPP/PDP/PCP",
                 'P', Items.STICK,
@@ -1621,11 +1621,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 'D', dye);
     }
 
-    private ShapedRecipeBuilder networkComponent(Item result, int count, Tag.Named<Item> edge, Tag.Named<Item> dyeCorner) {
+    private ShapedRecipeBuilder networkComponent(Item result, int count, TagKey<Item> edge, TagKey<Item> dyeCorner) {
         return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
 
-    private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, Tag.Named<Item> dyeCorner) {
+    private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, TagKey<Item> dyeCorner) {
         return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
 
@@ -1643,9 +1643,9 @@ public class ModRecipeProvider extends RecipeProvider {
         Arrays.stream(pattern.split("/")).forEach(builder::pattern);
         for (int i = 0; i < keys.length; i += 2) {
             Object v = keys[i + 1];
-            if (v instanceof Tag<?>) {
+            if (v instanceof TagKey<?>) {
                 //noinspection unchecked
-                builder.define((Character) keys[i], (Tag<Item>) v);
+                builder.define((Character) keys[i], (TagKey<Item>) v);
             } else if (v instanceof ItemLike) {
                 builder.define((Character) keys[i], (ItemLike) v);
             } else if (v instanceof Ingredient) {
@@ -1674,7 +1674,7 @@ public class ModRecipeProvider extends RecipeProvider {
         return shaped(result, 1, required, pattern, keys);
     }
 
-    private ShapedRecipeBuilder plasticBrick(DyeColor color, Tag<Item> dyeIngredient) {
+    private ShapedRecipeBuilder plasticBrick(DyeColor color, TagKey<Item> dyeIngredient) {
         Item brick = ModBlocks.plasticBrick(color).get().asItem();
         return shaped(brick, 8, ModItems.PLASTIC.get(),
                 "PPP/PDP/PPP",
@@ -1688,7 +1688,7 @@ public class ModRecipeProvider extends RecipeProvider {
         return shapeless(smoothBrick, ModItems.PLASTIC.get(), brick);
     }
 
-    private ShapedRecipeBuilder wallLamp(DyeColor color, boolean inverted, Tag<Item> dyeIngredient) {
+    private ShapedRecipeBuilder wallLamp(DyeColor color, boolean inverted, TagKey<Item> dyeIngredient) {
         Item lamp = ModBlocks.wallLamp(color, inverted).get().asItem();
         return shaped(lamp, 4, ModItems.COMPRESSED_IRON_INGOT.get(),
                 " R /IGI/ D ",

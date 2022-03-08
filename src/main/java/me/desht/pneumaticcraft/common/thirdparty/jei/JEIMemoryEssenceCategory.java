@@ -31,7 +31,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -56,7 +56,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, MemoryEssenceRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, MemoryEssenceRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 54, 29)
                 .addItemStack(recipe.input1)
                 .addTooltipCallback(new Tooltip(recipe, 0));

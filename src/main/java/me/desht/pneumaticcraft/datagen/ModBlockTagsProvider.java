@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -106,22 +106,22 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 // with thanks to Tropicraft for these helper methods
 
     @SafeVarargs
-    private final <T> T[] resolveAll(IntFunction<T[]> creator, Supplier<? extends T>... suppliers) {
+    private <T> T[] resolveAll(IntFunction<T[]> creator, Supplier<? extends T>... suppliers) {
         return Arrays.stream(suppliers).map(Supplier::get).toArray(creator);
     }
 
     @SafeVarargs
-    private final void createTag(Tag.Named<Block> tag, Supplier<? extends Block>... blocks) {
+    private void createTag(TagKey<Block> tag, Supplier<? extends Block>... blocks) {
         tag(tag).add(resolveAll(Block[]::new, blocks));
     }
 
     @SafeVarargs
-    private final void appendToTag(Tag.Named<Block> tag, Tag.Named<Block>... toAppend) {
+    private void appendToTag(TagKey<Block> tag, TagKey<Block>... toAppend) {
         tag(tag).addTags(toAppend);
     }
 
     @SafeVarargs
-    private final void createAndAppend(Tag.Named<Block> tag, Tag.Named<Block> to, Supplier<? extends Block>... blocks) {
+    private void createAndAppend(TagKey<Block> tag, TagKey<Block> to, Supplier<? extends Block>... blocks) {
         createTag(tag, blocks);
         appendToTag(to, tag);
     }

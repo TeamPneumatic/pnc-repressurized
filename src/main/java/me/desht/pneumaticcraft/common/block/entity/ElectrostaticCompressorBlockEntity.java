@@ -48,7 +48,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.items.IItemHandler;
@@ -85,12 +84,12 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
         if ((nonNullLevel().getGameTime() & 0x1f) == 0) {  // every 32 ticks
             int max = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR;
             for (ironBarsBeneath = 0; ironBarsBeneath < max; ironBarsBeneath++) {
-                if (!isValidGridBlock(nonNullLevel().getBlockState(getBlockPos().below(ironBarsBeneath + 1)).getBlock())) {
+                if (!isValidGridBlock(nonNullLevel().getBlockState(getBlockPos().below(ironBarsBeneath + 1)))) {
                     break;
                 }
             }
             for (ironBarsAbove = 0; ironBarsAbove < MAX_BARS_ABOVE; ironBarsAbove++) {
-                if (!isValidGridBlock(nonNullLevel().getBlockState(getBlockPos().above(ironBarsAbove + 1)).getBlock())) {
+                if (!isValidGridBlock(nonNullLevel().getBlockState(getBlockPos().above(ironBarsAbove + 1)))) {
                     break;
                 }
             }
@@ -130,7 +129,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
             for (int y = getBlockPos().getY() + 5; y > getBlockPos().getY() - 5; y--) {
                 BlockPos hitPos = new BlockPos(x, y, z);
                 BlockState state = level.getBlockState(hitPos);
-                if (state.getBlock() instanceof ElectrostaticCompressorBlock || isValidGridBlock(state.getBlock())) {
+                if (state.getBlock() instanceof ElectrostaticCompressorBlock || isValidGridBlock(state)) {
                     Set<BlockPos> gridSet = new ObjectOpenHashSet<>(MAX_ELECTROSTATIC_GRID_SIZE);
                     Set<ElectrostaticCompressorBlockEntity> compressorSet = new ObjectOpenHashSet<>(20);
                     getElectrostaticGrid(gridSet, compressorSet, hitPos);
@@ -199,10 +198,10 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
             BlockPos checkingPos = pendingPos.pop();
             for (Direction d : DirectionUtil.VALUES) {
                 BlockPos newPos = checkingPos.relative(d);
-                Block block = nonNullLevel().getBlockState(newPos).getBlock();
-                if ((isValidGridBlock(block) || block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get())
+                BlockState state = nonNullLevel().getBlockState(newPos);
+                if ((isValidGridBlock(state) || state.getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR.get())
                         && grid.size() < MAX_ELECTROSTATIC_GRID_SIZE && grid.add(newPos)) {
-                    if (block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get()) {
+                    if (state.getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR.get()) {
                         nonNullLevel().getBlockEntity(newPos, ModBlockEntities.ELECTROSTATIC_COMPRESSOR.get())
                                 .ifPresent(compressors::add);
                     }
@@ -212,8 +211,8 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
         }
     }
 
-    private static boolean isValidGridBlock(Block block) {
-        return PneumaticCraftTags.Blocks.ELECTROSTATIC_GRID.contains(block);
+    private static boolean isValidGridBlock(BlockState state) {
+        return state.is(PneumaticCraftTags.Blocks.ELECTROSTATIC_GRID);
     }
 
     @Nullable

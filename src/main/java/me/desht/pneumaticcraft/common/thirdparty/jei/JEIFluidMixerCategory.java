@@ -29,7 +29,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -61,7 +61,7 @@ public class JEIFluidMixerCategory extends AbstractPNCCategory<FluidMixerRecipe>
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, FluidMixerRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, FluidMixerRecipe recipe, IFocusGroup focuses) {
         FluidStack in1 = recipe.getInput1().getFluidStacks().get(0);
         FluidStack in2 = recipe.getInput2().getFluidStacks().get(0);
         FluidStack outF = recipe.getOutputFluid();

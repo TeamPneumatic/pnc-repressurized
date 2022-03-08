@@ -45,7 +45,6 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -265,7 +264,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {
-        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getOrEmpty(Registry.BLOCK_REGISTRY));
+        PneumaticHelmetRegistry.getInstance().resolveBlockTags();
 
         PneumaticRegistry.getInstance().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
     }

@@ -100,7 +100,7 @@ public enum FuelRegistry implements IFuelRegistry {
 
         // fluid tags registered in code
         for (Map.Entry<Tag<Fluid>, FuelRecord> entry : fuelTags.entrySet()) {
-            if (entry.getKey().contains(fluid)) {
+            if (entry.getKey().getValues().contains(fluid)) {
                 return entry.getValue();
             }
         }

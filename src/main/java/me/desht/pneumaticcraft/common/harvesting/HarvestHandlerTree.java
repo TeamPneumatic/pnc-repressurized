@@ -37,7 +37,7 @@ public class HarvestHandlerTree extends HarvestHandler {
 
     @Override
     public boolean canHarvest(Level world, BlockGetter chunkCache, BlockPos pos, BlockState state, IDrone drone) {
-        return BlockTags.LOGS.contains(state.getBlock());
+        return state.is(BlockTags.LOGS);
     }
 
     @Override

@@ -28,7 +28,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -62,7 +62,7 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, UVLightBoxRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, UVLightBoxRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addIngredients(recipe.in());
         builder.addSlot(RecipeIngredientRole.OUTPUT, 65, 1).addItemStack(recipe.out());
     }

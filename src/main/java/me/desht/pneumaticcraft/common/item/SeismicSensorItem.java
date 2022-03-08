@@ -74,7 +74,7 @@ public class SeismicSensorItem extends Item {
 
     private Fluid findFluid(Level world, BlockPos pos) {
         FluidState state = world.getFluidState(pos);
-        return PneumaticCraftTags.Fluids.SEISMIC.contains(state.getType()) ? state.getType() : null;
+        return state.getType().is(PneumaticCraftTags.Fluids.SEISMIC) ? state.getType() : null;
     }
 
     private Set<BlockPos> findLake(Level world, BlockPos searchPos, Fluid fluid) {

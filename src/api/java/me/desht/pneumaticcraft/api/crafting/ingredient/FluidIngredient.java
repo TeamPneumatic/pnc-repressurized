@@ -17,25 +17,23 @@
 
 package me.desht.pneumaticcraft.api.crafting.ingredient;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -57,18 +55,18 @@ public class FluidIngredient extends Ingredient {
     private ItemStack[] cachedStacks;
     private final int amount;
     private final ResourceLocation fluidId;
-    private final Tag<Fluid> fluidTag;
+    private final TagKey<Fluid> fluidTagKey;
     private final CompoundTag nbt;
     private final boolean fuzzyNBT;
 
     public static final FluidIngredient EMPTY = new FluidIngredient(Collections.emptyList(), 0, null, null, null, false);
 
-    protected FluidIngredient(List<Fluid> fluids, int amount, ResourceLocation fluidId, Tag<Fluid> fluidTag, CompoundTag nbt, boolean fuzzyNBT) {
+    protected FluidIngredient(List<Fluid> fluids, int amount, ResourceLocation fluidId, TagKey<Fluid> fluidTagKey, CompoundTag nbt, boolean fuzzyNBT) {
         super(Stream.empty());
         this.fluids = fluids;
         this.amount = amount;
         this.fluidId = fluidId;
-        this.fluidTag = fluidTag;
+        this.fluidTagKey = fluidTagKey;
         this.nbt = nbt;
         this.fuzzyNBT = fuzzyNBT;
     }
@@ -115,7 +113,7 @@ public class FluidIngredient extends Ingredient {
      * @param fluidTag the fluid tag
      * @return the fluid ingredient
      */
-    public static FluidIngredient of(int amount, @Nullable CompoundTag nbt, boolean fuzzyNBT, Tag<Fluid> fluidTag) {
+    public static FluidIngredient of(int amount, @Nullable CompoundTag nbt, boolean fuzzyNBT, TagKey<Fluid> fluidTag) {
         return new FluidIngredient(null, amount, null, fluidTag, nbt, fuzzyNBT);
     }
 
@@ -125,7 +123,7 @@ public class FluidIngredient extends Ingredient {
      * @param fluidTag the fluid tag
      * @return the fluid ingredient
      */
-    public static FluidIngredient of(int amount, Tag<Fluid> fluidTag) {
+    public static FluidIngredient of(int amount, TagKey<Fluid> fluidTag) {
         return of(amount, null, false, fluidTag);
     }
 
@@ -177,8 +175,8 @@ public class FluidIngredient extends Ingredient {
                 } else {
                     fluids = Collections.emptyList();
                 }
-            } else if (fluidTag != null) {
-                fluids = ImmutableList.copyOf(fluidTag.getValues());
+            } else if (fluidTagKey != null) {
+                Registry.FLUID.getTagOrEmpty(fluidTagKey).forEach(fluid -> fluids.add(fluid.value()));
             } else {
                 throw new IllegalStateException("no fluid ID or fluid tag is available?");
             }
@@ -273,11 +271,8 @@ public class FluidIngredient extends Ingredient {
     public JsonElement toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("type", Serializer.ID.toString());
-        if (fluidTag != null) {
-            ResourceLocation tagId = SerializationTags.getInstance().getIdOrThrow(Registry.FLUID_REGISTRY, fluidTag, () -> {
-                throw new IllegalStateException("unknown fluid tag");
-            });
-            json.addProperty("tag", tagId.toString());
+        if (fluidTagKey != null) {
+            json.addProperty("tag", fluidTagKey.location().toString());
         } else if (fluidId != null) {
             json.addProperty("fluid", fluidId.toString());
         } else if (!fluids.isEmpty()) {
@@ -334,10 +329,8 @@ public class FluidIngredient extends Ingredient {
             boolean fuzzyNBT = GsonHelper.getAsBoolean(json, "fuzzyNBT", false);
             if (json.has("tag")) {
                 ResourceLocation rl = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-                Tag<Fluid> tag = SerializationTags.getInstance().getTagOrThrow(Registry.FLUID_REGISTRY, rl, (r) -> {
-                    throw new JsonSyntaxException("unknown fluid tag '" + r + "'");
-                });
-                result = FluidIngredient.of(amount, nbt, fuzzyNBT, tag);
+                TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, rl);
+                result = FluidIngredient.of(amount, nbt, fuzzyNBT, tagKey);
             } else if (json.has("fluid")) {
                 ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
                 Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);

@@ -18,21 +18,24 @@
 package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.collect.Sets;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ItemTagMatcher {
-    private final Set<ResourceLocation> tags;
+    private final Set<TagKey<Item>> tags = new HashSet<>();
 
     private ItemTagMatcher(ItemStack stack) {
-        this.tags = stack.getItem().getTags();
+        Registry.ITEM.getHolderOrThrow(Registry.ITEM.getResourceKey(stack.getItem()).orElseThrow()).tags().forEach(tags::add);
     }
 
     public boolean match(ItemStack stack) {
-        return !Sets.intersection(tags, stack.getItem().getTags()).isEmpty();
+        return !Sets.intersection(tags, PneumaticCraftUtils.itemTags(stack.getItem())).isEmpty();
     }
 
     public static boolean matchTags(@Nonnull ItemStack stack1, @Nonnull ItemStack stack2) {

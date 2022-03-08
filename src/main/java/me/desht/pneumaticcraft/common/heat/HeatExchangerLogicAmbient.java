@@ -35,7 +35,7 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
 
         // biome temp of 0.8 is plains: let's call that the baseline - 300K
         // max (vanilla) is 2.0 for desert / nether, min is -0.5 for snowy taiga mountains
-        float t = world.getBiome(pos).getBaseTemperature() - 0.8f;
+        float t = world.getBiome(pos).value().getBaseTemperature() - 0.8f;
 
         // TODO 1.18 validate these numbers
         int h = 0;

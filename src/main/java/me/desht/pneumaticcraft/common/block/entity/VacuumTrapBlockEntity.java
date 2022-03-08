@@ -271,7 +271,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     private static boolean isEntityBlacklisted(EntityType<?> type) {
-        return PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED.contains(type);
+        return type.is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
     }
 
     public enum Problems implements ITranslatableEnum {

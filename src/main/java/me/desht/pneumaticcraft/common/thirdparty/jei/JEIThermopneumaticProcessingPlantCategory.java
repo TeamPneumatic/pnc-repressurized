@@ -32,7 +32,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -64,7 +64,7 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, ThermoPlantRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, ThermoPlantRecipe recipe, IFocusGroup focuses) {
         int inH = 64, outH = 64;
         int inputAmount = recipe.getInputFluid().getAmount();
         int outputAmount = recipe.getOutputFluid().getAmount();

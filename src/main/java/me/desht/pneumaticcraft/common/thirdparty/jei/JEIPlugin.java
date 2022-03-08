@@ -62,7 +62,6 @@ public class JEIPlugin implements IModPlugin {
     static IJeiHelpers jeiHelpers;
     static IRecipeManager recipeManager;
     static IRecipesGui recipesGui;
-    static IJeiRuntime jeiRuntime;
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
@@ -192,7 +191,6 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-        JEIPlugin.jeiRuntime = jeiRuntime;
         recipeManager = jeiRuntime.getRecipeManager();
         recipesGui = jeiRuntime.getRecipesGui();
     }

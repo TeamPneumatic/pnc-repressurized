@@ -19,11 +19,12 @@ package me.desht.pneumaticcraft.common.thirdparty.botania;
 
 import me.desht.pneumaticcraft.api.item.IMagnetSuppressor;
 import net.minecraft.world.entity.Entity;
-import vazkii.botania.api.BotaniaAPI;
+//import vazkii.botania.api.BotaniaAPI;
 
 public class SolegnoliaHandler implements IMagnetSuppressor {
     @Override
     public boolean shouldSuppressMagnet(Entity e) {
-        return BotaniaAPI.instance().hasSolegnoliaAround(e);
+        return false;
+//        return BotaniaAPI.instance().hasSolegnoliaAround(e);
     }
 }

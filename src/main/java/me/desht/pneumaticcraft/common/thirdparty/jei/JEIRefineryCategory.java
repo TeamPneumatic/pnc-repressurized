@@ -29,7 +29,7 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -57,7 +57,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, RefineryRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, RefineryRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 2, 10)
                 .addIngredients(VanillaTypes.FLUID, recipe.getInput().getFluidStacks())
                 .setFluidRenderer(recipe.getInput().getAmount(), true, 16, 64)

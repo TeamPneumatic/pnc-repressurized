@@ -326,8 +326,9 @@ public class PneumaticArmorHandler {
 
     @SubscribeEvent
     public void onArmorRepair(AnvilUpdateEvent event) {
+
         if (event.getLeft().getItem() instanceof PneumaticArmorItem
-                && PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON.contains(event.getRight().getItem()))
+                && new ItemStack(event.getLeft().getItem()).is(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON))
         {
             ItemStack repairedItem = event.getLeft().copy();
             int damageRepaired = Math.min(repairedItem.getDamageValue(), event.getRight().getCount() * ARMOR_REPAIR_AMOUNT);

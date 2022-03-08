@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -46,7 +46,7 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, PlasticSolidifyingRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, PlasticSolidifyingRecipe recipe, IFocusGroup focuses) {
         if (recipe.input instanceof FluidIngredient f) {
             builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
                     .addIngredients(VanillaTypes.FLUID, f.getFluidStacks());

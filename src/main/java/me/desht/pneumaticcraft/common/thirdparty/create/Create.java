@@ -17,40 +17,30 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.create;
 
-import com.simibubi.create.content.contraptions.relays.belt.BeltBlock;
-import com.simibubi.create.content.contraptions.relays.belt.BeltSlicer;
-import com.simibubi.create.content.contraptions.wrench.IWrenchable;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.RayTraceUtils;
-import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 
 public class Create implements IThirdParty {
     @Override
     public void init() {
-        PneumaticRegistry.getInstance().getWrenchRegistry().addModdedWrenchBehaviour(ModIds.CREATE,
-                (ctx, state) -> {
-                    // pre
-                    if (state.getBlock() instanceof BeltBlock) {
-                        HitResult rtr = RayTraceUtils.getMouseOverServer(ctx.getPlayer(), PneumaticCraftUtils.getPlayerReachDistance(ctx.getPlayer()));
-                        if (rtr instanceof BlockHitResult) {
-                            return BeltSlicer.useWrench(state, ctx.getLevel(), ctx.getClickedPos(), ctx.getPlayer(), ctx.getHand(),
-                                    (BlockHitResult) rtr, new BeltSlicer.Feedback());
-                        }
-                    } else if (state.getBlock() instanceof IWrenchable) {
-                        return ctx.getPlayer() != null && ctx.getPlayer().isCrouching() ?
-                                ((IWrenchable) state.getBlock()).onSneakWrenched(state, ctx) :
-                                ((IWrenchable) state.getBlock()).onWrenched(state, ctx);
-                    }
-                    return InteractionResult.PASS;
-                },
-                (ctx, state) -> {
-                    // post
-                }
-        );
+//        PneumaticRegistry.getInstance().getWrenchRegistry().addModdedWrenchBehaviour(ModIds.CREATE,
+//                (ctx, state) -> {
+//                    // pre
+//                    if (state.getBlock() instanceof BeltBlock) {
+//                        HitResult rtr = RayTraceUtils.getMouseOverServer(ctx.getPlayer(), PneumaticCraftUtils.getPlayerReachDistance(ctx.getPlayer()));
+//                        if (rtr instanceof BlockHitResult) {
+//                            return BeltSlicer.useWrench(state, ctx.getLevel(), ctx.getClickedPos(), ctx.getPlayer(), ctx.getHand(),
+//                                    (BlockHitResult) rtr, new BeltSlicer.Feedback());
+//                        }
+//                    } else if (state.getBlock() instanceof IWrenchable) {
+//                        return ctx.getPlayer() != null && ctx.getPlayer().isCrouching() ?
+//                                ((IWrenchable) state.getBlock()).onSneakWrenched(state, ctx) :
+//                                ((IWrenchable) state.getBlock()).onWrenched(state, ctx);
+//                    }
+//                    return InteractionResult.PASS;
+//                },
+//                (ctx, state) -> {
+//                    // post
+//                }
+//        );
     }
 }

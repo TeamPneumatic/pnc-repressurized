@@ -26,9 +26,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
@@ -51,7 +51,7 @@ public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     private final Map<Block, Supplier<? extends IHackableBlock>> hackableBlocks = new HashMap<>();
     // blocks known from tags are stored separately; they could change during the game if tags are reloaded
     private final Map<Block, Supplier<? extends IHackableBlock>> hackableTaggedBlocks = new HashMap<>();
-    private final Map<ResourceLocation, Supplier<? extends IHackableBlock>> pendingBlockTags = new HashMap<>();
+    private final Map<TagKey<Block>, Supplier<? extends IHackableBlock>> pendingBlockTags = new HashMap<>();
     private final Map<ResourceLocation, Supplier<? extends IHackableBlock>> idToBlockHackables = new HashMap<>();
 
     public static PneumaticHelmetRegistry getInstance() {
@@ -85,23 +85,22 @@ public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     }
 
     @Override
-    public void addHackable(Tag.Named<Block> blockTag, Supplier<? extends IHackableBlock> iHackable) {
+    public void addHackable(TagKey<Block> blockTag, Supplier<? extends IHackableBlock> iHackable) {
         Validate.isTrue(!(iHackable instanceof Block), "Blocks that already implement IHackableBlock do not need to be registered as hackable!");
 
         // can't add these yet because tags aren't populated at this point
         // we'll resolve them later via resolveBlockTags()
-        pendingBlockTags.put(blockTag.getName(), iHackable);
+        pendingBlockTags.put(blockTag, iHackable);
     }
 
     /**
      * Called when a TagsUpdatedEvent is received, on both server and client, to refresh the actual blocks referred to
      * by the tags we've registered.
-     *
-     * @param tags the newly updated block tags
      */
-    public void resolveBlockTags(TagCollection<Block> tags) {
+    public void resolveBlockTags() {
         hackableTaggedBlocks.clear();
-        pendingBlockTags.forEach((id, hackable) -> tags.getTag(id).getValues().forEach(block -> hackableTaggedBlocks.put(block, hackable)));
+
+        pendingBlockTags.forEach((tagKey, hackable) -> Registry.BLOCK.getTagOrEmpty(tagKey).forEach(h -> hackableTaggedBlocks.put(h.value(), hackable)));
     }
 
     @Override

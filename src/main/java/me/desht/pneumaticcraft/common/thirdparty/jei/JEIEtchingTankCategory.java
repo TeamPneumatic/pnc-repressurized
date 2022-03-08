@@ -28,7 +28,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -36,7 +36,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -54,7 +53,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, EtchingTankRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, EtchingTankRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 13)
                 .addIngredients(recipe.input);
         builder.addSlot(RecipeIngredientRole.INPUT, 26, 13)

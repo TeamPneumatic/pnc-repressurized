@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.levelgen.feature.structures.SinglePoolElement;
-import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElement;
-import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 
 import java.util.ArrayList;

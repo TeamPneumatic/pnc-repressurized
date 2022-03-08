@@ -22,7 +22,6 @@ import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.tags.SetTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
@@ -32,9 +31,9 @@ public class Criteria {
         return hasItem(ItemPredicate.Builder.item().of(itemIn).build());
     }
 
-    private static InventoryChangeTrigger.TriggerInstance hasItem(SetTag<Item> tagIn) {
-        return hasItem(ItemPredicate.Builder.item().of(tagIn).build());
-    }
+//    private static InventoryChangeTrigger.TriggerInstance hasItem(SetTag<Item> tagIn) {
+//        return hasItem(ItemPredicate.Builder.item().of(tagIn).build());
+//    }
 
     private static InventoryChangeTrigger.TriggerInstance hasItem(ItemPredicate... predicates) {
         return new InventoryChangeTrigger.TriggerInstance(EntityPredicate.Composite.ANY, MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, MinMaxBounds.Ints.ANY, predicates);

@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.core.ModFeatures;
 import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -34,34 +35,38 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.LakeFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 
 public class ModWorldGen {
-    public static PlacedFeature OIL_LAKE_SURFACE;
-    public static PlacedFeature OIL_LAKE_UNDERGROUND;
+    public static Holder<PlacedFeature> OIL_LAKE_SURFACE;
+    public static Holder<PlacedFeature> OIL_LAKE_UNDERGROUND;
 
     static WildcardedRLMatcher dimensionMatcher = null;
     static WildcardedRLMatcher biomeMatcher = null;
 
+    /**
+     * Called from FMLCommonSetupEvent
+     */
     public static void registerConfiguredFeatures() {
-        LakeFeature.Configuration configuration = new LakeFeature.Configuration(
+        LakeFeature.Configuration oilLakeConfig = new LakeFeature.Configuration(
                 BlockStateProvider.simple(ModBlocks.OIL.get().defaultBlockState()),
                 BlockStateProvider.simple(Blocks.AIR)
         );
 
-        OIL_LAKE_SURFACE = registerPlacedFeature(Names.MOD_ID + ":lake_oil_surface", ModFeatures.OIL_LAKE.get().configured(configuration),
+        Holder<ConfiguredFeature<LakeFeature.Configuration,?>> oilLake
+                = FeatureUtils.register(Names.MOD_ID + ":lake_oil_underground", ModFeatures.OIL_LAKE.get(), oilLakeConfig);
+
+        OIL_LAKE_SURFACE = PlacementUtils.register(Names.MOD_ID + ":lake_oil_surface", oilLake,
                 RarityFilter.onAverageOnceEvery(ConfigHelper.common().worldgen.surfaceOilLakeFrequency.get()),
                 InSquarePlacement.spread(),
                 PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
                 BiomeFilter.biome()
         );
-        OIL_LAKE_UNDERGROUND = registerPlacedFeature(Names.MOD_ID + ":lake_oil_underground", ModFeatures.OIL_LAKE.get().configured(configuration),
+        OIL_LAKE_UNDERGROUND = PlacementUtils.register(Names.MOD_ID + ":lake_oil_underground", oilLake,
                 RarityFilter.onAverageOnceEvery(ConfigHelper.common().worldgen.undergroundOilLakeFrequency.get()),
                 InSquarePlacement.spread(),
                 HeightRangePlacement.of(UniformHeight.of(VerticalAnchor.absolute(0), VerticalAnchor.top())),
@@ -73,13 +78,6 @@ public class ModWorldGen {
                 SurfaceRelativeThresholdFilter.of(Heightmap.Types.OCEAN_FLOOR_WG, Integer.MIN_VALUE, -5),
                 BiomeFilter.biome()
         );
-    }
-
-    private static <C extends FeatureConfiguration, F extends Feature<C>> PlacedFeature registerPlacedFeature(String registryName,
-                                                                                                              ConfiguredFeature<C, F> feature,
-                                                                                                              PlacementModifier... placementModifiers) {
-        PlacedFeature placed = FeatureUtils.register(registryName, feature).placed(placementModifiers);
-        return PlacementUtils.register(registryName, placed);
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {

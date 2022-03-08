@@ -121,8 +121,8 @@ dependencies {
 	runtimeOnly fg.deobf("mezz.jei:jei-${project.mc_version}:${jei_version}")
 	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
 	runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
-	runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
+	//compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
+	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
 	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 	compileOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
@@ -131,18 +131,19 @@ dependencies {
 	runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	//compileOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
 	//runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
-	compileOnly fg.deobf("curse.maven:create-328085:${create_curse_id}")
-	runtimeOnly fg.deobf("curse.maven:create-328085:${create_curse_id}")
-	compileOnly fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
-	runtimeOnly fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
+	//compileOnly fg.deobf("curse.maven:create-328085:${create_curse_id}")
+	//runtimeOnly fg.deobf("curse.maven:create-328085:${create_curse_id}")
+	//compileOnly fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
+	//runtimeOnly fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
 	compileOnly fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	runtimeOnly fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	//compileOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
 	//runtimeOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
-	compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
-	runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
-	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${project.mc_version}:${crafttweaker_version}")
-	runtimeOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${project.mc_version}:${crafttweaker_version}")
+	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
+	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
+	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.18.1:${crafttweaker_version}")
+	//compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${project.mc_version}:${crafttweaker_version}")
+	//runtimeOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${project.mc_version}:${crafttweaker_version}")
 	//compileOnly fg.deobf("net.darkhax.gamestages:GameStages-${project.mc_version}:${gamestages_version}")
 	//runtimeOnly fg.deobf("net.darkhax.gamestages:GameStages-${project.mc_version}:${gamestages_version}")
 	//compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-${project.mc_version}:10.3.29")
@@ -168,7 +169,8 @@ dependencies {
 }
 
 minecraft {
-	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
+//	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
+	mappings channel: 'parchment', version: "1.18.1-2022.03.06-1.18.2"
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 

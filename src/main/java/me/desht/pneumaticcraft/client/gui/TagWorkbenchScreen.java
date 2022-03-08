@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -118,7 +119,8 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
         ItemStack stack = menu.getSlot(0).getItem();
         if (stack.getItem() != lastItem) {
             availableList.clear();
-            stack.getItem().getTags().forEach(rl -> availableList.add(rl));
+            Registry.ITEM.getHolderOrThrow(Registry.ITEM.getResourceKey(stack.getItem()).orElseThrow()).tags()
+                            .forEach(tagKey -> availableList.add(tagKey.location()));
             availableList.unselectAll();
             lastItem = stack.getItem();
         }

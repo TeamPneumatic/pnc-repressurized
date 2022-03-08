@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.FluidTagsProvider;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -65,17 +65,17 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
     }
 
     @SafeVarargs
-    private void createTag(Tag.Named<Fluid> tag, Supplier<? extends Fluid>... blocks) {
+    private void createTag(TagKey<Fluid> tag, Supplier<? extends Fluid>... blocks) {
         tag(tag).add(resolveAll(Fluid[]::new, blocks));
     }
 
     @SafeVarargs
-    private void appendToTag(Tag.Named<Fluid> tag, Tag.Named<Fluid>... toAppend) {
+    private void appendToTag(TagKey<Fluid> tag, TagKey<Fluid>... toAppend) {
         tag(tag).addTags(toAppend);
     }
 
     @SafeVarargs
-    private void createAndAppend(Tag.Named<Fluid> tag, Tag.Named<Fluid> to, Supplier<? extends Fluid>... fluids) {
+    private void createAndAppend(TagKey<Fluid> tag, TagKey<Fluid> to, Supplier<? extends Fluid>... fluids) {
         createTag(tag, fluids);
         appendToTag(to, tag);
     }

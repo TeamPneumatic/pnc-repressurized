@@ -27,7 +27,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -57,7 +57,7 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, AmadronRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, AmadronRecipe recipe, IFocusGroup focuses) {
         IRecipeSlotBuilder inputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 6, 15);
         recipe.getInput().accept(
                 inputSlot::addItemStack,

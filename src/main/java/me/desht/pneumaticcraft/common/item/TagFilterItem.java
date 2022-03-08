@@ -21,6 +21,7 @@ import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -84,6 +85,7 @@ public class TagFilterItem extends Item implements IFilteringItem {
     public boolean matchFilter(ItemStack filterStack, ItemStack stack) {
         Validate.isTrue(filterStack.getItem() instanceof TagFilterItem, "filtering itemstack is not a tag filter!");
         Set<ResourceLocation> tags = getConfiguredTagList(filterStack);
-        return !Sets.intersection(tags, stack.getItem().getTags()).isEmpty();
+        return !Sets.intersection(tags, PneumaticCraftUtils.itemTags(stack.getItem())).isEmpty();
     }
+
 }

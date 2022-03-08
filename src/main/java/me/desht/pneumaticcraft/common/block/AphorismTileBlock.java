@@ -154,7 +154,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
         BlockEntity te = world.getBlockEntity(pos);
         if (!(te instanceof AphorismTileBlockEntity teAT)) return InteractionResult.FAIL;
 
-        if (!world.isClientSide && Tags.Items.DYES.contains(player.getItemInHand(hand).getItem()) && !teAT.isInvisible()) {
+        if (!world.isClientSide && player.getItemInHand(hand).is(Tags.Items.DYES) && !teAT.isInvisible()) {
             return tryDyeTile(state, player, hand, brtr, teAT);
         } else if (world.isClientSide && hand == InteractionHand.MAIN_HAND && player.getItemInHand(hand).isEmpty()) {
             return openEditorGui(player, teAT);

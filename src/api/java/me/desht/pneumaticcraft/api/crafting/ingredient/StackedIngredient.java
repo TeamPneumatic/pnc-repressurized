@@ -23,14 +23,15 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.SerializationTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -49,8 +50,8 @@ public class StackedIngredient extends Ingredient {
         super(itemLists);
     }
 
-    public static Ingredient fromTag(Tag.Named<Item> tag, int count) {
-        return StackedIngredient.fromItemListStream(Stream.of(new StackedTagList(tag, count, tag.getName())));
+    public static Ingredient fromTag(TagKey<Item> tag, int count) {
+        return StackedIngredient.fromItemListStream(Stream.of(new StackedTagList(tag, count)));
     }
 
     public static Ingredient fromStacks(ItemStack... stacks) {
@@ -100,11 +101,9 @@ public class StackedIngredient extends Ingredient {
             return new Ingredient.ItemValue(new ItemStack(item, count));
         } else if (json.has("tag")) {
             ResourceLocation resourcelocation = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
-            Tag<Item> tag = SerializationTags.getInstance().getTagOrThrow(Registry.ITEM_REGISTRY, resourcelocation, (r) -> {
-                throw new JsonSyntaxException("Unknown item tag '" + r + "'");
-            });
+            TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, resourcelocation);
             int count = json.has("count") ? GsonHelper.getAsInt(json, "count") : 1;
-            return new StackedTagList(tag, count, resourcelocation);
+            return new StackedTagList(tagKey, count);
         } else {
             throw new JsonParseException("An ingredient entry needs either a tag or an item");
         }
@@ -157,26 +156,22 @@ public class StackedIngredient extends Ingredient {
     }
 
     public static class StackedTagList implements Value {
-        private final Tag<Item> tag;
+        private final TagKey<Item> tagKey;
         private final int count;
-        private final ResourceLocation id;
 
-        public StackedTagList(Tag<Item> tagIn, int count, ResourceLocation id) {
-            this.tag = tagIn;
+        public StackedTagList(TagKey<Item> tagIn, int count) {
+            this.tagKey = tagIn;
             this.count = count;
-            this.id = id;
         }
 
         @Override
         public Collection<ItemStack> getItems() {
             List<ItemStack> list = Lists.newArrayList();
 
-            for (Item item : this.tag.getValues()) {
-                list.add(new ItemStack(item, count));
-            }
+            Registry.ITEM.getTagOrEmpty(tagKey).forEach(h -> list.add(new ItemStack(h.value(), count)));
 
             if (list.size() == 0 && !net.minecraftforge.common.ForgeConfig.SERVER.treatEmptyTagsAsAir.get()) {
-                list.add(new ItemStack(net.minecraft.world.level.block.Blocks.BARRIER).setHoverName(new net.minecraft.network.chat.TextComponent("Empty Tag: " + id.toString())));
+                list.add(new ItemStack(Blocks.BARRIER).setHoverName(new TextComponent("Empty Tag: " + tagKey.location())));
             }
             return list;
         }
@@ -185,7 +180,7 @@ public class StackedIngredient extends Ingredient {
         public JsonObject serialize() {
             JsonObject json = new JsonObject();
             json.addProperty("type", Serializer.ID.toString());
-            json.addProperty("tag", id.toString());
+            json.addProperty("tag", tagKey.location().toString());
             json.addProperty("count", count);
             return json;
         }

@@ -18,11 +18,11 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.tags.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import javax.annotation.Nonnull;
@@ -64,7 +64,7 @@ public interface IPneumaticHelmetRegistry {
      */
     void addHackable(@Nonnull Block block, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
-    void addHackable(@Nonnull Tag.Named<Block> blockTag, @Nonnull Supplier<? extends IHackableBlock> iHackable);
+    void addHackable(@Nonnull TagKey<Block> blockTag, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
     /**
      * Get a list of all current successful hacks on a given entity. This is used for example in Enderman hacking, so

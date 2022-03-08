@@ -31,6 +31,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -89,7 +90,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, HeatPropertiesRecipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, HeatPropertiesRecipe recipe, IFocusGroup focuses) {
         setInputIngredient(builder, recipe);
 
         List<ItemStack> items = new ArrayList<>();
@@ -235,7 +236,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     private IFocus<?> makeFocus(Block block, RecipeIngredientRole mode) {
         return block == Blocks.AIR || block instanceof LiquidBlock ?
                 null :
-                JEIPlugin.jeiRuntime.createFocus(mode, VanillaTypes.ITEM, new ItemStack(block));
+                JEIPlugin.jeiHelpers.getFocusFactory().createFocus(mode, VanillaTypes.ITEM, new ItemStack(block));
     }
 
     private void addTooltip(Block block, List<Component> list) {

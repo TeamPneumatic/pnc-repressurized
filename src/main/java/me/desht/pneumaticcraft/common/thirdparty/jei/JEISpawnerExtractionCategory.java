@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
-import mezz.jei.api.recipe.IFocus;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +47,7 @@ public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawner
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, List<? extends IFocus<?>> focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 53, 3).addItemStack(recipe.itemInput);
         builder.addSlot(RecipeIngredientRole.INPUT, 53, 34).addItemStack(new ItemStack(Blocks.SPAWNER));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 18,34).addItemStacks(recipe.cores);

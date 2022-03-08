@@ -17,10 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.waila;
 
-import mcp.mobius.waila.api.IRegistrar;
-import mcp.mobius.waila.api.IWailaPlugin;
-import mcp.mobius.waila.api.TooltipPosition;
-import mcp.mobius.waila.api.WailaPlugin;
+import mcp.mobius.waila.api.*;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
@@ -30,17 +27,21 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+@SuppressWarnings("UnstableApiUsage")
 @WailaPlugin
 public class WailaRegistration implements IWailaPlugin {
     @Override
-    public void register(IRegistrar iRegistrar) {
+    public void register(IWailaCommonRegistration iRegistrar) {
         iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), AbstractPneumaticCraftBlockEntity.class);
         iRegistrar.registerBlockDataProvider(new SemiblockProvider.Data(), BlockEntity.class);
         iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), AbstractPneumaticCraftBlockEntity.class);
         iRegistrar.registerBlockDataProvider(new TubeModuleProvider.Data(), PressureTubeBlockEntity.class);
         iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), LivingEntity.class);
         iRegistrar.registerEntityDataProvider(new EntityProvider.Data(), AbstractSemiblockEntity.class);
+    }
 
+    @Override
+    public void registerClient(IWailaClientRegistration iRegistrar) {
         iRegistrar.registerComponentProvider(new PneumaticProvider.Component(), TooltipPosition.BODY, Block.class);
         iRegistrar.registerComponentProvider(new SemiblockProvider.Component(), TooltipPosition.BODY, Block.class);
         iRegistrar.registerComponentProvider(new RedstoneControlProvider.Component(), TooltipPosition.BODY, AbstractPneumaticCraftBlock.class);

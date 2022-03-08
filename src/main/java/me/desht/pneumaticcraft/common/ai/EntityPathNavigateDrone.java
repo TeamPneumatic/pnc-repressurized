@@ -147,7 +147,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
 
     private boolean teleportationAllowed(BlockPos pos) {
         int max = ConfigHelper.common().drones.maxDroneTeleportRange.get();
-        return !droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerThan(droneEntity.getDronePos(), max);
+        return !droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerToCenterThan(droneEntity.getDronePos(), max);
     }
 
     @Override
