@@ -21,6 +21,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -29,6 +30,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -37,6 +39,9 @@ import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunct
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.Objects;
 
@@ -44,14 +49,14 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_AIR_AMOUNT;
 import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_SIDE_CONFIG;
 
+@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModLootFunctions {
-    public static final LootItemFunctionType TE_SERIALIZER = Registry.register(Registry.LOOT_FUNCTION_TYPE,
-            RL("te_serializer"), new LootItemFunctionType(new BlockEntitySerializerFunction.Serializer())
-    );
+    private static LootItemFunctionType TE_SERIALIZER;
 
-    @SuppressWarnings("EmptyMethod")
-    public static void init() {
-        // poke
+    @SubscribeEvent
+    public static void init(@SuppressWarnings("unused") RegistryEvent.Register<Item> event) {
+        TE_SERIALIZER = Registry.register(Registry.LOOT_FUNCTION_TYPE,
+                RL("te_serializer"), new LootItemFunctionType(new BlockEntitySerializerFunction.Serializer()));
     }
 
     /**

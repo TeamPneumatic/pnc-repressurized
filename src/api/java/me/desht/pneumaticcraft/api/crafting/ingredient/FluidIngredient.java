@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.api.crafting.ingredient;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
@@ -176,7 +177,9 @@ public class FluidIngredient extends Ingredient {
                     fluids = Collections.emptyList();
                 }
             } else if (fluidTagKey != null) {
-                Registry.FLUID.getTagOrEmpty(fluidTagKey).forEach(fluid -> fluids.add(fluid.value()));
+                ImmutableList.Builder<Fluid> builder = ImmutableList.builder();
+                Registry.FLUID.getTagOrEmpty(fluidTagKey).forEach(fluid -> builder.add(fluid.value()));
+                fluids = builder.build();
             } else {
                 throw new IllegalStateException("no fluid ID or fluid tag is available?");
             }
