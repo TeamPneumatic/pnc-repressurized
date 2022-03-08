@@ -17,6 +17,9 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
+import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
@@ -24,6 +27,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.spawner.AbstractSpawner;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 public class EntitySpawnerAgitator extends EntitySemiblockBase {
     public EntitySpawnerAgitator(EntityType<?> entityTypeIn, World worldIn) {
@@ -45,7 +51,7 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
                 // just altering the range when added isn't enough - needs to be kept updated each tick
                 spawner.requiredPlayerRange = Integer.MAX_VALUE;
                 if (tickCount == 1) {
-                    setSpawnPersistentEntities(getSpawner(), true);
+                    setSpawnPersistentEntities(spawner, true);
                 }
             }
         }
@@ -71,5 +77,26 @@ public class EntitySpawnerAgitator extends EntitySemiblockBase {
 
     private void setSpawnPersistentEntities(AbstractSpawner spawner, boolean persistent) {
         spawner.nextSpawnData.getTag().putBoolean("PersistenceRequired", persistent);
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onBlockBreak(BlockEvent.BreakEvent event) {
+            // Covers the case where the block is broken and the activation range needs to be reset.
+            // Normally this isn't an issue since the spawner doesn't drop as an item, but some mods
+            //  (e.g. Apotheosis) can change this behaviour, so we want to ensure the agitator modifications
+            //  don't get persisted into the dropped spawner item.
+            if (event.getState().getBlock() == Blocks.SPAWNER && event.getWorld() instanceof World) {
+                ISemiBlock semi = SemiblockTracker.getInstance().getSemiblock((World) event.getWorld(), event.getPos());
+                if (semi instanceof EntitySpawnerAgitator) {
+                    AbstractSpawner spawner = ((EntitySpawnerAgitator) semi).getSpawner();
+                    if (spawner != null) {
+                        spawner.requiredPlayerRange = 16;
+                        ((EntitySpawnerAgitator) semi).setSpawnPersistentEntities(spawner, false);
+                    }
+                }
+            }
+        }
     }
 }
