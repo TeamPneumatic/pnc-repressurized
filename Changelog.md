@@ -4,6 +4,12 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+# Minecraft 1.18.2
+
+## 3.1.0-56 (9 Mar 2022)
+
+This release is just a straight port of 3.0.0 (1.18.1) to Minecraft 1.18.2. No player-visible changes.
+
 # Minecraft 1.18.1
 
 ## 3.0.0-53 (7 Mar 2022)
