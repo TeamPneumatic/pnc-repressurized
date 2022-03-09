@@ -20,11 +20,14 @@ package me.desht.pneumaticcraft.common.villages;
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 
 import java.util.ArrayList;
@@ -39,7 +42,7 @@ public class VillageStructures {
      *
      * With thanks to TelepathicGrunt: https://gist.github.com/TelepathicGrunt/4fdbc445ebcbcbeb43ac748f4b18f342
      */
-    private static void addPieceToPool(Registry<StructureTemplatePool> templatePoolRegistry, ResourceLocation poolRL, String nbtPieceRL, StructureTemplatePool.Projection projection, int weight) {
+    private static void addPieceToPool(Registry<StructureTemplatePool> templatePoolRegistry, Holder<StructureProcessorList> emptyProcessor, ResourceLocation poolRL, String nbtPieceRL, StructureTemplatePool.Projection projection, int weight) {
         // Grab the pool we want to add to
         StructureTemplatePool pool = templatePoolRegistry.get(poolRL);
         if (pool == null) return;
@@ -47,8 +50,8 @@ public class VillageStructures {
         // Grabs the nbt piece and creates a SingleJigsawPiece of it that we can add to a structure's pool.
         // Note: street pieces are a legacy_single_pool_piece type, houses are single_pool_piece
         SinglePoolElement piece = poolRL.getPath().endsWith("streets") ?
-                SinglePoolElement.legacy(nbtPieceRL).apply(projection) :
-                SinglePoolElement.single(nbtPieceRL).apply(projection);
+                SinglePoolElement.legacy(nbtPieceRL, emptyProcessor).apply(projection) :
+                SinglePoolElement.single(nbtPieceRL, emptyProcessor).apply(projection);
 
         // AccessTransformer to make JigsawPattern's templates field public for us to see.
         // public net.minecraft.world.gen.feature.jigsaw.JigsawPattern templates #templates
@@ -70,6 +73,9 @@ public class VillageStructures {
     public static void addMechanicHouse(final ServerAboutToStartEvent event) {
         int weight = ConfigHelper.common().villagers.mechanicHouseWeight.get();
         if (weight > 0) {
+            Holder<StructureProcessorList> emptyProcessor = event.getServer().registryAccess().registryOrThrow(Registry.PROCESSOR_LIST_REGISTRY)
+                    .getHolderOrThrow(ResourceKey.create(Registry.PROCESSOR_LIST_REGISTRY, new ResourceLocation("minecraft:empty")));
+
             Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY);
 
             for (VillageBiome v : VillageBiome.values()) {
@@ -79,13 +85,13 @@ public class VillageStructures {
                 if (v.needsCustomStreet()) {
                     // note: in this case, our mechanic house is in the custom pneumaticcraft:village/<biome>/houses
                     //   template pool JSON, so doesn't need to be added in code
-                    addPieceToPool(templatePoolRegistry,
+                    addPieceToPool(templatePoolRegistry, emptyProcessor,
                             new ResourceLocation("village/" + v.getBiomeName() + "/streets"),
                             Names.MOD_ID + ":villages/custom_street_" + v.getBiomeName(),
                             StructureTemplatePool.Projection.TERRAIN_MATCHING, Math.max(1, weight / 4));
                 } else {
                     // add the house to the vanilla minecraft:village/<biome>/houses pool
-                    addPieceToPool(templatePoolRegistry,
+                    addPieceToPool(templatePoolRegistry, emptyProcessor,
                             new ResourceLocation("village/" + v.getBiomeName() + "/houses"),
                             Names.MOD_ID + ":villages/mechanic_house_" + v.getBiomeName(),
                             StructureTemplatePool.Projection.RIGID, weight
