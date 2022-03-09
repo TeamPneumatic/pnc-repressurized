@@ -1,12 +1,10 @@
 name: "Build applicable branches on push or pull request"
 
 # Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the 1.18.1 branch
+# events but only for the 1.18.x branches
 on:
   push:
-    branches: [ "1.18.1" ]
-  pull_request:
-    branches: [ "1.18.1" ]
+    branches: [ "1.18.1", "1.18.2" ]
 
 jobs:
   build:

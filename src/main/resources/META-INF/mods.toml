@@ -11,7 +11,7 @@ authors="desht, MineMaarten"
     modId="pneumaticcraft"
     version="${version}"
     displayName="PneumaticCraft: Repressurized"
-    updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/1.16.5/release_info.json" #optional
+    updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/1.18.2/release_info.json" #optional
     description='''
 PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
 
