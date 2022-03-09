@@ -53,7 +53,7 @@ jobs:
           echo "::set-output name=version::$(grep ^mod_version_ ./gradle.properties | cut -d= -f2 | tr '\012' '.' | sed -e 's/\.$//')"
       - uses: actions/upload-artifact@v2
         with:
-          name: pncr-dist-${{ github.ref_name }}-{{ steps.mod_version.outputs.version}}-{{ github.run_number }}.zip
+          name: pncr-dist-${{ github.ref_name }}-${{ steps.mod_version.outputs.version}}-${{ github.run_number }}.zip
           path: build/libs/
       - name: Discord notification
         uses: Ilshidur/action-discord@master
