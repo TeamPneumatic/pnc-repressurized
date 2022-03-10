@@ -54,6 +54,7 @@ public class DroneAIManager implements IVariableProvider {
     private final IDroneBase drone;
     private List<IProgWidget> progWidgets;
     private IProgWidget activeWidget;
+    private IProgWidget startWidget;  // cache to reduce search time; this one is referenced a lot
     private Goal currentGoal;
     private Goal currentTargetingGoal;
     private boolean stopWhenEndReached;
@@ -89,15 +90,19 @@ public class DroneAIManager implements IVariableProvider {
 
     public void setWidgets(List<IProgWidget> progWidgets) {
         this.progWidgets = progWidgets;
+        this.jumpBackWidgets.clear();
         if (progWidgets.isEmpty()) {
             setActiveWidget(null);
+            startWidget = null;
         } else {
             for (IProgWidget widget : progWidgets) {
-                if (widget instanceof IVariableWidget v) {
+                if (widget instanceof ProgWidgetStart) {
+                    startWidget = widget;
+                } else if (widget instanceof IVariableWidget v) {
                     v.setAIManager(this);
                 }
             }
-            gotoFirstWidget();
+            restartProgram();
         }
     }
 
@@ -217,35 +222,31 @@ public class DroneAIManager implements IVariableProvider {
                 setActiveWidget(widget);
             } else {
                 // end of the program!
-                if (stopWhenEndReached) {
+                if (stopWhenEndReached && jumpBackWidgets.isEmpty()) {
                     setActiveWidget(null);
                 } else {
-                    gotoFirstWidget();
+                    restartProgram();
                 }
             }
         }
         if (activeWidget == null && !stopWhenEndReached) {
-            gotoFirstWidget();
+            restartProgram();
         }
     }
 
-    private void gotoFirstWidget() {
+    /**
+     * Move execution back to the Start widget, or if we're in a Foreach subroutine, back to the Foreach widget
+     */
+    private void restartProgram() {
         setLabel("Main");
-        if (!jumpBackWidgets.isEmpty()) {
-            setActiveWidget(jumpBackWidgets.pop());
-        } else {
-            progWidgets.stream()
-                    .filter(widget -> widget instanceof ProgWidgetStart)
-                    .findFirst()
-                    .ifPresent(this::setActiveWidget);
-        }
+        setActiveWidget(jumpBackWidgets.isEmpty() ? startWidget : jumpBackWidgets.pop());
     }
 
     private void setActiveWidget(IProgWidget widget) {
         Goal targetGoal = null;
         Goal goal = null;
         if (widget != null) {
-            boolean isStartWidget = widget instanceof ProgWidgetStart;
+            boolean isStartWidget = widget == startWidget;
             targetGoal = widget.getWidgetTargetAI(drone, widget);
             goal = widget.getWidgetAI(drone, widget);
             Set<IProgWidget> visitedWidgets = new HashSet<>();//Prevent endless loops
@@ -256,12 +257,12 @@ public class DroneAIManager implements IVariableProvider {
                 if (widget == null) {
                     // reached the last widget in the line
                     if (!isStartWidget) {
-                        if (stopWhenEndReached) {
+                        if (stopWhenEndReached && jumpBackWidgets.isEmpty()) {
                             // stop executing
                             setActiveWidget(null);
                         } else {
-                            // return to the start widget
-                            gotoFirstWidget();
+                            // return to the start widget (or
+                            restartProgram();
                         }
                     }
                     return;
