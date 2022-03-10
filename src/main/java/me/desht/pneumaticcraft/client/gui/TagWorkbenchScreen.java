@@ -32,6 +32,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -127,10 +128,10 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
         ItemStack stack1 = menu.getSlot(1).getItem();
         if (!ItemStack.matches(stack1, lastPaperStack)) {
             if (stack1.getItem() == ModItems.TAG_FILTER.get()) {
-                Set<ResourceLocation> s = TagFilterItem.getConfiguredTagList(stack1);
-                s.addAll(selectedList.getLines());
+                Set<TagKey<Item>> s = TagFilterItem.getConfiguredTagList(stack1);
+                s.addAll(selectedList.getLines().stream().map(rl -> TagKey.create(Registry.ITEM_REGISTRY, rl)).toList());
                 selectedList.clear();
-                s.forEach(rl -> selectedList.add(rl));
+                s.forEach(rl -> selectedList.add(rl.location()));
             }
             selectedList.unselectAll();
             lastPaperStack = stack1.copy();

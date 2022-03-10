@@ -23,12 +23,14 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -55,19 +57,20 @@ public class TagFilterItem extends Item implements IFilteringItem {
 
         if (worldIn != null) {
             tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(ChatFormatting.YELLOW));
-            for (ResourceLocation rl : getConfiguredTagList(stack)) {
-                tooltip.add(Symbols.bullet().append(rl.toString()).withStyle(ChatFormatting.GOLD));
+            for (TagKey<Item> key : getConfiguredTagList(stack)) {
+                tooltip.add(Symbols.bullet().append(key.location().toString()).withStyle(ChatFormatting.GOLD));
             }
         }
     }
 
-    public static Set<ResourceLocation> getConfiguredTagList(ItemStack stack) {
+    public static Set<TagKey<Item>> getConfiguredTagList(ItemStack stack) {
         CompoundTag nbt = stack.getTag();
         if (nbt != null && nbt.contains(NBT_TAG_LIST)) {
             ListTag l = nbt.getList(NBT_TAG_LIST, Tag.TAG_STRING);
-            Set<ResourceLocation> res = new HashSet<>();
+            Set<TagKey<Item>> res = new HashSet<>();
             for (int i = 0; i < l.size(); i++) {
-                res.add(new ResourceLocation(l.getString(i)));
+                res.add(TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(l.getString(i))));
+//                res.add(new ResourceLocation(l.getString(i)));
             }
             return res;
         } else {
@@ -75,16 +78,16 @@ public class TagFilterItem extends Item implements IFilteringItem {
         }
     }
 
-    public static void setConfiguredTagList(ItemStack stack, Set<ResourceLocation> tags) {
+    public static void setConfiguredTagList(ItemStack stack, Set<TagKey<Item>> tags) {
         ListTag l = new ListTag();
-        tags.forEach(rl -> l.add(StringTag.valueOf(rl.toString())));
+        tags.forEach(tagKey -> l.add(StringTag.valueOf(tagKey.location().toString())));
         stack.getOrCreateTag().put(NBT_TAG_LIST, l);
     }
 
     @Override
     public boolean matchFilter(ItemStack filterStack, ItemStack stack) {
         Validate.isTrue(filterStack.getItem() instanceof TagFilterItem, "filtering itemstack is not a tag filter!");
-        Set<ResourceLocation> tags = getConfiguredTagList(filterStack);
+        Set<TagKey<Item>> tags = getConfiguredTagList(filterStack);
         return !Sets.intersection(tags, PneumaticCraftUtils.itemTags(stack.getItem())).isEmpty();
     }
 
