@@ -6,6 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
+## 3.1.1-?? (unreleased)
+
+### Updates
+* Added `pneumaticcraft:no_oil_lakes` configured structure feature tag
+  * Configured structure feature ID's can be added to this tag to prevent oil lakes from generating within those structures
+  * Default is to include `#minecraft:village` so oil lakes will never generated within a village
+  * Can be modified via datapack: `data/pneumaticcraft/tags/worldgen/configured_structure_feature/no_oil_lakes.json`
+
+### Fixes
+* Fixed Foreach widgets (Coordinate and Item) not functioning properly when running in a subprogram called by an External Program widget
+  * External Program wrongly interpreted the end of the foreach subroutine as end of the entire program
+* Added Huge Tanks to the `pneumaticcraft:tanks` block & item tags
+
 ## 3.1.0-56 (9 Mar 2022)
 
 This release is just a straight port of 3.0.0 (1.18.1) to Minecraft 1.18.2. No player-visible changes.
