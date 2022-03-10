@@ -346,6 +346,8 @@ public class PneumaticCraftUtils {
 
         if (filterStack.getItem() instanceof IFilteringItem f) {
             return f.matchFilter(filterStack, stack);
+        } else if (stack.getItem() instanceof IFilteringItem f) {
+            return f.matchFilter(stack, filterStack);
         }
 
         if (filterStack.getItem() != stack.getItem()) return false;
