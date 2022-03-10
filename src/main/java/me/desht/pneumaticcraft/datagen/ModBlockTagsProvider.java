@@ -76,7 +76,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         createTag(PneumaticCraftTags.Blocks.SMOOTH_PLASTIC_BRICKS, ModBlocks.SMOOTH_PLASTIC_BRICKS.toArray(new Supplier[0]));
         createTag(PneumaticCraftTags.Blocks.WALL_LAMPS, ModBlocks.WALL_LAMPS.toArray(new Supplier[0]));
         createTag(PneumaticCraftTags.Blocks.WALL_LAMPS_INVERTED, ModBlocks.WALL_LAMPS_INVERTED.toArray(new Supplier[0]));
-        createTag(PneumaticCraftTags.Blocks.FLUID_TANKS, ModBlocks.TANK_SMALL, ModBlocks.TANK_MEDIUM, ModBlocks.TANK_LARGE);
+        createTag(PneumaticCraftTags.Blocks.FLUID_TANKS, ModBlocks.TANK_SMALL, ModBlocks.TANK_MEDIUM, ModBlocks.TANK_LARGE, ModBlocks.TANK_HUGE);
 
         createTag(PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC,
                 () -> Blocks.TNT,
