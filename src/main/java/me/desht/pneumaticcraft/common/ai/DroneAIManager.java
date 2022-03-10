@@ -65,6 +65,7 @@ public class DroneAIManager implements IVariableProvider {
     private final IDroneBase drone;
     private List<IProgWidget> progWidgets;
     private IProgWidget curActiveWidget;
+    private IProgWidget startWidget;  // cache to reduce search time; this one is referenced a lot
     private Goal curWidgetAI;
     private Goal curWidgetTargetAI;
     private boolean stopWhenEndReached;
@@ -100,15 +101,18 @@ public class DroneAIManager implements IVariableProvider {
 
     public void setWidgets(List<IProgWidget> progWidgets) {
         this.progWidgets = progWidgets;
+        jumpBackWidgets.clear();
         if (progWidgets.isEmpty()) {
             setActiveWidget(null);
         } else {
             for (IProgWidget widget : progWidgets) {
-                if (widget instanceof IVariableWidget) {
+                if (widget instanceof ProgWidgetStart) {
+                    startWidget = widget;
+                } else if (widget instanceof IVariableWidget) {
                     ((IVariableWidget) widget).setAIManager(this);
                 }
             }
-            gotoFirstWidget();
+            restartProgram();
         }
     }
 
@@ -252,19 +256,19 @@ public class DroneAIManager implements IVariableProvider {
                 setActiveWidget(widget);
             } else {
                 // end of the program!
-                if (stopWhenEndReached) {
+                if (stopWhenEndReached && jumpBackWidgets.isEmpty()) {
                     setActiveWidget(null);
                 } else {
-                    gotoFirstWidget();
+                    restartProgram();
                 }
             }
         }
         if (curActiveWidget == null && !stopWhenEndReached) {
-            gotoFirstWidget();
+            restartProgram();
         }
     }
 
-    private void gotoFirstWidget() {
+    private void restartProgram() {
         setLabel("Main");
         if (!jumpBackWidgets.isEmpty()) {
             setActiveWidget(jumpBackWidgets.pop());
@@ -291,12 +295,12 @@ public class DroneAIManager implements IVariableProvider {
                 if (widget == null) {
                     // reached the last widget in the line
                     if (!first) {
-                        if (stopWhenEndReached) {
+                        if (stopWhenEndReached && jumpBackWidgets.isEmpty()) {
                             // stop executing
                             setActiveWidget(null);
                         } else {
                             // return to the start widget
-                            gotoFirstWidget();
+                            restartProgram();
                         }
                     }
                     return;
