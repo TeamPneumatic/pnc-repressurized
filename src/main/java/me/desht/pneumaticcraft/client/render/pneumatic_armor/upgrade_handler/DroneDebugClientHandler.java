@@ -24,12 +24,15 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.DroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.DroneDebugHandler;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.settings.KeyBinding;
@@ -47,6 +50,20 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
 
     public DroneDebugClientHandler() {
         super(ArmorUpgradeRegistry.getInstance().droneDebugHandler);
+    }
+
+    public static void onWidgetsChanged() {
+        if (Minecraft.getInstance().screen instanceof GuiArmorMainScreen) {
+            GuiArmorMainScreen a = (GuiArmorMainScreen)Minecraft.getInstance().screen;
+            if (a.getCurrentOptionsPage().getPage() instanceof DroneDebuggerOptions) {
+                DroneDebuggerOptions db = (DroneDebuggerOptions)  a.getCurrentOptionsPage().getPage();
+                IDroneBase drone = db.getSelectedDrone();
+                if (drone != null) {
+                    TileEntityProgrammer.updatePuzzleConnections(drone.getProgWidgets());
+                    db.gotoStartWidget();
+                }
+            }
+        }
     }
 
     public Set<BlockPos> getShowingPositions() {

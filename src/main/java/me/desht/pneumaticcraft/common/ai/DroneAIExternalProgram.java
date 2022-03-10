@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetExternalProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -91,6 +93,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                 } else {
                     curProgramTag = null;
                     subAI.setWidgets(new ArrayList<>());
+                    drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(drone), p));
                 }
             }
             return true;
@@ -107,6 +110,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                             if (progWidget.shareVariables) mainAI.connectVariables(subAI);
                             subAI.getDrone().getAIManager().setLabel("Main");
                             subAI.setWidgets(widgets);
+                            drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(drone), p));
                             curProgramTag = stack.getTag();
                             if (!subAI.isIdling()) {
                                 return true;
@@ -116,6 +120,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                 }
                 curSlot++;
             }
+            abort();
             return false;
         }
     }
@@ -125,7 +130,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
         return ai instanceof DroneAIExternalProgram && curProgramTag.equals(((DroneAIExternalProgram) ai).curProgramTag);
     }
 
-    DroneAIManager getRunningAI() {
+    public DroneAIManager getRunningAI() {
         return subAI;
     }
 

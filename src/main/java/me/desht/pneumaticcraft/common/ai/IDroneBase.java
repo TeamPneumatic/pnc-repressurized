@@ -80,6 +80,17 @@ public interface IDroneBase extends IDrone {
         }
     }
 
+    /**
+     * Get the currently-active AI manager. Normally the drone's own aiManager object, but if currently executing
+     * an External Program widget, then return the sub-AI which is in effect.
+     * @return the active AI manager
+     */
+    default DroneAIManager getActiveAIManager() {
+        return getAIManager().getCurrentAI() instanceof DroneAIExternalProgram ?
+                ((DroneAIExternalProgram) getAIManager().getCurrentAI()).getRunningAI() :
+                getAIManager();
+    }
+
     String getLabel();
 
     ITextComponent getDroneName();

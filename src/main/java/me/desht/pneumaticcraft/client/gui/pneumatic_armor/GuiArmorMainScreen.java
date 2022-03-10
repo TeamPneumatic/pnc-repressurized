@@ -141,7 +141,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         init();
     }
 
-    private UpgradeOption getCurrentOptionsPage() {
+    public UpgradeOption getCurrentOptionsPage() {
         if (pageNumber >= 0 && pageNumber < upgradeOptions.size()) {
             return upgradeOptions.get(pageNumber);
         } else {
@@ -253,7 +253,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         return false;
     }
 
-    private static class UpgradeOption {
+    public static class UpgradeOption {
         private final IOptionPage page;
         private final ResourceLocation upgradeID;
         private final ItemStack[] icons;
@@ -262,6 +262,10 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
             this.page = page;
             this.upgradeID = upgradeID;
             this.icons = icons;
+        }
+
+        public IOptionPage getPage() {
+            return page;
         }
     }
 }

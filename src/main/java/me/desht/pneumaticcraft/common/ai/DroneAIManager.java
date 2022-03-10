@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
@@ -100,7 +101,7 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     public void setWidgets(List<IProgWidget> progWidgets) {
-        this.progWidgets = progWidgets;
+        this.progWidgets = ImmutableList.copyOf(progWidgets);
         jumpBackWidgets.clear();
         if (progWidgets.isEmpty()) {
             setActiveWidget(null);
@@ -126,11 +127,15 @@ public class DroneAIManager implements IVariableProvider {
         itemVariables.clear();
     }
 
+    public List<IProgWidget> getProgWidgets() {
+        return progWidgets;
+    }
+
     public boolean isIdling() {
         return curWidgetAI == null;
     }
 
-    Goal getCurrentAI() {
+    public Goal getCurrentAI() {
         return curWidgetAI;
     }
 

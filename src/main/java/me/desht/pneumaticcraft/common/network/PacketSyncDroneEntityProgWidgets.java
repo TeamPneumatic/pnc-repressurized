@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -35,7 +36,7 @@ public class PacketSyncDroneEntityProgWidgets extends PacketDroneDebugBase {
 
     public PacketSyncDroneEntityProgWidgets(IDroneBase drone) {
         super(drone);
-        progWidgets = drone.getProgWidgets();
+        progWidgets = drone.getActiveAIManager().getProgWidgets();
     }
 
     PacketSyncDroneEntityProgWidgets(PacketBuffer buffer) {
@@ -53,5 +54,6 @@ public class PacketSyncDroneEntityProgWidgets extends PacketDroneDebugBase {
         List<IProgWidget> widgets = droneBase.getProgWidgets();
         widgets.clear();
         widgets.addAll(progWidgets);
+        DroneDebugClientHandler.onWidgetsChanged();
     }
 }
