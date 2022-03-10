@@ -24,6 +24,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.material.Fluid;
 
 public class PneumaticCraftTags {
@@ -144,6 +145,18 @@ public class PneumaticCraftTags {
         }
 
         static TagKey<EntityType<?>> modTag(String name) {
+            return tag(Names.MOD_ID, name);
+        }
+    }
+
+    public static class ConfiguredStructures extends PneumaticCraftTags {
+        public static final TagKey<ConfiguredStructureFeature<?,?>> NO_OIL_LAKES = modTag("no_oil_lakes");
+
+        static TagKey<ConfiguredStructureFeature<?,?>> tag(String modid, String name) {
+            return TagKey.create(Registry.CONFIGURED_STRUCTURE_FEATURE_REGISTRY, new ResourceLocation(modid, name));
+        }
+
+        static TagKey<ConfiguredStructureFeature<?,?>> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
     }
