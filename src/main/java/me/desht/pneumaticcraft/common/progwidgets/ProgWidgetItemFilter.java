@@ -121,7 +121,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                     .append(": ").append(filter.getHoverName()));
             if (filter.getItem() == ModItems.TAG_FILTER.get()) {
                 curTooltip.addAll(TagFilterItem.getConfiguredTagList(filter).stream()
-                        .map(s -> Symbols.bullet().append(new TextComponent(s.toString()).withStyle(ChatFormatting.YELLOW)))
+                        .map(s -> Symbols.bullet().append(new TextComponent(s.location().toString()).withStyle(ChatFormatting.YELLOW)))
                         .toList());
             }
         }
