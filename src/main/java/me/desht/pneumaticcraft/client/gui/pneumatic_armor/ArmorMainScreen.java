@@ -143,7 +143,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
         init();
     }
 
-    private UpgradeOption getCurrentOptionsPage() {
+    public UpgradeOption getCurrentOptionsPage() {
         if (pageNumber >= 0 && pageNumber < upgradeOptions.size()) {
             return upgradeOptions.get(pageNumber);
         } else {
@@ -255,7 +255,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
         return false;
     }
 
-    private record UpgradeOption(IOptionPage page,
+    public record UpgradeOption(IOptionPage page,
                                  ResourceLocation upgradeID,
                                  ItemStack... icons) {
     }

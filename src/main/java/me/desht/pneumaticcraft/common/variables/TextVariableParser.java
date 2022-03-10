@@ -60,7 +60,9 @@ public class TextVariableParser {
         while ((index = ret.indexOf("${")) >= 0) {
             int secondIndex = ret.indexOf("}", index);
             if (secondIndex >= 0) {
-                String varValue = getVariableValue(ret.substring(index + 2, secondIndex));
+                String varName = ret.substring(index + 2, secondIndex);
+                boolean isItem = !variableProvider.getStack(playerID, varName).isEmpty() && variableProvider.getCoordinate(playerID, varName).isEmpty();
+                String varValue = getVariableValue(varName, isItem);
                 ret = ret.substring(0, index) + varValue + ret.substring(secondIndex + 1);
             } else {
                 return ret.substring(0, index) + "Parsing error: Missing '}'";
@@ -73,10 +75,10 @@ public class TextVariableParser {
         return relevantVariables;
     }
 
-    private String getVariableValue(String varNameWithExt) {
+    private String getVariableValue(String varNameWithExt, boolean isItem) {
         String[] f = StringUtils.splitByWholeSeparator(varNameWithExt, ".", 2);
         final String varName = f[0];
-        final String ext = f.length == 2 ? f[1] : "pos";
+        final String ext = f.length == 2 ? f[1] : (isItem ? "item" : "pos");
 
         VariableRetriever handler = RETRIEVERS.get(ext);
         if (handler == null) return "";

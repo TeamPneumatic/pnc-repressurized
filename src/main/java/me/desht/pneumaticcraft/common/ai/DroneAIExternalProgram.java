@@ -19,6 +19,8 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetExternalProgram;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -36,7 +38,6 @@ import java.util.List;
 import java.util.Set;
 
 public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetExternalProgram> {
-
     private final DroneAIManager subAI, mainAI;
     private final Set<BlockPos> traversedPositions = new HashSet<>();
     private int curSlot;
@@ -106,6 +107,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                             if (progWidget.shareVariables) mainAI.connectVariables(subAI);
                             subAI.getDrone().getAIManager().setLabel("Main");
                             subAI.setWidgets(widgets);
+                            drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(drone), p));
                             curProgramTag = stack.getTag();
                             if (!subAI.isIdling()) {
                                 return true;
@@ -115,6 +117,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                 }
                 curSlot++;
             }
+            abort();
             return false;
         }
     }
@@ -124,8 +127,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
         return ai instanceof DroneAIExternalProgram ext && this.curProgramTag.equals(ext.curProgramTag);
     }
 
-    DroneAIManager getRunningAI() {
+    public DroneAIManager getRunningAI() {
         return subAI;
     }
-
 }

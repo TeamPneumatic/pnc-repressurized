@@ -48,6 +48,7 @@ import net.minecraft.network.chat.TextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -78,11 +79,15 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
         areaShowWidgetId = -1;
     }
 
+    public IDroneBase getSelectedDrone() {
+        return selectedDrone;
+    }
+
     @Override
     public void populateGui(IGuiScreen gui) {
         showStart = new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.gui.progWidget.debug.showStart"),
-                b -> programmerUnit.gotoPiece(ProgrammerScreen.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class)));
+                b -> gotoStartWidget());
         gui.addWidget(showStart);
 
         showActive = new WidgetButtonExtended(30, 150, 150, 20,
@@ -103,8 +108,12 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                 new Rect2i(programmingStartX, PROGRAMMING_START_Y, programmingWidth, programmingHeight),
                 0, 0, 0);
         if (isDroneValid()) {
-            programmerUnit.gotoPiece(ProgrammerScreen.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class));
+            gotoStartWidget();
         }
+    }
+
+    public void gotoStartWidget() {
+        programmerUnit.gotoPiece(ProgrammerScreen.findWidget(Objects.requireNonNull(selectedDrone).getProgWidgets(), ProgWidgetStart.class));
     }
 
     private boolean isDroneValid() {

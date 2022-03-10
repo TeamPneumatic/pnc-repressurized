@@ -265,7 +265,12 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
                 else if (chunkloadWorkingChunk) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK);
             }
             if (chunkloadSelf) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_SELF);
+            DroneAIManager prevActive = getActiveAIManager();
             aiManager.onUpdateTasks();
+            if (getActiveAIManager() != prevActive) {
+                // active AI has changed (started or stopped using External Program) - resync widget list to debugging players
+                getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(this), p));
+            }
             maybeChargeHeldItem();
         }
 

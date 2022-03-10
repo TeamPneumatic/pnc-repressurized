@@ -23,8 +23,11 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.DroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.block.entity.ProgrammerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -47,6 +50,16 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
 
     public DroneDebugClientHandler() {
         super(ArmorUpgradeRegistry.getInstance().droneDebugHandler);
+    }
+
+    public static void onWidgetsChanged() {
+        if (Minecraft.getInstance().screen instanceof ArmorMainScreen a && a.getCurrentOptionsPage().page() instanceof DroneDebuggerOptions db) {
+            IDroneBase drone = db.getSelectedDrone();
+            if (drone != null) {
+                ProgrammerBlockEntity.updatePuzzleConnections(drone.getProgWidgets());
+                db.gotoStartWidget();
+            }
+        }
     }
 
     public Set<BlockPos> getShowingPositions() {

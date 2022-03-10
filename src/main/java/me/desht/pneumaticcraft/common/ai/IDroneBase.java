@@ -91,6 +91,15 @@ public interface IDroneBase extends IDrone {
     DroneItemHandler getDroneItemHandler();
 
     default void resetAttackCount() {
-
     }
+
+    /**
+     * Get the currently-active AI manager. Normally the drone's own aiManager object, but if currently executing
+     * an External Program widget, then return the sub-AI which is in effect.
+     * @return the active AI manager
+     */
+    default DroneAIManager getActiveAIManager() {
+        return getAIManager().getCurrentGoal() instanceof DroneAIExternalProgram ext ? ext.getRunningAI() : getAIManager();
+    }
+
 }

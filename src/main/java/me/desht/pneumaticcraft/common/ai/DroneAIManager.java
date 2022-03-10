@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.ai;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
@@ -89,7 +90,7 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     public void setWidgets(List<IProgWidget> progWidgets) {
-        this.progWidgets = progWidgets;
+        this.progWidgets = ImmutableList.copyOf(progWidgets);
         this.jumpBackWidgets.clear();
         if (progWidgets.isEmpty()) {
             setActiveWidget(null);
@@ -115,7 +116,7 @@ public class DroneAIManager implements IVariableProvider {
         return currentGoal == null;
     }
 
-    Goal getCurrentGoal() {
+    public Goal getCurrentGoal() {
         return currentGoal;
     }
 
@@ -472,6 +473,10 @@ public class DroneAIManager implements IVariableProvider {
         return currentGoal instanceof DroneAIExternalProgram ext ?
                 ext.getRunningAI().getLabel() + "/" + currentLabel :
                 currentLabel;
+    }
+
+    public List<IProgWidget> widgets() {
+        return progWidgets;
     }
 
     public record WrappedGoal(int priority, Goal goal) {

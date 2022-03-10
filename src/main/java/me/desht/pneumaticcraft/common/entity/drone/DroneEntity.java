@@ -51,6 +51,7 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
 import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
+import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.progwidgets.WidgetSerializer;
@@ -508,7 +509,14 @@ public class DroneEntity extends AbstractDroneEntity implements
         }
 
         if (!level.isClientSide && isAlive()) {
-            if (enabled) aiManager.onUpdateTasks();
+            if (enabled) {
+                DroneAIManager prevActive = getActiveAIManager();
+                aiManager.onUpdateTasks();
+                if (getActiveAIManager() != prevActive) {
+                    // active AI has changed (started or stopped using External Program) - resync widget list to debugging players
+                    getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(this), p));
+                }
+            }
             handleRedstoneEmission();
         }
     }
@@ -633,7 +641,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public void setActiveProgram(IProgWidget widget) {
         entityData.set(PROGRAM_KEY, widget.getTypeID().toString());
-        entityData.set(ACTIVE_WIDGET, progWidgets.indexOf(widget));
+        entityData.set(ACTIVE_WIDGET, getActiveAIManager().widgets().indexOf(widget));
     }
 
     private void setAccelerating(boolean accelerating) {
