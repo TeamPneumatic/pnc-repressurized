@@ -57,5 +57,5 @@ public interface IHeatRegistry {
      * @param id a unique for this heat behaviour
      * @param heatBehaviour a heat behaviour supplier
      */
-    void registerHeatBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour<?>> heatBehaviour);
+    void registerHeatBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour> heatBehaviour);
 }

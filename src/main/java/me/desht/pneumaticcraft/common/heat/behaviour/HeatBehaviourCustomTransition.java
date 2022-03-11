@@ -43,7 +43,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
     private HeatPropertiesRecipe heatEntry;
 
     @Override
-    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
 
         heatEntry = BlockHeatProperties.getInstance().getCustomHeatEntry(world, getBlockState());

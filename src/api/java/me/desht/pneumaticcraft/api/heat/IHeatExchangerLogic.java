@@ -223,7 +223,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      * @return an optional heat behaviour, or {@code Optional.empty()} the position is invalid or there is no matching
      * heat behaviour there
      */
-    default <T extends HeatBehaviour<?>> Optional<T> getHeatBehaviour(BlockPos pos, Class<T> cls) {
+    default <T extends HeatBehaviour> Optional<T> getHeatBehaviour(BlockPos pos, Class<T> cls) {
         return Optional.empty();
     }
 

@@ -44,7 +44,7 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
     }
 
     @Override
-    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
 
         tracker = HeatExtractionTracker.getInstance(getWorld());

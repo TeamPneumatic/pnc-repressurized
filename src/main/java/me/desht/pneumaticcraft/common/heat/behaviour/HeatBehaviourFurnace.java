@@ -24,7 +24,7 @@ import net.minecraft.util.ResourceLocation;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class HeatBehaviourFurnace extends HeatBehaviour<AbstractFurnaceTileEntity> {
+public class HeatBehaviourFurnace extends HeatBehaviour {
     static final ResourceLocation ID = RL("furnace");
 
     @Override
@@ -39,7 +39,12 @@ public class HeatBehaviourFurnace extends HeatBehaviour<AbstractFurnaceTileEntit
 
     @Override
     public void tick() {
-        AbstractFurnaceTileEntity furnace = getTileEntity();
+        if (!(getCachedTileEntity() instanceof AbstractFurnaceTileEntity) || getCachedTileEntity().isRemoved()) {
+            // shouldn't happen, but let's be defensive
+            // https://github.com/TeamPneumatic/pnc-repressurized/issues/969
+            return;
+        }
+        AbstractFurnaceTileEntity furnace = (AbstractFurnaceTileEntity) getCachedTileEntity();
         if (getHeatExchanger().getTemperature() > 373) {
             if (furnace.litTime < 190 && !furnace.getItem(0).isEmpty()) {
                 if (furnace.litTime == 0) {

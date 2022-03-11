@@ -42,11 +42,11 @@ import java.util.function.Supplier;
  * For general blockstate transitions, datapack recipes are the preferred way to add custom heat behaviours. See
  * {@code data/pneumaticcraft/recipes/block_heat_properties/*.json}
  */
-public abstract class HeatBehaviour<T extends TileEntity> implements INBTSerializable<CompoundNBT> {
+public abstract class HeatBehaviour implements INBTSerializable<CompoundNBT> {
     private IHeatExchangerLogic connectedHeatLogic;
     private World world;
     private BlockPos pos;
-    private T cachedTE;
+    private TileEntity cachedTE;
     private BlockState blockState;
     private Direction direction;  // direction of this behaviour, from the tile entity's point of view
 
@@ -59,7 +59,7 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
      * @param pos block pos of the owning tile entity
      * @param direction direction of this behaviour (from the tile entity's point of view)
      */
-    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         this.connectedHeatLogic = connectedHeatLogic;
         this.world = world;
         this.pos = pos;
@@ -85,9 +85,9 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
         return direction;
     }
 
-    public T getTileEntity() {
-        if (cachedTE == null || cachedTE.isRemoved()) //noinspection unchecked
-            cachedTE = (T) world.getBlockEntity(pos);
+    public TileEntity getCachedTileEntity() {
+        if (cachedTE == null || cachedTE.isRemoved())
+            cachedTE = world.getBlockEntity(pos);
         return cachedTE;
     }
 
@@ -131,7 +131,7 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
     @Override
     public boolean equals(Object o) {
         if (o instanceof HeatBehaviour) {
-            HeatBehaviour<?> behaviour = (HeatBehaviour<?>) o;
+            HeatBehaviour behaviour = (HeatBehaviour) o;
             return behaviour.getId().equals(getId()) && behaviour.getPos().equals(getPos());
         } else {
             return false;

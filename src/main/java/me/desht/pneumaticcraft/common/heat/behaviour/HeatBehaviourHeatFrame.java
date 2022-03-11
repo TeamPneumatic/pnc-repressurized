@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityHeatFrame;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicTicking;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -31,13 +30,13 @@ import net.minecraft.world.World;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
+public class HeatBehaviourHeatFrame extends HeatBehaviour {
     static final ResourceLocation ID = RL("heat_frame");
 
     private EntityHeatFrame semiBlock;
 
     @Override
-    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
         semiBlock = null;
         return this;

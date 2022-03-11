@@ -37,8 +37,8 @@ import java.util.function.BiPredicate;
 public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private final Set<IHeatExchangerLogic> hullExchangers = Collections.newSetFromMap(new IdentityHashMap<>());
     private final Set<IHeatExchangerLogic> connectedExchangers = Collections.newSetFromMap(new IdentityHashMap<>());
-    private List<HeatBehaviour<?>> behaviours = new ArrayList<>();
-    private List<HeatBehaviour<?>> newBehaviours; // required to prevent CME problems
+    private List<HeatBehaviour> behaviours = new ArrayList<>();
+    private List<HeatBehaviour> newBehaviours; // required to prevent CME problems
     private double ambientTemperature = -1;
     private double temperature = HeatExchangerLogicAmbient.BASE_AMBIENT_TEMP;  // degrees Kelvin, 300K by default
     @GuiSynced
@@ -138,7 +138,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         CompoundNBT tag = new CompoundNBT();
         tag.putDouble("temperature", temperature);
         ListNBT tagList = new ListNBT();
-        for (HeatBehaviour<?> behaviour : behaviours) {
+        for (HeatBehaviour behaviour : behaviours) {
             CompoundNBT t = behaviour.serializeNBT();
             t.putString("id", behaviour.getId().toString());
             tagList.add(t);
@@ -155,7 +155,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         ListNBT tagList = nbt.getList("behaviours", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             CompoundNBT t = tagList.getCompound(i);
-            HeatBehaviour<?> behaviour = HeatBehaviourManager.getInstance().createBehaviour(new ResourceLocation(t.getString("id")));
+            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().createBehaviour(new ResourceLocation(t.getString("id")));
             if (behaviour != null) {
                 behaviour.deserializeNBT(t);
                 behaviours.add(behaviour);
@@ -172,20 +172,20 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
             return;
         }
         if (newBehaviours != null) {
-            List<HeatBehaviour<?>> oldBehaviours = behaviours;
+            List<HeatBehaviour> oldBehaviours = behaviours;
             behaviours = newBehaviours;
             newBehaviours = null;
             // Transfer over equal heat behaviour's info.
-            for (HeatBehaviour<?> oldBehaviour : oldBehaviours) {
+            for (HeatBehaviour oldBehaviour : oldBehaviours) {
                 int equalBehaviourIndex = behaviours.indexOf(oldBehaviour);
                 if (equalBehaviourIndex >= 0) {
                     behaviours.get(equalBehaviourIndex).deserializeNBT(oldBehaviour.serializeNBT());
                 }
             }
         }
-        Iterator<HeatBehaviour<?>> iterator = behaviours.iterator();
+        Iterator<HeatBehaviour> iterator = behaviours.iterator();
         while (iterator.hasNext()) {
-            HeatBehaviour<?> behaviour = iterator.next();
+            HeatBehaviour behaviour = iterator.next();
             // upon loading from NBT the world is null. gets initialized once 'initializeAsHull' is invoked.
             if (behaviour.getWorld() != null) {
                 if (behaviour.isApplicable()) {
@@ -244,8 +244,8 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     }
 
     @Override
-    public <T extends HeatBehaviour<?>> Optional<T> getHeatBehaviour(BlockPos pos, Class<T> cls) {
-        for (HeatBehaviour<?> behaviour : behaviours) {
+    public <T extends HeatBehaviour> Optional<T> getHeatBehaviour(BlockPos pos, Class<T> cls) {
+        for (HeatBehaviour behaviour : behaviours) {
             if (behaviour.getPos().equals(pos) && cls.isAssignableFrom(behaviour.getClass())) {
                 return Optional.of(cls.cast(behaviour));
             }
