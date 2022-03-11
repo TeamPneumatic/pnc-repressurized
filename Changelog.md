@@ -9,6 +9,10 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 3.1.1-?? (unreleased)
 
 ### Updates
+### Fixes
+
+### Updates
+* Drone debugging now works for External Program widgets
 * Added `pneumaticcraft:no_oil_lakes` configured structure feature tag
   * Configured structure feature ID's can be added to this tag to prevent oil lakes from generating within those structures
   * Default is to include `#minecraft:village` so oil lakes will never generated within a village
@@ -18,6 +22,13 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Foreach widgets (Coordinate and Item) not functioning properly when running in a subprogram called by an External Program widget
   * External Program wrongly interpreted the end of the foreach subroutine as end of the entire program
 * Added Huge Tanks to the `pneumaticcraft:tanks` block & item tags
+* When breaking a Spawner with a Spawner Agitator attached, Spawner player activation range is now reset
+  * This isn't normally important, but when mods are present which allow dropping Spawners as items (e.g. Apotheosis), it becomes important
+* Fixed Foreach widget loops not working properly in external programs (i.e. run by External Program widget)
+* Fixed External Program widget running forever
+  * Now it will run the programs in the target inventory once (in order), then move to the next widget in the program
+* Fixed Item Filter order mattering in `Condition: Item Filter` when using a Tag Filter
+  * Previously the Tag Filter had to be in the second slot, now it can be in either
 
 ## 3.1.0-56 (9 Mar 2022)
 

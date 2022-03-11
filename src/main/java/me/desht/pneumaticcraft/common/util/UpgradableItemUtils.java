@@ -121,6 +121,9 @@ public class UpgradableItemUtils {
 
     public static int getUpgrades(ItemStack stack, PNCUpgrade upgrade) {
         if (stack.hasTag()) {
+            if (stack.getTag().contains(NBT_UPGRADE_TAG) && !stack.getTag().contains(NBT_UPGRADE_CACHE_TAG)) {
+
+            }
             CompoundTag subTag = Objects.requireNonNull(stack.getTag()).getCompound(NBT_UPGRADE_CACHE_TAG);
             String key = PneumaticCraftUtils.modDefaultedString(upgrade.getRegistryName());
             return subTag.getInt(key);

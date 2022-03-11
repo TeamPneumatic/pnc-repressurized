@@ -27,17 +27,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
-public class HeatBehaviourHeatFrame extends HeatBehaviour<BlockEntity> {
+public class HeatBehaviourHeatFrame extends HeatBehaviour {
     static final ResourceLocation ID = RL("heat_frame");
 
     private HeatFrameEntity semiBlock;
 
     @Override
-    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, Level world, BlockPos pos, Direction direction) {
+    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, Level world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
         semiBlock = null;
         return this;

@@ -92,6 +92,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                 } else {
                     curProgramTag = null;
                     subAI.setWidgets(new ArrayList<>());
+                    drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(drone), p));
                 }
             }
             return true;
