@@ -309,7 +309,6 @@ public class DroneEntity extends AbstractDroneEntity implements
         Validate.isTrue(droneStack.getItem() instanceof DroneItem);
 
         CompoundTag tag = new CompoundTag();
-        tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
         if (((DroneItem) droneStack.getItem()).canProgram(droneStack)) {
             WidgetSerializer.putWidgetsToNBT(progWidgets, tag);
         }
@@ -318,6 +317,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             tag.put("Tank", fluidTank.writeToNBT(new CompoundTag()));
         }
         droneStack.setTag(tag);
+        UpgradableItemUtils.setUpgrades(droneStack, upgradeInventory);
         EnchantmentHelper.setEnchantments(stackEnchants, droneStack);
 
         droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).addAir(getAirHandler().getAir());
