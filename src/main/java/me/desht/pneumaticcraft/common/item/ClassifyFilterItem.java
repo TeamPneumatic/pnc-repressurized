@@ -70,7 +70,7 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         FilterSettings settings = FilterSettings.fromStack(pStack);
         pTooltipComponents.add(xlateMatch(settings.matchAll()).withStyle(ChatFormatting.YELLOW));
         for (FilterCondition c : settings.filterConditions()) {
-            pTooltipComponents.add(Symbols.bullet().append(xlate(c.getTranslationKey())).withStyle(ChatFormatting.YELLOW));
+            pTooltipComponents.add(Symbols.bullet().append(xlate(c.getTranslationKey())).withStyle(ChatFormatting.GOLD));
         }
     }
 
