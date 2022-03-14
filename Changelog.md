@@ -29,6 +29,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * Previously the Tag Filter had to be in the second slot, now it can be in either
 * Fixed a possible server-side crash related to placing heat-using blocks
   * Not one I could reproduce myself, but extra defensive coding has been added to ensure a crash is impossible in these circumstances
+  * NOTE: this does require an API break in the `HeatBehaviour` API class; generics are no longer used or required here
 
 ## 2.15.3-208 (28th Feb 2022)
 
