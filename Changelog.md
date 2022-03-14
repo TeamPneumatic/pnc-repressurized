@@ -13,10 +13,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
-## 2.15.4-??? (unreleased)
+## 2.15.4-312 (14th Mar 2022)
 
 ### Updates
-* Drone debugging now works for External Program widgets
+* Drone debugging now works for External Program widgets; the visible debugged widgets will update as the Drone enters/leaves sub-programs
 
 ### Fixes
 * When breaking a Spawner with a Spawner Agitator attached, Spawner player activation range is now reset
@@ -24,9 +24,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Foreach widgets (Coordinate and Item) not functioning properly when running in a subprogram called by an External Program widget
   * External Program wrongly interpreted the end of the foreach subroutine as end of the entire subprogram
 * Fixed External Program widget running forever
-  * Now it will run the programs in the target inventory once (in order), then move to the next widget in the program
+  * Now it will run each program in the target inventory once (in order), then move to the next widget in the program
 * Fixed Item Filter order mattering in `Condition: Item Filter` when using a Tag Filter
   * Previously the Tag Filter had to be in the second slot, now it can be in either
+* Fixed a possible server-side crash related to placing heat-using blocks
+  * Not one I could reproduce myself, but extra defensive coding has been added to ensure a crash is impossible in these circumstances
 
 ## 2.15.3-208 (28th Feb 2022)
 
