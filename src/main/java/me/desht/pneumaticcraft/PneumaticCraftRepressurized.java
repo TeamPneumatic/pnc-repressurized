@@ -56,7 +56,6 @@ import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
@@ -155,11 +154,7 @@ public class PneumaticCraftRepressurized {
         event.enqueueWork(() -> {
             ModWorldGen.registerConfiguredFeatures();
             AdvancementTriggers.registerTriggers();
-
-            DispenserBlock.registerBehavior(ModItems.DRONE.get(), new DroneDispenseBehavior());
-            DispenserBlock.registerBehavior(ModItems.LOGISTICS_DRONE.get(), new DroneDispenseBehavior());
-            DispenserBlock.registerBehavior(ModItems.HARVESTING_DRONE.get(), new DroneDispenseBehavior());
-
+            DroneDispenseBehavior.registerDrones();
             ThirdPartyManager.instance().postInit();
         });
     }

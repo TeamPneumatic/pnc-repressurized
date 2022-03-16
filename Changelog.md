@@ -9,9 +9,6 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 3.1.1-?? (unreleased)
 
 ### Updates
-### Fixes
-
-### Updates
 * Drone debugging now works for External Program widgets
 * Added `pneumaticcraft:no_oil_lakes` configured structure feature tag
   * Configured structure feature ID's can be added to this tag to prevent oil lakes from generating within those structures
