@@ -64,17 +64,12 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
     public static final int CHEST_SIZE = 72;
     private static final String NBT_ITEMS = "Items";
 
-    private final SmartChestItemHandler inventory = new SmartChestItemHandler(this, CHEST_SIZE) {
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() != ModBlocks.REINFORCED_CHEST.get().asItem() && super.isItemValid(slot, stack);
-        }
-    };
+    private final SmartChestItemHandler inventory = new SmartChestItemHandler(this, CHEST_SIZE);
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
     @GuiSynced
     private final RedstoneController<SmartChestBlockEntity> rsController = new RedstoneController<>(this);
     @GuiSynced
-    private int pushPullModes = 0;  // 6 tristate (2-bit) values packed into an int (for sync reasons...)
+    private int pushPullModes = 0;  // 6 tri-state (2-bit) values packed into an int (for sync reasons...)
     @GuiSynced
     private int cooldown = 0;
 
@@ -316,6 +311,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
 
     @Override
     public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.put(NBT_ITEMS, inventory.serializeNBT());
         tag.putInt("pushPull", pushPullModes);
     }
