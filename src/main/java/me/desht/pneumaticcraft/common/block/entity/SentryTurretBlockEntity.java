@@ -135,6 +135,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     public void tickCommonPost() {
         super.tickCommonPost();
 
+        getMinigun().setIdleYaw(idleYaw);
         getMinigun().tick(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
     }
 
@@ -194,8 +195,6 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         if (minigun == null) {
             minigun = new MinigunSentryTurret(nonNullLevel().isClientSide ? null : getFakePlayer());
             minigun.setWorld(getLevel());
-            minigun.minigunYaw = idleYaw;
-            minigun.setIdleYaw(idleYaw);
         }
         return minigun;
     }
