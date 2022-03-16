@@ -277,7 +277,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             }
             curXpFluid = curXPFluidIndex >= 0 ? available.get(curXPFluidIndex) : Fluids.EMPTY;
             curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
-        } else if (tag.startsWith("SideConf") && itemHandlerSideConfigurator.handleButtonPress(tag)) {
+        } else if (itemHandlerSideConfigurator.handleButtonPress(tag, shiftHeld)) {
             needUpdateNeighbours = true;
         } else {
             try {

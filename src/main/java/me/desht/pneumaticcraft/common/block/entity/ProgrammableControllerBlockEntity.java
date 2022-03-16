@@ -372,7 +372,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             chunkloadWorkingChunk = !chunkloadWorkingChunk;
         } else if (tag.equals("chunkload_work_3x3")) {
             chunkloadWorkingChunk3x3 = !chunkloadWorkingChunk3x3;
-        } else if (itemHandlerSideConfigurator.handleButtonPress(tag)) {
+        } else if (itemHandlerSideConfigurator.handleButtonPress(tag, shiftHeld)) {
             shouldUpdateNeighbours = true;
         }
         setChanged();

@@ -351,15 +351,15 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
             if (s.length == 2) {
                 try {
                     SideConfigurator.RelativeFace face = SideConfigurator.RelativeFace.valueOf(s[1]);
-                    cycleMode(face);
+                    cycleMode(face, shiftHeld);
                 } catch (IllegalArgumentException ignored) {
                 }
             }
         }
     }
 
-    public void cycleMode(SideConfigurator.RelativeFace face) {
-        setPushPullMode(face, getPushPullMode(face).cycle());
+    public void cycleMode(SideConfigurator.RelativeFace face, boolean shiftHeld) {
+        setPushPullMode(face, getPushPullMode(face).cycle(shiftHeld));
     }
 
     public int getLastSlot() {
@@ -421,9 +421,10 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
             return "pneumaticcraft.gui.tooltip.smartChest.mode." + key;
         }
 
-        public PushPullMode cycle() {
-            int n = ordinal() + 1;
-            if (n >= values().length) n = 0;
+        public PushPullMode cycle(boolean backward) {
+            int n = ordinal() + (backward ? -1 : 1);
+            if (n < 0) n = values().length - 1;
+            else if (n >= values().length) n = 0;
             return PushPullMode.values()[n];
         }
     }

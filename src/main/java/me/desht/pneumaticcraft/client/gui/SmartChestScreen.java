@@ -152,7 +152,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
 
     private WidgetButtonExtended makePushPullButton(RelativeFace face, int x, int y) {
         WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, TextComponent.EMPTY, b -> {
-            te.cycleMode(face);
+            te.cycleMode(face, Screen.hasShiftDown());
             setupPushPullButton((WidgetButtonExtended) b, face);
         }).withTag("push_pull:" + face.toString());
         setupPushPullButton(button, face);

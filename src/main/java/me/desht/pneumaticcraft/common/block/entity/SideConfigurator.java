@@ -41,7 +41,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * A class to manage which sides of a BE's block are mapped to which capability handler objects (item/fluid/energy...)
  */
 public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
-    private static final String baseButtonTag = "SideConf";
+    public static final String BASE_BUTTON_TAG = "SideConf";
 
     private final List<ConnectionEntry<T>> entries = new ArrayList<>();
     private final String id;
@@ -140,27 +140,34 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundTag> {
         System.arraycopy(faces, 0, this.faces, 0, this.faces.length);
     }
 
-    public boolean handleButtonPress(String tag) {
-        try {
-            RelativeFace relativeFace = RelativeFace.valueOf(tag.split("\\.")[1]);
-            cycleValue(relativeFace);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
+    public boolean handleButtonPress(String tag, boolean hasShiftDown) {
+        if (tag.startsWith(BASE_BUTTON_TAG)) {
+            try {
+                RelativeFace relativeFace = RelativeFace.valueOf(tag.split("\\.")[1]);
+                cycleValue(relativeFace, hasShiftDown);
+                return true;
+            } catch (IllegalArgumentException ignored) {
+            }
         }
+        return false;
     }
 
-    public String getButtonId(RelativeFace relativeFace) {
-        return baseButtonTag + "." + relativeFace.toString();
+    public String getButtonTag(RelativeFace relativeFace) {
+        return BASE_BUTTON_TAG + "." + relativeFace.toString();
     }
 
-    private void cycleValue(RelativeFace relativeFace) {
+    private void cycleValue(RelativeFace relativeFace, boolean hasShiftDown) {
         int idx = relativeFace.ordinal();
         int n = 0;
         while (n++ < entries.size()) {
-            faces[idx]++;
-            if (faces[idx] >= entries.size()) {
-                faces[idx] = 0;
+            if (hasShiftDown) {
+                if (--faces[idx] < 0) {
+                    faces[idx] = (byte)(entries.size() - 1);
+                }
+            } else {
+                if (++faces[idx] >= entries.size()) {
+                    faces[idx] = 0;
+                }
             }
             ConnectionEntry<T> c = entries.get(faces[idx]);
             if (sideConfigurable.isValid(relativeFace, c == null ? null : c.cap)) return;

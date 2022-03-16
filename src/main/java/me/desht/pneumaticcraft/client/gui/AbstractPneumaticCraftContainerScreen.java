@@ -49,7 +49,6 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -124,9 +123,9 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
             if (shouldAddSideConfigTabs()) {
                 addSideConfiguratorTabs();
             }
-            if (te instanceof AbstractAirHandlingBlockEntity) {
+            if (te instanceof AbstractAirHandlingBlockEntity airHandler) {
                 // ensure all handlers are known, so we can get their upgrades right
-                ((AbstractAirHandlingBlockEntity) te).initializeHullAirHandlers();
+                airHandler.initializeHullAirHandlers();
             }
         }
     }
@@ -250,34 +249,29 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         }
     }
 
-    private WidgetButtonExtended makeSideConfButton(final SideConfigurator<?> sideConfigurator, RelativeFace relativeFace, int x, int y) {
-        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, TextComponent.EMPTY, b -> {
-            WidgetButtonExtended gbs = (WidgetButtonExtended) b;
-            ((ISideConfigurable) te).getSideConfigurators().stream()
-                    .filter(sc -> sc.handleButtonPress(gbs.getTag()))
-                    .findFirst()
-                    .ifPresent(sc -> setupSideConfiguratorButton(sc, gbs));
-        }).withTag("SideConf." + relativeFace.toString());
+    private SideConfiguratorButton makeSideConfButton(final SideConfigurator<?> sideConfigurator, RelativeFace relativeFace, int x, int y) {
+        SideConfiguratorButton button = (SideConfiguratorButton) new SideConfiguratorButton(x, y, relativeFace, b -> {
+            SideConfiguratorButton gbs = (SideConfiguratorButton) b;
+            if (sideConfigurator.handleButtonPress(gbs.getTag(), Screen.hasShiftDown())) {
+                setupSideConfiguratorButton(sideConfigurator, gbs);
+            }
+        }).withTag(sideConfigurator.getButtonTag(relativeFace));
         setupSideConfiguratorButton(sideConfigurator, button);
         return button;
     }
 
-    private void setupSideConfiguratorButton(SideConfigurator<?> sc, WidgetButtonExtended button) {
-        try {
-            RelativeFace relativeFace = RelativeFace.valueOf(button.getTag().split("\\.")[1]);
-            SideConfigurator.ConnectionEntry<?> c = sc.getEntry(relativeFace);
-            if (c != null && c.getTexture() != null) {
-                button.setTexture(c.getTexture());
-            } else {
-                button.setRenderedIcon(Textures.GUI_X_BUTTON);
-            }
-            button.setTooltipText(ImmutableList.of(
-                    new TextComponent(relativeFace.toString()).withStyle(ChatFormatting.YELLOW),
-                    sc.getFaceLabel(relativeFace)
-            ));
-        } catch (IllegalArgumentException e) {
-            Log.warning("Bad tag '" + button.getTag() + "'");
+    private void setupSideConfiguratorButton(SideConfigurator<?> sc, SideConfiguratorButton button) {
+        RelativeFace relativeFace = button.relativeFace;
+        SideConfigurator.ConnectionEntry<?> c = sc.getEntry(relativeFace);
+        if (c != null && c.getTexture() != null) {
+            button.setTexture(c.getTexture());
+        } else {
+            button.setRenderedIcon(Textures.GUI_X_BUTTON);
         }
+        button.setTooltipText(ImmutableList.of(
+                new TextComponent(relativeFace.toString()).withStyle(ChatFormatting.YELLOW),
+                sc.getFaceLabel(relativeFace)
+        ));
     }
 
     protected void addInfoTab(List<Component> info) {
@@ -383,7 +377,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         List<Component> tooltip = new ArrayList<>();
         for (Widget widget : renderables) {
             if (widget instanceof ITooltipProvider provider && provider.shouldProvide()) {
-               provider.addTooltip(x, y, tooltip, Screen.hasShiftDown());
+                provider.addTooltip(x, y, tooltip, Screen.hasShiftDown());
             }
         }
         if (shouldParseVariablesInTooltips()) {
@@ -616,5 +610,14 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         String id = te.getCurrentRecipeIdSynced();
         return id.isEmpty() ? Optional.empty() :
                 Optional.ofNullable(type.getRecipe(ClientUtils.getClientLevel(), new ResourceLocation(id)));
+    }
+
+    private static class SideConfiguratorButton extends WidgetButtonExtended {
+        private final RelativeFace relativeFace;
+
+        public SideConfiguratorButton(int startX, int startY, RelativeFace relativeFace, OnPress pressable) {
+            super(startX, startY, 20, 20, TextComponent.EMPTY, pressable);
+            this.relativeFace = relativeFace;
+        }
     }
 }
