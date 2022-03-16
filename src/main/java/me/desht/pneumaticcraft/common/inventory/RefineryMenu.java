@@ -39,6 +39,7 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerB
         super(ModMenuTypes.REFINERY.get(), i, playerInventory, pos);
 
         RefineryControllerBlockEntity refinery = te;
+        refinery.incPlayersUsing();
         refinery.onNeighborTileUpdate(null);
         while (refinery.getCachedNeighbor(Direction.UP) instanceof RefineryControllerBlockEntity) {
             refinery = (RefineryControllerBlockEntity) refinery.getCachedNeighbor(Direction.UP);
@@ -47,6 +48,13 @@ public class RefineryMenu extends AbstractPneumaticCraftMenu<RefineryControllerB
         }
 
         addPlayerSlots(playerInventory, 108);
+    }
+
+    @Override
+    public void removed(Player pPlayer) {
+        super.removed(pPlayer);
+
+        te.decPlayersUsing();
     }
 
     @Override

@@ -42,7 +42,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
-        if (te != null) te.setChanged();
+        if (te != null && te.getLevel() != null && !te.getLevel().isClientSide) te.setChanged();
     }
 
     @Nonnull

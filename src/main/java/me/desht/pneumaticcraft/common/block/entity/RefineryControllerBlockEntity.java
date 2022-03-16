@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -71,7 +72,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     private final RefineryInputTank inputTank = new RefineryInputTank(PneumaticValues.NORMAL_TANK_CAPACITY);
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> inputTank);
     @GuiSynced
-    public final SmartSyncTank[] outputsSynced = new SmartSyncTank[RefineryRecipe.MAX_OUTPUTS];  // purely for GUI syncing
+    public final SyncOnlyTank[] outputsSynced = new SyncOnlyTank[RefineryRecipe.MAX_OUTPUTS];  // purely for GUI syncing
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
@@ -97,12 +98,13 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     private int comparatorValue;
     private int prevOutputCount = -1;
     private boolean searchForRecipe = true;
+    private int nPlayersUsing = 0;
 
     public RefineryControllerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.REFINERY.get(), pos, state);
 
         for (int i = 0; i < RefineryRecipe.MAX_OUTPUTS; i++) {
-            outputsSynced[i] = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
+            outputsSynced[i] = new SyncOnlyTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
         }
     }
 
@@ -189,10 +191,14 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
             }
         }
 
-        IntStream.range(0, outputCount).forEach(i -> outputCache.get(i).ifPresent(h -> {
-            outputsSynced[i].setFluid(h.getFluidInTank(0).copy());
-            outputsSynced[i].tick();
-        }));
+        if (nPlayersUsing > 0) {
+            IntStream.range(0, outputCount).forEach(i -> outputCache.get(i).ifPresent(h -> {
+                if (!outputsSynced[i].getFluid().isFluidStackIdentical(h.getFluidInTank(0))) {
+                    outputsSynced[i].setFluid(h.getFluidInTank(0).copy());
+                    outputsSynced[i].tick();
+                }
+            }));
+        }
 
         prevOutputCount = outputCount;
         maybeUpdateComparatorValue(outputCount, hasWork);
@@ -278,11 +284,11 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         List<FluidStack> recipeOutputs = currentRecipe.getOutputs();
 
         for (int i = 0; i < outputCache.size() && i < recipeOutputs.size(); i++) {
-        	final FluidStack outFluid = recipeOutputs.get(i);
+            final FluidStack outFluid = recipeOutputs.get(i);
             int filled = outputCache.get(i).map(h -> h.fill(outFluid, action)).orElse(0);
             if (filled != outFluid.getAmount()) {
-            	blocked = true;
-            	return false;
+                blocked = true;
+                return false;
             }
         }
 
@@ -397,6 +403,18 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         return heatExchanger;
     }
 
+    public void incPlayersUsing() {
+        nPlayersUsing++;
+    }
+
+    public void decPlayersUsing() {
+        if (nPlayersUsing == 0) {
+            Log.warning("decPlayersUsing() called for " + this + " but already 0?");
+        } else {
+            nPlayersUsing = Math.max(0, nPlayersUsing - 1);
+        }
+    }
+
     private class RefineryInputTank extends SmartSyncTank {
         RefineryInputTank(int capacity) {
             super(RefineryControllerBlockEntity.this, capacity);
@@ -417,6 +435,17 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
                     || currentRecipe != null && getFluidAmount() < prevAmount) {
                 searchForRecipe = true;
             }
+        }
+    }
+
+    private static class SyncOnlyTank extends SmartSyncTank {
+        SyncOnlyTank(BlockEntity owner, int capacity) {
+            super(owner, capacity);
+        }
+
+        @Override
+        protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
+            // do nothing, this tank is for client sync only
         }
     }
 }

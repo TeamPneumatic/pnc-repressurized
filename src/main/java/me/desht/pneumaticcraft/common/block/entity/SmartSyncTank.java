@@ -135,7 +135,8 @@ public class SmartSyncTank extends PNCFluidTank {
 
     @Override
     protected void onContentsChanged(Fluid prevFluid, int prevAmount) {
-        if (owner.get() != null) {
+        BlockEntity be = owner.get();
+        if (be != null && be.getLevel() != null && !be.getLevel().isClientSide()) {
             owner.get().setChanged();
         }
     }
