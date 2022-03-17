@@ -9,23 +9,35 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 3.1.1-?? (unreleased)
 
 ### Updates
-* Drone debugging now works for External Program widgets
+* Drone debugging now works for External Program widgets; the visible debugged widgets will update as the Drone enters/leaves sub-programs
 * Added `pneumaticcraft:no_oil_lakes` configured structure feature tag
   * Configured structure feature ID's can be added to this tag to prevent oil lakes from generating within those structures
-  * Default is to include `#minecraft:village` so oil lakes will never generated within a village
+  * Default is to include `#minecraft:village` so oil lakes will never generate within a village
   * Can be modified via datapack: `data/pneumaticcraft/tags/worldgen/configured_structure_feature/no_oil_lakes.json`
+* Shift-clicking on buttons in side configuration GUI tabs now cycles backwards through the possible values
+  * Also applies to Smart Chest side-based push/pull setup
+* Minor improvement to drone Dispenser behaviour
+  * All drone types (Collector/Guard/Logistics/Harvesting) can now be deployed via Dispenser
+  * Dispense behaviour now looks for a block 2 blocks in front of the dispensing direction and uses that to "click" the drone against
+  * Note that drones deployed via Dispenser do not have an "owner", which may be problematic if terrain protection mods are active
 
 ### Fixes
 * Fixed Foreach widgets (Coordinate and Item) not functioning properly when running in a subprogram called by an External Program widget
   * External Program wrongly interpreted the end of the foreach subroutine as end of the entire program
-* Added Huge Tanks to the `pneumaticcraft:tanks` block & item tags
+* Added Huge Tank to the `pneumaticcraft:tanks` block & item tags
 * When breaking a Spawner with a Spawner Agitator attached, Spawner player activation range is now reset
   * This isn't normally important, but when mods are present which allow dropping Spawners as items (e.g. Apotheosis), it becomes important
 * Fixed Foreach widget loops not working properly in external programs (i.e. run by External Program widget)
 * Fixed External Program widget running forever
-  * Now it will run the programs in the target inventory once (in order), then move to the next widget in the program
+  * Now it will run each program in the target inventory once (in order), then move to the next widget in the program
 * Fixed Item Filter order mattering in `Condition: Item Filter` when using a Tag Filter
   * Previously the Tag Filter had to be in the second slot, now it can be in either
+* Fixed Sentry Turret idle yaw position not matching placing player's yaw
+* Fixed Smart Chest not saving its upgrade between world reloads
+* Fixed Drones not remembering their upgrades properly when dropped as an item (when killed or wrenched)
+* Fixed a possible server-side crash related to placing heat-using blocks
+  * Not one I could reproduce myself, but extra defensive coding has been added to ensure a crash is impossible in these circumstances
+  * NOTE: this does require an API break in the `HeatBehaviour` API class; generics are no longer used or required here
 
 ## 3.1.0-56 (9 Mar 2022)
 
