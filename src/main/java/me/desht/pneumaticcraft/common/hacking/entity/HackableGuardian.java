@@ -41,7 +41,7 @@ public class HackableGuardian implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return true;
+        return Reflections.guardian_aiGuardianAttack != null;
     }
 
     @Override

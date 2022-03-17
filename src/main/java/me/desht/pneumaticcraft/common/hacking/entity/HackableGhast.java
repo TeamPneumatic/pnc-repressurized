@@ -39,7 +39,7 @@ public class HackableGhast implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return true;
+        return Reflections.ghast_aiFireballAttack != null;
     }
 
     @Override

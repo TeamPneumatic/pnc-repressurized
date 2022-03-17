@@ -40,7 +40,7 @@ public class HackableBlaze implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return true;
+        return Reflections.blaze_aiFireballAttack != null;
     }
 
     @Override

@@ -24,24 +24,18 @@ import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.entity.monster.Shulker;
 
-import java.lang.reflect.Method;
-
 /**
  * Gather all the reflection work we need to do here for ease of reference.
  *
  * Note: any private field access is handled via access transformers (META-INF/pneumaticcraft_at.cfg)
  */
 public class Reflections {
-    private static Method msbl_isActivated;
-
     public static Class<?> blaze_aiFireballAttack;
     public static Class<?> ghast_aiFireballAttack;
     public static Class<?> shulker_aiAttack;
     public static Class<?> guardian_aiGuardianAttack;
 
     public static void init() {
-//        msbl_isActivated = ObfuscationReflectionHelper.findMethod(BaseSpawner.class, "func_98279_f");
-
         // access to non-public entity AI's for hacking purposes
         // TODO 1.14 verify notch names
         blaze_aiFireballAttack = findEnclosedClass(Blaze.class, "BlazeAttackGoal", "a");
@@ -61,13 +55,4 @@ public class Reflections {
         Log.error("can't find any of [" + Strings.join(enclosedClassNames, ", ") + "] in class " + cls.getCanonicalName());
         return null;
     }
-
-//    public static boolean isActivated(BaseSpawner msbl) {
-//        try {
-//            return (boolean) msbl_isActivated.invoke(msbl);
-//        } catch (IllegalAccessException | InvocationTargetException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
 }

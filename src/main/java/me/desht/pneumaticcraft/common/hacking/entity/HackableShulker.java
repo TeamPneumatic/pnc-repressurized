@@ -39,7 +39,7 @@ public class HackableShulker implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return true;
+        return Reflections.shulker_aiAttack != null;
     }
 
     @Override
