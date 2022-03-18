@@ -65,7 +65,7 @@ public class PacketHackingBlockStart extends LocationIntPacket {
                 if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
                     handler.getExtensionData(CommonUpgradeHandlers.hackHandler)
                             .setHackedBlockPos(new WorldAndCoord(player.level, pos));
-                    NetworkHandler.sendToAllTracking(this, player.level, player.blockPosition());
+                    NetworkHandler.sendToPlayer(this, player);
                 }
             }
         });

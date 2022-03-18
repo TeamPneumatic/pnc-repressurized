@@ -77,7 +77,7 @@ public class PacketHackingEntityStart {
                     Entity entity = player.level.getEntity(entityId);
                     if (entity != null) {
                         handler.getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(entity);
-                        NetworkHandler.sendToAllTracking(this, entity);
+                        NetworkHandler.sendToPlayer(this, player);
                     }
                 }
             }
