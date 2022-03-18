@@ -31,10 +31,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.WebBlock;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -59,18 +56,12 @@ public class VortexEntity extends ThrowableProjectile {
 
         // onImpact() is no longer called for blocks with no collision box, like shrubs & crops, as of MC 1.16.2
         if (!level.isClientSide) {
-            if (vortexBreakable(level.getBlockState(getOnPos()).getBlock())) {
-                handleVortexCollision(getOnPos());
-            } else if (vortexBreakable(level.getBlockState(blockPosition()).getBlock())) {
-                handleVortexCollision(blockPosition());
-            } else {
-                Vec3 m = getDeltaMovement().scale(0.5);
-                Vec3 p = position().add(m.x(), m.y(), m.z());
-                BlockPos pos1 = new BlockPos(p.x(), p.y(), p.z());
-                if (!pos1.equals(blockPosition()) && vortexBreakable(level.getBlockState(pos1).getBlock())) {
-                    handleVortexCollision(pos1);
+            AABB box = getBoundingBox().inflate(1);
+            BlockPos.betweenClosedStream(box).forEach(pos -> {
+                if (vortexBreakable(level.getBlockState(pos).getBlock())) {
+                    handleVortexCollision(pos);
                 }
-            }
+            });
         }
 
         setDeltaMovement(getDeltaMovement().scale(0.95));
