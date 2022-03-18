@@ -21,6 +21,7 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -202,7 +203,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         otherStats.forEach(IGuiAnimatedStat::tickWidget);
 
         if (helpText.isEmpty()) {
-            helpText.add(xlate(ArmorUpgradeRegistry.getStringKey(renderHandler.getCommonHandler().getID())).withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE));
+            helpText.add(xlate(IArmorUpgradeHandler.getStringKey(renderHandler.getCommonHandler().getID())).withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE));
             helpText.add(TextComponent.EMPTY);
             helpText.add(xlate("pneumaticcraft.armor.moveStat.move"));
             helpText.add(new TextComponent("<REPLACEME>"));

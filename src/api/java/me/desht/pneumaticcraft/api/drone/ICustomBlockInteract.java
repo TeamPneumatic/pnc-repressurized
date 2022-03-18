@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
 import net.minecraftforge.event.RegistryEvent;
 
 /**

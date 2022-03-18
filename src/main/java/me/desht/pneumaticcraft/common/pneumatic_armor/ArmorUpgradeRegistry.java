@@ -17,14 +17,15 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import org.apache.commons.lang3.Validate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
@@ -32,7 +33,7 @@ public enum ArmorUpgradeRegistry {
     INSTANCE;
 
     private final List<List<IArmorUpgradeHandler<?>>> upgradeHandlers;
-    private final Map<ResourceLocation, IArmorUpgradeHandler<?>> byID = new HashMap<>();
+    private final Map<ResourceLocation, IArmorUpgradeHandler<?>> byID = new ConcurrentHashMap<>();
 
     public static final EquipmentSlot[] ARMOR_SLOTS = new EquipmentSlot[] {
             EquipmentSlot.HEAD,
@@ -46,21 +47,20 @@ public enum ArmorUpgradeRegistry {
     }
 
     ArmorUpgradeRegistry() {
-        upgradeHandlers = new ArrayList<>(4);
+        ImmutableList.Builder<List<IArmorUpgradeHandler<?>>> b = ImmutableList.builder();
         for (int i = 0; i < 4; i++) {
-            upgradeHandlers.add(new CopyOnWriteArrayList<>());
+            b.add(new CopyOnWriteArrayList<>());
         }
+        upgradeHandlers = b.build();
     }
 
-    public static String getStringKey(ResourceLocation id) {
-        return IArmorUpgradeHandler.getStringKey(id);
-    }
+    public synchronized <T extends IArmorUpgradeHandler<?>> T registerUpgradeHandler(T handler) {
+        Validate.isTrue(!byID.containsKey(handler.getID()), "handler " + handler.getID() + " is already registered!");
 
-    public <T extends IArmorUpgradeHandler<?>> T registerUpgradeHandler(T handler) {
-        List<IArmorUpgradeHandler<?>> l = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
-        handler.setIndex(l.size());
+        List<IArmorUpgradeHandler<?>> handlerList = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
+        handler.setIndex(handlerList.size());
         byID.put(handler.getID(), handler);
-        l.add(handler);
+        handlerList.add(handler);
         return handler;
     }
 

@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
 import java.util.List;

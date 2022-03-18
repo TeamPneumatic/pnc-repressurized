@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
-import net.minecraft.world.level.block.Block;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.GlobalPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 

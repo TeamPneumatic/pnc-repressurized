@@ -17,10 +17,10 @@
 
 package me.desht.pneumaticcraft.api.heat;
 
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.function.BiPredicate;

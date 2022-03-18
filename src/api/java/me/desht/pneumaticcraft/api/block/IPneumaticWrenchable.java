@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.api.block;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 /**
  * Should be implemented by any block or entity that can be clicked by a Pneumatic Wrench. It uses almost the same

@@ -71,7 +71,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
 
     private WidgetKeybindCheckBox(ResourceLocation upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
         super(x, y, color,
-                xlate("pneumaticcraft.gui.enableModule", xlate(ArmorUpgradeRegistry.getStringKey(upgradeID))),
+                xlate("pneumaticcraft.gui.enableModule", xlate(IArmorUpgradeHandler.getStringKey(upgradeID))),
                 pressable);
 
         this.oldCheckboxText = getMessage();
@@ -197,7 +197,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         // set the on/off state for this upgrade on both client and server
         NetworkHandler.sendToServer(new PacketToggleArmorFeature(slot, idx, coreComponents.checked && checked));
         commonArmorHandler.setUpgradeEnabled(slot, idx, coreComponents.checked && checked);
-        HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(upgradeID), checked);
+        HUDHandler.getInstance().addFeatureToggleMessage(IArmorUpgradeHandler.getStringKey(upgradeID), checked);
     }
 
     private void toggleAllUpgrades(CommonArmorHandler commonArmorHandler) {

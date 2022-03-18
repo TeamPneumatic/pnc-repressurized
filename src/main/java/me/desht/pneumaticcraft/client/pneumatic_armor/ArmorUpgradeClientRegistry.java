@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.pneumatic_armor;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
@@ -39,7 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public enum ArmorUpgradeClientRegistry {
     INSTANCE;
 
-    private final List<List<IArmorUpgradeClientHandler<?>>> clientUpgradeHandlers = new ArrayList<>();
+    private List<List<IArmorUpgradeClientHandler<?>>> clientUpgradeHandlers = null;
     private final Map<ResourceLocation, IArmorUpgradeClientHandler<?>> id2HandlerMap = new ConcurrentHashMap<>();
     private final Map<ResourceLocation, KeyMapping> id2KeyBindMap = new ConcurrentHashMap<>();
     private final Map<String, IArmorUpgradeClientHandler<?>> triggerKeyBindMap = new ConcurrentHashMap<>();
@@ -99,7 +100,7 @@ public enum ArmorUpgradeClientRegistry {
      * @return a list of all the client upgrade handlers registered for that slot
      */
     public List<IArmorUpgradeClientHandler<?>> getHandlersForSlot(EquipmentSlot slot) {
-        if (clientUpgradeHandlers.isEmpty()) {
+        if (clientUpgradeHandlers == null) {
             initHandlerLists();
         }
         return clientUpgradeHandlers.get(slot.getIndex());
@@ -107,11 +108,13 @@ public enum ArmorUpgradeClientRegistry {
 
     private void initHandlerLists() {
         // lazy init the by-slot lists; this adds client handlers in *exactly* the same order as common handlers
-        if (!clientUpgradeHandlers.isEmpty()) throw new IllegalStateException("handler lists already inited!?");
+        if (clientUpgradeHandlers != null) throw new IllegalStateException("handler lists already inited!?");
 
+        ImmutableList.Builder<List<IArmorUpgradeClientHandler<?>>> builder = ImmutableList.builder();
         for (EquipmentSlot ignored : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            clientUpgradeHandlers.add(new ArrayList<>());
+            builder.add(new ArrayList<>());
         }
+        clientUpgradeHandlers = builder.build();
 
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             for (IArmorUpgradeHandler<?> handler : ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot)) {
@@ -130,7 +133,7 @@ public enum ArmorUpgradeClientRegistry {
     public void refreshConfig() {
         // we will get called really early (when client config is first loaded)
         // at that point, no upgrade handlers (client or common) are yet registered
-        if (clientUpgradeHandlers.isEmpty()) return;
+        if (clientUpgradeHandlers == null) return;
 
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             for (IArmorUpgradeClientHandler<?> renderHandler : getHandlersForSlot(slot)) {

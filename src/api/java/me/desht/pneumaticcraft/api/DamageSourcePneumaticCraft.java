@@ -18,10 +18,10 @@
 package me.desht.pneumaticcraft.api;
 
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public class DamageSourcePneumaticCraft extends DamageSource {
     public static final DamageSource PRESSURE = new DamageSourcePneumaticCraft("pressure", 2).bypassArmor();
