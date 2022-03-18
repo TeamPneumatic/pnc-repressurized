@@ -58,8 +58,8 @@ public class DrillBitItem extends Item {
     }
 
     public enum DrillBitType {
-        NONE("none", Tiers.WOOD, 0x00000000, 1, -1),
-        IRON("iron", Tiers.IRON, 0xFFd8d8d8, 6, 2),
+        NONE("none", Tiers.WOOD, 0x00000000, 1, 0),
+        IRON("iron", Tiers.IRON, 0xFFd8d8d8, 6, 1),
         COMPRESSED_IRON("compressed_iron", Tiers.IRON, 0xFF4d4846, 7, 2),
         DIAMOND("diamond", Tiers.DIAMOND, 0xFF4aedd9, 8, 3),
         NETHERITE("netherite", Tiers.NETHERITE, 0xFF31292a, 9, 4);
@@ -68,14 +68,14 @@ public class DrillBitItem extends Item {
         private final Tier tier;
         private final int tint;
         private final int baseEfficiency;
-        private final int harvestLevel;
+        private final int bitQuality;
 
-        DrillBitType(String name, Tier tier, int tint, int baseEfficiency, int harvestLevel) {
+        DrillBitType(String name, Tier tier, int tint, int baseEfficiency, int bitQuality) {
             this.name = name;
             this.tier = tier;
             this.tint = tint;
             this.baseEfficiency = baseEfficiency;
-            this.harvestLevel = harvestLevel;
+            this.bitQuality = bitQuality;
         }
 
         public Tier getTier() {
@@ -86,8 +86,9 @@ public class DrillBitItem extends Item {
             return tint;
         }
 
-        public int getHarvestLevel() {
-            return harvestLevel;
+        public int getBitQuality() {
+            // this controls the available dig modes for the bit type
+            return bitQuality;
         }
 
         public String getRegistryName() {
@@ -103,14 +104,13 @@ public class DrillBitItem extends Item {
         }
 
         public DigMode getBestDigType() {
-            DigMode best = DigMode.MODE_1X1;
-            for (DigMode digMode : DigMode.values()) {
-                if (digMode.getBitType().getHarvestLevel() >= getHarvestLevel()) {
-                    return best;
+            for (int i = DigMode.values().length - 1; i >= 0; i--) {
+                DigMode digMode = DigMode.values()[i];
+                if (digMode.getBitType().getBitQuality() <= getBitQuality()) {
+                    return digMode;
                 }
-                best = digMode;
             }
-            return DigMode.MODE_VEIN_PLUS;
+            return DigMode.MODE_1X1;
         }
     }
 }

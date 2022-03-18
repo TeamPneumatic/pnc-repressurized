@@ -114,9 +114,9 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
         DigMode digMode = JackHammerItem.getDigMode(hammerStack);
         if (digMode == null) digMode = DigMode.MODE_1X1;
 
-        typeButtons.forEach((dm, button) -> button.active = bitType.getHarvestLevel() >= dm.getBitType().getHarvestLevel());
+        typeButtons.forEach((dm, button) -> button.active = bitType.getBitQuality() >= dm.getBitType().getBitQuality());
 
-        if (digMode.getBitType().getHarvestLevel() > bitType.getHarvestLevel() && digMode != DigMode.MODE_1X1) {
+        if (digMode.getBitType().getBitQuality() > bitType.getBitQuality() && digMode != DigMode.MODE_1X1) {
             // jackhammer currently has a selected dig type of a tier too high for the installed drill bit
             digMode = DigMode.MODE_1X1;
             NetworkHandler.sendToServer(new PacketGuiButton("digmode:" + digMode));

@@ -394,20 +394,30 @@ public class JackHammerItem extends PressurizableItem
         if (stack.getItem() instanceof JackHammerItem) {
             DrillBitType ourBit = ((JackHammerItem) stack.getItem()).getDrillBit(stack);
             DigMode currentMode = getDigMode(stack);
-            int nModes = DigMode.values().length;
-            for (int i = 0; i < nModes; i++) {
-                int nextOrd = currentMode.ordinal() + (forward ? i : -i);
-                if (nextOrd >= nModes)
-                    nextOrd = 0;
-                else if (nextOrd < 0)
-                    nextOrd = ourBit.getBestDigType().ordinal();
-                DigMode nextMode = DigMode.values()[nextOrd];
-                if (nextMode != currentMode && ourBit.getHarvestLevel() >= nextMode.getBitType().getHarvestLevel()) {
-                    setDigMode(stack, nextMode);
-                    return nextMode;
+            DigMode newMode = currentMode;
+            if (forward) {
+                if (currentMode == DigMode.MODE_VEIN_PLUS) {
+                    newMode = DigMode.MODE_1X1;
+                } else {
+                    newMode = DigMode.values()[currentMode.ordinal() + 1];
+                    newMode = newMode.getBitType().getBitQuality() <= ourBit.getBitQuality() ? newMode : DigMode.MODE_1X1;
+                }
+            } else {
+                if (currentMode == DigMode.MODE_1X1) {
+                    // search backward to find the highest dig mode our bit supports
+                    for (int i = DigMode.values().length - 1; i >= 0; i--) {
+                        if (DigMode.values()[i].getBitType().getBitQuality() <= ourBit.getBitQuality()) {
+                            newMode = DigMode.values()[i];
+                            break;
+                        }
+                    }
+                } else {
+                    newMode = DigMode.values()[currentMode.ordinal() - 1];
                 }
             }
-            return currentMode;
+
+            setDigMode(stack, newMode);
+            return newMode;
         }
         return null;
     }

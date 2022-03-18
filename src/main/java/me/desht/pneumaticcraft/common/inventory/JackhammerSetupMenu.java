@@ -79,7 +79,7 @@ public class JackhammerSetupMenu extends AbstractPneumaticCraftMenu<AbstractPneu
             try {
                 DrillBitItem.DrillBitType ourBit = ((JackHammerItem) hammerStack.getItem()).getDrillBit(hammerStack);
                 DigMode newDigMode = DigMode.valueOf(tag.substring(8));
-                if (ourBit.getHarvestLevel() >= newDigMode.getBitType().getHarvestLevel() || newDigMode == DigMode.MODE_1X1) {
+                if (ourBit.getBitQuality() >= newDigMode.getBitType().getBitQuality() || newDigMode == DigMode.MODE_1X1) {
                     JackHammerItem.setDigMode(hammerStack, newDigMode);
                 }
             } catch (IllegalArgumentException ignored) {
