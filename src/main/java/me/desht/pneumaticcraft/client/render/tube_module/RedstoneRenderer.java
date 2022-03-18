@@ -129,10 +129,10 @@ public class RedstoneRenderer extends AbstractTubeModuleRenderer<RedstoneModule>
             matrixStack.popPose();
         }
         cols = DyeColor.byId(module.getColorChannel()).getTextureDiffuseColors();
-        frame1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
-        frame2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
-        frame3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
-        frame4.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
+        frame1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+        frame2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+        frame3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+        frame4.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
     }
 
     @Override
