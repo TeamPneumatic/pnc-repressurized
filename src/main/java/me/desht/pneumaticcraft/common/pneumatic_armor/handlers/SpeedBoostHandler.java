@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
@@ -95,7 +95,7 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
     }
 
     public double getSpeedBoostFromLegs(ICommonArmorHandler commonArmorHandler) {
-        if (commonArmorHandler.upgradeUsable(ArmorUpgradeRegistry.getInstance().runSpeedHandler, true)) {
+        if (commonArmorHandler.upgradeUsable(CommonUpgradeHandlers.runSpeedHandler, true)) {
             int speedUpgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.SPEED.get());
             Player player = commonArmorHandler.getPlayer();
             ItemStack armorStack = player.getItemBySlot(EquipmentSlot.LEGS);

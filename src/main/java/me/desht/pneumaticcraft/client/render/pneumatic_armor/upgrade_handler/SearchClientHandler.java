@@ -35,7 +35,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.SearchHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -73,7 +73,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     private ItemStack searchedStack = ItemStack.EMPTY;
 
     public SearchClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().searchHandler);
+        super(CommonUpgradeHandlers.searchHandler);
     }
 
     @Override

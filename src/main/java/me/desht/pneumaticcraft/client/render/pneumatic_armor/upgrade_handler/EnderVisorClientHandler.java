@@ -6,8 +6,8 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EnderVisorHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -17,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class EnderVisorClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<EnderVisorHandler> {
     public EnderVisorClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().enderVisorHandler);
+        super(CommonUpgradeHandlers.enderVisorHandler);
     }
 
     public static class PumpkinOverlay implements net.minecraftforge.client.IItemRenderProperties {
@@ -26,7 +26,7 @@ public class EnderVisorClientHandler extends IArmorUpgradeClientHandler.SimpleTo
         @Override
         public void renderHelmetOverlay(ItemStack stack, Player player, int width, int height, float partialTicks) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().enderVisorHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.enderVisorHandler, true)) {
                 renderTextureOverlay();
             }
         }

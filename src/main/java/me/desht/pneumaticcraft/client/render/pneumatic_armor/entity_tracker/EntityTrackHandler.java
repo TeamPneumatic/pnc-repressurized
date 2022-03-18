@@ -35,7 +35,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -328,7 +328,7 @@ public class EntityTrackHandler {
             IHackableEntity hackable = HackManager.getHackableForEntity(entity, player);
             if (hackable != null) {
                 int hackTime = ArmorUpgradeClientRegistry.getInstance()
-                        .getClientHandler(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, EntityTrackerClientHandler.class)
+                        .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                         .getTargetsStream()
                         .filter(target -> target.entity == entity)
                         .findFirst()

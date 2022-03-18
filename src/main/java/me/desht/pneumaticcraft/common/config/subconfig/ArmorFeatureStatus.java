@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +48,7 @@ public class ArmorFeatureStatus extends AuxConfigJson {
         JsonArray array = new JsonArray();
         if (activeUpgrades.isEmpty()) {
             // armor "master switch" is on by default
-            activeUpgrades.add(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID());
+            activeUpgrades.add(CommonUpgradeHandlers.coreComponentsHandler.getID());
         }
         for (ResourceLocation s : activeUpgrades) {
             array.add(s.toString());

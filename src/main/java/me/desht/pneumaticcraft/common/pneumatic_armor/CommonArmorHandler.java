@@ -367,7 +367,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     @Override
     public boolean isArmorEnabled() {
-        return isUpgradeEnabled(EquipmentSlot.HEAD, ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getIndex());
+        return isUpgradeEnabled(EquipmentSlot.HEAD, CommonUpgradeHandlers.coreComponentsHandler.getIndex());
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

@@ -44,7 +44,7 @@ import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.item.DrillBitItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.Minecraft;
@@ -439,32 +439,31 @@ public class ClientSetup {
     }
 
     private static void registerArmorClientUpgradeHandlers() {
-        ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
         ArmorUpgradeClientRegistry cr = ArmorUpgradeClientRegistry.getInstance();
 
-        cr.registerHandler(r.coreComponentsHandler, new CoreComponentsClientHandler());
-        cr.registerHandler(r.blockTrackerHandler, new BlockTrackerClientHandler());
-        cr.registerHandler(r.entityTrackerHandler, new EntityTrackerClientHandler());
-        cr.registerHandler(r.searchHandler, new SearchClientHandler());
-        cr.registerHandler(r.coordTrackerHandler, new CoordTrackClientHandler());
-        cr.registerHandler(r.droneDebugHandler, new DroneDebugClientHandler());
-        cr.registerHandler(r.nightVisionHandler, new NightVisionClientHandler());
-        cr.registerHandler(r.scubaHandler, new ScubaClientHandler());
-        cr.registerHandler(r.hackHandler, new HackClientHandler());
-        cr.registerHandler(r.enderVisorHandler, new EnderVisorClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.coreComponentsHandler, new CoreComponentsClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.blockTrackerHandler, new BlockTrackerClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.entityTrackerHandler, new EntityTrackerClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.searchHandler, new SearchClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.coordTrackerHandler, new CoordTrackClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.droneDebugHandler, new DroneDebugClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.nightVisionHandler, new NightVisionClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.scubaHandler, new ScubaClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.hackHandler, new HackClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.enderVisorHandler, new EnderVisorClientHandler());
 
-        cr.registerHandler(r.magnetHandler, new MagnetClientHandler());
-        cr.registerHandler(r.chargingHandler, new ChargingClientHandler());
-        cr.registerHandler(r.chestplateLauncherHandler, new ChestplateLauncherClientHandler());
-        cr.registerHandler(r.airConHandler, new AirConClientHandler());
-        cr.registerHandler(r.reachDistanceHandler, new ReachDistanceClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.magnetHandler, new MagnetClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.chargingHandler, new ChargingClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.chestplateLauncherHandler, new ChestplateLauncherClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.airConHandler, new AirConClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.reachDistanceHandler, new ReachDistanceClientHandler());
 
-        cr.registerHandler(r.runSpeedHandler, new SpeedBoostClientHandler());
-        cr.registerHandler(r.jumpBoostHandler, new JumpBoostClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.runSpeedHandler, new SpeedBoostClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.jumpBoostHandler, new JumpBoostClientHandler());
 
-        cr.registerHandler(r.jetBootsHandler, new JetBootsClientHandler());
-        cr.registerHandler(r.stepAssistHandler, new StepAssistClientHandler());
-        cr.registerHandler(r.kickHandler, new KickClientHandler());
-        cr.registerHandler(r.stompHandler, new StompClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.jetBootsHandler, new JetBootsClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.stepAssistHandler, new StepAssistClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.kickHandler, new KickClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.stompHandler, new StompClientHandler());
     }
 }

@@ -30,8 +30,8 @@ import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
 import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -87,7 +87,7 @@ public class PneumaticArmorHandler {
             if (isPneumaticArmorPiece(player, EquipmentSlot.HEAD)) {
                 if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getId()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                    if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)) {
+                    if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
                         Map<String, Integer> map = targetWarnings.computeIfAbsent(player.getUUID(), k -> new HashMap<>());
                         map.merge(event.getEntityLiving().getName().getString(), 1, Integer::sum);
                     }
@@ -119,7 +119,7 @@ public class PneumaticArmorHandler {
                 event.setDamageMultiplier(0.2F);
                 return;
             }
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.jumpBoostHandler, true)) {
                 // straight fall distance reduction if jump upgrade operational in legs
                 event.setDistance(Math.max(0, event.getDistance() - 1.5f * handler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.JUMPING.get())));
                 if (event.getDistance() < 2) {
@@ -134,7 +134,7 @@ public class PneumaticArmorHandler {
                 int vol = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandler::getVolume).orElse(0);
                 float airAvailable = vol * handler.getArmorPressure(EquipmentSlot.FEET);
                 List<Entity> stomped = new ArrayList<>();
-                if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().stompHandler, true)) {
+                if (handler.upgradeUsable(CommonUpgradeHandlers.stompHandler, true)) {
                     for (Entity e: player.level.getEntities(player, new AABB(player.blockPosition()).inflate(7.0), e -> e instanceof Mob && e.isAlive())) {
                         if (airAvailable > airNeeded + extraAirNeeded) {
                             stomped.add(e);
@@ -221,12 +221,12 @@ public class PneumaticArmorHandler {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, true)
-                    && !handler.getExtensionData(ArmorUpgradeRegistry.getInstance().jetBootsHandler).isSmartHover()) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.jetBootsHandler, true)
+                    && !handler.getExtensionData(CommonUpgradeHandlers.jetBootsHandler).isSmartHover()) {
                 // enabled jet boots = no jumping
                 return;
             }
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.jumpBoostHandler, true)) {
                 float power = PneumaticArmorItem.getIntData(stack, PneumaticArmorItem.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlot.LEGS, ModUpgrades.JUMPING.get(),
                         player.isShiftKeyDown() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);

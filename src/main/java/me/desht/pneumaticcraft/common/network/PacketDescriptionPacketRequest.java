@@ -17,8 +17,8 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -44,7 +44,7 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.get().getSender());
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
                 BlockEntity te = ctx.get().getSender().level.getBlockEntity(pos);
                 if (te != null) {
                     forceLootGeneration(te);

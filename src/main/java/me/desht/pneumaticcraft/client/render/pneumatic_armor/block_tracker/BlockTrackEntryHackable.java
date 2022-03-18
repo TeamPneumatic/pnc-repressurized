@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Blo
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -66,7 +66,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
         IHackableBlock hackableBlock = HackManager.getHackableForBlock(world, pos, player);
         assert hackableBlock != null;
         int hackTime = ArmorUpgradeClientRegistry.getInstance()
-                .getClientHandler(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, BlockTrackerClientHandler.class)
+                .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
                 .getTargetForCoord(pos).getHackTime();
         if (hackTime == 0) {
             hackableBlock.addInfo(world, pos, infoList, player);

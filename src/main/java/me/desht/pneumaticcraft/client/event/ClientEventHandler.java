@@ -37,8 +37,8 @@ import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -114,7 +114,7 @@ public class ClientEventHandler {
     public static void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
         if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().getEntity() instanceof Player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().scubaHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.scubaHandler, true)) {
                 event.setDensity(350f);
                 event.setCanceled(true);
             }

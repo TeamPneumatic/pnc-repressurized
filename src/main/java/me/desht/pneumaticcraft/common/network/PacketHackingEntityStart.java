@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Ent
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -60,10 +61,10 @@ public class PacketHackingEntityStart {
                 Entity entity = cPlayer.level.getEntity(entityId);
                 if (entity != null) {
                     CommonArmorHandler.getHandlerForPlayer(cPlayer)
-                            .getExtensionData(r.hackHandler)
+                            .getExtensionData(CommonUpgradeHandlers.hackHandler)
                             .setHackedEntity(entity);
                     ArmorUpgradeClientRegistry.getInstance()
-                            .getClientHandler(r.entityTrackerHandler, EntityTrackerClientHandler.class)
+                            .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                             .getTargetsStream()
                             .filter(target -> target.entity == entity)
                             .findFirst()
@@ -72,10 +73,10 @@ public class PacketHackingEntityStart {
             } else {
                 // server
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.upgradeUsable(r.entityTrackerHandler, true)) {
+                if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
                     Entity entity = player.level.getEntity(entityId);
                     if (entity != null) {
-                        handler.getExtensionData(r.hackHandler).setHackedEntity(entity);
+                        handler.getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(entity);
                         NetworkHandler.sendToAllTracking(this, entity);
                     }
                 }

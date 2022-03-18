@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -59,7 +59,7 @@ public class PacketHackingEntityFinish {
                 if (hackableEntity != null) {
                     hackableEntity.onHackFinished(entity, player);
                     HackTickHandler.instance().trackEntity(entity, hackableEntity);
-                    CommonArmorHandler.getHandlerForPlayer(player).getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler).setHackedEntity(null);
+                    CommonArmorHandler.getHandlerForPlayer(player).getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(null);
                     player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
                 }
             }

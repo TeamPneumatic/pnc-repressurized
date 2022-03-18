@@ -24,6 +24,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -64,6 +65,13 @@ public interface IPneumaticHelmetRegistry {
      */
     void addHackable(@Nonnull Block block, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
+    /**
+     * Register a block tag with your hackable. By default, the vanilla doors, buttons & trapdoors block tags are
+     * registered, meaning any block added to any of those tags (e.g. modded doors) will also be considered hackable.
+     *
+     * @param blockTag the block tag to register
+     * @param iHackable the hack to register
+     */
     void addHackable(@Nonnull TagKey<Block> blockTag, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
     /**
@@ -77,12 +85,21 @@ public interface IPneumaticHelmetRegistry {
     List<IHackableEntity> getCurrentEntityHacks(Entity entity);
 
     /**
+     * Register a common (client and server) handler for a Pneumatic Armor upgrade.  This must be called from a
+     * {@link FMLCommonSetupEvent} handler
+     * (it is not necessary to use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
+     * @param handler the handler to register
+     */
+    void registerUpgradeHandler(IArmorUpgradeHandler<?> handler);
+
+    /**
      * Registers the client handler for a Pneumatic Armor upgrade. This must be called from a {@link FMLClientSetupEvent}
      * handler, using {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}. This
      * also registers any keybindings referenced by the render handler
      * (see {@link IArmorUpgradeClientHandler#getInitialKeyBinding()} and {@link IArmorUpgradeClientHandler#getSubKeybinds()}.
      *
-     * @param clientHandler the handler to register
+     * @param handler the common upgrade handler, previously registered with
+     * @param clientHandler the client handler to register with the common upgrade handler
      */
     <T extends IArmorUpgradeHandler<?>> void registerRenderHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler);
 

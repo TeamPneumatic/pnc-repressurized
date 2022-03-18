@@ -38,8 +38,8 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -85,7 +85,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     private int noPathCooldown;
 
     public CoordTrackClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().coordTrackerHandler);
+        super(CommonUpgradeHandlers.coordTrackerHandler);
     }
 
     public enum EnumNavigationResult {
@@ -202,7 +202,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
             if (commonArmorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.COORDINATE_TRACKER.get()) == 0) return;
 
             CoordTrackClientHandler handler = ArmorUpgradeClientRegistry.getInstance()
-                    .getClientHandler(ArmorUpgradeRegistry.getInstance().coordTrackerHandler, CoordTrackClientHandler.class);
+                    .getClientHandler(CommonUpgradeHandlers.coordTrackerHandler, CoordTrackClientHandler.class);
             if (handler.isListeningToCoordTrackerSetting) {
                 handler.isListeningToCoordTrackerSetting = false;
                 if (event.getFace() != null) {

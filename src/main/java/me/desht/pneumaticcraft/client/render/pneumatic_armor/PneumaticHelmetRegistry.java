@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
@@ -111,6 +112,12 @@ public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     @Override
     public void registerBlockTrackEntry(IBlockTrackEntry entry) {
         BlockTrackEntryList.INSTANCE.trackList.add(entry);
+    }
+
+    @Override
+    public void registerUpgradeHandler(IArmorUpgradeHandler<?> handler) {
+        Validate.notNull(handler, "Upgrade handler can't be null!");
+        ArmorUpgradeRegistry.getInstance().registerUpgradeHandler(handler);
     }
 
     @Override

@@ -83,15 +83,15 @@ public class PacketUpdateArmorExtraData {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayer player = ctx.get().getSender();
+            ServerPlayer player = Objects.requireNonNull(ctx.get().getSender());
             ItemStack stack = player.getItemBySlot(slot);
             if (stack.getItem() instanceof PneumaticArmorItem) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 NBTUtils.initNBTTagCompound(stack);
                 for (String key : data.getAllKeys()) {
                     Tag dataTag = data.get(key);
-                    if (isKeyOKForSlot(key, slot, dataTag.getId())) {
-                        stack.getTag().put(key, dataTag);
+                    if (isKeyOKForSlot(key, slot, Objects.requireNonNull(dataTag).getId())) {
+                        Objects.requireNonNull(stack.getTag()).put(key, dataTag);
                         IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
                         if (upgradeHandler != null) {
                             upgradeHandler.onDataFieldUpdated(handler, key, dataTag);

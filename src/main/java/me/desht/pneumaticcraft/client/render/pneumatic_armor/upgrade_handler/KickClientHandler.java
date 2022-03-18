@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.KickOptions;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.KickHandler;
 import net.minecraft.client.KeyMapping;
 
@@ -33,7 +33,7 @@ import java.util.Optional;
 
 public class KickClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<KickHandler> {
     public KickClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().kickHandler);
+        super(CommonUpgradeHandlers.kickHandler);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class KickClientHandler extends IArmorUpgradeClientHandler.SimpleToggleab
 
     @Override
     public void onTriggered(ICommonArmorHandler armorHandler) {
-        if (armorHandler.upgradeUsable(ArmorUpgradeRegistry.getInstance().kickHandler, false)) {
+        if (armorHandler.upgradeUsable(CommonUpgradeHandlers.kickHandler, false)) {
             NetworkHandler.sendToServer(new PacketPneumaticKick());
         }
     }

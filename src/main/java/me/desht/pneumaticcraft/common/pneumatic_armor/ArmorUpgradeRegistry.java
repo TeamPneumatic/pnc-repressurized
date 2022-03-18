@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
 public enum ArmorUpgradeRegistry {
@@ -41,31 +41,6 @@ public enum ArmorUpgradeRegistry {
             EquipmentSlot.FEET
     };
 
-    public final CoreComponentsHandler coreComponentsHandler;
-    public final BlockTrackerHandler blockTrackerHandler;
-    public final EntityTrackerHandler entityTrackerHandler;
-    public final SearchHandler searchHandler;
-    public final CoordTrackerHandler coordTrackerHandler;
-    public final DroneDebugHandler droneDebugHandler;
-    public final NightVisionHandler nightVisionHandler;
-    public final ScubaHandler scubaHandler;
-    public final HackHandler hackHandler;
-    public final EnderVisorHandler enderVisorHandler;
-
-    public final MagnetHandler magnetHandler;
-    public final ChargingHandler chargingHandler;
-    public final ChestplateLauncherHandler chestplateLauncherHandler;
-    public final AirConHandler airConHandler;
-    public final ReachDistanceHandler reachDistanceHandler;
-
-    public final SpeedBoostHandler runSpeedHandler;
-    public final JumpBoostHandler jumpBoostHandler;
-
-    public final JetBootsHandler jetBootsHandler;
-    public final StepAssistHandler stepAssistHandler;
-    public final KickHandler kickHandler;
-    public final StompHandler stompHandler;
-
     public static ArmorUpgradeRegistry getInstance() {
         return INSTANCE;
     }
@@ -73,44 +48,15 @@ public enum ArmorUpgradeRegistry {
     ArmorUpgradeRegistry() {
         upgradeHandlers = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
-            upgradeHandlers.add(new ArrayList<>());
+            upgradeHandlers.add(new CopyOnWriteArrayList<>());
         }
-
-        coreComponentsHandler = registerUpgradeHandler(new CoreComponentsHandler());
-        blockTrackerHandler = registerUpgradeHandler(new BlockTrackerHandler());
-        entityTrackerHandler = registerUpgradeHandler(new EntityTrackerHandler());
-        searchHandler = registerUpgradeHandler(new SearchHandler());
-        coordTrackerHandler = registerUpgradeHandler(new CoordTrackerHandler());
-        droneDebugHandler = registerUpgradeHandler(new DroneDebugHandler());
-        nightVisionHandler = registerUpgradeHandler(new NightVisionHandler());
-        scubaHandler = registerUpgradeHandler(new ScubaHandler());
-        hackHandler = registerUpgradeHandler(new HackHandler());
-        enderVisorHandler = registerUpgradeHandler(new EnderVisorHandler());
-
-        magnetHandler = registerUpgradeHandler(new MagnetHandler());
-        chargingHandler = registerUpgradeHandler(new ChargingHandler());
-        chestplateLauncherHandler = registerUpgradeHandler(new ChestplateLauncherHandler());
-        airConHandler = registerUpgradeHandler(new AirConHandler());
-        reachDistanceHandler = registerUpgradeHandler(new ReachDistanceHandler());
-
-        runSpeedHandler = registerUpgradeHandler(new SpeedBoostHandler());
-        jumpBoostHandler = registerUpgradeHandler(new JumpBoostHandler());
-
-        jetBootsHandler = registerUpgradeHandler(new JetBootsHandler());
-        stepAssistHandler = registerUpgradeHandler(new StepAssistHandler());
-        kickHandler = registerUpgradeHandler(new KickHandler());
-        stompHandler = registerUpgradeHandler(new StompHandler());
-    }
-
-    public static void init() {
-        // poke
     }
 
     public static String getStringKey(ResourceLocation id) {
         return IArmorUpgradeHandler.getStringKey(id);
     }
 
-    private <T extends IArmorUpgradeHandler<?>> T registerUpgradeHandler(T handler) {
+    public <T extends IArmorUpgradeHandler<?>> T registerUpgradeHandler(T handler) {
         List<IArmorUpgradeHandler<?>> l = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
         handler.setIndex(l.size());
         byID.put(handler.getID(), handler);

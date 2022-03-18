@@ -42,7 +42,7 @@ import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
@@ -142,7 +142,7 @@ public class PneumaticCraftRepressurized {
         ThirdPartyManager.instance().init();
         NetworkHandler.init();
         FluidSetup.init();
-        ArmorUpgradeRegistry.init();
+        CommonUpgradeHandlers.init();
         HackManager.addDefaultEntries();
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();

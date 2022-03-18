@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.HackHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -46,7 +47,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<HackHandler> {
     public HackClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().hackHandler);
+        super(CommonUpgradeHandlers.hackHandler);
     }
 
     @Override
@@ -59,8 +60,8 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
         if (enabledForPlayer(armorHandler.getPlayer())) {
             ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
             ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
-            c.getClientHandler(r.blockTrackerHandler, BlockTrackerClientHandler.class).hack();
-            c.getClientHandler(r.entityTrackerHandler, EntityTrackerClientHandler.class).hack();
+            c.getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class).hack();
+            c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).hack();
         }
     }
 

@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.DroneDebugHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -49,7 +50,7 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     private final Set<BlockPos> shownArea = new HashSet<>();
 
     public DroneDebugClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().droneDebugHandler);
+        super(CommonUpgradeHandlers.droneDebugHandler);
     }
 
     public static void onWidgetsChanged() {
@@ -80,7 +81,7 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
         if (enabledForPlayer(Minecraft.getInstance().player)) {
             ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
             ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
-            c.getClientHandler(r.entityTrackerHandler, EntityTrackerClientHandler.class).selectAsDebuggingTarget();
+            c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).selectAsDebuggingTarget();
         }
     }
 

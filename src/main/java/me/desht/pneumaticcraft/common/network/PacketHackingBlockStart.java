@@ -22,8 +22,8 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.Rende
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,18 +52,18 @@ public class PacketHackingBlockStart extends LocationIntPacket {
                 // client
                 Player cPlayer = ClientUtils.getClientPlayer();
                 CommonArmorHandler.getHandlerForPlayer()
-                        .getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler)
+                        .getExtensionData(CommonUpgradeHandlers.hackHandler)
                         .setHackedBlockPos(new WorldAndCoord(cPlayer.level, pos));
 
                 RenderBlockTarget target = ArmorUpgradeClientRegistry.getInstance()
-                        .getClientHandler(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, BlockTrackerClientHandler.class)
+                        .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
                         .getTargetForCoord(pos);
                 if (target != null) target.onHackConfirmServer();
             } else {
                 // server
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, true)) {
-                    handler.getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler)
+                if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
+                    handler.getExtensionData(CommonUpgradeHandlers.hackHandler)
                             .setHackedBlockPos(new WorldAndCoord(player.level, pos));
                     NetworkHandler.sendToAllTracking(this, player.level, player.blockPosition());
                 }

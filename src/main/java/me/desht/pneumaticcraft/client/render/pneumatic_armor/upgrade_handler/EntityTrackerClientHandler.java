@@ -35,7 +35,7 @@ import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -70,7 +70,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     private EntityFilter entityFilter = new EntityFilter("");
 
     public EntityTrackerClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().entityTrackerHandler);
+        super(CommonUpgradeHandlers.entityTrackerHandler);
     }
 
     @Override
@@ -78,9 +78,9 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get());
         Player player = armorHandler.getPlayer();
 
-        if ((ClientUtils.getClientLevel().getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler)) {
+        if ((ClientUtils.getClientLevel().getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(CommonUpgradeHandlers.searchHandler)) {
             ArmorUpgradeClientRegistry.getInstance()
-                    .getClientHandler(ArmorUpgradeRegistry.getInstance().searchHandler, SearchClientHandler.class)
+                    .getClientHandler(CommonUpgradeHandlers.searchHandler, SearchClientHandler.class)
                     .trackItemEntities(player, rangeUpgrades);
         }
 

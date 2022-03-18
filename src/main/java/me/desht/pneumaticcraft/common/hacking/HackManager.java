@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
 import me.desht.pneumaticcraft.common.hacking.entity.*;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
@@ -167,7 +167,7 @@ public class HackManager {
     private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, BlockGetter world, BlockPos pos, Player player) {
         if (player.level.isClientSide) {
             RenderBlockTarget target = ArmorUpgradeClientRegistry.getInstance()
-                    .getClientHandler(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, BlockTrackerClientHandler.class)
+                    .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
                     .getTargetForCoord(pos);
             int requiredHackTime = hackableBlock.getHackTime(world, pos, player);
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;
@@ -179,7 +179,7 @@ public class HackManager {
     private static boolean isInDisplayCooldown(IHackableEntity hackableEntity, Entity entity) {
         if (entity.level.isClientSide) {
             RenderEntityTarget target = ArmorUpgradeClientRegistry.getInstance()
-                    .getClientHandler(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, EntityTrackerClientHandler.class)
+                    .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                     .getTargetForEntity(entity);
             int requiredHackTime = hackableEntity.getHackTime(entity, ClientUtils.getClientPlayer());
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;

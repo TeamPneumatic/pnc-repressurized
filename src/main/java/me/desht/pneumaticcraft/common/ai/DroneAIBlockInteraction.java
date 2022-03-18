@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnIndicatorParticles;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
@@ -291,7 +291,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
             for (ServerPlayer player : drone.getDebugger().getDebuggingPlayers()) {
                 if (player.distanceToSqr(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < DRONE_DEBUG_PARTICLE_RANGE_SQ) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                    if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)
+                    if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)
                             && handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.DISPENSER.get()) > 0) {
                         NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), player);
                     }

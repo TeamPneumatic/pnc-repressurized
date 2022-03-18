@@ -30,15 +30,19 @@ import net.minecraftforge.client.settings.KeyModifier;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public enum ArmorUpgradeClientRegistry {
     INSTANCE;
 
     private final List<List<IArmorUpgradeClientHandler<?>>> clientUpgradeHandlers = new ArrayList<>();
-    private final Map<ResourceLocation, IArmorUpgradeClientHandler<?>> id2HandlerMap = new HashMap<>();
-    private final Map<ResourceLocation, KeyMapping> id2KeyBindMap = new HashMap<>();
-    private final Map<String, IArmorUpgradeClientHandler<?>> triggerKeyBindMap = new HashMap<>();
+    private final Map<ResourceLocation, IArmorUpgradeClientHandler<?>> id2HandlerMap = new ConcurrentHashMap<>();
+    private final Map<ResourceLocation, KeyMapping> id2KeyBindMap = new ConcurrentHashMap<>();
+    private final Map<String, IArmorUpgradeClientHandler<?>> triggerKeyBindMap = new ConcurrentHashMap<>();
 
     public static ArmorUpgradeClientRegistry getInstance() {
         return INSTANCE;

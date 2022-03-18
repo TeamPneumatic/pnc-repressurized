@@ -31,8 +31,8 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -126,7 +126,7 @@ public enum AreaRenderManager {
     }
 
     private void maybeRenderCoordinateTracker(PoseStack matrixStack, MultiBufferSource.BufferSource buffer, Player player, float partialTicks) {
-        CoordTrackerHandler handler = ArmorUpgradeRegistry.getInstance().coordTrackerHandler;
+        CoordTrackerHandler handler = CommonUpgradeHandlers.coordTrackerHandler;
         if (CommonArmorHandler.getHandlerForPlayer().upgradeUsable(handler, true)) {
             BlockPos pos = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler, CoordTrackClientHandler.class).getTrackedPos();
             if (pos != null) {
@@ -163,7 +163,7 @@ public enum AreaRenderManager {
         if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
             if (droneDebugger == null) {
                 droneDebugger = ArmorUpgradeClientRegistry.getInstance()
-                        .getClientHandler(ArmorUpgradeRegistry.getInstance().droneDebugHandler, DroneDebugClientHandler.class);
+                        .getClientHandler(CommonUpgradeHandlers.droneDebugHandler, DroneDebugClientHandler.class);
             }
             Set<BlockPos> posSet = droneDebugger.getShowingPositions();
             Set<BlockPos> areaSet = droneDebugger.getShownArea();

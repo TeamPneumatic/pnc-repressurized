@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -67,7 +68,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     private boolean forceUpdatePressureStat = true;
 
     public CoreComponentsClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().coreComponentsHandler);
+        super(CommonUpgradeHandlers.coreComponentsHandler);
     }
 
     @Override

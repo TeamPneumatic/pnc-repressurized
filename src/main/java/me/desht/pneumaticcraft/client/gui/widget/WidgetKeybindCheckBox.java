@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -85,7 +86,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             if (keyBinding != null) {
                 KeyDispatcher.desc2checkbox.put(keyBinding.getName(), newCheckBox);
             }
-            if (id.equals(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID())) {
+            if (id.equals(CommonUpgradeHandlers.coreComponentsHandler.getID())) {
                 // stash this one since it's referenced a lot
                 coreComponents = newCheckBox;
             }
@@ -212,7 +213,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         if (checked) {
             // force pressure stat to recalc its layout (just using .reset() isn't enough)
             ArmorUpgradeClientRegistry.getInstance()
-                    .getClientHandler(ArmorUpgradeRegistry.getInstance().coreComponentsHandler, CoreComponentsClientHandler.class)
+                    .getClientHandler(CommonUpgradeHandlers.coreComponentsHandler, CoreComponentsClientHandler.class)
                     .onResolutionChanged();
         } else {
             Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 0.5f);

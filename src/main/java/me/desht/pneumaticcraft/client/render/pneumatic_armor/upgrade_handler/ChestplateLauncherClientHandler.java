@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.client.render.ProgressBarRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChestplateLauncher;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ChestplateLauncherHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -45,7 +45,7 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     private int launcherProgress = 0;
 
     public ChestplateLauncherClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().chestplateLauncherHandler);
+        super(CommonUpgradeHandlers.chestplateLauncherHandler);
     }
 
     @Override

@@ -38,6 +38,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -78,7 +79,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     private Direction focusedFace = null;
 
     public BlockTrackerClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().blockTrackerHandler);
+        super(CommonUpgradeHandlers.blockTrackerHandler);
     }
 
     @Override
@@ -109,8 +110,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(world, pos, te))) {
                 if (te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
                     SearchClientHandler searchHandler = ArmorUpgradeClientRegistry.getInstance()
-                            .getClientHandler(ArmorUpgradeRegistry.getInstance().searchHandler, SearchClientHandler.class);
-                    searchHandler.checkInventoryForItems(te, null, WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler));
+                            .getClientHandler(CommonUpgradeHandlers.searchHandler, SearchClientHandler.class);
+                    searchHandler.checkInventoryForItems(te, null, WidgetKeybindCheckBox.isHandlerEnabled(CommonUpgradeHandlers.searchHandler));
                 }
                 List<IBlockTrackEntry> entries = BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te);
                 if (!entries.isEmpty()) {

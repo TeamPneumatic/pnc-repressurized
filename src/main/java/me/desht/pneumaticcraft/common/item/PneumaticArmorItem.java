@@ -42,6 +42,7 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -355,7 +356,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     @Override
     public float getFOVModifier(ItemStack stack, Player player, EquipmentSlot slot) {
         if (slot == EquipmentSlot.LEGS && ConfigHelper.client().armor.leggingsFOVFactor.get() > 0) {
-            double boost = ArmorUpgradeRegistry.getInstance().runSpeedHandler.getSpeedBoostFromLegs(CommonArmorHandler.getHandlerForPlayer());
+            double boost = CommonUpgradeHandlers.runSpeedHandler.getSpeedBoostFromLegs(CommonArmorHandler.getHandlerForPlayer());
             if (boost > 0) {
                 return 1.0f + (float) (boost * 2.0 * ConfigHelper.client().armor.leggingsFOVFactor.get());
             }
@@ -411,7 +412,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
         if (stack.getItem() instanceof PneumaticArmorItem) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            return handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().enderVisorHandler, true);
+            return handler.upgradeUsable(CommonUpgradeHandlers.enderVisorHandler, true);
         }
         return false;
     }

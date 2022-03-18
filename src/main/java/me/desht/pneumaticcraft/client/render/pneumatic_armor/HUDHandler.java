@@ -39,6 +39,7 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -278,8 +279,8 @@ public enum HUDHandler implements IKeyListener {
     public void onMouseScroll(InputEvent.MouseScrollEvent event) {
         ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
         ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
-        boolean isCaptured = c.getClientHandler(r.blockTrackerHandler, BlockTrackerClientHandler.class).scroll(event);
-        if (!isCaptured) isCaptured = c.getClientHandler(r.entityTrackerHandler, EntityTrackerClientHandler.class).scroll(event);
+        boolean isCaptured = c.getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class).scroll(event);
+        if (!isCaptured) isCaptured = c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).scroll(event);
         if (isCaptured) event.setCanceled(true);
     }
 

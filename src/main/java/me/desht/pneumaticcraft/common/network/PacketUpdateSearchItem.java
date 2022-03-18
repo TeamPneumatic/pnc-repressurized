@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -55,7 +55,7 @@ public class PacketUpdateSearchItem {
         ctx.get().enqueueWork(() -> {
             Player player = ctx.get().getSender();
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().searchHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.searchHandler, true)) {
                 ItemStack helmetStack = player.getItemBySlot(EquipmentSlot.HEAD);
                 Item searchedItem = ForgeRegistries.ITEMS.getValue(itemId);
                 if (searchedItem != null && searchedItem != Items.AIR) {

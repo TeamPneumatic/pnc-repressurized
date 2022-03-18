@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import net.minecraft.ChatFormatting;
@@ -73,7 +74,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     private IGuiAnimatedStat jbStat;
 
     public JetBootsClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().jetBootsHandler);
+        super(CommonUpgradeHandlers.jetBootsHandler);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     public void tickClient(ICommonArmorHandler armorHandler) {
         super.tickClient(armorHandler);
 
-        JetBootsHandler jbHandler = ArmorUpgradeRegistry.getInstance().jetBootsHandler;
+        JetBootsHandler jbHandler = CommonUpgradeHandlers.jetBootsHandler;
         JetBootsStateTracker.JetBootsState jbState = jbHandler.getJetBootsSyncedState(armorHandler);
         if (armorHandler.upgradeUsable(jbHandler, false)) {
             if (jbState.isActive() && (!jbState.isEnabled() || !thrustKeyPressed(jbState.isBuilderMode()))) {

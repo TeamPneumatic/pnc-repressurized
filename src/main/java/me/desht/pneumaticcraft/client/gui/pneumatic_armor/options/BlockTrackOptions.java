@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.Block
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
@@ -47,7 +48,7 @@ public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTracker
             Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.BLOCK_TRACKER));
         }));
 
-        ResourceLocation blockTrackerID = ArmorUpgradeRegistry.getInstance().blockTrackerHandler.getID();
+        ResourceLocation blockTrackerID = CommonUpgradeHandlers.blockTrackerHandler.getID();
 
         int nWidgets = BlockTrackEntryList.INSTANCE.trackList.size();
         ResourceLocation owningId = getClientUpgradeHandler().getCommonHandler().getID();

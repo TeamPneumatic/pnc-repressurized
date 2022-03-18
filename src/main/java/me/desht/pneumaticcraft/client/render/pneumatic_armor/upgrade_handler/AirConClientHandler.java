@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.AirConditioner
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.AirConHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
@@ -42,7 +42,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     private IGuiAnimatedStat acStat;
 
     public AirConClientHandler() {
-        super(ArmorUpgradeRegistry.getInstance().airConHandler);
+        super(CommonUpgradeHandlers.airConHandler);
     }
 
     @Override
