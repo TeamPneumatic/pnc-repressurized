@@ -114,19 +114,20 @@ dependencies {
 
 	//compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api")
 	//runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}")
-        // temporary till TOP for 1.18 is on maven.tterrag.com...
-        compileOnly fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
-        runtimeOnly fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
+	// temporary till TOP for 1.18 is on maven.tterrag.com...
+	compileOnly fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
+	runtimeOnly fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
 	compileOnly fg.deobf("mezz.jei:jei-${project.mc_version}:${jei_version}:api")
 	runtimeOnly fg.deobf("mezz.jei:jei-${project.mc_version}:${jei_version}")
 	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
 	runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-	//compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
+	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
 	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
 	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 	compileOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
-	runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
+	// runtime disabled until there's a CC build for forge 40.0.18+
+//	runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
 	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 	//compileOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")

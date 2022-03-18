@@ -29,10 +29,12 @@ import net.minecraftforge.registries.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 public class ModHarvestHandlers {
-    public static final DeferredRegister<HarvestHandler> HARVEST_HANDLERS_DEFERRED = DeferredRegister.create(HarvestHandler.class, Names.MOD_ID);
+    public static final DeferredRegister<HarvestHandler> HARVEST_HANDLERS_DEFERRED = DeferredRegister.create(RL("harvest_handlers"), Names.MOD_ID);
     public static final Supplier<IForgeRegistry<HarvestHandler>> HARVEST_HANDLERS = HARVEST_HANDLERS_DEFERRED
-            .makeRegistry("harvest_handlers", () -> new RegistryBuilder<HarvestHandler>().disableSaving().disableSync());
+            .makeRegistry(HarvestHandler.class, () -> new RegistryBuilder<HarvestHandler>().disableSaving().disableSync());
 
     public static final RegistryObject<HarvestHandler> CROPS = register("crops", HarvestHandlerCrops::new);
     public static final RegistryObject<HarvestHandler> NETHER_WART = register("nether_wart", () -> new HarvestHandlerCropLike(state ->

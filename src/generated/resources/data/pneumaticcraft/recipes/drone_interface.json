@@ -25,9 +25,7 @@
           "P": {
             "item": "pneumaticcraft:printed_circuit_board"
           },
-          "M": {
-            "item": "computercraft:wireless_modem_normal"
-          }
+          "M": []
         },
         "result": {
           "item": "pneumaticcraft:drone_interface"
