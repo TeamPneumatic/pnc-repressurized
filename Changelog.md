@@ -6,7 +6,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
-## 3.1.1-?? (unreleased)
+## 3.1.1-61 (18 Mar 2022)
+
+**This release requires a Forge release between 40.0.12 & 40.0.17 inclusive.  40.0.18 is a breaking change for many mods and will not work for this release.**
 
 ### Updates
 * Drone debugging now works for External Program widgets; the visible debugged widgets will update as the Drone enters/leaves sub-programs
