@@ -296,14 +296,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void setChanged() {
-        super.setChanged();
-        if (chargeableInventory != null) {
-            chargeableInventory.writeToNBT();
-        }
-    }
-
-    @Override
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
