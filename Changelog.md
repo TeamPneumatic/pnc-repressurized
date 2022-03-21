@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
-## 3.1.2-62 (21 Mar 2022)
+## 3.1.2-64 (21 Mar 2022)
 
 **This release requires a Forge release of 40.0.18 or later**
 
