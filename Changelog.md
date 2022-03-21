@@ -6,6 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
+## 3.1.2-62 (21 Mar 2022)
+
+**This release requires a Forge release of 40.0.18 or later**
+
+### Updates
+* The vortices fired by the Vortex Cannon are now much more effective at breaking vegetation
+
+### Fixes
+* Fixed Redstone Module rendering causing client crash
+* Fixed Charging Station wrongly transferring upgrades from one item to another under some circumstances
+* Fixed semiblock (logistic frames, crop supports etc.) chunk load/unload behaviour
+  * Unloading and reloading chunks with semiblocks was causing some desyncs
+
 ## 3.1.1-61 (18 Mar 2022)
 
 **This release requires a Forge release between 40.0.12 & 40.0.17 inclusive.  40.0.18 is a breaking change for many mods and will not work for this release.**
