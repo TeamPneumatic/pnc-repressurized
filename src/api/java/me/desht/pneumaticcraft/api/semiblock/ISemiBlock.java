@@ -147,8 +147,8 @@ public interface ISemiBlock extends ICapabilityProvider {
     int getTrackingId();
 
     /**
-     * Mark this semiblock for removal.
-     *
+     * Called when a player causes a semiblock to be removed, either by sneak-right-clicking with a Logistics
+     * Configurator, or by repeatedly hitting the semiblock entity.
      * @param player player who is removing the semiblock
      */
     void removeSemiblock(Player player);

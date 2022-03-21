@@ -146,10 +146,8 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     }
 
     @Override
-    protected void onBroken() {
-        super.onBroken();
-
-//        if (AE2Integration.isAvailable()) {
+    protected void doExtraCleanupTasks() {
+//        if (!level.isClientSide() && AE2Integration.isAvailable()) {
 //            getAE2integration().shutdown();
 //        }
     }

@@ -52,9 +52,7 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
     }
 
     @Override
-    public void onBroken() {
-        super.onBroken();
-
+    public void doExtraCleanupTasks() {
         if (!level.isClientSide) {
             BaseSpawner spawner = getSpawner();
             if (spawner != null) {

@@ -40,6 +40,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -74,7 +75,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     private static final float MAX_HEALTH = 40.0F;
 
     private BlockEntity cachedTE;
-    private boolean shouldDropItem = true;
+    private boolean shouldDropItem = false;
     private AABB blockBounds;
     private BlockPos blockPos;
     private Vec3 dropOffset = Vec3.ZERO;
@@ -82,20 +83,6 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     AbstractSemiblockEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
-    }
-
-    /**
-     * Called by onRemovedFromWorld(). Override in subclasses if needed, but be sure to call the super() method.
-     */
-    protected void onBroken() {
-        if (!level.isClientSide) {
-            if (shouldDropItem) {
-                getDrops().forEach(this::dropItem);
-            }
-            if (level.isLoaded(blockPos)) {
-                level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
-            }
-        }
     }
 
     private void dropItem(ItemStack stack) {
@@ -116,15 +103,6 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         super.tick();
 
         if (tickCount == 1) {
-            if (!level.isClientSide) {
-                Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
-                if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
-                    MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
-                } else {
-                    Log.error("found existing semiblock at %s, pos=%s, dir=%s", level, blockPos, dir);
-                }
-            }
-
             // can't do this in onAddedToWorld() because querying the blockstate then can cause a deadlock
             // add a small outset so the entity covers the block and becomes interactable
             setBoundingBox(getBlockBounds().move(blockPos));//.grow(0.01));
@@ -141,6 +119,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         }
 
         if (!level.isClientSide && isAlive() && !canStay()) {
+            shouldDropItem = true;
             kill();
         }
 
@@ -163,7 +142,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             return InteractionResult.PASS;
         }
 
-        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()) {
+        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get() && !player.level.isClientSide) {
             if (player.isShiftKeyDown()) {
                 removeSemiblock(player);
                 return InteractionResult.SUCCESS;
@@ -330,46 +309,46 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public void remove(RemovalReason pReason) {
-        super.remove(pReason);
+    public void onAddedToWorld() {
+        super.onAddedToWorld();
 
         if (!level.isClientSide) {
             Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
-            SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
-            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
-        }
-
-        if (pReason.shouldDestroy()) {
-            onBroken();
+            if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
+                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
+            } else {
+                Log.error("SemiblockTracker: not overwriting existing semiblock at %s, pos=%s, dir=%s!", level, blockPos, dir);
+            }
         }
     }
 
-//    @Override
-//    public void onAddedToWorld() {
-//        super.onAddedToWorld();
-//
-//        if (!level.isClientSide) {
-//            Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
-//            if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
-//                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
-//            } else {
-//                Log.error("found existing semiblock at %s, pos=%s, dir=%s", level, blockPos, dir);
-//            }
-//        }
-//    }
+    @Override
+    public void onRemovedFromWorld() {
+        if (!level.isClientSide) {
+            Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
+            SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
 
-//    @Override
-//    public void onRemovedFromWorld() {
-//        super.onRemovedFromWorld();
-//
-//        if (!level.isClientSide) {
-//            Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
-//            SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
-//            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
-//        }
-//
-//        onBroken();
-//    }
+            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
+
+            if (shouldDropItem) {
+                getDrops().forEach(this::dropItem);
+            }
+
+            if (level.isLoaded(blockPos)) {
+                level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
+            }
+        }
+
+        doExtraCleanupTasks();
+
+        super.onRemovedFromWorld();
+    }
+
+    /**
+     * Called by onRemovedFromWorld() to finalize semiblock removal. Override in subclasses.
+     */
+    protected void doExtraCleanupTasks() {
+    }
 
     @Override
     public boolean isNoGravity() {
@@ -383,8 +362,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public int getTrackingId() {
-//        return isAddedToWorld() ? getId() : -1;
-        return isAlive() ? getId() : -1;
+        return isAddedToWorld() ? getId() : -1;
     }
 
     @Override
@@ -398,9 +376,10 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public void removeSemiblock(Player player) {
-        player.playSound(SoundEvents.ITEM_PICKUP, 1.0f, 1.0f);
+        player.level.playSound(null, blockPos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.0f);
+        shouldDropItem = !player.isCreative();
         dropOffset = player.position().subtract(this.position()).normalize();
-        this.kill();
+        kill();
     }
 
     @Override
@@ -410,11 +389,13 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         } else if (!this.level.isClientSide && this.isAlive()) {
             this.setTimeSinceHit(10);
             this.setDamageTaken(this.getDamageTaken() + amount * 10.0F);
-            boolean isCreative = source.getEntity() instanceof Player
-                    && ((Player)source.getEntity()).getAbilities().instabuild;
-            if (isCreative || this.getDamageTaken() > MAX_HEALTH) {
-                shouldDropItem = !isCreative;
-                kill();
+            if (this.getDamageTaken() > MAX_HEALTH) {
+                if (source.getEntity() instanceof Player p) {
+                    removeSemiblock(p);
+                } else {
+                    shouldDropItem = true;
+                    kill();
+                }
             }
         }
         return true;
@@ -442,7 +423,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
-        // nothing
+        // do nothing, override in subclasses
     }
 
     @Override

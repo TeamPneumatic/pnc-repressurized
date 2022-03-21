@@ -50,7 +50,7 @@ public class SemiblockEvent extends Event {
     }
 
     /**
-     * Fired when a semiblock is added to the world.
+     * Fired when a semiblock has been added to the world. This event is not cancelable.
      */
     public static class PlaceEvent extends SemiblockEvent {
         public PlaceEvent(Level world, BlockPos pos, ISemiBlock semiBlock) {
@@ -59,7 +59,7 @@ public class SemiblockEvent extends Event {
     }
 
     /**
-     * Fired when a semiblock is removed from the world.
+     * Fired when a semiblock has been removed from the world. This event is not cancelable.
      */
     public static class BreakEvent extends SemiblockEvent {
         public BreakEvent(Level world, BlockPos pos, ISemiBlock semiBlock) {
