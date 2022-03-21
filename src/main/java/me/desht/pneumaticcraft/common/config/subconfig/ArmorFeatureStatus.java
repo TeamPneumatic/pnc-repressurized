@@ -34,7 +34,7 @@ public class ArmorFeatureStatus extends AuxConfigJson {
     public static final ArmorFeatureStatus INSTANCE = new ArmorFeatureStatus();
 
     private ArmorFeatureStatus() {
-        super(true);
+        super(false);
     }
 
     @Override
