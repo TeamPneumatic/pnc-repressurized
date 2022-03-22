@@ -43,6 +43,8 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen<ChargingStationMenu,ChargingStationBlockEntity> {
+    private static final int PARTICLE_COUNT = 10;
+
     private WidgetButtonExtended guiSelectButton;
     private WidgetButtonExtended upgradeOnlyButton;
     private float renderAirProgress;
@@ -80,13 +82,13 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float opacity, int x, int y) {
-        super.renderBg(matrixStack, opacity, x, y);
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
+        super.renderBg(matrixStack, partialTicks, x, y);
 
         if (te.upgradeOnly) {
             blit(matrixStack, leftPos + 102, topPos + 76, 177, 0, 13, 16);
         } else {
-            renderAir(matrixStack);
+            renderAir(matrixStack, partialTicks);
         }
     }
 
@@ -162,12 +164,11 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
         }
     }
 
-    private void renderAir(PoseStack matrixStack) {
+    private void renderAir(PoseStack matrixStack, float partialTicks) {
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(2.0F);
-        int particles = 10;
-        for (int i = 0; i < particles; i++) {
-            renderAirParticle(matrixStack, renderAirProgress % (1F / particles) + (float) i / particles);
+        for (int i = 0; i < PARTICLE_COUNT; i++) {
+            renderAirParticle(matrixStack, renderAirProgress % (1F / PARTICLE_COUNT) + (float) i / PARTICLE_COUNT);
         }
 
         RenderSystem.enableTexture();
@@ -192,17 +193,10 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f posMat = matrixStack.last().pose();
-        bufferbuilder.vertex(posMat, x - 1f, y + 1f, 0.0F).color(0.9f, 0.9f, 0.9f, 1f).endVertex();
-        bufferbuilder.vertex(posMat, x + 1f, y + 1f, 0.0F).color(0.9f, 0.9f, 0.9f, 1f).endVertex();
-        bufferbuilder.vertex(posMat, x + 1f, y - 1f, 0.0F).color(0.9f, 0.9f, 0.9f, 1f).endVertex();
-        bufferbuilder.vertex(posMat, x - 1f, y - 1f, 0.0F).color(0.9f, 0.9f, 0.9f, 1f).endVertex();
-//        bufferbuilder.end();
-//
-//        GL11.glPointSize(5);
-//        RenderSystem.setShader(GameRenderer::getPositionShader);
-//        wr.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION);
-//        wr.vertex(matrixStack.last().pose(), x, y, 0f).endVertex();
-//        wr.vertex(matrixStack.last().pose(), x + 1, y + 1, 0f).endVertex();
+        bufferbuilder.vertex(posMat, x - 1f, y + 1f, 0.0F).color(0.7f, 0.8f, 0.9f, 1f).endVertex();
+        bufferbuilder.vertex(posMat, x + 1f, y + 1f, 0.0F).color(0.6f, 0.7f, 0.7f, 1f).endVertex();
+        bufferbuilder.vertex(posMat, x + 1f, y - 1f, 0.0F).color(0.7f, 0.8f, 0.9f, 1f).endVertex();
+        bufferbuilder.vertex(posMat, x - 1f, y - 1f, 0.0F).color(0.8f, 0.9f, 0.9f, 1f).endVertex();
         Tesselator.getInstance().end();
     }
 }
