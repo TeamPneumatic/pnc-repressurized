@@ -94,7 +94,7 @@ public class GlobalPosHelper {
      */
     public static BlockEntity getTileEntity(GlobalPos globalPos) {
         Level world = getWorldForGlobalPos(globalPos);
-        if (world != null && world.isAreaLoaded(globalPos.pos(), 1)) {
+        if (world != null && world.isLoaded(globalPos.pos())) {
             return world.getBlockEntity(globalPos.pos());
         }
         return null;

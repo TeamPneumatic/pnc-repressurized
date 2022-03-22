@@ -55,7 +55,7 @@ public class EntityFilter implements Predicate<Entity> {
     private static final Pattern ELEMENT_DIVIDER = Pattern.compile(";");
     private static final Pattern ELEMENT_SUBDIVIDER = Pattern.compile("[(),]");
     private static final Map<String,Predicate<Entity>> ENTITY_PREDICATES = ImmutableMap.<String,Predicate<Entity>>builder()
-            .put("mob", e -> e instanceof Enemy && !(e instanceof TamableAnimal && ((TamableAnimal) e).isTame()))
+            .put("mob", e -> e instanceof Enemy && !(e instanceof TamableAnimal t && t.isTame()))
             .put("animal", e -> e instanceof Animal)
             .put("living", e -> e instanceof LivingEntity)
             .put("player", e -> e instanceof Player)

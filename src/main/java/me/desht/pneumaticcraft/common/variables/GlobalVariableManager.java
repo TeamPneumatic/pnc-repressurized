@@ -39,7 +39,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 import java.util.*;
 
 /**
- * Manages global variables. These are prefixed with '#'.
+ * Manages global variables. These are prefixed with '#' or '%'.
  */
 public class GlobalVariableManager extends SavedData {
     public static final int MAX_VARIABLE_LEN = 64;

@@ -35,23 +35,23 @@ public class ItemStackHandlerIterable implements Iterable<ItemStack>{
     
     @Override
     public Iterator<ItemStack> iterator(){
-        return new Iterator<ItemStack>(){
+        return new Iterator<>() {
             private int curIndex = 0;
-            
+
             @Override
-            public boolean hasNext(){
+            public boolean hasNext() {
                 return curIndex < itemStackHandler.getSlots();
             }
 
             @Override
-            public ItemStack next(){
-                if(!hasNext()) throw new NoSuchElementException();
+            public ItemStack next() {
+                if (!hasNext()) throw new NoSuchElementException();
                 return itemStackHandler.getStackInSlot(curIndex++);
             }
-            
+
             @Override
             public void remove() {
-                if(curIndex == 0) throw new IllegalStateException("First call next()!");
+                if (curIndex == 0) throw new IllegalStateException("First call next()!");
                 itemStackHandler.setStackInSlot(curIndex - 1, ItemStack.EMPTY);
             }
         };
