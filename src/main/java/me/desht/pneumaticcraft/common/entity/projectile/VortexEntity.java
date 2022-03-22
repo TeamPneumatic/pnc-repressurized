@@ -31,7 +31,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.WebBlock;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -59,12 +58,9 @@ public class VortexEntity extends ThrowableProjectile {
 
         // onImpact() is no longer called for blocks with no collision box, like shrubs & crops, as of MC 1.16.2
         if (!level.isClientSide) {
-            AABB box = getBoundingBox().inflate(1);
-            BlockPos.betweenClosedStream(box).forEach(pos -> {
-                if (vortexBreakable(level.getBlockState(pos).getBlock())) {
-                    handleVortexCollision(pos);
-                }
-            });
+            BlockPos.betweenClosedStream(getBoundingBox())
+                    .filter(pos -> vortexBreakable(level.getBlockState(pos).getBlock()))
+                    .forEach(this::handleVortexCollision);
         }
 
         setDeltaMovement(getDeltaMovement().scale(0.95));
@@ -72,6 +68,7 @@ public class VortexEntity extends ThrowableProjectile {
             discard();
         }
     }
+
 
     public boolean hasRenderOffsetX() {
         return renderOffsetX > -Float.MAX_VALUE;
@@ -83,15 +80,6 @@ public class VortexEntity extends ThrowableProjectile {
 
     public void setRenderOffsetX(float renderOffsetX) {
         this.renderOffsetX = renderOffsetX;
-    }
-
-    private boolean tryCutPlants(BlockPos pos) {
-        Block block = level.getBlockState(pos).getBlock();
-        if (vortexBreakable(block)) {
-            level.destroyBlock(pos, true);
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -126,22 +114,8 @@ public class VortexEntity extends ThrowableProjectile {
     }
 
     private void handleVortexCollision(BlockPos pos) {
-        BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());
-        if (tryCutPlants(pos)) {
-            int plantsCut = 1;
-            for (int x = -2; x <= 2; x++) {
-                for (int y = -2; y <= 2; y++) {
-                    for (int z = -2; z <= 2; z++) {
-                        if (x == 0 && y == 0 && z == 0) continue;
-                        mPos.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
-                        if (tryCutPlants(mPos)) plantsCut++;
-                    }
-                }
-            }
-            // slow the vortex down for each plant it broke
-            double mult = Math.pow(0.85D, plantsCut);
-            setDeltaMovement(getDeltaMovement().scale(mult));
-        }
+        level.destroyBlock(pos, true);
+        setDeltaMovement(getDeltaMovement().scale(0.85D));
     }
 
     private boolean vortexBreakable(Block block) {
@@ -150,6 +124,5 @@ public class VortexEntity extends ThrowableProjectile {
 
     @Override
     protected void defineSynchedData() {
-
     }
 }
