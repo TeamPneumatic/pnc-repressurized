@@ -100,10 +100,10 @@ public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModul
 
         // the coloured frame
         float[] cols = DyeColor.byId(module.getColorChannel()).getTextureDiffuseColors();
-        shape1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
-        shape2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
-        shape3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
-        shape4.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
+        shape1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+        shape2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+        shape3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
+        shape4.render(matrixStack, builder, combinedLight, combinedOverlay, cols[0], cols[1], cols[2], alpha);
     }
 
     @Override
