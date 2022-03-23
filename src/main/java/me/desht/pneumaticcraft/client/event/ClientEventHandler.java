@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -54,12 +53,10 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.BipedRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -67,10 +64,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
@@ -78,11 +72,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Random;
-
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandler {
-//    private static final double MINIGUN_RADIUS = 1.1D;
+    //    private static final double MINIGUN_RADIUS = 1.1D;
     private static final float MINIGUN_TEXT_SIZE = 0.55f;
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
 
@@ -141,46 +133,19 @@ public class ClientEventHandler {
             PlayerEntity player = Minecraft.getInstance().player;
             if (player == null) return;
             ItemStack stack = player.getMainHandItem();
-            if (stack.getItem() instanceof ItemMinigun) {
-                renderFirstPersonMinigunTraces(event, player, stack);
-            } else if (stack.getItem() instanceof ItemJackHammer) {
-                renderJackHamerOverlay(event, player, stack);
+            if (stack.getItem() instanceof ItemJackHammer) {
+                renderJackHammerOverlay(event, player, stack);
+            } else if (stack.getItem() instanceof ItemMinigun) {
+                renderMinigunOverlay(event, player, stack);
             }
         }
     }
 
-    private static void renderJackHamerOverlay(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
-        long timedelta = player.level.getGameTime() - ItemJackHammer.getLastModeSwitchTime();
-        ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(heldStack);
-        if (digMode != null && (digMode.atLeast(ItemJackHammer.DigMode.MODE_1X2) || timedelta < 30 || player.isCrouching())) {
-            Minecraft mc = Minecraft.getInstance();
-            MatrixStack matrixStack = event.getMatrixStack();
-            int w = event.getWindow().getGuiScaledWidth();
-            int h = event.getWindow().getGuiScaledHeight();
-            mc.getTextureManager().bind(digMode.getGuiIcon());
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            RenderSystem.color4f(1f, 1f, 1f, 0.25f);
-            float scaleFactor = MathHelper.clamp((float) Minecraft.getInstance().getWindow().getGuiScale(), 2, 3);
-            matrixStack.pushPose();
-            matrixStack.translate(w / 2.0, h / 2.0, 0);
-            matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
-            matrixStack.translate(8, -8, 0);
-            AbstractGui.blit(matrixStack, 0, 0, 0, 0, 16, 16, 16, 16);
-            matrixStack.popPose();
-        }
-    }
-
-    private static void renderFirstPersonMinigunTraces(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
+    private static void renderMinigunOverlay(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack stack) {
         Minecraft mc = Minecraft.getInstance();
-        Minigun minigun = ((ItemMinigun) heldStack.getItem()).getMinigun(heldStack, player);
+        Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
         int w = event.getWindow().getGuiScaledWidth();
         int h = event.getWindow().getGuiScaledHeight();
-
-        if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-            drawBulletTraces2D(minigun.getAmmoColor() | 0x40000000, w, h);
-        }
-
         MatrixStack matrixStack = event.getMatrixStack();
         ItemStack ammo = minigun.getAmmoStack();
         if (!ammo.isEmpty()) {
@@ -205,61 +170,25 @@ public class ClientEventHandler {
         event.setCanceled(true);
     }
 
-    private static void drawBulletTraces2D(int color, int w, int h) {
-        RenderSystem.pushMatrix();
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_LINE_STIPPLE);
-
-        int x = w / 2;
-        int y = h / 2;
-
-        int[] cols = RenderUtils.decomposeColor(color);
-        Random rand = Minecraft.getInstance().level.random;
-        BufferBuilder bb = Tessellator.getInstance().getBuilder();
-        float f = Minecraft.getInstance().options.mainHand == HandSide.RIGHT ? 0.665F : 0.335F;
-        float endX = w * f;
-        float endY = h * 0.685F;
-        for (int i = 0; i < 5; i++) {
-            int stipple = 0xFFFF & ~(3 << rand.nextInt(16));
-            GL11.glLineStipple(4, (short) stipple);
-            bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-            bb.vertex(x + rand.nextInt(12) - 6, y + rand.nextInt(12) - 6, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            bb.vertex(endX, endY, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
-            Tessellator.getInstance().end();
-        }
-        GL11.glDisable(GL11.GL_LINE_STIPPLE);
-        RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
-        RenderSystem.popMatrix();
-    }
-
-    @SubscribeEvent
-    public static void renderThirdPersonMinigunTraces(RenderPlayerEvent.Post event) {
-        // render everyone else's (and ours, in 3rd person camera) minigun bullet traces
-        PlayerEntity player = event.getPlayer();
-        if (player == Minecraft.getInstance().player && Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
-
-        ItemStack curItem = player.getMainHandItem();
-        if (curItem.getItem() == ModItems.MINIGUN.get()) {
-            Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
-            if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                IVertexBuilder builder = event.getBuffers().getBuffer(RenderType.LINES);
-                // FIXME: this just doesn't place the start of the line where it should... why?
-                Vector3d startVec = new Vector3d(0, player.getEyeHeight() / 2, 0).add(player.getLookAngle());
-                Vector3d endVec = startVec.add(player.getLookAngle().scale(20));
-                int[] cols = RenderUtils.decomposeColor(minigun.getAmmoColor());
-                Matrix4f posMat = event.getMatrixStack().last().pose();
-                for (int i = 0; i < 5; i++) {
-                    RenderUtils.posF(builder, posMat, startVec.x, startVec.y, startVec.z)
-                            .color(cols[1], cols[2], cols[3], 64)
-                            .endVertex();
-                    RenderUtils.posF(builder, posMat, endVec.x + player.getRandom().nextDouble() - 0.5, endVec.y + player.getRandom().nextDouble() - 0.5, endVec.z + player.getRandom().nextDouble() - 0.5)
-                            .color(cols[1], cols[2], cols[3], 64)
-                            .endVertex();
-                }
-            }
+    private static void renderJackHammerOverlay(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
+        long timedelta = player.level.getGameTime() - ItemJackHammer.getLastModeSwitchTime();
+        ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(heldStack);
+        if (digMode != null && (digMode.atLeast(ItemJackHammer.DigMode.MODE_1X2) || timedelta < 30 || player.isCrouching())) {
+            Minecraft mc = Minecraft.getInstance();
+            MatrixStack matrixStack = event.getMatrixStack();
+            int w = event.getWindow().getGuiScaledWidth();
+            int h = event.getWindow().getGuiScaledHeight();
+            mc.getTextureManager().bind(digMode.getGuiIcon());
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            RenderSystem.color4f(1f, 1f, 1f, 0.25f);
+            float scaleFactor = MathHelper.clamp((float) Minecraft.getInstance().getWindow().getGuiScale(), 2, 3);
+            matrixStack.pushPose();
+            matrixStack.translate(w / 2.0, h / 2.0, 0);
+            matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
+            matrixStack.translate(8, -8, 0);
+            AbstractGui.blit(matrixStack, 0, 0, 0, 0, 16, 16, 16, 16);
+            matrixStack.popPose();
         }
     }
 

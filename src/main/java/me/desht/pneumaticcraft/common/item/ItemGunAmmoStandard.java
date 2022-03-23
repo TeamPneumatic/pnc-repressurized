@@ -72,7 +72,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     @Override
     @OnlyIn(Dist.CLIENT)
     public boolean isFoil(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains(NBT_POTION);
+        return super.isFoil(stack) || stack.hasTag() && stack.getTag().contains(NBT_POTION);
     }
 
     @Override
@@ -84,8 +84,6 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     @Override
     public int getAmmoColor(ItemStack ammo) {
         return 0x00FFFF00;
-//        ItemStack potion = getPotion(ammo);
-//        return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getInstance().getItemColors().getColor(potion, 0);
     }
 
     @Override

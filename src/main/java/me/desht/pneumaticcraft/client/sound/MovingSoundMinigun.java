@@ -18,18 +18,26 @@
 package me.desht.pneumaticcraft.client.sound;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModParticleTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.TickableSound;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.vector.Vector3d;
+
+import java.util.Random;
 
 public class MovingSoundMinigun extends TickableSound {
     private final Entity entity;
@@ -91,9 +99,53 @@ public class MovingSoundMinigun extends TickableSound {
                 }
             }
         }
+        if (minigun != null) {
+            playParticles(minigun);
+        }
+
         finished = minigun == null || !minigun.isMinigunActivated() || minigun.getMinigunSpeed() < Minigun.MAX_GUN_SPEED * 0.9;
         if (finished && !wasFinished) {
             ClientUtils.getClientWorld().playSound(ClientUtils.getClientPlayer(), x, y, z, ModSounds.MINIGUN_STOP.get(), SoundCategory.NEUTRAL, volume, 1f);
+            if (minigun != null) {
+                Vector3d startVec = minigun.getMuzzlePosition();
+                if (startVec != null) {
+                    ClientUtils.getClientWorld().addParticle(ParticleTypes.LARGE_SMOKE, startVec.x, startVec.y, startVec.z, 0, 0, 0);
+                }
+            }
+        }
+    }
+
+    private void playParticles(Minigun minigun) {
+        Vector3d muzzlePos = minigun.getMuzzlePosition();
+        if (muzzlePos == null) return;
+
+        Vector3d lookVec = minigun.getLookAngle();
+        Random r = ClientUtils.getClientWorld().random;
+        for (int i = 0; i < 10; i ++) {
+            Vector3d velVec = lookVec.scale(3f + i * 0.2f);
+            Particle bullet = Minecraft.getInstance().particleEngine.createParticle(ModParticleTypes.BULLET_PARTICLE.get(),
+                    muzzlePos.x + r.nextFloat() * 0.1f - 0.05f,
+                    muzzlePos.y + r.nextFloat() * 0.1f - 0.05f,
+                    muzzlePos.z + r.nextFloat() * 0.1f - 0.05f,
+                    velVec.x, velVec.y, velVec.z);
+            if (bullet != null) {
+                switch (r.nextInt(8)) {
+                    case 0:
+                        bullet.setColor(0.1f, 0.1f, 0.1f);
+                        break;
+                    case 1: case 2: case 3:
+                        bullet.setColor(1f, 0.25f + r.nextFloat() * 0.75f, 0f);
+                        break;
+                    default:
+                        float[] rgb = RenderUtils.decomposeColorF(minigun.getAmmoColor());
+                        bullet.setColor(rgb[1], rgb[2], rgb[3]);
+                        break;
+                }
+                bullet.scale(minigun.getParticleScale());
+            }
+        }
+        if (r.nextInt(10) == 0) {
+            ClientUtils.getClientWorld().addParticle(ParticleTypes.FLAME, muzzlePos.x, muzzlePos.y, muzzlePos.z, lookVec.x * 0.01f, lookVec.y * 0.01f, lookVec.z * 0.01f);
         }
     }
 

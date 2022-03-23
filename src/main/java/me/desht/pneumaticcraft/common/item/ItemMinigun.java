@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.render.RenderItemMinigun;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
@@ -51,6 +52,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -62,6 +65,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -145,9 +149,9 @@ public class ItemMinigun extends ItemPressurizable implements
             for (int i = 0; i < handler.getSlots() && pressure > 0.25f; i++) {
                 ItemStack ammo = handler.getStackInSlot(i);
                 if (ammo.getItem() instanceof ItemGunAmmo && ammo.getDamageValue() > 0) {
-                    if (world.getGameTime() % (475 - itemLife * 75L) == 0) {
+                    if (world.getGameTime() % (200 - itemLife * 35L) == 0) {
                         ammo.setDamageValue(ammo.getDamageValue() - 1);
-                        minigun.getAirCapability().ifPresent(h -> h.addAir(-(50 * itemLife)));
+                        minigun.getAirCapability().ifPresent(h -> h.addAir(-(100 * itemLife)));
                         pressure = minigun.getAirCapability().map(IAirHandler::getPressure).orElse(0f);
                         repaired = true;
                     }
@@ -403,6 +407,30 @@ public class ItemMinigun extends ItemPressurizable implements
             if (!player.level.isClientSide) {
                 NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundCategory.PLAYERS, player.blockPosition(), volume, pitch, false), player.level, player.blockPosition());
             }
+        }
+
+        @Nullable
+        @Override
+        public Vector3d getMuzzlePosition() {
+            float pitch = player.xRot * ((float) Math.PI / 180F);
+            // 13.5 degree clockwise rotation
+            float yaw = -(player.yRot + 13.5f) * ((float) Math.PI / 180F);
+            float f2 = MathHelper.cos(yaw);
+            float f3 = MathHelper.sin(yaw);
+            float f4 = MathHelper.cos(pitch);
+            float f5 = MathHelper.sin(pitch);
+            Vector3d lookVec = new Vector3d(f3 * f4, -f5, f2 * f4);
+            return player.getEyePosition(0f).add(lookVec.scale(2.2f)).subtract(0, .3, 0);
+        }
+
+        @Override
+        public Vector3d getLookAngle() {
+            return player.getLookAngle();
+        }
+
+        @Override
+        public float getParticleScale() {
+            return player.getId() == ClientUtils.getClientPlayer().getId() && ClientUtils.isFirstPersonCamera() ? 0.4f : 1f;
         }
 
         @Override

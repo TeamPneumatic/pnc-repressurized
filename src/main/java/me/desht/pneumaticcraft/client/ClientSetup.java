@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.GuiLogisticsModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiRedstoneModule;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
+import me.desht.pneumaticcraft.client.particle.BulletParticle;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.entity.*;
@@ -81,6 +82,7 @@ public class ClientSetup {
     public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
         Minecraft.getInstance().particleEngine.register(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
         Minecraft.getInstance().particleEngine.register(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
+        Minecraft.getInstance().particleEngine.register(ModParticleTypes.BULLET_PARTICLE.get(), BulletParticle.Factory::new);
     }
 
     public static void initLate() {

@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -32,16 +31,10 @@ import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -166,16 +159,6 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
      * @return the number of rounds fired
      */
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
-        if (ConfigHelper.common().minigun.blockHitParticles.get()) {
-            World w = minigun.getPlayer().level;
-            BlockState state = w.getBlockState(brtr.getBlockPos());
-            Direction face = brtr.getDirection();
-            Vector3d hitVec = brtr.getLocation();
-            IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
-            ((ServerWorld) w).sendParticles(data, hitVec.x, hitVec.y, hitVec.z, 10,
-                    face.getStepX() * 0.2, face.getStepY() * 0.2, face.getStepZ() * 0.2, 0.05);
-        }
-
         // not taking speed upgrades into account here; being kind to players who miss a lot...
         return 1;
     }

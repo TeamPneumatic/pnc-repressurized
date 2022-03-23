@@ -37,10 +37,12 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -124,6 +126,21 @@ public abstract class Minigun {
     public abstract int getAmmoColor();
 
     public abstract void playSound(SoundEvent soundName, float volume, float pitch);
+
+    /**
+     * The position from which particles originate when the gun is firing
+     * @return a vector position, may be null
+     */
+    @Nullable
+    public abstract Vector3d getMuzzlePosition();
+
+    /**
+     * A normalised look vector for the minigun
+     * @return a vector
+     */
+    public abstract Vector3d getLookAngle();
+
+    public abstract float getParticleScale();
 
     protected int getAmmoColor(@Nonnull ItemStack stack) {
         return stack.getItem() instanceof ItemGunAmmo ?

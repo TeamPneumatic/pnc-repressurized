@@ -1550,6 +1550,29 @@ public class EntityDrone extends EntityDroneBase implements
             world.playSound(null, blockPosition(), soundName, SoundCategory.NEUTRAL, volume, pitch);
         }
 
+        @Nullable
+        @Override
+        public Vector3d getMuzzlePosition() {
+            Vector3d centre = position();
+            LivingEntity target = minigun.getAttackTarget();
+            if (target == null) return null;
+            Vector3d offset = target.position()
+                    .add(0, target.getBbHeight() / 2, 0)
+                    .subtract(centre)
+                    .normalize().scale(0.6);
+            return centre.add(offset);
+        }
+
+        @Override
+        public Vector3d getLookAngle() {
+            return Vector3d.directionFromRotation(minigunPitch, minigunYaw).normalize();
+        }
+
+        @Override
+        public float getParticleScale() {
+            return 1f;
+        }
+
         @Override
         public boolean isValid() {
             return EntityDrone.this.isAlive();
