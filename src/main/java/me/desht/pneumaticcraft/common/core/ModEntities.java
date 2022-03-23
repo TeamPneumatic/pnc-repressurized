@@ -90,7 +90,7 @@ public class ModEntities {
 
     private static EntityType.Builder<EntityVortex> vortex() {
         return EntityType.Builder.of(EntityVortex::new, EntityClassification.MISC)
-                .sized(0.5f, 0.5f)
+                .sized(1.5f, 1.5f)
                 .fireImmune()
                 .setTrackingRange(4)
                 .setUpdateInterval(3)
