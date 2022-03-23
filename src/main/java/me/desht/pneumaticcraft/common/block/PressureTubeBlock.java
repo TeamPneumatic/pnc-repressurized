@@ -302,6 +302,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             if (module != null && !module.isUpgraded() && module.canUpgrade()) {
                 if (!world.isClientSide) {
                     module.upgrade();
+                    tePT.setChanged();
                     tePT.sendDescriptionPacket();
                     if (!player.isCreative()) heldStack.shrink(1);
                 }
