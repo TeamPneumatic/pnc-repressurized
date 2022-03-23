@@ -37,10 +37,6 @@ public class MinigunOverlay implements IIngameOverlay {
         ItemStack heldStack = player.getMainHandItem();
         Minigun minigun = itemMinigun.getMinigun(heldStack, player);
 
-//        if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-//            drawBulletTraces2D(player.getRandom(), minigun.getAmmoColor() | 0x40000000, width, height);
-//        }
-
         ItemStack ammo = minigun.getAmmoStack();
         if (!ammo.isEmpty()) {
             Minecraft.getInstance().getItemRenderer().renderGuiItem(ammo,width / 2 + 16, height / 2 - 7);
