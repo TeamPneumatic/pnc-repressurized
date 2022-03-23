@@ -21,7 +21,8 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.common.block.PneumaticCraftEntityBlock;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.loot.MechanicVillagerChestLoot;
+import me.desht.pneumaticcraft.common.loot.CustomDungeonLootProvider;
+import me.desht.pneumaticcraft.common.loot.MechanicVillagerChestLootProvider;
 import me.desht.pneumaticcraft.common.loot.ModLootFunctions;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
@@ -59,7 +60,8 @@ public class ModLootTablesProvider extends LootTableProvider {
     protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         return ImmutableList.of(
                 Pair.of(BlockLootTablePNC::new, LootContextParamSets.BLOCK),
-                Pair.of(MechanicVillagerChestLoot::new, LootContextParamSets.CHEST)
+                Pair.of(MechanicVillagerChestLootProvider::new, LootContextParamSets.CHEST),
+                Pair.of(CustomDungeonLootProvider::new, LootContextParamSets.CHEST)
         );
     }
 

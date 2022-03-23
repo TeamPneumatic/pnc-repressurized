@@ -23,7 +23,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 /**
  * Added to the Mechanic Villager house chest
  */
-public class MechanicVillagerChestLoot extends ChestLoot {
+public class MechanicVillagerChestLootProvider extends ChestLoot {
     @Override
     public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
         LootPool.Builder lootPool = LootPool.lootPool();
