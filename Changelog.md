@@ -6,6 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
+## 3.1.3-67 (23 Mar 2022)
+
+### Updates
+* Reworked dungeon loot system
+  * Loot is not hardcoded anymore, but instead loaded from datapack: see `data/pneumaticcraft/loot_tables/custom/{common,uncommon,rare}_dungeon_loot.json`
+  * `data/pneumaticcraft/loot_modifiers/dungeon_loot.json` still controls which loot tables those three custom loot tables are added to
+  * config setting `enable_dungeon_loot` works again as a "master switch" to completely disable adding custom loot to any pool
+
+### Fixes
+* Fixed adding a Module Expansion Card to a tube module not always marking the tube as needs-save (causing expansion card to be lost on world reload)
+* Fixed combobox widgets (e.g. Redstone Module gui) not displaying their choices correctly
+* Fixed Logistics Module rendering causing client crash
+
 ## 3.1.2-64 (21 Mar 2022)
 
 **This release requires a Forge release of 40.0.18 or later**
