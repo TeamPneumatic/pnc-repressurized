@@ -13,6 +13,19 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
+## 2.15.5-??? (unreleased)
+
+### Updates
+* Backported Minigun improvements from 1.18.2:
+  * Minigun bullets now use particles instead of ugly line drawing, for a much better appearance
+  * Item Life upgrades now have a much faster ammo repair effect (but use more air to carry out repairs)
+  * Not a new feature, but a reminder: Minigun Ammo can take the Unbreaking enchantment
+* Vortex Cannon vortices now break vegetation much more effectively
+
+### Fixes
+* Fixed Charging Station wrongly transferring upgrades between items under some circumstances
+* Fixed harmless but annoying warning message regarding "inworldplasticsolidification" on startup
+
 ## 2.15.4-312 (14th Mar 2022)
 
 ### Updates
