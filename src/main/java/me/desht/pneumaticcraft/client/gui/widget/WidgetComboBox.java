@@ -199,8 +199,8 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     }
 
     public final <T extends Enum<T>> WidgetComboBox initFromEnum(T initialValue) {
-        if (initialValue instanceof ITranslatableEnum tr) {
-            return initFromEnum(initialValue, e -> I18n.get(tr.getTranslationKey()));
+        if (initialValue instanceof ITranslatableEnum) {
+            return initFromEnum(initialValue, e -> I18n.get(((ITranslatableEnum)e).getTranslationKey()));
         } else {
             throw new IllegalArgumentException(initialValue + " must implement ITranslatableEnum!");
         }
