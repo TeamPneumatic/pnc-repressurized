@@ -64,7 +64,7 @@ public class AirGrateModule extends AbstractTubeModule {
     private boolean vacuum;
     private final Set<HeatSinkBlockEntity> heatSinks = new HashSet<>();
     private boolean showRange;
-    private EntityFilter entityFilter = null;
+    private EntityFilter entityFilter = EntityFilter.allow();
     private final Map<BlockPos,Boolean> traceabilityCache = new HashMap<>();
 
     private LazyOptional<IItemHandler> itemInsertionCap = null; // null = "unknown", LazyOptional.empty() = "known absent"
@@ -157,7 +157,7 @@ public class AirGrateModule extends AbstractTubeModule {
             if (d5 > 0.0D) {
                 d5 *= d5;
                 if (vacuum) d5 *= -1;
-                if (entity.isOnGround()) entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.25, 0));
+                if (entity.isOnGround() && entity instanceof ItemEntity) entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.25, 0));
                 entity.move(MoverType.SELF, new Vec3(x * d5, y * d5, z * d5));
                 entitiesMoved++;
                 if (world.isClientSide && world.random.nextDouble() < 0.2) {
@@ -297,7 +297,7 @@ public class AirGrateModule extends AbstractTubeModule {
         vacuum = tag.getBoolean("vacuum");
         grateRange = tag.getInt("grateRange");
         String f = tag.getString("entityFilter");
-        entityFilter = f.isEmpty() ? null : EntityFilter.fromString(f);
+        entityFilter = f.isEmpty() ? EntityFilter.allow() : EntityFilter.fromString(f);
     }
 
     @Override
@@ -305,7 +305,9 @@ public class AirGrateModule extends AbstractTubeModule {
         super.writeToNBT(tag);
         tag.putBoolean("vacuum", vacuum);
         tag.putInt("grateRange", grateRange);
-        tag.putString("entityFilter", entityFilter == null ? "" : entityFilter.toString());
+        if (entityFilter != EntityFilter.allow()) {
+            tag.putString("entityFilter", entityFilter.toString());
+        }
         return tag;
     }
 
@@ -317,7 +319,7 @@ public class AirGrateModule extends AbstractTubeModule {
         if (grateRange != 0) {
             curInfo.add(xlate("pneumaticcraft.message.misc.range", grateRange).withStyle(ChatFormatting.WHITE));
         }
-        if (entityFilter != null) {
+        if (entityFilter != EntityFilter.allow()) {
             curInfo.add(xlate("pneumaticcraft.gui.entityFilter.show", entityFilter.toString()).withStyle(ChatFormatting.WHITE));
         }
     }
@@ -333,7 +335,7 @@ public class AirGrateModule extends AbstractTubeModule {
     }
 
     public String getEntityFilterString() {
-        return entityFilter == null ? "" : entityFilter.toString();
+        return entityFilter == EntityFilter.allow() ? "" : entityFilter.toString();
     }
 
     public void setEntityFilter(String filter) {
