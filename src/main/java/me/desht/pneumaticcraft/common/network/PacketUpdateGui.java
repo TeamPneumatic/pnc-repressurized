@@ -17,12 +17,9 @@
 
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -57,17 +54,8 @@ public class PacketUpdateGui {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            if (Minecraft.getInstance().screen instanceof AbstractContainerScreen) {
-                AbstractContainerMenu container = ((AbstractContainerScreen<?>) Minecraft.getInstance().screen).getMenu();
-                if (container instanceof AbstractPneumaticCraftMenu) {
-                    ((AbstractPneumaticCraftMenu<?>) container).updateField(syncId, value);
-                }
-                if (Minecraft.getInstance().screen instanceof AbstractPneumaticCraftContainerScreen) {
-                    ((AbstractPneumaticCraftContainerScreen<?,?>) Minecraft.getInstance().screen).onGuiUpdate();
-                }
-            }
-        });
+        ctx.get().enqueueWork(() -> ClientUtils.syncViaOpenContainerScreen(syncId, value));
         ctx.get().setPacketHandled(true);
     }
+
 }

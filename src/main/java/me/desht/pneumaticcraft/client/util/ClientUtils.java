@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.client.gui.programmer.AbstractProgWidgetScreen;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
@@ -63,6 +64,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Miscellaneous client-side utilities.  Used to wrap client-only code in methods safe to call from classes that could
@@ -140,6 +142,10 @@ public class ClientUtils {
     @Nonnull
     public static Level getClientLevel() {
         return Objects.requireNonNull(Minecraft.getInstance().level);
+    }
+
+    public static Optional<Level> getOptionalClientLevel() {
+        return Optional.ofNullable(Minecraft.getInstance().level);
     }
 
     @Nonnull
@@ -321,6 +327,23 @@ public class ClientUtils {
             return 1f;
         } else {
             return (float) (dist / 10);
+        }
+    }
+
+    /**
+     * Called from PacketUpdateGui to sync data from the server-side block entity via open container
+     * @param syncId index of the block entity field to be sync'd
+     * @param value value to sync
+     */
+    public static void syncViaOpenContainerScreen(int syncId, Object value) {
+        if (Minecraft.getInstance().screen instanceof AbstractContainerScreen screen) {
+            AbstractContainerMenu container = screen.getMenu();
+            if (container instanceof AbstractPneumaticCraftMenu pncMenu) {
+                pncMenu.updateField(syncId, value);
+            }
+            if (screen instanceof AbstractPneumaticCraftContainerScreen pncScreen) {
+                pncScreen.onGuiUpdate();
+            }
         }
     }
 }

@@ -17,9 +17,9 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Registry;
@@ -67,15 +67,12 @@ public class PacketUtil {
     public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, BlockPos pos, Class<T> cls) {
         if (player == null) {
             // client-side: we trust the blockpos the server sends
-            Level w = Minecraft.getInstance().level;
-            if (w != null) {
-                return PneumaticCraftUtils.getTileEntityAt(w, pos, cls);
-            }
+            return ClientUtils.getOptionalClientLevel().flatMap(level -> PneumaticCraftUtils.getTileEntityAt(level, pos, cls));
         } else {
             // server-side: don't trust the blockpos the client sent us
             // instead get the BE from the player's open container
-            if (player.containerMenu instanceof AbstractPneumaticCraftMenu) {
-                BlockEntity te = ((AbstractPneumaticCraftMenu<?>) player.containerMenu).te;
+            if (player.containerMenu instanceof AbstractPneumaticCraftMenu pncMenu) {
+                BlockEntity te = pncMenu.te;
                 if (te != null && cls.isAssignableFrom(te.getClass()) && (pos == null || te.getBlockPos().equals(pos))) {
                     //noinspection unchecked
                     return Optional.of((T) te);
