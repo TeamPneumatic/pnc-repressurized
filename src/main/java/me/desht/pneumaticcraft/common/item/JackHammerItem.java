@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
@@ -577,11 +576,13 @@ public class JackHammerItem extends PressurizableItem
         public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
             Player player = event.getPlayer();
             ItemStack stack = player.getItemInHand(event.getHand());
-            if (stack.getItem() == ModItems.JACKHAMMER.get() && ((IPressurizableItem) stack.getItem()).getAir(stack) > 0f) {
+            if (stack.getItem() instanceof JackHammerItem jackHammer && jackHammer.getAir(stack) > 0f) {
                 if (event.getWorld().isClientSide) {
+                    // play the sound to this player
                     MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getPlayer());
                 } else {
-                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, MovingSoundFocus.of(player)), player.level, player.blockPosition());
+                    // play the sound to any other players tracking this player
+                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, MovingSoundFocus.of(player)), player);
                 }
             }
         }

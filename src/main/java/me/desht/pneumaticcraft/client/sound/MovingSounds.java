@@ -57,41 +57,41 @@ public class MovingSounds {
 
         switch (s) {
             case JET_BOOTS:
-                if (focus instanceof Player) {
-                    return new MovingSoundJetBoots((Player) focus);
+                if (focus instanceof Player player) {
+                    return new MovingSoundJetBoots(player);
                 }
                 break;
             case MINIGUN:
                 if (focus instanceof Player || focus instanceof DroneEntity) {
                     return new MovingSoundMinigun((Entity) focus);
-                } else if (focus instanceof BlockPos) {
-                    BlockEntity te = world.getBlockEntity((BlockPos) focus);
+                } else if (focus instanceof BlockPos pos) {
+                    BlockEntity te = world.getBlockEntity(pos);
                     return te == null ? null : new MovingSoundMinigun(te);
                 }
                 break;
             case ELEVATOR:
-                if (focus instanceof BlockPos) {
-                    BlockEntity te = world.getBlockEntity((BlockPos) focus);
+                if (focus instanceof BlockPos pos) {
+                    BlockEntity te = world.getBlockEntity(pos);
                     return te instanceof ElevatorBaseBlockEntity ? new MovingSoundElevator((ElevatorBaseBlockEntity) te) : null;
                 }
                 break;
             case AIR_LEAK:
-                if (focus instanceof BlockPos) {
-                    AbstractTickableSoundInstance sound = posToTickableSound.get(focus);
+                if (focus instanceof BlockPos pos) {
+                    AbstractTickableSoundInstance sound = posToTickableSound.get(pos);
                     if (sound != null && !sound.isStopped()) {
                         return null;  // a sound is still playing; don't start another one
                     }
-                    BlockEntity te = world.getBlockEntity((BlockPos) focus);
+                    BlockEntity te = world.getBlockEntity(pos);
                     if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
                         sound = new MovingSoundAirLeak(te, (Direction) extraData[0]);
-                        posToTickableSound.put((BlockPos) focus, sound);
+                        posToTickableSound.put(pos, sound);
                         return sound;
                     }
                 }
                 break;
             case JACKHAMMER:
-                if (focus instanceof Player) {
-                    return MovingSoundJackhammer.startOrContinue((Player) focus);
+                if (focus instanceof Player player) {
+                    return MovingSoundJackhammer.startOrContinue(player);
                 }
         }
         throw new IllegalArgumentException("Invalid moving sound " + s + " for focus object " + focus);
