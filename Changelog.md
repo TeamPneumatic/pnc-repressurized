@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
-## 3.1.3-67 (23 Mar 2022)
+## 3.1.3-67 (25 Mar 2022)
 
 ### Updates
 * Reworked dungeon loot system
