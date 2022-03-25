@@ -15,6 +15,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * config setting `enable_dungeon_loot` works again as a "master switch" to completely disable adding custom loot to any pool
 
 ### Fixes
+* Fixed Air Grate causing server NPE
 * Fixed adding a Module Expansion Card to a tube module not always marking the tube as needs-save (causing expansion card to be lost on world reload)
 * Fixed combobox widgets (e.g. Redstone Module gui) not displaying their choices correctly
 * Fixed Logistics Module rendering causing client crash
