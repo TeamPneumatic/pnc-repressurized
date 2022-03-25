@@ -204,7 +204,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         }
 
         // now scan all refineries and ensure each one has the correct output, according to the current recipe
-        for (int i = 0; i < outputCount; i++) {
+        for (int i = 0; i < outputCount && i < currentRecipe.getOutputs().size(); i++) {
             final FluidStack wantedFluid = currentRecipe.getOutputs().get(i);
             outputCache.get(i).ifPresent(outputHandler -> {
                 FluidStack fluid = outputHandler.getFluidInTank(0);
