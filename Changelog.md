@@ -13,7 +13,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
-## 2.15.5-??? (unreleased)
+## 2.15.5-313 (25 Mar 2022)
 
 ### Updates
 * Backported Minigun improvements from 1.18.2:
@@ -25,8 +25,9 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Fixes
 * Fixed Charging Station wrongly transferring upgrades between items under some circumstances
 * Fixed harmless but annoying warning message regarding "inworldplasticsolidification" on startup
+* Fixed server crash if Refinery multiblock has new outputs added to it while it has an active recipe that has fewer outputs than there are Refinery Output blocks
 
-## 2.15.4-312 (14th Mar 2022)
+## 2.15.4-312 (14 Mar 2022)
 
 ### Updates
 * Drone debugging now works for External Program widgets; the visible debugged widgets will update as the Drone enters/leaves sub-programs
@@ -44,7 +45,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * Not one I could reproduce myself, but extra defensive coding has been added to ensure a crash is impossible in these circumstances
   * NOTE: this does require an API break in the `HeatBehaviour` API class; generics are no longer used or required here
 
-## 2.15.3-208 (28th Feb 2022)
+## 2.15.3-208 (28 Feb 2022)
 
 ### Updates
 * Bandages can be now configured in pneumaticcraft-common.toml
@@ -66,7 +67,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed the PneumaticCraft villager house not generating in Desert & Snowy villages
   * Also, houses now generate using Compressed bricks, not Reinforced (so look more like pre-2.15.0 houses) - already-generated houses aren't changed, though
 
-## 2.15.2-303 (4th Feb 2022)
+## 2.15.2-303 (4Feb 2022)
 
 ### Updates
 * Amadrone spawn-in location is now adjustable in config (`pneumaticcraft-common.toml`)
@@ -89,7 +90,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Hopefully fix a CME causing player kicks when drones are deployed under certain circumstances (possibly related to carried equipment?)
   * I could not reproduce this one myself, so hard to know for sure if it's fixed, but some extra-defensive coding has been added
 
-## 2.15.1-297 (19th Jan 2022)
+## 2.15.1-297 (19Jan 2022)
 
 ### Updates
 * Patchouli is now a mandatory dependency!
@@ -112,7 +113,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * Creative-upgraded hoppers also got a visual makeover, thanks Rid
 * Fixed missing place-sound effect when any blocks are placed against Pressure Chamber walls
 
-## 2.15.0-289 (10th Jan 2022)
+## 2.15.0-289 (10Jan 2022)
 
 ### New
 * A complete retexture of the entire mod, courtesy of Ridanisaurus
@@ -136,7 +137,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed a server-side crash related to invalid villager trades
   * Seems like some mod is possibly adding trades with empty cost or result?  in any case, PNC:R now ignores these for Amadron purposes
 
-## 2.14.6-277 (24th Nov 2021)
+## 2.14.6-277 (24Nov 2021)
 
 ### Fixes
 * Fixed Aerial Interface allowing Charging Module to charge items through it when its pressure is under 10bar
@@ -160,7 +161,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * All Java source files now include license headers (GPLv3 for the main mod, LGPLv3 for the API)
 * Included a copy of COPYING.LESSER (LGPLv3 licence) in the source distribution
 
-## 2.14.5-272 (10th Nov 2021)
+## 2.14.5-272 (10Nov 2021)
 
 ### Updates
 * The Amadron Tablet can now accept Volume Upgrades (place it in a Charging Station to upgrade)
@@ -178,7 +179,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed NPE related to flowing fluids coming into contact with Heat Sinks or other heat-handling blocks
 * Fixed Charging Station continuing to emit redstone in "Item Inserted and Idle" mode, if an item is later removed from the station
 
-## 2.14.4-258 (24th Sep 2021)
+## 2.14.4-258 (24Sep 2021)
 
 ### Fixes
 
