@@ -201,7 +201,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         }
 
         prevOutputCount = outputCount;
-        maybeUpdateComparatorValue(outputCount, hasWork);
+        maybeUpdateComparatorValue(hasWork);
     }
 
     /**
@@ -346,12 +346,12 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         rsController.parseRedstoneMode(tag);
     }
 
-    private void maybeUpdateComparatorValue(int outputCount, boolean hasWork) {
+    private void maybeUpdateComparatorValue(boolean hasWork) {
         int newValue;
-        if (inputTank.getFluidAmount() < 10 || outputCount < 2 || currentRecipe == null || outputCount > currentRecipe.getOutputs().size()) {
-            newValue = 0;
+        if (hasWork && currentRecipe != null && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount() && outputCount >= currentRecipe.getOutputs().size()) {
+            newValue = 15;
         } else {
-            newValue = hasWork ? 15 : 0;
+            newValue = 0;
         }
         if (newValue != comparatorValue) {
             // update comparator output for the controller AND all known outputs
