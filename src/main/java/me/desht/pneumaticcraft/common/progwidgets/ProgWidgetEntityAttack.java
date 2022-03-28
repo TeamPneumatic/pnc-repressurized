@@ -46,6 +46,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     private EntityFilterPair<ProgWidgetEntityAttack> entityFilters;
     private int maxActions;
     private boolean useMaxActions;
+    private boolean checkSight;
 
     public ProgWidgetEntityAttack() {
         super(ModProgWidgets.ENTITY_ATTACK.get());
@@ -72,7 +73,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAINearestAttackableTarget((DroneEntity) drone, false, (ProgWidget) widget);
+        return new DroneAINearestAttackableTarget((DroneEntity) drone, checkSight, (ProgWidget) widget);
     }
 
     @Override
@@ -157,10 +158,19 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         return useMaxActions;
     }
 
+    public void setCheckSight(boolean checkSight) {
+        this.checkSight = checkSight;
+    }
+
+    public boolean isCheckSight() {
+        return checkSight;
+    }
+
     @Override
     public void writeToNBT(CompoundTag tag) {
         super.writeToNBT(tag);
         if (useMaxActions) tag.putBoolean("useMaxActions", true);
+        if (checkSight) tag.putBoolean("checkSight", true);
         tag.putInt("maxActions", maxActions);
     }
 
@@ -168,6 +178,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
         useMaxActions = tag.getBoolean("useMaxActions");
+        checkSight = tag.getBoolean("checkSight");
         maxActions = tag.getInt("maxActions");
     }
 
@@ -176,6 +187,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         super.writeToPacket(buf);
         buf.writeBoolean(useMaxActions);
         buf.writeVarInt(maxActions);
+        buf.writeBoolean(checkSight);
     }
 
     @Override
@@ -183,5 +195,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
         super.readFromPacket(buf);
         useMaxActions = buf.readBoolean();
         maxActions = buf.readVarInt();
+        checkSight = buf.readBoolean();
     }
+
 }

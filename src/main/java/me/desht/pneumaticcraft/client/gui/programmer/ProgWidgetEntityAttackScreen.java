@@ -50,6 +50,12 @@ public class ProgWidgetEntityAttackScreen extends ProgWidgetAreaShowScreen<ProgW
         textField.setValue(progWidget.getMaxActions());
         textField.setVisible(useMaxActions.checked);
         addRenderableWidget(textField);
+
+        WidgetCheckBox checkSight = new WidgetCheckBox(guiLeft + 8, textField.y + textField.getHeight() + 12, 0xFF404040,
+                xlate("pneumaticcraft.gui.progWidget.entityAttack.checkSight"), b -> progWidget.setCheckSight(b.checked))
+                .setTooltipKey("pneumaticcraft.gui.progWidget.entityAttack.checkSight.tooltip")
+                .setChecked(progWidget.isCheckSight());
+        addRenderableWidget(checkSight);
     }
 
     @Override

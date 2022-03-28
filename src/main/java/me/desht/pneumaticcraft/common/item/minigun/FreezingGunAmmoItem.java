@@ -27,7 +27,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.ClipContext;
@@ -40,12 +39,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 
-import java.util.UUID;
-
 public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
-    private static final UUID KNOCKBACK_UUID = UUID.fromString("49b2f9a8-228d-4be5-96ce-6f9ce2877145");
-    private static final AttributeModifier KNOCKBACK = new AttributeModifier(KNOCKBACK_UUID, "Temp. Knockback Resist",1.0, AttributeModifier.Operation.ADDITION);
-
     @Override
     public int getMaxDamage(ItemStack stack) {
         return ConfigHelper.common().minigun.freezingAmmoCartridgeSize.get();

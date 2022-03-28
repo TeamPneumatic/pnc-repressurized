@@ -33,42 +33,31 @@ import java.util.List;
 public class DroneAINearestAttackableTarget extends TargetGoal {
     private final DroneEntity drone;
     private final ProgWidget widget;
-
-    /**
-     * Instance of EntityAINearestAttackableTargetSorter.
-     */
     private final DistanceSorter distanceSorter;
 
     private LivingEntity targetEntity;
 
-    public DroneAINearestAttackableTarget(DroneEntity drone, boolean checkSight, ProgWidget widget) {
-        this(drone, checkSight, false, widget);
-    }
-
-    public DroneAINearestAttackableTarget(DroneEntity drone, boolean checkSight, boolean easyTargetsOnly,
-                                          ProgWidget widget) {
-        super(drone, checkSight, easyTargetsOnly);
+    public DroneAINearestAttackableTarget(DroneEntity drone, boolean mustSee, ProgWidget widget) {
+        super(drone, mustSee, false);
         this.drone = drone;
         this.widget = widget;
-        distanceSorter = new DistanceSorter(drone);
+        this.distanceSorter = new DistanceSorter(drone);
         setFlags(EnumSet.of(Flag.TARGET));
     }
 
-    /**
-     * Returns whether the EntityAIBase should begin execution.
-     */
     @Override
     public boolean canUse() {
         if (drone.hasMinigun() && drone.getSlotForAmmo() < 0) {
             return false;
         }
-        if (widget instanceof IMaxActions m) {
-            if (m.useMaxActions() && drone.getAttackCount() >= m.getMaxActions()) {
-                return false;
-            }
+        if (widget instanceof IMaxActions m && m.useMaxActions() && drone.getAttackCount() >= m.getMaxActions()) {
+            return false;
+        }
+        if (!(widget instanceof IEntityProvider provider)) {
+            return false;
         }
 
-        List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.level);
+        List<Entity> list = provider.getValidEntities(drone.level);
         list.sort(distanceSorter);
         for (Entity entity : list) {
             if (entity.isAlive() && entity != mob && entity instanceof LivingEntity && !shouldIgnore(entity)) {
@@ -80,25 +69,18 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
     }
 
     private boolean shouldIgnore(Entity entity) {
-        return entity.isSpectator() || entity instanceof Player && ((Player) entity).isCreative();
+        return entity.isSpectator()
+                || entity instanceof Player && ((Player) entity).isCreative()
+                || mustSee && !mob.getSensing().hasLineOfSight(entity);
     }
 
-    /**
-     * Execute a one shot task or start executing a continuous task
-     */
     @Override
     public void start() {
         mob.setTarget(targetEntity);
         super.start();
     }
 
-    public static class DistanceSorter implements Comparator<Entity> {
-        private final Entity entity;
-
-        DistanceSorter(Entity entityIn) {
-            this.entity = entityIn;
-        }
-
+    private record DistanceSorter(Entity entity) implements Comparator<Entity> {
         @Override
         public int compare(Entity e1, Entity e2) {
             return Double.compare(entity.distanceToSqr(e1), entity.distanceToSqr(e2));
