@@ -417,6 +417,17 @@ public class PneumaticArmorItem extends ArmorItem implements
         return false;
     }
 
+    @Override
+    public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
+        if (stack.getItem() instanceof PneumaticArmorItem && wearer instanceof Player player) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+            if (handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.FLIPPERS.get()) > 0) {
+                return true;
+            }
+        }
+        return super.canWalkOnPowderedSnow(stack, wearer);
+    }
+
     /**
      * Get the overlay colour
      * @param stack the armor piece
