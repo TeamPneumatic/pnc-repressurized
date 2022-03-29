@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.ProgWidgetCC;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundTag;
@@ -52,7 +53,12 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        evaluator = getEvaluator(drone, widget);
+        // when running under computer control, it appears to be important to keep the same evaluator
+        //  and the reverse is true when not running under computer control (i.e. normal drone program)
+        // TODO needs more investigation
+        // https://github.com/TeamPneumatic/pnc-repressurized/issues/984
+        if (evaluator == null || !(widget instanceof ProgWidgetCC)) evaluator = getEvaluator(drone, widget);
+
         return evaluator;
     }
 
