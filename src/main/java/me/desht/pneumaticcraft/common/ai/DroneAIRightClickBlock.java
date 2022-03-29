@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
+import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -204,7 +204,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         BlockState state = world.getBlockState(pos);
         List<AxisAlignedBB> l = state.getShape(world, pos).toAabbs();
         Vector3d targetVec = l.isEmpty() ? Vector3d.atCenterOf(pos) : l.get(0).getCenter().add(Vector3d.atLowerCornerOf(pos));
-        Direction side = ((ProgWidgetBlockRightClick) progWidget).getClickSide();
+        Direction side = ISidedWidget.getDirForSides(((ISidedWidget) progWidget).getSides());
         Vector3d saved = new Vector3d(fakePlayer.getX(), fakePlayer.getY(), fakePlayer.getZ());
         Vector3d posVec = targetVec.add(side.getStepX(), side.getStepY(), side.getStepZ());
         fakePlayer.setPos(posVec.x, posVec.y, posVec.z);

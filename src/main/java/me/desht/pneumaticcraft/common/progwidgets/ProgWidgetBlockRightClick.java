@@ -116,16 +116,16 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(sneaking);
-        buf.writeByte(clickSide.get3DDataValue());
-        buf.writeByte(clickType.ordinal());
+        buf.writeEnum(clickSide);
+        buf.writeEnum(clickType);
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
         sneaking = buf.readBoolean();
-        clickSide = Direction.from3DDataValue(buf.readByte());
-        clickType = RightClickType.values()[buf.readByte()];
+        clickSide = buf.readEnum(Direction.class);
+        clickType = buf.readEnum(RightClickType.class);
     }
 
     @Override
