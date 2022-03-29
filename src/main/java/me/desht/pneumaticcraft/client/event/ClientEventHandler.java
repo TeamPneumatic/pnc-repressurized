@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.client.event;
 
+import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -111,11 +112,14 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
+    public static void fogDensityEvent(EntityViewRenderEvent.RenderFogEvent event) {
         if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().getEntity() instanceof Player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.upgradeUsable(CommonUpgradeHandlers.scubaHandler, true)) {
-                event.setDensity(350f);
+                event.setNearPlaneDistance(20f);
+                event.setNearPlaneDistance(50f);
+                event.setFogShape(FogShape.SPHERE);
+//                event.setDensity(350f);
                 event.setCanceled(true);
             }
         }
