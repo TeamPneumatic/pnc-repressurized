@@ -6,6 +6,22 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
+## 3.1.4-68 (30 Mar 2022)
+
+**This version requires a Forge release of 40.0.32 or later**
+
+### Updates
+* Added a "check sight" checkbox to the Entity Attack programming widget
+  * If checked, drones won't attack entities they can't directly see
+* Pneumatic Boots with the Flippers upgrade now allow walking on Powder Snow in the same way Leather Boots do
+
+### Fixes
+* Fixed Security Station allowing invalid items to be piped in, causing a crash
+* Fixed Refinery has-work output not working for some custom recipes
+* Two computer control (CC:Tweaked) fixes:
+  * Fixed crash when using setSides() Lua call in conjunction with setAction("block_right_click")
+  * Fixed condition actions, e.g. setAction("condition_redstone"), always return false when evaluated in a Lua program
+  
 ## 3.1.3-67 (25 Mar 2022)
 
 ### Updates
