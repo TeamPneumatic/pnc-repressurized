@@ -86,6 +86,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
@@ -520,7 +521,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         for (int i = 0; i < INVENTORY_SIZE; i++) {
             if (!inventory.getStackInSlot(i).isEmpty()) {
                 NetworkComponentType type = ItemNetworkComponent.getType(inventory.getStackInSlot(i));
-                assert type != null;
+                if (type == null) continue;
                 switch (type) {
                     case DIAGNOSTIC_SUBROUTINE:
                         if (subroutineSlot != -1)
@@ -643,6 +644,14 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private class SecurityStationHandler extends BaseItemStackHandler {
         private SecurityStationHandler() {
             super(TileEntitySecurityStation.this, INVENTORY_SIZE);
+        }
+
+        @Override
+        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+            NetworkComponentType type = ItemNetworkComponent.getType(stack);
+            return type == NetworkComponentType.DIAGNOSTIC_SUBROUTINE
+                    || type == NetworkComponentType.NETWORK_IO_PORT
+                    || type == NetworkComponentType.NETWORK_REGISTRY;
         }
 
         @Override
