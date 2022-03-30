@@ -81,6 +81,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -515,7 +516,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         for (int i = 0; i < INVENTORY_SIZE; i++) {
             if (!inventory.getStackInSlot(i).isEmpty()) {
                 NetworkComponentType type = NetworkComponentItem.getType(inventory.getStackInSlot(i));
-                assert type != null;
+                if (type == null) continue; // shouldn't happen but let's be careful
                 switch (type) {
                     case DIAGNOSTIC_SUBROUTINE -> {
                         if (subroutineSlot != -1)
@@ -641,8 +642,17 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         }
 
         @Override
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            NetworkComponentType type = NetworkComponentItem.getType(stack);
+            return type == NetworkComponentType.DIAGNOSTIC_SUBROUTINE
+                    || type == NetworkComponentType.NETWORK_IO_PORT
+                    || type == NetworkComponentType.NETWORK_REGISTRY;
+        }
+
+        @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
+
             checkForNetworkValidity();
         }
     }
