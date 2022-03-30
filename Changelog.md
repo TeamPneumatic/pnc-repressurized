@@ -13,6 +13,15 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
+## 2.15.6-315 (30 Mar 2022)
+
+### Fixes
+* Fixed Security Station allowing invalid items to be piped in, causing a crash
+* Fixed Refinery has-work output not working for some custom recipes
+* Two computer control (CC:Tweaked) fixes:
+  * Fixed crash when using setSides() Lua call in conjunction with setAction("block_right_click")
+  * Fixed condition actions, e.g. setAction("condition_redstone"), always return false when evaluated in a Lua program
+
 ## 2.15.5-313 (25 Mar 2022)
 
 ### Updates
