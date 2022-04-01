@@ -38,6 +38,10 @@ public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
         }
     }
 
+    public boolean isEmpty() {
+        return reslocs.isEmpty() && namespaces.isEmpty();
+    }
+
     @Override
     public boolean test(ResourceLocation resourceLocation) {
         return reslocs.contains(resourceLocation) || namespaces.contains(resourceLocation.getNamespace());

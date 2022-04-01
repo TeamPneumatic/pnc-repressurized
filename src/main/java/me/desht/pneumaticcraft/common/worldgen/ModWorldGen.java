@@ -41,22 +41,30 @@ import net.minecraft.world.level.levelgen.heightproviders.UniformHeight;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 
-public class ModWorldGen {
-    public static Holder<PlacedFeature> OIL_LAKE_SURFACE;
-    public static Holder<PlacedFeature> OIL_LAKE_UNDERGROUND;
+import java.util.List;
 
-    static WildcardedRLMatcher dimensionMatcher = null;
-    static WildcardedRLMatcher biomeMatcher = null;
+public class ModWorldGen {
+    private static Holder<PlacedFeature> OIL_LAKE_SURFACE;
+    private static Holder<PlacedFeature> OIL_LAKE_UNDERGROUND;
+
+    private static WildcardedRLMatcher dimensionMatcherB = null;
+    private static WildcardedRLMatcher dimensionMatcherW = null;
+    private static WildcardedRLMatcher biomeMatcherB = null;
+    private static WildcardedRLMatcher biomeMatcherW = null;
 
     /**
      * Called from FMLCommonSetupEvent
      */
     public static void registerConfiguredFeatures() {
+        // why is LakeFeature deprecated by vanilla?
+
+        //noinspection deprecation
         LakeFeature.Configuration oilLakeConfig = new LakeFeature.Configuration(
                 BlockStateProvider.simple(ModBlocks.OIL.get().defaultBlockState()),
                 BlockStateProvider.simple(Blocks.AIR)
         );
 
+        //noinspection deprecation
         Holder<ConfiguredFeature<LakeFeature.Configuration,?>> oilLake
                 = FeatureUtils.register(Names.MOD_ID + ":lake_oil_underground", ModFeatures.OIL_LAKE.get(), oilLakeConfig);
 
@@ -81,28 +89,46 @@ public class ModWorldGen {
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {
-        if (!isBiomeBlacklisted(event.getName()) && !ConfigHelper.common().worldgen.oilWorldGenCategoryBlacklist.get().contains(event.getCategory().getName())) {
+        List<String> whitelist = ConfigHelper.common().worldgen.oilWorldGenCategoryWhitelist.get();
+        List<String> blacklist = ConfigHelper.common().worldgen.oilWorldGenCategoryBlacklist.get();
+
+        boolean generate = !whitelist.isEmpty() ?
+                isBiomeOK(event.getName()) && whitelist.contains(event.getCategory().getName()) :
+                isBiomeOK(event.getName()) && !blacklist.contains(event.getCategory().getName());
+
+        if (generate) {
             event.getGeneration().addFeature(GenerationStep.Decoration.LAKES, OIL_LAKE_SURFACE);
             event.getGeneration().addFeature(GenerationStep.Decoration.LAKES, OIL_LAKE_UNDERGROUND);
         }
     }
 
     public static void clearBlacklistCache() {
-        dimensionMatcher = null;
-        biomeMatcher = null;
+        dimensionMatcherB = null;
+        dimensionMatcherW = null;
+        biomeMatcherB = null;
+        biomeMatcherW = null;
     }
 
-    static boolean isBiomeBlacklisted(ResourceLocation biomeName) {
-        if (biomeMatcher == null) {
-            biomeMatcher = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenBlacklist.get());
+    static boolean isBiomeOK(ResourceLocation biomeName) {
+        if (biomeMatcherB == null) {
+            biomeMatcherB = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenBlacklist.get());
         }
-        return biomeMatcher.test(biomeName);
+        if (biomeMatcherW == null) {
+            biomeMatcherW = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenWhitelist.get());
+        }
+        // non-empty whitelist match OR no blacklist match
+        return biomeMatcherW.isEmpty() ? !biomeMatcherB.test(biomeName) : biomeMatcherW.test(biomeName);
     }
 
-    static boolean isDimensionBlacklisted(WorldGenLevel level) {
-        if (dimensionMatcher == null) {
-            dimensionMatcher = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenDimensionBlacklist.get());
+    static boolean isDimensionOK(WorldGenLevel level) {
+        if (dimensionMatcherB == null) {
+            dimensionMatcherB = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenDimensionBlacklist.get());
         }
-        return dimensionMatcher.test(level.getLevel().dimension().getRegistryName());
+        if (dimensionMatcherW == null) {
+            dimensionMatcherW = new WildcardedRLMatcher(ConfigHelper.common().worldgen.oilWorldGenDimensionWhitelist.get());
+        }
+        // non-empty whitelist match OR no blacklist match
+        ResourceLocation name = level.getLevel().dimension().location();
+        return dimensionMatcherW.isEmpty() ? !dimensionMatcherB.test(name) : dimensionMatcherW.test(name);
     }
 }
