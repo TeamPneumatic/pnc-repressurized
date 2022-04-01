@@ -122,6 +122,8 @@ public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGa
 
     @Override
     public void renderExtras(PressureGaugeModule module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
+        if (module.isFake()) return;
+
         BlockPos pos = module.getTube().getBlockPos();
         if (ClientUtils.getClientPlayer().distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
 

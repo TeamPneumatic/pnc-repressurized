@@ -18,9 +18,11 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionResult;
@@ -35,20 +37,21 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class TubeModuleItem extends Item {
-    private final Function<TubeModuleItem, AbstractTubeModule> moduleFactory;
+    private final BiFunction<Direction, PressureTubeBlockEntity, AbstractTubeModule> moduleFactory;
 
-    public TubeModuleItem(Function<TubeModuleItem, AbstractTubeModule> moduleFactory) {
+    public TubeModuleItem(BiFunction<Direction, PressureTubeBlockEntity, AbstractTubeModule> moduleFactory) {
         super(ModItems.defaultProps());
         this.moduleFactory = moduleFactory;
     }
 
     @Nonnull
-    public AbstractTubeModule createModule() {
-        return moduleFactory.apply(this);
+    public AbstractTubeModule createModule(Direction dir, @Nullable PressureTubeBlockEntity blockEntity) {
+        return moduleFactory.apply(dir, blockEntity);
     }
 
     @Override
@@ -56,7 +59,7 @@ public class TubeModuleItem extends Item {
     public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
 
-        AbstractTubeModule module = createModule();
+        AbstractTubeModule module = createModule(Direction.UP,null);
         tooltip.add(new TextComponent("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(ChatFormatting.DARK_AQUA));
     }
 

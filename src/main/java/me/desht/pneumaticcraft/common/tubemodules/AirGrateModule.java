@@ -20,9 +20,10 @@ package me.desht.pneumaticcraft.common.tubemodules;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.block.entity.HeatSinkBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.RangeManager;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
@@ -40,6 +41,7 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -55,6 +57,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -64,19 +67,25 @@ public class AirGrateModule extends AbstractTubeModule {
     private boolean vacuum;
     private final Set<HeatSinkBlockEntity> heatSinks = new HashSet<>();
     private boolean showRange;
+    @Nonnull
     private EntityFilter entityFilter = EntityFilter.allow();
     private final Map<BlockPos,Boolean> traceabilityCache = new HashMap<>();
 
     private LazyOptional<IItemHandler> itemInsertionCap = null; // null = "unknown", LazyOptional.empty() = "known absent"
     private LazyOptional<IFluidHandler> fluidInsertionCap = null;
 
-    public AirGrateModule(TubeModuleItem tubeModuleItem) {
-        super(tubeModuleItem);
+    public AirGrateModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
     }
 
     @Override
     public double getWidth() {
         return 16D;
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.AIR_GRATE_MODULE.get();
     }
 
     @Override
@@ -297,7 +306,7 @@ public class AirGrateModule extends AbstractTubeModule {
         vacuum = tag.getBoolean("vacuum");
         grateRange = tag.getInt("grateRange");
         String f = tag.getString("entityFilter");
-        entityFilter = f.isEmpty() ? EntityFilter.allow() : EntityFilter.fromString(f);
+        entityFilter = f.isEmpty() ? EntityFilter.allow() : EntityFilter.fromString(f, EntityFilter.allow());
     }
 
     @Override
@@ -334,12 +343,14 @@ public class AirGrateModule extends AbstractTubeModule {
         return new AABB(pressureTube.getBlockPos().relative(getDirection(), grateRange + 1)).inflate(grateRange * 2);
     }
 
-    public String getEntityFilterString() {
-        return entityFilter == EntityFilter.allow() ? "" : entityFilter.toString();
+    @Nonnull
+    public EntityFilter getEntityFilter() {
+        return entityFilter;
     }
 
-    public void setEntityFilter(String filter) {
-        entityFilter = EntityFilter.fromString(filter);
+    public void setEntityFilter(@Nonnull EntityFilter filter) {
+        this.entityFilter = filter;
+        setChanged();
     }
 
     public boolean isShowRange() {
@@ -353,6 +364,7 @@ public class AirGrateModule extends AbstractTubeModule {
         } else {
             AreaRenderManager.getInstance().removeHandlers(pressureTube);
         }
+        setChanged();
     }
 
     @Override

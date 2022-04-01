@@ -71,14 +71,18 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
 
         int tx = 12 + filterLabel.getWidth();
         textfield = new WidgetTextField(font, guiLeft + tx, guiTop + 20, xSize - tx - 10, 10);
-        textfield.setValue(module.getEntityFilterString());
-        textfield.setResponder(s -> sendTimer = 5);
+        textfield.setValue(module.getEntityFilter().toString());
+        textfield.setResponder(s -> {
+            if (validateEntityFilter(s)) {
+                sendTimer = 5;
+            }
+        });
         textfield.setFocus(true);
         textfield.setVisible(module.isUpgraded());
         setFocused(textfield);
         addRenderableWidget(textfield);
 
-        warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, TextComponent.EMPTY)
+        warningButton = new WidgetButtonExtended(guiLeft + tx, guiTop + 30, 20, 20, TextComponent.EMPTY)
                 .setVisible(false)
                 .setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         addRenderableWidget(warningButton);
@@ -96,14 +100,16 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
         return new TextComponent((this.module.isShowRange() ? ChatFormatting.AQUA : ChatFormatting.DARK_GRAY) + "R");
     }
 
-    private void validateEntityFilter(String filter) {
+    private boolean validateEntityFilter(String filter) {
         try {
+            new EntityFilter(filter);  // syntax check
             warningButton.visible = false;
             warningButton.setTooltipText(TextComponent.EMPTY);
-            new EntityFilter(filter);  // syntax check
+            return true;
         } catch (IllegalArgumentException e) {
             warningButton.visible = true;
             warningButton.setTooltipText(new TextComponent(e.getMessage()).withStyle(ChatFormatting.GOLD));
+            return false;
         }
     }
 
@@ -121,11 +127,16 @@ public class AirGrateModuleScreen extends AbstractTubeModuleScreen<AirGrateModul
     public void tick() {
         super.tick();
 
-        if (!textfield.isFocused()) textfield.setValue(module.getEntityFilterString());
+        if (!textfield.isFocused()) textfield.setValue(module.getEntityFilter().toString());
+
+        validateEntityFilter(textfield.getValue());
 
         if (sendTimer > 0 && --sendTimer == 0) {
-            module.setEntityFilter(textfield.getValue());
-            NetworkHandler.sendToServer(new PacketUpdateAirGrateModule(module, textfield.getValue()));
+            EntityFilter filter = EntityFilter.fromString(textfield.getValue());
+            if (filter != null) {
+                module.setEntityFilter(filter);
+                NetworkHandler.sendToServer(new PacketUpdateAirGrateModule(module, textfield.getValue()));
+            }
         }
     }
 

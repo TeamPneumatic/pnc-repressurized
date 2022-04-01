@@ -19,23 +19,31 @@ package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
 
 public class SafetyValveModule extends AbstractRedstoneReceivingModule {
-    private boolean shouldAddVenting = false;
+    private boolean inited = false;
 
-    public SafetyValveModule(TubeModuleItem item) {
-        super(item);
+    public SafetyValveModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.SAFETY_TUBE_MODULE.get();
     }
 
     @Override
     public void tickServer() {
         super.tickServer();
-        if (shouldAddVenting) {
+
+        if (!inited) {
             pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).orElseThrow(RuntimeException::new)
                     .enableSafetyVenting(p -> p > getThreshold(), getDirection());
-            shouldAddVenting = false;
+            inited = true;
         }
     }
 
@@ -46,15 +54,6 @@ public class SafetyValveModule extends AbstractRedstoneReceivingModule {
         // 4.92 instead of 4.9 because if the system is being fed via regulator from a high pressure line,
         // then it will be at 4.9 bar, which would cause safety modules to leak unnecessarily...
         return getTube().getDangerPressure() == PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE ? 19.9f : 4.92f;
-    }
-
-    @Override
-    public void setTube(PressureTubeBlockEntity tube) {
-        super.setTube(tube);
-
-        // can't add immediately because the tube's world could be null (this is called on world load as well as
-        // when player places module)
-        shouldAddVenting = true;
     }
 
     @Override

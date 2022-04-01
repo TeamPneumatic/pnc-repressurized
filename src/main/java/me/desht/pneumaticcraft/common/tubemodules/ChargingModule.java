@@ -18,8 +18,11 @@
 package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
@@ -29,8 +32,13 @@ import net.minecraftforge.items.IItemHandler;
 public class ChargingModule extends AbstractTubeModule {
     private BlockEntity neighbourTE = null;
 
-    public ChargingModule(TubeModuleItem tubeModuleItem) {
-        super(tubeModuleItem);
+    public ChargingModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.CHARGING_MODULE.get();
     }
 
     @Override

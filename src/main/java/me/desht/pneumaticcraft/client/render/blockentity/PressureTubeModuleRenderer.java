@@ -73,11 +73,9 @@ public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureT
             if (blockHitResult.getBlockPos().equals(tile.getBlockPos())
                     && player.level.getBlockEntity(blockHitResult.getBlockPos()) == tile
                     && tile.getModule(face) == null) {
-                AbstractTubeModule fakeModule = moduleItem.createModule();
-                if (tile.mayPlaceModule(fakeModule, face)) {
+                AbstractTubeModule fakeModule = moduleItem.createModule(face, tile);
+                if (tile.mayPlaceModule(fakeModule)) {
                     fakeModule.markFake();
-                    fakeModule.setDirection(face);
-                    fakeModule.setTube(tile);
                     getModuleRenderer(fakeModule).renderModule(fakeModule, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
                 }
             }

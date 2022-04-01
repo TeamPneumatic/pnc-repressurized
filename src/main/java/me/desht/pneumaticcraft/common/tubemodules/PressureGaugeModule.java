@@ -18,15 +18,24 @@
 package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.Item;
 
 public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
-    public PressureGaugeModule(TubeModuleItem item) {
-        super(item);
+    public PressureGaugeModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
+
         lowerBound = 0;
         higherBound = 7.5F;
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.PRESSURE_GAUGE_MODULE.get();
     }
 
     @Override

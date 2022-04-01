@@ -21,10 +21,12 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -34,8 +36,13 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     public float rotation, oldRotation;
     private int lastAmount = 0;
 
-    public VacuumModule(TubeModuleItem tubeModuleItem) {
-        super(tubeModuleItem);
+    public VacuumModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.VACUUM_MODULE.get();
     }
 
     @Override

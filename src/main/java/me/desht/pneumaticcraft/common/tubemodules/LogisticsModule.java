@@ -23,19 +23,22 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticsModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -55,8 +58,13 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     private int ticksUntilNextCycle;
     private boolean powered;
 
-    public LogisticsModule(TubeModuleItem tubeModuleItem) {
-        super(tubeModuleItem);
+    public LogisticsModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.LOGISTICS_MODULE.get();
     }
 
     public int getTicksSinceAction() {
@@ -85,6 +93,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     @Override
     public void setColorChannel(int colorChannel) {
         this.colorChannel = colorChannel;
+        setChanged();
     }
 
     @Override

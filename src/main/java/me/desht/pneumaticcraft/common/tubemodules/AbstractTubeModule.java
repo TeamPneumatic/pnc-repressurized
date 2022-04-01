@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.AbstractTubeModuleScreen;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -46,19 +45,20 @@ import static me.desht.pneumaticcraft.common.block.PressureTubeBlock.CORE_MIN;
 
 public abstract class AbstractTubeModule {
     public static final float MAX_VALUE = 30;
-    private final TubeModuleItem item;
 
-    protected PressureTubeBlockEntity pressureTube;
-    protected Direction dir = Direction.UP;
+    protected final PressureTubeBlockEntity pressureTube;
     private final VoxelShape[] boundingBoxes;
+    protected final Direction dir;
+
+    private boolean fake;
+    private boolean shouldDrop;
     protected boolean upgraded;
     public float lowerBound = 4.9F, higherBound = 0;
-    private boolean fake;
     public boolean advancedConfig;
-    public boolean shouldDrop;
 
-    public AbstractTubeModule(TubeModuleItem item) {
-        this.item = item;
+    public AbstractTubeModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        this.dir = dir;
+        this.pressureTube = pressureTube;
 
         double w = getWidth() / 2;
         double h = getHeight();
@@ -82,12 +82,14 @@ public abstract class AbstractTubeModule {
         return fake;
     }
 
-    public void setTube(PressureTubeBlockEntity pressureTube) {
-        this.pressureTube = pressureTube;
-    }
-
     public PressureTubeBlockEntity getTube() {
         return pressureTube;
+    }
+
+    protected final void setChanged() {
+        if (pressureTube != null && pressureTube.getLevel() != null && !pressureTube.getLevel().isClientSide) {
+            pressureTube.setChanged();
+        }
     }
 
     /**
@@ -128,20 +130,13 @@ public abstract class AbstractTubeModule {
         return drops;
     }
 
-    public Item getItem() {
-        return item;
-    }
-
-    public void setDirection(Direction dir) {
-        this.dir = dir;
-    }
+    public abstract Item getItem();
 
     public Direction getDirection() {
         return dir;
     }
 
     public void readFromNBT(CompoundTag nbt) {
-        dir = Direction.from3DDataValue(nbt.getInt("dir"));
         upgraded = nbt.getBoolean("upgraded");
         lowerBound = nbt.getFloat("lowerBound");
         higherBound = nbt.getFloat("higherBound");
@@ -165,6 +160,7 @@ public abstract class AbstractTubeModule {
     }
 
     public void tickServer() {
+        shouldDrop = true;
         tickCommon();
     }
 
@@ -175,7 +171,7 @@ public abstract class AbstractTubeModule {
     }
 
     public final ResourceLocation getType() {
-        return item.getRegistryName();
+        return getItem().getRegistryName();
     }
 
     public int getRedstoneLevel() {
@@ -212,7 +208,10 @@ public abstract class AbstractTubeModule {
     }
 
     public void upgrade() {
-        upgraded = true;
+        if (!upgraded) {
+            setChanged();
+            upgraded = true;
+        }
     }
 
     public boolean isUpgraded() {
@@ -262,6 +261,10 @@ public abstract class AbstractTubeModule {
     public void onPlaced() {
     }
 
+    /**
+     * Called just before a module is removed from a pressure tube, either by a player wrenching it, or when data
+     * that is read from NBT causes the module to be removed.
+     */
     public void onRemoved() {
     }
 

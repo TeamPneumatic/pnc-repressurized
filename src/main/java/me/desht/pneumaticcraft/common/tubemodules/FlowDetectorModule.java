@@ -18,10 +18,13 @@
 package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 
 import java.util.List;
 
@@ -30,8 +33,8 @@ public class FlowDetectorModule extends AbstractRedstoneEmittingModule implement
     private int flow;
     private int oldFlow;
 
-    public FlowDetectorModule(TubeModuleItem item) {
-        super(item);
+    public FlowDetectorModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
     }
 
     @Override
@@ -40,6 +43,11 @@ public class FlowDetectorModule extends AbstractRedstoneEmittingModule implement
 
         oldRotation = rotation;
         rotation += getRedstoneLevel() / 100F;
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.FLOW_DETECTOR_MODULE.get();
     }
 
     @Override

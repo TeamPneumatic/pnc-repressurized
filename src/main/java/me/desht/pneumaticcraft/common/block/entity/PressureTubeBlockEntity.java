@@ -131,8 +131,9 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundTag moduleTag = moduleList.getCompound(i);
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(moduleTag.getString("type")));
+            Direction dir = Direction.from3DDataValue(moduleTag.getInt("dir"));
             if (item instanceof TubeModuleItem) {
-                AbstractTubeModule module = ((TubeModuleItem) item).createModule();
+                AbstractTubeModule module = ((TubeModuleItem) item).createModule(dir, this);
                 module.readFromNBT(moduleTag);
                 AbstractTubeModule oldModule = getModule(module.getDirection());
                 if (oldModule != null && !oldModule.getType().equals(module.getType())) {
@@ -198,7 +199,6 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
             AbstractTubeModule tm = getModule(dir);
             if (tm != null) {
                 couldLeak = false;
-                tm.shouldDrop = true;
                 tm.tickServer();
             }
             if (isSideClosed(dir)) {
@@ -262,7 +262,8 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         return modules.values().stream().filter(Objects::nonNull);
     }
 
-    public boolean mayPlaceModule(AbstractTubeModule module, Direction side) {
+    public boolean mayPlaceModule(AbstractTubeModule module) {
+        Direction side = module.getDirection();
         return inLineModuleDir == null
                 && getModule(side) == null
                 && !isSideClosed(side)
@@ -271,8 +272,6 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
 
     public void setModule(Direction side, AbstractTubeModule module) {
         if (module != null) {
-            module.setDirection(side);
-            module.setTube(this);
             if (module.isInline()) {
                 inLineModuleDir = side;
             }

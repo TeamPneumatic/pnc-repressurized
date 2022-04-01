@@ -24,7 +24,6 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetText;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
@@ -65,12 +64,18 @@ public class EntityFilter implements Predicate<Entity> {
             .put("minecart", e -> e instanceof AbstractMinecart)
             .put("painting", e -> e instanceof Painting)
             .put("orb", e -> e instanceof ExperienceOrb)
+            .put("nothing", e -> false)
             .build();
 
     private final List<EntityMatcher> matchers = new ArrayList<>();
     private final boolean sense;
     private final String rawFilter;
 
+    /**
+     * Create a new entity filter
+     * @param filter the filter specification
+     * @throws IllegalArgumentException if the spec is not valid
+     */
     public EntityFilter(String filter) {
         if (filter.startsWith("!")) {
             filter = filter.substring(1);
@@ -86,6 +91,14 @@ public class EntityFilter implements Predicate<Entity> {
         }
     }
 
+    /**
+     * Create a new entity filter from a progwidget, which has one or more text widgets attached
+     * @param widget the progwidget
+     * @param whitelist true if this should be a whitelist (look to the widget's right) or blacklist (look to the left)
+     * @param <T> widget type
+     * @return an entity filter
+     * @throws IllegalArgumentException if any of the attached text widgets contain an invalid filter spec
+     */
     public static <T extends IProgWidget & IEntityProvider> EntityFilter fromProgWidget(T widget, boolean whitelist) {
         if (widget.getParameters().size() > 1) {
             int pos = widget.getEntityFilterPosition();
@@ -104,26 +117,54 @@ public class EntityFilter implements Predicate<Entity> {
         return whitelist ? ConstantEntityFilter.ALLOW : ConstantEntityFilter.DENY;
     }
 
+    /**
+     * Create an entity filter from string
+     * @param s the filter spec
+     * @return an entity filter, or null if the spec is not valid
+     */
     public static EntityFilter fromString(String s) {
+        return fromString(s, null);
+    }
+
+    /**
+     * Create an entity filter from string
+     * @param s the filter spec
+     * @param fallback a fallback filter to use
+     * @return an entity filter, or the fallback filter if the spec is not valid
+     */
+    public static EntityFilter fromString(String s, EntityFilter fallback) {
         try {
             return new EntityFilter(s);
         } catch (Exception e) {
-            Log.warning("ignoring invalid filter: " + s);
-            return null;
+            return fallback;
         }
     }
 
+    /**
+     * An entity filter which allows everything
+     * @return an entity filter
+     */
     public static EntityFilter allow() {
         return ConstantEntityFilter.ALLOW;
     }
 
+    /**
+     * An entity filter which allows nothing
+     * @return an entity filter
+     */
     public static EntityFilter deny() {
         return ConstantEntityFilter.DENY;
     }
 
     @Override
     public String toString() {
-        return sense ? rawFilter : "!" + rawFilter;
+        if (this == ConstantEntityFilter.ALLOW) {
+            return "";
+        } else if (this == ConstantEntityFilter.DENY) {
+            return "@nothing";
+        } else {
+            return sense ? rawFilter : "!" + rawFilter;
+        }
     }
 
     @Override

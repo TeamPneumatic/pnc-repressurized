@@ -17,14 +17,16 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -33,6 +35,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -60,8 +63,8 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     public float lastExtension;
     private boolean comparatorInput;  // input acts like a vanilla comparator?
 
-    public RedstoneModule(TubeModuleItem tubeModuleItem) {
-        super(tubeModuleItem);
+    public RedstoneModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
     }
 
     @Override
@@ -87,6 +90,11 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     @Override
     protected double getHeight() {
         return 5D;
+    }
+
+    @Override
+    public Item getItem() {
+        return ModItems.REDSTONE_MODULE.get();
     }
 
     @Override
@@ -189,6 +197,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
 
     public void setRedstoneDirection(EnumRedstoneDirection redstoneDirection) {
         this.redstoneDirection = redstoneDirection;
+        setChanged();
     }
 
     @Override
@@ -224,6 +233,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
     @Override
     public void setColorChannel(int channel) {
         this.colorChannel = channel;
+        setChanged();
     }
 
     public boolean isInverted() {
@@ -232,6 +242,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
 
     public void setInverted(boolean inverted) {
         this.inverted = inverted;
+        setChanged();
     }
 
     public boolean isComparatorInput() {
@@ -240,6 +251,7 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
 
     public void setComparatorInput(boolean comparatorInput) {
         this.comparatorInput = comparatorInput;
+        setChanged();
     }
 
     @Override
@@ -335,6 +347,8 @@ public class RedstoneModule extends AbstractTubeModule implements INetworkedModu
         this.operation = operation;
         this.otherColor = otherColor;
         this.constantVal = constantVal;
+
+        setChanged();
     }
 
     public enum EnumRedstoneDirection implements ITranslatableEnum {

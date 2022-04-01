@@ -83,7 +83,8 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
     void disableSafetyVenting();
 
     /**
-     * Must be called every tick by the owning block entity.
+     * Must be called every tick by the owning block entity. This is called on both server and client (client needs to
+     * handle sounds and particles if the air handler is leaking).
      *
      * @param ownerTE the owning block entity
      */

@@ -17,8 +17,9 @@
 
 package me.desht.pneumaticcraft.common.tubemodules;
 
-import me.desht.pneumaticcraft.common.item.TubeModuleItem;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 
@@ -27,8 +28,8 @@ import java.util.List;
 public abstract class AbstractRedstoneReceivingModule extends AbstractTubeModule {
     private int redstoneLevel;
 
-    AbstractRedstoneReceivingModule(TubeModuleItem item) {
-        super(item);
+    AbstractRedstoneReceivingModule(Direction dir, PressureTubeBlockEntity pressureTube) {
+        super(dir, pressureTube);
     }
 
     @Override

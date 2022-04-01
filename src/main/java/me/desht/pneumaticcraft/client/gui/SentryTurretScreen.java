@@ -41,7 +41,6 @@ import java.util.List;
 public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<SentryTurretMenu,SentryTurretBlockEntity> {
     private WidgetTextField entityFilter;
     private WidgetButtonExtended errorButton;
-    private String prevFilterText = "";
 
     public SentryTurretScreen(SentryTurretMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -63,13 +62,13 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
 
         addRenderableWidget(errorButton = new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, TextComponent.EMPTY));
         errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
+        errorButton.visible = false;
     }
 
     @Override
     public void containerTick() {
         if (firstUpdate) {
             // setting the filter value in the textfield on init() isn't reliable; might not be sync'd in time
-            prevFilterText = te.getText(0);
             entityFilter.setValue(te.getText(0));
             entityFilter.setResponder(this::onEntityFilterChanged);
         }
@@ -81,13 +80,12 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
 
     private void onEntityFilterChanged(String newText) {
         try {
-            if (!newText.equals(prevFilterText)) {
-                new EntityFilter(newText);
-                errorButton.setTooltipText(Collections.emptyList());
-                sendDelayed(5);
-                prevFilterText = newText;
-            }
+            new EntityFilter(newText);
+            errorButton.visible = false;
+            errorButton.setTooltipText(Collections.emptyList());
+            sendDelayed(5);
         } catch (IllegalArgumentException e) {
+            errorButton.visible = true;
             errorButton.setTooltipText(new TextComponent(e.getMessage()));
         }
     }

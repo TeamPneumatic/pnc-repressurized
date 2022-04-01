@@ -280,9 +280,9 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         if (tePT == null) return false;
 
         ItemStack heldStack = player.getItemInHand(hand);
-        if (heldStack.getItem() instanceof TubeModuleItem) {
-            AbstractTubeModule module = ((TubeModuleItem) heldStack.getItem()).createModule();
-            if (tePT.mayPlaceModule(module, side)) {
+        if (heldStack.getItem() instanceof TubeModuleItem tubeModuleItem) {
+            AbstractTubeModule module = tubeModuleItem.createModule(side, tePT);
+            if (tePT.mayPlaceModule(module)) {
                 if (simulate) module.markFake();
                 tePT.setModule(side, module);
                 if (!simulate && !world.isClientSide) {
