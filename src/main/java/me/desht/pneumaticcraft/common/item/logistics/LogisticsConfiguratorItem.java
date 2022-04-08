@@ -53,7 +53,7 @@ public class LogisticsConfiguratorItem extends PressurizableItem {
 
             if (player.isShiftKeyDown()) {
                 semiBlocks.filter(s -> !(s instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) s).getSide() == side)
-                        .forEach(s -> s.removeSemiblock(player));
+                        .forEach(s -> s.killedByEntity(player));
                 return InteractionResult.SUCCESS;
             } else {
                 if (semiBlocks.anyMatch(s -> s.onRightClickWithConfigurator(player, side))) {

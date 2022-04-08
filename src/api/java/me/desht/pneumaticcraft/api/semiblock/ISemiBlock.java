@@ -150,8 +150,20 @@ public interface ISemiBlock extends ICapabilityProvider {
      * Called when a player causes a semiblock to be removed, either by sneak-right-clicking with a Logistics
      * Configurator, or by repeatedly hitting the semiblock entity.
      * @param player player who is removing the semiblock
+     * @deprecated no longer called, use {@link #killedByEntity(Entity)} instead
      */
-    void removeSemiblock(Player player);
+    @Deprecated
+    default void removeSemiblock(Player player) {
+        killedByEntity(player);
+    }
+
+    /**
+     * Called when an entity has caused this semiblock to be removed; usually, but necessarily, a player wrenching or
+     * hitting it.
+     *
+     * @param entity the killer entity
+     */
+    void killedByEntity(Entity entity);
 
     /**
      * Add tooltip information for this semiblock. This info is used by info mods such as Waila or TOP.

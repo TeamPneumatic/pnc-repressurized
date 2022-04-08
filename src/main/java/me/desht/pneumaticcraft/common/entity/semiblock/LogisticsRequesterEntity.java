@@ -146,7 +146,7 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
     }
 
     @Override
-    protected void doExtraCleanupTasks() {
+    protected void doExtraCleanupTasks(boolean removingSemiblock) {
 //        if (!level.isClientSide() && AE2Integration.isAvailable()) {
 //            getAE2integration().shutdown();
 //        }

@@ -75,7 +75,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     private static final float MAX_HEALTH = 40.0F;
 
     private BlockEntity cachedTE;
-    private boolean shouldDropItem = false;
+    private boolean beingRemoved = false;
     private AABB blockBounds;
     private BlockPos blockPos;
     private Vec3 dropOffset = Vec3.ZERO;
@@ -119,7 +119,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         }
 
         if (!level.isClientSide && isAlive() && !canStay()) {
-            shouldDropItem = true;
+            beingRemoved = true;
             kill();
         }
 
@@ -144,7 +144,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
         if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get() && !player.level.isClientSide) {
             if (player.isShiftKeyDown()) {
-                removeSemiblock(player);
+                killedByEntity(player);
                 return InteractionResult.SUCCESS;
             } else {
                 if (onRightClickWithConfigurator(player, brtr.getDirection())) {
@@ -207,6 +207,8 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public BlockEntity getCachedTileEntity() {
+        if (!level.isLoaded(blockPos)) return null;
+
         if (cachedTE == null || cachedTE.isRemoved()) {
             cachedTE = level.getBlockEntity(blockPos);
         }
@@ -313,10 +315,10 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         super.onAddedToWorld();
 
         if (!level.isClientSide) {
-            Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
             if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
                 MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
             } else {
+                Direction dir = this instanceof IDirectionalSemiblock d ? d.getSide() : null;
                 Log.error("SemiblockTracker: not overwriting existing semiblock at %s, pos=%s, dir=%s!", level, blockPos, dir);
             }
         }
@@ -330,7 +332,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
             MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
 
-            if (shouldDropItem) {
+            if (beingRemoved) {
                 getDrops().forEach(this::dropItem);
             }
 
@@ -339,15 +341,16 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             }
         }
 
-        doExtraCleanupTasks();
+        doExtraCleanupTasks(beingRemoved);
 
         super.onRemovedFromWorld();
     }
 
     /**
      * Called by onRemovedFromWorld() to finalize semiblock removal. Override in subclasses.
+     * @param removingSemiblock true if this semiblock is actually being removed from world, false if removing to chunk unloading
      */
-    protected void doExtraCleanupTasks() {
+    protected void doExtraCleanupTasks(boolean removingSemiblock) {
     }
 
     @Override
@@ -375,10 +378,10 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public void removeSemiblock(Player player) {
-        player.level.playSound(null, blockPos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.0f);
-        shouldDropItem = !player.isCreative();
-        dropOffset = player.position().subtract(this.position()).normalize();
+    public void killedByEntity(Entity entity) {
+        entity.level.playSound(null, blockPos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.0f);
+        dropOffset = entity.position().subtract(this.position()).normalize();
+        beingRemoved = true;
         kill();
     }
 
@@ -390,10 +393,9 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             this.setTimeSinceHit(10);
             this.setDamageTaken(this.getDamageTaken() + amount * 10.0F);
             if (this.getDamageTaken() > MAX_HEALTH) {
-                if (source.getEntity() instanceof Player p) {
-                    removeSemiblock(p);
+                if (source.getEntity() != null) {
+                    killedByEntity(source.getEntity());
                 } else {
-                    shouldDropItem = true;
                     kill();
                 }
             }

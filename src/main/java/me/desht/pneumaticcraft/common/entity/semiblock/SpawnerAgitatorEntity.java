@@ -22,7 +22,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 
 public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
@@ -45,15 +44,15 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
                 // just altering the range when added isn't enough - needs to be kept updated each tick
                 spawner.requiredPlayerRange = Integer.MAX_VALUE;
                 if (tickCount == 1) {
-                    setSpawnPersistentEntities(getSpawner(), true);
+                    setSpawnPersistentEntities(spawner, true);
                 }
             }
         }
     }
 
     @Override
-    public void doExtraCleanupTasks() {
-        if (!level.isClientSide) {
+    public void doExtraCleanupTasks(boolean removingSemiblock) {
+        if (!level.isClientSide && removingSemiblock) {
             BaseSpawner spawner = getSpawner();
             if (spawner != null) {
                 spawner.requiredPlayerRange = 16;
@@ -63,8 +62,7 @@ public class SpawnerAgitatorEntity extends AbstractSemiblockEntity {
     }
 
     private BaseSpawner getSpawner() {
-        BlockEntity te = getCachedTileEntity();
-        return te instanceof SpawnerBlockEntity ? ((SpawnerBlockEntity) te).getSpawner() : null;
+        return getCachedTileEntity() instanceof SpawnerBlockEntity s ? s.getSpawner() : null;
     }
 
     private void setSpawnPersistentEntities(BaseSpawner spawner, boolean persistent) {
