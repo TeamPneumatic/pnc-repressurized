@@ -6,6 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
+## 3.1.5-70 (11 Apr 2022)
+
+### Updates
+* Added whitelisting config settings for oil lakes, in addition to existing blacklisting settings
+  * See new `oil_world_gen_whitelist`, `oil_world_gen_category_whitelist` and `oil_world_gen_dimension_whitelist` settings in `pneumaticcraft-common.toml`
+  * Non-empty whitelists take priority over blacklists
+
+### Fixes
+* Fixed tube modules not always properly marking their pressure tube as needed save
+  * Caused intermittent issues with modules disappearing or losing their settings after world restart
+* Fixed CME under some circumstances when unloading a chunk containing a Spawner Agitator
+* Fixed crash with invalid entity filters on an upgraded Air Grate Module
+
 ## 3.1.4-68 (30 Mar 2022)
 
 **This version requires a Forge release of 40.0.32 or later**
