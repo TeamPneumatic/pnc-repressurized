@@ -19,14 +19,12 @@ package me.desht.pneumaticcraft.common.block.entity;
 
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.ai.ChunkPositionSorter;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.GasLiftMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -58,31 +56,14 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<GasLiftBlockEntity>, ISerializableTanks,
         IAutoFluidEjecting, MenuProvider
 {
     private static final int INVENTORY_SIZE = 1;
-
-    public enum Status implements ITranslatableEnum {
-        IDLE("idling"), PUMPING("pumping"), DIGGING("diggingDown"), RETRACTING("retracting"), STUCK("stuck");
-
-        private final String desc;
-
-        Status(String desc) {
-            this.desc = desc;
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return "pneumaticcraft.gui.tab.status.gasLift.action." + desc;
-        }
-    }
-
-    public enum PumpMode {
-        PUMP_EMPTY, PUMP_LEAVE_FLUID, RETRACT
-    }
+    private static final int MAX_PUMP_RANGE_SQUARED = 15 * 15;
 
     @DescSynced
     @GuiSynced
@@ -96,6 +77,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
         }
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
+
     @GuiSynced
     public int currentDepth;
     @GuiSynced
@@ -105,9 +87,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     @GuiSynced
     public Status status = Status.IDLE;
     private int workTimer;
-    private int ticker;
-    private List<BlockPos> pumpingLake;
-    private static final int MAX_PUMP_RANGE_SQUARED = 15 * 15;
+    private Deque<BlockPos> pumpingLake = new ArrayDeque<>();
 
     public GasLiftBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.GAS_LIFT.get(), pos, state, PressureTier.TIER_ONE, 3000, 4);
@@ -139,16 +119,12 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     public void tickServer() {
         super.tickServer();
 
-        ticker++;
         if (currentDepth > 0) {
-            int curCheckingPipe = ticker % currentDepth;
+            // check for broken drill pipes
+            int curCheckingPipe = (int)(nonNullLevel().getGameTime() % currentDepth);
             if (curCheckingPipe > 0 && !isPipe(nonNullLevel(), getBlockPos().relative(Direction.DOWN, curCheckingPipe))) {
                 currentDepth = curCheckingPipe - 1;
             }
-        }
-        if (ticker == 400) {
-            pumpingLake = null;
-            ticker = 0;
         }
 
         if (rsController.shouldRun() && getPressure() >= getMinWorkingPressure()) {
@@ -237,33 +213,28 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     }
 
     private boolean suckLiquid() {
-        BlockPos pos = getBlockPos().relative(Direction.DOWN, currentDepth + 1);
-
+        final BlockPos pos = getBlockPos().relative(Direction.DOWN, currentDepth + 1);
         final Level level = nonNullLevel();
-        FluidState fluidState = level.getFluidState(pos);
+        final FluidState fluidState = level.getFluidState(pos);
         if (fluidState.getType() == Fluids.EMPTY) {
-            pumpingLake = null;
             return false;
         }
         FluidStack fluidStack = new FluidStack(fluidState.getType(), FluidAttributes.BUCKET_VOLUME);
 
         if (tank.fill(fluidStack, FluidAction.SIMULATE) == fluidStack.getAmount()) {
-            if (pumpingLake == null) {
+            if (pumpingLake.isEmpty()) {
                 findLake(fluidStack.getFluid());
             }
-            boolean foundSource = false;
             BlockPos curPos = null;
-            while (pumpingLake.size() > 0) {
-                curPos = pumpingLake.get(0);
+            while (!pumpingLake.isEmpty()) {
+                curPos = pumpingLake.peek();
                 if (FluidUtils.isSourceFluidBlock(level, curPos, fluidStack.getFluid())) {
-                    foundSource = true;
                     break;
                 }
-                pumpingLake.remove(0);
+                pumpingLake.pop();
             }
-            if (pumpingLake.isEmpty()) {
-                pumpingLake = null;
-            } else if (foundSource) {
+            if (curPos != null) {
+                // if pumpingLake isn't empty, we *must* have found a source block
                 FluidStack taken = FluidUtils.tryPickupFluid(fluidCap, level, curPos, false, FluidAction.EXECUTE);
                 if (taken.getAmount() == FluidAttributes.BUCKET_VOLUME) {
                     addAir(-100);
@@ -275,26 +246,28 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     }
 
     private void findLake(Fluid fluid) {
-        pumpingLake = new ArrayList<>();
-        Stack<BlockPos> pendingPositions = new Stack<>();
+        Set<BlockPos> result = new HashSet<>();
+        Deque<BlockPos> pendingPositions = new ArrayDeque<>();
         BlockPos thisPos = getBlockPos().relative(Direction.DOWN, currentDepth + 1);
         pendingPositions.add(thisPos);
-        pumpingLake.add(thisPos);
-        while (!pendingPositions.empty()) {
+        result.add(thisPos);
+        while (!pendingPositions.isEmpty()) {
             BlockPos checkingPos = pendingPositions.pop();
             for (Direction d : DirectionUtil.VALUES) {
                 if (d == Direction.DOWN) continue;
                 BlockPos newPos = checkingPos.relative(d);
                 if (PneumaticCraftUtils.distBetweenSq(newPos, thisPos) <= MAX_PUMP_RANGE_SQUARED
                         && FluidUtils.isSourceFluidBlock(nonNullLevel(), newPos, fluid)
-                        && !pumpingLake.contains(newPos)) {
+                        && !result.contains(newPos)) {
                     pendingPositions.add(newPos);
-                    pumpingLake.add(newPos);
+                    result.add(newPos);
                 }
             }
         }
-        pumpingLake.sort(new ChunkPositionSorter(getBlockPos().getX() + 0.5, getBlockPos().getY() - currentDepth - 1, getBlockPos().getZ() + 0.5, IBlockOrdered.Ordering.HIGH_TO_LOW));
-        Collections.reverse(pumpingLake);
+
+        pumpingLake = result.stream()
+                .sorted((o1, o2) -> (int)o2.distSqr(getBlockPos()) - (int)o1.distSqr(getBlockPos()))
+                .collect(Collectors.toCollection(() -> new ArrayDeque<>(result.size())));
     }
 
     @Override
@@ -379,5 +352,24 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
             int amount = pumpMode == PumpMode.PUMP_LEAVE_FLUID ? Math.max(0, inTank - 1) : inTank;
             return super.drain(Math.min(maxDrain, amount), action);
         }
+    }
+
+    public enum Status implements ITranslatableEnum {
+        IDLE("idling"), PUMPING("pumping"), DIGGING("diggingDown"), RETRACTING("retracting"), STUCK("stuck");
+
+        private final String desc;
+
+        Status(String desc) {
+            this.desc = desc;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.tab.status.gasLift.action." + desc;
+        }
+    }
+
+    public enum PumpMode {
+        PUMP_EMPTY, PUMP_LEAVE_FLUID, RETRACT
     }
 }
