@@ -806,6 +806,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
+    public float getDronePressure() {
+        return getPressure();
+    }
+
+    @Override
     public int getActiveWidgetIndex() {
         return activeWidgetIndex;
     }

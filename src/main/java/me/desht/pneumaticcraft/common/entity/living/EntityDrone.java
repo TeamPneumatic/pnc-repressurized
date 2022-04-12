@@ -1501,6 +1501,11 @@ public class EntityDrone extends EntityDroneBase implements
         attackCount = 0;
     }
 
+    @Override
+    public float getDronePressure() {
+        return getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).getPressure();
+    }
+
     public void setDroneSpeed(double droneSpeed) {
         this.droneSpeed = droneSpeed;
     }

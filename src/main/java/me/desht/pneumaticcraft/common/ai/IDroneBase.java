@@ -102,6 +102,7 @@ public interface IDroneBase extends IDrone {
     DroneItemHandler getDroneItemHandler();
 
     default void resetAttackCount() {
-
     }
+
+    float getDronePressure();
 }
