@@ -787,6 +787,11 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
+    public float getDronePressure() {
+        return getPressure();
+    }
+
+    @Override
     public int getActiveWidgetIndex() {
         return activeWidgetIndex;
     }

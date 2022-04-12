@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
@@ -40,8 +39,7 @@ public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneCondition {
 
     @Override
     protected int getCount(IDroneBase drone, IProgWidget widget) {
-        float pressure = drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
-                .orElseThrow(RuntimeException::new).getPressure();
+        float pressure = drone.getDronePressure();
         maybeRecordMeasuredVal(drone, (int)(pressure * 1000));
         return (int) pressure;
     }

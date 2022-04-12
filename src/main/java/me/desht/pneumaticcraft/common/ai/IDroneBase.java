@@ -102,4 +102,5 @@ public interface IDroneBase extends IDrone {
         return getAIManager().getCurrentGoal() instanceof DroneAIExternalProgram ext ? ext.getRunningAI() : getAIManager();
     }
 
+    float getDronePressure();
 }
