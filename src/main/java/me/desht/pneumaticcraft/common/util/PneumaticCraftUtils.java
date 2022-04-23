@@ -707,7 +707,7 @@ public class PneumaticCraftUtils {
         return rl.getNamespace().equals(Names.MOD_ID) ? rl.getPath() : rl.toString();
     }
 
-    public static CompoundNBT copyNBTWithout(@Nonnull CompoundNBT nbt, @Nonnull String skip) {
+    public static synchronized CompoundNBT copyNBTWithout(@Nonnull CompoundNBT nbt, @Nonnull String skip) {
         CompoundNBT newNBT = new CompoundNBT();
 
         for (String key : nbt.getAllKeys()) {
