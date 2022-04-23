@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import com.google.gson.*;
 import net.minecraft.nbt.*;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.Set;
 
@@ -62,7 +63,11 @@ public class NBTToJsonConverter {
                 JsonArray array = new JsonArray();
                 ListNBT tagList = (ListNBT) nbt;
                 for (int i = 0; i < tagList.size(); i++) {
-                    array.add(getObject(tagList.getCompound(i)));
+                    if (tagList.getElementType() == Constants.NBT.TAG_COMPOUND)
+                        array.add(getObject(tagList.getCompound(i)));
+                    else if (tagList.getElementType() == Constants.NBT.TAG_STRING) {
+                        array.add(new JsonPrimitive(tagList.getString(i)));
+                    }
                 }
                 keyObject.add("value", array);
             } else if (nbt instanceof IntArrayNBT) {
