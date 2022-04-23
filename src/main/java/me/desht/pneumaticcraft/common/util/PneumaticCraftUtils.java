@@ -710,7 +710,10 @@ public class PneumaticCraftUtils {
     public static synchronized CompoundNBT copyNBTWithout(@Nonnull CompoundNBT nbt, @Nonnull String skip) {
         CompoundNBT newNBT = new CompoundNBT();
 
-        for (String key : nbt.getAllKeys()) {
+        Iterator<String> iterator = nbt.getAllKeys().iterator();
+        //noinspection WhileLoopReplaceableByForEach
+        while (iterator.hasNext()) {
+            String key = iterator.next();
             if (!skip.equals(key)) {
                 INBT subTag = nbt.get(key);
                 if (subTag != null) {
