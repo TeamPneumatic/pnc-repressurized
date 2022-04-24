@@ -109,7 +109,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
     @Nullable
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
-        return roundedPressure(stack);
+        return ConfigHelper.common().advanced.nbtToClientModification.get() ? roundedPressure(stack) : super.getShareTag(stack);
     }
 
     @Override

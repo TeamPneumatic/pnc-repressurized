@@ -94,6 +94,7 @@ public class CommonConfig {
         public ForgeConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
         public ForgeConfigSpec.IntValue maxDroneChargingStationSearchRange;
         public ForgeConfigSpec.IntValue maxDroneTeleportRange;
+        public ForgeConfigSpec.BooleanValue nbtToClientModification;
     }
     public static class Micromissiles {
         public ForgeConfigSpec.DoubleValue baseExplosionDamage;
@@ -430,6 +431,9 @@ public class CommonConfig {
                 .comment("If a Drone has found a path, but gets stuck on a block along that path, it will teleport to its destination after this many ticks of being stuck. Set this to 0 to disable teleporting, which will likely leave the drone waiting there forever (or until it runs out of air). Note that getting stuck on a block is usually the fault of the mod that added the block (especially if the block has a non-full-cube shape), but if you encounter this behaviour, please report it as a PneumaticCraft: Repressurized issue so it can be investigated.")
                 .translation("pneumaticcraft.config.common.advanced.stuck_drone_teleport_ticks")
                 .defineInRange("stuck_drone_teleport_ticks", 20, 0, Integer.MAX_VALUE);
+        advanced.nbtToClientModification = builder
+                .comment("When set to true, server will strip NBT data from pressurizable items (pneumatic armor, drones...) which the client doesn't care about. Good for saving on network chatter, but can cause players to be kicked under some circumstances. If this occurs, set this config value to false.")
+                .define("nbt_to_client_modification", true);
         builder.pop();
 
         builder.push("Micromissile Properties");
