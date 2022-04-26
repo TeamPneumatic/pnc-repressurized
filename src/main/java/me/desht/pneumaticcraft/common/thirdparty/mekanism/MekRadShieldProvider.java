@@ -17,41 +17,46 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
-public class MekRadShieldProvider /*implements ICapabilityProvider*/ {
-//    private final IRadiationShielding impl;
-//    private final LazyOptional<IRadiationShielding> lazy;
-//
-//    public MekRadShieldProvider(ItemStack stack, EquipmentSlot slot) {
-//        this.impl = new PneumaticArmorRadiationShield(stack, slot);
-//        this.lazy = LazyOptional.of(() -> impl);
-//    }
-//
-//    @Nonnull
-//    @Override
-//    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//        return MekanismIntegration.CAPABILITY_RADIATION_SHIELDING.orEmpty(cap, lazy);
-//    }
-//
-//    public static class PneumaticArmorRadiationShield implements IRadiationShielding {
-//        private final ItemStack stack;
-//        private final EquipmentSlot slot;
-//
-//        public PneumaticArmorRadiationShield(ItemStack stack, EquipmentSlot slot) {
-//            this.stack = stack;
-//            this.slot = slot;
-//        }
-//
-//        @Override
-//        public double getRadiationShielding() {
-//            boolean upgrade = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.RADIATION_SHIELDING.get()) > 0;
-//            if (!upgrade) return 0d;
-//            switch (slot) {
-//                case HEAD: return 0.25;
-//                case CHEST: return 0.4;
-//                case LEGS: return 0.2;
-//                case FEET: return 0.15;
-//                default: return 0d;
-//            }
-//        }
-//    }
+import me.desht.pneumaticcraft.common.core.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import mekanism.api.radiation.capability.IRadiationShielding;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class MekRadShieldProvider implements ICapabilityProvider {
+    private final IRadiationShielding impl;
+    private final LazyOptional<IRadiationShielding> lazy;
+
+    public MekRadShieldProvider(ItemStack stack, EquipmentSlot slot) {
+        this.impl = new PneumaticArmorRadiationShield(stack, slot);
+        this.lazy = LazyOptional.of(() -> impl);
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        return MekanismIntegration.CAPABILITY_RADIATION_SHIELDING.orEmpty(cap, lazy);
+    }
+
+    public record PneumaticArmorRadiationShield(ItemStack stack, EquipmentSlot slot) implements IRadiationShielding {
+        @Override
+        public double getRadiationShielding() {
+            boolean upgrade = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.RADIATION_SHIELDING.get()) > 0;
+            if (!upgrade) return 0d;
+            return switch (slot) {
+                case HEAD -> 0.25;
+                case CHEST -> 0.4;
+                case LEGS -> 0.2;
+                case FEET -> 0.15;
+                default -> 0d;
+            };
+        }
+    }
 }
