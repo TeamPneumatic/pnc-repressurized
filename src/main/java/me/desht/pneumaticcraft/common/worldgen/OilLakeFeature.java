@@ -31,7 +31,7 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 
 /**
  * Extended vanilla lake feature to allow blacklisting by dimension ID and also to prevent generation within
- * structures in the "pneumaticcraft:no_oil_lakes" structure feature tag (which is villages by default).
+ * structures in the "pneumaticcraft:no_oil_lakes" structure feature tag (which is "#villages" by default).
  */
 public class OilLakeFeature extends LakeFeature {
     public OilLakeFeature() {
@@ -40,7 +40,7 @@ public class OilLakeFeature extends LakeFeature {
 
     @Override
     public boolean place(FeaturePlaceContext<Configuration> context) {
-        if (!ModWorldGen.isDimensionOK(context.level())) {
+        if (!WorldGenFiltering.isDimensionOK(context.level())) {
             return false;
         }
 

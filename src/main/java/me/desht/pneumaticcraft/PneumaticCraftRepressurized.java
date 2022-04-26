@@ -51,7 +51,7 @@ import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
-import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
+import me.desht.pneumaticcraft.common.worldgen.WorldGenListener;
 import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.data.DataGenerator;
@@ -107,7 +107,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(HackTickHandler.instance());
         forgeBus.addListener(VillageStructures::addMechanicHouse);
 
-        forgeBus.addListener(EventPriority.HIGH, ModWorldGen::onBiomeLoading);
+        forgeBus.addListener(EventPriority.HIGH, WorldGenListener::onBiomeLoading);
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {
@@ -120,7 +120,9 @@ public class PneumaticCraftRepressurized {
         ModMenuTypes.MENU_TYPES.register(modBus);
         ModParticleTypes.PARTICLES.register(modBus);
         ModRecipes.RECIPES.register(modBus);
-        ModFeatures.FEATURES.register(modBus);
+        ModWorldGen.FEATURES.register(modBus);
+        ModWorldGen.CONFIGURED_FEATURES.register(modBus);
+        ModWorldGen.PLACED_FEATURES.register(modBus);
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
         ModLootModifiers.LOOT_MODIFIER.register(modBus);
@@ -152,7 +154,7 @@ public class PneumaticCraftRepressurized {
         ItemRegistry.getInstance().registerAllPNCUpgradeAcceptors();
 
         event.enqueueWork(() -> {
-            ModWorldGen.registerConfiguredFeatures();
+//            ModWorldGen.registerConfiguredFeatures();
             AdvancementTriggers.registerTriggers();
             DroneDispenseBehavior.registerDrones();
             ThirdPartyManager.instance().postInit();
