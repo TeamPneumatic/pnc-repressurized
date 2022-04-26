@@ -87,6 +87,7 @@ public class CommonConfig {
         public ForgeConfigSpec.IntValue fluidTankUpdateRate;
         public ForgeConfigSpec.IntValue pressureSyncPrecision;
         public ForgeConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
+        public ForgeConfigSpec.BooleanValue nbtToClientModification;
     }
     public static class Micromissiles {
         public ForgeConfigSpec.DoubleValue baseExplosionDamage;
@@ -394,6 +395,9 @@ public class CommonConfig {
                 .comment("Don't remove a water source block when picking up (drones, liquid hoppers, gas lift) if it has at least two water source neighbours. This can reduce lag due to frequent block updates, and can also potentially make water import much faster. Set this to false if you want no-infinite-water rules in a world, or want to limit the speed of water importing to vanilla block update rates.")
                 .translation("pneumaticcraft.config.common.advanced.dont_update_infinite_water_sources")
                 .define("dont_update_infinite_water_sources", true);
+        advanced.nbtToClientModification = builder
+                .comment("When set to true, server will strip NBT data from pressurizable items (pneumatic armor, drones...) which the client doesn't care about. Good for saving on network chatter, but can cause players to be kicked under some circumstances. If this occurs, set this config value to false.")
+                .define("nbt_to_client_modification", true);
         builder.pop();
 
         builder.push("Micromissile Properties");

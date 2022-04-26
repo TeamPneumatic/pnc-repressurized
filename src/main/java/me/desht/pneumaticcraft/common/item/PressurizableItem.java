@@ -104,7 +104,7 @@ public class PressurizableItem extends Item implements IPressurizableItem, Vanis
     @Nullable
     @Override
     public CompoundTag getShareTag(ItemStack stack) {
-        return roundedPressure(stack);
+        return ConfigHelper.common().advanced.nbtToClientModification.get() ? roundedPressure(stack) : super.getShareTag(stack);
     }
 
     @Override
