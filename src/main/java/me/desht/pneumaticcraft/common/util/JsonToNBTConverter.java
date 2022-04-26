@@ -21,10 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 
 import java.util.Map;
 
@@ -77,7 +74,11 @@ public class JsonToNBTConverter {
                     JsonArray array = element.getAsJsonArray();
                     ListTag tagList = new ListTag();
                     for (JsonElement e : array) {
-                        tagList.add(tagList.size(), getTag(e.getAsJsonObject()));
+                        if (e.isJsonObject()) {
+                            tagList.add(tagList.size(), getTag(e.getAsJsonObject()));
+                        } else {
+                            tagList.add(tagList.size(), StringTag.valueOf(e.getAsString()));
+                        }
                     }
                     nbt.put(entry.getKey(), tagList);
                     break;

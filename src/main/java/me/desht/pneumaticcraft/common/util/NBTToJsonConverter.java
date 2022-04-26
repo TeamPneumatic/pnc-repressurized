@@ -58,16 +58,18 @@ public class NBTToJsonConverter {
                 keyObject.addProperty("value", ((NumericTag) nbt).getAsDouble());
             } else if (nbt instanceof StringTag) {
                 keyObject.addProperty("value", nbt.getAsString());
-            } else if (nbt instanceof ListTag) {
+            } else if (nbt instanceof ListTag tagList) {
                 JsonArray array = new JsonArray();
-                ListTag tagList = (ListTag) nbt;
                 for (int i = 0; i < tagList.size(); i++) {
-                    array.add(getObject(tagList.getCompound(i)));
+                    if (tagList.getElementType() == Tag.TAG_COMPOUND) {
+                        array.add(getObject(tagList.getCompound(i)));
+                    } else if (tagList.getElementType() == Tag.TAG_STRING) {
+                        array.add(new JsonPrimitive(tagList.getString(i)));
+                    }
                 }
                 keyObject.add("value", array);
-            } else if (nbt instanceof IntArrayTag) {
+            } else if (nbt instanceof IntArrayTag intArray) {
                 JsonArray array = new JsonArray();
-                IntArrayTag intArray = (IntArrayTag) nbt;
                 for (int i : intArray.getAsIntArray()) {
                     array.add(new JsonPrimitive(i));
                 }
