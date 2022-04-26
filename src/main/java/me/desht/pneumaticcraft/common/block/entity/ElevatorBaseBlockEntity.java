@@ -248,8 +248,8 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         int i = -1;
         BlockEntity te = nonNullLevel().getBlockEntity(getBlockPos().relative(Direction.DOWN));
-        while (te instanceof ElevatorBaseBlockEntity) {
-            ((ElevatorBaseBlockEntity) te).getRedstoneController().setCurrentMode(newModeIdx);
+        while (te instanceof ElevatorBaseBlockEntity elevator) {
+            elevator.getRedstoneController().setCurrentMode(newModeIdx);
             i--;
             te = nonNullLevel().getBlockEntity(getBlockPos().offset(0, i, 0));
         }

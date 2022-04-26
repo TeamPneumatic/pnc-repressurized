@@ -30,8 +30,6 @@ import java.lang.ref.WeakReference;
 public class ElevatorFrameBlockEntity extends AbstractPneumaticCraftBlockEntity {
     private WeakReference<ElevatorBaseBlockEntity> baseRef = null;
 
-    //TODO redo elevator frames
-
     public ElevatorFrameBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ELEVATOR_FRAME.get(), pos, state);
     }
@@ -57,7 +55,7 @@ public class ElevatorFrameBlockEntity extends AbstractPneumaticCraftBlockEntity 
             pos1.move(Direction.DOWN);
             if (level.getBlockState(pos1).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
                 return (ElevatorBaseBlockEntity) level.getBlockEntity(pos1);
-            } else if (level.getBlockState(pos1).getBlock() != ModBlocks.ELEVATOR_FRAME.get() || pos1.getY() <= 0) {
+            } else if (level.getBlockState(pos1).getBlock() != ModBlocks.ELEVATOR_FRAME.get() || pos1.getY() <= level.getMinBuildHeight()) {
                 return null;
             }
         }
