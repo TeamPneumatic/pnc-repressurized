@@ -242,7 +242,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     @Nullable
     @Override
     public CompoundTag getShareTag(ItemStack stack) {
-        return PressurizableItem.roundedPressure(stack);
+        return ConfigHelper.common().advanced.nbtToClientModification.get() ? PressurizableItem.roundedPressure(stack) : super.getShareTag(stack);
     }
 
     /* ----------- Pneumatic Helmet helpers ---------- */
