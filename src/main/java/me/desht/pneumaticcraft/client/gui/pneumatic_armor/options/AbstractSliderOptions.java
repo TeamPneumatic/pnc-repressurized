@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
+import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -34,8 +34,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
-public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler<?>> extends IOptionPage.SimpleOptionPage<T>
-        implements PNCSlider.ISlider {
+public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler<?>> extends IOptionPage.SimpleOptionPage<T> {
     private Integer pendingVal = null;
 
     AbstractSliderOptions(IGuiScreen screen, T handler) {
@@ -73,14 +72,8 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
             initVal = PneumaticArmorItem.getIntData(stack, getTagName(), range.getRight());
         }
         PointXY pos = getSliderPos();
-        gui.addWidget(new PNCSlider(pos.x(), pos.y(), 150, 20, getPrefix(), getSuffix(),
-                range.getLeft(), range.getRight(), initVal, false, true, b -> {
-        }, this));
-    }
-
-    @Override
-    public void onChangeSliderValue(PNCSlider slider) {
-        pendingVal = slider.getValueInt();
+        gui.addWidget(new PNCForgeSlider(pos.x(), pos.y(), 150, 20, getPrefix(), getSuffix(),
+                range.getLeft(), range.getRight(), initVal, true, slider -> pendingVal = slider.getValueInt()));
     }
 
     @Override

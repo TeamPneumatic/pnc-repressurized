@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
-import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
+import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -43,15 +43,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.client.gui.GuiUtils;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements PNCSlider.ISlider {
+public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
     private boolean needSave = false;
     private final int[][] origColors = new int[4][SelectorType.values().length]; // primary & secondary for each slot
     private final int[][] colors = new int[4][SelectorType.values().length]; // primary & secondary for each slot
@@ -72,10 +70,10 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack stack = player.getItemBySlot(slot);
             int idx = slot.getIndex();
-            if (stack.getItem() instanceof PneumaticArmorItem) {
-                origColors[idx][0] = colors[idx][0] = ((PneumaticArmorItem) stack.getItem()).getColor(stack);
-                origColors[idx][1] = colors[idx][1] = ((PneumaticArmorItem) stack.getItem()).getSecondaryColor(stack);
-                origColors[idx][2] = colors[idx][2] = ((PneumaticArmorItem) stack.getItem()).getEyepieceColor(stack);
+            if (stack.getItem() instanceof PneumaticArmorItem armor) {
+                origColors[idx][0] = colors[idx][0] = armor.getColor(stack);
+                origColors[idx][1] = colors[idx][1] = armor.getSecondaryColor(stack);
+                origColors[idx][2] = colors[idx][2] = armor.getEyepieceColor(stack);
             }
         }
     }
@@ -182,7 +180,6 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
 
     private void updateSlider(RGBSlider s, int val) {
         s.setValue(val);
-        s.setMessage(s.dispString.copy().append(Integer.toString(val)).append(s.suffix));
     }
 
     @Override
@@ -218,7 +215,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
                 int newVal = Mth.clamp((int) (slider.getValueInt() + val), 0, 255);
                 if (slider.getValueInt() != newVal) {
                     updateSlider(slider, newVal);
-                    onChangeSliderValue(slider);
+                    slider.applyValue();
                 }
                 return true;
             }
@@ -228,7 +225,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
 
     @Override
     public void onClose() {
-        minecraft.setScreen(ArmorMainScreen.getInstance());
+        Objects.requireNonNull(minecraft).setScreen(ArmorMainScreen.getInstance());
     }
 
     @Override
@@ -240,25 +237,33 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen implements
         super.removed();
     }
 
-    @Override
-    public void onChangeSliderValue(PNCSlider slider) {
-        if (slider instanceof RGBSlider) {
-            ColorComponent component = ((RGBSlider) slider).getColor();
-            setCurrentColor((getCurrentColor() & ~component.mask) | (slider.getValueInt() << component.bitShift));
-            updateClientSideArmor(selectedSlot);
-        }
-    }
-
-    private static class RGBSlider extends PNCSlider {
+    private static class RGBSlider extends PNCForgeSlider {
+        private final ArmorColoringScreen gui;
         private final ColorComponent color;
 
         public RGBSlider(ArmorColoringScreen gui, ColorComponent color, int xPos, int yPos, int width, int height, double currentVal) {
-            super(xPos, yPos, width, height, new TextComponent(color.prefix), TextComponent.EMPTY, 0, 255, currentVal, false, true, null, gui);
+            super(xPos, yPos, width, height, new TextComponent(color.prefix), TextComponent.EMPTY, 0, 255, currentVal, true, null);
+            this.gui = gui;
             this.color = color;
         }
 
         public ColorComponent getColor() {
             return color;
+        }
+
+        @Override
+        protected void applyValue() {
+            ColorComponent component = getColor();
+            gui.setCurrentColor((gui.getCurrentColor() & ~component.mask) | (getValueInt() << component.bitShift));
+            gui.updateClientSideArmor(selectedSlot);
+            super.applyValue();
+        }
+
+        @Override
+        protected void renderBg(PoseStack pPoseStack, Minecraft pMinecraft, int pMouseX, int pMouseY) {
+            int xPos = this.x + (int)(this.value * (double)(this.width - 8));
+            int vOff = (this.isHoveredOrFocused() ? 2 : 1) * 20;
+            GuiUtils.drawContinuousTexturedBox(pPoseStack, WIDGETS_LOCATION, xPos, this.y, 0, 46 + vOff, 8, this.height, 200, 20, 2, 3, 2, 2, this.getBlitOffset());
         }
     }
 

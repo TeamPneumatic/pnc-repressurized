@@ -197,7 +197,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         return marginSize;
     }
 
-    public void setMarginSize(byte marginSize) {
+    public void setMarginSize(int marginSize) {
         this.marginSize = (byte) Mth.clamp(marginSize, 0, 9);
         needMaxLineWidthRecalc();
     }

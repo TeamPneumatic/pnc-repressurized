@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
+import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.UVLightBoxBlock;
@@ -37,8 +37,8 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLightBoxMenu,UVLightBoxBlockEntity> implements PNCSlider.ISlider {
-    private PNCSlider slider;
+public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLightBoxMenu,UVLightBoxBlockEntity> {
+    private PNCForgeSlider slider;
 
     public UVLightBoxScreen(UVLightBoxMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -50,9 +50,9 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
     public void init() {
         super.init();
 
-        addRenderableWidget(slider = new PNCSlider(leftPos + 10, topPos + 45, 95, 16,
+        addRenderableWidget(slider = new PNCForgeSlider(leftPos + 10, topPos + 45, 95, 16,
                 xlate("pneumaticcraft.gui.uv_light_box.threshold").append(" "), new TextComponent("%"),
-                1, 100, te.getThreshold(), false, true, b -> { }, this));
+                1, 100, te.getThreshold(), true, slider -> sendDelayed(5)));
     }
 
     @Override
@@ -61,7 +61,6 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
         if (firstUpdate || interpolate) {
             // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
             slider.setValue(te.getThreshold());
-            slider.updateSlider();
         }
         slider.active = !interpolate;
         slider.visible = !interpolate || te.getRedstoneController().getCurrentRedstonePower() > 0;
@@ -100,11 +99,6 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
             float usage = PneumaticValues.USAGE_UV_LIGHTBOX * te.getSpeedUsageMultiplierFromUpgrades();
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.airUsage", PneumaticCraftUtils.roundNumberTo(usage, 2)));
         }
-    }
-
-    @Override
-    public void onChangeSliderValue(PNCSlider slider) {
-        sendDelayed(5);
     }
 
     @Override

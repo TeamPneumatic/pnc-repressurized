@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
-import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
+import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
@@ -55,7 +55,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     private final ArmorHUDLayout.LayoutType layoutItem;
 
     private WidgetCheckBox snapToGrid;
-    private PNCSlider gridSlider;
+    private PNCForgeSlider gridSlider;
 
     private static boolean snap = false;
     private static int gridSize = 4;
@@ -106,8 +106,8 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         snapToGrid.checked = snap;
         addRenderableWidget(snapToGrid);
 
-        gridSlider = new PNCSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
-                TextComponent.EMPTY, TextComponent.EMPTY, 1, 12, gridSize, false, true, b -> {}, null);
+        gridSlider = new PNCForgeSlider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
+                TextComponent.EMPTY, TextComponent.EMPTY, 1, 12, gridSize, true, null);
         addRenderableWidget(gridSlider);
     }
 

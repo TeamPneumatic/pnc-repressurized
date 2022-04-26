@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.client.gui.widget.PNCSlider;
+import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -28,15 +28,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraftforge.client.gui.widget.ForgeSlider;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<KeroseneLampMenu,KeroseneLampBlockEntity> implements PNCSlider.ISlider {
+public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<KeroseneLampMenu,KeroseneLampBlockEntity> {
 
     private WidgetLabel rangeLabel;
-    private PNCSlider slider;
+    private ForgeSlider slider;
 
     public KeroseneLampScreen(KeroseneLampMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -47,12 +48,12 @@ public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<Ke
         super.init();
 
         addRenderableWidget(new WidgetTank(leftPos + 152, topPos + 15, te.getTank()));
-        addRenderableWidget(rangeLabel = new WidgetLabel(leftPos + 20, topPos + 55, TextComponent.EMPTY));
+        addRenderableWidget(rangeLabel = new WidgetLabel(leftPos + 8, topPos + 50, TextComponent.EMPTY));
 
-        addRenderableWidget(slider = new PNCSlider(leftPos + 7, topPos + 30, 118, 20,
+        addRenderableWidget(slider = new PNCForgeSlider(leftPos + 7, topPos + 30, 118, 16,
                 xlate("pneumaticcraft.gui.keroseneLamp.maxRange").append(" "), TextComponent.EMPTY,
-                1, KeroseneLampBlockEntity.MAX_RANGE, te.getTargetRange(), false, true,
-                b -> { }, this));
+                1, KeroseneLampBlockEntity.MAX_RANGE, te.getTargetRange(), true,
+                (slider) -> sendDelayed(5)));
     }
 
     @Override
@@ -60,17 +61,11 @@ public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<Ke
         if (firstUpdate) {
             // te sync packet hasn't necessarily arrived when init() is called; need to set it up here
             slider.setValue(te.getTargetRange());
-            slider.updateSlider();
         }
 
         super.containerTick();
 
         rangeLabel.setMessage(xlate("pneumaticcraft.message.misc.range", te.getRange()));
-    }
-
-    @Override
-    public void onChangeSliderValue(PNCSlider slider) {
-        sendDelayed(5);
     }
 
     @Override
