@@ -250,7 +250,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
-    private Rectangle2d getProgrammerBounds() {
+    public Rectangle2d getProgrammerBounds() {
         return hiRes ? PROGRAMMER_HI_RES : PROGRAMMER_STD_RES;
     }
 
@@ -619,8 +619,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         return false;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private boolean isValidPlaced(IProgWidget widget1) {
+    public boolean isValidPlaced(IProgWidget widget1) {
         Rectangle2d draggingRect = new Rectangle2d(widget1.getX(), widget1.getY(), widget1.getWidth() / 2, widget1.getHeight() / 2);
         for (IProgWidget w : te.progWidgets) {
             if (w != widget1 && ClientUtils.intersects(draggingRect, w.getX(), w.getY(), w.getWidth() / 2.0, w.getHeight() / 2.0)) {
@@ -852,7 +851,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (!programmedItem.isEmpty()) {
             int required = te.getRequiredPuzzleCount();
             if (required != 0) exportButtonTooltip.add(StringTextComponent.EMPTY);
-            int effectiveRequired = minecraft.player.isCreative() ? 0 : required;
+            int effectiveRequired = ClientUtils.getClientPlayer().isCreative() ? 0 : required;
             int available = te.availablePuzzlePieces + countPlayerPuzzlePieces();
             exportButton.active = effectiveRequired <= available;
             if (required > 0) {
@@ -864,7 +863,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.returnedPieces", -effectiveRequired)
                         .withStyle(TextFormatting.GREEN));
             }
-            if (required != 0 && minecraft.player.isCreative()) {
+            if (required != 0 && ClientUtils.getClientPlayer().isCreative()) {
                 exportButtonTooltip.add(new StringTextComponent("(Creative mode)").withStyle(TextFormatting.LIGHT_PURPLE));
             }
             if (effectiveRequired > available) {
@@ -1015,6 +1014,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (offset.equals(BlockPos.ZERO))
             return baseVariable;
         return offsetToVariableNames.computeIfAbsent(offset, k -> "var" + (offsetToVariableNames.size() + 1));
+    }
+
+    public PointXY mouseToWidgetCoords(double mouseX, double mouseY, IProgWidget p) {
+        float scale = programmerUnit.getScale();
+        mouseX = (mouseX - programmerUnit.getTranslatedX()) / scale;
+        mouseY = (mouseY - programmerUnit.getTranslatedY()) / scale;
+        return new PointXY((int) (mouseX - leftPos - p.getWidth() / 3d), (int) (mouseY - topPos - p.getHeight() / 4d));
     }
 
     @Override
@@ -1251,6 +1257,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 .orElse(null);
     }
 
+    public boolean isVisible(IProgWidget w) {
+        return !programmerUnit.isOutsideProgrammingArea(w);
+    }
+
     private static class FilterTextField extends WidgetTextField {
         FilterTextField(FontRenderer font, int x, int y, int width, int height) {
             super(font, x, y, width, height);
@@ -1280,7 +1290,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         final IProgWidget widget;
         double ty = 0;
         double tx = 0;
-        final double velX = (Minecraft.getInstance().level.random.nextDouble() - 0.5) * 3;
+        final double velX = (ClientUtils.getClientWorld().random.nextDouble() - 0.5) * 3;
         double velY = -4;
 
         private RemovingWidget(IProgWidget widget) {

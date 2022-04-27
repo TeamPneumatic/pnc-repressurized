@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.AmadronAddTradeGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.LogisticsFilterGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.ProgWidgetItemFilterGhost;
+import me.desht.pneumaticcraft.common.thirdparty.jei.transfer.ProgrammerTransferHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -185,6 +186,11 @@ public class JEIPlugin implements IModPlugin {
         registration.addGhostIngredientHandler(GuiAmadronAddTrade.class, new AmadronAddTradeGhost());
         registration.addGhostIngredientHandler(GuiLogisticsBase.class, new LogisticsFilterGhost());
         registration.addGhostIngredientHandler(GuiProgWidgetItemFilter.class, new ProgWidgetItemFilterGhost());
+    }
+
+    @Override
+    public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
+        registration.addUniversalRecipeTransferHandler(new ProgrammerTransferHandler(registration.getTransferHelper()));
     }
 
     @Override

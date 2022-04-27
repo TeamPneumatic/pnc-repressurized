@@ -26,8 +26,11 @@ import me.desht.pneumaticcraft.api.client.ITickableWidget;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
-import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -575,19 +578,19 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), StringTextComponent.EMPTY, pressable).withTag(tag);
     }
 
-    WidgetTextField getTextFieldFromRectangle(Rectangle2d textFieldSize) {
-        return new WidgetTextField(font, textFieldSize.getX(), textFieldSize.getY(), textFieldSize.getWidth(), textFieldSize.getHeight());
-    }
-
-    @Override
-    public int getGuiLeft() {
-        return leftPos;
-    }
-
-    @Override
-    public int getGuiTop() {
-        return topPos;
-    }
+//    WidgetTextField getTextFieldFromRectangle(Rectangle2d textFieldSize) {
+//        return new WidgetTextField(font, textFieldSize.getX(), textFieldSize.getY(), textFieldSize.getWidth(), textFieldSize.getHeight());
+//    }
+//
+//    @Override
+//    public int getGuiLeft() {
+//        return leftPos;
+//    }
+//
+//    @Override
+//    public int getGuiTop() {
+//        return topPos;
+//    }
 
     public List<Rectangle2d> getTabRectangles() {
         return getStatWidgets().stream()

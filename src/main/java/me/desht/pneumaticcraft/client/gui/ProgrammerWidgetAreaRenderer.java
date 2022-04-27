@@ -130,7 +130,7 @@ public class ProgrammerWidgetAreaRenderer {
 
     private int getHoveredWidgetIndex(int mouseX, int mouseY) {
         float scale = getScale();
-        for (int i = 0; i < progWidgets.size(); i++) {
+        for (int i = progWidgets.size() - 1; i >= 0; i--) {
             IProgWidget widget = progWidgets.get(i);
             if (!isOutsideProgrammingArea(widget)
                     && (mouseX - translatedX) / scale - guiLeft >= widget.getX()
