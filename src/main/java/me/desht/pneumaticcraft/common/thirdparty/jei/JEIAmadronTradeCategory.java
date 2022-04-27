@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAmadronOffer;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -44,10 +45,10 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
     private final IDrawable limitedIcon;
 
     JEIAmadronTradeCategory() {
-        super(ModCategoryUid.AMADRON_TRADE, AmadronRecipe.class,
+        super(RecipeTypes.AMADRON_TRADE,
                 xlate(ModItems.AMADRON_TABLET.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.WIDGET_AMADRON_OFFER, 0, 0, 73, 35),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.AMADRON_TABLET.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.AMADRON_TABLET.get()))
         );
 
         limitedIcon = guiHelper()
@@ -61,13 +62,13 @@ public class JEIAmadronTradeCategory extends AbstractPNCCategory<AmadronRecipe> 
         IRecipeSlotBuilder inputSlot = builder.addSlot(RecipeIngredientRole.INPUT, 6, 15);
         recipe.getInput().accept(
                 inputSlot::addItemStack,
-                fluidStack -> inputSlot.addIngredient(VanillaTypes.FLUID, fluidStack)
+                fluidStack -> inputSlot.addIngredient(ForgeTypes.FLUID_STACK, fluidStack)
                         .setOverlay(new FluidTextOverlay(fluidStack), 0, 0)
         );
         IRecipeSlotBuilder outputSlot = builder.addSlot(RecipeIngredientRole.OUTPUT, 51, 15);
         recipe.getOutput().accept(
                 outputSlot::addItemStack,
-                fluidStack -> outputSlot.addIngredient(VanillaTypes.FLUID, fluidStack)
+                fluidStack -> outputSlot.addIngredient(ForgeTypes.FLUID_STACK, fluidStack)
                         .setOverlay(new FluidTextOverlay(fluidStack), 0, 0)
         );
     }

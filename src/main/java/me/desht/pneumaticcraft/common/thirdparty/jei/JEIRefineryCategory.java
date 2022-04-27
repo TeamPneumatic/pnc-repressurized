@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -48,10 +49,10 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     private final Map<ResourceLocation, WidgetTemperature> tempWidgets = new HashMap<>();
 
     JEIRefineryCategory() {
-        super(ModCategoryUid.REFINERY, RefineryRecipe.class,
+        super(RecipeTypes.REFINERY,
                 xlate(ModBlocks.REFINERY.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_REFINERY, 6, 15, 166, 79),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.REFINERY.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.REFINERY.get()))
         );
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
@@ -59,7 +60,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, RefineryRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 2, 10)
-                .addIngredients(VanillaTypes.FLUID, recipe.getInput().getFluidStacks())
+                .addIngredients(ForgeTypes.FLUID_STACK, recipe.getInput().getFluidStacks())
                 .setFluidRenderer(recipe.getInput().getAmount(), true, 16, 64)
                 .setOverlay(Helpers.makeTankOverlay(64), 0, 0);
 
@@ -68,7 +69,7 @@ public class JEIRefineryCategory extends AbstractPNCCategory<RefineryRecipe> {
             int h = out.getAmount() * 64 / recipe.getInput().getAmount();
             int yOff = 64 - h;
             builder.addSlot(RecipeIngredientRole.OUTPUT, 69 + n * 20, 18 - n * 4 + yOff)
-                    .addIngredient(VanillaTypes.FLUID, out)
+                    .addIngredient(ForgeTypes.FLUID_STACK, out)
                     .setFluidRenderer(out.getAmount(), true, 16, h)
                     .setOverlay(Helpers.makeTankOverlay(h), 0, 0);
             n++;

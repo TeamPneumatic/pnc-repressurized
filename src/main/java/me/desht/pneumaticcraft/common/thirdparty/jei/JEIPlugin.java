@@ -17,7 +17,9 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetItemFilterScreen;
 import me.desht.pneumaticcraft.client.gui.semiblock.AbstractLogisticsScreen;
@@ -32,6 +34,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.AmadronAddTradeGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.LogisticsFilterGhost;
 import me.desht.pneumaticcraft.common.thirdparty.jei.ghost.ProgWidgetItemFilterGhost;
+import me.desht.pneumaticcraft.common.thirdparty.jei.transfer.ProgrammerTransferHandler;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
@@ -39,6 +42,7 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.recipe.IRecipeManager;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.runtime.IRecipesGui;
@@ -67,14 +71,15 @@ public class JEIPlugin implements IModPlugin {
     public void registerItemSubtypes(ISubtypeRegistration registration) {
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             if (item.get() instanceof PressurizableItem) {
-                registration.registerSubtypeInterpreter(item.get(),
+                registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, item.get(),
                         (s, ctx) -> s.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                                 .map(h2 -> String.valueOf(h2.getPressure()))
                                 .orElse(IIngredientSubtypeInterpreter.NONE)
                 );
             }
         }
-        registration.registerSubtypeInterpreter(ModItems.EMPTY_PCB.get(), (s, ctx) -> String.valueOf(UVLightBoxBlockEntity.getExposureProgress(s)));
+        registration.registerSubtypeInterpreter(VanillaTypes.ITEM_STACK, ModItems.EMPTY_PCB.get(),
+                (s, ctx) -> String.valueOf(UVLightBoxBlockEntity.getExposureProgress(s)));
     }
 
     @Override
@@ -106,79 +111,79 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         // these all use recipes from the vanilla RecipeManager
-        addRecipeType(registration, PneumaticCraftRecipeType.pressureChamber, ModCategoryUid.PRESSURE_CHAMBER);
-        addRecipeType(registration, PneumaticCraftRecipeType.heatFrameCooling, ModCategoryUid.HEAT_FRAME_COOLING);
-        addRecipeType(registration, PneumaticCraftRecipeType.refinery, ModCategoryUid.REFINERY);
-        addRecipeType(registration, PneumaticCraftRecipeType.thermoPlant, ModCategoryUid.THERMO_PLANT);
-        addRecipeType(registration, PneumaticCraftRecipeType.assemblyLaser, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        addRecipeType(registration, PneumaticCraftRecipeType.assemblyDrill, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        addRecipeType(registration, PneumaticCraftRecipeType.assemblyDrillLaser, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        addRecipeType(registration, PneumaticCraftRecipeType.amadronOffers, ModCategoryUid.AMADRON_TRADE);
-        addRecipeType(registration, PneumaticCraftRecipeType.fluidMixer, ModCategoryUid.FLUID_MIXER);
-        addRecipeType(registration, PneumaticCraftRecipeType.explosionCrafting, ModCategoryUid.EXPLOSION_CRAFTING);
+        addRecipeType(registration, PneumaticCraftRecipeType.pressureChamber, RecipeTypes.PRESSURE_CHAMBER);
+        addRecipeType(registration, PneumaticCraftRecipeType.heatFrameCooling, RecipeTypes.HEAT_FRAME_COOLING);
+        addRecipeType(registration, PneumaticCraftRecipeType.refinery, RecipeTypes.REFINERY);
+        addRecipeType(registration, PneumaticCraftRecipeType.thermoPlant, RecipeTypes.THERMO_PLANT);
+        addRecipeType(registration, PneumaticCraftRecipeType.assemblyLaser, RecipeTypes.ASSEMBLY);
+        addRecipeType(registration, PneumaticCraftRecipeType.assemblyDrill, RecipeTypes.ASSEMBLY);
+        addRecipeType(registration, PneumaticCraftRecipeType.assemblyDrillLaser, RecipeTypes.ASSEMBLY);
+        addRecipeType(registration, PneumaticCraftRecipeType.amadronOffers, RecipeTypes.AMADRON_TRADE);
+        addRecipeType(registration, PneumaticCraftRecipeType.fluidMixer, RecipeTypes.FLUID_MIXER);
+        addRecipeType(registration, PneumaticCraftRecipeType.explosionCrafting, RecipeTypes.EXPLOSION_CRAFTING);
 
         // these have their own pseudo-recipes
-        registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
-        registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
-        registration.addRecipes(JEISpawnerExtractionCategory.getAllRecipes(), ModCategoryUid.SPAWNER_EXTRACTION);
-        registration.addRecipes(JEIMemoryEssenceCategory.getAllRecipes(), ModCategoryUid.MEMORY_ESSENCE);
+        registration.addRecipes(RecipeTypes.UV_LIGHT_BOX, JEIUVLightBoxCategory.getAllRecipes());
+        registration.addRecipes(RecipeTypes.ETCHING_TANK, JEIEtchingTankCategory.getAllRecipes());
+        registration.addRecipes(RecipeTypes.SPAWNER_EXTRACTION, JEISpawnerExtractionCategory.getAllRecipes());
+        registration.addRecipes(RecipeTypes.MEMORY_ESSENCE, JEIMemoryEssenceCategory.getAllRecipes());
         if (ConfigHelper.common().recipes.inWorldPlasticSolidification.get()) {
-            registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
+            registration.addRecipes(RecipeTypes.PLASTIC_SOLIDIFYING, JEIPlasticSolidifyingCategory.getAllRecipes());
         }
         if (ConfigHelper.common().recipes.inWorldYeastCrafting.get()) {
-            registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
+            registration.addRecipes(RecipeTypes.YEAST_CRAFTING, JEIYeastCraftingCategory.getAllRecipes());
         }
 
         // even though heat properties are in the vanilla recipe system, we use a custom registration here
         // so we can pull extra entries from the BlockHeatProperties manager (auto-registered fluids etc.)
-        registration.addRecipes(JEIBlockHeatPropertiesCategory.getAllRecipes(), ModCategoryUid.HEAT_PROPERTIES);
+        registration.addRecipes(RecipeTypes.HEAT_PROPERTIES, JEIBlockHeatPropertiesCategory.getAllRecipes());
 
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             addStackInfo(registration, new ItemStack(item.get()));
         }
     }
 
-    private void addRecipeType(IRecipeRegistration registration, PneumaticCraftRecipeType<?> type, ResourceLocation id) {
-        registration.addRecipes(type.getRecipes(Minecraft.getInstance().level).values(), id);
+    private <T extends PneumaticCraftRecipe> void addRecipeType(IRecipeRegistration registration, PneumaticCraftRecipeType<T> type, RecipeType<T> recipeType) {
+        registration.addRecipes(recipeType, ImmutableList.copyOf(type.getRecipes(Minecraft.getInstance().level).values()));
     }
 
     private void addStackInfo(IRecipeRegistration registry, ItemStack stack) {
         String k = ICustomTooltipName.getTranslationKey(stack, false);
         if (I18n.exists(k)) {
             for (String s : StringUtils.splitByWholeSeparator(I18n.get(k), GuiUtils.TRANSLATION_LINE_BREAK)) {
-                registry.addIngredientInfo(stack, VanillaTypes.ITEM, new TextComponent(s));
+                registry.addIngredientInfo(stack, VanillaTypes.ITEM_STACK, new TextComponent(s));
             }
         }
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(ModItems.AMADRON_TABLET.get()), ModCategoryUid.AMADRON_TRADE);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()), ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_VALVE.get()), ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_GLASS.get()), ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY.get()), ModCategoryUid.REFINERY);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY_OUTPUT.get()), ModCategoryUid.REFINERY);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), ModCategoryUid.THERMO_PLANT);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()), ModCategoryUid.UV_LIGHT_BOX);
-        registration.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME.get()), ModCategoryUid.HEAT_FRAME_COOLING);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ETCHING_TANK.get()), ModCategoryUid.ETCHING_TANK);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.FLUID_MIXER.get()), ModCategoryUid.FLUID_MIXER);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()), ModCategoryUid.SPAWNER_EXTRACTION);
-        registration.addRecipeCatalyst(new ItemStack(ModBlocks.HEAT_PIPE.get()), ModCategoryUid.HEAT_PROPERTIES);
-        registration.addRecipeCatalyst(new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()), ModCategoryUid.MEMORY_ESSENCE);
-        registration.addRecipeCatalyst(new ItemStack(Blocks.TNT), ModCategoryUid.EXPLOSION_CRAFTING);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.AMADRON_TABLET.get()), RecipeTypes.AMADRON_TRADE);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()), RecipeTypes.ASSEMBLY);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), RecipeTypes.PRESSURE_CHAMBER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_VALVE.get()), RecipeTypes.PRESSURE_CHAMBER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), RecipeTypes.PRESSURE_CHAMBER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.PRESSURE_CHAMBER_GLASS.get()), RecipeTypes.PRESSURE_CHAMBER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY.get()), RecipeTypes.REFINERY);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.REFINERY_OUTPUT.get()), RecipeTypes.REFINERY);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()), RecipeTypes.THERMO_PLANT);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()), RecipeTypes.UV_LIGHT_BOX);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME.get()), RecipeTypes.HEAT_FRAME_COOLING);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.ETCHING_TANK.get()), RecipeTypes.ETCHING_TANK);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.FLUID_MIXER.get()), RecipeTypes.FLUID_MIXER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()), RecipeTypes.SPAWNER_EXTRACTION);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.HEAT_PIPE.get()), RecipeTypes.HEAT_PROPERTIES);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()), RecipeTypes.MEMORY_ESSENCE);
+        registration.addRecipeCatalyst(new ItemStack(Blocks.TNT), RecipeTypes.EXPLOSION_CRAFTING);
     }
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(AssemblyControllerScreen.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
-        registration.addRecipeClickArea(PressureChamberScreen.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
-        CustomRecipeClickArea.add(registration, RefineryControllerScreen.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
-        CustomRecipeClickArea.add(registration, ThermopneumaticProcessingPlantScreen.class, 30, 36, 48, 30, ModCategoryUid.THERMO_PLANT);
-        CustomRecipeClickArea.add(registration, FluidMixerScreen.class, 50, 40, 47, 24, ModCategoryUid.FLUID_MIXER);
+        registration.addRecipeClickArea(AssemblyControllerScreen.class, 110, 10, 50, 50, RecipeTypes.ASSEMBLY);
+        registration.addRecipeClickArea(PressureChamberScreen.class, 100, 7, 60, 60, RecipeTypes.PRESSURE_CHAMBER);
+        CustomRecipeClickArea.add(registration, RefineryControllerScreen.class, 47, 33, 27, 47, RecipeTypes.REFINERY);
+        CustomRecipeClickArea.add(registration, ThermopneumaticProcessingPlantScreen.class, 30, 36, 48, 30, RecipeTypes.THERMO_PLANT);
+        CustomRecipeClickArea.add(registration, FluidMixerScreen.class, 50, 40, 47, 24, RecipeTypes.FLUID_MIXER);
 
         registration.addGenericGuiContainerHandler(AbstractPneumaticCraftContainerScreen.class, new GuiTabHandler());
 
@@ -193,6 +198,11 @@ public class JEIPlugin implements IModPlugin {
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         recipeManager = jeiRuntime.getRecipeManager();
         recipesGui = jeiRuntime.getRecipesGui();
+    }
+
+    @Override
+    public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
+        registration.addUniversalRecipeTransferHandler(new ProgrammerTransferHandler(registration.getTransferHelper()));
     }
 
     @Override

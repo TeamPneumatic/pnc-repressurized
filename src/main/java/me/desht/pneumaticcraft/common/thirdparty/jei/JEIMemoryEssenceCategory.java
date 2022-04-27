@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
 import mezz.jei.api.gui.ingredient.IRecipeSlotView;
@@ -42,16 +43,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssenceCategory.MemoryEssenceRecipe> {
     public JEIMemoryEssenceCategory() {
-        super(ModCategoryUid.MEMORY_ESSENCE, MemoryEssenceRecipe.class,
+        super(RecipeTypes.MEMORY_ESSENCE,
                 new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000).getDisplayName(),
                 guiHelper().createDrawable(Textures.GUI_JEI_MEMORY_ESSENCE, 0, 0, 146, 73),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()))
         );
     }
 
@@ -66,7 +66,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
                     .addTooltipCallback(new Tooltip(recipe, 1));
         }
         builder.addSlot(RecipeIngredientRole.OUTPUT, 112, 29)
-                .addIngredients(VanillaTypes.FLUID, Collections.singletonList(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000)));
+                .addIngredients(ForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000)));
     }
 
     @Override
@@ -88,7 +88,7 @@ public class JEIMemoryEssenceCategory extends AbstractPNCCategory<JEIMemoryEssen
         }
     }
 
-    static Collection<MemoryEssenceRecipe> getAllRecipes() {
+    static List<MemoryEssenceRecipe> getAllRecipes() {
         return ImmutableList.of(
                 new MemoryEssenceRecipe(ModItems.MEMORY_STICK.get(), null),
                 new MemoryEssenceRecipe(ModBlocks.AERIAL_INTERFACE.get(), ModUpgrades.DISPENSER.get().getItem()),

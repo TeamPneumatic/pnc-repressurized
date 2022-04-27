@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
@@ -34,8 +35,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -43,10 +44,10 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
     private final IDrawableAnimated progressBar;
 
     JEIEtchingTankCategory() {
-        super(ModCategoryUid.ETCHING_TANK, EtchingTankRecipe.class,
+        super(RecipeTypes.ETCHING_TANK,
                 xlate(ModBlocks.ETCHING_TANK.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 0, 0, 83, 42),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.ETCHING_TANK.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.ETCHING_TANK.get()))
         );
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_ETCHING_TANK, 83, 0, 42, 42);
         progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
@@ -57,7 +58,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 13)
                 .addIngredients(recipe.input);
         builder.addSlot(RecipeIngredientRole.INPUT, 26, 13)
-                .addIngredients(VanillaTypes.FLUID, Collections.singletonList(new FluidStack(ModFluids.ETCHING_ACID.get(), 1000)));
+                .addIngredients(ForgeTypes.FLUID_STACK, Collections.singletonList(new FluidStack(ModFluids.ETCHING_ACID.get(), 1000)));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 1)
                 .addItemStack(recipe.output);
         builder.addSlot(RecipeIngredientRole.OUTPUT, 66, 25)
@@ -69,7 +70,7 @@ public class JEIEtchingTankCategory extends AbstractPNCCategory<JEIEtchingTankCa
         progressBar.draw(matrixStack, 20, 0);
     }
 
-    static Collection<?> getAllRecipes() {
+    static List<EtchingTankRecipe> getAllRecipes() {
         ItemStack[] input = new ItemStack[4];
         for (int i = 0; i < input.length; i++) {
             input[i] = new ItemStack(ModItems.EMPTY_PCB.get());

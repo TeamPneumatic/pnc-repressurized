@@ -32,7 +32,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIExplosionCraftingCategory extends AbstractPNCCategory<ExplosionCraftingRecipe> {
     JEIExplosionCraftingCategory() {
-        super(ModCategoryUid.EXPLOSION_CRAFTING, ExplosionCraftingRecipe.class,
+        super(RecipeTypes.EXPLOSION_CRAFTING,
                 xlate("pneumaticcraft.gui.nei.title.explosionCrafting"),
                 guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
                 guiHelper()

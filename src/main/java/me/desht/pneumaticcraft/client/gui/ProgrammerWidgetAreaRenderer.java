@@ -127,8 +127,10 @@ public class ProgrammerWidgetAreaRenderer {
     }
 
     private int getHoveredWidgetIndex(int mouseX, int mouseY) {
+        // iterate backwards because later-added widgets are more logically on top
+        // widgets don't normally overlap, but there are circumstances where they can
         float scale = getScale();
-        for (int i = 0; i < progWidgets.size(); i++) {
+        for (int i = progWidgets.size() - 1; i >= 0; i--) {
             IProgWidget widget = progWidgets.get(i);
             if (!isOutsideProgrammingArea(widget)
                     && (mouseX - translatedX) / scale - guiLeft >= widget.getX()

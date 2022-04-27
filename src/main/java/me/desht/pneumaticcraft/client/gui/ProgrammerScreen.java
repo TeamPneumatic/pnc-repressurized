@@ -255,7 +255,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
     }
 
-    private Rect2i getProgrammerBounds() {
+    public Rect2i getProgrammerBounds() {
         return hiRes ? PROGRAMMER_HI_RES : PROGRAMMER_STD_RES;
     }
 
@@ -1287,6 +1287,17 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 .filter(w -> cls.isAssignableFrom(w.getClass()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public PointXY mouseToWidgetCoords(double mouseX, double mouseY, ProgWidgetItemFilter p) {
+        float scale = programmerUnit.getScale();
+        mouseX = (mouseX - programmerUnit.getTranslatedX()) / scale;
+        mouseY = (mouseY - programmerUnit.getTranslatedY()) / scale;
+        return new PointXY((int) (mouseX - leftPos - p.getWidth() / 3d), (int) (mouseY - topPos - p.getHeight() / 4d));
+    }
+
+    public boolean isVisible(IProgWidget w) {
+        return !programmerUnit.isOutsideProgrammingArea(w);
     }
 
     private static class FilterTextField extends WidgetTextField {

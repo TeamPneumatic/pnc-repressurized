@@ -31,23 +31,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawnerExtractionCategory.Recipe> {
+public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawnerExtractionCategory.SpawnerExtractionRecipe> {
     public JEISpawnerExtractionCategory() {
-        super(ModCategoryUid.SPAWNER_EXTRACTION, Recipe.class,
+        super(RecipeTypes.SPAWNER_EXTRACTION,
                 xlate("pneumaticcraft.gui.jei.title.spawnerExtraction"),
                 guiHelper().createDrawable(Textures.GUI_JEI_SPAWNER_EXTRACTION, 0, 0, 120, 64),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()))
         );
     }
 
     @Override
-    public void setRecipe(IRecipeLayoutBuilder builder, Recipe recipe, IFocusGroup focuses) {
+    public void setRecipe(IRecipeLayoutBuilder builder, SpawnerExtractionRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 53, 3).addItemStack(recipe.itemInput);
         builder.addSlot(RecipeIngredientRole.INPUT, 53, 34).addItemStack(new ItemStack(Blocks.SPAWNER));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 18,34).addItemStacks(recipe.cores);
@@ -60,7 +59,7 @@ public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawner
         ENTITY_TYPES.add(EntityType.SKELETON);
         ENTITY_TYPES.add(EntityType.CREEPER);
     }
-    public static Collection<?> getAllRecipes() {
+    public static List<SpawnerExtractionRecipe> getAllRecipes() {
         List<ItemStack> cores = new ArrayList<>();
         for (EntityType<?> type : ENTITY_TYPES) {
             ItemStack core = new ItemStack(ModItems.SPAWNER_CORE.get());
@@ -70,7 +69,7 @@ public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawner
             cores.add(core);
         }
 
-        return Collections.singletonList(new Recipe(
+        return Collections.singletonList(new SpawnerExtractionRecipe(
                         new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()),
                         cores,
                         new ItemStack(ModBlocks.EMPTY_SPAWNER.get())
@@ -78,6 +77,6 @@ public class JEISpawnerExtractionCategory extends AbstractPNCCategory<JEISpawner
         );
     }
 
-    record Recipe(ItemStack itemInput, List<ItemStack> cores, ItemStack itemOutput) {
+    record SpawnerExtractionRecipe(ItemStack itemInput, List<ItemStack> cores, ItemStack itemOutput) {
     }
 }

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
@@ -27,6 +26,7 @@ import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -49,7 +49,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -64,7 +67,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     private static final Rect2i[] OUTPUT_AREAS = new Rect2i[] { COLD_AREA, HOT_AREA };
 
     public JEIBlockHeatPropertiesCategory() {
-        super(ModCategoryUid.HEAT_PROPERTIES, HeatPropertiesRecipe.class,
+        super(RecipeTypes.HEAT_PROPERTIES,
                 xlate("pneumaticcraft.gui.jei.title.heatProperties"),
                 guiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 0, 0, 146, 73),
                 guiHelper()
@@ -77,16 +80,15 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         this.air = guiHelper().createDrawable(Textures.GUI_JEI_HEAT_PROPERTIES, 150, 36, 16, 16);
     }
 
-    public static Collection<HeatPropertiesRecipe> getAllRecipes() {
+    public static List<HeatPropertiesRecipe> getAllRecipes() {
         // FIXME filtering out recipes whose input block has no item (e.g. minecraft:fire) is a kludge:
         //  it suppresses JEI errors when loading recipes, but such recipes still aren't shown in JEI
         //  (on the other hand the blocks in the recipe don't appear in JEI's display anyway so ¯\_(ツ)_/¯)
-        //noinspection UnstableApiUsage
         return BlockHeatProperties.getInstance().getAllEntries(Minecraft.getInstance().level).stream()
                 .filter(r -> r.getBlock() instanceof LiquidBlock || !new ItemStack(r.getBlock()).isEmpty())
                 .sorted(Comparator.comparingInt(HeatPropertiesRecipe::getTemperature)
                         .thenComparing(o -> o.getInputDisplayName().getString()))
-                .collect(ImmutableList.toImmutableList());
+                .toList();
     }
 
     @Override
@@ -101,7 +103,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         for (int idx = 0; idx < 2; idx++) {
             if (!fluids.get(idx).isEmpty()) {
                 builder.addSlot(RecipeIngredientRole.OUTPUT, OUTPUT_AREAS[idx].getX() + 2, OUTPUT_AREAS[idx].getY() - 1)
-                        .addIngredient(VanillaTypes.FLUID, fluids.get(idx));
+                        .addIngredient(ForgeTypes.FLUID_STACK, fluids.get(idx));
             } else if (!items.get(idx).isEmpty()) {
                 builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT)
                         .addItemStack(items.get(idx));
@@ -133,7 +135,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         if (block instanceof LiquidBlock l) {
             FluidStack stack = new FluidStack(l.getFluid(), 1000);
             builder.addSlot(RecipeIngredientRole.INPUT, INPUT_AREA.getX() + 2, INPUT_AREA.getY() - 1)
-                            .addIngredient(VanillaTypes.FLUID, stack);
+                            .addIngredient(ForgeTypes.FLUID_STACK, stack);
         } else {
             // items are rendered as blocks by renderBlock()
             builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addItemStack(new ItemStack(block));
@@ -236,7 +238,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
     private IFocus<?> makeFocus(Block block, RecipeIngredientRole mode) {
         return block == Blocks.AIR || block instanceof LiquidBlock ?
                 null :
-                JEIPlugin.jeiHelpers.getFocusFactory().createFocus(mode, VanillaTypes.ITEM, new ItemStack(block));
+                JEIPlugin.jeiHelpers.getFocusFactory().createFocus(mode, VanillaTypes.ITEM_STACK, new ItemStack(block));
     }
 
     private void addTooltip(Block block, List<Component> list) {

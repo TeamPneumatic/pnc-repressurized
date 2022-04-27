@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -31,17 +32,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.Collection;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasticSolidifyingCategory.PlasticSolidifyingRecipe> {
     JEIPlasticSolidifyingCategory() {
-        super(ModCategoryUid.PLASTIC_SOLIDIFYING, PlasticSolidifyingRecipe.class,
+        super(RecipeTypes.PLASTIC_SOLIDIFYING,
                 xlate("pneumaticcraft.gui.jei.title.plasticSolidifying"),
                 guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.PLASTIC.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.PLASTIC.get()))
         );
     }
 
@@ -49,7 +49,7 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
     public void setRecipe(IRecipeLayoutBuilder builder, PlasticSolidifyingRecipe recipe, IFocusGroup focuses) {
         if (recipe.input instanceof FluidIngredient f) {
             builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
-                    .addIngredients(VanillaTypes.FLUID, f.getFluidStacks());
+                    .addIngredients(ForgeTypes.FLUID_STACK, f.getFluidStacks());
         } else {
             builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
                     .addIngredients(recipe.input);
@@ -63,7 +63,7 @@ public class JEIPlasticSolidifyingCategory extends AbstractPNCCategory<JEIPlasti
         return positionalTooltip(mouseX, mouseY, (x, y) -> x >= 23 && x <= 60, "pneumaticcraft.gui.jei.tooltip.plasticSolidifying");
     }
 
-    public static Collection<PlasticSolidifyingRecipe> getAllRecipes() {
+    public static List<PlasticSolidifyingRecipe> getAllRecipes() {
         return ImmutableList.of(
                 new PlasticSolidifyingRecipe(
                         FluidIngredient.of(1000, ModFluids.PLASTIC.get()),

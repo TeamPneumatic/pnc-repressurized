@@ -34,7 +34,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,10 +51,10 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
     }
 
     JEIUVLightBoxCategory() {
-        super(ModCategoryUid.UV_LIGHT_BOX, UVLightBoxRecipe.class,
+        super(RecipeTypes.UV_LIGHT_BOX,
                 xlate(ModBlocks.UV_LIGHT_BOX.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.UV_LIGHT_BOX.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.UV_LIGHT_BOX.get()))
         );
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
         progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
@@ -78,7 +77,7 @@ public class JEIUVLightBoxCategory extends AbstractPNCCategory<UVLightBoxRecipe>
         return positionalTooltip(mouseX, mouseY, (x, y) -> x >= 23 && x <= 60, "pneumaticcraft.gui.nei.recipe.uvLightBox");
     }
 
-    static Collection<UVLightBoxRecipe> getAllRecipes() {
+    static List<UVLightBoxRecipe> getAllRecipes() {
         return UV_LIGHT_BOX_RECIPES;
     }
 }

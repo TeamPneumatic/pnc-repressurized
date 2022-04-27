@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -31,15 +32,13 @@ import java.util.List;
 import java.util.function.BiPredicate;
 
 public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
+    private final RecipeType<T> type;
     private final Component localizedName;
     private final IDrawable background;
     private final IDrawable icon;
-    private final ResourceLocation id;
-    private final Class<? extends T> cls;
 
-    protected AbstractPNCCategory(ResourceLocation id, Class<? extends T> cls, Component localizedName, IDrawable background, IDrawable icon) {
-        this.id = id;
-        this.cls = cls;
+    protected AbstractPNCCategory(RecipeType<T> type, Component localizedName, IDrawable background, IDrawable icon) {
+        this.type = type;
         this.localizedName = localizedName;
         this.background = background;
         this.icon = icon;
@@ -61,13 +60,18 @@ public abstract class AbstractPNCCategory<T> implements IRecipeCategory<T> {
     }
 
     @Override
+    public RecipeType<T> getRecipeType() {
+        return type;
+    }
+
+    @Override
     public ResourceLocation getUid() {
-        return id;
+        return type.getUid();
     }
 
     @Override
     public Class<? extends T> getRecipeClass() {
-        return cls;
+        return type.getRecipeClass();
     }
 
     static IGuiHelper guiHelper() {

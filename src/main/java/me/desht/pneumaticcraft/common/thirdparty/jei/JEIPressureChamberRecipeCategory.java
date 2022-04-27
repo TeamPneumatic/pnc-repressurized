@@ -50,10 +50,10 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
     private final ITickTimer tickTimer;
 
     JEIPressureChamberRecipeCategory() {
-        super(ModCategoryUid.PRESSURE_CHAMBER, PressureChamberRecipe.class,
+        super(RecipeTypes.PRESSURE_CHAMBER,
                 xlate("pneumaticcraft.gui.pressureChamber"),
                 guiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER, 5, 11, 166, 116),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()))
         );
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
@@ -131,7 +131,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
             int posY = 79 - i / 3 * 17;
             builder.addSlot(RecipeIngredientRole.INPUT, posX, posY)
                     .setSlotName("in" + i)
-                    .addIngredients(VanillaTypes.ITEM, inputs.get(i))
+                    .addIngredients(VanillaTypes.ITEM_STACK, inputs.get(i))
                     .addTooltipCallback(new Tooltip(recipe));
         }
 
@@ -140,7 +140,7 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
             builder.addSlot(RecipeIngredientRole.OUTPUT, 101 + i % 3 * 18, 59 + i / 3 * 18)
                     .setSlotName("out" + i)
                     .addItemStacks(outputs.get(i))
-                    .addTooltipCallback(new Tooltip(recipe));;
+                    .addTooltipCallback(new Tooltip(recipe));
         }
     }
 

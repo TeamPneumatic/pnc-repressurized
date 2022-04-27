@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.recipe.IFocusFactory;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.ChatFormatting;
@@ -31,7 +32,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -44,18 +44,18 @@ import java.util.List;
  * if advanced tooltips are on - F3+H)
  */
 public class CustomRecipeClickArea {
-    static <T extends AbstractPneumaticCraftContainerScreen<?,?>> void add(IGuiHandlerRegistration reg, Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
+    static <T extends AbstractPneumaticCraftContainerScreen<?,?>> void add(IGuiHandlerRegistration reg, Class<? extends T> guiContainerClass, int xPos, int yPos, int width, int height, RecipeType<?>... recipeTypes) {
         reg.addGuiContainerHandler(guiContainerClass, new IGuiContainerHandler<T>() {
             @Override
             public Collection<IGuiClickableArea> getGuiClickableAreas(T gui, double mouseX, double mouseY) {
-                return Collections.singletonList(createClickableArea(gui, xPos, yPos, width, height, recipeCategoryUids));
+                return Collections.singletonList(createClickableArea(gui, xPos, yPos, width, height, recipeTypes));
             }
         });
     }
 
-    private static <T extends AbstractPneumaticCraftContainerScreen<?,?>> IGuiClickableArea createClickableArea(T gui, int xPos, int yPos, int width, int height, ResourceLocation... recipeCategoryUids) {
+    private static <T extends AbstractPneumaticCraftContainerScreen<?,?>> IGuiClickableArea createClickableArea(T gui, int xPos, int yPos, int width, int height, RecipeType<?>... recipeTypes) {
         Rect2i area = new Rect2i(xPos, yPos, width, height);
-        List<ResourceLocation> recipeCategoryUidList = ImmutableList.copyOf(recipeCategoryUids);
+        List<RecipeType<?>> recipeCategoryUidList = ImmutableList.copyOf(recipeTypes);
         return new IGuiClickableArea() {
             @Override
             public Rect2i getArea() {
@@ -64,7 +64,7 @@ public class CustomRecipeClickArea {
 
             @Override
             public void onClick(IFocusFactory focusFactory, IRecipesGui recipesGui) {
-                recipesGui.showCategories(recipeCategoryUidList);
+                recipesGui.showTypes(recipeCategoryUidList);
             }
 
             @Override

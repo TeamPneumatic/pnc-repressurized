@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -32,7 +33,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,10 +40,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCraftingCategory.YeastCraftingRecipe> {
     public JEIYeastCraftingCategory() {
-        super(ModCategoryUid.YEAST_CRAFTING, YeastCraftingRecipe.class,
+        super(RecipeTypes.YEAST_CRAFTING,
                 xlate("pneumaticcraft.gui.jei.title.yeastCrafting"),
                 guiHelper().createDrawable(Textures.GUI_JEI_YEAST_CRAFTING, 0, 0, 128, 40),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.YEAST_CULTURE_BUCKET.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.YEAST_CULTURE_BUCKET.get()))
         );
     }
 
@@ -53,13 +53,13 @@ public class JEIYeastCraftingCategory extends AbstractPNCCategory<JEIYeastCrafti
         List<FluidStack> waterStack = Collections.singletonList(new FluidStack(Fluids.WATER, 1000));
 
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1).addItemStack(recipe.itemInput);
-        builder.addSlot(RecipeIngredientRole.CATALYST, 16, 16).addIngredients(VanillaTypes.FLUID, yeastStack);
-        builder.addSlot(RecipeIngredientRole.INPUT, 32, 16).addIngredients(VanillaTypes.FLUID, waterStack);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 80, 16).addIngredients(VanillaTypes.FLUID, yeastStack);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 16).addIngredients(VanillaTypes.FLUID, yeastStack);
+        builder.addSlot(RecipeIngredientRole.CATALYST, 16, 16).addIngredients(ForgeTypes.FLUID_STACK, yeastStack);
+        builder.addSlot(RecipeIngredientRole.INPUT, 32, 16).addIngredients(ForgeTypes.FLUID_STACK, waterStack);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 80, 16).addIngredients(ForgeTypes.FLUID_STACK, yeastStack);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 96, 16).addIngredients(ForgeTypes.FLUID_STACK, yeastStack);
     }
 
-    public static Collection<?> getAllRecipes() {
+    public static List<YeastCraftingRecipe> getAllRecipes() {
         return Collections.singletonList(new YeastCraftingRecipe(
                         new ItemStack(Items.SUGAR),
                         FluidIngredient.of(1000, ModFluids.YEAST_CULTURE.get()),

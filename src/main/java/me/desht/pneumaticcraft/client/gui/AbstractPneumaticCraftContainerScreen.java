@@ -540,16 +540,6 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         NetworkHandler.sendToServer(new PacketGuiButton(tag));
     }
 
-    @Override
-    public int getGuiLeft() {
-        return leftPos;
-    }
-
-    @Override
-    public int getGuiTop() {
-        return topPos;
-    }
-
     public List<Rect2i> getTabRectangles() {
         return getStatWidgets().stream()
                 .map(IGuiAnimatedStat::getBounds)

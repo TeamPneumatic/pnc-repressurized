@@ -40,10 +40,10 @@ public class JEIAssemblyControllerCategory extends AbstractPNCCategory<AssemblyR
     private final IDrawableAnimated progressBar;
 
     JEIAssemblyControllerCategory() {
-        super(ModCategoryUid.ASSEMBLY_CONTROLLER, AssemblyRecipe.class,
+        super(RecipeTypes.ASSEMBLY,
                 xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 5, 11, 158, 98),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()))
         );
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 173, 0, 24, 17);
         progressBar = guiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);

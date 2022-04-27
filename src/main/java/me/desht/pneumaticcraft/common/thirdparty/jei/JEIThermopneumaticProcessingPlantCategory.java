@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
@@ -53,10 +54,10 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
     private final IDrawableAnimated progressBar;
 
     JEIThermopneumaticProcessingPlantCategory() {
-        super(ModCategoryUid.THERMO_PLANT, ThermoPlantRecipe.class,
+        super(RecipeTypes.THERMO_PLANT,
                 xlate(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get().getDescriptionId()),
                 guiHelper().createDrawable(Textures.GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT, 0, 0, 166, 70),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get()))
         );
         tickTimer = guiHelper().createTickTimer(60, 60, false);
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_THERMOPNEUMATIC_PROCESSING_PLANT, 176, 0, 48, 30);
@@ -78,7 +79,7 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
 
         if (inputAmount > 0) {
             builder.addSlot(RecipeIngredientRole.INPUT, 8, 3 + (64 - inH))
-                    .addIngredients(VanillaTypes.FLUID, recipe.getInputFluid().getFluidStacks())
+                    .addIngredients(ForgeTypes.FLUID_STACK, recipe.getInputFluid().getFluidStacks())
                     .setFluidRenderer(inputAmount, false, 16, inH)
                     .setOverlay(Helpers.makeTankOverlay(inH), 0, 0);
         }
@@ -88,7 +89,7 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
         }
         if (outputAmount > 0) {
             builder.addSlot(RecipeIngredientRole.OUTPUT, 74, 3 + (64 - outH))
-                    .addIngredient(VanillaTypes.FLUID, recipe.getOutputFluid())
+                    .addIngredient(ForgeTypes.FLUID_STACK, recipe.getOutputFluid())
                     .setFluidRenderer(outputAmount, false, 16, outH)
                     .setOverlay(Helpers.makeTankOverlay(outH), 0, 0);
         }

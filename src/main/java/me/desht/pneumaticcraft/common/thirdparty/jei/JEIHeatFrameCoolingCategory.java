@@ -45,10 +45,10 @@ public class JEIHeatFrameCoolingCategory extends AbstractPNCCategory<HeatFrameCo
     private final IDrawableAnimated progressBar;
 
     JEIHeatFrameCoolingCategory() {
-        super(ModCategoryUid.HEAT_FRAME_COOLING, HeatFrameCoolingRecipe.class,
+        super(RecipeTypes.HEAT_FRAME_COOLING,
                 xlate("pneumaticcraft.gui.nei.title.heatFrameCooling"),
                 guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18),
-                guiHelper().createDrawableIngredient(VanillaTypes.ITEM, new ItemStack(ModItems.HEAT_FRAME.get()))
+                guiHelper().createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(ModItems.HEAT_FRAME.get()))
         );
         IDrawableStatic d = guiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
         progressBar = guiHelper().createAnimatedDrawable(d, 30, IDrawableAnimated.StartDirection.LEFT, false);
