@@ -15,6 +15,7 @@
     {
       "type": "text",
       "title": "JEI Integration",
+      "flag": "mod:jei",
       "text": "It is possible to quickly and easily set up Item Filters for the Crafting widget using JEI; see $(l:programming/programmer#jei)this page/$ for more information."
     },
     {
