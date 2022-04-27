@@ -66,7 +66,8 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Pneu
             case WEST: x = 1 - Math.abs(hitZ % 1); break;
             default: return -1;
         }
-        double y = 1 - (hitY % 1);
+        // yep, Y val seems to need inverting if Y < 0.  go figure?
+        double y = hitY < 0 ? Math.abs(hitY % 1) : 1 - Math.abs(hitY % 1);
 
         for (ElevatorCallerBlockEntity.ElevatorButton button : teEC.getFloors()) {
             if (x >= button.posX && x <= button.posX + button.width && y >= button.posY && y <= button.posY + button.height) {
