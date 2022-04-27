@@ -61,6 +61,8 @@ public class AuxConfigHandler {
     public static void postInit() {
         File defaultConfigDir = new File(FMLPaths.CONFIGDIR.get().toFile(), Names.MOD_ID);
         for (IAuxConfig subConfig : EXTERNAL_CONFIGS) {
+            // world-specific configs are server only
+            if (subConfig.useWorldSpecificDir() && ServerLifecycleHooks.getCurrentServer() == null) continue;
             File subFolder = subConfig.useWorldSpecificDir() ? getWorldSpecificDir() : defaultConfigDir;
             if (subFolder.exists() || subFolder.mkdirs()) {
                 File subFile = new File(subFolder, subConfig.getConfigFilename() + ".cfg");

@@ -55,7 +55,8 @@ public interface IAuxConfig {
 
     /**
      * If true, use a world-local directory for this config, outside the normal config/ hierarchy. Used for
-     * world-specific (rather than game-global) saved data.
+     * world-specific (rather than game-global) saved data. World-specific data is only loaded on the server, and only
+     * in the post-init phase.
      * @return true to use a world-specific directory, false to use the usual config directory
      */
     default boolean useWorldSpecificDir() {
