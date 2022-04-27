@@ -1,8 +1,8 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized",
   "promos": {
-    "1.16.5-recommmended": "1.16.5-2.15.6-315",
-    "1.16.5-latest": "1.16.5-2.15.6-315"
+    "1.16.5-recommmended": "1.16.5-2.15.7-320",
+    "1.16.5-latest": "1.16.5-2.15.7-320"
   },
   "1.16.5": {
     "1.16.4-2.9.3-120": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#293-120-17-jan-2021",
@@ -42,6 +42,7 @@
     "1.16.5-2.15.3-308": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2153-308-28-feb-2022",
     "1.16.5-2.15.4-312": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2154-312-14-mar-2022",
     "1.16.5-2.15.5-313": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2155-313-25-mar-2022",
-    "1.16.5-2.15.6-315": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2155-315-30-mar-2022"
+    "1.16.5-2.15.6-315": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2156-315-30-mar-2022",
+    "1.16.5-2.15.7-320": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2157-320-27-apr-2022"
   }
 }

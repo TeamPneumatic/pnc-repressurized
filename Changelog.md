@@ -10,8 +10,25 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
-* PNC:R 2.15.1 and later *require* Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
+
+## 2.15.7-320 (27 Apr 2022)
+
+### Updates
+* Added some Programmer/JEI integration functionality:
+  * Opening a JEI window while the Programmer GUI is open will now show a "+" (Move Items) button in JEI
+  * Clicking this will create Item Filter widgets for each input item in the displayed recipe
+  * If a Crafting widget with no filters is in the programming area, it will auto-add filters to quickly set up a recipe for the Crafting widget
+* Added a 'nbt_to_client_modification' config setting, default true
+  * When true (default and previous behaviour), PNC will modify NBT in items sync'd to client to reduce network traffic
+  * However this can under some circumstances (which are not entirely clear at this time) cause players to be kicked
+  * If you see this problem, set 'nbt_to_client_modification' to false. Note this will increase network traffic from server to client, particularly for items where NBT changes rapidly, e.g. firing Minigun or using Pneumatic Armor Jet Boots.
+  * This should be considered a workaround until a proper fix is determined.
+
+### Fixes
+* Fixed some NBT <-> JSON conversion behaviour when exporting Drone programs to clipboard or pastebin
+  * Specifically this caused Tag Filter tag information to be lost in conversion
+* Fixed crash with Drone Condition: Pressure widget when used in Programmable Controller
 
 ## 2.15.6-315 (30 Mar 2022)
 
