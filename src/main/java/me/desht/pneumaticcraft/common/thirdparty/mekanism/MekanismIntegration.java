@@ -18,20 +18,24 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
+import mekanism.api.MekanismAPI;
 import mekanism.api.heat.IHeatHandler;
+import mekanism.api.heat.IMekanismHeatHandler;
 import mekanism.api.radiation.capability.IRadiationShielding;
-import mekanism.common.registries.MekanismDamageSource;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 
 public class MekanismIntegration {
     public static final Capability<IHeatHandler> CAPABILITY_HEAT_HANDLER = CapabilityManager.get(new CapabilityToken<>() {});
-
     public static final Capability<IRadiationShielding> CAPABILITY_RADIATION_SHIELDING = CapabilityManager.get(new CapabilityToken<>() {});
 
     static void mekSetup() {
-        // FIXME non-api usage here (ask Mek team to provide an API method?)
-        RadiationSourceCheck.INSTANCE.registerRadiationSource(s -> s == MekanismDamageSource.RADIATION);
+        RadiationSourceCheck.INSTANCE.registerRadiationSource(s -> s == MekanismAPI.getRadiationManager().getRadiationDamageSource());
+    }
+
+    static boolean isMekHeatHandler(BlockEntity blockEntity) {
+        return blockEntity instanceof IMekanismHeatHandler;
     }
 }
