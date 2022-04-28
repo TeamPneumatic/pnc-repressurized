@@ -37,21 +37,20 @@ public class Create implements IThirdParty {
                     // pre
                     if (state.getBlock() instanceof BeltBlock) {
                         HitResult rtr = RayTraceUtils.getMouseOverServer(ctx.getPlayer(), PneumaticCraftUtils.getPlayerReachDistance(ctx.getPlayer()));
-                        if (rtr instanceof BlockHitResult) {
+                        if (rtr instanceof BlockHitResult brtr) {
                             return BeltSlicer.useWrench(state, ctx.getLevel(), ctx.getClickedPos(), ctx.getPlayer(), ctx.getHand(),
-                                    (BlockHitResult) rtr, new BeltSlicer.Feedback());
+                                    brtr, new BeltSlicer.Feedback());
                         }
-                    } else if (state.getBlock() instanceof IWrenchable) {
+                    } else if (state.getBlock() instanceof IWrenchable wrenchable) {
                         return ctx.getPlayer() != null && ctx.getPlayer().isCrouching() ?
-                                ((IWrenchable) state.getBlock()).onSneakWrenched(state, ctx) :
-                                ((IWrenchable) state.getBlock()).onWrenched(state, ctx);
+                                wrenchable.onSneakWrenched(state, ctx) :
+                                wrenchable.onWrenched(state, ctx);
                     }
                     return InteractionResult.PASS;
                 },
                 (ctx, state) -> {
                     // post
                 }
-
         );
     }
 }

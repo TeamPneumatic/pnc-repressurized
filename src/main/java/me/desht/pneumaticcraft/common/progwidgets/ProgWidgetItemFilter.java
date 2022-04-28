@@ -94,7 +94,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @Override
     public List<Component> getExtraStringInfo() {
-        return Collections.singletonList(varAsTextComponent(variable));
+        return variable.isEmpty() ? Collections.emptyList() : Collections.singletonList(varAsTextComponent(variable));
     }
 
     @Nonnull
