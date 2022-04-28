@@ -8,13 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.2.0-?? (unreleased)
+## 3.2.0-74 (28 Apr 2022)
 
 ### Updates
 * Re-added Mekanism integration
-  * Same functionality as was in 1.16.5: heat compatibility, harvest drones can use Paxels, Radiation Shielding upgrade for Pneumatic Armor
+  * Same functionality as in 1.16.5: heat compatibility, Harvesting drones can use Paxels, Radiation Shielding upgrade for Pneumatic Armor
 * Re-added Create integration
-  * Same functionality as was in 1.16.5: Pneumatic Wrench can be used on Create belts like a Create wrench can be
+  * Same functionality as in 1.16.5: Pneumatic Wrench can be used on Create belts like a Create wrench can be
 * Added some Programmer/JEI integration functionality:
   * Opening a JEI window while the Programmer GUI is open will now show a "+" (Move Items) button in JEI
   * Clicking this will create Item Filter widgets for each input item in the displayed recipe
@@ -22,14 +22,15 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added a 'nbt_to_client_modification' config setting, default true
   * When true (default and previous behaviour), PNC will modify NBT in items sync'd to client to reduce network traffic
   * However this can under some circumstances (which are not entirely clear at this time) cause players to be kicked
-  * If you see this problem, set 'nbt_to_client_modification' to false. Note this will increase network traffic from server to client, particularly for items where NBT changes rapidly, e.g. firing Minigun or using Pneumatic Armor Jet Boots.
-  * This should be considered a workaround until a proper fix is determined.
+  * If you see this problem, set 'nbt_to_client_modification' to false. Note this will increase network traffic from server to client, particularly for items where NBT changes rapidly, e.g. firing Minigun or using Pneumatic Armor Jet Boots
+  * This should be considered a workaround until a proper fix is determined
 
 ### Fixes
 * Fixed Elevators not working below Y=0 (new 1.18 world height limits)
 * Fixed some NBT <-> JSON conversion behaviour when exporting Drone programs to clipboard or pastebin
   * Specifically this caused Tag Filter tag information to be lost in conversion
 * Fixed crash with Drone Condition: Pressure widget when used in Programmable Controller
+* Fixed Pneumatic Armor feature-enable config not getting read properly on dedicated server (i.e. game didn't remember which armor features were switched on)
 
 ## 3.1.5-70 (11 Apr 2022)
 
