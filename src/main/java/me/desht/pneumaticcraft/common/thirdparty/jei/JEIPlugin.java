@@ -54,6 +54,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
@@ -198,6 +199,8 @@ public class JEIPlugin implements IModPlugin {
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         recipeManager = jeiRuntime.getRecipeManager();
         recipesGui = jeiRuntime.getRecipesGui();
+
+        MinecraftForge.EVENT_BUS.register(ProgrammerTransferHandler.Listener.class);
     }
 
     @Override
