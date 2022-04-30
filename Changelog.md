@@ -8,6 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.2.1-75 (30 Apr 2022)
+
+### Fixes
+* Hotfix: fix client startup failure if JEI isn't installed
+
 ## 3.2.0-74 (28 Apr 2022)
 
 ### Updates
