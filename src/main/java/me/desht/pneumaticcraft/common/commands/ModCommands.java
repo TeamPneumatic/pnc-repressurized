@@ -25,6 +25,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
@@ -38,6 +39,8 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.commands.synchronization.ArgumentTypes;
+import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.TextComponent;
@@ -237,7 +240,12 @@ public class ModCommands {
         return 1;
     }
 
-    static class VarnameType implements ArgumentType<String> {
+    public static void postInit() {
+        ArgumentTypes.register(Names.MOD_ID + ":varname_type", ModCommands.VarnameType.class,
+                new EmptyArgumentSerializer<>(ModCommands.VarnameType::new));
+    }
+
+    private static class VarnameType implements ArgumentType<String> {
         @Override
         public String parse(StringReader reader) throws CommandSyntaxException {
             int start = reader.getCursor();

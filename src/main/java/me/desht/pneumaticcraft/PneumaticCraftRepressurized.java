@@ -158,6 +158,7 @@ public class PneumaticCraftRepressurized {
             AdvancementTriggers.registerTriggers();
             DroneDispenseBehavior.registerDrones();
             ThirdPartyManager.instance().postInit();
+            ModCommands.postInit();
         });
     }
 
