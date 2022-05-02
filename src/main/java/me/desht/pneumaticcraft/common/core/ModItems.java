@@ -219,7 +219,7 @@ public class ModItems {
     public static final RegistryObject<BucketItem> ETCHING_ACID_BUCKET = registerBucket("etching_acid_bucket",
             ModFluids.ETCHING_ACID);
     public static final RegistryObject<BucketItem> PLASTIC_BUCKET = register("plastic_bucket",
-            () -> new FluidPlastic.Bucket(ModItems.filledBucketProps()));
+            FluidPlastic.Bucket::new);
     public static final RegistryObject<BucketItem> DIESEL_BUCKET = registerBucket("diesel_bucket",
             ModFluids.DIESEL);
     public static final RegistryObject<BucketItem> KEROSENE_BUCKET = registerBucket("kerosene_bucket",
@@ -308,7 +308,7 @@ public class ModItems {
     }
 
     private static RegistryObject<BucketItem> registerBucket(String name, Supplier<? extends Fluid> sup) {
-        return register(name, () -> new BucketItem(sup, ModItems.filledBucketProps()));
+        return register(name, () -> new PneumaticCraftBucketItem(sup));
     }
 
     private static RegistryObject<Item> registerFood(final String name, FoodProperties food) {

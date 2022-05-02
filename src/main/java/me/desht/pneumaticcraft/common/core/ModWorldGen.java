@@ -38,7 +38,7 @@ public class ModWorldGen {
     );
 
     public static final RegistryObject<PlacedFeature> OIL_LAKE_SURFACE = PLACED_FEATURES.register("lake_oil_surface",
-            () -> new PlacedFeature(OIL_LAKE_CF.getHolder().get(), ImmutableList.of(
+            () -> new PlacedFeature(OIL_LAKE_CF.getHolder().orElseThrow(), ImmutableList.of(
                     RarityFilter.onAverageOnceEvery(ConfigHelper.common().worldgen.surfaceOilLakeFrequency.get()),
                     InSquarePlacement.spread(),
                     PlacementUtils.HEIGHTMAP_WORLD_SURFACE,
@@ -47,7 +47,7 @@ public class ModWorldGen {
     );
 
     public static final RegistryObject<PlacedFeature> OIL_LAKE_UNDERGROUND = PLACED_FEATURES.register("lake_oil_underground",
-            () -> new PlacedFeature(OIL_LAKE_CF.getHolder().get(), ImmutableList.of(
+            () -> new PlacedFeature(OIL_LAKE_CF.getHolder().orElseThrow(), ImmutableList.of(
                     RarityFilter.onAverageOnceEvery(ConfigHelper.common().worldgen.undergroundOilLakeFrequency.get()),
                     InSquarePlacement.spread(),
                     HeightRangePlacement.of(UniformHeight.of(VerticalAnchor.absolute(0), VerticalAnchor.top())),
