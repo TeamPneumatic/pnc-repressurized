@@ -45,12 +45,11 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
         this(drone, checkSight, false, widget);
     }
 
-    public DroneAINearestAttackableTarget(EntityDrone drone, boolean checkSight, boolean easyTargetsOnly,
-                                          ProgWidget widget) {
-        super(drone, checkSight, easyTargetsOnly);
+    public DroneAINearestAttackableTarget(EntityDrone drone, boolean mustSee, boolean easyTargetsOnly, ProgWidget widget) {
+        super(drone, mustSee, easyTargetsOnly);
         this.drone = drone;
         this.widget = widget;
-        distanceSorter = new DistanceSorter(drone);
+        this.distanceSorter = new DistanceSorter(drone);
         setFlags(EnumSet.of(Flag.TARGET));
     }
 
@@ -68,6 +67,9 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
                 return false;
             }
         }
+        if (!(widget instanceof IEntityProvider)) {
+            return false;
+        }
 
         List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.level);
         list.sort(distanceSorter);
@@ -81,7 +83,9 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
     }
 
     private boolean shouldIgnore(Entity entity) {
-        return entity.isSpectator() || entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative();
+        return entity.isSpectator()
+                || entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()
+                || mustSee && !mob.getSensing().canSee(entity);
     }
 
     /**
