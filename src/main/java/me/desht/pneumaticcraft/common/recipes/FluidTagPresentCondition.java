@@ -47,11 +47,14 @@ public class FluidTagPresentCondition implements ICondition {
     }
 
     @Override
-    public boolean test() {
+    public boolean test(IContext context) {
         TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, tagName);
-        return Registry.FLUID.getTag(tagKey).isPresent();
-//        Tag<Fluid> tag = SerializationTags.getInstance().getOrEmpty(Registry.FLUID_REGISTRY).getTag(tagName);
-//        return tag != null && !tag.getValues().isEmpty();
+        return !context.getTag(tagKey).getValues().isEmpty();
+    }
+
+    @Override
+    public boolean test() {
+        return test(IContext.EMPTY);
     }
 
     public static class Serializer implements IConditionSerializer<FluidTagPresentCondition> {
