@@ -153,6 +153,10 @@ public enum ItemRegistry implements IItemRegistry {
         return originalVolume;
     }
 
+    public void addVolumeModifierInfo(ItemStack stack, List<Component> text) {
+        volumeModifiers.forEach(modifier -> modifier.addInfo(stack, text));
+    }
+
     /**
      * Get a list of the items contained in the given item.  This uses the {@link IInventoryItem} interface.
      *

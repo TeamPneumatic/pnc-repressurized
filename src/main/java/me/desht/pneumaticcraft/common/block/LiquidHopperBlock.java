@@ -82,7 +82,7 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
 
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
-            int n = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.CREATIVE.get());
+            int n = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.CREATIVE.get());
             return n > 0 ? 0xFFDB46CF : 0xFF2b2727;
         }
 

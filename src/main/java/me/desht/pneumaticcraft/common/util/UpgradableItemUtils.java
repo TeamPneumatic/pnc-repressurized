@@ -18,7 +18,9 @@
 package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
@@ -33,8 +35,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -56,21 +59,16 @@ public class UpgradableItemUtils {
      * @param flag tooltip flag
      */
     public static void addUpgradeInformation(ItemStack iStack, List<Component> textList, TooltipFlag flag) {
-        ItemStack[] inventoryStacks = getUpgradeStacks(iStack);
-        boolean isItemEmpty = true;
-        for (ItemStack stack : inventoryStacks) {
-            if (!stack.isEmpty()) {
-                isItemEmpty = false;
-                break;
-            }
-        }
-        if (isItemEmpty) {
+        Map<PNCUpgrade,Integer> upgrades = getUpgrades(iStack);
+        if (upgrades.isEmpty()) {
             if (!(iStack.getItem() instanceof BlockItem)) {
                 textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.empty").withStyle(ChatFormatting.DARK_GREEN));
             }
         } else {
             textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(ChatFormatting.GREEN));
-            PneumaticCraftUtils.summariseItemStacks(textList, inventoryStacks, ChatFormatting.DARK_GREEN + Symbols.BULLET + " ");
+            List<ItemStack> l = new ArrayList<>();
+            upgrades.forEach((u, n) -> l.add(u.getItemStack(n)));
+            PneumaticCraftUtils.summariseItemStacks(textList, l.toArray(new ItemStack[0]), ChatFormatting.DARK_GREEN + Symbols.BULLET + " ");
         }
     }
 
@@ -86,6 +84,7 @@ public class UpgradableItemUtils {
         UpgradeCache cache = new UpgradeCache(() -> handler);
         Objects.requireNonNull(stack.getTag()).put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
 
+        // in case volume upgrade count has changed...
         stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
             if (h.getPressure() > h.maxPressure()) {
                 int maxAir = (int)(h.getVolume() * h.maxPressure());
@@ -95,48 +94,58 @@ public class UpgradableItemUtils {
     }
 
     /**
-     * Retrieves the upgrades currently installed on the given itemstack.
+     * Retrieves the upgrades currently installed on the given itemstack. Upgrade tiers are taken into account, e.g.
+     * a single tier 5 upgrade will have a count of 5.
+     *
+     * @param stack the itemstack to check
+     * @return a map of upgrade->count
      */
-    public static ItemStack[] getUpgradeStacks(ItemStack stack) {
+    public static Map<PNCUpgrade,Integer> getUpgrades(ItemStack stack) {
         CompoundTag tag = getSerializedUpgrades(stack);
-        ItemStack[] inventoryStacks = new ItemStack[UPGRADE_INV_SIZE];
-        Arrays.fill(inventoryStacks, ItemStack.EMPTY);
         ListTag itemList = tag.getList("Items", Tag.TAG_COMPOUND);
+        ImmutableMap.Builder<PNCUpgrade,Integer> builder = ImmutableMap.builder();
         for (int i = 0; i < itemList.size(); i++) {
-            CompoundTag slotEntry = itemList.getCompound(i);
-            int j = slotEntry.getByte("Slot");
-            if (j >= 0 && j < UPGRADE_INV_SIZE) {
-                inventoryStacks[j] = ItemStack.of(slotEntry);
+            ItemStack upgradeStack = ItemStack.of(itemList.getCompound(i));
+            if (upgradeStack.getItem() instanceof IUpgradeItem upgradeItem) {
+                builder.put(upgradeItem.getUpgradeType(), upgradeItem.getUpgradeTier() * upgradeStack.getCount());
             }
         }
-        return inventoryStacks;
+        return builder.build();
     }
 
-    public static ItemStackHandler getUpgrades(ItemStack stack) {
-        ItemStackHandler handler = new ItemStackHandler(UPGRADE_INV_SIZE);
-        CompoundTag tag = getSerializedUpgrades(stack);
-        if (!tag.isEmpty()) handler.deserializeNBT(tag);
-        return handler;
-    }
-
-    public static int getUpgrades(ItemStack stack, PNCUpgrade upgrade) {
-        if (stack.hasTag()) {
-            if (stack.getTag().contains(NBT_UPGRADE_TAG) && !stack.getTag().contains(NBT_UPGRADE_CACHE_TAG)) {
-
-            }
+    /**
+     * Get the installed count for the given upgrade. Tiered upgrades count as multiple, e.g. one Tier 5
+     * upgrade will return a result of 5 if queried for.
+     *
+     * @param stack the itemstack to check
+     * @param upgrade the upgrade to check for
+     * @return number of upgrades installed
+     */
+    public static int getUpgradeCount(ItemStack stack, PNCUpgrade upgrade) {
+        if (stack.getTag() != null) {
+            validateUpgradeCache(stack);
             CompoundTag subTag = Objects.requireNonNull(stack.getTag()).getCompound(NBT_UPGRADE_CACHE_TAG);
-            String key = PneumaticCraftUtils.modDefaultedString(upgrade.getRegistryName());
+            String key = PneumaticCraftUtils.modDefaultedString(Objects.requireNonNull(upgrade.getRegistryName()));
             return subTag.getInt(key);
         }
         return 0;
     }
 
+    /**
+     * Get the installed count for the given upgrades. Tiered upgrades count as multiple, e.g. one Tier 5
+     * upgrade will return a result of 5 if queried for.
+     *
+     * @param stack the itemstack to check
+     * @param upgradeList the upgrades to check for
+     * @return number of upgrades installed, in the same order as the upgrades which were passed to the method
+     */
     public static List<Integer> getUpgradeList(ItemStack stack, PNCUpgrade... upgradeList) {
         ImmutableList.Builder<Integer> builder = ImmutableList.builder();
-        if (stack.hasTag()) {
-            CompoundTag subTag = Objects.requireNonNull(stack.getTag()).getCompound(NBT_UPGRADE_CACHE_TAG);
+        if (stack.getTag() != null) {
+            validateUpgradeCache(stack);
+            CompoundTag subTag = stack.getTag().getCompound(NBT_UPGRADE_CACHE_TAG);
             for (PNCUpgrade upgrade : upgradeList) {
-                String key = PneumaticCraftUtils.modDefaultedString(upgrade.getRegistryName());
+                String key = PneumaticCraftUtils.modDefaultedString(Objects.requireNonNull(upgrade.getRegistryName()));
                 builder.add(subTag.getInt(key));
             }
         }
@@ -144,13 +153,24 @@ public class UpgradableItemUtils {
     }
 
     public static boolean hasCreativeUpgrade(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().getBoolean(UpgradableItemUtils.NBT_CREATIVE);
+        return stack.getTag() != null && stack.getTag().getBoolean(UpgradableItemUtils.NBT_CREATIVE);
+    }
+
+    private static void validateUpgradeCache(ItemStack stack) {
+        if (Objects.requireNonNull(stack.getTag()).contains(NBT_UPGRADE_TAG) && !stack.getTag().contains(NBT_UPGRADE_CACHE_TAG)) {
+            // should not normally get here; the quick-access cache should already be built by setUpgrades()
+            ItemStackHandler handler = new ItemStackHandler(UPGRADE_INV_SIZE);
+            CompoundTag tag = getSerializedUpgrades(stack);
+            if (!tag.isEmpty()) handler.deserializeNBT(tag);
+            UpgradeCache cache = new UpgradeCache(() -> handler);
+            Objects.requireNonNull(stack.getTag()).put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
+        }
     }
 
     private static CompoundTag getSerializedUpgrades(ItemStack stack) {
-        if (!stack.hasTag()) return new CompoundTag();
+        if (stack.getTag() == null) return new CompoundTag();
         if (Objects.requireNonNull(stack.getTag()).contains(NBTKeys.BLOCK_ENTITY_TAG)) {
-            return stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG).getCompound(NBT_UPGRADE_TAG);
+            return Objects.requireNonNull(stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG)).getCompound(NBT_UPGRADE_TAG);
         } else {
             return stack.getTag().getCompound(NBT_UPGRADE_TAG);
         }

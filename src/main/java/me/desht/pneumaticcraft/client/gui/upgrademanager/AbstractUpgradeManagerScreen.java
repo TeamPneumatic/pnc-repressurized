@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationUpgradeManagerMenu;
-import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -44,7 +44,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -88,7 +87,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
 
     @Override
     protected void addPressureStatInfo(List<Component> pressureStatText) {
-        int upgrades = UpgradableItemUtils.getUpgrades(itemStack, ModUpgrades.VOLUME.get());
+        int upgrades = UpgradableItemUtils.getUpgradeCount(itemStack, ModUpgrades.VOLUME.get());
         int volume = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(IAirHandler::getVolume).orElse(getDefaultVolume());
         float curPressure = te.chargingItemPressure;
@@ -97,10 +96,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
 
     @Override
     protected void addExtraVolumeModifierInfo(List<Component> text) {
-        int nHolding = CoFHCore.getHoldingUpgrades(itemStack);
-        if (nHolding > 0) {
-            text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(CoFHCore.holdingEnchantmentName(nHolding)));
-        }
+        ItemRegistry.getInstance().addVolumeModifierInfo(itemStack, text);
     }
 
     @Override

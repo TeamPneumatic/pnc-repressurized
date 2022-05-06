@@ -18,6 +18,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.item.ItemVolumeModifier;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.chat.Component;
@@ -27,6 +29,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.List;
 
 public class CoFHCore implements IThirdParty {
     static Enchantment holdingEnchantment = null;
@@ -54,9 +58,7 @@ public class CoFHCore implements IThirdParty {
             // holding enchantment adds another volume multiplier
             holdingEnchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation("cofh_core", "holding"));
             if (holdingEnchantment != null) {
-                PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(
-                        (stack, oldVolume) -> oldVolume * (1 + EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack))
-                );
+                PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(new COFHVolumeModifier());
             }
         }
     }
@@ -76,6 +78,21 @@ public class CoFHCore implements IThirdParty {
         } catch (ClassNotFoundException e) {
             Log.error("PneumaticCraft: Repressurized found an older (pre-1.2.0) release of CoFH Core. Continuing, but PneumaticCraft items won't be able to use the Holding enchantment. Upgrade to CoFH Core 1.2.0 or later if possible.");
             return false;
+        }
+    }
+
+    public static class COFHVolumeModifier implements ItemVolumeModifier {
+        @Override
+        public int getNewVolume(ItemStack stack, int oldVolume) {
+            return oldVolume * (1 + EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack));
+        }
+
+        @Override
+        public void addInfo(ItemStack stack, List<Component> text) {
+            int nHolding = CoFHCore.getHoldingUpgrades(stack);
+            if (nHolding > 0) {
+                text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(CoFHCore.holdingEnchantmentName(nHolding)));
+            }
         }
     }
 

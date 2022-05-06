@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
-import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
@@ -279,19 +278,16 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         ItemStack armorStack = player.getItemBySlot(slot);
 
         // record which upgrades / render-handlers are inserted
-        ItemStack[] upgradeStacks = UpgradableItemUtils.getUpgradeStacks(armorStack);
+        Map<PNCUpgrade,Integer> upgrades = UpgradableItemUtils.getUpgrades(armorStack);
         Arrays.fill(upgradeRenderersInserted[slot.getIndex()], false);
         for (int i = 0; i < upgradeRenderersInserted[slot.getIndex()].length; i++) {
-            upgradeRenderersInserted[slot.getIndex()][i] = isModuleEnabled(upgradeStacks, ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).get(i));
+            upgradeRenderersInserted[slot.getIndex()][i] = isModuleEnabled(upgrades.keySet(), ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).get(i));
         }
 
         // record the number of upgrades of every type
         upgradeMatrix.get(slot.getIndex()).clear();
-        for (ItemStack stack : upgradeStacks) {
-            if (stack.getItem() instanceof UpgradeItem upgrade) {
-                upgradeMatrix.get(slot.getIndex()).put(upgrade.getUpgradeType(), stack.getCount() * upgrade.getUpgradeTier());
-            }
-        }
+        upgrades.forEach((upgrade, count) -> upgradeMatrix.get(slot.getIndex()).put(upgrade, count));
+
         startupTimes[slot.getIndex()] = (int) (ConfigHelper.common().armor.armorStartupTime.get() * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
 
         ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).forEach(handler -> {
@@ -333,18 +329,8 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return ticksSinceEquip[slot.getIndex()];
     }
 
-    private boolean isModuleEnabled(ItemStack[] helmetStacks, IArmorUpgradeHandler<?> handler) {
-        for (PNCUpgrade requiredUpgrade : handler.getRequiredUpgrades()) {
-            boolean found = false;
-            for (ItemStack stack : helmetStacks) {
-                if (PNCUpgrade.from(stack) == requiredUpgrade) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) return false;
-        }
-        return true;
+    private boolean isModuleEnabled(Set<PNCUpgrade> upgrades, IArmorUpgradeHandler<?> handler) {
+        return Arrays.stream(handler.getRequiredUpgrades()).allMatch(upgrades::contains);
     }
 
     @Override

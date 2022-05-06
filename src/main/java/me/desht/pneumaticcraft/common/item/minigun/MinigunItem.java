@@ -486,7 +486,7 @@ public class MinigunItem extends PressurizableItem implements
         @Override
         public int getUpgrades(PNCUpgrade upgrade) {
             return Math.min(ApplicableUpgradesDB.getInstance().getMaxUpgrades(minigunStack.getItem(), upgrade),
-                    UpgradableItemUtils.getUpgrades(minigunStack, upgrade));
+                    UpgradableItemUtils.getUpgradeCount(minigunStack, upgrade));
         }
     }
 }

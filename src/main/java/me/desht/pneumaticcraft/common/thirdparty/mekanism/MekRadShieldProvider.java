@@ -48,7 +48,7 @@ public class MekRadShieldProvider implements ICapabilityProvider {
     public record PneumaticArmorRadiationShield(ItemStack stack, EquipmentSlot slot) implements IRadiationShielding {
         @Override
         public double getRadiationShielding() {
-            boolean upgrade = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.RADIATION_SHIELDING.get()) > 0;
+            boolean upgrade = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.RADIATION_SHIELDING.get()) > 0;
             if (!upgrade) return 0d;
             return switch (slot) {
                 case HEAD -> 0.25;

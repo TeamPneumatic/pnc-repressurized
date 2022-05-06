@@ -54,7 +54,7 @@ public class CollectorDroneEntity extends AbstractBasicDroneEntity {
         BlockPos invPos = clickPos;
 
         List<IProgWidget> params = new ArrayList<>();
-        int rangeUpgrades = UpgradableItemUtils.getUpgrades(droneStack, ModUpgrades.RANGE.get());
+        int rangeUpgrades = UpgradableItemUtils.getUpgradeCount(droneStack, ModUpgrades.RANGE.get());
         params.add(ProgWidgetArea.fromPosition(pos, 16 + rangeUpgrades * 2));
         LazyOptional<IItemHandler> itemCap = IOHelper.getInventoryForTE(level.getBlockEntity(clickPos), facing);
         if (itemCap.isPresent()) {

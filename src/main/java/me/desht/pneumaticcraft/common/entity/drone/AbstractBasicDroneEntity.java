@@ -44,7 +44,7 @@ abstract class AbstractBasicDroneEntity extends DroneEntity {
     }
 
     void maybeAddStandbyInstruction(DroneProgramBuilder builder, ItemStack droneStack) {
-        if (UpgradableItemUtils.getUpgrades(droneStack, ModUpgrades.STANDBY.get()) > 0) {
+        if (UpgradableItemUtils.getUpgradeCount(droneStack, ModUpgrades.STANDBY.get()) > 0) {
             builder.add(new ProgWidgetStandby());
         }
     }

@@ -137,7 +137,7 @@ public class JackHammerItem extends PressurizableItem
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         DrillBitType bitType = getDrillBit(stack);
-        int speed = bitType == DrillBitType.NONE ? 0 : UpgradableItemUtils.getUpgrades(stack, ModUpgrades.SPEED.get());
+        int speed = bitType == DrillBitType.NONE ? 0 : UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.SPEED.get());
         return getAir(stack) > 0f ? bitType.getBaseEfficiency() * SPEED_MULT[speed] : 1;
     }
 
@@ -164,7 +164,7 @@ public class JackHammerItem extends PressurizableItem
     @Override
     public boolean mineBlock(ItemStack stack, Level worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
         if (entityLiving instanceof Player && ((Player) entityLiving).isCreative()) return true;
-        int speed = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.SPEED.get());
+        int speed = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.SPEED.get());
         stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new)
                 .addAir(-PneumaticValues.USAGE_JACKHAMMER * speed);
         return true;

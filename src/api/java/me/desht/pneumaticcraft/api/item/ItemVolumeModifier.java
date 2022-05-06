@@ -17,10 +17,13 @@
 
 package me.desht.pneumaticcraft.api.item;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
+
 /**
- * A functional interface to modify a given Pneumatic item's volume based on attributes of the item stack
+ * A functional interface to modify a given Pneumatic item's effective volume based on attributes of the item stack
  * (generally values in its NBT, e.g. upgrades or enchantments). Instances of this can be registered
  * with {@link IItemRegistry#registerPneumaticVolumeModifier(ItemVolumeModifier)}.
  */
@@ -33,4 +36,12 @@ public interface ItemVolumeModifier {
      * @return the modified volume
      */
     int getNewVolume(ItemStack stack, int oldVolume);
+
+    /**
+     * Add some information regarding this volume modifier for GUI display purposes; this information will be
+     * displayed in the Charging Station upgrade screen for the item in the Charging Station.
+     * @param stack the item
+     * @param text information text to be appended to
+     */
+    default void addInfo(ItemStack stack, List<Component> text) { }
 }

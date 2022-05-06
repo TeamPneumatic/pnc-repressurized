@@ -159,7 +159,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public int getVolumeUpgrades(ItemStack stack) {
-        return UpgradableItemUtils.getUpgrades(stack, ModUpgrades.VOLUME.get());
+        return UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.VOLUME.get());
     }
 
     @Override
@@ -231,7 +231,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 //                .build(super.getAttributeModifiers(equipmentSlot, stack));
 
         if (equipmentSlot == this.slot) {
-            int upgrades = UpgradableItemUtils.getUpgrades(stack, ModUpgrades.ARMOR.get());
+            int upgrades = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.ARMOR.get());
             multimap.put(Attributes.ARMOR, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor modifier boost", (double) upgrades / 2d, AttributeModifier.Operation.ADDITION));
             multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", upgrades, AttributeModifier.Operation.ADDITION));
         }
@@ -405,7 +405,7 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
-        return UpgradableItemUtils.getUpgrades(stack, ModUpgrades.GILDED.get()) > 0;
+        return UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.GILDED.get()) > 0;
     }
 
     @Override
