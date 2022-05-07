@@ -24,7 +24,10 @@ import java.util.Map;
  *
  * Could be implemented by anything; implementations should be registered through
  * {@link IItemRegistry#registerUpgradeAcceptor(IUpgradeAcceptor)}
+ *
+ * @deprecated no longer required; superceded by functionality in {@link IUpgradeRegistry}
  */
+@Deprecated(forRemoval = true)
 public interface IUpgradeAcceptor {
     /**
      * This method is called as soon as an instance of this interface is registered, be aware.

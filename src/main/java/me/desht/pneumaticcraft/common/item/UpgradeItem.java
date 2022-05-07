@@ -72,10 +72,11 @@ public class UpgradeItem extends Item implements IUpgradeItem {
     public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn").withStyle(ChatFormatting.AQUA));
-            PneumaticRegistry.getInstance().getItemRegistry().addTooltip(upgrade.get(), infoList);
+            PneumaticRegistry.getInstance().getItemRegistry().getUpgradeRegistry().addUpgradeTooltip(upgrade.get(), infoList);
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(ChatFormatting.AQUA));
         }
+        // FIXME code smell
         if (getUpgradeType() == ModUpgrades.DISPENSER.get()) {
             Direction dir = stack.hasTag() ? Direction.byName(NBTUtils.getString(stack, NBT_DIRECTION)) : null;
             infoList.add(xlate("pneumaticcraft.message.dispenser.direction", dir == null ?

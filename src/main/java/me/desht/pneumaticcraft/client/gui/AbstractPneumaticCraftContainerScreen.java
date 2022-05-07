@@ -48,6 +48,7 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -211,11 +212,11 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
 
     private void addUpgradeTab() {
         List<Component> text = new ArrayList<>();
-        te.getApplicableUpgrades().keySet().stream()
+        ApplicableUpgradesDB.getInstance().getApplicableUpgrades(te).keySet().stream()
                 .sorted(Comparator.comparing(o -> o.getItemStack().getHoverName().getString()))
                 .forEach(upgrade -> {
                     if (isUpgradeAvailable(upgrade)) {
-                        int max = te.getApplicableUpgrades().get(upgrade);
+                        int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(te, upgrade);
                         text.add(upgrade.getItemStack().getHoverName().copy().withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE));
                         text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(ChatFormatting.GRAY));
                         String upgradeName = PneumaticCraftUtils.modDefaultedString(upgrade.getRegistryName());

@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.util.upgrade;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.api.item.IUpgradeRegistry.Builder;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
 import me.desht.pneumaticcraft.common.core.ModEntityTypes;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -28,9 +28,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.world.entity.EquipmentSlot;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UpgradesDBSetup {
     private static final int MAX_VOLUME = 25;
@@ -53,17 +51,17 @@ public class UpgradesDBSetup {
             .with(ModUpgrades.SPEED.get(), 10)
             .with(ModUpgrades.STANDBY.get(), 1);
 
-    private static final Builder GUARD_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
+    private static final Builder GUARD_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.MINIGUN.get(), 1)
             .with(ModUpgrades.ARMOR.get(), 15)
             .with(ModUpgrades.RANGE.get(), 16);
 
-    private static final Builder COLLECTOR_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
+    private static final Builder COLLECTOR_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.MAGNET.get(), 6)
             .with(ModUpgrades.RANGE.get(), 16)
             .with(ModUpgrades.INVENTORY.get(), 35);
 
-    private static final Builder LOGISTICS_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
+    private static final Builder LOGISTICS_DRONE_UPGRADES = Builder.copyOf(BASIC_DRONE_UPGRADES)
             .with(ModUpgrades.INVENTORY.get(), 35);
 
     public static void init() {
@@ -289,26 +287,4 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModBlockEntities.UNIVERSAL_SENSOR.get(), sensorBuilder);
     }
 
-    static class Builder {
-        private final Map<PNCUpgrade, Integer> l = new HashMap<>();
-
-        Builder() {
-        }
-
-        Builder(Builder copy) {
-            l.putAll(copy.l);
-        }
-
-        Builder with(PNCUpgrade upgrade, int amount) {
-            l.put(upgrade, amount);
-            return this;
-        }
-
-        Map<PNCUpgrade,Integer> getUpgrades() {
-            return l;
-        }
-//        public int[] build() {
-//            return l.stream().mapToInt(Integer::intValue).toArray();
-//        }
-    }
 }

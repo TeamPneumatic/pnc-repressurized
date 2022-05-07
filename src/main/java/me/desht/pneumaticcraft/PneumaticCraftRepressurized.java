@@ -40,7 +40,6 @@ import me.desht.pneumaticcraft.common.fluid.FluidSetup;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
-import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
@@ -151,10 +150,8 @@ public class PneumaticCraftRepressurized {
         ModNameCache.init();
         HeatBehaviourManager.getInstance().init();
         PlayerFilter.registerDefaultMatchers();
-        ItemRegistry.getInstance().registerAllPNCUpgradeAcceptors();
 
         event.enqueueWork(() -> {
-//            ModWorldGen.registerConfiguredFeatures();
             AdvancementTriggers.registerTriggers();
             DroneDispenseBehavior.registerDrones();
             ThirdPartyManager.instance().postInit();

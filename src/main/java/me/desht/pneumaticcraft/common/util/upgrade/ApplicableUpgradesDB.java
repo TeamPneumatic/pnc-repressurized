@@ -19,55 +19,107 @@ package me.desht.pneumaticcraft.common.util.upgrade;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
+import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
+import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.item.UpgradeItem;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
-public enum ApplicableUpgradesDB {
+public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     INSTANCE;
 
-    private final Table<BlockEntityType<?>, PNCUpgrade, Integer> TILE_ENTITIES = HashBasedTable.create();
-    private final Table<EntityType<?>, PNCUpgrade, Integer> ENTITIES = HashBasedTable.create();
-    private final Table<Item, PNCUpgrade, Integer> ITEMS = HashBasedTable.create();
+    private static final int MAX_UPGRADES_IN_TOOLTIP = 12;
+
+    private final Table<BlockEntityType<?>, PNCUpgrade, Integer> TILE_ENTITIES = Tables.synchronizedTable(HashBasedTable.create());
+    private final Table<EntityType<?>, PNCUpgrade, Integer> ENTITIES = Tables.synchronizedTable(HashBasedTable.create());
+    private final Table<Item, PNCUpgrade, Integer> ITEMS = Tables.synchronizedTable(HashBasedTable.create());
+
+    private final Map<PNCUpgrade,Set<Item>> ACCEPTED_UPGRADES = new ConcurrentHashMap<>();
 
     public static ApplicableUpgradesDB getInstance() {
         return INSTANCE;
     }
 
-    public void addApplicableUpgrades(BlockEntityType<?> type, UpgradesDBSetup.Builder builder) {
+    @Override
+    public void addApplicableUpgrades(BlockEntityType<?> type, IUpgradeRegistry.Builder builder) {
         addUpgrades(TILE_ENTITIES, type, builder);
     }
 
-    public void addApplicableUpgrades(EntityType<?> type, UpgradesDBSetup.Builder builder) {
+    @Override
+    public void addApplicableUpgrades(EntityType<?> type, IUpgradeRegistry.Builder builder) {
         addUpgrades(ENTITIES, type, builder);
     }
 
-    public void addApplicableUpgrades(Item item, UpgradesDBSetup.Builder builder) {
+    @Override
+    public void addApplicableUpgrades(Item item, IUpgradeRegistry.Builder builder) {
         addUpgrades(ITEMS, item, builder);
     }
 
+    @Override
     public int getMaxUpgrades(BlockEntity te, PNCUpgrade upgrade) {
         if (te == null || upgrade == null) return 0;
         Integer max = TILE_ENTITIES.get(te.getType(), upgrade);
         return max == null ? 0 : max;
     }
 
-    public int getMaxUpgrades(Entity e, PNCUpgrade upgrade) {
-        if (e == null || upgrade == null) return 0;
-        Integer max = ENTITIES.get(e.getType(), upgrade);
+    @Override
+    public int getMaxUpgrades(Entity entity, PNCUpgrade upgrade) {
+        if (entity == null || upgrade == null) return 0;
+        Integer max = ENTITIES.get(entity.getType(), upgrade);
         return max == null ? 0 : max;
     }
 
+    @Override
     public int getMaxUpgrades(Item item, PNCUpgrade upgrade) {
         if (item == null || upgrade == null) return 0;
         Integer max = ITEMS.get(item, upgrade);
         return max == null ? 0 : max;
+    }
+
+    @Override
+    public void addUpgradeTooltip(PNCUpgrade upgrade, List<Component> tooltip) {
+        Collection<Item> acceptors = ApplicableUpgradesDB.getInstance().getItemsWhichAccept(upgrade);
+        if (!acceptors.isEmpty()) {
+            List<Component> tempList = new ArrayList<>(acceptors.size());
+            for (Item acceptor : acceptors) {
+                tempList.add(Symbols.bullet().append(acceptor.getDescription().copy().withStyle(ChatFormatting.DARK_AQUA)));
+            }
+            tempList.sort(Comparator.comparing(Component::getString));
+            if (tempList.size() > MAX_UPGRADES_IN_TOOLTIP) {
+                int n = (int) ((ClientUtils.getClientLevel().getGameTime() / 8) % acceptors.size());
+                List<Component> tempList2 = new ArrayList<>(MAX_UPGRADES_IN_TOOLTIP);
+                for (int i = 0; i < MAX_UPGRADES_IN_TOOLTIP; i++) {
+                    tempList2.add(tempList.get((n + i) % acceptors.size()));
+                }
+                tooltip.addAll(tempList2);
+            } else {
+                tooltip.addAll(tempList);
+            }
+        }
+    }
+
+    @Override
+    public Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier) {
+        return new UpgradeItem(upgrade, tier);
+    }
+
+    public Collection<Item> getItemsWhichAccept(PNCUpgrade upgrade) {
+        return ACCEPTED_UPGRADES.getOrDefault(upgrade, Collections.emptySet());
     }
 
     public Map<PNCUpgrade, Integer> getApplicableUpgrades(BlockEntity te) {
@@ -82,7 +134,21 @@ public enum ApplicableUpgradesDB {
         return ITEMS.row(item);
     }
 
-    private <T extends ForgeRegistryEntry<?>> void addUpgrades(Table<T,PNCUpgrade,Integer> table, T entry, UpgradesDBSetup.Builder builder) {
-        builder.getUpgrades().forEach((upgrade, max) -> table.put(entry, upgrade, max));
+    private <T extends ForgeRegistryEntry<?>> void addUpgrades(Table<T,PNCUpgrade,Integer> table, T entry, IUpgradeRegistry.Builder builder) {
+        builder.getUpgrades().forEach((upgrade, max) -> {
+            table.put(entry, upgrade, max);
+            if (entry instanceof Item item) {
+                addAccepted(upgrade, item);
+            } else if (entry instanceof BlockEntityType<?> beType) {
+                beType.validBlocks.stream()
+                        .map(Block::asItem)
+                        .filter(item -> item != Items.AIR)
+                        .forEach(item -> addAccepted(upgrade, item));
+            }
+        });
+    }
+
+    private void addAccepted(PNCUpgrade upgrade, Item item) {
+        ACCEPTED_UPGRADES.computeIfAbsent(upgrade, k -> ConcurrentHashMap.newKeySet()).add(item);
     }
 }

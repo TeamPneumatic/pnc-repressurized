@@ -46,7 +46,9 @@ public interface IItemRegistry {
      * mod's init thread.
      *
      * @param upgradeAcceptor the upgrade acceptor
+     * @deprecated no longer required and is now a no-op; superceded by {@link IUpgradeRegistry}
      */
+    @Deprecated(forRemoval = true)
     void registerUpgradeAcceptor(IUpgradeAcceptor upgradeAcceptor);
 
     /**
@@ -55,12 +57,14 @@ public interface IItemRegistry {
      * {@link #addTooltip(PNCUpgrade, List)} is called when Shift is held while hovering over the item.
      * <p>
      * You can use this method when registering upgrade items as an alternative to creating an Item which implements
-     * {@code IUpgradeItem} yourself.
+     * {@code IUpgrad£eItem} yourself.
      *
      * @param upgrade a supplier for the upgrade object, which will not yet be registered
      * @param tier upgrade tier of this item
      * @return an item
+     * @deprecated superceded by {@link IUpgradeRegistry#makeUpgradeItem(Supplier, int)}
      */
+    @Deprecated(forRemoval = true)
     Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier);
 
     /**
@@ -70,7 +74,9 @@ public interface IItemRegistry {
      * which machines and/or items accept it.
      *  @param upgrade the upgrade item
      * @param tooltip the tooltip string list to append to
+     * @deprecated superceded by {@link IUpgradeRegistry#addUpgradeTooltip(PNCUpgrade, List)}
      */
+    @Deprecated(forRemoval = true)
     void addTooltip(PNCUpgrade upgrade, List<Component> tooltip);
 
     /**
@@ -83,8 +89,8 @@ public interface IItemRegistry {
 
     /**
      * Convenience method to check if an item matches a given filter item. Note that the filtering item (the first
-     * parameter) could be a Tag Filter or other instance of {@link IFilteringItem}, so parameter order is important;
-     * provide the filtering item first, and the item to check second.
+     * parameter) could be a Tag Filter, Classify Filter, or other instance of {@link IFilteringItem}, so parameter
+     * order is important; provide the filtering item first, and the item to check second.
      *
      * @param filterStack the item to check against
      * @param stack the item being checked
@@ -137,4 +143,12 @@ public interface IItemRegistry {
      * @implNote this air handler stores the item's air amount in the {@code}pneumaticcraft:air{@code} integer NBT tag
      */
     IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure);
+
+    /**
+     * Get the upgrade registry handler, which can be used to register custom upgrades with block entities, entities
+     * and items.
+     *
+     * @return the upgrade registry
+     */
+    IUpgradeRegistry getUpgradeRegistry();
 }

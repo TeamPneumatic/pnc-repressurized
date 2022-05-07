@@ -18,56 +18,33 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.*;
-import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Supplier;
 
 public enum ItemRegistry implements IItemRegistry {
     INSTANCE;
 
-    private static final int MAX_UPGRADES_IN_TOOLTIP = 12;
-
     private final List<Item> inventoryItemBlacklist = new ArrayList<>();
     public final List<IInventoryItem> inventoryItems = new ArrayList<>();
-    private final Map<PNCUpgrade, List<IUpgradeAcceptor>> upgradeToAcceptors = new ConcurrentHashMap<>();
     private final List<IMagnetSuppressor> magnetSuppressors = new ArrayList<>();
     private final List<ItemVolumeModifier> volumeModifiers = new ArrayList<>();
 
     public static ItemRegistry getInstance() {
         return INSTANCE;
-    }
-
-    public void registerAllPNCUpgradeAcceptors() {
-        for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
-            if (block.get() instanceof IUpgradeAcceptor a) {
-                registerUpgradeAcceptor(a);
-            }
-        }
-        for (RegistryObject<Item> item : ModItems.ITEMS.getEntries()) {
-            if (item.get() instanceof IUpgradeAcceptor a) {
-                registerUpgradeAcceptor(a);
-            }
-        }
     }
 
     @Override
@@ -78,40 +55,19 @@ public enum ItemRegistry implements IItemRegistry {
 
     @Override
     public void registerUpgradeAcceptor(@Nonnull IUpgradeAcceptor upgradeAcceptor) {
-        Map<PNCUpgrade,Integer> applicableUpgrades = upgradeAcceptor.getApplicableUpgrades();
-        if (applicableUpgrades != null) {
-            for (PNCUpgrade applicableUpgrade : applicableUpgrades.keySet()) {
-                List<IUpgradeAcceptor> acceptors = upgradeToAcceptors.computeIfAbsent(applicableUpgrade, k -> new ArrayList<>());
-                acceptors.add(upgradeAcceptor);
-            }
-        }
+        // will disappear in 1.19
     }
 
     @Override
     public Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier) {
-        return new UpgradeItem(upgrade, tier);
+        // will disappear in 1.19
+        return getUpgradeRegistry().makeUpgradeItem(upgrade, tier);
     }
 
     @Override
     public void addTooltip(PNCUpgrade upgrade, List<Component> tooltip) {
-        List<IUpgradeAcceptor> acceptors = upgradeToAcceptors.get(upgrade);
-        if (acceptors != null) {
-            List<String> tempList = new ArrayList<>(acceptors.size());
-            for (IUpgradeAcceptor acceptor : acceptors) {
-                tempList.add(Symbols.BULLET + " " + I18n.get(acceptor.getUpgradeAcceptorTranslationKey()));
-            }
-            Collections.sort(tempList);
-            if (tempList.size() > MAX_UPGRADES_IN_TOOLTIP) {
-                int n = (int) ((ClientUtils.getClientLevel().getGameTime() / 8) % acceptors.size());
-                List<String> tempList2 = new ArrayList<>(MAX_UPGRADES_IN_TOOLTIP);
-                for (int i = 0; i < MAX_UPGRADES_IN_TOOLTIP; i++) {
-                    tempList2.add(tempList.get((n + i) % acceptors.size()));
-                }
-                tooltip.addAll(tempList2.stream().map(s -> new TextComponent(s).withStyle(ChatFormatting.DARK_AQUA)).toList());
-            } else {
-                tooltip.addAll(tempList.stream().map(s -> new TextComponent(s).withStyle(ChatFormatting.DARK_AQUA)).toList());
-            }
-        }
+        // will disappear in 1.19
+        getUpgradeRegistry().addUpgradeTooltip(upgrade, tooltip);
     }
 
     @Override
@@ -138,6 +94,11 @@ public enum ItemRegistry implements IItemRegistry {
     @Override
     public IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure) {
         return new AirHandlerItemStack(stack, maxPressure);
+    }
+
+    @Override
+    public IUpgradeRegistry getUpgradeRegistry() {
+        return ApplicableUpgradesDB.getInstance();
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
