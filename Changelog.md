@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.2.2-?? (unreleased)
+## 3.2.2-79 (8 May 2022)
 
 ### Updates
 * API: better exposure of methods for registering custom upgrades (primarily around new `IUpgradeRegistry` API class)

@@ -26,6 +26,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.Objects;
 
 public class PneumaticCraftTags {
     public static class Blocks extends PneumaticCraftTags {
@@ -51,7 +54,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 
         static TagKey<Block> tag(String modid, String name) {
-            return TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(modid, name));
+            return ForgeRegistries.BLOCKS.tags().createTagKey(new ResourceLocation(modid, name));
         }
 
         static TagKey<Block> modTag(String name) {
@@ -94,7 +97,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> WRENCHES = forgeTag("tools/wrench");
 
         static TagKey<Item> tag(String modid, String name) {
-            return TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(modid, name));
+            return Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).createTagKey(new ResourceLocation(modid, name));
         }
 
         static TagKey<Item> modTag(String name) {
@@ -125,7 +128,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Fluid> SEISMIC = modTag("seismic_sensor_interesting");
 
         static TagKey<Fluid> tag(String modid, String name) {
-            return TagKey.create(Registry.FLUID_REGISTRY, new ResourceLocation(modid, name));
+            return Objects.requireNonNull(ForgeRegistries.FLUIDS.tags()).createTagKey(new ResourceLocation(modid, name));
         }
 
         static TagKey<Fluid> modTag(String name) {
@@ -141,7 +144,7 @@ public class PneumaticCraftTags {
         public static final TagKey<EntityType<?>> VACUUM_TRAP_BLACKLISTED = modTag("vacuum_trap_blacklisted");
 
         static TagKey<EntityType<?>> tag(String modid, String name) {
-            return TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(modid, name));
+            return Objects.requireNonNull(ForgeRegistries.ENTITIES.tags()).createTagKey(new ResourceLocation(modid, name));
         }
 
         static TagKey<EntityType<?>> modTag(String name) {
