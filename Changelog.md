@@ -8,6 +8,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.2.2-?? (unreleased)
+
+### Updates
+* API: better exposure of methods for registering custom upgrades (primarily around new `IUpgradeRegistry` API class)
+  * Also deprecated `IUpgradeAcceptor` interface, which is no longer needed
+
+### Fixes
+* Fixed buckets not having fluid handler functionality (noticeable when trying to cool a bucket of Molten Plastic in a heat-framed inventory)
+* Fixed fluid tag handling bug in recipes which prevented Mekanism fuels being recognised as usable in PNC machines
+* Fixed harmless-but-annoying "Could not serialize" errors the log when a player logs into dedicated server
+
 ## 3.2.1-75 (30 Apr 2022)
 
 ### Fixes
