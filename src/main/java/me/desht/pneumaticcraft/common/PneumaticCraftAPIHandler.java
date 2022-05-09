@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
@@ -45,6 +46,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -124,6 +126,11 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     @Override
     public IItemRegistry getItemRegistry() {
         return ItemRegistry.getInstance();
+    }
+
+    @Override
+    public IUpgradeRegistry getUpgradeRegistry() {
+        return ApplicableUpgradesDB.getInstance();
     }
 
     @Override

@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
+import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
@@ -97,6 +98,8 @@ public final class PneumaticRegistry {
         ISensorRegistry getSensorRegistry();
 
         IItemRegistry getItemRegistry();
+
+        IUpgradeRegistry getUpgradeRegistry();
 
         IFuelRegistry getFuelRegistry();
 

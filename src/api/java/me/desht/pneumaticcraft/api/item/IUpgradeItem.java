@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 /**
  * Represents an item which can be used as a PneumaticCraft upgrade in machines or other items. You can implement this
  * interface on your own items, or you can use {@link IUpgradeRegistry#makeUpgradeItem(Supplier, int)} to create an
- * upgrade with PneumaticCraft tooltips.
+ * upgrade with default PneumaticCraft tooltip behaviour.
  * <p>
  * Items that you implement yourself should take a {@code Supplier&lt;PNCUpgrade&gt;} in their constructor, and
  * store that in a final field. A Supplier is needed because items are registered before PNCUpgrade objects.

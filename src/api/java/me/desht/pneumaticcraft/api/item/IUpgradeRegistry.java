@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -95,6 +96,23 @@ public interface IUpgradeRegistry {
      * @return an item
      */
     Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier);
+
+    /**
+     * Helper method to get the number of the given upgrade which is installed in the given itemstack.
+     *
+     * @param stack the item holding the upgrades
+     * @param upgrade the upgrade to check for
+     * @return the number of that upgrade installed in the item
+     */
+    int getUpgradeCount(ItemStack stack, PNCUpgrade upgrade);
+
+    /**
+     * Helper method to get all the upgrades currently installed in the given itemstack
+     *
+     * @param stack the item holding the upgrades
+     * @return an immutable map of (upgrade->count)
+     */
+    Map<PNCUpgrade,Integer> getAllUpgrades(ItemStack stack);
 
     /**
      * Helper class to collect a list of upgrades for adding to an object via one of the {@code addApplicableUpgrades()}

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.api.item;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -149,6 +150,8 @@ public interface IItemRegistry {
      * and items.
      *
      * @return the upgrade registry
+     * @deprecated use {@link PneumaticRegistry.IPneumaticCraftInterface#getUpgradeRegistry()}
      */
+    @Deprecated(forRemoval = true)
     IUpgradeRegistry getUpgradeRegistry();
 }

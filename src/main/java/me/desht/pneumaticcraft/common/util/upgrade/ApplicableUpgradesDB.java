@@ -25,11 +25,13 @@ import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.UpgradeItem;
+import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -118,6 +120,16 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
         return new UpgradeItem(upgrade, tier);
     }
 
+    @Override
+    public int getUpgradeCount(ItemStack stack, PNCUpgrade upgrade) {
+        return UpgradableItemUtils.getUpgradeCount(stack, upgrade);
+    }
+
+    @Override
+    public Map<PNCUpgrade, Integer> getAllUpgrades(ItemStack stack) {
+        return UpgradableItemUtils.getUpgrades(stack);
+    }
+
     public Collection<Item> getItemsWhichAccept(PNCUpgrade upgrade) {
         return ACCEPTED_UPGRADES.getOrDefault(upgrade, Collections.emptySet());
     }
@@ -140,7 +152,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
             if (entry instanceof Item item) {
                 addAccepted(upgrade, item);
             } else if (entry instanceof BlockEntityType<?> beType) {
-                beType.validBlocks.stream()
+                beType.validBlocks.stream() // access transform
                         .map(Block::asItem)
                         .filter(item -> item != Items.AIR)
                         .forEach(item -> addAccepted(upgrade, item));
