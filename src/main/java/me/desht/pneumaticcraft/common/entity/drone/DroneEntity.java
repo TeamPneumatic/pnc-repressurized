@@ -94,6 +94,7 @@ import net.minecraft.world.damagesource.EntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -232,6 +233,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
     private LogisticsManager logisticsManager;
     private final Map<Enchantment,Integer> stackEnchants = new HashMap<>();
+    private boolean carriedEntityAIdisabled;  // true if the drone's carried entity AI was already disabled
 
     public DroneEntity(EntityType<? extends DroneEntity> type, Level world) {
         super(type, world);
@@ -858,6 +860,10 @@ public class DroneEntity extends AbstractDroneEntity implements
     public void die(DamageSource damageSource) {
         super.die(damageSource);
 
+        for (Entity e : getPassengers()) {
+            if (e instanceof Mob mob) mob.setNoAi(carriedEntityAIdisabled);
+        }
+
         restoreFluidBlocks(false);
 
         if (shouldDropAsItem()) {
@@ -962,10 +968,11 @@ public class DroneEntity extends AbstractDroneEntity implements
         WidgetSerializer.putWidgetsToNBT(progWidgets, tag);
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
-        tag.putBoolean("disabledByHacking", disabledByHacking);
-        tag.putBoolean("hackedByOwner", gotoOwnerAI != null);
+        if (disabledByHacking) tag.putBoolean("disabledByHacking", true);
+        if (gotoOwnerAI != null) tag.putBoolean("hackedByOwner", true);
+        if (standby) tag.putBoolean("standby", true);
+        if (carriedEntityAIdisabled) tag.putBoolean("carriedEntityAIdisabled", true);
         tag.putInt("color", getDroneColor());
-        tag.putBoolean("standby", standby);
         tag.put("variables", aiManager.writeToNBT(new CompoundTag()));
 
         ItemStackHandler tmpHandler = new ItemStackHandler(droneItemHandler.getSlots());
@@ -1016,6 +1023,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         upgradeInventory.deserializeNBT(tag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
         upgradeCache.invalidateCache();
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
+        carriedEntityAIdisabled = tag.getBoolean("carriedEntityAIdisabled");
 
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("Inventory"));
@@ -1140,10 +1148,6 @@ public class DroneEntity extends AbstractDroneEntity implements
     public IItemHandlerModifiable getInv() {
         return droneItemHandler;
     }
-
-//    public double getSpeed() {
-//        return speed;
-//    }
 
     public int getEmittingRedstone(Direction side) {
         return emittingRedstoneValues.getOrDefault(side, 0);
@@ -1320,22 +1324,28 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (entity == null) {
             for (Entity e : getCarryingEntities()) {
                 e.stopRiding();
-                double y = e.getY();
-                if (ConfigHelper.common().drones.dronesCanBePickedUp.get() && (e instanceof AbstractMinecart || e instanceof Boat)) {
-                    // little kludge to prevent the dropped minecart/boat immediately picking up the drone
-                    y -= 2;
-                    BlockPos pos = e.blockPosition();
-                    if (level.getBlockState(pos).isRedstoneConductor(level, pos)) {
-                        y++;
-                    }
-                    // minecarts have their own tick() which doesn't decrement rideCooldown
-                    if (e instanceof AbstractMinecart) e.boardingCooldown = 0;
-                }
-                if (y != e.getY()) e.setPos(e.getX(), y, e.getZ());
+                if (e instanceof Mob mob) mob.setNoAi(carriedEntityAIdisabled);
+                checkForMinecartKludge(e);
             }
-        } else {
-            entity.startRiding(this);
+        } else if (entity.startRiding(this) && entity instanceof Mob mob) {
+            carriedEntityAIdisabled = mob.isNoAi();
+            mob.setNoAi(true);
         }
+    }
+
+    private void checkForMinecartKludge(Entity e) {
+        double y = e.getY();
+        if (ConfigHelper.common().drones.dronesCanBePickedUp.get() && (e instanceof AbstractMinecart || e instanceof Boat)) {
+            // little kludge to prevent the dropped minecart/boat immediately picking up the drone
+            y -= 2;
+            BlockPos pos = e.blockPosition();
+            if (level.getBlockState(pos).isRedstoneConductor(level, pos)) {
+                y++;
+            }
+            // minecarts have their own tick() which doesn't decrement rideCooldown
+            if (e instanceof AbstractMinecart) e.boardingCooldown = 0;
+        }
+        if (y != e.getY()) e.setPos(e.getX(), y, e.getZ());
     }
 
     @Override

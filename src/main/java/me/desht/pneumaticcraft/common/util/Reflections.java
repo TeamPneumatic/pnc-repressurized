@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.world.entity.animal.Pufferfish;
 import net.minecraft.world.entity.monster.Blaze;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.Guardian;
@@ -34,6 +35,7 @@ public class Reflections {
     public static Class<?> ghast_aiFireballAttack;
     public static Class<?> shulker_aiAttack;
     public static Class<?> guardian_aiGuardianAttack;
+    public static Class<?> pufferfish_aiPuff;
 
     public static void init() {
         // access to non-public entity AI's for hacking purposes
@@ -42,6 +44,7 @@ public class Reflections {
         ghast_aiFireballAttack = findEnclosedClass(Ghast.class, "GhastShootFireballGoal", "c");
         shulker_aiAttack = findEnclosedClass(Shulker.class, "ShulkerAttackGoal", "a");
         guardian_aiGuardianAttack = findEnclosedClass(Guardian.class, "GuardianAttackGoal", "a");
+        pufferfish_aiPuff = findEnclosedClass(Pufferfish.class, "PufferfishPuffGoal", "a");
     }
 
     private static Class<?> findEnclosedClass(Class<?> cls, String... enclosedClassNames) {
