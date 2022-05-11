@@ -39,6 +39,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Pufferfish;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -108,6 +109,7 @@ public class HackManager {
         registry.addHackable(Horse.class, HackableHorse::new);
         registry.addHackable(Shulker.class, HackableShulker::new);
         registry.addHackable(Guardian.class, HackableGuardian::new);
+        registry.addHackable(Pufferfish.class, HackablePufferfish::new);
         registry.addHackable(Villager.class, HackableVillager::new);
         registry.addHackable(Painting.class, HackablePainting::new);
         registry.addHackable(ItemFrame.class, HackableItemFrame::new);
