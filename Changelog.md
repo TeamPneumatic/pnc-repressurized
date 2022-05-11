@@ -12,6 +12,15 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
+## 2.15.8-??? (unreleased)
+
+### Updates
+* Added a "check sight" checkbox to the Entity Attack programming widget
+  * If checked, drones won't attack entities they can't directly see
+
+### Fixes
+* Fix some mobs (e.g. Zoglins) being able to control drones which have imported them
+ 
 ## 2.15.7-320 (27 Apr 2022)
 
 ### Updates
