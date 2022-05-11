@@ -38,6 +38,9 @@ import java.util.Optional;
  * Represents the client-specific part of an armor upgrade handler; provides methods for rendering, getting the
  * configuration GUI page, reading/writing client-side configuration, and handling keybinds. It's recommended to extend
  * {@link AbstractHandler} or {@link SimpleToggleableHandler} rather than implement this interface directly.
+ * <p>
+ * Register an instance of this via {@link IPneumaticHelmetRegistry#registerRenderHandler(IArmorUpgradeHandler, IArmorUpgradeClientHandler)}.
+ * You will need a corresponding {@link IArmorUpgradeHandler} object; there is a 1-1 relationship.
  */
 public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     /**
@@ -47,7 +50,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     T getCommonHandler();
 
     /**
-     * This is called when a {@link net.minecraftforge.fml.config.ModConfig.ModConfigEvent} is received for the mod.
+     * This is called when a {@link net.minecraftforge.fml.event.config.ModConfigEvent} is received for the mod.
      */
     default void initConfig() {}
 
@@ -66,7 +69,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     void tickClient(ICommonArmorHandler armorHandler);
 
     /**
-     * Called in the 3D render stage (via {@link net.minecraftforge.client.event.RenderWorldLastEvent})
+     * Called in the 3D render stage (via {@link net.minecraftforge.client.event.RenderLevelLastEvent})
      *
      * @param matrixStack the matrix stack
      * @param buffer the render type buffer

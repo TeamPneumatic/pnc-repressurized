@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 
 /**
  * Retrieve an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getHelmetRegistry()}
+ * <p>Note: despite the name of this interface, it is for used for all armor pieces. The name is historical.
  */
 public interface IPneumaticHelmetRegistry {
     /**
