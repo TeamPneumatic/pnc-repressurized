@@ -154,8 +154,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
             // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
             int air = tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
             int volume = ((IPressurizableItem) stackCopy.getItem()).getEffectiveVolume(stackCopy);
-
-
+            // ok to modify tag directly here because we're working on a copy of the itemstack
             tag.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / ConfigHelper.common().advanced.pressureSyncPrecision.get()));
             return tag;
         } else {
