@@ -17,22 +17,24 @@
 
 package me.desht.pneumaticcraft.common;
 
-import me.desht.pneumaticcraft.api.drone.ICustomBlockInteract;
-import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
-import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
-import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.api.drone.*;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCustomBlockInteract;
 import me.desht.pneumaticcraft.common.util.ProgrammedDroneUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.Validate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public enum DroneRegistry implements IDroneRegistry {
     INSTANCE;
@@ -75,4 +77,17 @@ public enum DroneRegistry implements IDroneRegistry {
     public PathfinderMob retrieveFluidAmazonStyle(GlobalPos globalPos, FluidStack queriedFluid) {
         return ProgrammedDroneUtils.retrieveFluidAmazonStyle(globalPos, queriedFluid);
     }
+
+    @Override
+    public Optional<IDrone> getDrone(Level level, int entityID) {
+        Entity e = level.getEntity(entityID);
+        return e instanceof IDrone d ? Optional.of(d) : Optional.empty();
+    }
+
+    @Override
+    public Optional<IDrone> getDrone(Level level, BlockPos pos) {
+        BlockEntity be = level.getBlockEntity(pos);
+        return be instanceof IDrone d ? Optional.of(d) : Optional.empty();
+    }
+
 }

@@ -41,14 +41,16 @@ import java.util.UUID;
 /**
  * Represents a drone or drone-like object (e.g. a Programmable Controller).
  * <p>
- * Do not implement this class yourself!
+ * Do not implement this class yourself! Instances of it are available via drone events ({@link AmadronRetrievalEvent},
+ * {@link DroneConstructingEvent}, {@link DroneSuicideEvent}), and via {@code getDrone(...)} methods in
+ * {@link IDroneRegistry}.
  */
 public interface IDrone extends ICapabilityProvider {
     /**
-     * Get the number of installed upgrades of the given item type.
+     * Get a count of the installed upgrades of the given type.
      *
+     * @param upgrade the upgrade to check
      * @return amount of installed upgrades in the drone
-     * @param upgrade
      */
     int getUpgrades(PNCUpgrade upgrade);
 
@@ -62,7 +64,7 @@ public interface IDrone extends ICapabilityProvider {
     /**
      * Get the drone's fluid tank.  Note that this is also accessible via the
      * {@link net.minecraftforge.fluids.capability.CapabilityFluidHandler#FLUID_HANDLER_CAPABILITY}
-     * capability.
+     * capability, which should be used in preference.
      *
      * @return a fluid tank
      */
@@ -70,7 +72,8 @@ public interface IDrone extends ICapabilityProvider {
 
     /**
      * Get the drone's inventory.  Note that this is also accessible via the
-     * {@link net.minecraftforge.items.CapabilityItemHandler#ITEM_HANDLER_CAPABILITY} capability.
+     * {@link net.minecraftforge.items.CapabilityItemHandler#ITEM_HANDLER_CAPABILITY} capability,
+     * which should be used in preference.
      *
      * @return an inventory
      */
@@ -84,8 +87,8 @@ public interface IDrone extends ICapabilityProvider {
     Vec3 getDronePos();
 
     /**
-     * Get the position of the drone's controller. For actual drone entities, this will always be (0,0,0).  If the
-     * drone is actually a Programmable Controller, it will be the controller's block position.
+     * Get the position of the drone's controller. For actual drone entities, this will always be {@code BlockPos.ZERO}.
+     * If the drone is actually a Programmable Controller, it will be the controller's block position.
      */
     BlockPos getControllerPos();
 
@@ -139,7 +142,7 @@ public interface IDrone extends ICapabilityProvider {
     /**
      * Get the drone's current collection of tasks.
      *
-     * @return a vanilla EntityAITasks object
+     * @return a vanilla GoalSelector object
      */
     GoalSelector getTargetAI();
 
@@ -159,7 +162,8 @@ public interface IDrone extends ICapabilityProvider {
     void setName(Component string);
 
     /**
-     * Make the drone pick up the given entity.  The given entity will be set as a rider of the drone.
+     * Make the drone pick up the given entity.  The given entity will be set as a rider of the drone, but it will
+     * not have any control over the drone (in fact, its AI is disabled while being carried).
      *
      * @param entity an entity to pick up
      */
@@ -167,6 +171,7 @@ public interface IDrone extends ICapabilityProvider {
 
     /**
      * Get the list of entities currently carried by this drone.
+     * Note: although this method returns a list, drones currently support only a single carried entity.
      *
      * @return a list of entities
      */

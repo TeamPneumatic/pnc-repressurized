@@ -17,12 +17,16 @@
 
 package me.desht.pneumaticcraft.api.drone;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidStack;
+
+import java.util.Optional;
 
 /**
  * Retrieve an instance of this via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getDroneRegistry()}.
@@ -99,4 +103,20 @@ public interface IDroneRegistry {
      * @return the drone
      */
     PathfinderMob retrieveFluidAmazonStyle(GlobalPos globalPos, FluidStack queriedFluid);
+
+    /**
+     * Get the {@link IDrone} API object for the given entity ID
+     * @param level the level
+     * @param entityID the entity ID
+     * @return an IDrone object, or {@code Optional.empty()} if the entity isn't a drone
+     */
+    Optional<IDrone> getDrone(Level level, int entityID);
+
+    /**
+     * Get the {@link IDrone} API object for the block entity at the given position
+     * @param level the level
+     * @param pos the block entity's position
+     * @return an IDrone object, or {@code Optional.empty()} if the block entity at the given pos isn't a Programmable Controller
+     */
+    Optional<IDrone> getDrone(Level level, BlockPos pos);
 }
