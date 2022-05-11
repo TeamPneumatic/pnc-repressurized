@@ -75,6 +75,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
@@ -217,6 +218,7 @@ public class EntityDrone extends EntityDroneBase implements
     private Minigun minigun;
     private int attackCount; // tracks number of times drone has starting attacking something
     private BlockPos deployPos; // where the drone was deployed, accessible to programs as '$deploy_pos'
+    private boolean carriedEntityAIdisabled;  // true if the drone's carried entity AI was already disabled
 
     private final DroneDebugger debugger = new DroneDebugger(this);
 
@@ -856,6 +858,10 @@ public class EntityDrone extends EntityDroneBase implements
     public void die(DamageSource damageSource) {
         super.die(damageSource);
 
+        for (Entity e : getPassengers()) {
+            if (e instanceof MobEntity) ((MobEntity) e).setNoAi(carriedEntityAIdisabled);
+        }
+
         restoreFluidBlocks(false);
 
         if (shouldDropAsItem()) {
@@ -1320,22 +1326,31 @@ public class EntityDrone extends EntityDroneBase implements
         if (entity == null) {
             for (Entity e : getCarryingEntities()) {
                 e.stopRiding();
-                double y = e.getY();
-                if (ConfigHelper.common().general.dronesCanBePickedUp.get() && (e instanceof AbstractMinecartEntity || e instanceof BoatEntity)) {
-                    // little kludge to prevent the dropped minecart/boat immediately picking up the drone
-                    y -= 2;
-                    BlockPos pos = PneumaticCraftUtils.getPosForEntity(e);
-                    if (level.getBlockState(pos).isRedstoneConductor(level, pos)) {
-                        y++;
-                    }
-                    // minecarts have their own tick() which doesn't decrement rideCooldown
-                    if (e instanceof AbstractMinecartEntity) e.boardingCooldown = 0;
-                }
-                if (y != e.getY()) e.setPos(e.getX(), y, e.getZ());
+                if (e instanceof MobEntity) ((MobEntity) e).setNoAi(carriedEntityAIdisabled);
+                checkForMinecartKludge(e);
             }
         } else {
-            entity.startRiding(this);
+            if (entity.startRiding(this) && entity instanceof MobEntity) {
+                MobEntity mob = (MobEntity) entity;
+                carriedEntityAIdisabled = mob.isNoAi();
+                mob.setNoAi(true);
+            }
         }
+    }
+
+    private void checkForMinecartKludge(Entity e) {
+        // little kludge to prevent a dropped minecart/boat immediately picking up the drone
+        double y = e.getY();
+        if (ConfigHelper.common().general.dronesCanBePickedUp.get() && (e instanceof AbstractMinecartEntity || e instanceof BoatEntity)) {
+            y -= 2;
+            BlockPos pos = PneumaticCraftUtils.getPosForEntity(e);
+            if (level.getBlockState(pos).isRedstoneConductor(level, pos)) {
+                y++;
+            }
+            // minecarts have their own tick() which doesn't decrement rideCooldown
+            if (e instanceof AbstractMinecartEntity) e.boardingCooldown = 0;
+        }
+        if (y != e.getY()) e.setPos(e.getX(), y, e.getZ());
     }
 
     @Override

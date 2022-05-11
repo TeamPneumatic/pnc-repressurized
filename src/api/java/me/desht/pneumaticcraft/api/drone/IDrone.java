@@ -158,14 +158,16 @@ public interface IDrone extends ICapabilityProvider {
     void setName(ITextComponent string);
 
     /**
-     * Make the drone pick up the given entity.  The given entity will be set as a rider of the drone.
+     * Make the drone pick up the given entity.  The given entity will be set as a rider of the drone, but it will
+     * not have any control over the drone (in fact, its AI is disabled while being carried).
      *
-     * @param entity an entity to pick up
+     * @param entity an entity to pick up, or null to drop any currently-held entity
      */
     void setCarryingEntity(Entity entity);
 
     /**
      * Get the list of entities currently carried by this drone.
+     * Note: although this method returns a list, drones currently only support carrying a single entity.
      *
      * @return a list of entities
      */
