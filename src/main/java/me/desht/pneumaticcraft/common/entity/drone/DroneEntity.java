@@ -1171,6 +1171,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (PneumaticCraftUtils.isBlockLiquid(block)) {
             return securityUpgradeCount > 0;
         }
+        if (checkMC181565kludge(block)) return false;
         if (state.isPathfindable(level, pos, PathComputationType.LAND)) return true;
         if (!state.getMaterial().blocksMotion() && block != Blocks.LADDER) return true;
         if (DroneRegistry.getInstance().pathfindableBlocks.containsKey(block)) {
@@ -1179,6 +1180,22 @@ public class DroneEntity extends AbstractDroneEntity implements
         } else {
             return false;
         }
+    }
+
+    // temp workaround for https://bugs.mojang.com/browse/MC-181565
+    // some vanilla blocks with non-full shapes that don't override isPathfindable()
+    private static final Set<Block> MC181565_BLOCKS = Set.of(
+            Blocks.AMETHYST_CLUSTER,
+            Blocks.CANDLE,
+            Blocks.LILY_PAD,
+            Blocks.BIG_DRIPLEAF,
+            Blocks.POINTED_DRIPSTONE,
+            Blocks.TURTLE_EGG,
+            Blocks.AZALEA,
+            Blocks.HONEY_BLOCK
+    );
+    private static boolean checkMC181565kludge(Block block) {
+        return MC181565_BLOCKS.contains(block);
     }
 
     @Override
