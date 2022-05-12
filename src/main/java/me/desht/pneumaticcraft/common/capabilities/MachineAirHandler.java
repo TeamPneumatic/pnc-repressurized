@@ -60,10 +60,11 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private Direction prevLeakDir = null;
     private int prevAir;
     private final Map<Direction, LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new EnumMap<>(Direction.class);
+
     // note: leaks due to security upgrade are tracked separately from leaks due to disconnection
-    private boolean safetyLeaking;
-    private Predicate<Float> securityUpgradePred;
-    private Direction safetyLeakDir;
+    private boolean safetyLeaking;   // is the handler venting right now?
+    private Direction safetyLeakDir; // direction handler would vent in (non-null does not mean actively venting)
+    private Predicate<Float> safetyPredicate;  // for determining when safety venting is needed
 
     public MachineAirHandler(PressureTier tier, int volume) {
         super(volume);
@@ -108,13 +109,13 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     @Override
     public void enableSafetyVenting(Predicate<Float> pressureCheck, Direction dir) {
         this.safetyLeakDir = dir;
-        this.securityUpgradePred = pressureCheck;
+        this.safetyPredicate = pressureCheck;
     }
 
     @Override
     public void disableSafetyVenting() {
         this.safetyLeakDir = null;
-        this.securityUpgradePred = null;
+        this.safetyPredicate = null;
     }
 
     @Override
@@ -139,9 +140,9 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             BlockPos pos = ownerTE.getBlockPos();
             if (safetyLeakDir != null) {
                 float pressure = getPressure();
-                if (!safetyLeaking && securityUpgradePred.test(pressure) /*pressure >= getDangerPressure()*/) {
+                if (!safetyLeaking && safetyPredicate.test(pressure)) {
                     safetyLeaking = true;
-                } else if (safetyLeaking && !securityUpgradePred.test(pressure + 0.2f) /*pressure < getDangerPressure() - 0.2*/) {
+                } else if (safetyLeaking && !safetyPredicate.test(pressure + 0.2f)) {
                     safetyLeaking = false;
                 }
                 // also cap pressure at critical level (it's still possible for air to added faster than it can vent)
