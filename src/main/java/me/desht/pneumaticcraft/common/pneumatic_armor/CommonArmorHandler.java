@@ -370,15 +370,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return getArmorPressure(slot) >= CRITICAL_PRESSURE;
     }
 
-    /**
-     * Validate that the given upgrade can currently be used. Also requires that the armor is enabled, and that the
-     * associated armor piece has enough pressure and has finished initialising. For non-toggleable upgrades
-     * (e.g. chestplate launcher), pass false for {@code mustBeActive}
-     *
-     * @param upgrade the upgrade to check
-     * @param mustBeActive true if the upgrade must be switched on, false otherwise
-     * @return true if the upgrade can currently be used
-     */
     @Override
     public boolean upgradeUsable(IArmorUpgradeHandler<?> upgrade, boolean mustBeActive) {
         EquipmentSlot slot = upgrade.getEquipmentSlot();

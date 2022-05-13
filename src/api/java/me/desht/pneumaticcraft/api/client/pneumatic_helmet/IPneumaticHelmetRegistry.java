@@ -54,7 +54,9 @@ public interface IPneumaticHelmetRegistry {
      *
      * @param entityClazz entity class; subclasses of this entity will also be affected
      * @param iHackable the hack to register
+     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#addHackable(Class, Supplier)}
      */
+    @Deprecated(forRemoval = true)
     void addHackable(Class<? extends Entity> entityClazz, Supplier<? extends IHackableEntity> iHackable);
 
     /**
@@ -63,7 +65,9 @@ public interface IPneumaticHelmetRegistry {
      *
      * @param block the block class; subclasses of this block will also be affected
      * @param iHackable the hack to register
+     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#addHackable(Block, Supplier)}
      */
+    @Deprecated(forRemoval = true)
     void addHackable(@Nonnull Block block, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
     /**
@@ -72,7 +76,9 @@ public interface IPneumaticHelmetRegistry {
      *
      * @param blockTag the block tag to register
      * @param iHackable the hack to register
+     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#addHackable(TagKey, Supplier)}
      */
+    @Deprecated(forRemoval = true)
     void addHackable(@Nonnull TagKey<Block> blockTag, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
     /**
@@ -82,7 +88,9 @@ public interface IPneumaticHelmetRegistry {
      *
      * @param entity the entity to check
      * @return empty list if no hacks.
+     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#getCurrentEntityHacks(Entity)}
      */
+    @Deprecated(forRemoval = true)
     List<IHackableEntity> getCurrentEntityHacks(Entity entity);
 
     /**
@@ -90,7 +98,9 @@ public interface IPneumaticHelmetRegistry {
      * {@link FMLCommonSetupEvent} handler
      * (it is not necessary to use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
      * @param handler the handler to register
+     * @deprecated use {@link me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry#registerUpgradeHandler(IArmorUpgradeHandler)}
      */
+    @Deprecated(forRemoval = true)
     void registerUpgradeHandler(IArmorUpgradeHandler<?> handler);
 
     /**

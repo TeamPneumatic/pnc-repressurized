@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -90,7 +90,7 @@ public class CapabilityHacking {
             ListTag tagList = nbt.getList("hackables", Tag.TAG_COMPOUND);
             for (int i = 0; i < tagList.size(); i++) {
                 ResourceLocation hackableId = new ResourceLocation(tagList.getCompound(i).getString("id"));
-                IHackableEntity hackable = PneumaticHelmetRegistry.getInstance().getEntityById(hackableId);
+                IHackableEntity hackable = CommonArmorRegistry.getInstance().getEntityById(hackableId);
                 if (hackable != null) {
                     impl.getCurrentHacks().add(hackable);
                 } else {

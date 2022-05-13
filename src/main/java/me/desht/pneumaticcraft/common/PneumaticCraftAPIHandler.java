@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
+import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
@@ -41,6 +42,7 @@ import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketNotifyBlockUpdate;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerMachineFactory;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
@@ -77,6 +79,11 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     @Override
     public IPneumaticHelmetRegistry getHelmetRegistry() {
         return PneumaticHelmetRegistry.getInstance();
+    }
+
+    @Override
+    public ICommonArmorRegistry getCommonArmorRegistry() {
+        return CommonArmorRegistry.getInstance();
     }
 
     @Override

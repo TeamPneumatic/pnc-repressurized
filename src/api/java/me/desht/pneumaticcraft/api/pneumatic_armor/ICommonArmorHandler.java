@@ -22,7 +22,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 
 /**
- * Provides some methods for upgrade handlers to easily retrieve information about the player's equipped armor
+ * Provides access to the current state of the Pneumatic Armor worn by a player. This object is passed as a parameter
+ * to some methods of {@link IArmorUpgradeHandler} and {@link me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler},
+ * and can also be directly retrieved via {@link ICommonArmorRegistry#getCommonArmorHandler(Player)}.
+ * <p>
+ * You should avoid hanging on to instances of this across ticks, since it will become invalid if a player logs off or
+ * changes dimension.
  */
 public interface ICommonArmorHandler {
     /**
@@ -89,7 +94,9 @@ public interface ICommonArmorHandler {
     boolean upgradeUsable(IArmorUpgradeHandler<?> handler, boolean mustBeActive);
 
     /**
-     * Get the per-player extension data for the given upgrade, if any
+     * Get the per-player extension data for the given upgrade, if any.
+     * See {@link IArmorUpgradeHandler#extensionData()}.
+     *
      * @param handler the armor upgrade handler
      * @param <T> handler type
      * @return the extension, or null if there is none for this type of upgrade

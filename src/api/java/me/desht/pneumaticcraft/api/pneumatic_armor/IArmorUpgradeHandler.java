@@ -158,8 +158,8 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
     /**
      * Set up player-specific extension data for this armor upgrade; since armor upgrade handlers are singleton objects,
      * any player-specific data needs to be stored separately. If your handler needs this (most don't), override this
-     * method to return a new instance of a class that implements {@link IArmorExtensionData}. This data will be stored
-     * in the common armor handler for the player, and can be retrieved with
+     * method to return a supplier of a new instance of some class that implements {@link IArmorExtensionData}. This
+     * data will be stored in the common armor handler for the player, and can be retrieved with
      * {@link ICommonArmorHandler#getExtensionData(IArmorUpgradeHandler)}.
      *
      * @return a supplier for the extension data for this upgrade &amp; player; supply null if there is none

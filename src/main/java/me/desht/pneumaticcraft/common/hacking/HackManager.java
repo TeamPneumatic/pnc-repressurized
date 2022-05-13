@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
@@ -31,6 +30,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
 import me.desht.pneumaticcraft.common.hacking.entity.*;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -127,7 +127,7 @@ public class HackManager {
 
         IHackableEntity hackable = getInstance(player.getCommandSenderWorld()).trackedHackableEntities.get(entity);
         if (hackable == null) {
-            hackable = PneumaticHelmetRegistry.getInstance().getHackable(entity, player);
+            hackable = CommonArmorRegistry.getInstance().getHackable(entity, player);
             if (hackable != null) {
                 getInstance(player.getCommandSenderWorld()).trackedHackableEntities.put(entity, hackable);
             }
@@ -155,7 +155,7 @@ public class HackManager {
         WorldAndCoord loc = new WorldAndCoord(world, pos);
         Pair<Block,IHackableBlock> pair = getInstance(player.getCommandSenderWorld()).trackedHackableBlocks.get(loc);
         if (pair == null) {
-            IHackableBlock hackable = PneumaticHelmetRegistry.getInstance().getHackable(block);
+            IHackableBlock hackable = CommonArmorRegistry.getInstance().getHackable(block);
             if (hackable != null && hackable.canHack(world, pos, player)) {
                 pair = Pair.of(block, hackable);
                 getInstance(player.getCommandSenderWorld()).trackedHackableBlocks.put(loc, pair);
