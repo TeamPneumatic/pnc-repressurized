@@ -20,7 +20,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixes
 * Fix some mobs (e.g. Zoglins) being able to control drones which have imported them
- 
+  * This affects mobs added in newer Minecraft versions (1.16+) which have a very different AI implementation from older mobs
+* Fix <ERROR> being displayed in Jade (Waila) info box when looking at blocks with semiblocks (Spawner Agitator, Logistics Frames...) attached
+
 ## 2.15.7-320 (27 Apr 2022)
 
 ### Updates
