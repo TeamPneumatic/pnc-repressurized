@@ -679,7 +679,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean isProgramApplicable(ProgWidgetType widgetType) {
+    public boolean isProgramApplicable(ProgWidgetType<?> widgetType) {
         return !BLACKLISTED_WIDGETS.contains(widgetType.getRegistryName());
     }
 

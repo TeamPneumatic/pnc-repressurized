@@ -53,10 +53,13 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.Collection;
 
 public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, IGUIButtonSensitive {
     private static final DataParameter<Integer> TIME_SINCE_HIT = EntityDataManager.defineId(EntitySemiblockBase.class, DataSerializers.INT);
@@ -93,8 +96,9 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         if (!stack.isEmpty()) {
             ItemEntity itemEntity = new ItemEntity(level, getX() + dropOffset.x(), getY() + dropOffset.y(), getZ() + dropOffset.z(), stack);
             itemEntity.setDefaultPickUpDelay();
-            if (captureDrops() != null)
-                captureDrops().add(itemEntity);
+            Collection<ItemEntity> drops = captureDrops();
+            if (drops != null)
+                drops.add(itemEntity);
             else
                 level.addFreshEntity(itemEntity);
         }
@@ -130,6 +134,11 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             blockBounds = null;
             lastBlock = curBlock;
         }
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getName();
     }
 
     @Override
