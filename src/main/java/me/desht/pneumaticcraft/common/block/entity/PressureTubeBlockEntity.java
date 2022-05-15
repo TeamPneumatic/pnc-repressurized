@@ -70,11 +70,11 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     private int pendingCacheShapeClear = 0;
 
     public PressureTubeBlockEntity(BlockPos pos, BlockState state) {
-        this(ModBlockEntities.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
+        this(ModBlockEntities.PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE);
     }
 
-    PressureTubeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier, int volumePressureTube, int upgradeSlots) {
-        super(type, pos, state, tier, volumePressureTube, upgradeSlots);
+    PressureTubeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier, int volumePressureTube) {
+        super(type, pos, state, tier, volumePressureTube, 0);
     }
 
     @Override
@@ -227,23 +227,16 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
 
     @Override
     public void onAirDispersion(IAirHandlerMachine handler, @Nullable Direction side, int airDispersed) {
-        if (side != null) {
-            AbstractTubeModule tm = getModule(side);
-            if (tm instanceof IInfluenceDispersing) {
-                ((IInfluenceDispersing) tm).onAirDispersion(airDispersed);
-            }
+        if (side != null && getModule(side) instanceof IInfluenceDispersing dispersing) {
+            dispersing.onAirDispersion(airDispersed);
         }
     }
 
     @Override
     public int getMaxDispersion(IAirHandlerMachine handler, @Nullable Direction side) {
-        if (side != null) {
-            AbstractTubeModule tm = getModule(side);
-            if (tm instanceof IInfluenceDispersing) {
-                return ((IInfluenceDispersing) tm).getMaxDispersion();
-            }
-        }
-        return Integer.MAX_VALUE;
+        return side != null && getModule(side) instanceof IInfluenceDispersing dispersing ?
+                dispersing.getMaxDispersion() :
+                Integer.MAX_VALUE;
     }
 
     public AbstractTubeModule getModule(Direction side) {

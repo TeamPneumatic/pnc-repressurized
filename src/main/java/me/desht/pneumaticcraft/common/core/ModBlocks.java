@@ -2,6 +2,9 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.*;
+import me.desht.pneumaticcraft.common.block.entity.AdvancedPressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.ReinforcedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.DroneInterfaceBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
@@ -63,11 +66,11 @@ public class ModBlocks {
     }
 
     public static final RegistryObject<PressureTubeBlock> PRESSURE_TUBE = register("pressure_tube",
-            () -> new PressureTubeBlock(PressureTubeBlock.Tier.ONE));
+            () -> new PressureTubeBlock(PressureTubeBlockEntity::new));
     public static final RegistryObject<PressureTubeBlock> REINFORCED_PRESSURE_TUBE = register("reinforced_pressure_tube",
-            () -> new PressureTubeBlock(PressureTubeBlock.Tier.ONE_HALF));
+            () -> new PressureTubeBlock(ReinforcedPressureTubeBlockEntity::new));
     public static final RegistryObject<PressureTubeBlock> ADVANCED_PRESSURE_TUBE = register("advanced_pressure_tube",
-            () -> new PressureTubeBlock(PressureTubeBlock.Tier.TWO));
+            () -> new PressureTubeBlock(AdvancedPressureTubeBlockEntity::new));
     public static final RegistryObject<AirCannonBlock> AIR_CANNON = register("air_cannon",
             AirCannonBlock::new);
     public static final RegistryObject<PressureChamberWallBlock> PRESSURE_CHAMBER_WALL = register("pressure_chamber_wall",

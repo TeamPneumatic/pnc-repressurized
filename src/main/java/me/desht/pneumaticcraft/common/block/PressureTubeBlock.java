@@ -19,10 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.pressure.PressureTier;
-import me.desht.pneumaticcraft.common.block.entity.AdvancedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.PressureTubeBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.ReinforcedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
@@ -32,7 +29,6 @@ import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -116,11 +112,11 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             DOWN_3, UP_3, NORTH_3, SOUTH_3, WEST_3, EAST_3
     };
 
-    private final Tier tier;
+    private final BiFunction<BlockPos,BlockState,? extends PressureTubeBlockEntity> teFactory;
 
-    public PressureTubeBlock(Tier tier) {
-        super(ModBlocks.defaultProps().noOcclusion());  // notSolid() because of camo requirements
-        this.tier = tier;
+    public PressureTubeBlock(BiFunction<BlockPos,BlockState,? extends PressureTubeBlockEntity> teFactory) {
+        super(ModBlocks.defaultProps().noOcclusion());  // noOcclusion() because of camo requirements
+        this.teFactory = teFactory;
 
         BlockState state = getStateDefinition().any();
         for (EnumProperty<ConnectionType> p : CONNECTION_PROPERTIES_3) {
@@ -132,7 +128,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return tier.teFactory.apply(pPos, pState);
+        return teFactory.apply(pPos, pState);
     }
 
     @Override
@@ -471,12 +467,37 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                     tube.onNeighborBlockUpdate(pos.relative(sideHit));
                     world.setBlockAndUpdate(pos, recalculateState(world, pos, world.getBlockState(pos)));
                     PneumaticRegistry.getInstance().forceClientShapeRecalculation(world, pos);
+                    if (tube.isSideClosed(sideHit)) {
+                        // if there's an adjacent tube which would now leak, close that too
+                        PneumaticCraftUtils.getTileEntityAt(world, pos.relative(sideHit), PressureTubeBlockEntity.class).ifPresent(tube2 -> {
+                            if (shouldCloseNeighbor(tube2, sideHit)) {
+                                tube2.setSideClosed(sideHit.getOpposite(), true);
+                                BlockPos pos2 = tube2.getBlockPos();
+                                world.setBlockAndUpdate(pos2, recalculateState(world, pos2, world.getBlockState(pos2)));
+                                PneumaticRegistry.getInstance().forceClientShapeRecalculation(world, pos2);
+                            }
+                        });
+                    }
                 }
             }
         }
         ModuleNetworkManager.getInstance(world).invalidateCache();
 
         return true;
+    }
+
+    private boolean shouldCloseNeighbor(PressureTubeBlockEntity tube2, Direction offset) {
+        boolean doClose = false;
+        for (Direction d : DirectionUtil.VALUES) {
+            if (tube2.getConnectedNeighbor(d) != null) {
+                if (d.getAxis() == offset.getAxis()) {
+                    doClose = true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return doClose;
     }
 
     @Override
@@ -576,22 +597,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         return super.mirror(state, mirrorIn);
     }
 
-    public enum Tier {
-        ONE(PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_TUBE, PressureTubeBlockEntity::new),
-        ONE_HALF(PressureTier.TIER_ONE_HALF, PneumaticValues.VOLUME_PRESSURE_TUBE, ReinforcedPressureTubeBlockEntity::new),
-        TWO(PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, AdvancedPressureTubeBlockEntity::new);
-
-        private final PressureTier tier;
-        final int volume;
-        private final BiFunction<BlockPos,BlockState,? extends PressureTubeBlockEntity> teFactory;
-
-        Tier(PressureTier tier, int volume, BiFunction<BlockPos,BlockState,? extends PressureTubeBlockEntity> teFactory) {
-            this.tier = tier;
-            this.volume = volume;
-            this.teFactory = teFactory;
-        }
-    }
-
     /**
      * Stores information about the subpart of a pressure tube that is being looked at or interacted with.
      */
@@ -600,6 +605,9 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         public static final TubeHitInfo CENTER = new TubeHitInfo(null, PartType.TUBE);
 
         enum PartType { TUBE, MODULE }
+    }
+
+    private record BlockHitInfo(BlockHitResult res, @Nonnull TubeHitInfo tubeHitInfo) {
     }
 
     /**
@@ -626,8 +634,5 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         public int getIndex() {
             return index;
         }
-    }
-
-    private record BlockHitInfo(BlockHitResult res, @Nonnull TubeHitInfo tubeHitInfo) {
     }
 }

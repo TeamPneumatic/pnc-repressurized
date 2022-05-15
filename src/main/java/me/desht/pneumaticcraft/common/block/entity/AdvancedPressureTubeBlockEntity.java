@@ -25,6 +25,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class AdvancedPressureTubeBlockEntity extends PressureTubeBlockEntity {
     public AdvancedPressureTubeBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.ADVANCED_PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE, 0);
+        super(ModBlockEntities.ADVANCED_PRESSURE_TUBE.get(), pos, state, PressureTier.TIER_TWO, PneumaticValues.VOLUME_ADVANCED_PRESSURE_TUBE);
     }
 }
