@@ -38,7 +38,7 @@ public interface ICommonArmorRegistry {
     /**
      * Register a common (client and server) handler for a Pneumatic Armor upgrade.  This must be called from a
      * {@link FMLCommonSetupEvent} handler
-     * (it is not necessary to use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
+     * (do <strong>not</strong> use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}).
      * @param handler the handler to register
      */
     @Nonnull

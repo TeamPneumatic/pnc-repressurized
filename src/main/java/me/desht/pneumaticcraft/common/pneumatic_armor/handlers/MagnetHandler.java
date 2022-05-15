@@ -40,9 +40,11 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("magnet");
+
     @Override
     public ResourceLocation getID() {
-        return RL("magnet");
+        return ID;
     }
 
     @Override

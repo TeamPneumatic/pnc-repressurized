@@ -33,9 +33,11 @@ import net.minecraft.world.item.ItemStack;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("charging");
+
     @Override
     public ResourceLocation getID() {
-        return RL("charging");
+        return ID;
     }
 
     @Override

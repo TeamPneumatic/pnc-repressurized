@@ -28,9 +28,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class JumpBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("jump_boost");
+
     @Override
     public ResourceLocation getID() {
-        return RL("jump_boost");
+        return ID;
     }
 
     @Override

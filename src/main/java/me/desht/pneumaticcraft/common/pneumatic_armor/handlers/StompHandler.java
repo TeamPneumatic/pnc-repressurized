@@ -28,9 +28,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class StompHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("stomp");
+
     @Override
     public ResourceLocation getID() {
-        return RL("stomp");
+        return ID;
     }
 
     @Override

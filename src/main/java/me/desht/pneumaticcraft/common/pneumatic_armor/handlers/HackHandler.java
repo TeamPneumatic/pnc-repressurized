@@ -43,9 +43,11 @@ import java.util.function.Supplier;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
+    private static final ResourceLocation ID = RL("hacking");
+
     @Override
     public ResourceLocation getID() {
-        return RL("hacking");
+        return ID;
     }
 
     @Override

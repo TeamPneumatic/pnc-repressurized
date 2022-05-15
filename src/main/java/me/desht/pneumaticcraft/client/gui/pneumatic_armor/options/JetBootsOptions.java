@@ -45,7 +45,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 
 import java.util.Optional;
 
-import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler> {
@@ -63,15 +62,15 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
 
         IPneumaticHelmetRegistry registry = PneumaticRegistry.getInstance().getHelmetRegistry();
         ResourceLocation ownerID = getClientUpgradeHandler().getCommonHandler().getID();
-        checkBoxBuilderMode = registry.makeKeybindingCheckBox(RL("jet_boots.module.builder_mode"), 5, 45, 0xFFFFFFFF,
+        checkBoxBuilderMode = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_BUILDER_MODE, 5, 45, 0xFFFFFFFF,
                 b -> setFlag(PneumaticArmorItem.NBT_BUILDER_MODE, JetBootsHandler.BUILDER_MODE_LEVEL, b))
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(checkBoxBuilderMode.asWidget());
-        checkBoxStabilizers = registry.makeKeybindingCheckBox(RL("jet_boots.module.flight_stabilizers"), 5, 65, 0xFFFFFFFF,
+        checkBoxStabilizers = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_FLIGHT_STABILIZERS, 5, 65, 0xFFFFFFFF,
                 b -> setFlag(PneumaticArmorItem.NBT_FLIGHT_STABILIZERS, JetBootsHandler.STABILIZERS_LEVEL, b))
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(checkBoxStabilizers.asWidget());
-        ICheckboxWidget hoverControl = registry.makeKeybindingCheckBox(RL("jet_boots.module.smart_hover"), 5, 85, 0xFFFFFFFF,
+        ICheckboxWidget hoverControl = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_SMART_HOVER, 5, 85, 0xFFFFFFFF,
                 b -> setFlag(PneumaticArmorItem.NBT_SMART_HOVER, 1, b))
                 .withOwnerUpgradeID(ownerID);
         gui.addWidget(hoverControl.asWidget());

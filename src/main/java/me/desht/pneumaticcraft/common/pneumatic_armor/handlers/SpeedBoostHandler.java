@@ -40,13 +40,14 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     private static final Vec3 FORWARD = new Vec3(0, 0, 1);
+    private static final ResourceLocation ID = RL("run_speed");
 
     // track player movement across ticks on the server - very transient, a capability would be overkill here
-    private static final Map<UUID,Vec3> moveMap = new HashMap<>();
+    private static final Map<UUID,Vec3> MOVE_MAP = new HashMap<>();
 
     @Override
     public ResourceLocation getID() {
-        return RL("run_speed");
+        return ID;
     }
 
     @Override
@@ -84,13 +85,13 @@ public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
             }
         }
         if (!player.level.isClientSide && speedBoost > 0) {
-            Vec3 prev = moveMap.get(player.getUUID());
+            Vec3 prev = MOVE_MAP.get(player.getUUID());
             boolean moved = prev != null && (Math.abs(player.getX() - prev.x) > 0.0001 || Math.abs(player.getZ() - prev.z) > 0.0001);
             if (moved && player.isOnGround() && !player.isInWater()) {
                 int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 8);
                 commonArmorHandler.addAir(EquipmentSlot.LEGS, -airUsage);
             }
-            moveMap.put(player.getUUID(), player.position());
+            MOVE_MAP.put(player.getUUID(), player.position());
         }
     }
 

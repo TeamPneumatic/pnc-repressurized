@@ -28,9 +28,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class KickHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("kick");
+
     @Override
     public ResourceLocation getID() {
-        return RL("kick");
+        return ID;
     }
 
     @Override

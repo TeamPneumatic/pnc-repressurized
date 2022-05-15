@@ -143,7 +143,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         @SubscribeEvent
         public static void tickEnd(TickEvent.ClientTickEvent event) {
             if (event.phase == TickEvent.Phase.END) {
-                if (Minecraft.getInstance().player == null) {
+                if (Minecraft.getInstance().player == null && ArmorUpgradeRegistry.getInstance().isFrozen()) {
                     for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                         for (IArmorUpgradeClientHandler<?> handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
                             handler.reset();

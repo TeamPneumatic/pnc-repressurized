@@ -29,11 +29,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class EntityTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("entity_tracker");
     private static final float ENTITY_TRACKING_RANGE = 16F;
 
     @Override
     public ResourceLocation getID() {
-        return RL("entity_tracker");
+        return ID;
     }
 
     @Override

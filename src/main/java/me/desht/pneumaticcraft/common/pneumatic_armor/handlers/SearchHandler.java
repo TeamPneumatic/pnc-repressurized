@@ -29,9 +29,12 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class SearchHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+
+    private static final ResourceLocation ID = RL("search");
+
     @Override
     public ResourceLocation getID() {
-        return RL("search");
+        return ID;
     }
 
     @Override

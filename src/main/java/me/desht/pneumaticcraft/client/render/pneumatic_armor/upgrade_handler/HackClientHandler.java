@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.HackHandler;
@@ -59,7 +58,6 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
     public void onTriggered(ICommonArmorHandler armorHandler) {
         if (enabledForPlayer(armorHandler.getPlayer())) {
             ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
-            ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
             c.getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class).hack();
             c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).hack();
         }

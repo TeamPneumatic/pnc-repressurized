@@ -64,6 +64,10 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
+    public static final ResourceLocation MODULE_BUILDER_MODE = RL("jet_boots.module.builder_mode");
+    public static final ResourceLocation MODULE_FLIGHT_STABILIZERS = RL("jet_boots.module.flight_stabilizers");
+    public static final ResourceLocation MODULE_SMART_HOVER = RL("jet_boots.module.smart_hover");
+
     private String l1, l2, l3, r1, r2, r3;
     private int widestR;
     private boolean builderMode;
@@ -200,7 +204,11 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     @Override
     public Collection<ResourceLocation> getSubKeybinds() {
-        return ImmutableList.of(RL("jet_boots.module.builder_mode"), RL("jet_boots.module.flight_stabilizers"), RL("jet_boots.module.smart_hover"));
+        return ImmutableList.of(
+                MODULE_BUILDER_MODE,
+                MODULE_FLIGHT_STABILIZERS,
+                MODULE_SMART_HOVER
+        );
     }
 
     private static boolean thrustKeyPressed(boolean builderMode) {

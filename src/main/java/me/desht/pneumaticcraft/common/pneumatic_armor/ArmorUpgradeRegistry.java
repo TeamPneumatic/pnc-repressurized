@@ -18,15 +18,17 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.apache.commons.lang3.Validate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
 public enum ArmorUpgradeRegistry {
@@ -34,6 +36,7 @@ public enum ArmorUpgradeRegistry {
 
     private final List<List<IArmorUpgradeHandler<?>>> upgradeHandlers;
     private final Map<ResourceLocation, IArmorUpgradeHandler<?>> byID = new ConcurrentHashMap<>();
+    private boolean isFrozen = false;
 
     public static final EquipmentSlot[] ARMOR_SLOTS = new EquipmentSlot[] {
             EquipmentSlot.HEAD,
@@ -49,22 +52,20 @@ public enum ArmorUpgradeRegistry {
     ArmorUpgradeRegistry() {
         ImmutableList.Builder<List<IArmorUpgradeHandler<?>>> b = ImmutableList.builder();
         for (int i = 0; i < 4; i++) {
-            b.add(new CopyOnWriteArrayList<>());
+            b.add(new ArrayList<>());
         }
         upgradeHandlers = b.build();
     }
 
     public synchronized <T extends IArmorUpgradeHandler<?>> T registerUpgradeHandler(T handler) {
+        if (isFrozen) throw new IllegalStateException("armor upgrade registry is frozen!");
         Validate.isTrue(!byID.containsKey(handler.getID()), "handler " + handler.getID() + " is already registered!");
-
-        List<IArmorUpgradeHandler<?>> handlerList = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
-        handler.setIndex(handlerList.size());
         byID.put(handler.getID(), handler);
-        handlerList.add(handler);
         return handler;
     }
 
     public List<IArmorUpgradeHandler<?>> getHandlersForSlot(EquipmentSlot slotType) {
+        if (!isFrozen) throw new IllegalStateException("armor upgrade registry is not frozen yet!");
         return upgradeHandlers.get(slotType.getIndex());
     }
 
@@ -75,5 +76,33 @@ public enum ArmorUpgradeRegistry {
 
     public Stream<IArmorUpgradeHandler<?>> entries() {
         return byID.values().stream();
+    }
+
+    public boolean isFrozen() {
+        return isFrozen;
+    }
+
+    public void freeze() {
+        if (isFrozen) throw new IllegalStateException("armor upgrade registry is already frozen!");
+
+        byID.values().stream()
+                .sorted((o1, o2) -> compareHandlerID(o1.getID(), o2.getID()))
+                .forEach(this::addHandlerToList);
+
+        isFrozen = true;
+    }
+
+    private int compareHandlerID(ResourceLocation id1, ResourceLocation id2) {
+        // special case: core components always first
+        if (id1.equals(CoreComponentsHandler.ID)) return -1;
+        // special case: PNC handler come before 3rd party handlers
+        if (id1.getNamespace().equals(Names.MOD_ID) && !id2.getNamespace().equals(Names.MOD_ID)) return -1;
+        return id1.compareTo(id2);
+    }
+
+    private void addHandlerToList(IArmorUpgradeHandler<?> handler) {
+        List<IArmorUpgradeHandler<?>> handlerList = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
+        handler.setIndex(handlerList.size());
+        handlerList.add(handler);
     }
 }

@@ -28,9 +28,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class DroneDebugHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("drone_debug");
+
     @Override
     public ResourceLocation getID() {
-        return RL("drone_debug");
+        return ID;
     }
 
     @Override

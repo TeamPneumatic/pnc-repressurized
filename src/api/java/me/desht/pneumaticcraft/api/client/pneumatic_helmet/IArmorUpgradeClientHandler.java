@@ -33,6 +33,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Represents the client-specific part of an armor upgrade handler; provides methods for rendering, getting the
@@ -44,7 +45,7 @@ import java.util.Optional;
  */
 public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     /**
-     * Get the common handler corresponding to this client handler. There is always a one-to-mapping between common
+     * Get the common handler corresponding to this client handler. There is always a one-to-one mapping between common
      * and client handlers.
      */
     T getCommonHandler();
@@ -78,7 +79,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks);
 
     /**
-     * Called in the 2D render stage (via {@link net.minecraftforge.client.event.RenderGameOverlayEvent.Post})
+     * Called in the 2D render stage (via the Forge {@link net.minecraftforge.client.gui.IIngameOverlay} system).
      *
      * @param matrixStack the matrix stack
      * @param partialTicks partial ticks since last world tick
@@ -151,9 +152,12 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     }
 
     /**
-     * Get all the sub-keybinds for this upgrade handler. Any checkboxes which toggle a sub-feature of this upgrade
-     * (e.g. the various Block Tracker categories, or the Jet Boots builder mode) need to be returned here so a key
-     * binding can be registered for them.
+     * Get all the sub-keybinds for this upgrade handler. The ID's of any checkboxes which toggle a sub-feature of this
+     * upgrade (e.g. the various Block Tracker categories, or the Jet Boots builder mode) need to be returned here so a
+     * key binding can be registered for them.
+     * <p>
+     * The ID's returned here are the same as those passed to
+     * {@link IPneumaticHelmetRegistry#makeKeybindingCheckBox(ResourceLocation, int, int, int, Consumer)}.
      *
      * @return a collection of ID's
      */

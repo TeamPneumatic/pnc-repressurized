@@ -37,7 +37,7 @@ public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     private static final UUID REACH_DIST_BOOST_ID = UUID.fromString("c9dce729-70c4-4c0f-95d4-31d2e50bc826");
     public static final AttributeModifier REACH_DIST_BOOST = new AttributeModifier(REACH_DIST_BOOST_ID, "Pneumatic Reach Boost", 3.5D, AttributeModifier.Operation.ADDITION);
 
-    private final ResourceLocation ID = RL("reach_distance");
+    private static final ResourceLocation ID = RL("reach_distance");
 
     @Override
     public ResourceLocation getID() {

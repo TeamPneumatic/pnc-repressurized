@@ -41,9 +41,12 @@ import net.minecraft.world.phys.Vec3;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+
+    private static final ResourceLocation ID = RL("scuba");
+
     @Override
     public ResourceLocation getID() {
-        return RL("scuba");
+        return ID;
     }
 
     @Override

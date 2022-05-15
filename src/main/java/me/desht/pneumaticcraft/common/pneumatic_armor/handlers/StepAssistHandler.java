@@ -28,9 +28,11 @@ import net.minecraft.world.entity.player.Player;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("step_assist");
+
     @Override
     public ResourceLocation getID() {
-        return RL("step_assist");
+        return ID;
     }
 
     @Override

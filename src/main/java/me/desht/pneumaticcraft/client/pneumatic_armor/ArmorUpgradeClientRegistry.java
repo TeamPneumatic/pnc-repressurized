@@ -108,6 +108,7 @@ public enum ArmorUpgradeClientRegistry {
 
     private void initHandlerLists() {
         // lazy init the by-slot lists; this adds client handlers in *exactly* the same order as common handlers
+        if (!ArmorUpgradeRegistry.getInstance().isFrozen()) throw new IllegalStateException("armor upgrade registry is not frozen yet!");
         if (clientUpgradeHandlers != null) throw new IllegalStateException("handler lists already inited!?");
 
         ImmutableList.Builder<List<IArmorUpgradeClientHandler<?>>> builder = ImmutableList.builder();

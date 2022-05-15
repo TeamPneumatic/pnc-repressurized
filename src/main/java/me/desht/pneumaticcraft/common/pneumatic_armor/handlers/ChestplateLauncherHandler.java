@@ -28,9 +28,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ChestplateLauncherHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("chestplate_launcher");
+
     @Override
     public ResourceLocation getID() {
-        return RL("chestplate_launcher");
+        return ID;
     }
 
     @Override

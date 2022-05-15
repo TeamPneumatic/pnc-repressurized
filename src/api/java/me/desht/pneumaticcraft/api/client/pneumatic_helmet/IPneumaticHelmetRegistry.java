@@ -105,8 +105,8 @@ public interface IPneumaticHelmetRegistry {
 
     /**
      * Registers the client handler for a Pneumatic Armor upgrade. This must be called from a {@link FMLClientSetupEvent}
-     * handler, using {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}. This
-     * also registers any keybindings referenced by the render handler
+     * handler; do <strong>not</strong> use {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}.
+     * This also registers any keybindings referenced by the render handler
      * (see {@link IArmorUpgradeClientHandler#getInitialKeyBinding()} and {@link IArmorUpgradeClientHandler#getSubKeybinds()}.
      *
      * @param handler the common upgrade handler, previously registered with

@@ -32,9 +32,11 @@ import net.minecraft.world.entity.player.Player;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class NightVisionHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("night_vision");
+
     @Override
     public ResourceLocation getID() {
-        return RL("night_vision");
+        return ID;
     }
 
     @Override

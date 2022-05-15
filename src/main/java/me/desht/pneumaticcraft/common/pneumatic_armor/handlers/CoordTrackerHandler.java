@@ -29,9 +29,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CoordTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("coordinate_tracker");
+
     @Override
     public ResourceLocation getID() {
-        return RL("coordinate_tracker");
+        return ID;
     }
 
     @Override

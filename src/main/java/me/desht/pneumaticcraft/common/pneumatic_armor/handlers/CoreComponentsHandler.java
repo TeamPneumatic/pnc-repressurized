@@ -27,9 +27,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CoreComponentsHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    public static final ResourceLocation ID = RL("core_components");
+
     @Override
     public ResourceLocation getID() {
-        return RL("core_components");
+        return ID;
     }
 
     @Override

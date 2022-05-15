@@ -11,9 +11,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class EnderVisorHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final ResourceLocation ID = RL("ender_visor");
+
     @Override
     public ResourceLocation getID() {
-        return RL("ender_visor");
+        return ID;
     }
 
     @Override
