@@ -8,6 +8,22 @@ Changes are in reverse chronological order; newest changes at the top.
 
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.2.3-?? (unreleased)
+
+### Updates
+* CoFH integration has been re-added
+  * Holding enchantment is supported on any pressurizable item, and increases item volume by (1 + enchantment_level)
+  * CoFH fuel compat for Creosote, Refined Fuel, Refined Biofuel and Tree Oil
+  * CoFH Crude Oil should work in the Refinery
+* Pufferfish can now be hacked (forces them to puff up)
+* Pressure Tube QoL feature: if wrenching shut a straight section of tube, also close the adjacent tube section if it would start to leak
+
+### Fixes
+* Fix some mobs (e.g. Zoglins) being able to control drones which have imported them
+  * This affects mobs added in newer Minecraft versions (1.16+) which have a very different AI implementation from older mobs
+* Fixed Drones getting stuck on Amethyst clusters
+  * Actually a vanilla bug (MC-181565) but worked around in PNC for now
+
 ## 3.2.2-79 (8 May 2022)
 
 ### Updates
