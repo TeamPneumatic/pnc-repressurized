@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 /**
  * The upgrade registry can be used to register custom upgrades to be accepted by block entities, entities and items.
- * Get an instance of it via {@link IItemRegistry#getUpgradeRegistry()}.
+ * Get an instance of it via {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#getUpgradeRegistry()}.
  *
  * The {@code addApplicableUpgrades()} methods should be called from your
  * {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent} handler.
@@ -90,12 +90,26 @@ public interface IUpgradeRegistry {
      * <p>
      * You can use this method when registering upgrade items as an alternative to creating an Item which implements
      * {@link IUpgradeItem} yourself.
+     * <p>
+     * The item created by this method will be in the PneumaticCraft creative tab and have no other special
+     * item properties; see {@link #makeUpgradeItem(Supplier, int, Item.Properties)} if you need custom behaviour here.
      *
      * @param upgrade a supplier for the upgrade object, which will not yet be registered
      * @param tier upgrade tier of this item
-     * @return an item
+     * @return an item, which should be registered in the usual way
      */
     Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier);
+
+    /**
+     * Same as {@link #makeUpgradeItem(Supplier, int)} but allows a custom item properties object to be supplied for
+     * use when the {@code Item} is created.
+     *
+     * @param upgrade a supplier for the upgrade object, which will not yet be registered
+     * @param tier upgrade tier of this item
+     * @param properties an item properties object
+     * @return an item, which should be registered in the usual way
+     */
+    Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier, Item.Properties properties);
 
     /**
      * Helper method to get the number of the given upgrade which is installed in the given itemstack.

@@ -121,6 +121,11 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     }
 
     @Override
+    public Item makeUpgradeItem(Supplier<PNCUpgrade> upgrade, int tier, Item.Properties properties) {
+        return new UpgradeItem(upgrade, tier, properties);
+    }
+
+    @Override
     public int getUpgradeCount(ItemStack stack, PNCUpgrade upgrade) {
         return UpgradableItemUtils.getUpgradeCount(stack, upgrade);
     }

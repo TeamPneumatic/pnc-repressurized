@@ -52,7 +52,11 @@ public class UpgradeItem extends Item implements IUpgradeItem {
     private final int tier;
 
     public UpgradeItem(Supplier<PNCUpgrade> upgrade, int tier) {
-        super(ModItems.defaultProps());
+        this(upgrade, tier, ModItems.defaultProps());
+    }
+
+    public UpgradeItem(Supplier<PNCUpgrade> upgrade, int tier, Properties properties) {
+        super(properties);
         this.upgrade = upgrade;
         this.tier = tier;
     }
@@ -72,7 +76,7 @@ public class UpgradeItem extends Item implements IUpgradeItem {
     public void appendHoverText(ItemStack stack, Level world, List<Component> infoList, TooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn").withStyle(ChatFormatting.AQUA));
-            PneumaticRegistry.getInstance().getItemRegistry().getUpgradeRegistry().addUpgradeTooltip(upgrade.get(), infoList);
+            PneumaticRegistry.getInstance().getUpgradeRegistry().addUpgradeTooltip(upgrade.get(), infoList);
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(ChatFormatting.AQUA));
         }
