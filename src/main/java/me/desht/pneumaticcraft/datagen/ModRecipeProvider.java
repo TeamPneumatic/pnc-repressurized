@@ -1577,8 +1577,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300_000, 1.5f);
 
         ModLoadedCondition thermalLoaded = new ModLoadedCondition("thermal");
-//        conditionalFuelRecipe(consumer, RL("pneumaticcraft_fuels/cofh_biofuel"), thermalLoaded,
-//                FluidIngredient.of(1000, new ResourceLocation("thermal:biofuel")), 1_000_000, 0.8f);
+        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_biofuel"), thermalLoaded,
+                FluidIngredient.of(1000, new ResourceLocation("thermal:refined_biofuel")), 1_000_000, 0.8f);
         conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_creosote"), thermalLoaded,
                 FluidIngredient.of(1000, new ResourceLocation("thermal:creosote")), 50_000, 0.25f);
         conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_refined_fuel"), thermalLoaded,
