@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
@@ -78,9 +77,7 @@ public class TooltipEventHandler {
     private static void addStandardTooltip(ItemStack stack, List<Component> curInfo, TooltipFlag flagIn) {
         addPressureTooltip(stack, curInfo);
 
-        if (stack.getItem() instanceof IUpgradeAcceptor) {
-            UpgradableItemUtils.addUpgradeInformation(stack, curInfo, TooltipFlag.Default.NORMAL);
-        }
+        UpgradableItemUtils.addUpgradeInformation(stack, curInfo, TooltipFlag.Default.NORMAL);
 
         if (stack.getItem() instanceof IInventoryItem item) {
             List<ItemStack> stacks = new ArrayList<>();

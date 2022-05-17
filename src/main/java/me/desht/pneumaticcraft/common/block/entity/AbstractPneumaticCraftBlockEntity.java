@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -72,11 +71,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
-        implements Nameable, IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
+        implements Nameable, IGUIButtonSensitive, IDescSynced, IUpgradeHolder, ILuaMethodProvider {
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
     private final UpgradeHandler upgradeHandler;
     private List<SyncedField<?>> descriptionFields;
@@ -104,11 +102,6 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     {
         // use in methods where we know the level is not null, e.g. tickers, renderers...
         return Objects.requireNonNull(super.getLevel());
-    }
-
-    @Override
-    public String getUpgradeAcceptorTranslationKey() {
-        return getBlockTranslationKey();
     }
 
     private String getBlockTranslationKey() {
@@ -266,7 +259,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             }
         }
         if (!nonNullLevel().isClientSide) {
-            PneumaticRegistry.getInstance().forceClientShapeRecalculation(level, worldPosition);
+            PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(level, worldPosition);
         }
     }
 
@@ -481,11 +474,6 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 });
             });
         });
-    }
-
-    @Override
-    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
-        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 
     @Override

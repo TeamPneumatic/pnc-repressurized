@@ -188,7 +188,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 world.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.BlockInteraction.BREAK);
                 world.destroyBlock(pos, false);
                 // notify client too so block shapes can be properly updated
-                PneumaticRegistry.getInstance().forceClientShapeRecalculation(world, pos);
+                PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos);
             } else if (rnd < delta / 25f) {
                 world.playSound(null, ownerTE.getBlockPos(), ModSounds.CREAK.get(), SoundSource.BLOCKS, 0.7f, 0.6f + world.random.nextFloat() * 0.8f);
             }

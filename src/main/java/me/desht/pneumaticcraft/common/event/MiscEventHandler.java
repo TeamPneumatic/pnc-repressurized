@@ -256,6 +256,6 @@ public class MiscEventHandler {
     public void onTagsUpdated(TagsUpdatedEvent event) {
         CommonArmorRegistry.getInstance().resolveBlockTags();
 
-        PneumaticRegistry.getInstance().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
+        PneumaticRegistry.getInstance().getMiscHelpers().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
     }
 }

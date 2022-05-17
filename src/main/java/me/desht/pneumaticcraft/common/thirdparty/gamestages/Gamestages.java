@@ -25,6 +25,6 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class Gamestages implements IThirdParty {
     @Override
     public void preInit() {
-        PneumaticRegistry.getInstance().registerPlayerMatcher(RL("gamestages"), new GamestagesMatcher.Factory());
+        PneumaticRegistry.getInstance().getMiscHelpers().registerPlayerMatcher(RL("gamestages"), new GamestagesMatcher.Factory());
     }
 }

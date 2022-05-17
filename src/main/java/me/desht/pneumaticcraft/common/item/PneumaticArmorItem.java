@@ -22,8 +22,6 @@ import com.google.common.collect.Multimap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
@@ -48,7 +46,6 @@ import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -78,7 +75,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -86,7 +82,7 @@ import java.util.function.Consumer;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PneumaticArmorItem extends ArmorItem implements
-        IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, ICustomDurabilityBar, IPressurizableItem,
+        IChargeableContainerProvider, IFOVModifierItem, ICustomDurabilityBar, IPressurizableItem,
         DyeableLeatherItem, ColorHandlers.ITintableItem
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
@@ -205,16 +201,6 @@ public class PneumaticArmorItem extends ArmorItem implements
     @Override
     public boolean isValidRepairItem(ItemStack par1ItemStack, ItemStack par2ItemStack) {
         return false;
-    }
-
-    @Override
-    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
-        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
-    }
-
-    @Override
-    public String getUpgradeAcceptorTranslationKey() {
-        return getDescriptionId();
     }
 
     @Override

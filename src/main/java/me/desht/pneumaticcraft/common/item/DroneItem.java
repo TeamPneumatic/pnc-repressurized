@@ -18,8 +18,6 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IProgrammable;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
@@ -28,7 +26,6 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -54,13 +51,13 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
 import static me.desht.pneumaticcraft.common.entity.drone.DroneEntity.NBT_DRONE_COLOR;
 
-public class DroneItem extends PressurizableItem implements IChargeableContainerProvider, IProgrammable, IUpgradeAcceptor, ColorHandlers.ITintableItem {
+public class DroneItem extends PressurizableItem
+        implements IChargeableContainerProvider, IProgrammable, ColorHandlers.ITintableItem {
     private final BiFunction<Level, Player, DroneEntity> droneCreator;
     private final boolean programmable;
     private final DyeColor defaultColor;
@@ -149,17 +146,7 @@ public class DroneItem extends PressurizableItem implements IChargeableContainer
     public boolean showProgramTooltip() {
         return true;
     }
-
-    @Override
-    public Map<PNCUpgrade,Integer> getApplicableUpgrades() {
-        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
-    }
-
-    @Override
-    public String getUpgradeAcceptorTranslationKey() {
-        return getDescriptionId();
-    }
-
+    
     @Override
     public MenuProvider getContainerProvider(ChargingStationBlockEntity te) {
         return new IChargeableContainerProvider.Provider(te, ModMenuTypes.CHARGING_DRONE.get());

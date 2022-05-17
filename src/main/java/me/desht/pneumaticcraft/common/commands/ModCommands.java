@@ -227,7 +227,7 @@ public class ModCommands {
                 // global var deletions need to get sync'd to players; syncing normally happens when remote/gps tool/etc GUI's
                 // are opened, but deleted vars won't get sync'd there, so could wrongly hang around on the client
                 if (id != null) {
-                    PneumaticRegistry.getInstance().syncGlobalVariable(ctx.getSource().getPlayerOrException(), varName);
+                    PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(ctx.getSource().getPlayerOrException(), varName);
                 } else {
                     NetworkHandler.sendToAll(new PacketSetGlobalVariable(varName, (BlockPos) null));
                     NetworkHandler.sendToAll(new PacketSetGlobalVariable(varName, ItemStack.EMPTY));

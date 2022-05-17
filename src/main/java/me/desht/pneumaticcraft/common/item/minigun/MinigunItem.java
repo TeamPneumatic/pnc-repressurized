@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.item.minigun;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
@@ -75,13 +74,12 @@ import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class MinigunItem extends PressurizableItem implements
-        IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem,
+        IChargeableContainerProvider, IFOVModifierItem,
         IInventoryItem, IShiftScrollable {
     public static final int MAGAZINE_SIZE = 4;
 
@@ -253,16 +251,6 @@ public class MinigunItem extends PressurizableItem implements
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
-    }
-
-    @Override
-    public Map<PNCUpgrade,Integer> getApplicableUpgrades() {
-        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
-    }
-
-    @Override
-    public String getUpgradeAcceptorTranslationKey() {
-        return getDescriptionId();
     }
 
     @Override

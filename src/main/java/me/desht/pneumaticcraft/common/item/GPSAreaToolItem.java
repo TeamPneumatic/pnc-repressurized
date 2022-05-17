@@ -200,8 +200,8 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         ProgWidgetArea area = getArea(player, stack);
         String v1 = area.getVarName(0);
         String v2 = area.getVarName(1);
-        if (!v1.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v1);
-        if (!v2.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v2);
+        if (!v1.isEmpty()) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, v1);
+        if (!v2.isEmpty()) PneumaticRegistry.getInstance().getMiscHelpers().syncGlobalVariable(player, v2);
     }
 
     @Override

@@ -466,7 +466,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                     tube.setSideClosed(sideHit, !tube.isSideClosed(sideHit));
                     tube.onNeighborBlockUpdate(pos.relative(sideHit));
                     world.setBlockAndUpdate(pos, recalculateState(world, pos, world.getBlockState(pos)));
-                    PneumaticRegistry.getInstance().forceClientShapeRecalculation(world, pos);
+                    PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos);
                     if (tube.isSideClosed(sideHit)) {
                         // if there's an adjacent tube which would now leak, close that too
                         PneumaticCraftUtils.getTileEntityAt(world, pos.relative(sideHit), PressureTubeBlockEntity.class).ifPresent(tube2 -> {
@@ -474,7 +474,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                                 tube2.setSideClosed(sideHit.getOpposite(), true);
                                 BlockPos pos2 = tube2.getBlockPos();
                                 world.setBlockAndUpdate(pos2, recalculateState(world, pos2, world.getBlockState(pos2)));
-                                PneumaticRegistry.getInstance().forceClientShapeRecalculation(world, pos2);
+                                PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos2);
                             }
                         });
                     }

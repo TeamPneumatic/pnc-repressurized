@@ -18,8 +18,6 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.amadron.ShoppingBasket;
 import me.desht.pneumaticcraft.common.block.entity.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -30,7 +28,6 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -59,12 +56,15 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AmadronTabletItem extends PressurizableItem
-        implements IPositionProvider, IChargeableContainerProvider, IUpgradeAcceptor {
+        implements IPositionProvider, IChargeableContainerProvider {
     public AmadronTabletItem() {
         super(ModItems.toolProps(), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
@@ -208,16 +208,6 @@ public class AmadronTabletItem extends PressurizableItem
                 return new AmadronMenu(windowId, playerInventory, handIn);
             }
         }, buf -> buf.writeBoolean(handIn == InteractionHand.MAIN_HAND));
-    }
-
-    @Override
-    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
-        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
-    }
-
-    @Override
-    public String getUpgradeAcceptorTranslationKey() {
-        return getDescriptionId();
     }
 
     @Override

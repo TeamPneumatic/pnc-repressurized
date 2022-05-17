@@ -20,8 +20,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.IPneumaticCraftProbeable;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -31,16 +29,10 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEn
 import me.desht.pneumaticcraft.common.block.entity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.heat.TemperatureCategory;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
-import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -57,7 +49,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -71,7 +62,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -84,16 +74,14 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 public abstract class AbstractPneumaticCraftBlock extends Block
-        implements IPneumaticWrenchable, IUpgradeAcceptor, IPneumaticCraftProbeable {
+        implements IPneumaticWrenchable, IPneumaticCraftProbeable {
     static final VoxelShape ALMOST_FULL_SHAPE = Block.box(0.5, 0, 0.5, 15.5, 16, 15.5);
 
     public static final BooleanProperty UP = BooleanProperty.create("up");
@@ -103,15 +91,9 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty WEST = BooleanProperty.create("west");
     public static final BooleanProperty[] CONNECTION_PROPERTIES = new BooleanProperty[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
-    public static final EnumProperty<TemperatureCategory> TEMPERATURE = EnumProperty.create("temperature", TemperatureCategory.class);
 
     protected AbstractPneumaticCraftBlock(Properties props) {
         super(props);
-    }
-
-    @Override
-    public String getUpgradeAcceptorTranslationKey() {
-        return getDescriptionId();
     }
 
     @Override
@@ -345,9 +327,6 @@ public abstract class AbstractPneumaticCraftBlock extends Block
             if (savedAir != 0) {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.air", Integer.toString(savedAir)).withStyle(ChatFormatting.GREEN));
             }
-            if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IUpgradeAcceptor) {
-                UpgradableItemUtils.addUpgradeInformation(stack, curInfo, flag);
-            }
             CompoundTag subTag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
             if (subTag != null && subTag.contains(NBTKeys.NBT_SAVED_TANKS, Tag.TAG_COMPOUND)) {
                 CompoundTag tag = subTag.getCompound(NBTKeys.NBT_SAVED_TANKS);
@@ -389,15 +368,6 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
-        if (this instanceof EntityBlock eb) {
-            BlockEntity te = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
-            if (te instanceof IUpgradeAcceptor ua) return ua.getApplicableUpgrades();
-        }
-        return Collections.emptyMap();
-    }
-
-    @Override
     public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
@@ -410,14 +380,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                 NonNullList<ItemStack> drops = NonNullList.create();
                 teBase.getContentsToDrop(drops);
                 drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
-
                 if (!teBase.shouldPreserveStateOnBreak()) {
-                    te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(handler -> {
-                        if (handler.getAir() > 0) {
-                            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, (int) (5 * handler.getPressure()), 1, 1, 1), world, pos);
-                            world.playSound(null, pos, ModSounds.SHORT_HISS.get(), SoundSource.BLOCKS, 0.3f, 0.8f);
-                        }
-                    });
+                    PneumaticRegistry.getInstance().getMiscHelpers().playMachineBreakEffect(te);
                 }
 
             }
@@ -449,7 +413,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         if (!world.isClientSide()) {
             world.removeBlock(pos, false);
             // this only gets called server-side, but the client needs to be informed too, to update neighbour states
-            PneumaticRegistry.getInstance().forceClientShapeRecalculation(world, pos);
+            PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos);
         }
     }
 

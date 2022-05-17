@@ -27,24 +27,22 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import org.apache.commons.lang3.Validate;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
 public enum HeatBehaviourManager {
     INSTANCE;
 
-    private final Map<ResourceLocation, Supplier<? extends HeatBehaviour>> behaviourRegistry = new HashMap<>();
+    private final Map<ResourceLocation, Supplier<? extends HeatBehaviour>> behaviourRegistry = new ConcurrentHashMap<>();
 
     public static HeatBehaviourManager getInstance() {
         return INSTANCE;
     }
 
-    public void init() {
-        behaviourRegistry.clear();
-
+    public void registerDefaultBehaviours() {
         registerBehaviour(HeatBehaviourFurnace.ID, HeatBehaviourFurnace::new);
         registerBehaviour(HeatBehaviourHeatFrame.ID, HeatBehaviourHeatFrame::new);
 

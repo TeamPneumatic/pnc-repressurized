@@ -19,8 +19,6 @@ package me.desht.pneumaticcraft.common.item;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
@@ -38,7 +36,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
 import me.desht.pneumaticcraft.common.util.*;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -80,7 +77,7 @@ import java.util.*;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JackHammerItem extends PressurizableItem
-        implements IChargeableContainerProvider, IUpgradeAcceptor, ColorHandlers.ITintableItem, IShiftScrollable {
+        implements IChargeableContainerProvider, ColorHandlers.ITintableItem, IShiftScrollable {
     private static final float[] SPEED_MULT = new float[] {
             1f,
             2f,
@@ -348,16 +345,6 @@ public class JackHammerItem extends PressurizableItem
             }
         }
         return found;
-    }
-
-    @Override
-    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
-        return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
-    }
-
-    @Override
-    public String getUpgradeAcceptorTranslationKey() {
-        return getDescriptionId();
     }
 
     @Override

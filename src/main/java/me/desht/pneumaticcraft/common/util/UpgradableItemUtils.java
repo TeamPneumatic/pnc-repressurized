@@ -24,13 +24,13 @@ import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.items.ItemStackHandler;
@@ -61,13 +61,13 @@ public class UpgradableItemUtils {
     public static void addUpgradeInformation(ItemStack iStack, List<Component> textList, TooltipFlag flag) {
         Map<PNCUpgrade,Integer> upgrades = getUpgrades(iStack);
         if (upgrades.isEmpty()) {
-            if (!(iStack.getItem() instanceof BlockItem)) {
+            if (!ApplicableUpgradesDB.getInstance().getApplicableUpgrades(iStack.getItem()).isEmpty()) {
                 textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.empty").withStyle(ChatFormatting.DARK_GREEN));
             }
         } else {
             textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").withStyle(ChatFormatting.GREEN));
             List<ItemStack> l = new ArrayList<>();
-            upgrades.forEach((u, n) -> l.add(u.getItemStack(n)));
+            upgrades.forEach((upgrade, count) -> l.add(upgrade.getItemStack(count)));
             PneumaticCraftUtils.summariseItemStacks(textList, l.toArray(new ItemStack[0]), ChatFormatting.DARK_GREEN + Symbols.BULLET + " ");
         }
     }

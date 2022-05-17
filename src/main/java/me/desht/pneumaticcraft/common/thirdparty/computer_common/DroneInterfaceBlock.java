@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
-import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.PneumaticCraftEntityBlock;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -32,9 +31,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.Map;
 
 public class DroneInterfaceBlock extends AbstractPneumaticCraftBlock implements PneumaticCraftEntityBlock {
     static final BooleanProperty CONNECTED = BooleanProperty.create("connected");
@@ -62,10 +58,10 @@ public class DroneInterfaceBlock extends AbstractPneumaticCraftBlock implements 
         return true;
     }
 
-    @Override
-    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
-        return Collections.emptyMap();
-    }
+//    @Override
+//    public Map<PNCUpgrade, Integer> getApplicableUpgrades() {
+//        return Collections.emptyMap();
+//    }
 
     @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {

@@ -148,7 +148,7 @@ public class PneumaticCraftRepressurized {
         HackManager.addDefaultEntries();
         SensorHandler.getInstance().init();
         ModNameCache.init();
-        HeatBehaviourManager.getInstance().init();
+        HeatBehaviourManager.getInstance().registerDefaultBehaviours();
         PlayerFilter.registerDefaultMatchers();
 
         event.enqueueWork(() -> {
