@@ -75,10 +75,6 @@ repositories {
 		name 'CC: Tweaked'
 		url 'https://squiddev.cc/maven/'
 	}
-	//maven {
-		//name "The One Probe"
-		//url "https://maven.tterrag.com/"
-	//}
 	maven {
 		name 'Crafttweaker/Patchouli/Botania/Immersive Engineering/Gamestages'
 		url 'https://maven.blamejared.com/'
@@ -87,10 +83,6 @@ repositories {
 		name 'Curios'
 		url "https://maven.theillusivec4.top/"
 	}
-	//maven {
-		//name 'Gigaherz mappings'
-		//url 'https://dogforce-games.com/maven/'
-	//}
 	maven {
 		name "K-4u Mod maven"
 		url "https://modmaven.dev/"
@@ -112,38 +104,26 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
 	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
-	//compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api")
-	//runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}")
-	// temporary till TOP for 1.18 is on maven.tterrag.com...
-	compileOnly fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
-	runtimeOnly fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
+	implementation fg.deobf("curse.maven:theoneprobe-245211:${top_curse_id}")
 	compileOnly fg.deobf("mezz.jei:jei-${project.mc_version}:${jei_version}:api")
 	runtimeOnly fg.deobf("mezz.jei:jei-${project.mc_version}:${jei_version}")
 	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
 	runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
 	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
-	//runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
+	runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
 	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
-	compileOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
-	runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
-	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
-	runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
-	compileOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
-	runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
-	compileOnly fg.deobf("curse.maven:create-328085:${create_curse_id}")
-	runtimeOnly fg.deobf("curse.maven:create-328085:${create_curse_id}")
-	compileOnly fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
-	runtimeOnly fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
-	compileOnly fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
-	runtimeOnly fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
-	compileOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
-	runtimeOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
+	implementation fg.deobf("org.squiddev:cc-tweaked-${project.mc_version}:${cc_tweaked_version}")
+	implementation fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+	implementation fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
+	implementation fg.deobf("curse.maven:create-328085:${create_curse_id}")
+	implementation fg.deobf("curse.maven:flywheel-486392:${flywheel_curse_id}")
+	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
+	implementation fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
+	implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:${crafttweaker_version}")
+
 	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
 	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
-	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.18.1:${crafttweaker_version}")
-	//compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${project.mc_version}:${crafttweaker_version}")
-	//runtimeOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-${project.mc_version}:${crafttweaker_version}")
 	//compileOnly fg.deobf("net.darkhax.gamestages:GameStages-${project.mc_version}:${gamestages_version}")
 	//runtimeOnly fg.deobf("net.darkhax.gamestages:GameStages-${project.mc_version}:${gamestages_version}")
 	//compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-${project.mc_version}:10.3.29")
@@ -165,12 +145,10 @@ dependencies {
 //    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
 //    compileOnly "thaumcraft:Thaumcraft:${thaumcraft_version}"
 //    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
-//    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
 }
 
 minecraft {
-//	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
-	mappings channel: 'parchment', version: "1.18.1-2022.03.06-1.18.2"
+	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 

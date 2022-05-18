@@ -178,7 +178,7 @@ public class FluidIngredient extends Ingredient {
                 }
             } else if (fluidTagKey != null) {
                 ImmutableList.Builder<Fluid> builder = ImmutableList.builder();
-                Registry.FLUID.getTagOrEmpty(fluidTagKey).forEach(fluid -> builder.add(fluid.value()));
+                Objects.requireNonNull(ForgeRegistries.FLUIDS.tags()).getTag(fluidTagKey).forEach(builder::add);
                 fluids = builder.build();
             } else {
                 throw new IllegalStateException("no fluid ID or fluid tag is available?");
@@ -279,7 +279,7 @@ public class FluidIngredient extends Ingredient {
         } else if (fluidId != null) {
             json.addProperty("fluid", fluidId.toString());
         } else if (!fluids.isEmpty()) {
-            json.addProperty("fluid", fluids.get(0).getRegistryName().toString());
+            json.addProperty("fluid", Objects.requireNonNull(fluids.get(0).getRegistryName()).toString());
         } else {
             throw new IllegalStateException("ingredient has no ID, tag or fluid!");
         }

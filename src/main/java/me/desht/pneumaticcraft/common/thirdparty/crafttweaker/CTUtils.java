@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Arrays;
@@ -51,6 +50,6 @@ public class CTUtils {
 
     public static FluidIngredient toFluidIngredient(CTFluidIngredient ingredient) {
         // TODO is this OK?
-        return ingredient.mapTo(FluidIngredient::of, (tag, amount) -> FluidIngredient.of(amount, tag.getValues().toArray(new Fluid[0])), FluidIngredient::ofFluidStream);
+        return ingredient.mapTo(FluidIngredient::of, (tag, amount) -> FluidIngredient.of(amount, tag), FluidIngredient::ofFluidStream);
     }
 }
