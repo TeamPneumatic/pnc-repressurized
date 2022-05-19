@@ -126,6 +126,9 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         super.readFromNBT(tag);
         if (tag.contains("coord")) {
             coord = NbtUtils.readBlockPos(tag.getCompound("coord"));
+        } else if (tag.contains("posX")) {
+            // legacy import
+            coord = new BlockPos(tag.getInt("posX"), tag.getInt("posY"), tag.getInt("posZ"));
         } else {
             coord = null;
         }

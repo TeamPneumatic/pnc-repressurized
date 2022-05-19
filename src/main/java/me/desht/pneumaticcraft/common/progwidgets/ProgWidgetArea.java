@@ -378,10 +378,18 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
 
-        pos[0] = NbtUtils.readBlockPos(tag.getCompound("pos1"));
-        pos[1] = NbtUtils.readBlockPos(tag.getCompound("pos2"));
-        varNames[0] = tag.getString("var1");
-        varNames[1] = tag.getString("var2");
+        if (tag.contains("x1")) {
+            // legacy import
+            pos[0] = new BlockPos(tag.getInt("x1"), tag.getInt("y1"), tag.getInt("z1"));
+            pos[1] = new BlockPos(tag.getInt("x2"), tag.getInt("y2"), tag.getInt("z2"));
+            varNames[0] = tag.getString("coord1Variable");
+            varNames[1] = tag.getString("coord2Variable");
+        } else {
+            pos[0] = NbtUtils.readBlockPos(tag.getCompound("pos1"));
+            pos[1] = NbtUtils.readBlockPos(tag.getCompound("pos2"));
+            varNames[0] = tag.getString("var1");
+            varNames[1] = tag.getString("var2");
+        }
         type = createType(tag.getString("type"));
         type.readFromNBT(tag);
     }
