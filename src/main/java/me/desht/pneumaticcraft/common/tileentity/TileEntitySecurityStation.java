@@ -649,9 +649,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             NetworkComponentType type = ItemNetworkComponent.getType(stack);
-            return type == NetworkComponentType.DIAGNOSTIC_SUBROUTINE
-                    || type == NetworkComponentType.NETWORK_IO_PORT
-                    || type == NetworkComponentType.NETWORK_REGISTRY;
+            return type != null && type.isSecStationComponent();
         }
 
         @Override
