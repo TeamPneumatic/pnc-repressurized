@@ -463,18 +463,12 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 Pair<Boolean, Direction> lookData = getLookedTube(world, pos, player);
                 if (lookData != null) {
                     Direction sideHit = lookData.getRight();
-                    tube.setSideClosed(sideHit, !tube.isSideClosed(sideHit));
-                    tube.onNeighborBlockUpdate(pos.relative(sideHit));
-                    world.setBlockAndUpdate(pos, recalculateState(world, pos, world.getBlockState(pos)));
-                    PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos);
+                    setTubeSideClosed(tube, sideHit, !tube.isSideClosed(sideHit));
                     if (tube.isSideClosed(sideHit)) {
                         // if there's an adjacent tube which would now leak, close that too
                         PneumaticCraftUtils.getTileEntityAt(world, pos.relative(sideHit), PressureTubeBlockEntity.class).ifPresent(tube2 -> {
                             if (shouldCloseNeighbor(tube2, sideHit)) {
-                                tube2.setSideClosed(sideHit.getOpposite(), true);
-                                BlockPos pos2 = tube2.getBlockPos();
-                                world.setBlockAndUpdate(pos2, recalculateState(world, pos2, world.getBlockState(pos2)));
-                                PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos2);
+                                setTubeSideClosed(tube2, sideHit.getOpposite(), true);
                             }
                         });
                     }
@@ -498,6 +492,14 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             }
         }
         return doClose;
+    }
+
+    private void setTubeSideClosed(PressureTubeBlockEntity tube, Direction side, boolean closed) {
+        tube.setSideClosed(side, closed);
+        Level world = tube.nonNullLevel();
+        BlockPos pos = tube.getBlockPos();
+        world.setBlockAndUpdate(pos, recalculateState(world, pos, world.getBlockState(pos)));
+        PneumaticRegistry.getInstance().getMiscHelpers().forceClientShapeRecalculation(world, pos);
     }
 
     @Override
