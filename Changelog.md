@@ -12,7 +12,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
-## 2.15.8-??? (unreleased)
+## 2.15.8-324 (19 May 2022)
 
 ### Updates
 * Added a "check sight" checkbox to the Entity Attack programming widget
@@ -22,6 +22,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix some mobs (e.g. Zoglins) being able to control drones which have imported them
   * This affects mobs added in newer Minecraft versions (1.16+) which have a very different AI implementation from older mobs
 * Fix <ERROR> being displayed in Jade (Waila) info box when looking at blocks with semiblocks (Spawner Agitator, Logistics Frames...) attached
+* Fix Network Node items not being able to be placed in a Security Station
 
 ## 2.15.7-320 (27 Apr 2022)
 
