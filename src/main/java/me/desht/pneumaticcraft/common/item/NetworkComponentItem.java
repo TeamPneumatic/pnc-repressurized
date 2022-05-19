@@ -33,17 +33,23 @@ public class NetworkComponentItem extends Item implements IProgrammable {
     private final NetworkComponentType type;
 
     public enum NetworkComponentType {
-        DIAGNOSTIC_SUBROUTINE("diagnostic_subroutine"),
-        NETWORK_API("network_api"),
-        NETWORK_DATA_STORAGE("network_data_storage"),
-        NETWORK_IO_PORT("network_io_port"),
-        NETWORK_REGISTRY("network_registry"),
-        NETWORK_NODE("network_node");
+        DIAGNOSTIC_SUBROUTINE("diagnostic_subroutine", true),
+        NETWORK_API("network_api", false),
+        NETWORK_DATA_STORAGE("network_data_storage", false),
+        NETWORK_IO_PORT("network_io_port", true),
+        NETWORK_REGISTRY("network_registry", true),
+        NETWORK_NODE("network_node", true);
 
         private final String name;
+        private final boolean secStationComponent;
 
-        NetworkComponentType(String name) {
+        NetworkComponentType(String name, boolean secStationComponent) {
             this.name = name;
+            this.secStationComponent = secStationComponent;
+        }
+
+        public boolean isSecStationComponent() {
+            return secStationComponent;
         }
 
         public String getRegistryName() {

@@ -644,9 +644,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         @Override
         public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             NetworkComponentType type = NetworkComponentItem.getType(stack);
-            return type == NetworkComponentType.DIAGNOSTIC_SUBROUTINE
-                    || type == NetworkComponentType.NETWORK_IO_PORT
-                    || type == NetworkComponentType.NETWORK_REGISTRY;
+            return type != null && type.isSecStationComponent();
         }
 
         @Override
