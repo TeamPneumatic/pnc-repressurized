@@ -31,9 +31,12 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableItemFrame implements IHackableEntity {
+
+    private static final ResourceLocation ID = RL("item_frame");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("item_frame");
+        return ID;
     }
 
     @Override

@@ -30,9 +30,12 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableCreeper implements IHackableEntity {
+
+    private static final ResourceLocation ID = RL("creeper");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("creeper");
+        return ID;
     }
 
     @Override

@@ -38,9 +38,11 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableEnderman implements IHackableEntity {
 
+    private static final ResourceLocation ID = RL("enderman");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("enderman");
+        return ID;
     }
 
     @Override

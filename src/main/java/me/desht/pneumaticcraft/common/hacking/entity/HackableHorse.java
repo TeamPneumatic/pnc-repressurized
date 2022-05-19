@@ -25,12 +25,15 @@ import net.minecraft.world.entity.player.Player;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
- * Horses, although tameable, don't extend EntityTameable.  Yay.
+ * Horses, although tameable animals, don't extend TamableAnimal.  Yay.
  */
 public class HackableHorse extends HackableTameable {
+
+    private static final ResourceLocation ID = RL("horse");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("horse");
+        return ID;
     }
 
     @Override

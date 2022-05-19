@@ -32,14 +32,16 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableTameable implements IHackableEntity {
 
+    private static final ResourceLocation ID = RL("tameable");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("tameable");
+        return ID;
     }
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return entity instanceof TamableAnimal && ((TamableAnimal) entity).getOwner() != player;
+        return entity instanceof TamableAnimal t && t.getOwner() != player;
     }
 
     @Override

@@ -1,39 +1,23 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.GlowSquid;
+import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeColor;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackableSheep implements IHackableEntity {
-
-    private static final ResourceLocation ID = RL("sheep");
+public class HackableSquid implements IHackableEntity {
+    private static final ResourceLocation ID = RL("squid");
 
     @Nullable
     @Override
@@ -43,7 +27,7 @@ public class HackableSheep implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return true;
+        return entity instanceof Squid;
     }
 
     @Override
@@ -63,9 +47,14 @@ public class HackableSheep implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, Player player) {
-        if (entity instanceof Sheep) {
-            DyeColor newColor = DyeColor.byId(player.getRandom().nextInt(DyeColor.values().length));
-            ((Sheep) entity).setColor(newColor);
+        if (!entity.level.isClientSide && entity instanceof Squid squid) {
+            entity.discard();
+            GlowSquid glowSquid = new GlowSquid(EntityType.GLOW_SQUID, squid.level);
+            glowSquid.moveTo(squid.getX(), squid.getY(), squid.getZ(), squid.getYRot(), squid.getXRot());
+            glowSquid.setHealth(squid.getHealth());
+            glowSquid.yBodyRot = squid.yBodyRot;
+            entity.level.addFreshEntity(glowSquid);
+            entity.level.addParticle(ParticleTypes.EXPLOSION, squid.getX(), squid.getY() + squid.getBbHeight() / 2.0F, squid.getZ(), 0.0D, 0.0D, 0.0D);
         }
     }
 

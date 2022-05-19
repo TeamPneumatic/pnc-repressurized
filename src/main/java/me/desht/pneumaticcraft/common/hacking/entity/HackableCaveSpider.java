@@ -31,9 +31,12 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableCaveSpider implements IHackableEntity {
+
+    private static final ResourceLocation ID = RL("cave_spider");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("cave_spider");
+        return ID;
     }
 
     @Override

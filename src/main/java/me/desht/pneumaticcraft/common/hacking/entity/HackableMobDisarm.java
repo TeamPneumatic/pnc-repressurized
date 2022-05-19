@@ -35,9 +35,12 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableMobDisarm implements IHackableEntity {
+
+    private static final ResourceLocation ID = RL("mob_disarm");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("mob_disarm");
+        return ID;
     }
 
     @Override

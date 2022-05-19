@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.hacking;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.RenderEntityTarget;
@@ -41,6 +41,7 @@ import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Pufferfish;
 import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.decoration.Painting;
@@ -72,7 +73,7 @@ public class HackManager {
     }
 
     public static void addDefaultEntries() {
-        IPneumaticHelmetRegistry registry = PneumaticRegistry.getInstance().getHelmetRegistry();
+        ICommonArmorRegistry registry = PneumaticRegistry.getInstance().getCommonArmorRegistry();
 
         // blocks
         registry.addHackable(Blocks.TNT, HackableTNT::new);
@@ -110,6 +111,7 @@ public class HackManager {
         registry.addHackable(Shulker.class, HackableShulker::new);
         registry.addHackable(Guardian.class, HackableGuardian::new);
         registry.addHackable(Pufferfish.class, HackablePufferfish::new);
+        registry.addHackable(Squid.class, HackableSquid::new);
         registry.addHackable(Villager.class, HackableVillager::new);
         registry.addHackable(Painting.class, HackablePainting::new);
         registry.addHackable(ItemFrame.class, HackableItemFrame::new);

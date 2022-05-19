@@ -23,6 +23,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * This affects mobs added in newer Minecraft versions (1.16+) which have a very different AI implementation from older mobs
 * Fixed Drones getting stuck on Amethyst clusters
   * Actually a vanilla bug (MC-181565) but worked around in PNC for now
+* Fixed pastebin import of Coordinate and Area widgets in legacy (pre-1.18) Drone programs
+  * X/Y/Z and variable information was getting lost
 
 ## 3.2.2-79 (8 May 2022)
 

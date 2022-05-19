@@ -32,9 +32,12 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableShulker implements IHackableEntity {
+
+    private static final ResourceLocation ID = RL("shulker");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("shulker");
+        return ID;
     }
 
     @Override

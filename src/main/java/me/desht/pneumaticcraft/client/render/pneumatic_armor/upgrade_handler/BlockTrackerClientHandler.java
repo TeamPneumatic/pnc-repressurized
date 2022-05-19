@@ -354,7 +354,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     public void hack() {
-        blockTargets.values().forEach(RenderBlockTarget::hack);
+        if (focusedTarget != null) focusedTarget.hack();
     }
 
     public RenderBlockTarget getTargetForCoord(BlockPos pos) {

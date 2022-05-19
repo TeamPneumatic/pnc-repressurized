@@ -33,14 +33,17 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableCow implements IHackableEntity {
+
+    private static final ResourceLocation ID = RL("cow");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("cow");
+        return ID;
     }
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        // mooshrooms are also a type of CowEntity
+        // mooshrooms are also a type of CowEntity so don't use instanceof here
         return entity.getType() == EntityType.COW;
     }
 

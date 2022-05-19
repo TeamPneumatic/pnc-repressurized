@@ -31,9 +31,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableBat implements IHackableEntity {
+    private static final ResourceLocation ID = RL("bat");
+
     @Override
     public ResourceLocation getHackableId() {
-        return RL("bat");
+        return ID;
     }
 
     @Override
