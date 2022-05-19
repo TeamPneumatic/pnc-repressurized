@@ -6,16 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.18.2
 
+* PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.2.3-?? (unreleased)
+## 3.2.3-84 (19 May 2022)
 
 ### Updates
 * CoFH integration has been re-added
   * Holding enchantment is supported on any pressurizable item, and increases item volume by (1 + enchantment_level)
   * CoFH fuel compat for Creosote, Refined Fuel, Refined Biofuel and Tree Oil
   * CoFH Crude Oil should work in the Refinery
+* CraftTweaker integration should now work correctly for Fluid ingredients using fluid tags (updated for 1.18.2 `TagKey` support)
 * Pufferfish can now be hacked (forces them to puff up)
+* Squid can now be hacked (converts them to Glow Squid)
 * Pressure Tube QoL feature: if wrenching shut a straight section of tube, also close the adjacent tube section if it would start to leak
 
 ### Fixes
@@ -25,6 +28,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * Actually a vanilla bug (MC-181565) but worked around in PNC for now
 * Fixed pastebin import of Coordinate and Area widgets in legacy (pre-1.18) Drone programs
   * X/Y/Z and variable information was getting lost
+* Pneumatic Boots step assist now uses the Forge STEP_HEIGHT entity attribute rather than modifying the player's step height directly
+  * Much better inter-mod compat this way
 
 ## 3.2.2-79 (8 May 2022)
 
