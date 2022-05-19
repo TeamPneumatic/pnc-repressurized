@@ -21,13 +21,21 @@ import me.desht.pneumaticcraft.api.item.PNCUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.ForgeMod;
+
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final UUID STEP_ASSIST_MODIFIER_ID = UUID.fromString("30bc8c6e-4f40-41e5-8b11-4001a9a85afb");
+
     private static final ResourceLocation ID = RL("step_assist");
 
     @Override
@@ -52,24 +60,40 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        // we will give the player a step height boost every tick if enabled
-        // but we won't take it away here, since that could mess up items from other
-        // mods which grant step assist
-        if (commonArmorHandler.hasMinPressure(EquipmentSlot.FEET) && enabled) {
-            Player player = commonArmorHandler.getPlayer();
-            player.maxUpStep = player.isShiftKeyDown() ? 0.6001F : 1.25F;
+        Player player = commonArmorHandler.getPlayer();
+        AttributeInstance attributeInstance = player.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+        if (attributeInstance != null) {
+            AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
+            double stepBoost = enabled && commonArmorHandler.hasMinPressure(EquipmentSlot.FEET) && !player.isShiftKeyDown() ? 0.6 : 0f;
+            if (currentModifier != null) {
+                if (PneumaticCraftUtils.epsilonEquals(currentModifier.getAmount(), stepBoost)) {
+                    return;  // already good
+                }
+                attributeInstance.removeModifier(currentModifier);
+            }
+            if (stepBoost > 0) {
+                attributeInstance.addTransientModifier(new AttributeModifier(STEP_ASSIST_MODIFIER_ID, "Step Assist", stepBoost, AttributeModifier.Operation.ADDITION));
+            }
         }
     }
 
     @Override
     public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
         if (!newState) {
-            commonArmorHandler.getPlayer().maxUpStep = 0.6F;
+            AttributeInstance attributeInstance = commonArmorHandler.getPlayer().getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+            if (attributeInstance != null) {
+                AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
+                if (currentModifier != null) attributeInstance.removeModifier(currentModifier);
+            }
         }
     }
 
     @Override
     public void onShutdown(ICommonArmorHandler commonArmorHandler) {
-        commonArmorHandler.getPlayer().maxUpStep = 0.6F;
+        AttributeInstance attributeInstance = commonArmorHandler.getPlayer().getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+        if (attributeInstance != null) {
+            AttributeModifier currentModifier = attributeInstance.getModifier(STEP_ASSIST_MODIFIER_ID);
+            if (currentModifier != null) attributeInstance.removeModifier(currentModifier);
+        }
     }
 }
