@@ -5,7 +5,10 @@ import me.desht.pneumaticcraft.common.block.entity.VortexTubeBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -111,5 +114,14 @@ public class VortexTubeBlock extends AbstractPneumaticCraftBlock implements Colo
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new VortexTubeBlockEntity(pPos, pState);
+    }
+
+    @Override
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, entity, stack);
+
+        // kludge: force one-time blockstate update - https://github.com/TeamPneumatic/pnc-repressurized/issues/1009
+        // otherwise tube connection can wrongly show through the hot and/or cold ends
+        world.setBlockAndUpdate(pos, Block.updateFromNeighbourShapes(state, world, pos));
     }
 }

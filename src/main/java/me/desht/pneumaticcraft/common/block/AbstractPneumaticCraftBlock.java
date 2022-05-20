@@ -106,7 +106,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                 || hand == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getMainHandItem())) {
             return InteractionResult.PASS;
         } else {
-            if (!world.isClientSide) {
+            if (player instanceof ServerPlayer serverPlayer) {
                 if (te instanceof AbstractPneumaticCraftBlockEntity) {
                     if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
                         world.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
@@ -116,7 +116,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                         return InteractionResult.SUCCESS;
                     }
                     // te must be a MenuProvider at this point: see instanceof check above
-                    doOpenGui((ServerPlayer) player, te);
+                    doOpenGui(serverPlayer, te);
                 }
             }
 
@@ -143,8 +143,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
             for (Direction facing : DirectionUtil.VALUES) {
                 if (state.hasProperty(connectionProperty(facing))) {
                     // handle pneumatic connections to neighbouring air handlers
-                    BlockEntity te = ctx.getLevel().getBlockEntity(ctx.getClickedPos().relative(facing));
-                    boolean b = te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
+                    BlockEntity neighbourBE = ctx.getLevel().getBlockEntity(ctx.getClickedPos().relative(facing));
+                    boolean b = neighbourBE != null && neighbourBE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
                     state = state.setValue(connectionProperty(facing), b);
                 }
             }
@@ -169,11 +169,11 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         super.setPlacedBy(world, pos, state, entity, stack);
 
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof AbstractPneumaticCraftBlockEntity && stack.hasCustomHoverName()) {
-            ((AbstractPneumaticCraftBlockEntity) te).setCustomName(stack.getHoverName());
+        if (te instanceof AbstractPneumaticCraftBlockEntity pncTE && stack.hasCustomHoverName()) {
+            pncTE.setCustomName(stack.getHoverName());
         }
-        if (te instanceof IHeatExchangingTE) {
-            ((IHeatExchangingTE) te).initHeatExchangersOnPlacement(world, pos);
+        if (te instanceof IHeatExchangingTE he) {
+            he.initHeatExchangersOnPlacement(world, pos);
         }
     }
 
@@ -238,9 +238,9 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         if (player != null && player.isShiftKeyDown()) {
             BlockEntity te = world.getBlockEntity(pos);
             boolean preserve = false;
-            if (te instanceof AbstractPneumaticCraftBlockEntity) {
+            if (te instanceof AbstractPneumaticCraftBlockEntity pncBE) {
                 preserve = true;
-                ((AbstractPneumaticCraftBlockEntity) te).setPreserveStateOnBreak(true);
+                pncBE.setPreserveStateOnBreak(true);
             }
             if (!player.isCreative() || preserve) {
                 Block.dropResources(world.getBlockState(pos), world, pos, te);
@@ -263,8 +263,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                         } while (!canRotateToTopOrBottom() && f.getAxis() == Axis.Y);
                         setRotation(world, pos, f);
                     }
-                    BlockEntity te = world.getBlockEntity(pos);
-                    if (te instanceof AbstractPneumaticCraftBlockEntity) ((AbstractPneumaticCraftBlockEntity) te).onBlockRotated();
+                    PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
+                            .ifPresent(AbstractPneumaticCraftBlockEntity::onBlockRotated);
                 }
                 return true;
             } else {
@@ -292,31 +292,23 @@ public abstract class AbstractPneumaticCraftBlock extends Block
 
     @Override
     public void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos tilePos) {
-        if (world instanceof Level && !((Level) world).isClientSide) {
-            BlockEntity te = world.getBlockEntity(pos);
-            if (te instanceof AbstractPneumaticCraftBlockEntity) {
-                ((AbstractPneumaticCraftBlockEntity) te).onNeighborTileUpdate(tilePos);
-            }
+        if (!world.isClientSide()) {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
+                    .ifPresent(pncBE -> pncBE.onNeighborTileUpdate(tilePos));
         }
     }
 
     @Override
     public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        if (!world.isClientSide) {
-            BlockEntity te = world.getBlockEntity(pos);
-            if (te instanceof AbstractPneumaticCraftBlockEntity) {
-                ((AbstractPneumaticCraftBlockEntity) te).onNeighborBlockUpdate(fromPos);
-            }
+        if (!world.isClientSide()) {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
+                    .ifPresent(pncBE -> pncBE.onNeighborBlockUpdate(fromPos));
         }
     }
 
     private int getSavedAir(ItemStack stack) {
         CompoundTag tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        if (tag != null && tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
-            return tag.getInt(NBTKeys.NBT_AIR_AMOUNT);
-        } else {
-            return 0;
-        }
+        return tag != null && tag.contains(NBTKeys.NBT_AIR_AMOUNT) ? tag.getInt(NBTKeys.NBT_AIR_AMOUNT) : 0;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -375,16 +367,14 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
-            BlockEntity te = world.getBlockEntity(pos);
-            if (te instanceof AbstractPneumaticCraftBlockEntity teBase) {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(pncBE -> {
                 NonNullList<ItemStack> drops = NonNullList.create();
-                teBase.getContentsToDrop(drops);
+                pncBE.getContentsToDrop(drops);
                 drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
-                if (!teBase.shouldPreserveStateOnBreak()) {
-                    PneumaticRegistry.getInstance().getMiscHelpers().playMachineBreakEffect(te);
+                if (!pncBE.shouldPreserveStateOnBreak()) {
+                    PneumaticRegistry.getInstance().getMiscHelpers().playMachineBreakEffect(pncBE);
                 }
-
-            }
+            });
             super.onRemove(state, world, pos, newState, isMoving);
         }
     }
@@ -398,8 +388,10 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                 BlockEntity te = worldIn.getBlockEntity(currentPos.relative(facing));
                 boolean b = te != null && te.getCapability (PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
                 stateIn = stateIn.setValue(connectionProperty(facing), b);
-                return stateIn;
+            } else {
+                stateIn = stateIn.setValue(connectionProperty(facing), false);
             }
+            return stateIn;
         }
         return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
