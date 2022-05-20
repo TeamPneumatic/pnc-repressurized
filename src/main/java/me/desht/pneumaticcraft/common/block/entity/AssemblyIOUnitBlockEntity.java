@@ -262,6 +262,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
 
     private boolean getItemFromCurrentDirection() {
         BlockEntity tile = getTileEntityForCurrentDirection();
+        if (tile == null) return false;
 
         boolean extracted = false;
 
