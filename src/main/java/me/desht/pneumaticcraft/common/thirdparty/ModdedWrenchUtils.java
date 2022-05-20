@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.thirdparty;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.item.PneumaticWrenchItem;
@@ -32,6 +31,7 @@ import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
@@ -43,8 +43,8 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
     private static final BiFunction<UseOnContext,BlockState,InteractionResult> NO_OP_PRE = (ctx, state) -> InteractionResult.PASS;
     private static final BiConsumer<UseOnContext,BlockState> NO_OP_POST = (ctx, state) -> {};
 
-    private final Map<String, BiFunction<UseOnContext,BlockState,InteractionResult>> modBehavioursPre = new Object2ObjectOpenHashMap<>();
-    private final Map<String, BiConsumer<UseOnContext,BlockState>> modBehavioursPost = new Object2ObjectOpenHashMap<>();
+    private final Map<String, BiFunction<UseOnContext,BlockState,InteractionResult>> modBehavioursPre = new ConcurrentHashMap<>();
+    private final Map<String, BiConsumer<UseOnContext,BlockState>> modBehavioursPost = new ConcurrentHashMap<>();
 
     public static ModdedWrenchUtils getInstance() {
         return INSTANCE;
