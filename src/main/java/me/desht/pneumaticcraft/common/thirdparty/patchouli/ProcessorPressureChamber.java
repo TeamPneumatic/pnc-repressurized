@@ -52,7 +52,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
         } else if (s.startsWith("input")) {
             int index = Integer.parseInt(s.substring(5)) - 1;
             if (index >= 0 && index < recipe.getInputsForDisplay().size()) {
-                return Patchouli.Util.getStacks(recipe.getInputsForDisplay().get(index));
+                return PatchouliAccess.getStacks(recipe.getInputsForDisplay().get(index));
             }
         } else if (s.startsWith("output")) {
             int index = Integer.parseInt(s.substring(6)) - 1;

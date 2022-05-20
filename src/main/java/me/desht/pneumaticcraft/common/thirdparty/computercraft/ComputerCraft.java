@@ -42,8 +42,8 @@ public class ComputerCraft implements IThirdParty {
     @Override
     public void init() {
         ComputerEventManager.getInstance().registerSender((te, name, params) -> te.getCapability(PneumaticTilePeripheral.PERIPHERAL_CAPABILITY).ifPresent(handler -> {
-            if (handler instanceof ComputerEventManager.IComputerEventSender) {
-                ((ComputerEventManager.IComputerEventSender) handler).sendEvent(te, name, params);
+            if (handler instanceof ComputerEventManager.IComputerEventSender sender) {
+                sender.sendEvent(te, name, params);
             }
         }));
     }

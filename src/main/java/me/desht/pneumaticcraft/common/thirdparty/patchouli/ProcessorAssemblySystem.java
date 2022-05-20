@@ -51,7 +51,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
 
         ItemStack programStack = new ItemStack(AssemblyProgramItem.fromProgramType(recipe.getProgramType()));
         return switch (key) {
-            case "input" -> Patchouli.Util.getStacks(recipe.getInput());
+            case "input" -> PatchouliAccess.getStacks(recipe.getInput());
             case "output" -> IVariable.from(recipe.getOutput());
             case "program" -> IVariable.from(programStack);
             case "name" -> IVariable.wrap(recipe.getOutput().getHoverName().getString());

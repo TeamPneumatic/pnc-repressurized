@@ -48,9 +48,9 @@ public class ProcessorThermoPlant implements IComponentProcessor {
             case "header":
                 return IVariable.wrap(header.isEmpty() ? defaultHeader() : header);
             case "item_input":
-                return Patchouli.Util.getStacks(recipe.getInputItem());
+                return PatchouliAccess.getStacks(recipe.getInputItem());
             case "fluid_input":
-                return Patchouli.Util.getFluidStacks(recipe.getInputFluid());
+                return PatchouliAccess.getFluidStacks(recipe.getInputFluid());
             case "item_output":
                 return IVariable.from(recipe.getOutputItem());
             case "fluid_output":

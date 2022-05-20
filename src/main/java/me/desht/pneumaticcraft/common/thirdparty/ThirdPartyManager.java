@@ -34,7 +34,6 @@ import net.minecraftforge.fml.ModList;
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public enum ThirdPartyManager {
     INSTANCE;
@@ -56,25 +55,23 @@ public enum ThirdPartyManager {
         return docsProvider;
     }
 
-    @SuppressWarnings("Convert2MethodRef")
     private void discoverMods() {
         Map<String, Supplier<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
         try {
-            // Not using method refs here, because that can cause early class loading and we don't want that
-            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, () -> new ComputerCraft());
+            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft::new);
             thirdPartyClasses.put(ModIds.WAILA, () -> IMPLICIT_INIT);
-            thirdPartyClasses.put(ModIds.TOP, () -> new TheOneProbe());
-            thirdPartyClasses.put(ModIds.CURIOS, () -> new Curios());
-            thirdPartyClasses.put(ModIds.BOTANIA, () -> new Botania());
-            thirdPartyClasses.put(ModIds.PATCHOULI, () -> new Patchouli());
+            thirdPartyClasses.put(ModIds.TOP, TheOneProbe::new);
+            thirdPartyClasses.put(ModIds.CURIOS, Curios::new);
+            thirdPartyClasses.put(ModIds.BOTANIA, Botania::new);
+            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli::new);
             thirdPartyClasses.put(ModIds.JEI, () -> IMPLICIT_INIT);
-            thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, () -> new ImmersiveEngineering());
-            thirdPartyClasses.put(ModIds.MEKANISM, () -> new Mekanism());
+            thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, ImmersiveEngineering::new);
+            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism::new);
             thirdPartyClasses.put(ModIds.AE2, () -> IMPLICIT_INIT);
-            thirdPartyClasses.put(ModIds.COFH_CORE, () -> new CoFHCore());
+            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore::new);
             thirdPartyClasses.put(ModIds.CRAFTTWEAKER, () -> IMPLICIT_INIT);
-            thirdPartyClasses.put(ModIds.GAMESTAGES, () -> new Gamestages());
-            thirdPartyClasses.put(ModIds.CREATE, () -> new Create());
+            thirdPartyClasses.put(ModIds.GAMESTAGES, Gamestages::new);
+            thirdPartyClasses.put(ModIds.CREATE, Create::new);
 
             // these were supported in 1.12.2 and may or may not come back...
 
@@ -97,11 +94,9 @@ public enum ThirdPartyManager {
 
         ThirdPartyConfig.setupDefaults(thirdPartyClasses.keySet());
 
-        Set<String> enabledThirdParty = thirdPartyClasses.keySet().stream().filter(ThirdPartyConfig::isEnabled).collect(Collectors.toSet());
-
         List<String> modNames = new ArrayList<>();
         for (Map.Entry<String, Supplier<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
-            if (enabledThirdParty.contains(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {
+            if (ThirdPartyConfig.isEnabled(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {
                 IThirdParty mod = entry.getValue().get();
                 thirdPartyMods.add(mod);
                 if (mod.modType() != null) loadedModTypes.add(mod.modType());
@@ -120,21 +115,18 @@ public enum ThirdPartyManager {
             try {
                 thirdParty.preInit();
             } catch (Throwable e) {
-                Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the PreInit phase!");
-                e.printStackTrace();
+                logError(e, thirdParty.getClass(), "PreInit");
             }
         }
     }
 
     public void init() {
-
         GENERIC.init();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.init();
             } catch (Throwable e) {
-                Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the Init phase!");
-                e.printStackTrace();
+                logError(e, thirdParty.getClass(), "Init");
             }
         }
     }
@@ -145,11 +137,9 @@ public enum ThirdPartyManager {
             try {
                 thirdParty.postInit();
             } catch (Throwable e) {
-                Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the PostInit phase!");
-                e.printStackTrace();
+                logError(e, thirdParty.getClass(), "PostInit");
             }
         }
-
     }
 
     public void clientInit() {
@@ -162,10 +152,14 @@ public enum ThirdPartyManager {
                     docsProvider = (IDocsProvider) thirdParty;
                 }
             } catch (Throwable e) {
-                Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " client side on the init!");
-                e.printStackTrace();
+                logError(e, thirdParty.getClass(), "Client Init");
             }
         }
+    }
+
+    private void logError(Throwable e, Class<?> cls, String when) {
+        Log.error("Third party integration error: class: %s, phase: %s", cls.getName(), when);
+        e.printStackTrace();
     }
 
     public boolean isModTypeLoaded(ModType modType) {
