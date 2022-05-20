@@ -257,6 +257,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
 
     private boolean getItemFromCurrentDirection() {
         TileEntity tile = getTileEntityForCurrentDirection();
+        if (tile == null) return false;
 
         boolean extracted = false;
 
