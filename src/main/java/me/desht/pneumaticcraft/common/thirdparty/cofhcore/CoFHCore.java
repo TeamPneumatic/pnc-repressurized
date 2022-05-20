@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.ItemVolumeModifier;
-import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
@@ -30,9 +29,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
@@ -50,6 +49,8 @@ public class CoFHCore implements IThirdParty {
         cofhVersionOK = checkForEnchantableItemInterface();
 
         if (cofhVersionOK) {
+            MinecraftForge.EVENT_BUS.register(CapabilityListener.class);
+
             // CoFH Core doesn't actually register the Holding enchantment itself; it's done by Thermal Expansion
             // we'll call it too, in the case that CoFH Core is present without TE
             // should be safe to call this multiple times (subsequent calls are effectively a no-op)
@@ -59,7 +60,7 @@ public class CoFHCore implements IThirdParty {
 
     @Override
     public void init() {
-        // note: fuel registration is now by datapack: all done by conditional recipes in ModRecipeProvider
+        // note: fuel registration is now done by datapack: see conditional recipes in ModRecipeProvider
 
         if (cofhVersionOK) {
             // holding enchantment adds another volume multiplier
@@ -75,7 +76,7 @@ public class CoFHCore implements IThirdParty {
             Class.forName("cofh.lib.capability.IEnchantableItem");
             return true;
         } catch (ClassNotFoundException e) {
-            Log.error("CoFH IEnchantableItem interface is not where we expected! Continuing, but PneumaticCraft items won't be able to use the Holding enchantment. Report this to the PNC mod author if you see it.");
+            Log.error("CoFH IEnchantableItem interface is not where we expected! Continuing, but PneumaticCraft items won't be able to use the Holding enchantment. Notify the PNC mod author, including the versions of PNC and CoFH Core you're using, if you see this error.");
             return false;
         }
     }
@@ -83,15 +84,11 @@ public class CoFHCore implements IThirdParty {
     public static class COFHVolumeModifier implements ItemVolumeModifier {
         @Override
         public int getNewVolume(ItemStack stack, int oldVolume) {
-            if (holdingEnchantment == null) return oldVolume;
-
             return oldVolume * (1 + EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack));
         }
 
         @Override
         public void addInfo(ItemStack stack, List<Component> text) {
-            if (holdingEnchantment == null) return;
-
             int nHolding = EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack);
             if (nHolding > 0) {
                 text.add(new TextComponent(Symbols.TRIANGLE_RIGHT + " ").append(holdingEnchantment.getFullname(nHolding)));
@@ -99,12 +96,11 @@ public class CoFHCore implements IThirdParty {
         }
     }
 
-    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
-    public static class Listener {
+    public static class CapabilityListener {
         @SubscribeEvent
         public static void attachCap(AttachCapabilitiesEvent<ItemStack> event) {
-            // potentially allow any pressurizable items to take the CoFH holding enchantment
-            if (holdingEnchantment != null && event.getObject().getItem() instanceof IPressurizableItem) {
+            // allow any pressurizable items to take the CoFH holding enchantment
+            if (event.getObject().getItem() instanceof IPressurizableItem) {
                 event.addCapability(RL("cofh_enchantable"), new HoldingEnchantableProvider());
             }
         }
