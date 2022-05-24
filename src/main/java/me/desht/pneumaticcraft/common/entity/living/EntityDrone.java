@@ -572,6 +572,12 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
+    public boolean isDescending() {
+        // allow drones to descend through scaffolding
+        return getDeltaMovement().y() < 0;
+    }
+
+    @Override
     public boolean canBreatheUnderwater() {
         return securityUpgradeCount > 0;
     }
