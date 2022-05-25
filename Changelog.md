@@ -16,6 +16,8 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixes
 * Fixed server crash with Assembly IO Unit under some circumstances
+* Drones are now able to descend through Scaffolding
+* Fixed the `/give` command creating uninteractable item entities when used to give Empty, Unassembled or Failed PCB's
 
 ## 2.15.8-324 (19 May 2022)
 
