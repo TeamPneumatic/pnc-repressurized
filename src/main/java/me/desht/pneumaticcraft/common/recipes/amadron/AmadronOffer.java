@@ -174,10 +174,8 @@ public class AmadronOffer extends AmadronRecipe {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AmadronOffer)) return false;
-        AmadronOffer that = (AmadronOffer) o;
-        return input.equals(that.input) &&
-                output.equals(that.output);
+        if (!(o instanceof AmadronOffer that)) return false;
+        return input.equals(that.input) && output.equals(that.output);
     }
 
     @Override

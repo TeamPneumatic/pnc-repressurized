@@ -24,11 +24,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.api.misc.IPlayerMatcher;
+import net.darkhax.gamestages.GameStageHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.player.Player;
+import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +45,7 @@ public class GamestagesMatcher implements IPlayerMatcher {
     private final boolean matchAll;
 
     public GamestagesMatcher(Collection<String> stages, boolean matchAll) {
-//        stages.forEach(s -> Validate.isTrue(GameStageHelper.isStageKnown(s), "unknown gamestage '" + s + "'!"));
+        stages.forEach(s -> Validate.isTrue(GameStageHelper.isStageKnown(s), "unknown gamestage '" + s + "'!"));
         this.stages = ImmutableSet.copyOf(stages);
         this.matchAll = matchAll;
     }
@@ -78,8 +80,7 @@ public class GamestagesMatcher implements IPlayerMatcher {
 
     @Override
     public boolean test(Player playerEntity) {
-//        return matchAll ? GameStageHelper.hasAllOf(playerEntity, stages) : GameStageHelper.hasAnyOf(playerEntity, stages);
-        return false;
+        return matchAll ? GameStageHelper.hasAllOf(playerEntity, stages) : GameStageHelper.hasAnyOf(playerEntity, stages);
     }
 
     public static class Factory implements IPlayerMatcher.MatcherFactory<GamestagesMatcher> {

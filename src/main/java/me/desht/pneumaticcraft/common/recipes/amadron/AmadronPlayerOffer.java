@@ -218,8 +218,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public static AmadronPlayerOffer playerOfferFromBuf(ResourceLocation id, FriendlyByteBuf buf) {
         AmadronRecipe recipe = ModRecipes.AMADRON_OFFERS.get().fromNetwork(id, buf);
 
-        if (recipe instanceof AmadronOffer) {
-            AmadronOffer offer = (AmadronOffer) recipe;
+        if (recipe instanceof AmadronOffer offer) {
             AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getId(),
                     offer.getInput(), offer.getOutput(), buf.readUtf(100), buf.readUUID(),
                     offer.whitelist, offer.blacklist);
@@ -255,8 +254,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public static AmadronPlayerOffer fromJson(JsonObject json) throws CommandSyntaxException {
         ResourceLocation id = new ResourceLocation(GsonHelper.getAsString(json, "id"));
         AmadronRecipe recipe = ModRecipes.AMADRON_OFFERS.get().fromJson(id, json);
-        if (recipe instanceof AmadronOffer) {
-            AmadronOffer offer = (AmadronOffer) recipe;
+        if (recipe instanceof AmadronOffer offer) {
             AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getId(), offer.getInput(), offer.getOutput(),
                     json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()),
                     offer.whitelist, offer.blacklist);
@@ -286,8 +284,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof AmadronPlayerOffer) {
-            AmadronPlayerOffer offer = (AmadronPlayerOffer) o;
+        if (o instanceof AmadronPlayerOffer offer) {
             return super.equals(o) && offer.offeringPlayerId.equals(offeringPlayerId);
         } else {
             return false;

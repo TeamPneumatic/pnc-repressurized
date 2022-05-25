@@ -11,6 +11,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 3.2.4-?? (unreleased)
 
+### Updates
+* Gamestages integration has been re-added
+  * As in 1.16.5, Amadron trades can be limited by the gamestages a player has
+  * See https://github.com/TeamPneumatic/pnc-repressurized/wiki/Amadron-and-Datapacks#player-filtering for more info
+
 ### Fixes
 * Fixed server crash with Assembly IO Unit under some circumstances
 * Drones are now able to descend through Scaffolding
@@ -18,7 +23,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fix Network Node items not being able to be placed in a Security Station
 * Fixed Vortex Tube model sometimes wrongly showing tube connectors on the heat-handling faces (cosmetic issue)
 
-## 3.2.3-84 (19 May 2022)
+## 3.2.3-84 (19 May 2022)e
 
 ### Updates
 * CoFH integration has been re-added
