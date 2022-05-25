@@ -9,6 +9,15 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.2.4-?? (unreleased)
+
+### Fixes
+* Fixed server crash with Assembly IO Unit under some circumstances
+* Drones are now able to descend through Scaffolding
+* Fixed the `/give` command creating uninteractable item entities when used to give Empty, Unassembled or Failed PCB's
+* Fix Network Node items not being able to be placed in a Security Station
+* Fixed Vortex Tube model sometimes wrongly showing tube connectors on the heat-handling faces (cosmetic issue)
+
 ## 3.2.3-84 (19 May 2022)
 
 ### Updates

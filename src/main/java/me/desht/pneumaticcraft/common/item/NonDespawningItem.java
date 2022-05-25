@@ -38,7 +38,12 @@ public class NonDespawningItem extends Item {
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
-        if (!entityItem.level.isClientSide) entityItem.setExtendedLifetime();
+        // Note: the /give command creates a fake item entity which despawns in one tick by setting the entity's age
+        // to one tick less than the entity's lifetime; we need to check for that
+        // https://github.com/TeamPneumatic/pnc-repressurized/issues/1012
+        if (!entityItem.level.isClientSide && entityItem.age < entityItem.getItem().getEntityLifespan(entityItem.level) - 1) {
+            entityItem.setExtendedLifetime();
+        }
         return false;
     }
 
