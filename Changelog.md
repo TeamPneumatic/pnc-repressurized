@@ -12,7 +12,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
-## 2.15.9-??? (unreleased)
+## 2.15.9-326 (25 May 2022)
 
 ### Fixes
 * Fixed server crash with Assembly IO Unit under some circumstances
