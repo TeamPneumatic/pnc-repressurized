@@ -101,7 +101,7 @@ public class ClientUtils {
                 .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                 .getTargetsStream()
                 .filter(target -> target.entity == drone)
-                .forEach(target -> target.getDroneAIRenderer().addBlackListEntry(drone.level, pos));
+                .forEach(target -> target.getDroneAIRenderer(drone).addBlackListEntry(drone.level, pos));
     }
 
     public static boolean isKeyDown(int keyCode) {

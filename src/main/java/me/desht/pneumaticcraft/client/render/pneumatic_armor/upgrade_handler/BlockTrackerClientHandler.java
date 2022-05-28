@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.RenderBlockTarget;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
@@ -113,7 +113,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                             .getClientHandler(CommonUpgradeHandlers.searchHandler, SearchClientHandler.class);
                     searchHandler.checkInventoryForItems(te, null, WidgetKeybindCheckBox.isHandlerEnabled(CommonUpgradeHandlers.searchHandler));
                 }
-                List<IBlockTrackEntry> entries = BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te);
+                List<IBlockTrackEntry> entries = BlockTrackHandler.getInstance().getEntriesForCoordinate(world, pos, te);
                 if (!entries.isEmpty()) {
                     entries.forEach(entry -> blockTypeCountPartial.mergeInt(entry.getEntryID(), 1, Integer::sum));
 
@@ -379,7 +379,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     @Override
     public Collection<ResourceLocation> getSubKeybinds() {
         ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
-        BlockTrackEntryList.INSTANCE.trackList.forEach(entry -> builder.add(entry.getEntryID()));
+        builder.addAll(BlockTrackHandler.getInstance().getIDs());
         return builder.build();
     }
 

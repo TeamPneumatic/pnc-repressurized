@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TextComponent;
@@ -30,6 +31,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.Collections;
 
+import static me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry.DEFAULT_MESSAGE_BGCOLOR;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<CoordTrackClientHandler> {
@@ -85,27 +87,21 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<Coord
      * See also: {@link CoordTrackClientHandler.Listener#onPlayerInteract(PlayerInteractEvent.RightClickBlock)}
      */
     private void selectTarget() {
-        mc.player.closeContainer();
+        ClientUtils.getClientPlayer().closeContainer();
         mc.setWindowActive(true);
         coordHandler.isListeningToCoordTrackerSetting = true;
         HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.settingCoord"),
                 Collections.singletonList(xlate("pneumaticcraft.armor.message.coordinateTracker.rightClickToSet")),
-                90, 0x7000AA00);
+                90, DEFAULT_MESSAGE_BGCOLOR);
     }
 
     private void navigateToSurface() {
-        mc.player.closeContainer();
+        ClientUtils.getClientPlayer().closeContainer();
         mc.setWindowActive(true);
-        switch (coordHandler.navigateToSurface(mc.player)) {
-            case EASY_PATH:
-                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.routeFound"), 90, 0x7000AA00));
-                break;
-            case DRONE_PATH:
-                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.harderRouteFound"), 90, 0x7044AA00));
-                break;
-            case NO_PATH:
-                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.noRouteFound"), 90, 0x70FF0000));
-                break;
+        switch (coordHandler.navigateToSurface(ClientUtils.getClientPlayer())) {
+            case EASY_PATH -> HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.routeFound"), 90, DEFAULT_MESSAGE_BGCOLOR));
+            case DRONE_PATH -> HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.harderRouteFound"), 90, 0x7044AA00));
+            case NO_PATH -> HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.noRouteFound"), 90, 0x70FF0000));
         }
     }
 

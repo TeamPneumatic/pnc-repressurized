@@ -105,7 +105,7 @@ public class RenderBlockTarget {
 
     private List<IBlockTrackEntry> getApplicableEntries() {
         return world.isLoaded(pos) ?
-                BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te) :
+                BlockTrackHandler.getInstance().getEntriesForCoordinate(world, pos, te) :
                 Collections.emptyList();
     }
 

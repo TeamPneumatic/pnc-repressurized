@@ -60,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry.DEFAULT_MESSAGE_BGCOLOR;
 import static me.desht.pneumaticcraft.common.item.PneumaticArmorItem.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -196,7 +197,7 @@ public enum HUDHandler implements IKeyListener {
         } else if (ticksSinceEquipped == startupTime) {
             // full init: display "init complete" message
             playArmorInitCompleteSound(player);
-            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, DEFAULT_MESSAGE_BGCOLOR));
         } else if (ticksSinceEquipped == 0 && WidgetKeybindCheckBox.getCoreComponents().checked) {
             // tick 0: inform the server which upgrades are enabled
             for (IArmorUpgradeClientHandler<?> handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
@@ -212,7 +213,7 @@ public enum HUDHandler implements IKeyListener {
         } else if (ticksSinceEquipped == 1) {
             // tick 1: display the "init started" message
             playArmorInitSound(player, 0.5F);
-            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initStarted", itemName), 50, 0x7000AA00));
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initStarted", itemName), 50, DEFAULT_MESSAGE_BGCOLOR));
         } else {
             // any other tick during startup: display found/not found message for each possible upgrade
             for (int i = 0; i < upgradeHandlers.size(); i++) {
@@ -221,7 +222,7 @@ public enum HUDHandler implements IKeyListener {
                     boolean upgradeEnabled = commonArmorHandler.isUpgradeInserted(slot, i);
                     Component message = xlate(upgradeHandlers.get(i).getTranslationKey())
                             .append(upgradeEnabled ? " installed" : " not installed");
-                    addMessage(new ArmorMessage(message, 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
+                    addMessage(new ArmorMessage(message, 80, upgradeEnabled ? DEFAULT_MESSAGE_BGCOLOR : 0x70FF8000));
                 }
             }
         }
@@ -246,13 +247,13 @@ public enum HUDHandler implements IKeyListener {
 
     public void addFeatureToggleMessage(String key, boolean enabled) {
         addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", xlate(key)),
-                Collections.emptyList(), 60, 0x7000AA00);
+                Collections.emptyList(), 60, DEFAULT_MESSAGE_BGCOLOR);
     }
 
     public void addFeatureToggleMessage(String key, String subKey, boolean enabled) {
         Component msg = xlate(key).append(": ").append(xlate(subKey));
         addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", msg),
-                Collections.emptyList(), 60, 0x7000AA00);
+                Collections.emptyList(), 60, DEFAULT_MESSAGE_BGCOLOR);
     }
 
     public void addMessage(Component title, List<Component> message, int duration, int backColor) {

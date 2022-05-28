@@ -38,6 +38,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Renders the Drone's currently executing widget in-world, above the drone itself. Used when drone debugging is active.
+ */
 public class RenderDroneAI {
     private final AbstractDroneEntity drone;
     private final List<Pair<RenderCoordWireframe, Integer>> blackListWireframes = new ArrayList<>();

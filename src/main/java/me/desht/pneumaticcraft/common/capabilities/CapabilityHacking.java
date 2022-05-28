@@ -90,7 +90,7 @@ public class CapabilityHacking {
             ListTag tagList = nbt.getList("hackables", Tag.TAG_COMPOUND);
             for (int i = 0; i < tagList.size(); i++) {
                 ResourceLocation hackableId = new ResourceLocation(tagList.getCompound(i).getString("id"));
-                IHackableEntity hackable = CommonArmorRegistry.getInstance().getEntityById(hackableId);
+                IHackableEntity hackable = CommonArmorRegistry.getInstance().getHackableForId(hackableId);
                 if (hackable != null) {
                     impl.getCurrentHacks().add(hackable);
                 } else {

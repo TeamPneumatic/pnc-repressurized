@@ -78,7 +78,8 @@ public class RenderEntityTarget {
 
     public RenderEntityTarget(Entity entity) {
         this.entity = entity;
-        trackEntries = EntityTrackHandler.getTrackersForEntity(entity);
+
+        trackEntries = EntityTrackHandler.getInstance().getTrackersForEntity(entity);
         circle1 = new RenderTargetCircle(entity);
         circle2 = new RenderTargetCircle(entity);
 
@@ -88,10 +89,10 @@ public class RenderEntityTarget {
         stat.setAutoLineWrap(false);
     }
 
-    public RenderDroneAI getDroneAIRenderer() {
+    public RenderDroneAI getDroneAIRenderer(AbstractDroneEntity drone) {
         for (IEntityTrackEntry tracker : trackEntries) {
-            if (tracker instanceof EntityTrackHandler.EntityTrackEntryDrone) {
-                return ((EntityTrackHandler.EntityTrackEntryDrone) tracker).getDroneAIRenderer();
+            if (tracker instanceof EntityTrackEntryDrone td) {
+                return td.getDroneAIRenderer(drone);
             }
         }
         throw new IllegalStateException("[RenderTarget] Drone entity, but no drone AI Renderer?");
@@ -109,14 +110,12 @@ public class RenderEntityTarget {
             player.level.playLocalSound(player.getX(), player.getY(), player.getZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundSource.PLAYERS, 0.1F, 1.0F, true);
         }
 
-        boolean tagged = entity instanceof AbstractDroneEntity && PneumaticArmorItem.isPlayerDebuggingDrone(player, (AbstractDroneEntity) entity);
+        boolean tagged = entity instanceof AbstractDroneEntity drone && PneumaticArmorItem.isPlayerDebuggingDrone(player, drone);
         circle1.setRenderingAsTagged(tagged);
-        circle2.setRenderingAsTagged(tagged);
         circle1.tick();
+        circle2.setRenderingAsTagged(tagged);
         circle2.tick();
-        for (IEntityTrackEntry tracker : trackEntries) {
-            tracker.tick(entity);
-        }
+        trackEntries.forEach(tracker -> tracker.tick(entity));
 
         isLookingAtTarget = isPlayerLookingAtTarget();
 
@@ -135,9 +134,7 @@ public class RenderEntityTarget {
     }
 
     public void render(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, boolean justRenderWhenHovering) {
-        for (IEntityTrackEntry tracker : trackEntries) {
-            tracker.render(matrixStack, buffer, entity, partialTicks);
-        }
+        trackEntries.forEach(tracker -> tracker.render(matrixStack, buffer, entity, partialTicks));
 
         double x = Mth.lerp(partialTicks, entity.xo, entity.getX());
         double y = Mth.lerp(partialTicks, entity.yo, entity.getY()) + entity.getBbHeight() / 2D;

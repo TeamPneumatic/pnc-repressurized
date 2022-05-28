@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.client.render.overlays.MinigunOverlay;
 import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticArmorLayer;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.render.tube_module.*;
@@ -91,7 +92,8 @@ public class ClientSetup {
         MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
 
-        EntityTrackHandler.registerDefaultEntries();
+        EntityTrackHandler.getInstance().registerDefaultEntries();
+        BlockTrackHandler.getInstance().registerDefaultEntries();
         ThirdPartyManager.instance().clientInit();
 
         registerProgWidgetScreenFactories();
@@ -116,11 +118,14 @@ public class ClientSetup {
         // stuff to do on the main thread
         setBlockRenderLayers();
         registerItemModelProperties();
+
+        // freeze entity & block track handlers before registering client upgrade handlers
+        EntityTrackHandler.getInstance().freeze();
+        BlockTrackHandler.getInstance().freeze();
         registerArmorClientUpgradeHandlers();
+
         registerScreenFactories();
         registerProgWidgetExtraRenderers();
-
-        EntityTrackHandler.init();
     }
 
     public static void registerRenderLayers(EntityRenderersEvent.AddLayers event) {

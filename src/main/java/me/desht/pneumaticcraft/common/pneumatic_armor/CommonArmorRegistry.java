@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
@@ -28,6 +30,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
 import org.apache.commons.lang3.Validate;
@@ -43,6 +46,9 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
 
     public final Map<Class<? extends Entity>, Supplier<? extends IHackableEntity>> hackableEntities = new ConcurrentHashMap<>();
     public final Map<ResourceLocation, Supplier<? extends IHackableEntity>> idToEntityHackables = new ConcurrentHashMap<>();
+    // cached list of entity-type -> list of hacks applicable to this entity type
+    // - the first of these hacks for which IHackableEntity#canHack() returns true will be the hack that is used
+    private final Multimap<EntityType<?>, IHackableEntity> hackablesByType = ArrayListMultimap.create();
 
     private final Map<Block, Supplier<? extends IHackableBlock>> hackableBlocks = new ConcurrentHashMap<>();
     // blocks known from tags are stored separately; they could change during the game if tags are reloaded
@@ -110,7 +116,6 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
         pendingBlockTags.forEach((tagKey, hackable) -> Registry.BLOCK.getTagOrEmpty(tagKey).forEach(h -> hackableTaggedBlocks.put(h.value(), hackable)));
     }
 
-
     public IHackableBlock getHackable(Block block) {
         Supplier<? extends IHackableBlock> sup = hackableBlocks.get(block);
         if (sup != null) return sup.get();
@@ -119,18 +124,21 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     }
 
     public IHackableEntity getHackable(Entity entity, Player player) {
-        for (Map.Entry<Class<? extends Entity>, Supplier<? extends IHackableEntity>> entry : hackableEntities.entrySet()) {
-            if (entry.getKey().isAssignableFrom(entity.getClass())) {
-                IHackableEntity hackable = entry.getValue().get();
-                if (hackable.canHack(entity, player)) {
-                    return hackable;
+        if (!hackablesByType.containsKey(entity.getType())) {
+            for (var entry : hackableEntities.entrySet()) {
+                if (entry.getKey().isAssignableFrom(entity.getClass())) {
+                    hackablesByType.put(entity.getType(), entry.getValue().get());
                 }
             }
         }
-        return null;
+
+        return hackablesByType.get(entity.getType()).stream()
+                .filter(hackable -> hackable.canHack(entity, player))
+                .findFirst()
+                .orElse(null);
     }
 
-    public IHackableEntity getEntityById(ResourceLocation id) {
+    public IHackableEntity getHackableForId(ResourceLocation id) {
         Supplier<? extends IHackableEntity> sup = idToEntityHackables.get(id);
         return sup == null ? null : sup.get();
     }

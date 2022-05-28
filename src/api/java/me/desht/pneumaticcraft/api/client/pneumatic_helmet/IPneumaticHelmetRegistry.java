@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -36,17 +38,49 @@ import java.util.function.Supplier;
  * <p>Note: despite the name of this interface, it is for used for all armor pieces. The name is historical.
  */
 public interface IPneumaticHelmetRegistry {
+    int DEFAULT_MESSAGE_BGCOLOR = 0x7000AA00;
+
     /**
-     * Register an entity tracker for the Pneumatic Helmet.
+     * Register an entity tracker for the Pneumatic Helmet. Call this from {@link FMLCommonSetupEvent} listener (do not
+     * use {@link FMLCommonSetupEvent#enqueueWork(Runnable)}).
      * @param entry the entity tracker
      */
     void registerEntityTrackEntry(Supplier<? extends IEntityTrackEntry> entry);
 
     /**
+     * Register an block track entry (i.e. a subcategory of the Block Tracker) for the Pneumatic Helmet.
+     * Call this from a {@link FMLCommonSetupEvent} listener (do not use {@link FMLCommonSetupEvent#enqueueWork(Runnable)}).
+     * @param entry the block track entry
+     */
+    void registerBlockTrackEntry(Supplier<? extends IBlockTrackEntry> entry);
+
+    /**
      * Register a block tracker for the Pneumatic Helmet
      * @param entry the block tracker
+     * @deprecated use {@link #registerBlockTrackEntry(Supplier)}
      */
-    void registerBlockTrackEntry(IBlockTrackEntry entry);
+    @Deprecated(forRemoval = true)
+    default void registerBlockTrackEntry(IBlockTrackEntry entry) {
+        registerBlockTrackEntry(() -> entry);
+    }
+
+    /**
+     * Add a message for display in the Pneumatic Helmet HUD display
+     * @param title the message title
+     * @param message the message text (can be empty if the title suffices for a one-line message)
+     * @param duration the duration in ticks for the message to be displayed
+     * @param backColor the message background color, including alpha (DEFAULT_MESSAGE_BGCOLOR is the default green color used by most messages)
+     */
+    void addHUDMessage(Component title, List<Component> message, int duration, int backColor);
+
+    /**
+     * Convenience version of {@link #addHUDMessage(Component, List, int, int)} which displays a one-line message for
+     * 2.5 seconds, using the default green background colour
+     * @param title the message
+     */
+    default void addHUDMessage(Component title) {
+        addHUDMessage(title, Collections.emptyList(), 50, DEFAULT_MESSAGE_BGCOLOR);
+    }
 
     /**
      * Register a "foreign" entity with your hackable. This should be used for entities you didn't create, i.e.

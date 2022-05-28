@@ -52,6 +52,8 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.MovingSoundFocus;
 import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
 import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.progwidgets.WidgetSerializer;
@@ -91,10 +93,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.EntityDamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -376,15 +375,14 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {
-        buffer.writeLong(ownerUUID.getMostSignificantBits());
-        buffer.writeLong(ownerUUID.getLeastSignificantBits());
+        buffer.writeUUID(ownerUUID);
         buffer.writeComponent(ownerName);
         buffer.writeVarInt(getUpgrades(ModUpgrades.SECURITY.get()));
     }
 
     @Override
     public void readSpawnData(FriendlyByteBuf buffer) {
-        ownerUUID = new UUID(buffer.readLong(), buffer.readLong());
+        ownerUUID = buffer.readUUID();
         ownerName = buffer.readComponent();
         securityUpgradeCount = buffer.readVarInt();
     }
@@ -1220,7 +1218,9 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return isAccelerating();
+        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+        return handler.upgradeUsable(CommonUpgradeHandlers.hackHandler, false)
+                && handler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.ENTITY_TRACKER.get()) >= 1;
     }
 
     @Override

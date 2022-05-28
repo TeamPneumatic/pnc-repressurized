@@ -26,8 +26,9 @@ import java.util.List;
 
 /**
  * Implement this class and register it with {@link IPneumaticHelmetRegistry#registerEntityTrackEntry(java.util.function.Supplier)}.
- * Your implementation must provide a no-parameter constructor. For every entity that's applicable for this definition,
- * an instance is created.
+ * Your implementation must provide a no-parameter constructor.
+ * <p>
+ * An instance of this tracker is created for each entity for which the tracker is applicable.
  */
 public interface IEntityTrackEntry {
     /**

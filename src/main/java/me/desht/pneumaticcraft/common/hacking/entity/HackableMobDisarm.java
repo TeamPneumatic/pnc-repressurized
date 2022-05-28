@@ -45,8 +45,8 @@ public class HackableMobDisarm implements IHackableEntity {
 
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return entity instanceof Mob && Arrays.stream(EquipmentSlot.values())
-                .anyMatch(slot -> !((Mob) entity).getItemBySlot(slot).isEmpty());
+        return entity instanceof Mob mob
+                && Arrays.stream(EquipmentSlot.values()).anyMatch(slot -> !mob.getItemBySlot(slot).isEmpty());
     }
 
     @Override

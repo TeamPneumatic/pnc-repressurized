@@ -35,7 +35,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ambient.Bat;
 import net.minecraft.world.entity.animal.Cow;
@@ -58,9 +58,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HackManager {
+    private static HackManager clientInstance, serverInstance;
+
     private final Map<Entity, IHackableEntity> trackedHackableEntities = new HashMap<>();
     private final Map<WorldAndCoord, Pair<Block,IHackableBlock>> trackedHackableBlocks = new HashMap<>();
-    private static HackManager clientInstance, serverInstance;
+    private long lastEntityPrune = 0L;
+    private long lastBlockPrune = 0L;
 
     private static HackManager getInstance(Level world) {
         if (world.isClientSide) {
@@ -96,7 +99,7 @@ public class HackManager {
         registry.addHackable(BlockTags.DOORS, HackableDoor::new);
         registry.addHackable(BlockTags.TRAPDOORS, HackableTrapDoor::new);
         // entities
-        registry.addHackable(LivingEntity.class, HackableMobDisarm::new);
+        registry.addHackable(Mob.class, HackableMobDisarm::new);
         registry.addHackable(Creeper.class, HackableCreeper::new);
         registry.addHackable(TamableAnimal.class, HackableTameable::new);
         registry.addHackable(Cow.class, HackableCow::new);
@@ -118,20 +121,25 @@ public class HackManager {
     }
 
     public static IHackableEntity getHackableForEntity(Entity entity, Player player) {
-        // clean up the tracked entities map
-        getInstance(player.getCommandSenderWorld()).trackedHackableEntities.entrySet().removeIf(
-                entry -> !entry.getKey().isAlive()
-                        || !entry.getValue().canHack(entry.getKey(), player) && !isInDisplayCooldown(entry.getValue(), entry.getKey())
-        );
+        HackManager manager = getInstance(player.getLevel());
+
+        if (player.getLevel().getGameTime() - 60 > manager.lastEntityPrune) {
+            // clean up the tracked entities map
+            manager.trackedHackableEntities.entrySet().removeIf(
+                    entry -> !entry.getKey().isAlive()
+                            || !entry.getValue().canHack(entry.getKey(), player) && !isInDisplayCooldown(entry.getValue(), entry.getKey())
+            );
+            manager.lastEntityPrune = player.getLevel().getGameTime();
+        }
 
         if (entity instanceof IHackableEntity h && h.canHack(entity, player))
             return h;
 
-        IHackableEntity hackable = getInstance(player.getCommandSenderWorld()).trackedHackableEntities.get(entity);
+        IHackableEntity hackable = manager.trackedHackableEntities.get(entity);
         if (hackable == null) {
             hackable = CommonArmorRegistry.getInstance().getHackable(entity, player);
             if (hackable != null) {
-                getInstance(player.getCommandSenderWorld()).trackedHackableEntities.put(entity, hackable);
+                manager.trackedHackableEntities.put(entity, hackable);
             }
         }
         return hackable;
@@ -139,28 +147,32 @@ public class HackManager {
 
     public static IHackableBlock getHackableForBlock(BlockGetter world, BlockPos pos, Player player) {
         Block block = world.getBlockState(pos).getBlock();
+        HackManager manager = getInstance(player.getLevel());
 
-        // clean up the tracked blocks map
-        getInstance(player.getCommandSenderWorld()).trackedHackableBlocks.entrySet().removeIf(
-                entry -> {
-                    Block trackedBlock = entry.getValue().getLeft();
-                    IHackableBlock hackableBlock = entry.getValue().getRight();
-                    return block != trackedBlock ||
-                            !hackableBlock.canHack(entry.getKey().world, entry.getKey().pos, player)
-                                    && !isInDisplayCooldown(hackableBlock, entry.getKey().world, entry.getKey().pos, player);
-                }
-        );
+        if (player.getLevel().getGameTime() - 60 > manager.lastBlockPrune) {
+            // clean up the tracked blocks map
+            manager.trackedHackableBlocks.entrySet().removeIf(
+                    entry -> {
+                        Block trackedBlock = entry.getValue().getLeft();
+                        IHackableBlock hackableBlock = entry.getValue().getRight();
+                        return block != trackedBlock ||
+                                !hackableBlock.canHack(entry.getKey().world, entry.getKey().pos, player)
+                                        && !isInDisplayCooldown(hackableBlock, entry.getKey().world, entry.getKey().pos, player);
+                    }
+            );
+            manager.lastBlockPrune = player.getLevel().getGameTime();
+        }
 
-        if (block instanceof IHackableBlock && ((IHackableBlock) block).canHack(world, pos, player))
-            return (IHackableBlock) block;
+        if (block instanceof IHackableBlock h && h.canHack(world, pos, player))
+            return h;
 
         WorldAndCoord loc = new WorldAndCoord(world, pos);
-        Pair<Block,IHackableBlock> pair = getInstance(player.getCommandSenderWorld()).trackedHackableBlocks.get(loc);
+        Pair<Block,IHackableBlock> pair = manager.trackedHackableBlocks.get(loc);
         if (pair == null) {
             IHackableBlock hackable = CommonArmorRegistry.getInstance().getHackable(block);
             if (hackable != null && hackable.canHack(world, pos, player)) {
                 pair = Pair.of(block, hackable);
-                getInstance(player.getCommandSenderWorld()).trackedHackableBlocks.put(loc, pair);
+                manager.trackedHackableBlocks.put(loc, pair);
             } else {
                 return null;
             }

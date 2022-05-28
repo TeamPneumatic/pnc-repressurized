@@ -32,24 +32,27 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
- * Implement this class and register it with {@link IPneumaticHelmetRegistry#registerBlockTrackEntry(IBlockTrackEntry)}.
- * Your implementation must provide a no-parameter constructor. For every entity that's applicable for this definition,
- * an instance is created.
+ * Implement this interface and register it with {@link IPneumaticHelmetRegistry#registerBlockTrackEntry(Supplier)}.
+ * Your implementation must provide a no-parameter constructor.
+ * <p>
+ * These trackers are singleton objects, so any instance data is in effect shared amongst all block positions for which
+ * the tracker is applicable (in most cases, instance data should not be necessary).
  */
 public interface IBlockTrackEntry {
     /**
-     * This method should return true if the coordinate checked is one that
-     * should be tracked. Most entries will just return true when the blockID is
-     * the one that they track.
+     * This method should return true if the block at the coordinate checked is one that should be tracked. This is
+     * often as simple as just checking the block type, but could be more complex for some trackers, i.e. checking
+     * if a certain capability exists on the block entity. This gets called a lot when the block tracker is active,
+     * so keep it as simple as possible.
      *
-     * @param world The world that is examined.
-     * @param pos   The position of the block examined.
-     * @param state The block of the current coordinate. This will save you a
-     *              call to World.getBlockState().
-     * @param te    The TileEntity at this x,y,z  (may be null)
-     * @return true if the coordinate should be tracked by this BlockTrackEntry.
+     * @param world the world
+     * @param pos   the blockpos
+     * @param state blockstate at this blockpos
+     * @param te    the block entity at this blockpos (may be null)
+     * @return true if this block should be tracked by this BlockTrackEntry
      */
     boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te);
 
@@ -79,11 +82,11 @@ public interface IBlockTrackEntry {
      * This method is only called if {@link #shouldTrackWithThisEntry(BlockGetter, BlockPos, BlockState, BlockEntity)}
      * returned true, and the player is currently focused on the block.
      *
-     * @param world    The world the block is in.
-     * @param pos      The position the block is at.
-     * @param te       The TileEntity at the x,y,z (may be null)
-     * @param face     The blockface the player is looking at (null if player is not looking directly at the block)
-     * @param infoList The list of lines to display.
+     * @param world    the world
+     * @param pos      the blockpos
+     * @param te       the block entity at this blockpos (may be null)
+     * @param face     the block face the player is looking at (null if player is not looking directly at the block)
+     * @param infoList list of text to add information to
      */
     void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList);
 

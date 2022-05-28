@@ -22,16 +22,17 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
 import org.apache.commons.lang3.Validate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -41,21 +42,23 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     INSTANCE;
 
-    public final List<Supplier<? extends IEntityTrackEntry>> entityTrackEntries = new ArrayList<>();
-
     public static PneumaticHelmetRegistry getInstance() {
         return INSTANCE;
     }
 
     @Override
     public void registerEntityTrackEntry(Supplier<? extends IEntityTrackEntry> entry) {
-        Validate.notNull(entry);
-        entityTrackEntries.add(entry);
+        EntityTrackHandler.getInstance().register(entry);
     }
 
     @Override
-    public void registerBlockTrackEntry(IBlockTrackEntry entry) {
-        BlockTrackEntryList.INSTANCE.trackList.add(entry);
+    public void registerBlockTrackEntry(Supplier<? extends IBlockTrackEntry> entry) {
+        BlockTrackHandler.getInstance().register(entry);
+    }
+
+    @Override
+    public void addHUDMessage(Component title, List<Component> message, int duration, int backColor) {
+        HUDHandler.getInstance().addMessage(title, message, duration, backColor);
     }
 
     @Override
