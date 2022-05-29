@@ -121,7 +121,7 @@ dependencies {
 	implementation fg.deobf("curse.maven:jade-324717:${jade_curse_id}")
 	implementation fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
 	implementation fg.deobf("com.blamejared.crafttweaker:CraftTweaker-forge-1.18.2:${crafttweaker_version}")
-	implementation fg.deobf("net.darkhax.gamestages:GameStages-Forge-${project.mc_version}:${gamestages_version}")
+	compileOnly fg.deobf("net.darkhax.gamestages:GameStages-Forge-${project.mc_version}:${gamestages_version}")
 
 	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
 	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
