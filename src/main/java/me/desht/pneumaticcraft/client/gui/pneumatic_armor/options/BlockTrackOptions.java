@@ -20,20 +20,14 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
-
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTrackerClientHandler> {
     public BlockTrackOptions(IGuiScreen screen, BlockTrackerClientHandler renderHandler) {
@@ -42,16 +36,12 @@ public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTracker
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        gui.addWidget(new WidgetButtonExtended(30, settingsYposition() + 12, 150, 20,
-                xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
-            ClientUtils.getClientPlayer().closeContainer();
-            Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.BLOCK_TRACKER));
-        }));
+        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, settingsYposition() + 12, getClientUpgradeHandler()));
 
         ResourceLocation blockTrackerID = CommonUpgradeHandlers.blockTrackerHandler.getID();
 
         List<IBlockTrackEntry> entries = BlockTrackHandler.getInstance().getEntries();
-        ResourceLocation owningId = getClientUpgradeHandler().getCommonHandler().getID();
+        ResourceLocation owningId = getClientUpgradeHandler().getID();
         IPneumaticHelmetRegistry registry = PneumaticRegistry.getInstance().getHelmetRegistry();
         for (int i = 0; i < entries.size(); i++) {
             ICheckboxWidget checkBox = registry.makeKeybindingCheckBox(

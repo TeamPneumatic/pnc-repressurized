@@ -58,7 +58,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.JetBootsLocalState> {
     public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
     public static final int STABILIZERS_LEVEL = 4;  // tier needed for flight stabilizers
-    private static final ResourceLocation ID = RL("jet_boots");
+    public static final ResourceLocation ID = RL("jet_boots");
 
     @Override
     public ResourceLocation getID() {

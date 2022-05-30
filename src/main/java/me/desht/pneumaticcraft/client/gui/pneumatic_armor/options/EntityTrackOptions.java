@@ -20,12 +20,11 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
@@ -41,8 +40,6 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.lwjgl.glfw.GLFW;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-
 public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrackerClientHandler> {
 
     private EditBox textField;
@@ -55,11 +52,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
-                xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
-            Minecraft.getInstance().player.closeContainer();
-            Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.ENTITY_TRACKER));
-        }));
+        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
 
         textField = new EditBox(gui.getFontRenderer(), 35, 60, 140, 10, TextComponent.EMPTY);
         if (Minecraft.getInstance().player != null) {
@@ -110,7 +103,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
         if (sendTimer > 0 && --sendTimer == 0) {
             CompoundTag tag = new CompoundTag();
             tag.putString(PneumaticArmorItem.NBT_ENTITY_FILTER, textField.getValue());
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, getClientUpgradeHandler().getCommonHandler().getID()));
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, getClientUpgradeHandler().getID()));
         }
     }
 

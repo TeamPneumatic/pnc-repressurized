@@ -24,6 +24,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Vector3f;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftContainerScreen;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
@@ -32,7 +33,6 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -151,12 +151,12 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     public WidgetAnimatedStat(Screen gui, Component title, StatIcon icon, int backGroundColor,
-                              IGuiAnimatedStat statAbove, ArmorHUDLayout.LayoutItem layout) {
+                              IGuiAnimatedStat statAbove, StatPanelLayout layout) {
         this(gui, title, 0, 0, backGroundColor, statAbove, layout.isLeftSided());
         Window mw = Minecraft.getInstance().getWindow();
-        int x = layout.getX() == -1 ? mw.getGuiScaledWidth() - 2 : (int) (mw.getGuiScaledWidth() * layout.getX());
+        int x = layout.x() == -1 ? mw.getGuiScaledWidth() - 2 : (int) (mw.getGuiScaledWidth() * layout.x());
         setBaseX(x);
-        setBaseY((int) (mw.getGuiScaledHeight() * layout.getY()));
+        setBaseY((int) (mw.getGuiScaledHeight() * layout.y()));
         statIcon = icon;
     }
 
@@ -171,6 +171,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         statAbove = stat;
     }
 
+    @Override
     public void addSubWidget(AbstractWidget widget) {
         subWidgets.add(widget);
     }
@@ -179,6 +180,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         subWidgets.remove(widget);
     }
 
+    @Override
     public void setSubwidgetRenderOffsets(int left, int right) {
         widgetOffsetLeft = left;
         widgetOffsetRight = right;
@@ -780,6 +782,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         }
     }
 
+    @Override
     public void setLineSpacing(int lineSpacing) {
         this.lineSpacing = lineSpacing;
     }

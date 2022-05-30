@@ -19,13 +19,8 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.AirConClientHandler;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
-import net.minecraft.client.Minecraft;
-
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AirConditionerOptions extends IOptionPage.SimpleOptionPage<AirConClientHandler> {
 
@@ -37,10 +32,6 @@ public class AirConditionerOptions extends IOptionPage.SimpleOptionPage<AirConCl
     public void populateGui(IGuiScreen gui) {
         super.populateGui(gui);
 
-        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
-                xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
-            Minecraft.getInstance().player.closeContainer();
-            Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.AIR_CON));
-        }));
+        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
     }
 }

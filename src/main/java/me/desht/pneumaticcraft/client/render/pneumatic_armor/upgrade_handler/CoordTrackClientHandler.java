@@ -211,7 +211,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                     PneumaticArmorItem.setCoordTrackerPos(helmetStack, gPos);
                     CompoundTag tag = new CompoundTag();
                     tag.put(PneumaticArmorItem.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
-                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, handler.getCommonHandler().getID()));
+                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlot.HEAD, tag, handler.getID()));
                     HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.selectedTarget", PneumaticCraftUtils.posToString(gPos.pos())), Collections.emptyList(), 60, 0x8000AA00);
                 }
             }

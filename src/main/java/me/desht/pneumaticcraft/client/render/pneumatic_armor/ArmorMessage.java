@@ -19,10 +19,13 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +35,7 @@ import java.util.List;
 
 public class ArmorMessage {
     private final IGuiAnimatedStat stat;
-    int lifeSpan;
+    private int lifeSpan;
 
     public ArmorMessage(Component title, int duration, int backColor) {
         this(title, Collections.emptyList(), duration, backColor);
@@ -40,7 +43,8 @@ public class ArmorMessage {
 
     public ArmorMessage(Component title, List<Component> message, int duration, int backColor) {
         lifeSpan = duration;
-        stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.NONE, backColor, null, ArmorHUDLayout.INSTANCE.messageStat);
+        StatPanelLayout layout = ArmorHUDLayout.INSTANCE.getLayoutFor(CoreComponentsHandler.getMessageID(), CoreComponentsClientHandler.getDefaultMessageLayout());
+        stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.NONE, backColor, null, layout);
         stat.setMinimumContractedDimensions(0, 0);
         stat.setText(message);
         Player player = ClientUtils.getClientPlayer();
@@ -63,5 +67,14 @@ public class ArmorMessage {
             stat.closeStat();
         }
         stat.renderStat(matrixStack, -1, -1, partialTicks);
+    }
+
+    public void tick() {
+        stat.tickWidget();
+        --lifeSpan;
+    }
+
+    public boolean isExpired() {
+        return lifeSpan <= 0;
     }
 }

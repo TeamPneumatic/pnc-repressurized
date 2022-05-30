@@ -17,19 +17,27 @@
 
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
+import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.apache.commons.lang3.Validate;
 
@@ -100,6 +108,25 @@ public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     @Override
     public ICheckboxWidget makeKeybindingCheckBox(ResourceLocation upgradeId, int xPos, int yPos, int color, Consumer<ICheckboxWidget> onPressed) {
         return WidgetKeybindCheckBox.getOrCreate(upgradeId, xPos, yPos, color, onPressed);
+    }
+
+    @Override
+    public IGuiAnimatedStat makeHUDStatPanel(Component title, ItemStack icon, IArmorUpgradeClientHandler<?> clientHandler) {
+        StatPanelLayout layout = ArmorHUDLayout.INSTANCE.getLayoutFor(clientHandler.getID(), clientHandler.getDefaultStatLayout());
+        return new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(icon), HUDHandler.getInstance().getStatOverlayColor(), null, layout);
+    }
+
+    @Override
+    public IGuiAnimatedStat makeHUDStatPanel(Component title, ResourceLocation icon, IArmorUpgradeClientHandler<?> clientHandler) {
+        StatPanelLayout layout = ArmorHUDLayout.INSTANCE.getLayoutFor(clientHandler.getID(), clientHandler.getDefaultStatLayout());
+        return new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(icon), HUDHandler.getInstance().getStatOverlayColor(), null, layout);
+    }
+
+    @Override
+    public AbstractWidget makeStatMoveButton(int x, int y, IArmorUpgradeClientHandler<?> handler) {
+        return new WidgetButtonExtended(x, y, 150, 20, xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"),
+                b -> Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(handler))
+        );
     }
 
 }

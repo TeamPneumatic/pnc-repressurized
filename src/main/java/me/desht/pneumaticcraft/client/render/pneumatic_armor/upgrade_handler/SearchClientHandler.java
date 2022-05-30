@@ -23,15 +23,14 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.SearchOptions;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
@@ -64,6 +63,8 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<SearchHandler> {
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.005f, 0.1f, false);
+
     private int totalSearchedItemCount;
     private int itemSearchCount;
     private int ticksExisted;
@@ -228,12 +229,16 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (searchInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(ModUpgrades.SEARCH.get().getItemStack());
-            searchInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.armor.gui.search.searchingFor"), icon,
-                    HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.itemSearchStat);
+            ItemStack icon = ModUpgrades.SEARCH.get().getItemStack();
+            searchInfo = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.armor.gui.search.searchingFor"), icon, this);
             searchInfo.setMinimumContractedDimensions(0, 0);
         }
         return searchInfo;
+    }
+
+    @Override
+    public StatPanelLayout getDefaultStatLayout() {
+        return DEFAULT_STAT_LAYOUT;
     }
 
     @Override

@@ -20,17 +20,15 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.ItemSearcherScreen;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.SearchClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModMenuTypes;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateSearchItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -53,8 +51,7 @@ public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHand
         gui.addWidget(new WidgetButtonExtended(30, 40, 150, 20,
                 xlate("pneumaticcraft.gui.misc.searchItem"), b -> openSearchGui()));
 
-        gui.addWidget(new Button(30, 128, 150, 20, xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"),
-                b -> Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.ITEM_SEARCH))));
+        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
 
         if (searchGui != null && !player.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
             ItemStack helmetStack = ClientUtils.getWornArmor(EquipmentSlot.HEAD);

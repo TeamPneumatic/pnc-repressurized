@@ -25,7 +25,9 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
@@ -49,6 +51,16 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * and client handlers.
      */
     T getCommonHandler();
+
+    /**
+     * Convenience method to get this client handler's ID, which is always the same as the corresponding common
+     * handler's ID. Do not override this method!
+     *
+     * @return the handler ID
+     */
+    default ResourceLocation getID() {
+        return getCommonHandler().getID();
+    }
 
     /**
      * This is called when a {@link net.minecraftforge.fml.event.config.ModConfigEvent} is received for the mod.
@@ -90,11 +102,31 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     /**
      * You can return a {@link IGuiAnimatedStat} here, which the HUD Handler will pick up and render. It also
      * automatically opens and closes the stat window as necessary.
+     * <p>
+     * {@link IPneumaticHelmetRegistry#makeHUDStatPanel(Component, ItemStack, IArmorUpgradeClientHandler)} is a useful
+     * method for creating a panel.
+     * <p>
+     * The recommended way to handle this is to have a
+     * {@link IGuiAnimatedStat} field in your client upgrade handler, and lazy-init that in
+     * this method, also resetting the field to null in {@link #onResolutionChanged()}.
      *
      * @return the animated stat, or null if this upgrade doesn't use/require a stat window
      */
     default IGuiAnimatedStat getAnimatedStat() {
         return null;
+    }
+
+    /**
+     * Return the default screen layout for this upgrade's stat panel, if it has one. Note that the position is
+     * easily modifiable by the player using the "Move Screen..." button in the upgrade's GUI.
+     * <p>
+     * If your handler doesn't have a stat panel (i.e. {@link #getAnimatedStat()} returns null), you don't need to
+     * override this. If it does have a panel, it's recommended to override this with a reasonable default position.
+     *
+     * @return the default position
+     */
+    default StatPanelLayout getDefaultStatLayout() {
+        return StatPanelLayout.DEFAULT;
     }
 
     /**
@@ -138,14 +170,14 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * toggles are added here; keybinds for non-toggleable upgrade which trigger specific actions (e.g. the
      * Chestplate Launcher or Drone Debugging key) need to be registered explicitly.
      * <p>
-     * You should not override this default implementation. Non-toggleable upgrades return {@code Optional.empty()}
+     * Do not override this default implementation. Non-toggleable upgrades return {@code Optional.empty()}
      * by default.
      *
      * @return the default key binding for this upgrade
      */
     default Optional<KeyMapping> getInitialKeyBinding() {
         return isToggleable() ?
-                Optional.of(new KeyMapping(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID()),
+                Optional.of(new KeyMapping(IArmorUpgradeHandler.getStringKey(getID()),
                         KeyConflictContext.IN_GAME, KeyModifier.NONE,
                         InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, getKeybindCategory())) :
                 Optional.empty();

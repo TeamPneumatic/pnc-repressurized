@@ -28,6 +28,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CoreComponentsHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     public static final ResourceLocation ID = RL("core_components");
+    public static final ResourceLocation MESSAGE_ID = RL("core_components_message");
 
     @Override
     public ResourceLocation getID() {
@@ -47,5 +48,9 @@ public class CoreComponentsHandler extends BaseArmorUpgradeHandler<IArmorExtensi
     @Override
     public EquipmentSlot getEquipmentSlot() {
         return EquipmentSlot.HEAD;
+    }
+
+    public static ResourceLocation getMessageID() {
+        return MESSAGE_ID;
     }
 }

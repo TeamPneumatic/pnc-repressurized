@@ -140,8 +140,8 @@ public enum HUDHandler implements IKeyListener {
                 }
                 if (anyArmorEquipped) {
                     ensureArmorInit(player, comHudHandler);
-                    pendingMessages.forEach(message -> message.getStat().tickWidget());
-                    pendingMessages.removeIf(message -> message == null || --message.lifeSpan <= 0);
+                    pendingMessages.forEach(ArmorMessage::tick);
+                    pendingMessages.removeIf(message -> message == null || message.isExpired());
                 } else {
                     pendingMessages.clear();
                     sentForceInitPacket = false;
@@ -278,7 +278,6 @@ public enum HUDHandler implements IKeyListener {
 
     @SubscribeEvent
     public void onMouseScroll(InputEvent.MouseScrollEvent event) {
-        ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
         ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
         boolean isCaptured = c.getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class).scroll(event);
         if (!isCaptured) isCaptured = c.getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class).scroll(event);

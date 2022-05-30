@@ -30,7 +30,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class SearchHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
 
-    private static final ResourceLocation ID = RL("search");
+    public static final ResourceLocation ID = RL("search");
 
     @Override
     public ResourceLocation getID() {

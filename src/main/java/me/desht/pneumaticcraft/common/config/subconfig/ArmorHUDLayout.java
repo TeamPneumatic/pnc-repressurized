@@ -18,28 +18,19 @@
 package me.desht.pneumaticcraft.common.config.subconfig;
 
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
+import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.resources.ResourceLocation;
 
-import java.util.function.BiConsumer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ArmorHUDLayout extends AuxConfigJson {
-    private static final LayoutItem POWER_DEF = new LayoutItem(0.995f, 0.005f, true);
-    private static final LayoutItem MESSAGE_DEF = new LayoutItem(0.005f, 0.15f, false);
-    private static final LayoutItem BLOCK_TRACKER_DEF = new LayoutItem(0.995f, 0.1f, true);
-    private static final LayoutItem ENTITY_TRACKER_DEF = new LayoutItem(0.995f, 0.2f, true);
-    private static final LayoutItem ITEM_SEARCH_DEF = new LayoutItem(0.005f, 0.1f, false);
-    private static final LayoutItem AIR_CON_DEF = new LayoutItem(0.5f, 0.005f, false);
-    private static final LayoutItem JET_BOOTS_DEF = new LayoutItem(0.7f, 0.005f, true);
-
-    // needs to be *after* the defaults above!
     public static final ArmorHUDLayout INSTANCE = new ArmorHUDLayout();
+    private static final String HUD_LAYOUT = "hud_layout";
 
-    public LayoutItem powerStat = POWER_DEF;
-    public LayoutItem messageStat = MESSAGE_DEF;
-    public LayoutItem blockTrackerStat = BLOCK_TRACKER_DEF;
-    public LayoutItem entityTrackerStat = ENTITY_TRACKER_DEF;
-    public LayoutItem itemSearchStat = ITEM_SEARCH_DEF;
-    public LayoutItem airConStat = AIR_CON_DEF;
-    public LayoutItem jetBootsStat = JET_BOOTS_DEF;
+    private final Map<ResourceLocation, StatPanelLayout> layouts = new HashMap<>();
 
     private ArmorHUDLayout() {
         super(true);
@@ -49,32 +40,44 @@ public class ArmorHUDLayout extends AuxConfigJson {
     protected void writeToJson(JsonObject json) {
         json.addProperty("Description", "Stores the layout of Pneumatic Armor HUD elements");
         JsonObject sub = new JsonObject();
-        sub.add("power", powerStat.toJson());
-        sub.add("message", messageStat.toJson());
-        sub.add("blockTracker", blockTrackerStat.toJson());
-        sub.add("entityTracker", entityTrackerStat.toJson());
-        sub.add("itemSearch", itemSearchStat.toJson());
-        sub.add("airCon", airConStat.toJson());
-        sub.add("jetBoots", jetBootsStat.toJson());
-        json.add("stats", sub);
+        layouts.forEach((id, layout) -> sub.add(id.toString(), layout.toJson()));
+        json.add(HUD_LAYOUT, sub);
     }
 
     @Override
     protected void readFromJson(JsonObject json) {
-        if (json.has("stats")) { // will always be false on dedicated server
-            JsonObject sub = json.getAsJsonObject("stats");
-            powerStat = readLayout(sub, "power", POWER_DEF);
-            messageStat = readLayout(sub, "message", MESSAGE_DEF);
-            blockTrackerStat = readLayout(sub, "blockTracker", BLOCK_TRACKER_DEF);
-            entityTrackerStat = readLayout(sub, "entityTracker", ENTITY_TRACKER_DEF);
-            itemSearchStat = readLayout(sub, "itemSearch", ITEM_SEARCH_DEF);
-            airConStat = readLayout(sub, "airCon", AIR_CON_DEF);
-            jetBootsStat = readLayout(sub, "jetBoots", JET_BOOTS_DEF);
+        // note: dedicated server will have neither old "stats" or new "layouts" data
+        // this information is only saved client-side
+
+        if (json.has("stats")) {
+            // TODO remove in 1.19
+            loadLegacy(json.getAsJsonObject("stats"));
+        } else if (json.has(HUD_LAYOUT)) {
+            JsonObject sub = json.getAsJsonObject(HUD_LAYOUT);
+            sub.entrySet().forEach(entry -> {
+                try {
+                    ResourceLocation id = new ResourceLocation(entry.getKey());
+                    layouts.put(id, StatPanelLayout.fromJson(entry.getValue().getAsJsonObject()));
+                } catch (IllegalArgumentException e) {
+                    Log.error("invalid stat panel key (not a resource location) %s in %s!", entry.getKey(), getConfigFilename());
+                } catch (IllegalStateException | NullPointerException e) {
+                    Log.error("invalid json for key %s in %s!", entry.getKey(), getConfigFilename());
+                }
+            });
         }
     }
 
-    private LayoutItem readLayout(JsonObject json, String name, LayoutItem def) {
-        return json.has(name) ? LayoutItem.fromJson(json.get(name).getAsJsonObject()) : def;
+    private void loadLegacy(JsonObject json) {
+        maybeAddLegacy(json, CoreComponentsHandler.ID, "power");
+        maybeAddLegacy(json, CoreComponentsHandler.getMessageID(), "message");
+        maybeAddLegacy(json, BlockTrackerHandler.ID, "blockTracker");
+        maybeAddLegacy(json, EntityTrackerHandler.ID, "entityTracker");
+        maybeAddLegacy(json, SearchHandler.ID, "itemSearch");
+        maybeAddLegacy(json, AirConHandler.ID, "airCon");
+        maybeAddLegacy(json, JetBootsHandler.ID, "jetBoots");
+    }
+    private void maybeAddLegacy(JsonObject json, ResourceLocation id, String fieldName) {
+        if (json.has(fieldName)) layouts.put(id, StatPanelLayout.fromJson(json.get(fieldName).getAsJsonObject()));
     }
 
     @Override
@@ -82,68 +85,12 @@ public class ArmorHUDLayout extends AuxConfigJson {
         return "PneumaticArmorHUDLayout";
     }
 
-    public void updateLayout(LayoutType layoutType, float x, float y, boolean leftSided) {
-        layoutType.update(this, new LayoutItem(x, y, leftSided));
+    public void updateLayout(ResourceLocation id, float x, float y, boolean leftSided) {
+        layouts.put(id, new StatPanelLayout(x, y, leftSided));
         tryWriteToFile();
     }
 
-    public static class LayoutItem {
-        private final float x;
-        private final float y;
-        private final boolean leftSided;
-
-        LayoutItem(float x, float y, boolean leftSided) {
-            this.x = x;
-            this.y = y;
-            this.leftSided = leftSided;
-        }
-
-        public float getX() {
-            return x;
-        }
-
-        public float getY() {
-            return y;
-        }
-
-        public boolean isLeftSided() {
-            return leftSided;
-        }
-
-        JsonObject toJson() {
-            JsonObject obj = new JsonObject();
-            obj.addProperty("x", x);
-            obj.addProperty("y", y);
-            obj.addProperty("leftSided", leftSided);
-            return obj;
-        }
-
-        static LayoutItem fromJson(JsonObject obj) {
-            return new LayoutItem(
-                    obj.get("x").getAsFloat(),
-                    obj.get("y").getAsFloat(),
-                    obj.get("leftSided").getAsBoolean()
-            );
-        }
-    }
-
-    public enum LayoutType {
-        POWER((layout, item) -> layout.powerStat = item),
-        MESSAGE((layout, item) -> layout.messageStat = item),
-        ENTITY_TRACKER((layout, item) -> layout.entityTrackerStat = item),
-        BLOCK_TRACKER((layout, item) -> layout.blockTrackerStat = item),
-        ITEM_SEARCH((layout, item) -> layout.itemSearchStat = item),
-        AIR_CON((layout, item) -> layout.airConStat = item),
-        JET_BOOTS((layout, item) -> layout.jetBootsStat = item);
-
-        private final BiConsumer<ArmorHUDLayout, LayoutItem> consumer;
-
-        LayoutType(BiConsumer<ArmorHUDLayout, LayoutItem> consumer) {
-            this.consumer = consumer;
-        }
-
-        void update(ArmorHUDLayout layout, LayoutItem item) {
-            consumer.accept(layout, item);
-        }
+    public StatPanelLayout getLayoutFor(ResourceLocation upgradeID, StatPanelLayout defaultStatLayout) {
+        return layouts.computeIfAbsent(upgradeID, k -> defaultStatLayout);
     }
 }

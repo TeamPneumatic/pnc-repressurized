@@ -28,7 +28,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class AirConHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final ResourceLocation ID = RL("air_conditioning");
+    public static final ResourceLocation ID = RL("air_conditioning");
 
     @Override
     public ResourceLocation getID() {

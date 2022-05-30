@@ -30,7 +30,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     public static final int BLOCK_TRACKING_RANGE = 30;
-    private static final ResourceLocation ID = RL("block_tracker");
+    public static final ResourceLocation ID = RL("block_tracker");
 
     @Override
     public ResourceLocation getID() {

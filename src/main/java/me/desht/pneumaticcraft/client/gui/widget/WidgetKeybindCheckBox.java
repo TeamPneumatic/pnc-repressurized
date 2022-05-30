@@ -103,7 +103,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     }
 
     public static WidgetKeybindCheckBox forUpgrade(IArmorUpgradeClientHandler<?> handler) {
-        return get(handler.getCommonHandler().getID());
+        return get(handler.getID());
     }
 
     public static WidgetKeybindCheckBox getCoreComponents() {

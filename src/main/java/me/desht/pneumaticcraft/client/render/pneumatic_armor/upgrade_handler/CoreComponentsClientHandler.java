@@ -19,10 +19,12 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.google.common.base.Strings;
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
@@ -60,10 +62,13 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     private static final String[] BAR_STR_CACHE = new String[MAX_BARS + 1];
     private static final Component NO_ARMOR = new TextComponent("-").withStyle(ChatFormatting.DARK_GRAY);
 
+    private static final StatPanelLayout DEF_STAT_LAYOUT = new StatPanelLayout(0.995f, 0.005f, true);
+    private static final StatPanelLayout DEFAULT_MESSAGE_LAYOUT = new StatPanelLayout(0.005f, 0.15f, false);
+
     private final float[] lastPressure = new float[] { -1, -1, -1, -1 };
-    private WidgetAnimatedStat powerStat;
+    private IGuiAnimatedStat powerStat;
+    private IGuiAnimatedStat testMessageStat;
     private final List<WidgetButtonExtended> pressureButtons = new ArrayList<>();
-    public IGuiAnimatedStat testMessageStat;
     private boolean showPressureNumerically;  // false for numeric readout, true for horizontal bars
     private boolean forceUpdatePressureStat = true;
 
@@ -177,7 +182,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     public IGuiAnimatedStat getAnimatedStat() {
         if (powerStat == null) {
             forceUpdatePressureStat = true;
-            powerStat = new WidgetAnimatedStat(null, TextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.powerStat);
+            powerStat = PneumaticRegistry.getInstance().getHelmetRegistry().makeHUDStatPanel(TextComponent.EMPTY, ItemStack.EMPTY, this);
             powerStat.setLineSpacing(14);
             powerStat.setSubwidgetRenderOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             pressureButtons.clear();
@@ -197,6 +202,11 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     }
 
     @Override
+    public StatPanelLayout getDefaultStatLayout() {
+        return DEF_STAT_LAYOUT;
+    }
+
+    @Override
     public void reset() {
         powerStat = null;
     }
@@ -211,5 +221,19 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
         powerStat = null;
         forceUpdatePressureStat = true;
         Arrays.fill(lastPressure, -1);
+    }
+
+    public static StatPanelLayout getDefaultMessageLayout() {
+        return DEFAULT_MESSAGE_LAYOUT;
+    }
+
+    public IGuiAnimatedStat getTestMessageStat() {
+        if (testMessageStat == null) {
+            StatPanelLayout messageLayout = ArmorHUDLayout.INSTANCE.getLayoutFor(CoreComponentsHandler.getMessageID(), CoreComponentsClientHandler.getDefaultMessageLayout());
+            testMessageStat = new WidgetAnimatedStat(null, new TextComponent("Test Message: keep in mind that messages can be long!"),
+                    WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, messageLayout);
+            testMessageStat.openStat();
+        }
+        return testMessageStat;
     }
 }

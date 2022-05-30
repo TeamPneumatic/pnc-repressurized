@@ -24,10 +24,8 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.AbstractPneumaticCraftScreen;
 import me.desht.pneumaticcraft.client.gui.widget.PNCForgeSlider;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
@@ -35,6 +33,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -43,6 +42,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -52,27 +52,30 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
     private final List<Component> helpText = new ArrayList<>();
-    private final ArmorHUDLayout.LayoutType layoutItem;
+    private final ResourceLocation statID;  // for saving to file
 
     private WidgetCheckBox snapToGrid;
     private PNCForgeSlider gridSlider;
 
+    // static so they persist across gui invocations
     private static boolean snap = false;
     private static int gridSize = 4;
 
-    public ArmorStatMoveScreen(IArmorUpgradeClientHandler<?> renderHandler, ArmorHUDLayout.LayoutType layoutItem) {
-        this(renderHandler, layoutItem, renderHandler.getAnimatedStat());
+    public ArmorStatMoveScreen(IArmorUpgradeClientHandler<?> renderHandler) {
+        this(renderHandler, renderHandler.getID(), renderHandler.getAnimatedStat());
     }
 
-    public ArmorStatMoveScreen(IArmorUpgradeClientHandler<?> renderHandler, ArmorHUDLayout.LayoutType layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
+    public ArmorStatMoveScreen(IArmorUpgradeClientHandler<?> renderHandler, ResourceLocation statID, @Nonnull IGuiAnimatedStat movedStat) {
         super(new TextComponent("Move Gui"));
 
         this.movedStat = movedStat;
         this.renderHandler = renderHandler;
-        this.layoutItem = layoutItem;
+        this.statID = statID;
 
         movedStat.openStat();
 
+        // find all upgrade handlers (other than this one) which provide a stat, and add those to the list of "other" stats
+        // so they can be rendered for positioning purposes
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
         for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             List<IArmorUpgradeClientHandler<?>> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
@@ -87,13 +90,12 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
             }
         }
 
+        // special case: the core components handler has a second configurable stat position: hud message display
         CoreComponentsClientHandler mainOptions = ArmorUpgradeClientRegistry.getInstance()
                 .getClientHandler(CommonUpgradeHandlers.coreComponentsHandler, CoreComponentsClientHandler.class);
-        if (movedStat != mainOptions.testMessageStat) {
-            mainOptions.testMessageStat = new WidgetAnimatedStat(null, new TextComponent("Test Message, keep in mind messages can be long!"),
-                    WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);
-            mainOptions.testMessageStat.openStat();
-            otherStats.add(mainOptions.testMessageStat);
+        IGuiAnimatedStat testMessageStat = mainOptions.getTestMessageStat();
+        if (movedStat != testMessageStat) {
+            otherStats.add(testMessageStat);
         }
     }
 
@@ -177,7 +179,9 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     public void render(PoseStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
 
-        GuiUtils.showPopupHelpScreen(matrixStack,this, font, helpText);
+        Rect2i bounds = GuiUtils.showPopupHelpScreen(matrixStack,this, font, helpText);
+        snapToGrid.y = bounds.getY() + bounds.getHeight() + 15;
+        gridSlider.y = snapToGrid.y + 12;
 
         super.render(matrixStack, x, y, partialTicks);
 
@@ -203,7 +207,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         otherStats.forEach(IGuiAnimatedStat::tickWidget);
 
         if (helpText.isEmpty()) {
-            helpText.add(xlate(IArmorUpgradeHandler.getStringKey(renderHandler.getCommonHandler().getID())).withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE));
+            helpText.add(xlate(IArmorUpgradeHandler.getStringKey(renderHandler.getID())).withStyle(ChatFormatting.GREEN, ChatFormatting.UNDERLINE));
             helpText.add(TextComponent.EMPTY);
             helpText.add(xlate("pneumaticcraft.armor.moveStat.move"));
             helpText.add(new TextComponent("<REPLACEME>"));
@@ -212,10 +216,10 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     }
 
     private void save() {
-        Window sr = minecraft.getWindow();
-        ArmorHUDLayout.INSTANCE.updateLayout(layoutItem,
-                ((float) movedStat.getBaseX() / (float) sr.getGuiScaledWidth()),
-                ((float) movedStat.getBaseY() / (float) sr.getGuiScaledHeight()),
+        Window window = Objects.requireNonNull(minecraft).getWindow();
+        ArmorHUDLayout.INSTANCE.updateLayout(statID,
+                ((float) movedStat.getBaseX() / (float) window.getGuiScaledWidth()),
+                ((float) movedStat.getBaseY() / (float) window.getGuiScaledHeight()),
                 movedStat.isLeftSided());
     }
 }

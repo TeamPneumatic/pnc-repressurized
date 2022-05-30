@@ -17,12 +17,15 @@
 
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -49,7 +52,7 @@ public interface IPneumaticHelmetRegistry {
 
     /**
      * Register an block track entry (i.e. a subcategory of the Block Tracker) for the Pneumatic Helmet.
-     * Call this from a {@link FMLCommonSetupEvent} listener (do not use {@link FMLCommonSetupEvent#enqueueWork(Runnable)}).
+     * Call this from a {@link FMLClientSetupEvent} listener (do not use {@link FMLClientSetupEvent#enqueueWork(Runnable)}).
      * @param id the block entry ID
      * @param entry the block track entry ({@link IBlockTrackEntry#getEntryID()} must return the same ID as the {@code id} parameter
      */
@@ -175,4 +178,43 @@ public interface IPneumaticHelmetRegistry {
      * @param onPressed called when the checkbox is toggled
      */
     ICheckboxWidget makeKeybindingCheckBox(ResourceLocation upgradeId, int xPos, int yPos, int color, Consumer<ICheckboxWidget> onPressed);
+
+    /**
+     * Create a stat panel for display on the Pneumatic Armor HUD.
+     * <p>
+     * This panel is automatically coloured according to the player's armor eyepiece color setting, and is
+     * re-positionable by the player. See {@link IArmorUpgradeClientHandler#getDefaultStatLayout()} to define the
+     * default positioning for the panel.
+     *
+     * @param title title text to display on the stat
+     * @param icon an icon to draw next to the title
+     * @param clientHandler the client upgrade handler this panel is associated with
+     * @return the stat panel
+     */
+    IGuiAnimatedStat makeHUDStatPanel(Component title, ItemStack icon, IArmorUpgradeClientHandler<?> clientHandler);
+
+    /**
+     * Just like {@link #makeHUDStatPanel(Component, ItemStack, IArmorUpgradeClientHandler)} but you can pass an
+     * arbitrary texture to use as the icon. The texture should be 16x16.
+     *
+     * @param title title text to display on the stat
+     * @param icon an icon to draw next to the title
+     * @param clientHandler the client upgrade handler this panel is associated with
+     * @return the stat panel
+     */
+    IGuiAnimatedStat makeHUDStatPanel(Component title, ResourceLocation icon, IArmorUpgradeClientHandler<?> clientHandler);
+
+    /**
+     * Create a "Move Stat Screen..." button to allow the stat panel for an upgrade to be moved. Clicking this button
+     * will automatically open the stat panel configuration GUI and allow the panel to be moved.
+     * <p>
+     * Call this from {@link IOptionPage#populateGui(IGuiScreen)}, and pass the return value to
+     * {@link IGuiScreen#addWidget(AbstractWidget)} to add this button to your upgrade GUI.
+     *
+     * @param x button X position
+     * @param y button Y position
+     * @param handler the client upgrade handler (can be obtained via {@link IOptionPage.SimpleOptionPage#getClientUpgradeHandler()}
+     * @return the button
+     */
+    AbstractWidget makeStatMoveButton(int x, int y, IArmorUpgradeClientHandler<?> handler);
 }

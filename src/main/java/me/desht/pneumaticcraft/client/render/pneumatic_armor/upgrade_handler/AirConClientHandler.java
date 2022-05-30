@@ -22,19 +22,20 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.AirConditionerOptions;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.AirConHandler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
 
 public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<AirConHandler> {
     private static final int MAX_AC = 20;
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.5f, 0.005f, false);
 
     public static int deltaTemp;  // set by packet from server
     private static int currentAC = 0; // cosmetic
@@ -75,11 +76,15 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (acStat == null) {
-            acStat = new WidgetAnimatedStat(null, TextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,
-                    HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.airConStat);
+            acStat = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(TextComponent.EMPTY, ItemStack.EMPTY, this);
             acStat.setMinimumContractedDimensions(0, 0);
         }
         return acStat;
+    }
+
+    @Override
+    public StatPanelLayout getDefaultStatLayout() {
+        return DEFAULT_STAT_LAYOUT;
     }
 
     @Override

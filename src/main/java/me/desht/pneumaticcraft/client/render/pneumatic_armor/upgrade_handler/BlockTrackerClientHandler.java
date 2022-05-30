@@ -28,14 +28,12 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.BlockTrackOptions;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.RenderBlockTarget;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
@@ -49,6 +47,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -69,6 +68,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<BlockTrackerHandler> {
     static final int BLOCK_TRACKING_RANGE = 30;
     private static final int HARD_MAX_BLOCKS_PER_TICK = 50000;
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.995f, 0.1f, true);
 
     private final Map<BlockPos, RenderBlockTarget> blockTargets = new Object2ObjectOpenHashMap<>();
     private IGuiAnimatedStat blockTrackInfo;
@@ -343,14 +343,17 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(ModUpgrades.BLOCK_TRACKER.get().getItemStack());
-            blockTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.blockTracker.info.trackedBlocks"),
-                    icon, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
+            ItemStack icon = ModUpgrades.BLOCK_TRACKER.get().getItemStack();
+            blockTrackInfo = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.blockTracker.info.trackedBlocks"), icon, this);
             blockTrackInfo.setMinimumContractedDimensions(0, 0);
             blockTrackInfo.setAutoLineWrap(false);
         }
         return blockTrackInfo;
+    }
 
+    @Override
+    public StatPanelLayout getDefaultStatLayout() {
+        return DEFAULT_STAT_LAYOUT;
     }
 
     public void hack() {

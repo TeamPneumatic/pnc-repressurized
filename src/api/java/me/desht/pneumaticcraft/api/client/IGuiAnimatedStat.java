@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.api.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
@@ -31,8 +32,6 @@ import java.util.List;
  * This interface doesn't have to be implemented. In PneumaticCraft there already is a widget which implements this
  * interface used in many places: GUI side tabs, Pneumatic Helmet 2D and 3D stats. You can get an instance of this
  * class via the various {@link IClientRegistry} getAnimatedStat() methods.
- * <p>
- * Implementing your own version of animated stats is also possible.
  */
 public interface IGuiAnimatedStat extends ITickableWidget, GuiEventListener {
     /**
@@ -283,4 +282,25 @@ public interface IGuiAnimatedStat extends ITickableWidget, GuiEventListener {
      * @param itemStack an item to use for the texture
      */
     void setTexture(ItemStack itemStack);
+
+    /**
+     * Set the line spacing, in pixels
+     * @param spacing the line spacing
+     */
+    void setLineSpacing(int spacing);
+
+    /**
+     * Add a subwidget to the panel. Subwidgets are automatically rendered by the panel itself, and don't need to be
+     * added to your GUI separately.
+     * @param widget the subwidget
+     */
+    void addSubWidget(AbstractWidget widget);
+
+    /**
+     * Define X offsets for subwidget rendering. You should not normally need to call this method.
+     *
+     * @param left X offset when widget opens to the left
+     * @param right X offset when widget opens to the right
+     */
+    void setSubwidgetRenderOffsets(int left, int right);
 }

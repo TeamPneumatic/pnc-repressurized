@@ -164,7 +164,7 @@ public class GuiUtils {
         tessellator.end();
     }
 
-    public static void showPopupHelpScreen(PoseStack matrixStack, Screen screen, Font fontRenderer, List<Component> helpText) {
+    public static Rect2i showPopupHelpScreen(PoseStack matrixStack, Screen screen, Font fontRenderer, List<Component> helpText) {
         List<FormattedCharSequence> l = GuiUtils.wrapTextComponentList(helpText, screen.width / 2, fontRenderer);
         int lineSpacing = fontRenderer.lineHeight + 1;
         int boxHeight = Math.min(screen.height, l.size() * lineSpacing);
@@ -179,6 +179,7 @@ public class GuiUtils {
             x = (screen.width - boxWidth) / 2;
             y = (screen.height - boxHeight) / 2;
         }
+        Rect2i bounds = new Rect2i(x, y, boxWidth, boxHeight);
         matrixStack.pushPose();
         matrixStack.translate(0, 0, 400);
         drawPanel(matrixStack, x, y, boxHeight, boxWidth);
@@ -189,6 +190,8 @@ public class GuiUtils {
             if (maxLines-- == 0) break;
         }
         matrixStack.popPose();
+
+        return bounds;
     }
 
     public static void drawPanel(PoseStack matrixStack, int x, int y, int panelHeight, int panelWidth) {

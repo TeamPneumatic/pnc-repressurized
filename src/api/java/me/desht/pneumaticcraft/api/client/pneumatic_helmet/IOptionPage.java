@@ -171,7 +171,7 @@ public interface IOptionPage {
 
         public SimpleOptionPage(IGuiScreen screen, T clientUpgradeHandler) {
             this.screen = screen;
-            this.name = new TranslatableComponent(IArmorUpgradeHandler.getStringKey(clientUpgradeHandler.getCommonHandler().getID()));
+            this.name = new TranslatableComponent(IArmorUpgradeHandler.getStringKey(clientUpgradeHandler.getID()));
             this.clientUpgradeHandler = clientUpgradeHandler;
         }
 

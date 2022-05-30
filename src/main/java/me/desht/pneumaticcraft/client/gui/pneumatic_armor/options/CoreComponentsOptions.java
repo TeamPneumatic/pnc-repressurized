@@ -23,15 +23,12 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorColoringScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TextComponent;
 
 import java.util.Optional;
 
@@ -46,18 +43,11 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
-                xlate("pneumaticcraft.armor.gui.misc.movePressureScreen"),
-                b -> Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.POWER)))
-        );
+        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, 128, getClientUpgradeHandler()));
 
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveMessageScreen"), b -> {
-            getClientUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, new TextComponent("Test Message, keep in mind messages can be long!"),
-                    WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);
-            getClientUpgradeHandler().testMessageStat.openStat();
-            Minecraft.getInstance().setScreen(
-                    new ArmorStatMoveScreen(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.MESSAGE, getClientUpgradeHandler().testMessageStat));
+            Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), CoreComponentsHandler.getMessageID(), getClientUpgradeHandler().getTestMessageStat()));
         }));
 
         gui.addWidget(new WidgetButtonExtended(30, 194, 150, 20,

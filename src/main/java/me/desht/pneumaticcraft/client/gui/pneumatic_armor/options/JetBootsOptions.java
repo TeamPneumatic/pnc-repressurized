@@ -24,19 +24,16 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorStatMoveScreen;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.JetBootsClientHandler;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -44,8 +41,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
 import java.util.Optional;
-
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler> {
     private ICheckboxWidget checkBoxBuilderMode;
@@ -61,7 +56,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         super.populateGui(gui);
 
         IPneumaticHelmetRegistry registry = PneumaticRegistry.getInstance().getHelmetRegistry();
-        ResourceLocation ownerID = getClientUpgradeHandler().getCommonHandler().getID();
+        ResourceLocation ownerID = getClientUpgradeHandler().getID();
         checkBoxBuilderMode = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_BUILDER_MODE, 5, 45, 0xFFFFFFFF,
                 b -> setFlag(PneumaticArmorItem.NBT_BUILDER_MODE, JetBootsHandler.BUILDER_MODE_LEVEL, b))
                 .withOwnerUpgradeID(ownerID);
@@ -78,11 +73,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         changeKeybindingButton = registry.makeKeybindingButton(135, KeyHandler.getInstance().keybindJetBoots);
         gui.addWidget(changeKeybindingButton.asWidget());
 
-        gui.addWidget(new WidgetButtonExtended(30, 157, 150, 20,
-                xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
-            Minecraft.getInstance().player.closeContainer();
-            Minecraft.getInstance().setScreen(new ArmorStatMoveScreen(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.JET_BOOTS));
-        }));
+        gui.addWidget(PneumaticHelmetRegistry.getInstance().makeStatMoveButton(30, 157, getClientUpgradeHandler()));
     }
 
     @Override

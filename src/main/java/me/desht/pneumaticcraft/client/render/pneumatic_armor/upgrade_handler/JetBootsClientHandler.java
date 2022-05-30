@@ -23,14 +23,13 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.JetBootsOptions;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -67,6 +66,8 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     public static final ResourceLocation MODULE_BUILDER_MODE = RL("jet_boots.module.builder_mode");
     public static final ResourceLocation MODULE_FLIGHT_STABILIZERS = RL("jet_boots.module.flight_stabilizers");
     public static final ResourceLocation MODULE_SMART_HOVER = RL("jet_boots.module.smart_hover");
+
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.5f, 0.005f, false);
 
     private String l1, l2, l3, r1, r2, r3;
     private int widestR;
@@ -188,13 +189,16 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             int n = Math.max(1, handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get()));
             ItemStack stack = new ItemStack(ModUpgrades.JET_BOOTS.get().getItem(n));
-            jbStat = new WidgetAnimatedStat(null, xlate(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID())),
-                    WidgetAnimatedStat.StatIcon.of(stack),
-                    HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.jetBootsStat);
+            jbStat = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(xlate(IArmorUpgradeHandler.getStringKey(getID())), stack, this);
             jbStat.setMinimumContractedDimensions(0, 0);
             jbStat.setMinimumExpandedDimensions(120, 42);
         }
         return jbStat;
+    }
+
+    @Override
+    public StatPanelLayout getDefaultStatLayout() {
+        return DEFAULT_STAT_LAYOUT;
     }
 
     @Override

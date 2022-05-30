@@ -19,20 +19,15 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.EntityTrackOptions;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
-import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
@@ -62,6 +57,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<EntityTrackerHandler> {
     private static final int ENTITY_TRACK_THRESHOLD = 7;
     private static final float ENTITY_TRACKING_RANGE = 16F;
+    private static final StatPanelLayout DEFAULT_STAT_LAYOUT = new StatPanelLayout(0.995f, 0.2f, true);
 
     private final Map<Integer, RenderEntityTarget> targets = new HashMap<>();
 
@@ -169,14 +165,17 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
-            WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(ModUpgrades.ENTITY_TRACKER.get().getItemStack());
-            entityTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon,
-                    HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
+            ItemStack icon = ModUpgrades.ENTITY_TRACKER.get().getItemStack();
+            entityTrackInfo = PneumaticHelmetRegistry.getInstance().makeHUDStatPanel(xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon, this);
             entityTrackInfo.setMinimumContractedDimensions(0, 0);
             entityTrackInfo.setAutoLineWrap(false);
         }
         return entityTrackInfo;
+    }
 
+    @Override
+    public StatPanelLayout getDefaultStatLayout() {
+        return DEFAULT_STAT_LAYOUT;
     }
 
     public Stream<RenderEntityTarget> getTargetsStream() {
