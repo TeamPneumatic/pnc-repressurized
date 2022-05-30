@@ -21,6 +21,8 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -29,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -217,4 +220,13 @@ public interface IPneumaticHelmetRegistry {
      * @return the button
      */
     AbstractWidget makeStatMoveButton(int x, int y, IArmorUpgradeClientHandler<?> handler);
+
+    /**
+     * Get the block position and face that is currently focused on by the player via the Block Tracker upgrade. If the
+     * Block Tracker isn't currently active or the player isn't currently looking at a block which is of interest to the
+     * block tracker, this will return (null,null).
+     *
+     * @return a pair of position and facing
+     */
+    Pair<BlockPos, Direction> getBlockTrackerFocus();
 }

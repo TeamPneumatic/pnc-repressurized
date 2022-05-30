@@ -28,11 +28,16 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -40,6 +45,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -129,4 +135,14 @@ public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
         );
     }
 
+    private static final Pair<BlockPos,Direction> NO_FOCUS = Pair.of(null, null);
+    @Override
+    public Pair<BlockPos, Direction> getBlockTrackerFocus() {
+        if (!CommonArmorHandler.getHandlerForPlayer().upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
+            return NO_FOCUS;
+        }
+        BlockTrackerClientHandler handler = ArmorUpgradeClientRegistry.getInstance()
+                .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class);
+        return Pair.of(handler.getFocusedPos(), handler.getFocusedFace());
+    }
 }
