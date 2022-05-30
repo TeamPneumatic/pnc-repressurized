@@ -34,7 +34,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackEntryMisc implements IBlockTrackEntry {
-    private static final ResourceLocation ID = RL("block_tracker.module.misc");
+    public static final ResourceLocation ID = RL("block_tracker.module.misc");
 
     @Override
     public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {

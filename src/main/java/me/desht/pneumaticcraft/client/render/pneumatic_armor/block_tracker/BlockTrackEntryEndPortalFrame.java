@@ -36,7 +36,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
-    private static final ResourceLocation ID = RL("block_tracker.module.end_portal");
+    public static final ResourceLocation ID = RL("block_tracker.module.end_portal");
 
     @Override
     public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {

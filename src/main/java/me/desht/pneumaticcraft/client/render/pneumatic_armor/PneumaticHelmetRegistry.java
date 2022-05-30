@@ -52,8 +52,8 @@ public enum PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     }
 
     @Override
-    public void registerBlockTrackEntry(Supplier<? extends IBlockTrackEntry> entry) {
-        BlockTrackHandler.getInstance().register(entry);
+    public void registerBlockTrackEntry(ResourceLocation id, Supplier<? extends IBlockTrackEntry> entry) {
+        BlockTrackHandler.getInstance().register(id, entry);
     }
 
     @Override

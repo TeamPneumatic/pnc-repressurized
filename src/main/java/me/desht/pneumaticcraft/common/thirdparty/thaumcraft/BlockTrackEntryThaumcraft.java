@@ -33,6 +33,8 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackEntryThaumcraft implements IBlockTrackEntry {
+    public static final ResourceLocation ID = RL("block_tracker_module_thaumcraft");
+
     @Override
     public boolean shouldTrackWithThisEntry(BlockGetter world, BlockPos pos, BlockState state, BlockEntity te) {
         return false;
@@ -67,6 +69,6 @@ public class BlockTrackEntryThaumcraft implements IBlockTrackEntry {
 
     @Override
     public ResourceLocation getEntryID() {
-        return RL("block_tracker_module_thaumcraft");
+        return ID;
     }
 }

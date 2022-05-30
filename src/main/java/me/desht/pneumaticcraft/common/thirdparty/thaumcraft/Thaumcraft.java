@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 public class Thaumcraft implements IThirdParty {
     @Override
     public void init() {
-        PneumaticRegistry.getInstance().getHelmetRegistry().registerBlockTrackEntry(BlockTrackEntryThaumcraft::new);
+        PneumaticRegistry.getInstance().getHelmetRegistry().registerBlockTrackEntry(BlockTrackEntryThaumcraft.ID, BlockTrackEntryThaumcraft::new);
     }
 
     @Override

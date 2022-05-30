@@ -105,6 +105,8 @@ public class ClientSetup {
 
         MinecraftForgeClient.registerTooltipComponentFactory(MicromissilesItem.Tooltip.class, MicromissileClientTooltip::new);
 
+        registerArmorClientUpgradeHandlers();
+
         event.enqueueWork(ClientSetup::initLate);
     }
 
@@ -122,7 +124,7 @@ public class ClientSetup {
         // freeze entity & block track handlers before registering client upgrade handlers
         EntityTrackHandler.getInstance().freeze();
         BlockTrackHandler.getInstance().freeze();
-        registerArmorClientUpgradeHandlers();
+        ArmorUpgradeClientRegistry.getInstance().registerSubKeyBinds();
 
         registerScreenFactories();
         registerProgWidgetExtraRenderers();

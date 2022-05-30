@@ -29,43 +29,43 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public enum BlockTrackHandler {
     INSTANCE;
 
-    private final List<Supplier<? extends IBlockTrackEntry>> pendingTrackers = new CopyOnWriteArrayList<>();
+    private final Map<ResourceLocation, Supplier<? extends IBlockTrackEntry>> pendingTrackers = new ConcurrentHashMap<>();
     private List<IBlockTrackEntry> trackers;
-    private boolean frozen = false;
 
     public static BlockTrackHandler getInstance() {
         return INSTANCE;
     }
 
     public void registerDefaultEntries() {
-        register(BlockTrackEntryHackable::new);
-        register(BlockTrackEntryInventory::new);
-        register(BlockTrackEntryFluid::new);
-        register(BlockTrackEntryEndPortalFrame::new);
-        register(BlockTrackEntryMobSpawner::new);
-        register(BlockTrackEntryMisc::new);
-        register(BlockTrackEntryEnergy::new);
+        register(BlockTrackEntryHackable.ID, BlockTrackEntryHackable::new);
+        register(BlockTrackEntryInventory.ID, BlockTrackEntryInventory::new);
+        register(BlockTrackEntryFluid.ID, BlockTrackEntryFluid::new);
+        register(BlockTrackEntryEndPortalFrame.ID, BlockTrackEntryEndPortalFrame::new);
+        register(BlockTrackEntryMobSpawner.ID, BlockTrackEntryMobSpawner::new);
+        register(BlockTrackEntryMisc.ID, BlockTrackEntryMisc::new);
+        register(BlockTrackEntryEnergy.ID, BlockTrackEntryEnergy::new);
     }
 
-    public void register(@Nonnull Supplier<? extends IBlockTrackEntry> entry) {
-        if (frozen) throw new IllegalStateException("entity tracker registry is frozen!");
-        pendingTrackers.add(entry);
+    public void register(ResourceLocation id, @Nonnull Supplier<? extends IBlockTrackEntry> entry) {
+        if (trackers != null) throw new IllegalStateException("entity tracker registry is frozen!");
+        pendingTrackers.put(id, entry);
     }
 
     public void freeze() {
         ImmutableList.Builder<IBlockTrackEntry> builder = ImmutableList.builder();
-        for (var sup : pendingTrackers) {
+        for (var sup : pendingTrackers.values()) {
             builder.add(sup.get());
         }
         trackers = builder.build();
-        frozen = true;
     }
 
     public List<IBlockTrackEntry> getEntriesForCoordinate(BlockGetter blockAccess, BlockPos pos, BlockEntity te) {
@@ -80,8 +80,8 @@ public enum BlockTrackHandler {
         return trackers;
     }
 
-    public List<ResourceLocation> getIDs() {
-        return trackers.stream().map(IBlockTrackEntry::getEntryID).toList();
+    public Collection<ResourceLocation> getIDs() {
+        return ImmutableList.copyOf(pendingTrackers.keySet());
     }
 
     public List<IBlockTrackEntry> getEntries() {

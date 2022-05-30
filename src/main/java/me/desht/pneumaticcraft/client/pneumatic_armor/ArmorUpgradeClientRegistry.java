@@ -53,11 +53,11 @@ public enum ArmorUpgradeClientRegistry {
         id2HandlerMap.put(handler.getID(), clientHandler);
 
         clientHandler.getInitialKeyBinding().ifPresent(k -> registerKeyBinding(handler.getID(), k));
-        clientHandler.getSubKeybinds().forEach(rl -> registerKeyBinding(rl,
-                new KeyMapping(IArmorUpgradeHandler.getStringKey(rl),
-                        KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
-                        clientHandler.getSubKeybindCategory())
-        ));
+//        clientHandler.getSubKeybinds().forEach(rl -> registerKeyBinding(rl,
+//                new KeyMapping(IArmorUpgradeHandler.getStringKey(rl),
+//                        KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+//                        clientHandler.getSubKeybindCategory())
+//        ));
 
         clientHandler.getTriggerKeyBinding().ifPresent(k -> registerTriggerKeybinding(k, clientHandler));
     }
@@ -69,6 +69,18 @@ public enum ArmorUpgradeClientRegistry {
 
     private void registerTriggerKeybinding(KeyMapping keyBinding, IArmorUpgradeClientHandler<?> clientHandler) {
         triggerKeyBindMap.put(keyBinding.getName(), clientHandler);
+    }
+
+    public void registerSubKeyBinds() {
+        // this is called from late init to ensure that all handlers have the necessary information to report their sub-keybinds
+        // in particular the block tracker handler needs to have a full list of block track entries available to it
+        id2HandlerMap.values().forEach(clientHandler -> {
+            clientHandler.getSubKeybinds().forEach(rl -> registerKeyBinding(rl,
+                    new KeyMapping(IArmorUpgradeHandler.getStringKey(rl),
+                            KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+                            clientHandler.getSubKeybindCategory())
+            ));
+        });
     }
 
     public KeyMapping getKeybindingForUpgrade(ResourceLocation upgradeID) {

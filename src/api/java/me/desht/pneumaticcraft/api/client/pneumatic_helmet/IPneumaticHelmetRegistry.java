@@ -50,18 +50,19 @@ public interface IPneumaticHelmetRegistry {
     /**
      * Register an block track entry (i.e. a subcategory of the Block Tracker) for the Pneumatic Helmet.
      * Call this from a {@link FMLCommonSetupEvent} listener (do not use {@link FMLCommonSetupEvent#enqueueWork(Runnable)}).
-     * @param entry the block track entry
+     * @param id the block entry ID
+     * @param entry the block track entry ({@link IBlockTrackEntry#getEntryID()} must return the same ID as the {@code id} parameter
      */
-    void registerBlockTrackEntry(Supplier<? extends IBlockTrackEntry> entry);
+    void registerBlockTrackEntry(ResourceLocation id, Supplier<? extends IBlockTrackEntry> entry);
 
     /**
      * Register a block tracker for the Pneumatic Helmet
      * @param entry the block tracker
-     * @deprecated use {@link #registerBlockTrackEntry(Supplier)}
+     * @deprecated use {@link #registerBlockTrackEntry(ResourceLocation, Supplier)}
      */
     @Deprecated(forRemoval = true)
     default void registerBlockTrackEntry(IBlockTrackEntry entry) {
-        registerBlockTrackEntry(() -> entry);
+        registerBlockTrackEntry(entry.getEntryID(), () -> entry);
     }
 
     /**

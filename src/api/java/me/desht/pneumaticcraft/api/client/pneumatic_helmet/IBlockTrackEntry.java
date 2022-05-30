@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Supplier;
@@ -96,6 +97,7 @@ public interface IBlockTrackEntry {
      *
      * @return the ID of this entry
      */
+    @Nonnull
     ResourceLocation getEntryID();
 
     /**
