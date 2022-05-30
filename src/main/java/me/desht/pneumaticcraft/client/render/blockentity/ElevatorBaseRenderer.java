@@ -35,6 +35,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<ElevatorBaseBlockEntity> {
     private static final float FACTOR = 9F / 16;
@@ -135,5 +137,14 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
     @Override
     public boolean shouldRenderOffScreen(ElevatorBaseBlockEntity te) {
         return true;  // since this can get very tall
+    }
+
+    @Override
+    public boolean shouldRender(ElevatorBaseBlockEntity te, Vec3 cameraPos) {
+        // Create an AABB fitting the elevator's height, expanded to the view distance.
+        var base = te.getBlockPos();
+        var max = base.offset(0, te.getMaxElevatorHeight(), 0);
+        var aabb = new AABB(base, max).inflate(getViewDistance());
+        return aabb.contains(cameraPos);
     }
 }
