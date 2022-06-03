@@ -127,8 +127,7 @@ public class PneumaticArmorHUDOverlay implements IIngameOverlay {
         }
     }
 
-
-    public void handlePressureWarnings(Player player, EquipmentSlot slot, float pressure) {
+    private void handlePressureWarnings(Player player, EquipmentSlot slot, float pressure) {
         // low/no pressure warnings
         if (pressure <= CRITICAL_PRESSURE && !gaveCriticalWarning[slot.getIndex()]) {
             HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.outOfAir", player.getItemBySlot(slot).getHoverName()),

@@ -192,9 +192,9 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
     @Override
     public float getBrightness() {
-        // cheat a bit here - semiblocks on solid blocks will be unlit otherwise
+        // cheat a bit here - semiblocks on solid blocks will render unlit otherwise
         // instead we use the brightness at the top of the world (hoping there isn't a block there...)
-        return ClientUtils.getBrightnessAtWorldHeight();
+        return level.isClientSide ? ClientUtils.getBrightnessAtWorldHeight() : super.getBrightness();
     }
 
     /**
