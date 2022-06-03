@@ -17,7 +17,12 @@
     {
       "type": "text",
       "title": "Example",
-      "text": "An example Lua program:$(p)$(#008)m = peripheral.wrap(\"right\")$(br)m.addArea(100, 64, 100, 120, 4, 120, \"Filled\")$(br)m.setAction(\"dig\")$(br)m.clearArea()$(br)m.addArea(80, 65, 80)$(br)m.setAction(\"standby\")$(p)/$makes the drone dig out a large area - all blocks in the (100,64,100)->(120,4,120) range - and then return to (80, 65, 80) and go into standby."
+      "text": "An example Lua program:$(br)$(#008)m = peripheral.wrap(\"right\")$(br)m.addArea(100, 64, 100, 120, 4, 120, \"Filled\")$(br)m.setAction(\"dig\")$(br)while not m.isActionDone()$(br)do$(br)  sleep(1)$(br)end$(br)m.clearArea()$(br)m.addArea(80, 65, 80)$(br)m.setAction(\"goto\")$(br)-- wait till done, as above$(br)m.setAction(\"standby\")$(p)/$makes the drone dig out a large area - all blocks in the (100,64,100)->(120,4,120) range - and then return to (80, 65, 80) and go into standby."
+    },
+    {
+      "type": "text",
+      "title": "Example (cont)",
+      "text": "You may notice that the program opposite has to explicitly wait until the Dig (and Goto) actions are done before continuing, unlike when writing Drone programs via the $(l:programming/programmer)Programmer/$. This is because your Lua computer program is running in a separate thread and can't interact with the world directly; it just tells the drone what to do next, and needs to ask the drone if it's done yet."
     },
     {
       "type": "text",
