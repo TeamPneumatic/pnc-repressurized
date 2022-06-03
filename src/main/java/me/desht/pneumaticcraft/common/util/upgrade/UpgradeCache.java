@@ -59,7 +59,7 @@ public class UpgradeCache {
     public void validateCache() {
         if (countCache != null) return;
 
-        countCache = new byte[largestID()];
+        countCache = new byte[largestID() + 1];
         IItemHandler handler = holder.getUpgradeHandler();
 
         ejectDirection = null;
