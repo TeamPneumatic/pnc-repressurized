@@ -808,7 +808,6 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
         updateConvertRelativeState();
 
-        ItemStack programmedItem = te.getItemInProgrammingSlot();
         oldShowingWidgetProgress = showingWidgetProgress;
         int maxProgress = maxPage * WIDGET_X_SPACING;
         if (showingAllWidgets) {
@@ -826,6 +825,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             if (showingWidgetProgress < 0) showingWidgetProgress = 0;
         }
 
+        ItemStack programmedItem = te.getItemInProgrammingSlot();
         boolean isDeviceInserted = !programmedItem.isEmpty();
         importButton.active = isDeviceInserted;
         exportButton.active = isDeviceInserted && programmerUnit.getTotalErrors() == 0;
@@ -855,9 +855,9 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         if (!programmedItem.isEmpty()) {
             int required = te.getRequiredPuzzleCount();
             if (required != 0) exportButtonTooltip.add(TextComponent.EMPTY);
-            int effectiveRequired = minecraft.player.isCreative() ? 0 : required;
+            int effectiveRequired = ClientUtils.getClientPlayer().isCreative() ? 0 : required;
             int available = te.availablePuzzlePieces + countPlayerPuzzlePieces();
-            exportButton.active = effectiveRequired <= available;
+            exportButton.active = exportButton.active && effectiveRequired <= available;
             if (required > 0) {
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", effectiveRequired)
                         .withStyle(ChatFormatting.YELLOW));
@@ -867,7 +867,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.returnedPieces", -effectiveRequired)
                         .withStyle(ChatFormatting.GREEN));
             }
-            if (required != 0 && minecraft.player.isCreative()) {
+            if (required != 0 && ClientUtils.getClientPlayer().isCreative()) {
                 exportButtonTooltip.add(new TextComponent("(Creative mode)").withStyle(ChatFormatting.LIGHT_PURPLE));
             }
             if (effectiveRequired > available) {
