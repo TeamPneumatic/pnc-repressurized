@@ -56,7 +56,8 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
         super.addErrors(curInfo, widgets);
         IProgWidget widget = getConnectedParameters()[getParameters().size() - 1];
         IProgWidget widget2 = getConnectedParameters()[getParameters().size() * 2 - 1];
-        if (widget == null && widget2 == null) {
+        boolean hasMeasureVar = this instanceof ICondition cond && !cond.getMeasureVar().isEmpty();
+        if (widget == null && widget2 == null && !hasMeasureVar) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.noFlowControl"));
         } else if (widget != null && !(widget instanceof ProgWidgetText) || widget2 != null && !(widget2 instanceof ProgWidgetText)) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.shouldConnectTextPieces"));
