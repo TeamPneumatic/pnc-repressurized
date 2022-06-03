@@ -9,7 +9,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
-## 3.2.4-?? (unreleased)
+## 3.2.4-92 (3 Jun 2022)
 
 ### Updates
 * Gamestages integration has been re-added
@@ -22,8 +22,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed the `/give` command creating uninteractable item entities when used to give Empty, Unassembled or Failed PCB's
 * Fix Network Node items not being able to be placed in a Security Station
 * Fixed Vortex Tube model sometimes wrongly showing tube connectors on the heat-handling faces (cosmetic issue)
+* Fixed Drone Condition: Upgrade causing a server crash (ArrayIndexOutOfBoundsException)
+* Fixed mistake in example Lua program in the manual page for the Drone Interface
 
-## 3.2.3-84 (19 May 2022)e
+## 3.2.3-84 (19 May 2022)
 
 ### Updates
 * CoFH integration has been re-added
