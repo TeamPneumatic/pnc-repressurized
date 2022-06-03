@@ -18,6 +18,7 @@ plugins {
 //	id 'com.matthewprenger.cursegradle' version '1.4.0'
 	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
 	id 'maven-publish'
+	id "com.modrinth.minotaur" version "2.+"
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
@@ -55,8 +56,9 @@ sourceSets {
 }
 
 configurations {
-	apiImplementation.extendsFrom(implementation)
-	apiRuntimeOnly.extendsFrom(runtimeOnly)
+//	apiImplementation.extendsFrom(implementation)
+//	apiRuntimeOnly.extendsFrom(runtimeOnly)
+	apiImplementation.extendsFrom(minecraft)
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -125,8 +127,6 @@ dependencies {
 
 	//compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
 	//runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
-	//compileOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-${project.mc_version}:10.3.29")
-	//runtimeOnly fg.deobf("net.darkhax.bookshelf:Bookshelf-Forge-${project.mc_version}:10.3.29")
 	//compileOnly fg.deobf("team.chisel.ctm:CTM:MC1.16.1-${ctm_version}")
 	//runtimeOnly fg.deobf("team.chisel.ctm:CTM:MC1.16.1-${ctm_version}")
 
@@ -216,6 +216,14 @@ javadoc {
 			.tags("apiNote:a:API Note:", "implSpec:a:Implementation Requirements:", "implNote:a:Implementation Note:")
 }
 
+task getChangelogProperty(type: Exec) {
+	standardOutput = new ByteArrayOutputStream()
+	commandLine 'bash', './scripts/extract_changes.sh', "${semver}"
+	doLast {
+		ext.changelog = standardOutput.toString()
+    }
+}
+
 //task makeChangelog(type: GitChangelogTask) {
 //	file = file('changelog.html')
 //	untaggedName = "Current release ${project.version}"
@@ -269,7 +277,7 @@ task sourcesJar(type: Jar) {
 	from sourceSets.api.allJava
 }
 
-task apiJar(type: Jar) {
+task apiJar(type: Jar, dependsOn: apiClasses) {
 	duplicatesStrategy(DuplicatesStrategy.FAIL)
 	archiveClassifier.set('api')
 	from sourceSets.api.output
@@ -343,6 +351,23 @@ idea {
 		for (String exclude in ['run', 'out', 'logs']) {
 			excludeDirs += file(exclude)
 		}
+	}
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "ncAcdgk7"
+	versionNumber = "${version}" // You don't need to set this manually. Will fail if Modrinth has this version already
+	versionType = "release" // This is the default -- can also be `beta` or `alpha`
+	uploadFile = jar // With Loom, this MUST be set to `remapJar` instead of `jar`!
+	additionalFiles = [ apiJar ]
+	gameVersions = ["${mc_version}"] // Must be an array, even with only one version
+	changelog = System.getenv("CHANGELOG")
+	dependencies { // A special DSL for creating dependencies
+		// scope.type
+		// The scope can be `required`, `optional`, or `incompatible`
+		// The type can either be `project` or `version`
+		required.project "nU0bVIaL"  // Patchouli
 	}
 }
 
