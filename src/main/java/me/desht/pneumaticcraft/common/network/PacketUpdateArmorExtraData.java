@@ -70,13 +70,13 @@ public class PacketUpdateArmorExtraData {
     }
 
     PacketUpdateArmorExtraData(FriendlyByteBuf buffer) {
-        slot = EquipmentSlot.values()[buffer.readByte()];
+        slot = buffer.readEnum(EquipmentSlot.class);
         data = buffer.readNbt();
         upgradeID = buffer.readResourceLocation();
     }
 
     public void toBytes(FriendlyByteBuf buf) {
-        buf.writeByte(slot.ordinal());
+        buf.writeEnum(slot);
         buf.writeNbt(data);
         buf.writeResourceLocation(upgradeID);
     }
