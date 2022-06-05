@@ -35,6 +35,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<ElevatorBaseBlockEntity> {
     private static final float FACTOR = 9F / 16;
@@ -135,5 +136,12 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
     @Override
     public boolean shouldRenderOffScreen(ElevatorBaseBlockEntity te) {
         return true;  // since this can get very tall
+    }
+
+    @Override
+    public boolean shouldRender(ElevatorBaseBlockEntity pBlockEntity, Vec3 pCameraPos) {
+        // ignore camera Y pos for purposes of render visibility (like the beacon does)
+        return Vec3.atCenterOf(pBlockEntity.getBlockPos()).multiply(1.0D, 0.0D, 1.0D)
+                .closerThan(pCameraPos.multiply(1.0D, 0.0D, 1.0D), this.getViewDistance());
     }
 }
