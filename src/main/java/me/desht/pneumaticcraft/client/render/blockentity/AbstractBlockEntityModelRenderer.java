@@ -35,8 +35,6 @@ public abstract class AbstractBlockEntityModelRenderer<T extends AbstractPneumat
     public void render(T te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         // boilerplate translation code, common to all our model-rendering TERs, is done here
 
-        if (!shouldRender(te) || !te.nonNullLevel().isLoaded(te.getBlockPos())) return;
-
         matrixStack.pushPose();
 
         // necessary transforms to make models render in the right place
@@ -52,10 +50,6 @@ public abstract class AbstractBlockEntityModelRenderer<T extends AbstractPneumat
     }
 
     abstract void renderModel(T te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn);
-
-    protected boolean shouldRender(T te) {
-        return true;
-    }
 
     protected void renderExtras(T te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
     }
