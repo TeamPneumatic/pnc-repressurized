@@ -35,7 +35,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei.transfer;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
@@ -59,10 +58,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -170,7 +167,6 @@ public class ProgrammerTransferHandler implements IRecipeTransferHandler<Contain
                 .orElse(null);
     }
 
-    @Mod.EventBusSubscriber(value = Dist.CLIENT, modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onGuiOpen(GuiOpenEvent event) {
