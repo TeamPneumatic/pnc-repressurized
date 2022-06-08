@@ -24,10 +24,11 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,18 +52,20 @@ public class DroneGoToChargingStation extends Goal {
     @Override
     public boolean canUse() {
         List<TileEntityChargingStation> validChargingStations = new ArrayList<>();
+        World level = drone.level;
         drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
-            if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE) {
+            if (h.getPressure() < PneumaticValues.DRONE_LOW_PRESSURE && h.getPressure() > 0.001f) {
                 int maxDistSq = ConfigHelper.common().advanced.maxDroneChargingStationSearchRange.get()
                         * ConfigHelper.common().advanced.maxDroneChargingStationSearchRange.get();
                 for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
-                    if (station.getLevel() == drone.level && drone.distanceToSqr(Vector3d.atCenterOf(station.getBlockPos())) <= maxDistSq) {
-                        if (DroneClaimManager.getInstance(drone.level).isClaimed(station.getBlockPos())) {
-                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", station.getBlockPos());
+                    BlockPos chargingPos = station.getBlockPos();
+                    if (station.getLevel() == level && level.isLoaded(chargingPos) && drone.distanceToSqr(Vector3d.atCenterOf(chargingPos)) <= maxDistSq) {
+                        if (DroneClaimManager.getInstance(level).isClaimed(chargingPos)) {
+                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", chargingPos);
                         } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {
-                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.notEnoughPressure", station.getBlockPos());
+                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.notEnoughPressure", chargingPos);
                         } else if (station.getUpgrades(EnumUpgrade.DISPENSER) == 0) {
-                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.noDispenserUpgrades", station.getBlockPos());
+                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.noDispenserUpgrades", chargingPos);
                         } else {
                             validChargingStations.add(station);
                         }
@@ -71,19 +74,20 @@ public class DroneGoToChargingStation extends Goal {
             }
         });
 
-        validChargingStations.sort(Comparator.comparingDouble(te -> PneumaticCraftUtils.distBetweenSq(te.getBlockPos(), drone.getX(), drone.getY(), drone.getZ())));
+        validChargingStations.sort(Comparator.comparingDouble(te -> te.getBlockPos().distSqr(drone.blockPosition())));
 
         for (TileEntityChargingStation station : validChargingStations) {
-            if (TileEntitySecurityStation.isProtectedFromPlayer(drone.getFakePlayer(), station.getBlockPos(), false)) {
-                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.protected", station.getBlockPos());
-            } else if (drone.getPathNavigator().moveToXYZ(station.getBlockPos().getX() + 0.5, station.getBlockPos().getY() + 1, station.getBlockPos().getZ() + 0.5)
+            BlockPos chargingPos = station.getBlockPos();
+            if (TileEntitySecurityStation.isProtectedFromPlayer(drone.getFakePlayer(), chargingPos, false)) {
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.protected", chargingPos);
+            } else if (drone.getPathNavigator().moveToXYZ(chargingPos.getX() + 0.5, chargingPos.getY() + 1, chargingPos.getZ() + 0.5)
                     || drone.getPathNavigator().isGoingToTeleport()) {
                 isExecuting = true;
                 curCharger = station;
-                DroneClaimManager.getInstance(drone.level).claim(station.getBlockPos());
+                DroneClaimManager.getInstance(level).claim(chargingPos);
                 return true;
             } else {
-                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.cantNavigate", station.getBlockPos());
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.cantNavigate", chargingPos);
             }
         }
         isExecuting = false;
