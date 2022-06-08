@@ -27,7 +27,6 @@ public class DamageSourcePneumaticCraft extends DamageSource {
     public static final DamageSource PRESSURE = new DamageSourcePneumaticCraft("pressure", 2).bypassArmor();
     public static final DamageSource ETCHING_ACID = new DamageSourcePneumaticCraft("acid", 2);
     public static final DamageSource SECURITY_STATION = new DamageSourcePneumaticCraft("securityStation").bypassArmor();
-    public static final DamageSource FREEZING = new DamageSourcePneumaticCraft("freezing", 2);
     public static final DamageSource PLASTIC_BLOCK = new DamageSourcePneumaticCraft("plastic_block", 2);
 
     public static boolean isDroneOverload(DamageSource src) {

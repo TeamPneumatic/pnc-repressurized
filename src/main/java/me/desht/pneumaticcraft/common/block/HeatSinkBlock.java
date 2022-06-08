@@ -17,12 +17,12 @@
 
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.block.entity.HeatSinkBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -90,9 +90,18 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
             } else if (temp < 243) { // -30C
                 int durationTicks = (int) ((243 - temp) * 2);
                 int amplifier = (int) ((243 - temp) / 20);
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, durationTicks, amplifier));
+                entity.setIsInPowderSnow(true);
                 if (temp < 213) { // -60C
-                    entity.hurt(DamageSourcePneumaticCraft.FREEZING, 2);
+                    // Internally, 1 Frozen Tick is added while can freeze, and 2 taken off otherwise (wearing Leather Armor piece for example)
+                    if (entity.canFreeze()) {
+                        entity.setTicksFrozen(Math.min(entity.getTicksFrozen() + amplifier, entity.getTicksRequiredToFreeze() + 2));
+                    } else {
+                        entity.setTicksFrozen(Math.min(entity.getTicksFrozen() + amplifier + 3, entity.getTicksRequiredToFreeze() + 2));
+                    }
+                    if (entity.getTicksFrozen() >= entity.getTicksRequiredToFreeze()) {
+                        ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, durationTicks, amplifier));
+                        entity.hurt(DamageSource.FREEZE, entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES) ? 5 : 2);
+                    }
                 }
             }
         });
