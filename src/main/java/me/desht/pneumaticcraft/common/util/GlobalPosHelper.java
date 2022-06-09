@@ -33,6 +33,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class GlobalPosHelper {
+    // TODO 1.19 use GlobalPos.CODEC & DynamicOps for NBT & Json serialization
+
     public static CompoundTag toNBT(GlobalPos globalPos) {
         CompoundTag tag = new CompoundTag();
         tag.put("pos", net.minecraft.nbt.NbtUtils.writeBlockPos(globalPos.pos()));

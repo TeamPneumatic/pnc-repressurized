@@ -36,14 +36,12 @@ public class HeatExtractionTracker extends SavedData {
     private HeatExtractionTracker() {
     }
 
-    public static HeatExtractionTracker getInstance(Level world) {
-        return ((ServerLevel) world).getDataStorage().computeIfAbsent(HeatExtractionTracker::load, HeatExtractionTracker::new, DATA_NAME);
+    private static HeatExtractionTracker load(CompoundTag tag) {
+        return new HeatExtractionTracker().readNBT(tag);
     }
 
-    private static HeatExtractionTracker load(CompoundTag tag) {
-        HeatExtractionTracker tracker = new HeatExtractionTracker();
-        tracker.readNBT(tag);
-        return tracker;
+    public static HeatExtractionTracker getInstance(Level world) {
+        return ((ServerLevel) world).getDataStorage().computeIfAbsent(HeatExtractionTracker::load, HeatExtractionTracker::new, DATA_NAME);
     }
 
     public double getHeatExtracted(BlockPos pos) {
@@ -60,7 +58,7 @@ public class HeatExtractionTracker extends SavedData {
         setDirty();
     }
 
-    private void readNBT(CompoundTag nbt) {
+    private HeatExtractionTracker readNBT(CompoundTag nbt) {
         extracted.clear();
 
         ListTag list = nbt.getList("extracted", Tag.TAG_COMPOUND);
@@ -69,6 +67,8 @@ public class HeatExtractionTracker extends SavedData {
             BlockPos pos = new BlockPos(sub.getInt("x"), sub.getInt("y"), sub.getInt("z"));
             extracted.put(pos, sub.getDouble("heat"));
         }
+
+        return this;
     }
 
     @Override
