@@ -78,7 +78,7 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
 
     @Override
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
-        if (!(entity instanceof LivingEntity)) return;
+        if (!(entity instanceof LivingEntity livingEntity)) return;
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, HeatSinkBlockEntity.class).ifPresent(te -> {
             double temp = te.getHeatExchanger().getTemperature();
@@ -88,26 +88,26 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
                     entity.setSecondsOnFire(3);
                 }
             } else if (temp < 243) { // -30C
-                int durationTicks = (int) ((243 - temp) * 2);
-                int amplifier = (int) ((243 - temp) / 20);
                 entity.setIsInPowderSnow(true);
                 if (temp < 213) { // -60C
                     // Internally, 1 Frozen Tick is added while can freeze, and 2 taken off otherwise (wearing Leather Armor piece for example)
-                    if (entity.canFreeze()) {
-                        entity.setTicksFrozen(Math.min(entity.getTicksFrozen() + amplifier, entity.getTicksRequiredToFreeze() + 2));
-                    } else {
-                        entity.setTicksFrozen(Math.min(entity.getTicksFrozen() + amplifier + 3, entity.getTicksRequiredToFreeze() + 2));
-                    }
+                    boolean canFreeze = entity.canFreeze();
+                    int amplifier = (int) ((243 - temp) / 20d) + (canFreeze ? 0 : 3);  // add 3 if !canFreeze to compensate for -2 from vanilla
+                    entity.setTicksFrozen(Math.min(entity.getTicksFrozen() + amplifier, entity.getTicksRequiredToFreeze() + 2));
                     if (entity.getTicksFrozen() >= entity.getTicksRequiredToFreeze()) {
-                        ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, durationTicks, amplifier));
-                        entity.hurt(DamageSource.FREEZE, entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES) ? 5 : 2);
+                        int durationTicks = (int) ((243 - temp) * 2);
+                        livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, durationTicks, amplifier));
+                        // more damage if cold-vulnerable, less damage if !canFreeze() (typically armour protection)
+                        float dmg = entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES) ? 5 : 2;
+                        if (!canFreeze) dmg /= 2f;
+                        entity.hurt(DamageSource.FREEZE, dmg);
                     }
                 }
             }
         });
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return new HeatSinkBlockEntity(pPos, pState);
