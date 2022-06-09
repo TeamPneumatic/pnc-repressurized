@@ -24,10 +24,14 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 
 public class DamageSourcePneumaticCraft extends DamageSource {
+    /**
+     * {@code @Deprecated} Will be removed in 1.19 in favor of Vanilla Freeze Damage Source
+     */
+    @Deprecated(forRemoval = true)
+    public static final DamageSource FREEZING = DamageSource.FREEZE;
     public static final DamageSource PRESSURE = new DamageSourcePneumaticCraft("pressure", 2).bypassArmor();
     public static final DamageSource ETCHING_ACID = new DamageSourcePneumaticCraft("acid", 2);
     public static final DamageSource SECURITY_STATION = new DamageSourcePneumaticCraft("securityStation").bypassArmor();
-    public static final DamageSource FREEZING = new DamageSourcePneumaticCraft("freezing", 2);
     public static final DamageSource PLASTIC_BLOCK = new DamageSourcePneumaticCraft("plastic_block", 2);
 
     public static boolean isDroneOverload(DamageSource src) {
