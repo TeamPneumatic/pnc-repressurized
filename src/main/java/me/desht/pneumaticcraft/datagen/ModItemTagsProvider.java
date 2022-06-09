@@ -86,6 +86,13 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(PneumaticCraftTags.Items.BREAD, ModItems.SOURDOUGH_BREAD);
 
         addItemsToTag(PneumaticCraftTags.Items.WRENCHES, ModItems.PNEUMATIC_WRENCH);
+
+        addItemsToTag(ItemTags.FREEZE_IMMUNE_WEARABLES,
+                ModItems.COMPRESSED_IRON_HELMET, ModItems.COMPRESSED_IRON_CHESTPLATE,
+                ModItems.COMPRESSED_IRON_LEGGINGS, ModItems.COMPRESSED_IRON_BOOTS,
+                ModItems.PNEUMATIC_HELMET, ModItems.PNEUMATIC_CHESTPLATE,
+                ModItems.PNEUMATIC_LEGGINGS, ModItems.PNEUMATIC_BOOTS
+        );
     }
 
     @SafeVarargs
