@@ -30,14 +30,14 @@ import net.minecraftforge.common.util.INBTSerializable;
 import java.util.function.Supplier;
 
 /**
- * You can extend this class, and register it via
- * {@link IHeatRegistry#registerHeatBehaviour(ResourceLocation, Supplier)}
- * <p>
- * This can be used to add heat dependent logic to non-BE's or blocks you don't have access to. For example,
+ * This can be used to add heat dependent logic to non-BE's or blocks from outside your own mod. For example,
  * PneumaticCraft uses this to power Furnaces with heat, and to turn Lava into Obsidian when heat is drained.
- * Of course, this requires a ticking heat exchanger block (e.g. a compressed iron block or any heatable machine) to
+ * Of course, this requires a ticking heat exchanger block (e.g. a Compressed Iron Block or any heatable machine) to
  * perform the ticking behaviour; simply adding a heat behaviour to lava won't make lava spontaneously turn into
- * obsidian. A ticking heat exchanger is needed to actually drain the heat.
+ * obsidian. A ticking heat exchanger adjacent to the Lava block is needed to actually drain the heat.
+ * <p>
+ * You can extend this class, and register the extended class via
+ * {@link IHeatRegistry#registerHeatBehaviour(ResourceLocation, Supplier)}
  * <p>
  * For general blockstate transitions, datapack recipes are the preferred way to add custom heat behaviours. See
  * {@code data/pneumaticcraft/recipes/block_heat_properties/*.json}

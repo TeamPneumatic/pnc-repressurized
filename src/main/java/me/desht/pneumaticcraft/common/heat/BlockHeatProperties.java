@@ -77,6 +77,7 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
                 .forEach((key, recipe) -> customHeatEntries.put(recipe.getBlock(), recipe));
 
         // give other mods a chance to programmatically add simple heat properties (no transitions, just temperature & resistance)
+        // TODO removing in 1.19
         MinecraftForge.EVENT_BUS.post(new HeatRegistrationEvent(HeatExchangerManager.getInstance()));
 
         registerDefaultFluidValues();

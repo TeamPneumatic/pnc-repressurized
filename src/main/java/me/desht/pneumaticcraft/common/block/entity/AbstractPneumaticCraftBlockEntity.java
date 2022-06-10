@@ -241,8 +241,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     @Override
     public void onLoad() {
-        if (this instanceof IHeatExchangingTE) {
-            ((IHeatExchangingTE) this).initializeHullHeatExchangers(level, worldPosition);
+        if (this instanceof IHeatExchangingTE he) {
+            he.initializeHullHeatExchangers(level, worldPosition);
         }
     }
 

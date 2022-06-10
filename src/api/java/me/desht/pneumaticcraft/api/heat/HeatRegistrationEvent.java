@@ -23,7 +23,10 @@ import net.minecraftforge.eventbus.api.Event;
 /**
  * Fired when block heat properties are loaded from datapacks. This event gives an opportunity to add custom block
  * heat properties and behaviours in code.
+ * @deprecated will be removed in 1.19. This should be done purely by datapack now
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
+@Deprecated(forRemoval = true)
 public class HeatRegistrationEvent extends Event {
     protected final IHeatRegistry registry;
 

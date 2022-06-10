@@ -22,6 +22,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -52,26 +55,31 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
     void tick();
 
     /**
-     * When called (on block entity first tick and on neighbor block updates), this discovers all heat
-     * exchanging neighbor tile entities as connected heat exchangers (i.e. tile entities who provide the
-     * {@link IHeatExchangerLogic} capability on that side).  It will also account for neighbouring blocks with
-     * special heat properties, like Magma or Lava, and other special cases like Heat Frames (which are entities).
+     * Discovers all heat exchanging neighbor block entities  (i.e. block entities who provide the
+     * {@link IHeatExchangerLogic} capability on that side) and adds them as connected heat exchangers.  It also
+     * accounts for neighbouring blocks with special heat properties, like Magma or Lava, and other special cases like
+     * Heat Frames (which are entities).
+     * <p>
+     * This should be called by the owning block entity on first tick ({@link BlockEntity#onLoad()} is suitable)
+     * and when neighboring blocks update
+     * ({@link net.minecraft.world.level.block.Block#neighborChanged(BlockState, Level, BlockPos, Block, BlockPos, boolean)}.
      * <p>
      * You don't need to call this method if this heat exchanger is not connected to the outside world (e.g.
-     * the connecting heat exchanger within a Vortex Tube).
+     * the internal connecting heat exchanger within a Vortex Tube).
      *
      * @param world the world
-     * @param pos  the position
-     * @param blockFilter a whitelist check; can be used to exclude certain blocks, e.g. air or fluids
+     * @param pos the blockpos of the owning block entity
+     * @param blockFilter a whitelist check; can be used to exclude certain blocks, e.g. air or fluids. In most cases,
+     *                    {@link #ALL_BLOCKS} can be passed here.
      * @param validSides an array of sides to check for heat exchanging neighbours
      */
     void initializeAsHull(Level world, BlockPos pos, BiPredicate<LevelAccessor,BlockPos> blockFilter, Direction... validSides);
 
     /**
-     * Initialize this heat exchanger's ambient temperature based on the given world &amp; position.  You don't need to call
-     * this method if your heat exchanger is a hull exchanger (i.e. provides an {@link IHeatExchangerLogic} object via
-     * capability lookup), as hulls are automatically initialized by
-     * {@link IHeatExchangerLogic#initializeAsHull(Level, BlockPos, BiPredicate, Direction...)}
+     * Initialize this heat exchanger's ambient temperature based on the given world &amp; position.  You don't need to
+     * call this method if your heat exchanger is a hull exchanger (i.e. provides an {@link IHeatExchangerLogic} object
+     * via capability lookup), as such heat exchangers are automatically initialized by
+     * {@link IHeatExchangerLogic#initializeAsHull(Level, BlockPos, BiPredicate, Direction...)}.
      *
      * @param world the world
      * @param pos the position
@@ -81,7 +89,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
     /**
      * When called, this will create a thermal connection between this heat exchanger and the given one. This should
      * be used when your BE contains more than one heat exchanger and you need a thermal connection between them;
-     * an example is the Vortex Tube.
+     * an example is the hot and cold ends of the Vortex Tube.
      * <p>
      * You <strong>don't</strong> need to call this method if your BE just has one heat exchanger to
      * expose to the world; in that case {@link #initializeAsHull(Level, BlockPos, BiPredicate, Direction...)} will
@@ -115,7 +123,7 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundTag> {
 
     /**
      * @param exchanger the other heat exchanger
-     * @param reciprocate whether the other exchanger should also add this one
+     * @param reciprocate whether the other exchanger should also remove this one
      * @apiNote non-api; don't call directly
      */
     default void removeConnectedExchanger(IHeatExchangerLogic exchanger, boolean reciprocate) {

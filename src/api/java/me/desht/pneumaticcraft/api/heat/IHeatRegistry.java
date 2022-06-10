@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  */
 public interface IHeatRegistry {
     /**
-     * Create a new ticking heat exchanger logic instance for use in tile entities (or potentially other ticking objects)
+     * Create a new ticking heat exchanger logic instance for use in block entities (or potentially other ticking objects)
      * that you create.
      *
      * @return a heat exchanger logic
@@ -44,7 +44,9 @@ public interface IHeatRegistry {
      * @param block the block
      * @param temperature the block's temperature
      * @param thermalResistance the thermal resistance, i.e. how quickly heat will be transferred
+     * @deprecated removing in 1.19; this should be done by datapack
      */
+    @Deprecated(forRemoval = true)
     void registerBlockExchanger(Block block, double temperature, double thermalResistance);
 
     /**
