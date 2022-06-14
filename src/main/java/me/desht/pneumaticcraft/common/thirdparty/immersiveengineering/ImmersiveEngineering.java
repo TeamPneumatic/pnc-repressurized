@@ -39,7 +39,7 @@ public class ImmersiveEngineering implements IThirdParty {
     private static final ResourceLocation HEMP_BLOCK = new ResourceLocation("immersiveengineering:hemp");
 
     @Override
-    public void init() {
+    public void preInit() {
         MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
         MinecraftForge.EVENT_BUS.register(ExternalHeatCapListener.class);
         FMLJavaModLoadingContext.get().getModEventBus().register(HarvestListener.class);
