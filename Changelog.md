@@ -12,6 +12,14 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 2.15.1 and later *require* Forge 36.2.0 or later, **and** Patchouli 1.16.4-50 or later.
 * If Mekanism is installed, PNC:R 2.15.1 and later *require* Mekanism 10.1.x or later.
 
+## 2.15.10-??? (unreleased)
+
+### Fixes
+* Fix crash on startup if JEI isn't installed
+* A couple of fixes to Drone auto-charging behaviour
+  * In particular, Drones which are completely out of air will no longer attempt to claim a Charging Station, locking all other Drones out of it
+* A couple of fixes to PNC fuels when used in a non-bucket container as vanilla Furnace fuels
+
 ## 2.15.9-326 (25 May 2022)
 
 ### Fixes
