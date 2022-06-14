@@ -78,6 +78,8 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Iterator;
@@ -99,13 +101,30 @@ public class MiscEventHandler {
     }
     @SubscribeEvent
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
-        FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
-            ResourceLocation name = fluidStack.getFluid().getRegistryName();
-            if (name != null && Names.MOD_ID.equals(name.getNamespace())) {
-                int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(null, fluidStack.getFluid());
-                event.setBurnTime(value > 0 ? (int)(value * ConfigHelper.common().general.fuelBucketEfficiency.get()) : -1);
-            }
-        });
+        // allow burning of PNC fuel fluids in any container item, iff item.hasContainer() is true
+        ItemStack containerStack = event.getItemStack();
+        if (containerStack.hasContainerItem()) {
+            FluidUtil.getFluidContained(containerStack).ifPresent(fluidStack -> {
+                ResourceLocation name = fluidStack.getFluid().getRegistryName();
+                if (name != null && Names.MOD_ID.equals(name.getNamespace())) {
+                    int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(null, fluidStack.getFluid());
+                    if (value > 0) {
+                        int amountTaken = amountTaken(fluidStack.getAmount(), containerStack);
+                        double mult = Math.min(amountTaken, fluidStack.getAmount()) / 1000d;
+                        event.setBurnTime((int) (value * mult * ConfigHelper.common().general.fuelBucketEfficiency.get()));
+                    } else {
+                        event.setBurnTime(-1);
+                    }
+                }
+            });
+        }
+    }
+
+    private int amountTaken(int origAmount, ItemStack stack) {
+        int newAmount = stack.getContainerItem().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+                .map(handler -> handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).getAmount())
+                .orElse(0);
+        return origAmount - newAmount;
     }
 
     @SubscribeEvent
