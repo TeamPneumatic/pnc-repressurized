@@ -9,6 +9,23 @@ Changes are in reverse chronological order; newest changes at the top.
 * PNC:R 3.2.3 and later *require* Forge 40.1.20 or later
 * PNC:R 3.2.0 and later *require* Forge 40.1.0 or later and JEI 9.7.0 or later
 
+## 3.2.5-?? (unreleased)
+
+### Updates
+* Heat Sink cold damage is now more vanilla-like, using the same effect as Powder Snow
+  * Wearing Compressed and/or Pneumatic Armor negates cold damage between -30C and -60C, and reduces damage taken below -60C
+  * Any armor in `minecraft:freeze_immune_wearables` item tag will reduce cold damage taken
+* Related: Minigun Freezing Ammo now applies vanilla freeze effects to mobs when hit
+  * Now checks for entities in the vanilla `minecraft:freeze_hurts_extra_types` entity tag 
+  * Remains extremely effective against Nether mobs
+
+### Fixes
+* Fixed Harvesting Drones ignoring IE Hemp
+* Fixed very tall Elevators sometimes not rendering when extended
+* Fixed PNC fuel behaviour in vanilla furnaces when placed in a non-bucket container (e.g. PNC tank)
+* A couple of fixes to Drone auto-charging behaviour
+  * In particular, Drones which are completely out of air will no longer attempt to claim a Charging Station, locking all other Drones out of it
+
 ## 3.2.4-93 (3 Jun 2022)
 
 ### Updates
