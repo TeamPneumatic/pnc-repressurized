@@ -19,13 +19,42 @@ package me.desht.pneumaticcraft.api.drone;
 
 import net.minecraft.world.entity.Entity;
 
+/**
+ * Some methods to control a drone-like object's movement. "Drone-like" means it could be a real Drone, or a
+ * Programmable Controller.
+ * <p>
+ * Retrieve an instance of this via {@link IDrone#getPathNavigator()}.
+ */
 public interface IPathNavigator {
+    /**
+     * Instruct the drone to move to the given position. Note that any currently-running program may subsequently
+     * override this. Note that if the drone cannot path to the given position, it may attempt to teleport.
+     * @param x target X position
+     * @param y target Y position
+     * @param z target Z position
+     * @return true if the drone is able to path to the given position, false otherwise
+     */
     boolean moveToXYZ(double x, double y, double z);
 
+    /**
+     * Instruct the drone to move to the given entity. Note that any currently-running program may subsequently
+     * override this. Note that if the drone cannot path to the given entity, it may attempt to teleport.
+     * @param entity the target entity
+     * @return true if the drone is able to path to the given entity, false otherwise
+     */
     boolean moveToEntity(Entity entity);
 
+    /**
+     * Check if the drone has an active path currently set.
+     * @return true if the drone has no path, or the current path is complete, false if there is still an active path
+     */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean hasNoPath();
-
+    
+    /**
+     * Check if the drone is firing up its teleportation device. Drones about to teleport will show some ender-style
+     * particles above themselves.
+     * @return true if the drone is about to teleport, false otherwise
+     */
     boolean isGoingToTeleport();
 }

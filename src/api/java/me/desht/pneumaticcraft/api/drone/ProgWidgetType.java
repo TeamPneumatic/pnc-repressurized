@@ -22,7 +22,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 import java.util.function.Supplier;
 
 /**
- * Represents the type of an upgrade. You do not need to use this directly.
+ * Represents the type of a progwidget. You do not need to use this directly.
  */
 public class ProgWidgetType<P extends IProgWidgetBase> extends ForgeRegistryEntry<ProgWidgetType<?>> {
     private final Supplier<? extends P> factory;

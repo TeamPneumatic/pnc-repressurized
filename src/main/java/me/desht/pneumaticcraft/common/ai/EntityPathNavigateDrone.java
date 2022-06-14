@@ -59,18 +59,18 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
     }
 
     @Override
-    public boolean moveTo(Entity p_75497_1_, double p_75497_2_) {
-        return super.moveTo(p_75497_1_, p_75497_2_) || isGoingToTeleport();
+    public boolean moveTo(Entity pEntity, double pSpeed) {
+        return super.moveTo(pEntity, pSpeed) || isGoingToTeleport();
     }
 
     /**
      * Returns the path to the given EntityLiving
      */
     @Override
-    public Path createPath(Entity par1Entity, int p2) {
-        BlockPos pos = new BlockPos(par1Entity.getX(), par1Entity.getBoundingBox().minY, par1Entity.getZ());
+    public Path createPath(Entity entity, int p2) {
+        BlockPos pos = new BlockPos(entity.getX(), entity.getBoundingBox().minY, entity.getZ());
 
-        if ((par1Entity instanceof ItemEntity && !droneEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof AbstractMinecart) {
+        if ((entity instanceof ItemEntity && !droneEntity.isBlockValidPathfindBlock(pos)) || entity instanceof AbstractMinecart) {
             // items can end up with a blockpos of the ground they're sitting on,
             // which will prevent the drone pathfinding to them
             // minecarts apparently prevent the drone moving to the same blockpos
