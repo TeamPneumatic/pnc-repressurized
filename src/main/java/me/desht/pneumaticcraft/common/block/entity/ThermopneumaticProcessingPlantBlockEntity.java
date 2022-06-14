@@ -24,13 +24,13 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.ThermopneumaticProcessingPlantMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
@@ -233,7 +233,7 @@ public class ThermopneumaticProcessingPlantBlockEntity extends AbstractAirHandli
      * @return a recipe, or null for no matching recipe
      */
     private ThermoPlantRecipe findApplicableRecipe() {
-        for (ThermoPlantRecipe recipe : PneumaticCraftRecipeType.thermoPlant.getRecipes(level).values()) {
+        for (ThermoPlantRecipe recipe : ModRecipeTypes.getRecipes(level, ModRecipeTypes.THERMO_PLANT)) {
             if (recipe.matches(inputTank.getFluid(), inputItemHandler.getStackInSlot(0))) {
                 requiredPressure = recipe.getRequiredPressure();
                 minTemperature = recipe.getOperatingTemperature().getMin();
@@ -370,7 +370,7 @@ public class ThermopneumaticProcessingPlantBlockEntity extends AbstractAirHandli
         @Override
         public boolean isFluidValid(FluidStack fluid) {
             return fluid.isEmpty() || acceptedFluidCache.isAcceptable(fluid.getFluid(), () ->
-                    PneumaticCraftRecipeType.thermoPlant.stream(level)
+                    ModRecipeTypes.THERMO_PLANT.get().stream(level)
                             .anyMatch(r -> r.getInputFluid().testFluid(fluid.getFluid()))
             );
         }
@@ -397,7 +397,7 @@ public class ThermopneumaticProcessingPlantBlockEntity extends AbstractAirHandli
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
             return stack.isEmpty() || acceptedItemCache.isAcceptable(stack.getItem(), () ->
-                    PneumaticCraftRecipeType.thermoPlant.stream(level).anyMatch(r -> r.getInputItem().test(stack))
+                    ModRecipeTypes.THERMO_PLANT.get().stream(level).anyMatch(r -> r.getInputItem().test(stack))
             );
         }
 

@@ -21,7 +21,7 @@ import com.google.common.collect.ArrayListMultimap;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.HeatRegistrationEvent;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -73,8 +73,8 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
     }
 
     private void populateCustomHeatEntries(Level world) {
-        PneumaticCraftRecipeType.heatProperties.getRecipes(world)
-                .forEach((key, recipe) -> customHeatEntries.put(recipe.getBlock(), recipe));
+        ModRecipeTypes.getRecipes(world, ModRecipeTypes.BLOCK_HEAT_PROPERTIES)
+                        .forEach(recipe -> customHeatEntries.put(recipe.getBlock(), recipe));
 
         // give other mods a chance to programmatically add simple heat properties (no transitions, just temperature & resistance)
         // TODO removing in 1.19

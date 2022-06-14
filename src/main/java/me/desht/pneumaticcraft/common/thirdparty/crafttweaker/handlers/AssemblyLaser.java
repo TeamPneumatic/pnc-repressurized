@@ -25,7 +25,7 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -48,6 +48,6 @@ public class AssemblyLaser implements IRecipeManager<AssemblyRecipe> {
 
     @Override
     public RecipeType<AssemblyRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.assemblyLaser;
+        return ModRecipeTypes.ASSEMBLY_LASER.get();
     }
 }

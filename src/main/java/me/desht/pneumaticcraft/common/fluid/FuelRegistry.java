@@ -19,14 +19,12 @@ package me.desht.pneumaticcraft.common.fluid;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import net.minecraft.tags.Tag;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public enum FuelRegistry implements IFuelRegistry {
     INSTANCE;
@@ -34,7 +32,7 @@ public enum FuelRegistry implements IFuelRegistry {
     private static final FuelRecord MISSING_FUEL_ENTRY = new FuelRecord(0, 1f);
 
     // values which have been registered in code (could be accessed from off-thread via API)
-    private final Map<Tag<Fluid>, FuelRecord> fuelTags = new ConcurrentHashMap<>();
+//    private final Map<Tag<Fluid>, FuelRecord> fuelTags = new ConcurrentHashMap<>();
 
     private final Map<Fluid, FuelRecord> cachedFuels = new HashMap<>();  // cleared on a /reload
     private final Map<Fluid, FuelRecord> hotFluids = new HashMap<>();
@@ -63,7 +61,7 @@ public enum FuelRegistry implements IFuelRegistry {
         Set<Fluid> res = new HashSet<>(hotFluids.keySet());
 
         // recipes, from datapacks
-        for (FuelQualityRecipe recipe : PneumaticCraftRecipeType.fuelQuality.getRecipes(world).values()) {
+        for (FuelQualityRecipe recipe : ModRecipeTypes.getRecipes(world, ModRecipeTypes.FUEL_QUALITY)) {
             res.addAll(recipe.getFuel().getFluidStacks().stream()
                     .map(FluidStack::getFluid)
                     .filter(f -> f.isSource(f.defaultFluidState()))
@@ -71,12 +69,12 @@ public enum FuelRegistry implements IFuelRegistry {
         }
 
         // fluids tags added by code
-        fuelTags.forEach((tag, entry) -> {
-            if (entry.mLperBucket > 0) {
-                List<Fluid> l = tag.getValues().stream().filter(f -> f.isSource(f.defaultFluidState())).toList();
-                res.addAll(l);
-            }
-        });
+//        fuelTags.forEach((tag, entry) -> {
+//            if (entry.mLperBucket > 0) {
+//                List<Fluid> l = tag.getValues().stream().filter(f -> f.isSource(f.defaultFluidState())).toList();
+//                res.addAll(l);
+//            }
+//        });
 
         return res;
     }
@@ -92,18 +90,18 @@ public enum FuelRegistry implements IFuelRegistry {
         if (fe != null) return fe;
 
         // stuff from datapacks (override default registered stuff)
-        for (FuelQualityRecipe recipe : PneumaticCraftRecipeType.fuelQuality.getRecipes(world).values()) {
+        for (FuelQualityRecipe recipe : ModRecipeTypes.getRecipes(world, ModRecipeTypes.FUEL_QUALITY)) {
             if (recipe.matchesFluid(fluid)) {
                 return new FuelRecord(recipe.getAirPerBucket(), recipe.getBurnRate());
             }
         }
 
         // fluid tags registered in code
-        for (Map.Entry<Tag<Fluid>, FuelRecord> entry : fuelTags.entrySet()) {
-            if (entry.getKey().getValues().contains(fluid)) {
-                return entry.getValue();
-            }
-        }
+//        for (Map.Entry<Tag<Fluid>, FuelRecord> entry : fuelTags.entrySet()) {
+//            if (entry.getKey().getValues().contains(fluid)) {
+//                return entry.getValue();
+//            }
+//        }
 
         return MISSING_FUEL_ENTRY;
     }

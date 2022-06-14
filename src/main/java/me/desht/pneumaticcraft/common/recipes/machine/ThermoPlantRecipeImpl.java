@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -136,12 +136,12 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.THERMO_PLANT.get();
+        return ModRecipeSerializers.THERMO_PLANT.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.thermoPlant;
+        return ModRecipeTypes.THERMO_PLANT.get();
     }
 
     @Override

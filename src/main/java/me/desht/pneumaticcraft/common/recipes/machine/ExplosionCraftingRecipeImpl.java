@@ -20,9 +20,10 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -84,7 +85,7 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     }
 
     public static NonNullList<ItemStack> tryToCraft(Level world, ItemStack stack) {
-        ExplosionCraftingRecipe recipe = PneumaticCraftRecipeType.explosionCrafting.findFirst(world, r -> r.matches(stack));
+        ExplosionCraftingRecipe recipe = ModRecipeTypes.EXPLOSION_CRAFTING.get().findFirst(world, r -> r.matches(stack));
         return recipe == null || recipe.getAmount() == 0 ? EMPTY_RESULT : createOutput(recipe, stack);
     }
 
@@ -124,17 +125,17 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.EXPLOSION_CRAFTING.get();
+        return ModRecipeSerializers.EXPLOSION_CRAFTING.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.explosionCrafting;
+        return ModRecipeTypes.EXPLOSION_CRAFTING.get();
     }
 
     @Override
     public String getGroup() {
-        return PneumaticCraftRecipeType.explosionCrafting.toString();
+        return PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING;
     }
 
     @Override

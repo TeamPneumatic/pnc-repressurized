@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.recipes.other;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -78,12 +78,12 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.FUEL_QUALITY.get();
+        return ModRecipeSerializers.FUEL_QUALITY.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.fuelQuality;
+        return ModRecipeTypes.FUEL_QUALITY.get();
     }
 
     public static class Serializer<T extends FuelQualityRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {

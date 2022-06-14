@@ -23,12 +23,12 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.entity.drone.AmadroneEntity;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -380,7 +380,7 @@ public enum AmadronOfferManager {
             staticOffers.clear();
             periodicOffers.clear();
 
-            PneumaticCraftRecipeType.amadronOffers.getRecipes(world).values().forEach(offer -> {
+            ModRecipeTypes.AMADRON.get().getRecipes(world).values().forEach(offer -> {
                 if (offer.isStaticOffer()) {
                     staticOffers.add(offer);
                 } else {

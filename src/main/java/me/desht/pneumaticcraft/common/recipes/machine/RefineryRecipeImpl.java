@@ -26,9 +26,9 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -83,12 +83,12 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
 	@Override
 	public RecipeSerializer<?> getSerializer() {
-		return ModRecipes.REFINERY.get();
+		return ModRecipeSerializers.REFINERY.get();
 	}
 
 	@Override
 	public RecipeType<?> getType() {
-		return PneumaticCraftRecipeType.refinery;
+		return ModRecipeTypes.REFINERY.get();
 	}
 
 	@Override

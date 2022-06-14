@@ -25,10 +25,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicConstant;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.network.FriendlyByteBuf;
@@ -178,12 +178,12 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.HEAT_PROPERTIES.get();
+        return ModRecipeSerializers.HEAT_PROPERTIES.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.heatProperties;
+        return ModRecipeTypes.BLOCK_HEAT_PROPERTIES.get();
     }
 
     @Override

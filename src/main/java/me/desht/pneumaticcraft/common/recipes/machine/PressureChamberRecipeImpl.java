@@ -24,8 +24,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -105,12 +105,12 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.pressureChamber;
+        return ModRecipeTypes.PRESSURE_CHAMBER.get();
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.PRESSURE_CHAMBER.get();
+        return ModRecipeSerializers.PRESSURE_CHAMBER.get();
     }
 
     @Override

@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.block.entity.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.PressurizableItem;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
@@ -112,16 +113,16 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         // these all use recipes from the vanilla RecipeManager
-        addRecipeType(registration, PneumaticCraftRecipeType.pressureChamber, RecipeTypes.PRESSURE_CHAMBER);
-        addRecipeType(registration, PneumaticCraftRecipeType.heatFrameCooling, RecipeTypes.HEAT_FRAME_COOLING);
-        addRecipeType(registration, PneumaticCraftRecipeType.refinery, RecipeTypes.REFINERY);
-        addRecipeType(registration, PneumaticCraftRecipeType.thermoPlant, RecipeTypes.THERMO_PLANT);
-        addRecipeType(registration, PneumaticCraftRecipeType.assemblyLaser, RecipeTypes.ASSEMBLY);
-        addRecipeType(registration, PneumaticCraftRecipeType.assemblyDrill, RecipeTypes.ASSEMBLY);
-        addRecipeType(registration, PneumaticCraftRecipeType.assemblyDrillLaser, RecipeTypes.ASSEMBLY);
-        addRecipeType(registration, PneumaticCraftRecipeType.amadronOffers, RecipeTypes.AMADRON_TRADE);
-        addRecipeType(registration, PneumaticCraftRecipeType.fluidMixer, RecipeTypes.FLUID_MIXER);
-        addRecipeType(registration, PneumaticCraftRecipeType.explosionCrafting, RecipeTypes.EXPLOSION_CRAFTING);
+        addRecipeType(registration, ModRecipeTypes.PRESSURE_CHAMBER.get(), RecipeTypes.PRESSURE_CHAMBER);
+        addRecipeType(registration, ModRecipeTypes.HEAT_FRAME_COOLING.get(), RecipeTypes.HEAT_FRAME_COOLING);
+        addRecipeType(registration, ModRecipeTypes.REFINERY.get(), RecipeTypes.REFINERY);
+        addRecipeType(registration, ModRecipeTypes.THERMO_PLANT.get(), RecipeTypes.THERMO_PLANT);
+        addRecipeType(registration, ModRecipeTypes.ASSEMBLY_LASER.get(), RecipeTypes.ASSEMBLY);
+        addRecipeType(registration, ModRecipeTypes.ASSEMBLY_DRILL.get(), RecipeTypes.ASSEMBLY);
+        addRecipeType(registration, ModRecipeTypes.ASSEMBLY_DRILL_LASER.get(), RecipeTypes.ASSEMBLY);
+        addRecipeType(registration, ModRecipeTypes.AMADRON.get(), RecipeTypes.AMADRON_TRADE);
+        addRecipeType(registration, ModRecipeTypes.FLUID_MIXER.get(), RecipeTypes.FLUID_MIXER);
+        addRecipeType(registration, ModRecipeTypes.EXPLOSION_CRAFTING.get(), RecipeTypes.EXPLOSION_CRAFTING);
 
         // these have their own pseudo-recipes
         registration.addRecipes(RecipeTypes.UV_LIGHT_BOX, JEIUVLightBoxCategory.getAllRecipes());

@@ -1240,18 +1240,18 @@ public class ModRecipeProvider extends RecipeProvider {
         }
 
         // specials
-        specialRecipe(ModRecipes.DRONE_COLOR_CRAFTING.get()).save(consumer, getId("color_drone"));
-        specialRecipe(ModRecipes.DRONE_UPGRADE_CRAFTING.get()).save(consumer, getId("drone_upgrade"));
-        specialRecipe(ModRecipes.GUN_AMMO_POTION_CRAFTING.get()).save(consumer, getId("gun_ammo_potion_crafting"));
-        specialRecipe(ModRecipes.PRESSURE_CHAMBER_ENCHANTING.get()).save(consumer, getId("pressure_chamber/pressure_chamber_enchanting"));
-        specialRecipe(ModRecipes.PRESSURE_CHAMBER_DISENCHANTING.get()).save(consumer, getId("pressure_chamber/pressure_chamber_disenchanting"));
+        specialRecipe(ModRecipeSerializers.DRONE_COLOR_CRAFTING.get()).save(consumer, getId("color_drone"));
+        specialRecipe(ModRecipeSerializers.DRONE_UPGRADE_CRAFTING.get()).save(consumer, getId("drone_upgrade"));
+        specialRecipe(ModRecipeSerializers.GUN_AMMO_POTION_CRAFTING.get()).save(consumer, getId("gun_ammo_potion_crafting"));
+        specialRecipe(ModRecipeSerializers.PRESSURE_CHAMBER_ENCHANTING.get()).save(consumer, getId("pressure_chamber/pressure_chamber_enchanting"));
+        specialRecipe(ModRecipeSerializers.PRESSURE_CHAMBER_DISENCHANTING.get()).save(consumer, getId("pressure_chamber/pressure_chamber_disenchanting"));
         ConditionalRecipe.builder()
                 .addCondition(new ModLoadedCondition("patchouli"))
-                .addRecipe(c -> specialRecipe(ModRecipes.PATCHOULI_BOOK_CRAFTING.get()).save(c, getId("patchouli_book_crafting")))
+                .addRecipe(c -> specialRecipe(ModRecipeSerializers.PATCHOULI_BOOK_CRAFTING.get()).save(c, getId("patchouli_book_crafting")))
                 .build(consumer, RL("patchouli_book_crafting"));
         ConditionalRecipe.builder()
                 .addCondition(new ModLoadedCondition("theoneprobe"))
-                .addRecipe(c -> specialRecipe(ModRecipes.ONE_PROBE_HELMET_CRAFTING.get()).save(c, getId("one_probe_crafting")))
+                .addRecipe(c -> specialRecipe(ModRecipeSerializers.ONE_PROBE_HELMET_CRAFTING.get()).save(c, getId("one_probe_crafting")))
                 .build(consumer, RL("one_probe_crafting"));
 
         // smelting

@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -153,6 +153,6 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.PRESSURE_CHAMBER_ENCHANTING.get();
+        return ModRecipeSerializers.PRESSURE_CHAMBER_ENCHANTING.get();
     }
 }

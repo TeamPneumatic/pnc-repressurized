@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.item.DroneItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -69,6 +69,6 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.DRONE_UPGRADE_CRAFTING.get();
+        return ModRecipeSerializers.DRONE_UPGRADE_CRAFTING.get();
     }
 }

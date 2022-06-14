@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -146,7 +146,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.PRESSURE_CHAMBER_DISENCHANTING.get();
+        return ModRecipeSerializers.PRESSURE_CHAMBER_DISENCHANTING.get();
     }
 
     private boolean blacklisted(ItemStack stack) {

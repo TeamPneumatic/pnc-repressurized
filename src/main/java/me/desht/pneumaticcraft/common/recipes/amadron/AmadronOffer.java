@@ -22,8 +22,8 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
@@ -142,7 +142,7 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     public static AmadronRecipe offerFromBuf(ResourceLocation id, FriendlyByteBuf buf) {
-        return ModRecipes.AMADRON_OFFERS.get().fromNetwork(id, buf);
+        return ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(id, buf);
     }
 
     public JsonObject toJson(JsonObject json) {
@@ -185,12 +185,12 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.AMADRON_OFFERS.get();
+        return ModRecipeSerializers.AMADRON_OFFERS.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.amadronOffers;
+        return ModRecipeTypes.AMADRON.get();
     }
 
     @Override

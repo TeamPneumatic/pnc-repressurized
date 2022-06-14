@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.inventory.handler.OutputItemHandler;
@@ -29,7 +30,6 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -196,7 +196,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     private FluidMixerRecipe findApplicableRecipe() {
-        for (FluidMixerRecipe recipe : PneumaticCraftRecipeType.fluidMixer.getRecipes(level).values()) {
+        for (FluidMixerRecipe recipe : ModRecipeTypes.getRecipes(level, ModRecipeTypes.FLUID_MIXER)) {
             if (recipe.matches(inputTank1.getFluid(), inputTank2.getFluid())) {
                 return recipe;
             }

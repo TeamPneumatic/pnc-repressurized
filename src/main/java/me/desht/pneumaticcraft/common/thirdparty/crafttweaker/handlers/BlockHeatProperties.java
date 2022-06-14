@@ -23,7 +23,7 @@ import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -79,6 +79,6 @@ public class BlockHeatProperties implements IRecipeManager<HeatPropertiesRecipe>
 
     @Override
     public RecipeType<HeatPropertiesRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.heatProperties;
+        return ModRecipeTypes.BLOCK_HEAT_PROPERTIES.get();
     }
 }

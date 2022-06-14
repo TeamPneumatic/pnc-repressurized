@@ -28,7 +28,7 @@ import com.blamejared.crafttweaker.api.item.MCItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -65,6 +65,6 @@ public class PressureChamber implements IRecipeManager<PressureChamberRecipe> {
 
     @Override
     public RecipeType<PressureChamberRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.pressureChamber;
+        return ModRecipeTypes.PRESSURE_CHAMBER.get();
     }
 }

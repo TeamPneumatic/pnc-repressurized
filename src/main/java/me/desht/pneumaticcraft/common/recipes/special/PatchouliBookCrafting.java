@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -54,6 +54,6 @@ public class PatchouliBookCrafting extends ShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.PATCHOULI_BOOK_CRAFTING.get();
+        return ModRecipeSerializers.PATCHOULI_BOOK_CRAFTING.get();
     }
 }

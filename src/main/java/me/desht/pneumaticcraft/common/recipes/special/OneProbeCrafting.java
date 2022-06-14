@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -73,7 +73,7 @@ public class OneProbeCrafting extends ShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.ONE_PROBE_HELMET_CRAFTING.get();
+        return ModRecipeSerializers.ONE_PROBE_HELMET_CRAFTING.get();
     }
 
     private ItemStack findHelmet(CraftingContainer inv) {

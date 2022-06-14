@@ -29,13 +29,13 @@ import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
 import me.desht.pneumaticcraft.common.block.PressureChamberGlassBlock;
 import me.desht.pneumaticcraft.common.block.PressureChamberValveBlock;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -189,7 +189,7 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
             applicableRecipes.clear();
             final SizeLimitedItemHandlerWrapper h = new SizeLimitedItemHandlerWrapper(itemsInChamber);
             if (h.getSlots() > 0) {
-                PneumaticCraftRecipeType.pressureChamber.stream(level).forEach(recipe -> {
+                ModRecipeTypes.PRESSURE_CHAMBER.get().stream(level).forEach(recipe -> {
                     Collection<Integer> slots = recipe.findIngredients(h);
                     if (!slots.isEmpty()) {
                         applicableRecipes.add(new ApplicableRecipe(recipe, slots));

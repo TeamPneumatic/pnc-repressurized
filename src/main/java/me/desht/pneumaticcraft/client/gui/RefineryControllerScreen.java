@@ -26,9 +26,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.RefineryControllerBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.RefineryOutputBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -161,7 +161,7 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
 
     @Override
     public Collection<FluidStack> getTargetFluids() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.refinery)
+        return getCurrentRecipe(ModRecipeTypes.REFINERY.get())
                 .map(RefineryRecipe::getOutputs)
                 .orElse(Collections.emptyList());
     }

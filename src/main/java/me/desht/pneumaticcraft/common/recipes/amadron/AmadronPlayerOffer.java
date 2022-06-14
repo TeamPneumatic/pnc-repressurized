@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.amadron.AmadronUtil;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
@@ -216,7 +216,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public static AmadronPlayerOffer playerOfferFromBuf(ResourceLocation id, FriendlyByteBuf buf) {
-        AmadronRecipe recipe = ModRecipes.AMADRON_OFFERS.get().fromNetwork(id, buf);
+        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromNetwork(id, buf);
 
         if (recipe instanceof AmadronOffer offer) {
             AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getId(),
@@ -253,7 +253,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     public static AmadronPlayerOffer fromJson(JsonObject json) throws CommandSyntaxException {
         ResourceLocation id = new ResourceLocation(GsonHelper.getAsString(json, "id"));
-        AmadronRecipe recipe = ModRecipes.AMADRON_OFFERS.get().fromJson(id, json);
+        AmadronRecipe recipe = ModRecipeSerializers.AMADRON_OFFERS.get().fromJson(id, json);
         if (recipe instanceof AmadronOffer offer) {
             AmadronPlayerOffer playerOffer = new AmadronPlayerOffer(offer.getId(), offer.getInput(), offer.getOutput(),
                     json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()),

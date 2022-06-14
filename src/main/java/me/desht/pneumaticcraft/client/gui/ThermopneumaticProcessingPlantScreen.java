@@ -27,9 +27,9 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.ThermopneumaticProcessingPlantBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.ThermopneumaticProcessingPlantBlockEntity.TPProblem;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ThermopneumaticProcessingPlantMenu;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -151,14 +151,14 @@ public class ThermopneumaticProcessingPlantScreen extends
 
     @Override
     public Collection<ItemStack> getTargetItems() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.thermoPlant)
+        return getCurrentRecipe(ModRecipeTypes.THERMO_PLANT.get())
                 .map(thermoPlantRecipe -> Collections.singletonList(thermoPlantRecipe.getOutputItem()))
                 .orElse(Collections.emptyList());
     }
 
     @Override
     public Collection<FluidStack> getTargetFluids() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.thermoPlant)
+        return getCurrentRecipe(ModRecipeTypes.THERMO_PLANT.get())
                 .map(thermoPlantRecipe -> Collections.singletonList(thermoPlantRecipe.getOutputFluid()))
                 .orElse(Collections.emptyList());
     }

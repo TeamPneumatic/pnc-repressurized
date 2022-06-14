@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -144,7 +144,7 @@ public class AssemblyLaserBlockEntity extends AbstractAssemblyRobotBlockEntity {
 
     @Nonnull
     private ItemStack getLaseredOutputForItem(ItemStack input) {
-        return PneumaticCraftRecipeType.assemblyLaser.stream(level)
+        return ModRecipeTypes.ASSEMBLY_LASER.get().stream(level)
                 .filter(recipe -> recipe.matches(input))
                 .findFirst()
                 .map(recipe -> recipe.getOutput().copy())

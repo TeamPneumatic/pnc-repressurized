@@ -31,9 +31,9 @@ import net.minecraftforge.fml.common.Mod;
 public class RecipeRegistrationEventListener {
     @SubscribeEvent
     public static void onRegister(RegistryEvent.Register<RecipeSerializer<?>> event) {
-        // register our custom recipe and ingredient types
+        // register our custom ingredient types
 
-        PneumaticCraftRecipeType.registerRecipeTypes();
+//        PneumaticCraftRecipeType.registerRecipeTypes();
 
         CraftingHelper.register(FluidTagPresentCondition.Serializer.INSTANCE);
 

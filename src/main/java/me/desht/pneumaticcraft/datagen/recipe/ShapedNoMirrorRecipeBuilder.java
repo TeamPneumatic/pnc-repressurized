@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.datagen.recipe;
 
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -39,7 +39,7 @@ public class ShapedNoMirrorRecipeBuilder extends ShapedRecipeBuilder {
     }
 
     public void save(Consumer<FinishedRecipe> consumerIn, ResourceLocation id) {
-        Consumer<FinishedRecipe> c = (finishedRecipe) -> consumerIn.accept(new WrappedBuilderResult(finishedRecipe, ModRecipes.CRAFTING_SHAPED_NO_MIRROR));
+        Consumer<FinishedRecipe> c = (finishedRecipe) -> consumerIn.accept(new WrappedBuilderResult(finishedRecipe, ModRecipeSerializers.CRAFTING_SHAPED_NO_MIRROR));
         super.save(c, id);
     }
 }

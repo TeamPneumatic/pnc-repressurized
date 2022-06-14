@@ -18,8 +18,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -36,11 +36,11 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = PneumaticCraftRecipeType.assemblyDrillLaser.getRecipe(Minecraft.getInstance().level, recipeId);
+        this.recipe = ModRecipeTypes.ASSEMBLY_DRILL_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId);
         if (recipe == null) {
-            this.recipe = PneumaticCraftRecipeType.assemblyDrill.getRecipe(Minecraft.getInstance().level, recipeId);
+            this.recipe = ModRecipeTypes.ASSEMBLY_DRILL.get().getRecipe(Minecraft.getInstance().level, recipeId);
             if (recipe == null) {
-                this.recipe = PneumaticCraftRecipeType.assemblyLaser.getRecipe(Minecraft.getInstance().level, recipeId);
+                this.recipe = ModRecipeTypes.ASSEMBLY_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId);
             }
         }
     }

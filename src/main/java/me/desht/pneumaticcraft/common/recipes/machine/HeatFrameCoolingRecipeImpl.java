@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -97,20 +97,20 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.HEAT_FRAME_COOLING.get();
+        return ModRecipeSerializers.HEAT_FRAME_COOLING.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.heatFrameCooling;
+        return ModRecipeTypes.HEAT_FRAME_COOLING.get();
     }
 
     public static <T extends Recipe<?>> void cacheMaxThresholdTemp(Collection<T> recipes) {
         maxThresholdTemp = Integer.MIN_VALUE;
         for (T recipe : recipes) {
-            if (recipe instanceof HeatFrameCoolingRecipe) {
-                if (((HeatFrameCoolingRecipe) recipe).getThresholdTemperature() > maxThresholdTemp) {
-                    maxThresholdTemp = ((HeatFrameCoolingRecipe) recipe).getThresholdTemperature();
+            if (recipe instanceof HeatFrameCoolingRecipe hfcr) {
+                if (hfcr.getThresholdTemperature() > maxThresholdTemp) {
+                    maxThresholdTemp = hfcr.getThresholdTemperature();
                 }
             }
         }
@@ -118,7 +118,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
     public static int getMaxThresholdTemp(Level world) {
         if (maxThresholdTemp == Integer.MIN_VALUE) {
-            cacheMaxThresholdTemp(PneumaticCraftRecipeType.heatFrameCooling.getRecipes(world).values());
+            cacheMaxThresholdTemp(ModRecipeTypes.getRecipes(world, ModRecipeTypes.HEAT_FRAME_COOLING));
         }
         return maxThresholdTemp;
     }

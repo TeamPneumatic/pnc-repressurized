@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -90,8 +90,8 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
     @Override
     public RecipeSerializer<?> getSerializer() {
         return switch (getProgramType()) {
-            case LASER -> ModRecipes.ASSEMBLY_LASER.get();
-            case DRILL -> ModRecipes.ASSEMBLY_DRILL.get();
+            case LASER -> ModRecipeSerializers.ASSEMBLY_LASER.get();
+            case DRILL -> ModRecipeSerializers.ASSEMBLY_DRILL.get();
             default -> throw new IllegalStateException("invalid program type: " + getProgramType());
         };
     }
@@ -99,9 +99,9 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
     @Override
     public RecipeType<?> getType() {
         return switch (getProgramType()) {
-            case DRILL -> PneumaticCraftRecipeType.assemblyDrill;
-            case LASER -> PneumaticCraftRecipeType.assemblyLaser;
-            case DRILL_LASER -> PneumaticCraftRecipeType.assemblyDrillLaser;
+            case DRILL -> ModRecipeTypes.ASSEMBLY_DRILL.get();
+            case LASER -> ModRecipeTypes.ASSEMBLY_LASER.get();
+            case DRILL_LASER -> ModRecipeTypes.ASSEMBLY_DRILL_LASER.get();
         };
     }
 

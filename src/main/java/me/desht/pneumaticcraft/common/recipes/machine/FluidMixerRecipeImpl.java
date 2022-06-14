@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -102,12 +102,12 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.FLUID_MIXER.get();
+        return ModRecipeSerializers.FLUID_MIXER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return PneumaticCraftRecipeType.fluidMixer;
+        return ModRecipeTypes.FLUID_MIXER.get();
     }
 
     public static class Serializer<T extends FluidMixerRecipe> extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<T> {

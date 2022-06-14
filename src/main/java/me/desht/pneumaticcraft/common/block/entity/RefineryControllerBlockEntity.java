@@ -24,10 +24,10 @@ import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
@@ -109,13 +109,13 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     }
 
     public static boolean isInputFluidValid(Level world, Fluid fluid, int size) {
-        RefineryRecipe recipe =  PneumaticCraftRecipeType.refinery
+        RefineryRecipe recipe =  ModRecipeTypes.REFINERY.get()
                 .findFirst(world, r -> r.getOutputs().size() <= size && FluidUtils.matchFluid(r.getInput(), fluid, true));
         return recipe != null;
     }
 
     private RefineryRecipe getRecipeFor(FluidStack fluid) {
-        return PneumaticCraftRecipeType.refinery.stream(level)
+        return ModRecipeTypes.REFINERY.get().stream(level)
                 .filter(r -> r.getOutputs().size() <= outputCount)
                 .filter(r -> FluidUtils.matchFluid(r.getInput(), fluid, true))
                 .max(Comparator.comparingInt(r2 -> r2.getOutputs().size()))

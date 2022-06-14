@@ -23,9 +23,9 @@ import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -241,7 +241,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         ItemStack stack = handler.getStackInSlot(slot);
         if (stack.isEmpty()) return false;
 
-        HeatFrameCoolingRecipe recipe = PneumaticCraftRecipeType.heatFrameCooling.findFirst(level, r -> r.matches(stack));
+        HeatFrameCoolingRecipe recipe = ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level, r -> r.matches(stack));
 
         if (recipe != null) {
             boolean extractedOK;

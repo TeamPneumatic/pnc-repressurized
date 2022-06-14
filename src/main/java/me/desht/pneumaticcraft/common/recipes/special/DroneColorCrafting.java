@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.DroneItem;
 import net.minecraft.core.NonNullList;
@@ -91,6 +91,6 @@ public class DroneColorCrafting extends ShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.DRONE_COLOR_CRAFTING.get();
+        return ModRecipeSerializers.DRONE_COLOR_CRAFTING.get();
     }
 }

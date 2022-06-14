@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.recipes.assembly;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -61,7 +61,7 @@ public class ProgramLaser extends AssemblyProgram {
     }
 
     private boolean canItemBeLasered(Level world, ItemStack item) {
-        return PneumaticCraftRecipeType.assemblyLaser.findFirst(world, r -> r.matches(item)) != null;
+        return ModRecipeTypes.ASSEMBLY_LASER.get().findFirst(world, r -> r.matches(item)) != null;
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ProgramLaser extends AssemblyProgram {
 
     @Override
     public Collection<AssemblyRecipe> getRecipeList(Level world) {
-        return PneumaticCraftRecipeType.assemblyLaser.getRecipes(world).values();
+        return ModRecipeTypes.getRecipes(world, ModRecipeTypes.ASSEMBLY_LASER);
     }
 
     @Override

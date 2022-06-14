@@ -28,7 +28,7 @@ import com.blamejared.crafttweaker.api.item.MCItemStack;
 import com.blamejared.crafttweaker.api.recipe.manager.base.IRecipeManager;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -65,6 +65,6 @@ public class ExplosionCrafting implements IRecipeManager<ExplosionCraftingRecipe
 
     @Override
     public RecipeType<ExplosionCraftingRecipe> getRecipeType() {
-        return PneumaticCraftRecipeType.explosionCrafting;
+        return ModRecipeTypes.EXPLOSION_CRAFTING.get();
     }
 }

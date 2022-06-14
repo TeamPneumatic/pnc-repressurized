@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.recipes.special;
 
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.core.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.item.minigun.StandardGunAmmoItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
@@ -66,7 +66,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.GUN_AMMO_POTION_CRAFTING.get();
+        return ModRecipeSerializers.GUN_AMMO_POTION_CRAFTING.get();
     }
 
     private static class PotionIngredient extends Ingredient {

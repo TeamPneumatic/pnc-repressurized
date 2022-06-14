@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.block.entity;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModUpgrades;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
@@ -27,7 +28,6 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
@@ -357,7 +357,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
         private boolean isValidItem(ItemStack stack) {
             if (PressureChamberInterfaceBlockEntity.this.interfaceMode == InterfaceDirection.IMPORT) {
                 return acceptedItemCache.isAcceptable(stack.getItem(), () ->
-                        PneumaticCraftRecipeType.pressureChamber.stream(level)
+                        ModRecipeTypes.PRESSURE_CHAMBER.get().stream(level)
                                 .anyMatch(recipe -> recipe.isValidInputItem(stack))
                 );
             } else return PressureChamberInterfaceBlockEntity.this.interfaceMode == InterfaceDirection.EXPORT;

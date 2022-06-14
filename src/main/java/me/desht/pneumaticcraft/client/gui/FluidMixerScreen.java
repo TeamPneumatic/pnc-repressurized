@@ -24,8 +24,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.FluidMixerBlockEntity;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -118,14 +118,14 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
 
     @Override
     public Collection<ItemStack> getTargetItems() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.fluidMixer)
+        return getCurrentRecipe(ModRecipeTypes.FLUID_MIXER.get())
                 .map(recipe -> Collections.singletonList(recipe.getOutputItem()))
                 .orElse(Collections.emptyList());
     }
 
     @Override
     public Collection<FluidStack> getTargetFluids() {
-        return getCurrentRecipe(PneumaticCraftRecipeType.fluidMixer)
+        return getCurrentRecipe(ModRecipeTypes.FLUID_MIXER.get())
                 .map(recipe -> Collections.singletonList(recipe.getOutputFluid()))
                 .orElse(Collections.emptyList());
     }

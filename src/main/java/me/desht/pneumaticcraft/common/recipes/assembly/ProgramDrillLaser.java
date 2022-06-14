@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.recipes.assembly;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.block.entity.AssemblyControllerBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -65,11 +65,11 @@ public class ProgramDrillLaser extends AssemblyProgram {
     }
 
     private boolean canItemBeLasered(Level world, ItemStack item) {
-        return PneumaticCraftRecipeType.assemblyLaser.stream(world).anyMatch(recipe -> recipe.matches(item));
+        return ModRecipeTypes.ASSEMBLY_LASER.get().stream(world).anyMatch(recipe -> recipe.matches(item));
     }
 
     private boolean canItemBeDrilled(Level world, ItemStack item) {
-        return PneumaticCraftRecipeType.assemblyDrill.stream(world).anyMatch(recipe -> recipe.matches(item));
+        return ModRecipeTypes.ASSEMBLY_DRILL.get().stream(world).anyMatch(recipe -> recipe.matches(item));
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ProgramDrillLaser extends AssemblyProgram {
 
     @Override
     public Collection<AssemblyRecipe> getRecipeList(Level world) {
-        return PneumaticCraftRecipeType.assemblyDrillLaser.getRecipes(world).values();
+        return ModRecipeTypes.ASSEMBLY_DRILL_LASER.get().getRecipes(world).values();
     }
 
     @Override

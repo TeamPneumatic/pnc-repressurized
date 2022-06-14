@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.common.core.ModBlockEntities;
+import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
-import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
@@ -151,7 +151,7 @@ public class AssemblyDrillBlockEntity extends AbstractAssemblyRobotBlockEntity {
     }
 
     private ItemStack getDrilledOutputForItem(ItemStack input) {
-        return PneumaticCraftRecipeType.assemblyDrill.stream(level)
+        return ModRecipeTypes.ASSEMBLY_DRILL.get().stream(level)
                 .filter(recipe -> recipe.matches(input))
                 .findFirst()
                 .map(recipe -> recipe.getOutput().copy())
