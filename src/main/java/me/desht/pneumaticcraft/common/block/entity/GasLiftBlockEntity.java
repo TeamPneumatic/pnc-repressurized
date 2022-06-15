@@ -288,7 +288,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
 
     @Override
     public float getMinWorkingPressure() {
-        return 0.5F + currentDepth * 0.05F;
+        return Math.min(4.9F, 0.5F + currentDepth * 0.05F);
     }
 
     @Override

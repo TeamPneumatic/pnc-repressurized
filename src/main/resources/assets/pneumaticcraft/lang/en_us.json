@@ -1313,7 +1313,7 @@
    "pneumaticcraft.gui.tab.gasLift.mode.drawIn" : "Retract Drill Pipes",
    "pneumaticcraft.gui.tab.gasLift.mode" : "Mode",
    "pneumaticcraft.gui.tab.gasLift.mode.pumpEmpty" : "Pump and allow empty tank",
-   "pneumaticcraft.gui.tab.gasLift.mode.pumpLeave" : "Pump and leave liquid in tank (used as filter)",
+   "pneumaticcraft.gui.tab.gasLift.mode.pumpLeave" : "Pump and leave fluid in tank (for filtering)",
    "pneumaticcraft.gui.tab.hopperStatus" : "Hopper Status",
    "pneumaticcraft.gui.tab.hopperStatus.itemTransferPerSecond" : "Item Transfer Speed:${br}§0%s items/s",
    "pneumaticcraft.gui.tab.hopperStatus.itemTransferPerTick" : "Item Transfer Speed:${br}§0%s items/tick",
