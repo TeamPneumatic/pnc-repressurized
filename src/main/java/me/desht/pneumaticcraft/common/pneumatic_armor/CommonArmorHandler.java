@@ -221,7 +221,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     @Override
     public float addAir(EquipmentSlot slot, int airAmount) {
         float oldPressure = getArmorPressure(slot);
-        if (!player.isCreative() || airAmount > 0) {
+        if ((!player.isCreative() || airAmount > 0) && getUpgradeCount(slot, ModUpgrades.CREATIVE.get()) == 0) {
             airHandlers.get(slot.getIndex()).ifPresent(h -> h.addAir(airAmount));
         }
         return oldPressure;

@@ -391,27 +391,31 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
-        return UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.GILDED.get()) > 0;
-    }
-
-    @Override
-    public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
-        if (stack.getItem() instanceof PneumaticArmorItem) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            return handler.upgradeUsable(CommonUpgradeHandlers.enderVisorHandler, true);
+        if (wearer instanceof Player player && stack.getItem() instanceof PneumaticArmorItem armor) {
+            return CommonArmorHandler.getHandlerForPlayer(player)
+                    .getUpgradeCount(armor.getSlot(), ModUpgrades.FLIPPERS.get()) > 0;
         }
         return false;
     }
 
     @Override
+    public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
+        CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+        return handler.upgradeUsable(CommonUpgradeHandlers.enderVisorHandler, true);
+    }
+
+    @Override
     public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
-        if (stack.getItem() instanceof PneumaticArmorItem && wearer instanceof Player player) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.FLIPPERS.get()) > 0) {
-                return true;
-            }
+        if (wearer instanceof Player player) {
+            return CommonArmorHandler.getHandlerForPlayer(player)
+                    .getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.FLIPPERS.get()) > 0;
         }
-        return super.canWalkOnPowderedSnow(stack, wearer);
+        return false;
+    }
+
+    @Override
+    public boolean isDamageable(ItemStack stack) {
+        return UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.CREATIVE.get()) == 0;
     }
 
     /**

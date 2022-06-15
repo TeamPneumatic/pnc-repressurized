@@ -113,7 +113,8 @@ public class UpgradesDBSetup {
                     .with(ModUpgrades.ARMOR.get(), 4)
                     .with(ModUpgrades.RADIATION_SHIELDING.get(), 1)
                     .with(ModUpgrades.GILDED.get(), 1)
-                    .with(ModUpgrades.THAUMCRAFT.get(), 1);
+                    .with(ModUpgrades.THAUMCRAFT.get(), 1)
+                    .with(ModUpgrades.CREATIVE.get(), 1);
         }
         // piece-specific upgrades which don't have a specific upgrade handler
         armor.get(EquipmentSlot.HEAD.getIndex()).with(ModUpgrades.RANGE.get(), 5).with(ModUpgrades.SECURITY.get(), 64);
