@@ -193,6 +193,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
 
         threshold = tag.getInt("threshold");
         inputHandler.deserializeNBT(tag.getCompound("Items"));
+        outputHandler.deserializeNBT(tag.getCompound("Output"));
     }
 
     @Override
@@ -200,6 +201,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
         super.save(nbt);
         nbt.putInt("threshold", threshold);
         nbt.put("Items", inputHandler.serializeNBT());
+        nbt.put("Output", outputHandler.serializeNBT());
         return nbt;
     }
 
