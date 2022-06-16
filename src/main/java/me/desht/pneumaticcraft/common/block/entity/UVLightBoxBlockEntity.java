@@ -54,10 +54,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-//import elucent.albedo.lighting.ILightProvider;
-//import elucent.albedo.lighting.Light;
-
-//@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
 public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implements
         IMinWorkingPressure, IRedstoneControl<UVLightBoxBlockEntity>, MenuProvider /*,ILightProvider */ {
     private static final String NBT_EXPOSURE = "pneumaticcraft:uv_exposure";
@@ -76,8 +72,6 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
                     te -> te.getCurrentRedstonePower() > 0)
     );
     public static final int RS_MODE_INTERPOLATE = 3;
-
-//    private Object light = null;
 
     // avoid rapid blockstate switching, which is a framerate killer
     private long lastStateUpdate = 0;
@@ -193,13 +187,16 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
 
         threshold = tag.getInt("threshold");
         inputHandler.deserializeNBT(tag.getCompound("Items"));
+        outputHandler.deserializeNBT(tag.getCompound("Output"));
     }
 
     @Override
     public void saveAdditional(CompoundTag nbt) {
         super.saveAdditional(nbt);
+
         nbt.putInt("threshold", threshold);
         nbt.put("Items", inputHandler.serializeNBT());
+        nbt.put("Output", outputHandler.serializeNBT());
     }
 
     public static int getExposureProgress(ItemStack stack) {
@@ -292,20 +289,6 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     public int getThreshold() {
         return threshold;
     }
-
-    /*
-    @Optional.Method(modid = "albedo")
-    @Override
-    public Light provideLight() {
-        if (light == null && areLightsOn) {
-            int radius = Math.max(8, 4 + getUpgrades(ModUpgrades.SPEED.get()));
-            light = Light.builder().pos(pos()).color(0.2f, 0.0f, 1.0f).radius(radius).build();
-        } else if (!areLightsOn) {
-            light = null;
-        }
-        return (Light) light;
-    }
-    */
 
     private class UVInputHandler extends BaseItemStackHandler {
         UVInputHandler() {
