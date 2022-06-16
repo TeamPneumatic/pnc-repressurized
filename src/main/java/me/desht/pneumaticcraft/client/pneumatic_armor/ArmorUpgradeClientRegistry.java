@@ -52,14 +52,8 @@ public enum ArmorUpgradeClientRegistry {
     public <T extends IArmorUpgradeHandler<?>> void registerHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler) {
         id2HandlerMap.put(handler.getID(), clientHandler);
 
-        clientHandler.getInitialKeyBinding().ifPresent(k -> registerKeyBinding(handler.getID(), k));
-//        clientHandler.getSubKeybinds().forEach(rl -> registerKeyBinding(rl,
-//                new KeyMapping(IArmorUpgradeHandler.getStringKey(rl),
-//                        KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
-//                        clientHandler.getSubKeybindCategory())
-//        ));
-
-        clientHandler.getTriggerKeyBinding().ifPresent(k -> registerTriggerKeybinding(k, clientHandler));
+        clientHandler.getInitialKeyBinding().ifPresent(keyMapping -> registerKeyBinding(handler.getID(), keyMapping));
+        clientHandler.getTriggerKeyBinding().ifPresent(keyMapping -> registerTriggerKeybinding(clientHandler, keyMapping));
     }
 
     private void registerKeyBinding(ResourceLocation upgradeID, KeyMapping keyBinding) {
@@ -67,7 +61,7 @@ public enum ArmorUpgradeClientRegistry {
         ClientRegistry.registerKeyBinding(keyBinding);
     }
 
-    private void registerTriggerKeybinding(KeyMapping keyBinding, IArmorUpgradeClientHandler<?> clientHandler) {
+    private void registerTriggerKeybinding(IArmorUpgradeClientHandler<?> clientHandler, KeyMapping keyBinding) {
         triggerKeyBindMap.put(keyBinding.getName(), clientHandler);
     }
 

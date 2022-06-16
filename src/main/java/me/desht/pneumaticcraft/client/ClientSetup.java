@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.client.render.overlays.MinigunOverlay;
 import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticArmorLayer;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticElytraLayer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
@@ -131,17 +132,24 @@ public class ClientSetup {
     }
 
     public static void registerRenderLayers(EntityRenderersEvent.AddLayers event) {
-        for(EntityRenderer<?> render : Minecraft.getInstance().getEntityRenderDispatcher().renderers.values()) {
-            if (render instanceof HumanoidMobRenderer<?, ?> hmr) {
+        for (EntityRenderer<?> entityRenderer : Minecraft.getInstance().getEntityRenderDispatcher().renderers.values()) {
+            if (entityRenderer instanceof HumanoidMobRenderer<?, ?> hmr) {
                 addRenderLayer(hmr, event.getEntityModels());
-            } else if (render instanceof ArmorStandRenderer asr) {
+            } else if (entityRenderer instanceof ArmorStandRenderer asr) {
                 addRenderLayer(asr, event.getEntityModels());
             }
         }
         for (String skin : event.getSkins()) {
             LivingEntityRenderer<?, ?> render = event.getSkin(skin);
-            if (render instanceof PlayerRenderer pr) addRenderLayer(pr, event.getEntityModels());
+            if (render instanceof PlayerRenderer pr) {
+                addRenderLayer(pr, event.getEntityModels());
+                addElytraRenderLayer(pr, event.getEntityModels());
+            }
         }
+    }
+
+    private static <T extends LivingEntity, M extends HumanoidModel<T>> void addElytraRenderLayer(LivingEntityRenderer<T, M> render, EntityModelSet models) {
+        render.addLayer(new PneumaticElytraLayer<>(render, models));
     }
 
     private static <T extends LivingEntity, M extends HumanoidModel<T>> void addRenderLayer(LivingEntityRenderer<T, M> render, EntityModelSet models) {
@@ -464,6 +472,7 @@ public class ClientSetup {
         cr.registerHandler(CommonUpgradeHandlers.chestplateLauncherHandler, new ChestplateLauncherClientHandler());
         cr.registerHandler(CommonUpgradeHandlers.airConHandler, new AirConClientHandler());
         cr.registerHandler(CommonUpgradeHandlers.reachDistanceHandler, new ReachDistanceClientHandler());
+        cr.registerHandler(CommonUpgradeHandlers.elytraHandler, new ElytraClientHandler());
 
         cr.registerHandler(CommonUpgradeHandlers.runSpeedHandler, new SpeedBoostClientHandler());
         cr.registerHandler(CommonUpgradeHandlers.jumpBoostHandler, new JumpBoostClientHandler());

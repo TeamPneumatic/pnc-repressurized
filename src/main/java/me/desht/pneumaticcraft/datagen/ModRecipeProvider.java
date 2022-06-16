@@ -974,6 +974,7 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(ModUpgrades.COORDINATE_TRACKER.get(), ModItems.GPS_TOOL.get(), Tags.Items.DUSTS_REDSTONE).save(consumer);
         standardUpgrade(ModUpgrades.DISPENSER.get(), Blocks.DISPENSER, Tags.Items.GEMS_QUARTZ).save(consumer);
         standardUpgrade(ModUpgrades.ENDER_VISOR.get(), Blocks.CARVED_PUMPKIN, Blocks.CHORUS_FLOWER).save(consumer);
+        standardUpgrade(ModUpgrades.ELYTRA.get(), Items.ELYTRA, Blocks.END_ROD).save(consumer);
         standardUpgrade(ModUpgrades.ENTITY_TRACKER.get(), Items.FERMENTED_SPIDER_EYE, Tags.Items.BONES).save(consumer);
         standardUpgrade(ModUpgrades.FLIPPERS.get(), Items.BLACK_WOOL, PneumaticCraftTags.Items.PLASTIC_SHEETS).save(consumer);
         standardUpgrade(ModUpgrades.GILDED.get(), Blocks.GILDED_BLACKSTONE, Tags.Items.INGOTS_GOLD).save(consumer);

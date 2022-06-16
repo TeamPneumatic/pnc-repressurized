@@ -271,6 +271,7 @@ public class ModItems {
         registerUpgrade(ModUpgrades.GILDED, BuiltinUpgrade.GILDED);
         registerUpgrade(ModUpgrades.ENDER_VISOR, BuiltinUpgrade.ENDER_VISOR);
         registerUpgrade(ModUpgrades.STOMP, BuiltinUpgrade.STOMP);
+        registerUpgrade(ModUpgrades.ELYTRA, BuiltinUpgrade.ELYTRA);
     }
 
     /* -----------------------*/
@@ -316,8 +317,7 @@ public class ModItems {
     }
 
     private static void registerUpgrade(RegistryObject<PNCUpgrade> upgrade, BuiltinUpgrade upgradeDetails) {
-        IntStream.range(1, upgradeDetails.getMaxTier() + 1).forEach(
-                tier -> {
+        IntStream.range(1, upgradeDetails.getMaxTier() + 1).forEach(tier -> {
                     String baseName = upgradeDetails.getName() + "_upgrade";
                     String itemName = upgradeDetails.getMaxTier() > 1 ? baseName + "_" + tier : baseName;
                     register(itemName, () -> new UpgradeItem(upgrade, tier));

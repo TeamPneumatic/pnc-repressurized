@@ -80,7 +80,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
     /**
      * Returns the usage in mL/tick when this upgrade handler is enabled.  Note this is constant usage just from the
      * upgrade being switched on, and does not take into account air used when some action is taken, e.g. flying with
-     * the jet boots upgrade is not included here.
+     * the Jet Boots upgrade is not included here, but air used by the Entity Tracker upgrade is included.
      *
      * @param armorHandler the armor handler object (can be used to get upgrades, etc.)
      * @return usage in mL/tick
@@ -179,7 +179,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      * <li>"mod2:other_upgrade" -> "pneumaticcraft.armor.upgrade.mod2.other_upgrade"</li>
      * </ul>
      * @param id the upgrade ID, as returned by {@link #getID()}
-     * @return a converted string
+     * @return a dot-separated string key, suitable for a translation key or keybind name
      */
     static String getStringKey(ResourceLocation id) {
         return UPGRADE_PREFIX +

@@ -12,6 +12,7 @@ public class CommonUpgradeHandlers {
     public static NightVisionHandler nightVisionHandler;
     public static ScubaHandler scubaHandler;
     public static HackHandler hackHandler;
+    public static ElytraHandler elytraHandler;
     public static EnderVisorHandler enderVisorHandler;
     public static MagnetHandler magnetHandler;
     public static ChargingHandler chargingHandler;
@@ -44,6 +45,7 @@ public class CommonUpgradeHandlers {
         chestplateLauncherHandler = r.registerUpgradeHandler(new ChestplateLauncherHandler());
         airConHandler = r.registerUpgradeHandler(new AirConHandler());
         reachDistanceHandler = r.registerUpgradeHandler(new ReachDistanceHandler());
+        elytraHandler = r.registerUpgradeHandler(new ElytraHandler());
 
         runSpeedHandler = r.registerUpgradeHandler(new SpeedBoostHandler());
         jumpBoostHandler = r.registerUpgradeHandler(new JumpBoostHandler());

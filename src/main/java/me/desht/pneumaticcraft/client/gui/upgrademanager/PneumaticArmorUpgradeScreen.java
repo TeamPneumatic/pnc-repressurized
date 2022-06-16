@@ -84,7 +84,12 @@ public class PneumaticArmorUpgradeScreen extends AbstractUpgradeManagerScreen {
                     IArmorUpgradeHandler<?> handler = handlers.get(i);
                     float upgradeUsage = handler.getIdleAirUsage(commonArmorHandler);
                     if (upgradeUsage > 0F) {
-                        text.add(new TextComponent(PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/t (" + handler.getID() + ")").withStyle(black));
+                        Component desc = xlate(IArmorUpgradeHandler.getStringKey(handler.getID()));
+                        Component c = new TextComponent(PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/t (")
+                                .append(desc)
+                                .append(")")
+                                .withStyle(black);
+                        text.add(c);
                     }
                 }
             }

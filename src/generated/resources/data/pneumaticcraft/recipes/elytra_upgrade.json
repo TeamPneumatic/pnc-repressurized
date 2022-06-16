@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "LXL",
+    "XCX",
+    "LXL"
+  ],
+  "key": {
+    "L": {
+      "tag": "pneumaticcraft:upgrade_components"
+    },
+    "X": {
+      "item": "minecraft:end_rod"
+    },
+    "C": {
+      "item": "minecraft:elytra"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:elytra_upgrade"
+  }
+}
