@@ -15,7 +15,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added the Elytra Upgrade for the Pneumatic Chestplate
   * Allows full vanilla-style Elytra gliding while wearing the chestplate
   * No durability damage, but a minor air cost while actively gliding
-  * Toggleable upgrade, can be switched on & off like any other upgrade.
+  * Toggleable upgrade, can be switched on & off like any other upgrade
   * Works well in conjunction with Jet Boots and the Smart Hover mode (glide with Elytra, use Jet Boots when needed to gain speed/altitude)
 
 ### Updates
@@ -34,7 +34,9 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Fixes
 * Fixed Harvesting Drones ignoring IE Hemp
 * Fixed very tall Elevators sometimes not rendering when extended
-* Fixed PNC fuel behaviour in vanilla furnaces when placed in a non-bucket container (e.g. PNC tank)
+* A couple of fixes to PNC fuels when used in a non-bucket container as vanilla Furnace fuels
+  * Tanks which would get voided (e.g. Mekanism tanks) will no longer go in the Furnace fuel slot
+  * Furnace is only fueled proportional to the amount of fluid in the tank instead of always 1000mB worth of fuel
 * A couple of fixes to Drone auto-charging behaviour
   * In particular, Drones which are completely out of air will no longer attempt to claim a Charging Station, locking all other Drones out of it
 * Fixed UV Lightbox losing the contents of the output slot on world reload
